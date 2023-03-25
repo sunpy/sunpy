@@ -1,2 +1,1 @@
 Added three tutorials which replicate `~sunpy.map.CompositeMap` functionality (:ref:`sphx_glr_generated_gallery_plotting_AIA_HMI_composite.py`, :ref:`sphx_glr_generated_gallery_plotting_masked_composite_plot.py`, :ref:`sphx_glr_generated_gallery_plotting_three_map_composite.py`).
-A fourth tutorial (:ref:`sphx_glr_generated_gallery_plotting_rgb_composite.py`) demonstrates how to create an RGB image with three different maps.

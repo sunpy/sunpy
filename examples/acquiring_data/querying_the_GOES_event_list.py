@@ -3,8 +3,7 @@
 Querying the GOES flare event list
 ==================================
 
-How to retrieve the GOES flare event list through use of
-sunpy's Heliophysics Event Knowledgebase (HEK) client.
+How to retrieve the GOES flare event list, sort and save the results.
 """
 from sunpy.net import Fido
 from sunpy.net import attrs as a
@@ -33,26 +32,38 @@ print(result.show("hpc_bbox", "refs"))
 
 # It"s also possible to access the HEK results from the
 # `~sunpy.net.fido_factory.UnifiedResponse` by name.
-
 hek_results = result["hek"]
 
 ###################################################################
-# We can also print the key-values that correspond to the HEK parameters returned
-# in result[0]. The ``.table`` attribute returns an `~astropy.table.Table`.
+# We can also print the key names that correspond to the HEK
+# parameters returned by the query.
 
-print(hek_results.colnames)
+# We only print every 10th key to avoid the output being too long.
+print(hek_results.colnames[::10])
 
 ###################################################################
-# The results returned to the `~sunpy.net.hek.hek.HEKTable`
-# contain a lot of information and we may only want to keep some main
-# results such as start time, end time, peak time, GOES-class, and
-# active region number. This can be done as so:
+# The results returned contain a lot of information and we may
+# only want to keep some main results such as start time,
+# end time, peak time, GOES-class, and active region number.
+# This can be done as so:
 
-new_table = hek_results["event_starttime", "event_peaktime",
-                        "event_endtime", "fl_goescls", "ar_noaanum"]
+filtered_results = hek_results["event_starttime", "event_peaktime",
+                               "event_endtime", "fl_goescls", "ar_noaanum"]
+
+###################################################################
+# ``hek_result`` is already sorted by date, if one wants to sort
+# by magnitude, one can do the following:
+
+# Sorting is done by using the flare class from "fl_goescls"
+# By converting the flare class to a number using ord()
+# and adding the flare strength, we can sort by value
+by_magnitude = sorted(filtered_results, key=lambda x: ord(x['fl_goescls'][0]) + float(x['fl_goescls'][1:]), reverse=True)
+
+for flare in by_magnitude:
+    print(f"Class {flare['fl_goescls']} occurred on {flare['event_starttime']}")
 
 ###################################################################
 # These results can then be saved to a CSV file, or any other file
 # format that `~astropy.table.Table` supports.
 
-new_table.write("october_M1_flares.csv", format="csv")
+filtered_results.write("october_M1_flares.csv", format="csv")

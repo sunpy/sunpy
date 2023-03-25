@@ -26,12 +26,16 @@ from astropy.time import Time
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.time import parse_time
+from sunpy.util.config import get_and_create_download_dir
 
 ###############################################################################
 # Let's download a STEREO-A SECCHI COR2 image from Helioviewer.org which provide
 # pre-processed images and load it into a Map.
+# We download to the default sunpy download directory.
 
-cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime, hvpy.DataSource.COR2_A.value), "COR2.JPEG2000")
+cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime,
+                                            hvpy.DataSource.COR2_A.value),
+                           get_and_create_download_dir() + "/COR2.jp2")
 cor2_map = sunpy.map.Map(cor2_file)
 
 ###############################################################################

@@ -56,7 +56,7 @@ def all_coordinates_from_map(smap):
         system "coordinate_system".
     """
     x, y = all_pixel_indices_from_map(smap)
-    return smap.pixel_to_world(x, y)
+    return smap.wcs.pixel_to_world(x.value, y.value)
 
 
 def all_corner_coords_from_map(smap):
@@ -65,7 +65,7 @@ def all_corner_coords_from_map(smap):
     """
     ny, nx = smap.data.shape
     y, x = np.indices((ny + 1, nx + 1))
-    return smap.pixel_to_world((x - 0.5) * u.pix, (y - 0.5) * u.pix)
+    return smap.wcs.pixel_to_world(x - 0.5, y - 0.5)
 
 
 def map_edges(smap):
@@ -161,9 +161,9 @@ def _edge_coordinates(smap):
     # We need to strip the units from edges before handing it to np.concatenate,
     # as the .unit attribute is not propagated in np.concatenate for numpy<1.17
     # When sunpy depends on numpy>=1.17 this unit replacing code can be removed
-    edge_pixels = u.Quantity(np.concatenate(edges).value, unit=u.pix, copy=False)
+    edge_pixels = np.concatenate(edges).value
     # Calculate the edge of the world
-    return smap.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
+    return smap.wcs.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
 
 def contains_full_disk(smap):
@@ -454,25 +454,34 @@ def _bresenham(*, x1, y1, x2, y2):
 
 def extract_along_coord(smap, coord):
     """
-    Return the value of the image array at every pixel the coordinate path intersects.
+    Extract pixel values from a map along a path that approximates a coordinate path.
 
-    For a given coordinate ``coord``, find all the pixels that cross the coordinate
-    and extract the values of the image array in ``smap`` at these points. This is done by applying
-    `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_
-    between the consecutive coordinates, in pixel space, and then indexing the data
-    array of ``smap`` at those points.
+    Each pair of consecutive coordinates in the provided coordinate array defines a
+    line segment in pixel space.  The approximate pixel path for each line segment is
+    determined by applying
+    `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_.
+    The resulting pixel path does not necessarily include every pixel that is
+    intersected by each line segment.
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
         The sunpy map.
     coord : `~astropy.coordinates.SkyCoord`
-        Coordinate along which to extract intensity.
+        The coordinate array that defines the path for extraction.
 
     Returns
     -------
-    values : `~astropy.units.Quantity`
-    value_coords : `~astropy.coordinates.SkyCoord`
+    pixel_values : `~astropy.units.Quantity`
+         The pixel values along a path that approximates the coordinate path.
+    pixel_coords : `~astropy.coordinates.SkyCoord`
+         The coordinates for the pixels from which the values were extracted.
+
+    Notes
+    -----
+    The provided coordinates are first rounded to the nearest corresponding pixel,
+    which means that the coordinates used for calculations may be shifted relative
+    to the provided coordinates by up to half a pixel.
 
     Examples
     --------
@@ -498,7 +507,7 @@ def extract_along_coord(smap, coord):
         pix.append(b)
     pix = np.vstack(pix)
 
-    intensity = u.Quantity(smap.data[pix[:, 0], pix[:, 1]], smap.unit)
-    coord_new = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
+    pixel_values = u.Quantity(smap.data[pix[:, 0], pix[:, 1]], smap.unit)
+    pixel_coords = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
 
-    return intensity, coord_new
+    return pixel_values, pixel_coords

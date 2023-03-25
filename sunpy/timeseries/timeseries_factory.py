@@ -19,6 +19,7 @@ from astropy.time import Time
 import sunpy
 from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io.header import FileHeader
+from sunpy.timeseries.sources import source_names
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import expand_list
 from sunpy.util.config import get_and_create_download_dir
@@ -50,7 +51,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Inputs to parse for timeseries objects. See the example section for a
         detailed list of possible inputs.
 
-    source : `str`, optional
+    source : {source_names}, optional
         A string to select the observational source of the data, currently
         necessary to define how files should be read for all instruments.
 
@@ -522,6 +523,7 @@ class NoTimeSeriesFound(ValueError):
     """
 
 
+TimeSeriesFactory.__doc__ = TimeSeriesFactory.__doc__.format(source_names=source_names)
 TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
                                default_widget_type=GenericTimeSeries,
                                additional_validation_functions=['is_datasource_for'])

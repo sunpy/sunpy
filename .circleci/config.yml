@@ -41,7 +41,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install --user -U "tox<4" tox-pypi-filter
+      - run: pip install --user -U tox tox-pypi-filter
       - run: tox -v
       - run:
           name: Running codecov
@@ -75,7 +75,7 @@ jobs:
       - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
       - run: git clone git@github.com:sunpy/sunpy-figure-tests.git --depth 1 -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
       # Generate Reference images
-      - run: pip install --user -U "tox<4" tox-pypi-filter
+      - run: pip install --user -U tox tox-pypi-filter
       - run: rm -rf /home/circleci/sunpy-figure-tests/figures/$TOXENV/*
       - run: tox -v -- --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
       - run: |

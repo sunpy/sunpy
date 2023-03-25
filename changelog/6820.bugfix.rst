@@ -1,0 +1,1 @@
+:meth:`sunpy.map.GenericMap.submap` can now handle a '~astropy.coordinates.BaseCoordinateFrame' as input.
