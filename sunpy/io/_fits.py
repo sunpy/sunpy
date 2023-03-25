@@ -83,6 +83,21 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                 hdulist = [hdulist[i] for i in hdus]
 
         hdulist = fits.hdu.HDUList(hdulist)
+       
+        for i in range(len(hdulist)):
+            if hdulist[i].data is not None:
+                flag = isinstance(hdulist[i].data.base, mmap.mmap)
+                flag_index = i
+                break
+        if memmap == True and flag == False:
+                try:
+                    if hdulist[0]._orig_bzero != 0 or hdulist[0]._orig_bscale != 1 or hdulist[0]._blank is not None:
+                        warn_user("Data array is not memory mapped because it is stored in the file has been scalled. Specify 'do_not_scale_image_data=True' to preserve memory mapping, but only if you do not need the data array to be rescalled.")
+                    elif isinstance(hdulist[flag_index], fits.CompImageHDU):
+                        warn_user("Data array is not memory mapped because it is stored in the file using compression. Specify 'disable_image_compression=True' to preserve memory mapping, but only if you do not need the data array to be decompressed.")
+                except:
+                    warn_user("Data array is not memory mapped")
+
         for h in hdulist:
             h.verify('silentfix+warn')
 
@@ -99,16 +114,6 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                     message += '\n'
                 message += repr(e)
                 warn_user(message)
-
-            if memmap == True and not (isinstance(pairs[0].data.base, mmap.mmap) and pairs[0].data.base is not None):
-                try:
-                    if pairs[0].header['BZERO'] != 0:
-                        warn_user("Data array is not memory mapped. Use 'disable_image_compression=True' to preserve memory mapping.")
-                    elif pairs[0].header['BSCALE'] != 1:
-                        warn_user("Data array is not memory mapped. Use 'do_not_scale_image_data=True' to preserve memory mapping.")
-                except KeyError:
-                    warn_user("Data array is not memory mapped.")
-
     return pairs
 
 
