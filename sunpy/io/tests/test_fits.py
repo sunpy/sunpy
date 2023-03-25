@@ -184,8 +184,6 @@ def test_read_memmap():
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
     assert data.base is None
 
-    data, _ = _fits.read(SWAP_LEVEL1_IMAGE, memmap=True)[0]
-    
 
 def test_warn_read_memmap():
     with pytest.warns(SunpyUserWarning, match="Data array is not memory mapped because it is stored in the file using compression. Specify 'disable_image_compression=True' to preserve memory mapping, but only if you do not need the data array to be decompressed."):
