@@ -10,7 +10,8 @@ import astropy.io.fits as fits
 from sunpy.data.test import get_test_data_filenames, get_test_filepath
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 from sunpy.io import _fits
-from sunpy.util import MetaDict, SunpyMetadataWarning
+from sunpy.util import MetaDict, SunpyMetadataWarning, SunpyUserWarning
+from sunpy.data.sample import AIA_171_IMAGE, SWAP_LEVEL1_IMAGE
 
 TEST_RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
@@ -182,3 +183,11 @@ def test_read_memmap():
 
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
     assert data.base is None
+
+    data, _ = _fits.read(SWAP_LEVEL1_IMAGE, memmap=True)[0]
+    
+
+def test_warn_read_memmap():
+    with pytest.warns(SunpyUserWarning, match="Data array is not memory mapped because it is stored in the file using compression. Specify 'disable_image_compression=True' to preserve memory mapping, but only if you do not need the data array to be decompressed."):
+        data, _ = _fits.read(AIA_171_IMAGE, memmap=True)[0]
+
