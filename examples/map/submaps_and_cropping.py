@@ -30,7 +30,7 @@ swap_submap = swap_map.submap(bottom_left, top_right=top_right)
 # Let's plot the results.
 
 fig = plt.figure()
-ax = fig.add_subplots(projection=swap_submap)
+ax = fig.add_subplot(projection=swap_submap)
 image = swap_submap.plot(axes=ax)
 swap_submap.draw_limb(axes=ax)
 swap_submap.draw_grid(axes=ax)

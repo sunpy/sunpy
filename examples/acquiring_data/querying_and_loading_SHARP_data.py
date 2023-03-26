@@ -43,7 +43,7 @@ file = Fido.fetch(result)
 
 sharp_map = sunpy.map.Map(file)
 fig = plt.figure()
-ax = plt.add_subplot(projection=sharp_map)
+ax = fig.add_subplot(projection=sharp_map)
 sharp_map.plot(axes=ax, vmin=-1500, vmax=1500)
 
 plt.show()

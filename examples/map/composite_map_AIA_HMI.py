@@ -47,6 +47,6 @@ comp_map.set_levels(index=1, levels=levels)
 # magnetic field.
 
 fig = plt.figure()
-ax = fig.add_subplot(projection=comp_map)
+ax = fig.add_subplot(projection=comp_map.get_map(0))
 comp_map.plot(axes=ax)
 plt.show()

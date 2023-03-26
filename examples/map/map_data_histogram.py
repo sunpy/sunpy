@@ -61,7 +61,7 @@ ax.legend(loc=9)
 # Finally let's overplot the one-sigma contours.
 
 fig = plt.figure()
-ax = fig.add_subplots(projection=aia_smap)
+ax = fig.add_subplot(projection=aia_smap)
 aia_smap.plot(axes=ax)
 levels = one_sigma / aia_smap.max() * u.percent * 100
 aia_smap.draw_contours(axes=ax, levels=levels, colors=['blue'])

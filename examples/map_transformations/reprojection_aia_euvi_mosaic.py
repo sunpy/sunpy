@@ -139,8 +139,8 @@ for w in weights:
     w[np.isnan(w)] = 0
 
 fig, ax = plt.subplots()
-ax.imshow(weights[0])
-plt.colorbar()
+im = ax.imshow(weights[0])
+fig.colorbar(im)
 
 plt.show()
 

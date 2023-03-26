@@ -37,7 +37,8 @@ m_seq = sunpy.map.Map([
 # AIA cadence. We adjust the plot setting to ensure the colorbar is
 # the same at each time step.
 
-fig, ax = plt.subplots()
+fig = plt.figure()
+ax = fig.add_subplot(projection=m_seq.maps[0])
 ani = m_seq.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
 
 plt.show()
@@ -73,7 +74,8 @@ m_seq_running = sunpy.map.Map(
 # re-normalize the intensity so that it shows up well.
 # First, we show the base difference map.
 
-fig, ax = plt.subplots()
+fig = plt.figure()
+ax = fig.add_subplot(projection=m_seq_base.maps[0])
 ani = m_seq_base.plot(axes=ax, title='Base Difference', norm=colors.Normalize(vmin=-200, vmax=200), cmap='Greys_r')
 plt.colorbar(extend='both', label=m_seq_base[0].unit.to_string())
 
@@ -82,7 +84,8 @@ plt.show()
 ###########################################################################
 # Then, we show the running difference map.
 
-fig, ax = plt.subplots()
+fig = plt.figure()
+ax = fig.add_subplot(projection=m_seq_running.maps[0])
 ani = m_seq_running.plot(axes=ax, title='Running Difference', norm=colors.Normalize(vmin=-200, vmax=200), cmap='Greys_r')
 plt.colorbar(extend='both', label=m_seq_running[0].unit.to_string())
 

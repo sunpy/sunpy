@@ -50,7 +50,7 @@ segment_mask |= np.isnan(all_hgs.lon)
 
 new_frame_map = sunpy.map.Map(smap.data, smap.meta, mask=segment_mask)
 fig = plt.figure()
-ax = fig.add_subplots(projection=new_frame_map)
+ax = fig.add_subplot(projection=new_frame_map)
 new_frame_map.plot(axes=ax)
 new_frame_map.draw_grid(axes=ax, color='red')
 plt.show()
