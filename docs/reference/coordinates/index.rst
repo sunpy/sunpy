@@ -1,3 +1,5 @@
+.. _sunpy-coordinates-reference:
+
 Coordinates (`sunpy.coordinates`)
 *********************************
 
