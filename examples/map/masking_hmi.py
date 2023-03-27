@@ -10,6 +10,7 @@ a HMI image based on the intensity values of AIA.
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import Normalize
 from skimage.measure import label, regionprops
 
 import astropy.units as u
@@ -35,13 +36,7 @@ aia = aia.submap(
 
 hmi = sunpy.map.Map(HMI_LOS_IMAGE)
 hmi = hmi.reproject_to(aia.wcs)
-
-###############################################################################
-# Now let's plot the reprojected HMI Map.
-
-fig = plt.figure()
-ax = fig.add_subplot(projection=hmi)
-hmi.plot(axes=ax, cmap="hmimag")
+hmi.nickname = 'HMI magnetogram'
 
 ###############################################################################
 # Now we will identify separate regions below a threshold in the AIA Map.
@@ -66,6 +61,14 @@ for i in range(7):
     plt.text(*np.flip(regions[i].centroid), str(i), color="w", ha="center", va="center")
 
 ###############################################################################
+# Now let's plot those same regions on the reprojected HMI Map.
+
+fig = plt.figure()
+ax = fig.add_subplot(projection=hmi)
+im = hmi.plot(axes=ax, cmap="hmimag", norm=Normalize(-1500, 1500))
+aia.draw_contours(axes=ax, levels=200 * u.ct, colors="r")
+fig.colorbar(im)
+###############################################################################
 # Now we have the regions, we need to create a new HMI map that masks out everything but the largest region.
 # To do so, we need to create the mask from the bounding box returned by `skimage`.
 
@@ -79,7 +82,7 @@ hmi_masked = sunpy.map.Map((hmi.data, hmi.meta), mask=mask)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=hmi_masked)
-im = hmi_masked.plot(axes=ax, cmap="hmimag")
+im = hmi_masked.plot(axes=ax, cmap="hmimag", norm=Normalize(-1500, 1500))
 fig.colorbar(im)
 
 plt.show()
