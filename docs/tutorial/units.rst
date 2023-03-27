@@ -41,18 +41,18 @@ Arithmetic Operations With Units
 
   >>> distance_start = 10 * u.mm
   >>> distance_end = 23 * u.km
-  >>> length = distance_end - distance_start
-  >>> length
+  >>> displacement = distance_end - distance_start
+  >>> displacement
   <Quantity 22.99999 km>
 
   >>> time = 15 * u.minute
-  >>> speed = length / time
+  >>> speed = displacement / time
   >>> speed
   <Quantity 1.53333267 km / min>
 
 However, operations with incompatible units raise an error::
 
-  >>> length + time
+  >>> displacement + time
   Traceback (most recent call last):
   ...
   astropy.units.core.UnitConversionError: Can only apply 'add' function to quantities with compatible dimensions
