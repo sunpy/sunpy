@@ -93,6 +93,7 @@ To perform this conversion, sunpy provides `~sunpy.coordinates.utils.solar_angle
   >>> from sunpy.coordinates import get_earth
   >>> from sunpy.coordinates.utils import solar_angle_equivalency
   >>> length.to(u.arcsec, equivalencies=solar_angle_equivalency(get_earth("2013-10-28")))
+  INFO: Apparent body location accounts for 495.82 seconds of light travel time [sunpy.coordinates.ephemeris]
   <Quantity 1.38763748e-05 arcsec>
 
 Note that in the above example we made use of `sunpy.coordinates.get_earth`.
