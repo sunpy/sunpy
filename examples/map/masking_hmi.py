@@ -68,6 +68,7 @@ ax = fig.add_subplot(projection=hmi)
 im = hmi.plot(axes=ax, cmap="hmimag", norm=Normalize(-1500, 1500))
 aia.draw_contours(axes=ax, levels=200 * u.ct, colors="r")
 fig.colorbar(im)
+
 ###############################################################################
 # Now we have the regions, we need to create a new HMI map that masks out everything but the largest region.
 # To do so, we need to create the mask from the bounding box returned by `skimage`.
