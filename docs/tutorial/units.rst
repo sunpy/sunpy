@@ -84,7 +84,7 @@ we get an exception because length and energy are, in general, not compatible un
 
 However, we can perform this conversion using the `~astropy.units.equivalencies.spectral` equivalency,::
 
-  >>> length.to(u.keV, equivalency=u.spectral())
+  >>> length.to(u.keV, equivalencies=u.spectral())
   <Quantity 1.23984198e-10 keV>
 
 An equivalency common in solar physics is conversion of angular distances in the plane of the sky to physical distances on the Sun.
