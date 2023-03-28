@@ -150,6 +150,10 @@ def sample_at_coords(smap, coordinates):
     -------
     `~astropy.units.Quantity`
         An array of the map data at the input coordinates.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.map.sample_at_coords
     """
     return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
 
@@ -481,10 +485,6 @@ def extract_along_coord(smap, coord):
     The provided coordinates are first rounded to the nearest corresponding pixel,
     which means that the coordinates used for calculations may be shifted relative
     to the provided coordinates by up to half a pixel.
-
-    Examples
-    --------
-    .. minigallery:: sunpy.map.extract_along_coord
     """
     if not len(coord.shape) or coord.shape[0] < 2:
         raise ValueError('At least two points are required for extracting intensity along a '
@@ -573,6 +573,10 @@ def pixelate_coord_path(smap, coord_path):
     -------
     `~astropy.coordinates.SkyCoord`
          The coordinates for the pixels that intersect with the coordinate path.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.map.pixelate_coord_path
     """
     if not len(coord_path.shape) or coord_path.shape[0] < 2:
         raise ValueError("The coordinate path must have at least two points.")
