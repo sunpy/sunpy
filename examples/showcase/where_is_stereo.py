@@ -21,6 +21,7 @@ import numpy as np
 from matplotlib.ticker import MultipleLocator
 
 import astropy.units as u
+from astropy.coordinates import Longitude
 
 from sunpy.coordinates import HeliocentricEarthEcliptic, get_body_heliographic_stonyhurst, get_horizons_coord
 from sunpy.time import parse_time
@@ -31,33 +32,49 @@ from sunpy.time import parse_time
 obstime = parse_time('now')
 
 ##############################################################################
+# Define a convenience function to extract the first full orbit from a
+# trajectory, assuming that the trajectory moves in the direction of positive
+# ecliptic longitude.
+
+hee_frame = HeliocentricEarthEcliptic(obstime=obstime)
+
+
+def get_first_orbit(coord):
+    lon = coord.transform_to(hee_frame).spherical.lon
+    shifted = Longitude(lon - lon[0])
+    ends = np.flatnonzero(np.diff(shifted) < 0)
+    if ends.size > 0:
+        return coord[:ends[0]]
+    return coord
+
+
+##############################################################################
 # Obtain the locations and trajectories of the various planets and spacecraft.
+# To ensure that each trajectory contains at least one full orbit, we request
+# 700 days for each planet and 1 year for each spacecraft.
 
 planets = ['Mercury', 'Venus', 'Earth', 'Mars']
-periods = [88, 225, 365, 687]
-planet_coords = {planet: get_body_heliographic_stonyhurst(planet,
-                                                          obstime + np.arange(period) * u.d)
-                 for planet, period in zip(planets, periods)}
+times = obstime + np.arange(700) * u.day
+planet_coords = {planet: get_first_orbit(get_body_heliographic_stonyhurst(planet, times))
+                 for planet in planets}
 
 stereo_a = get_horizons_coord('STEREO-A', obstime)
 stereo_b = get_horizons_coord('STEREO-B', obstime)
 
 missions = ['Parker Solar Probe', 'Solar Orbiter', 'BepiColombo']
 mission_labels = {'Parker Solar Probe': 'PSP', 'Solar Orbiter': 'SO', 'BepiColombo': 'BEPICOLOMBO'}
-periods = [100, 180, 120]  # may need to be updated as orbits evolve
-mission_coords = {mission: get_horizons_coord(mission, {'start': obstime,
-                                                        'stop': obstime + period * u.d,
-                                                        'step': '1d'})
-                  for mission, period in zip(missions, periods)}
+mission_coords = {mission: get_first_orbit(get_horizons_coord(mission, {'start': obstime,
+                                                                        'stop': obstime + 1 * u.yr,
+                                                                        'step': '1d'}))
+                  for mission in missions}
+
 
 ##############################################################################
-# Define a convenience function for converting coordinates to plot positions.
-
-frame = HeliocentricEarthEcliptic(obstime=obstime)
-
+# Define a convenience function for converting coordinates to plot positions
+# in the ecliptic plane.
 
 def coord_to_heexy(coord):
-    coord = coord.transform_to(frame)
+    coord = coord.transform_to(hee_frame)
     coord.representation_type = 'cartesian'
     return coord.y.to_value('AU'), coord.x.to_value('AU')
 
@@ -110,18 +127,18 @@ for planet, coord in planet_coords.items():
     ax.plot(*coord_to_heexy(coord), linestyle='dashed', color='gray')
 
     if planet == 'Earth':
-        color, markersize = 'lime', 10
+        color, markersize, offset = 'lime', 10, 0.1
     else:
-        color, markersize = 'gray', None
+        color, markersize, offset = 'gray', None, 0.05
 
     x, y = coord_to_heexy(coord[0])
     ax.plot(x, y, 'o', markersize=markersize, color=color)
-    ax.text(x + (0.1 if planet == 'Earth' else 0.05), y, planet, color=color)
+    ax.text(x + offset, y, planet, color=color)
 
 # sphinx_gallery_defer_figures
 
 ##############################################################################
-# Draw the STEREO spacecraft (sans orbits), as well as Sun-STEREO lines.
+# Draw the STEREO spacecraft (without orbits), as well as Sun-STEREO lines.
 
 for stereo, label, color in [(stereo_a, 'A', 'red'), (stereo_b, 'B', 'blue')]:
     x, y = coord_to_heexy(stereo)
