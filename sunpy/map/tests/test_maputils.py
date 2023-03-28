@@ -24,6 +24,7 @@ from sunpy.map.maputils import (
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
+    pixelate_coord_path,
     sample_at_coords,
     solar_angular_radius,
 )
@@ -302,3 +303,21 @@ def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
     point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
     with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
         _ = extract_along_coord(aia171_test_map, point)
+
+
+@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+                         [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
+                          ([1, 5], [1, 2], [1, 2, 3, 3, 4, 5], [1, 1, 1, 2, 2, 2]),
+                          ([1, 5], [1, 3], [1, 2, 2, 3, 4, 4, 5], [1, 1, 2, 2, 2, 3, 3]),
+                          ([1, 5], [1.0, 4.0], [1, 2, 2, 3, 3, 4, 4, 5], [1, 1, 2, 2, 3, 3, 4, 4]),
+                          ([1, 5], [1.0, 3.6], [1, 2, 2, 3, 3, 4, 5, 5], [1, 1, 2, 2, 3, 3, 3, 4]),
+                          ([1, 5], [1.4, 3.6], [1, 1, 2, 3, 3, 4, 5, 5], [1, 2, 2, 2, 3, 3, 3, 4])])
+def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
+    # Also test the x<->y transpose
+    for xx, yy, sxx, syy in [(x, y, sampled_x, sampled_y), (y, x, sampled_y, sampled_x)]:
+        # Using the AIA test map for a "real" WCS, but the actual WCS is irrelevant for this test
+        line = aia171_test_map.wcs.pixel_to_world(xx, yy)
+        sampled_coords = pixelate_coord_path(aia171_test_map, line)
+        sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
+        assert np.allclose(sampled_pixels[0], sxx)
+        assert np.allclose(sampled_pixels[1], syy)
