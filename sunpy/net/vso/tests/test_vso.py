@@ -359,3 +359,35 @@ def test_iris_filename(client):
     search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"), a.Instrument.iris)
     filename = client.mk_filename(pattern, search_results[0], None, url)
     assert filename.endswith("iris_l2_20180102_153155_3610108077_sji_1330_t000_fits.gz")
+
+
+@pytest.mark.remote_data
+def test_table_noinfo_required(client):
+    res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom))
+    assert 'Info Required' not in res.keys() and len(res) > 0
+
+
+@pytest.mark.remote_data
+def test_table_has_info_required_swap(client):
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'))
+    assert 'Info Required' in res.keys() and len(res) > 0
+
+
+@pytest.mark.remote_data
+def test_table_has_info_required_lyra(client):
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
+    assert 'Info Required' in res.keys() and len(res) > 0
+
+
+@pytest.mark.remote_data
+def test_fetch_swap(client, tmp_path):
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'))
+    files = client.fetch(res[0:1], path=tmp_path)
+    assert len(files) == 1
+
+
+@pytest.mark.remote_data
+def test_fetch_lyra(client, tmp_path):
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
+    files = client.fetch(res[0:1], path=tmp_path)
+    assert len(files) == 1
