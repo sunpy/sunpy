@@ -212,9 +212,9 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
         aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
     x = pixels[0, :]
     y = pixels[1, :]
-    intensity_along_arc = aia171_test_map.data[y, x]
-    np.testing.assert_almost_equal(data[0], intensity_along_arc[0], decimal=1)
-    np.testing.assert_almost_equal(data[-1], intensity_along_arc[-1], decimal=1)
+    intensity_along_arc = aia171_test_map.data[y, x] * aia171_test_map.unit
+    assert_quantity_allclose(data[0], intensity_along_arc[0])
+    assert_quantity_allclose(data[-1], intensity_along_arc[-1])
 
 
 def test_contains_solar_center(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map, sub_smap):

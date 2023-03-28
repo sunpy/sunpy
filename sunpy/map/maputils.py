@@ -148,11 +148,10 @@ def sample_at_coords(smap, coordinates):
 
     Returns
     -------
-    `numpy.array`
-        A `numpy.array` corresponding to the data obtained from the map,
-        at the input coordinates.
+    `~astropy.units.Quantity`
+        An array of the map data at the input coordinates.
     """
-    return smap.data[smap.wcs.world_to_array_index(coordinates)]
+    return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
 
 
 def _edge_coordinates(smap):
