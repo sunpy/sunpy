@@ -83,13 +83,12 @@ class VSOQueryResponseTable(QueryResponseTable):
                         # doesn't recognise as a unit, so fix it.
                         waveunit = value['waveunit']
                         waveunit = 'keV' if waveunit == 'kev' else waveunit
-
                         row["Wavelength"] = None
-                        if value['wavemin'] is not None and value['wavemax'] is not None:
+                        # VSO added "N/A" as potential value for wavemin and wavemax
+                        if value['wavemin'] not in [None, "N/A"] and value['wavemax'] not in [None, "N/A"]:
                             row["Wavelength"] = u.Quantity(
                                 [float(value['wavemin']), float(value['wavemax'])],
                                 unit=waveunit)
-
                         row["Wavetype"] = value['wavetype']
                         continue
                     for subkey, subvalue in value.items():
@@ -99,7 +98,6 @@ class VSOQueryResponseTable(QueryResponseTable):
                             key_template = f"{key.capitalize()} {subkey.capitalize()}"
                         row[key_template] = subvalue
             data.append(row)
-
         data = cls(data, client=client)
         # Parse times
         for col in data.colnames:
