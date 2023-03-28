@@ -201,15 +201,14 @@ In this example we'll search for LYRA or RHESSI data in a given time range::
     3 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     <BLANKLINE>
-           Start Time               End Time        ...   Size        Info
-                                                    ...  Mibyte
-    ----------------------- ----------------------- ... -------- --------------
-    2012-03-03 22:57:40.000 2012-03-04 00:33:20.000 ... -0.00098 RHESSI level-0
-    2012-03-04 00:33:20.000 2012-03-04 01:45:40.000 ... -0.00098 RHESSI level-0
-    2012-03-04 01:45:40.000 2012-03-04 02:09:00.000 ... -0.00098 RHESSI level-0
+           Start Time               End Time        Source ... Extent Type   Size
+                                                           ...              Mibyte
+    ----------------------- ----------------------- ------ ... ----------- --------
+    2012-03-03 22:57:40.000 2012-03-04 00:33:20.000 RHESSI ... PARTIAL_SUN -0.00098
+    2012-03-04 00:33:20.000 2012-03-04 01:45:40.000 RHESSI ... PARTIAL_SUN -0.00098
+    2012-03-04 01:45:40.000 2012-03-04 02:09:00.000 RHESSI ... PARTIAL_SUN -0.00098
     <BLANKLINE>
     <BLANKLINE>
-
 
 Working with Search Results
 ***************************
