@@ -5,6 +5,7 @@ import numbers
 from itertools import product
 
 import numpy as np
+from scipy.interpolate import griddata
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -132,8 +133,40 @@ def solar_angular_radius(coordinates):
     _verify_coordinate_helioprojective(coordinates)
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
+def _get_neighboring_indexes(array,dimensions):
+    """
+    Get neighboring array indexes for a particular index locations
+    """
 
-def sample_at_coords(smap, coordinates):
+    x = [array[0]]
+    y = [array[1]]
+    if array[0] < dimensions.x.value - 2:
+        x.append(array[0] + 1)
+    if array[0] > 0:
+        x.append(array[0] - 1)
+    if array[1] < dimensions.y.value - 2:
+        y.append(array[1] + 1)
+    if array[1] > 0:
+        y.append(array[1] - 1)
+
+    return tuple(np.array(np.meshgrid(x,y)).reshape(2,-1))
+
+def _get_value(neighbors_array,aia_map,coord,method="nearest"):
+    """
+    Get interpolated value for one coordiante
+    """
+    array_to_coord = aia_map.wcs.array_index_to_world(neighbors_array[0],
+                                                      neighbors_array[1])
+    
+    value = griddata((array_to_coord.Tx.value,
+                      array_to_coord.Ty.value),
+                      aia_map.data[neighbors_array],
+                      (coord.Tx.value,coord.Ty.value),
+                      method = method)
+    
+    return value
+
+def sample_at_coords(smap,coordinates,method = "nearest"):
     """
     Samples the data in a map at given series of coordinates.
     Uses nearest-neighbor interpolation of coordinates in map, as
@@ -145,6 +178,9 @@ def sample_at_coords(smap, coordinates):
         A SunPy map.
     coordinates : `~astropy.coordinates.SkyCoord`
         Input coordinates.
+    method : 'str'
+        Accepts scipy.interpolate.griddata method parameter values.
+        "nearest" , "linear","cubic"
 
     Returns
     -------
@@ -152,7 +188,12 @@ def sample_at_coords(smap, coordinates):
         A `numpy.array` corresponding to the data obtained from the map,
         at the input coordinates.
     """
-    return smap.data[smap.wcs.world_to_array_index(coordinates)]
+    array_indexes = smap.wcs.world_to_array_index(coordinates)
+    values = list()
+    for x,coord in zip(np.array(array_indexes).T,coordinates):
+        neighbors_indexes = _get_neighboring_indexes(x,smap.dimensions)
+        values.append(_get_value(neighbors_indexes,smap,coord,method))
+    return np.array(values)
 
 
 def _edge_coordinates(smap):
