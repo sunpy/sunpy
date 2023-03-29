@@ -321,3 +321,21 @@ def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
         sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
         assert np.allclose(sampled_pixels[0], sxx)
         assert np.allclose(sampled_pixels[1], syy)
+
+
+@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+                         [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
+                          ([1, 5], [1, 2], [1, 2, 3, 4, 5], [1, 1, 1, 2, 2]),
+                          ([1, 5], [1, 3], [1, 2, 3, 4, 5], [1, 1, 2, 2, 3]),
+                          ([1, 5], [1.0, 4.0], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
+                          ([1, 5], [1.0, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
+                          ([1, 5], [1.4, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4])])
+def test_pixelate_coord_path_bresenham(aia171_test_map, x, y, sampled_x, sampled_y):
+    # Also test the x<->y transpose
+    for xx, yy, sxx, syy in [(x, y, sampled_x, sampled_y), (y, x, sampled_y, sampled_x)]:
+        # Using the AIA test map for a "real" WCS, but the actual WCS is irrelevant for this test
+        line = aia171_test_map.wcs.pixel_to_world(xx, yy)
+        sampled_coords = pixelate_coord_path(aia171_test_map, line, bresenham=True)
+        sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
+        assert np.allclose(sampled_pixels[0], sxx)
+        assert np.allclose(sampled_pixels[1], syy)

@@ -545,7 +545,7 @@ def _intersected_pixels(*, x1, y1, x2, y2):
     return np.stack([x[use], y[use]], axis=1)
 
 
-def pixelate_coord_path(smap, coord_path):
+def pixelate_coord_path(smap, coord_path, *, bresenham=False):
     """
     Return the pixel coordinates for every pixel that intersects with a coordinate
     path.
@@ -563,6 +563,12 @@ def pixelate_coord_path(smap, coord_path):
         The sunpy map.
     coord : `~astropy.coordinates.SkyCoord`
         The coordinate path.
+    bresenham : `bool`
+        If ``True``, use Bresenham's line algorithm instead of the default
+        algorithm.  Bresenham's line algorithm is faster, but simplifies each
+        coordinate-path point to the nearest pixel center and can skip a pixel on
+        the path if two of its neighbors are diagonally connected and also on the
+        path.
 
     Notes
     -----
@@ -582,9 +588,14 @@ def pixelate_coord_path(smap, coord_path):
         raise ValueError("The coordinate path must have at least two points.")
 
     px, py = smap.wcs.world_to_pixel(coord_path)
+    if bresenham:
+        px, py = np.rint(px).astype(int), np.rint(py).astype(int)
+
     pix = []
     for i in range(len(px) - 1):
-        this_pix = _intersected_pixels(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
+        algorithm = _bresenham if bresenham else _intersected_pixels
+        this_pix = algorithm(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
+
         # After the first line segment, skip the start point since it is the same as the end point
         # of the previous line segment
         if i > 0:
