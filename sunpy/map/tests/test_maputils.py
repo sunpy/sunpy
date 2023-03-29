@@ -28,6 +28,7 @@ from sunpy.map.maputils import (
     sample_at_coords,
     solar_angular_radius,
 )
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 @pytest.fixture
@@ -280,7 +281,8 @@ def test_extract_along_coord(aia171_test_map):
     nmax = max(*aia171_test_map.data.shape)
     top_right = aia171_test_map.pixel_to_world((nmax-1)*u.pix, (nmax-1)*u.pix)
     line = SkyCoord([aia171_test_map.bottom_left_coord, top_right])
-    intensity, line_discrete = extract_along_coord(aia171_test_map, line)
+    with pytest.warns(SunpyDeprecationWarning):
+        intensity, line_discrete = extract_along_coord(aia171_test_map, line)
     pix_diag = np.array([(i, i) for i in range(nmax)])
     intensity_diag = u.Quantity(
         [aia171_test_map.data[i[0], i[1]] for i in pix_diag],
@@ -294,15 +296,18 @@ def test_extract_along_coord(aia171_test_map):
 
 def test_extract_along_coord_one_point_exception(aia171_test_map):
     with pytest.raises(ValueError, match='At least two points are required*'):
-        _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
+        with pytest.warns(SunpyDeprecationWarning):
+            _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
     with pytest.raises(ValueError, match='At least two points are required*'):
-        _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
+        with pytest.warns(SunpyDeprecationWarning):
+            _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
 
 
 def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
     point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
     with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
-        _ = extract_along_coord(aia171_test_map, point)
+        with pytest.warns(SunpyDeprecationWarning):
+            _ = extract_along_coord(aia171_test_map, point)
 
 
 @pytest.mark.parametrize('x, y, sampled_x, sampled_y',

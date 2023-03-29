@@ -10,6 +10,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import Helioprojective, sun
+from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -455,6 +456,9 @@ def _bresenham(*, x1, y1, x2, y2):
     return np.array(res)
 
 
+@deprecated("5.0", message="The extract_along_coord function is deprecated and may be removed in "
+                           "version 5.1. Use pixelate_coord_path, and then pass its output to "
+                           "sample_at_coords.")
 def extract_along_coord(smap, coord):
     """
     Extract pixel values from a map along a path that approximates a coordinate path.
