@@ -359,3 +359,32 @@ def test_iris_filename(client):
     search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"), a.Instrument.iris)
     filename = client.mk_filename(pattern, search_results[0], None, url)
     assert filename.endswith("iris_l2_20180102_153155_3610108077_sji_1330_t000_fits.gz")
+    
+@pytest.mark.remote_data
+def test_table_noinfo_required(client):
+    res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'),
+                        a.Wavelength(171 * u.angstrom),
+                        response_format="table")
+    has_info = False
+    res_keys = res.keys()
+    if 'Info Required' in res_keys:
+       has_info = True
+    assert not has_info
+
+@pytest.mark.remote_data
+def test_table_has_info_required(client):
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'),
+                        response_format="table")
+    has_info = False
+    res_keys = res.keys()
+    if 'Info Required' in res_keys:
+       has_info = True
+    assert has_info
+
+@pytest.mark.remote_data
+def test_table_length_test(client):
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'),
+                        response_format="table")
+    tap_results = len(res)
+    assert tap_results == 948
+    
