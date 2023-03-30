@@ -363,45 +363,28 @@ def test_iris_filename(client):
 @pytest.mark.remote_data
 def test_table_noinfo_required(client):
     res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'),
-                        a.Wavelength(171 * u.angstrom),
-                        response_format="table")
-    has_info = False
-    res_keys = res.keys()
-    if 'Info Required' in res_keys:
-       has_info = True
-    assert not has_info
+                        a.Wavelength(171 * u.angstrom))
+    assert 'Info Required' not in res.keys()
 
 @pytest.mark.remote_data
 def test_table_has_info_required_swap(client):
-    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'),
-                        response_format="table")
-    has_info = False
-    res_keys = res.keys()
-    if 'Info Required' in res_keys:
-       has_info = True
-    assert has_info
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'))
+    assert 'Info Required' in res.keys()
 
 @pytest.mark.remote_data
 def test_table_length_test_swap(client):
-    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'),
-                        response_format="table")
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'))
     tap_results = len(res)
     assert tap_results == 948
     
     @pytest.mark.remote_data
 def test_table_has_info_required_lyra(client):
-    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'),
-                        response_format="table")
-    has_info = False
-    res_keys = res.keys()
-    if 'Info Required' in res_keys:
-       has_info = True
-    assert has_info
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
+    assert 'Info Required' in res.keys()
 
 @pytest.mark.remote_data
 def test_table_length_test_lyra(client):
-    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'),
-                        response_format="table")
+    res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
     tap_results = len(res)
     assert tap_results == 9
     
