@@ -423,9 +423,9 @@ class VSOClient(BaseClient):
         #    Pass back the Apache session ID to the VSO if it exists in the response
 
         for item in response:
-           for k in item.keys():
-              if k == 'Info Required':
-                 info['required'] = item['Info Required']
+            info_required = item.get("Info Required", None)
+            if info_required is not None:
+                info['required'] = item['Info Required']
                 
         if methods is None:
             methods = self.method_order + ['URL']
