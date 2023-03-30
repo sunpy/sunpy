@@ -2,17 +2,17 @@ import cdflib
 import numpy as np
 import pandas as pd
 from cdflib.epochs import CDFepoch
-
+import warnings
 import astropy.units as u
 
 from sunpy import log
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.util.exceptions import warn_user
 
-__all__ = ['read_cdf']
+__all__ = ['_read_cdf']
 
 
-def read_cdf(fname):
+def _read_cdf(fname):
     """
     Read a CDF file that follows the ISTP/IACG guidelines.
 
@@ -31,8 +31,8 @@ def read_cdf(fname):
     ----------
     Space Physics Guidelines for CDF https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html
     """
+    warnings.warn("_read_cdf is depricated and it is meant to be used for internal uses only",DeprecationWarning)
     cdf = cdflib.CDF(str(fname))
-
     # Extract the time varying variables
     cdf_info = cdf.cdf_info()
     meta = cdf.globalattsget()

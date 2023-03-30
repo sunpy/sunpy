@@ -19,7 +19,7 @@ import sunpy
 import sunpy.net.vso.legacy_response
 from sunpy import config
 from sunpy.io import _fits
-from sunpy.io import file_tools as sunpy_filetools
+from sunpy.io import _file_tools as sunpy_filetools
 from sunpy.io.header import FileHeader
 from sunpy.time import parse_time
 from sunpy.util.types import DatabaseEntryType
