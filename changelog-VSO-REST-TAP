@@ -1,4 +1,0 @@
-Add support to SunPy so that the VSO queries of Data Providers using REST and/or TAP transport mechanisms can 
-return the Apache sessionID in a QueryResponse in the Info[Required] column. The Apache sessionID is only generated
-by the VSO for REST/TAP Data Providers, SOAP Data Providers are unchanged. The new code in vso.py will only send back
-the data in Info[Required] if it exists, and only if the User is subsequently requesting REST/TAP data from the VSO.
