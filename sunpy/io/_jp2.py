@@ -3,17 +3,17 @@ This module provides a JPEG 2000 file reader.
 """
 import os
 from xml.etree import cElementTree as ET
-
+import warnings
 import numpy as np
 
 from sunpy.io.header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['read', 'get_header', 'write']
+__all__ = ['_read', '_get_header', '_write']
 
 
-def read(filepath, **kwargs):
+def _read(filepath, **kwargs):
     """
     Reads a JPEG2000 file.
 
@@ -29,15 +29,17 @@ def read(filepath, **kwargs):
     `list`
         A list of (data, header) tuples.
     """
+    warnings.warn("_read is depricated and it is meant to be used for internal use only",DeprecationWarning)
+
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k
 
-    header = get_header(filepath)
+    header = _get_header(filepath)
     data = Jp2k(filepath)[...][::-1]
     return [HDPair(data, header[0])]
 
 
-def get_header(filepath):
+def _get_header(filepath):
     """
     Reads the header from the file.
 
@@ -51,6 +53,7 @@ def get_header(filepath):
     `list`
         A list of one header read from the file.
     """
+    warnings.warn("_get_header is depricated and it is meant to be used for internal use only",DeprecationWarning)
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k
     jp2 = Jp2k(filepath)
@@ -75,7 +78,7 @@ def get_header(filepath):
     return [FileHeader(pydict)]
 
 
-def header_to_xml(header):
+def _header_to_xml(header):
     """
     Converts image header metadata into an XML Tree that can be inserted into
     a JP2 file header.
@@ -92,6 +95,7 @@ def header_to_xml(header):
         in the form <key>value</key> derived from the key/value
         pairs in the given header dictionary
     """
+    warnings.warn("_header_to_xml is depricated and it is meant to be used for internal use only",DeprecationWarning)
     # glymur uses lxml and will crash if trying to use
     # python's builtin xml.etree
     import lxml.etree as ET
@@ -121,7 +125,7 @@ def header_to_xml(header):
     return fits
 
 
-def generate_jp2_xmlbox(header):
+def _generate_jp2_xmlbox(header):
     """
     Generates the JP2 XML box to be inserted into the jp2 file.
 
@@ -135,19 +139,20 @@ def generate_jp2_xmlbox(header):
     `XMLBox`
         XML box containing FITS metadata to be used in jp2 headers
     """
+    warnings.warn("_get_header is depricated and it is meant to be used for internal use only",DeprecationWarning)
     # glymur uses lxml and will crash if trying to use
     # python's builtin xml.etree
     import lxml.etree as ET
     from glymur import jp2box
 
-    header_xml = header_to_xml(header)
+    header_xml = _header_to_xml(header)
     meta = ET.Element("meta")
     meta.append(header_xml)
     tree = ET.ElementTree(meta)
     return jp2box.XMLBox(xml=tree)
 
 
-def write(fname, data, header, **kwargs):
+def _write(fname, data, header, **kwargs):
     """
     Take a data header pair and write a JP2 file.
 
@@ -168,6 +173,7 @@ def write(fname, data, header, **kwargs):
     uint8 values to support the JPEG2000 format.
     """
     from glymur import Jp2k
+    warnings.warn("_write is depricated and it is meant to be used for internal use only",DeprecationWarning)
 
     tmpname = fname + "tmp.jp2"
     jp2_data = np.uint8(data)
@@ -176,7 +182,7 @@ def write(fname, data, header, **kwargs):
     # Append the XML data to the header information stored in jp2.box
     meta_boxes = jp2.box
     target_index = len(meta_boxes) - 1
-    fits_box = generate_jp2_xmlbox(header)
+    fits_box = _generate_jp2_xmlbox(header)
     meta_boxes.insert(target_index, fits_box)
 
     # Rewrites the jp2 file on disk with the xml data in the header

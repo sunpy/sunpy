@@ -14,7 +14,7 @@ from astropy.time import Time, TimeDelta
 import sunpy.io
 from sunpy import log
 from sunpy.extern import parse
-from sunpy.io.file_tools import UnrecognizedFileTypeError
+from sunpy.io._file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.exceptions import warn_user

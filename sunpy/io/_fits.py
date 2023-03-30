@@ -38,17 +38,17 @@ import math
 import traceback
 import collections
 import collections.abc
-
+import warnings
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.io import HDPair
 
-__all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit', 'format_comments_and_history']
+__all__ = ['_header_to_fits', '_read', '_get_header', '_write', '_extract_waveunit', '_format_comments_and_history']
 
 
-def read(filepath, hdus=None, memmap=None, **kwargs):
+def _read(filepath, hdus=None, memmap=None, **kwargs):
     """
     Read a fits file.
 
@@ -74,6 +74,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     Also all comments in the original file are concatenated into a single
     "comment" key in the returned FileHeader.
     """
+    warnings.warn("_read is depricated and it is meant to be used for internal use only",DeprecationWarning)
     with fits.open(filepath, ignore_blank=True, memmap=memmap, **kwargs) as hdulist:
         if hdus is not None:
             if isinstance(hdus, int):
@@ -85,7 +86,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         for h in hdulist:
             h.verify('silentfix+warn')
 
-        headers = get_header(hdulist)
+        headers = _get_header(hdulist)
         pairs = []
 
         for i, (hdu, header) in enumerate(zip(hdulist, headers)):
@@ -102,7 +103,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     return pairs
 
 
-def get_header(afile):
+def _get_header(afile):
     """
     Read a fits file and return just the headers for all HDU's.
 
@@ -116,6 +117,7 @@ def get_header(afile):
     `list`
         A list of `sunpy.io.header.FileHeader` headers.
     """
+    warnings.warn("_get_header is depricated and it is meant to be used for internal uses only",DeprecationWarning)
     if isinstance(afile, fits.HDUList):
         hdulist = afile
         close = False
@@ -127,14 +129,14 @@ def get_header(afile):
     try:
         headers = []
         for hdu in hdulist:
-            headers.append(format_comments_and_history(hdu.header))
+            headers.append(_format_comments_and_history(hdu.header))
     finally:
         if close:
             hdulist.close()
     return headers
 
 
-def format_comments_and_history(input_header):
+def _format_comments_and_history(input_header):
     """
     Combine ``COMMENT`` and ``HISTORY`` cards into single
     entries. Extract ``KEYCOMMENTS`` into a single entry
@@ -149,6 +151,8 @@ def format_comments_and_history(input_header):
     -------
     `sunpy.io.header.FileHeader`
     """
+    warnings.warn("_format_comments_and_history is depricated and it is meant to be used for internal use only",DeprecationWarning)
+
     try:
         comment = "".join(input_header['COMMENT']).strip()
     except KeyError:
@@ -168,13 +172,13 @@ def format_comments_and_history(input_header):
         if card.comment != '':
             keydict.update({card.keyword: card.comment})
     header['KEYCOMMENTS'] = keydict
-    waveunit = extract_waveunit(header)
+    waveunit = _extract_waveunit(header)
     if waveunit is not None:
         header['WAVEUNIT'] = waveunit
     return header
 
 
-def write(fname, data, header, hdu_type=None, **kwargs):
+def _write(fname, data, header, hdu_type=None, **kwargs):
     """
     Take a data header pair and write a FITS file.
 
@@ -197,8 +201,9 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     """
     # Copy header so the one in memory is left alone
     header = header.copy()
+    warnings.warn("_write is depricated and it is meant to be used for internal use only",DeprecationWarning)
 
-    fits_header = header_to_fits(header)
+    fits_header = _header_to_fits(header)
 
     if isinstance(fname, str):
         fname = os.path.expanduser(fname)
@@ -228,10 +233,12 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     hdul.writeto(fname, **fitskwargs)
 
 
-def header_to_fits(header):
+def _header_to_fits(header):
     """
     Convert a header dict to a `~astropy.io.fits.Header`.
     """
+    warnings.warn("_header_to_fits is depricated and it is meant to be used for internal use only",DeprecationWarning)
+
     # Copy the header to avoid modifying it in place
     header = header.copy()
     # The comments need to be added to the header separately from the normal
@@ -285,7 +292,7 @@ def header_to_fits(header):
     return fits_header
 
 
-def extract_waveunit(header):
+def _extract_waveunit(header):
     """
     Attempt to read the wavelength unit from a given FITS header.
 
@@ -325,6 +332,7 @@ def extract_waveunit(header):
     # 3. parse wavelnth_comment
     # 3.1 "[$UNIT] ..." -> $UNIT
     # 3.2 "Observed wavelength ($UNIT)" -> $UNIT
+    warnings.warn("_extract_waveunit is depricated and it is meant to be used for internal uses only",DeprecationWarning)
     def parse_waveunit_comment(waveunit_comment):
         if waveunit_comment == 'in meters':
             return 'm'

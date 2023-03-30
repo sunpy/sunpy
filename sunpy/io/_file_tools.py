@@ -4,16 +4,16 @@ This module provides a generic file reader.
 import re
 import gzip
 import pathlib
-
+import warnings
 try:
     from . import _fits as fits
 except ImportError:
     fits = None
 
 try:
-    from . import jp2
+    from . import _jp2
 except ImportError:
-    jp2 = None
+    _jp2 = None
 
 try:
     from . import ana
@@ -21,7 +21,7 @@ except ImportError:
     ana = None
 
 
-__all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
+__all__ = ['_read_file', '_read_file_header', '_write_file', '_detect_filetype']
 
 # File formats supported by SunPy
 _known_extensions = {
@@ -48,12 +48,12 @@ class Readers(dict):
 # Map the readers
 _readers = Readers({
     'fits': fits,
-    'jp2': jp2,
+    'jp2': _jp2,
     'ana': ana
 })
 
 
-def read_file(filepath, filetype=None, **kwargs):
+def _read_file(filepath, filetype=None, **kwargs):
     """
     Automatically determine the filetype and read the file.
 
@@ -75,6 +75,7 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
+    warnings.warn("_read_file is depricated and it is meant to be used for internal uses only",DeprecationWarning)
     # Convert Path objects to strings as the filepath can also be a URL
     filepath = str(filepath)
     # Use the explicitly passed filetype
@@ -91,7 +92,7 @@ def read_file(filepath, filetype=None, **kwargs):
     return _readers[readername].read(filepath, **kwargs)
 
 
-def read_file_header(filepath, filetype=None, **kwargs):
+def _read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file.
 
@@ -112,6 +113,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
+    warnings.warn("_read_file_header is depricated and it is meant to be used for internal use only",DeprecationWarning)
     # Use the explicitly passed filetype
     if filetype is not None:
         return _readers[filetype].get_header(filepath, **kwargs)
@@ -126,7 +128,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     return _readers[readername].get_header(filepath, **kwargs)
 
 
-def write_file(fname, data, header, filetype='auto', **kwargs):
+def _write_file(fname, data, header, filetype='auto', **kwargs):
     """
     Write a file from a data & header pair using one of the defined file types.
 
@@ -148,6 +150,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     -----
     * This routine currently only supports saving a single HDU.
     """
+    warnings.warn("_write_file is depricated and it is meant to be used for internal use only",DeprecationWarning)
     if filetype == 'auto':
         # Get the extension without the leading dot
         filetype = pathlib.Path(fname).suffix[1:]
@@ -175,16 +178,16 @@ def _detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
-
-    if detect_filetype(filepath) in _readers.keys():
-        return detect_filetype(filepath)
+    warnings.warn("_detect_filetype is depricated and it is meant to be used for internal use only",DeprecationWarning)
+    if _detect_filetype(filepath) in _readers.keys():
+        return _detect_filetype(filepath)
 
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently "
                                     "supported by SunPy.")
 
 
-def detect_filetype(filepath):
+def _detect_filetype(filepath):
     """
     Attempts to determine the type of file a given filepath is.
 
@@ -198,7 +201,7 @@ def detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
-
+    warnings.warn("_detect_filetype is depricated and it is meant to be used for internal use only",DeprecationWarning)
     # Open file and read in first two lines
     with open(filepath, 'rb') as fp:
         line1 = fp.readline()
