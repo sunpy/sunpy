@@ -377,7 +377,7 @@ def test_table_length_test_swap(client):
     tap_results = len(res)
     assert tap_results == 948
     
-    @pytest.mark.remote_data
+@pytest.mark.remote_data
 def test_table_has_info_required_lyra(client):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
     assert 'Info Required' in res.keys()
