@@ -1,3 +1,19 @@
+4.1.4 (2023-03-31)
+==================
+
+Bug Fixes
+---------
+
+- When using ``autoalign=True`` when plotting maps, the result was misaligned by half a pixel. (`#6796 <https://github.com/sunpy/sunpy/pull/6796>`__)
+- :meth:`sunpy.map.GenericMap.submap` can now handle a '~astropy.coordinates.BaseCoordinateFrame' as input. (`#6820 <https://github.com/sunpy/sunpy/pull/6820>`__)
+
+
+Documentation
+-------------
+
+- Added a note in examples :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` and :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py` suggesting to use :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to retain off-disk HMI data. (`#6855 <https://github.com/sunpy/sunpy/pull/6855>`__)
+
+
 4.1.3 (2023-02-14)
 ==================
 
