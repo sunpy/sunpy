@@ -108,8 +108,10 @@ Not every package in the scientific Python ecosystem understand units.
 As such, it is sometimes necessary to drop the units before passing `~astropy.units.Quantity` to such functions.
 As shown above, you can retrieve the just the numerical value of a `~astropy.units.Quantity`,::
 
-  >>> length.value
+  >>> length.to_value()
   10.0
+  >>> length.to_value(u.km)
+  0.01
 
 Quantities as function arguments
 ================================
