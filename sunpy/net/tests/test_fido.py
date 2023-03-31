@@ -180,7 +180,7 @@ UnifiedResponse Tests
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
+        a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], QueryResponseTable)
 
@@ -188,7 +188,7 @@ def test_unifiedresponse_slicing():
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
+        a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     assert isinstance(results[::-1], UnifiedResponse)
     assert len(results[::-1]) == len(results[::1])
     assert isinstance(results[0, ::-1], QueryResponseTable)
@@ -206,19 +206,16 @@ def test_vso_unifiedresponse(mock_build_client):
 @pytest.mark.remote_data
 def test_responses():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-
-    for i, resp in enumerate(results):
+        a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
+    assert isinstance(results, UnifiedResponse)
+    for resp in results:
         assert isinstance(resp, QueryResponse)
-
-    assert i + 1 == len(results)
 
 
 @pytest.mark.remote_data
 def test_repr():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-
+        a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     rep = repr(results)
     rep = rep.split('\n')
     # 8 header lines, the results table and two blank lines at the end
@@ -230,19 +227,19 @@ def filter_queries(queries):
 
 
 @pytest.mark.remote_data
-def test_path():
+def test_path(tmp_path):
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-
-    Fido.fetch(results, path="notapath/{file}")
+        a.Time("2022/1/1", "2022/1/1"), a.Instrument.aia)
+    file = Fido.fetch(results, path=tmp_path / "{file}")
+    assert file == [f'{tmp_path}/aia_lev1_335a_2022_01_01t00_00_00_62z_image_lev1.fits']
 
 
 @pytest.mark.remote_data
 @skip_windows
 def test_path_read_only(tmp_path):
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
-
+        a.Time("2012/1/1", "2012/1/1"), a.Instrument.lyra, a.Level.two
+    )
     # chmod doesn't seem to work correctly on the windows CI
     os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)
     # Check to see if it's actually read only before running the test
