@@ -179,7 +179,7 @@ def test_from_zeep_response(mocker):
 
 def test_QueryResponse_build_table_with_extent_type(mocker):
     """
-    When explicitly suppling an 'Extent' only the 'type' is stored
+    When explicitly supplying an 'Extent' only the 'type' is stored
     in the built table.
     """
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
