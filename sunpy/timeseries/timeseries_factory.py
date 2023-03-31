@@ -17,7 +17,7 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
-from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
+from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io.header import FileHeader
 from sunpy.timeseries.sources import source_names
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
