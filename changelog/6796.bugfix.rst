@@ -1,1 +1,0 @@
-When using ``autoalign=True`` when plotting maps, the result was misaligned by half a pixel.
