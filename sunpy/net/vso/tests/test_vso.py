@@ -362,8 +362,7 @@ def test_iris_filename(client):
     
 @pytest.mark.remote_data
 def test_table_noinfo_required(client):
-    res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'),
-                        a.Wavelength(171 * u.angstrom))
+    res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom))
     assert 'Info Required' not in res.keys()
 
 @pytest.mark.remote_data
