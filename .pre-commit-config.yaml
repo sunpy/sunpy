@@ -1,5 +1,5 @@
 repos:
-# The warnings/errors we check for here are:
+  # The warnings/errors we check for here are:
   # E901 - SyntaxError or IndentationError
   # E902 - IOError
   # F822 - undefined name in __all__
@@ -36,7 +36,7 @@ repos:
   - repo: https://github.com/pre-commit/mirrors-autopep8
     rev: v2.0.2
     hooks:
-    -   id: autopep8
+      - id: autopep8
         args: ["--in-place","--max-line-length", "200"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|sunpy/visualization/colormaps/color_tables.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks

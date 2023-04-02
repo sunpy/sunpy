@@ -8,16 +8,11 @@ Unified File Readers
 
 .. automodapi:: sunpy.io
 
-.. _iojp2:
-.. automodapi:: sunpy.io.jp2
-
-.. _ioana:
 .. automodapi:: sunpy.io.ana
 
 Special File Readers
 ====================
 
-.. _iospecialgenx:
 .. automodapi:: sunpy.io.special.genx
 
 asdf (Advanced Scientific Data Format)
@@ -87,16 +82,6 @@ Also if the custom map subclass is not registered with `sunpy.map.Map` upon load
 This approach has been chosen despite these limitations so that once a map is saved to an ASDF file it can always be loaded back into a map rather than the asdf library returning it as a Python dictionary.
 It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialised and the way meta data is handled depends solely on the contents of the ``.meta`` attribute.
 
-CDF (common data format)
-------------------------
-
-CDF files are commonly used to store timeseries data observed by instruments
-taking in-situ measurements of plasmas throughout the heliosphere.
-sunpy provides support for reading in CDF files that conform to the
-`Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
-
-.. automodapi:: sunpy.io.cdf
-
 Internal API
 ============
 
@@ -107,3 +92,17 @@ work for all files of a given type nor will the API be stable.
 .. automodapi:: sunpy.io._fits
 
 .. automodapi:: sunpy.io.header
+
+.. automodapi:: sunpy.io._jp2
+
+.. automodapi:: sunpy.io._file_tools
+
+CDF (common data format)
+------------------------
+
+CDF files are commonly used to store timeseries data observed by instruments
+taking in-situ measurements of plasmas throughout the heliosphere.
+sunpy provides support for reading in CDF files that conform to the
+`Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
+
+.. automodapi:: sunpy.io._cdf
