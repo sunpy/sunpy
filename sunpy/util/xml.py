@@ -129,8 +129,8 @@ def xml_comments_to_dict(xmlstring):
     Parses all the XML comments provided in an XML string into a dictionary
 
     .. warning::
-        This method does not support multiple values of comments for elements
-        of the same name but with different values. It always takes the last value.
+
+        For elements with the same name, the last value will be taken.
 
     Parameters
     ----------
@@ -141,18 +141,26 @@ def xml_comments_to_dict(xmlstring):
     -------
     `dict`:
         The comments present in the string xml input as a dictionary.
+    `str`:
+        A concatenated string containing all the comments from the 'HISTORY' element
+
     Examples
     --------
+
     ::
 
         <outer>
             <inner comment = "One">one</inner>
             <inner comment = "Two">two</inner>
+            <HISTORY comment = "three">two</inner>
+            <HISTORY comment = "four">two</inner>
         </outer>
 
     gives you the dict::
 
         {u'inner': 'Two'}
+    and a str::
+        u'three four'
     """
     key_comments_dict = {}
     history = []
@@ -161,28 +169,28 @@ def xml_comments_to_dict(xmlstring):
     return key_comments_dict, history
 
 
-def node_comments_to_dict(node, dic, history):
+def node_comments_to_dict(node, comments, history):
     """
     Scans through the children of the node and updates the dictionary with their 'Comment'
-    Attributes
+    Attributes and list with the same of the 'HISTORY' elements
 
     Parameters
     ----------
     node : `xml.etree.ElementTree.Element`
         A XML element node.
-
-    Returns
-    -------
-    `None`
+    comments: `dict`
+        A dict storing the element name and the comment as key value pairs
+    history: `list`
+        A list storing all the comment attributes for 'HISTORY' elements
     """
     for n in node.childNodes:
         if n.nodeType == n.TEXT_NODE:
             continue
         if n.nodeType == n.ELEMENT_NODE:
-            if n.getAttribute("comment") != '':
+            if n.getAttribute("comment"):
                 if n.nodeName == 'HISTORY':
                     history.append(n.getAttribute("comment"))
                 else:
-                    dic.update({n.nodeName: n.getAttribute("comment")})
-        node_comments_to_dict(n, dic, history)
+                    comments.update({n.nodeName: n.getAttribute("comment")})
+        node_comments_to_dict(n, comments, history)
 
