@@ -100,3 +100,13 @@ sunpy provides support for reading in CDF files that conform to the
 `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
 
 .. automodapi:: sunpy.io.cdf
+
+
+Internal File Readers
+=====================
+
+These are readers that are used internally by ``sunpy`` to read files for Map and Timeseries.
+They are not intended to be used directly by users and we do not guarantee that they will
+work for all files of a given type nor will the API be stable.
+
+.. automodapi:: sunpy.io._fits
