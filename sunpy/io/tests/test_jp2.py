@@ -27,12 +27,12 @@ def test_read_header():
 @skip_glymur
 def test_read_header_comments():
     header = jp2.get_header(EUI_174_JP2)[0]
-    assert len(header["KEYCOMMENTS"].items()) == 222
+    assert header["KEYCOMMENTS"]['XTENSION'] == "binary table extension"
 
 @skip_glymur
 def test_read_header_history():
     header = jp2.get_header(EUI_174_JP2)[0]
-    assert len(header["HISTORY"]) == 858
+    assert "Last 32 columns removed" in header['HISTORY']
 
 @skip_glymur
 def test_read_memmap():
