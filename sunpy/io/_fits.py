@@ -1,17 +1,11 @@
 """
-This module provides a FITS file reader.
+This module provides a FITS file reader for internal use.
 
-.. warning::
-
-   ``sunpy.io.fits`` is deprecated, and will be removed in sunpy 4.1. This is
-   because it was designed for internal use only. We instead recommend users
-   use the `astropy.io.fits` module, which provides more generic functionality
-   to read FITS files.
-
+We instead recommend users use the `astropy.io.fits` module,
+which provides more generic functionality to read FITS files.
 
 Notes
 -----
-
 1. FITS files allow comments to be attached to every value in the header.
    This is implemented in this module as a KEYCOMMENTS dictionary in the
    sunpy header. To add a comment to the file on write, add a comment to this
