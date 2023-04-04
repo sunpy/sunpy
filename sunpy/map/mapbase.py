@@ -669,7 +669,7 @@ class GenericMap(NDData):
             ...
 
         and this will generate a plot with the correct WCS coordinates on the
-        axes. See https://wcsaxes.readthedocs.io for more information.
+        axes. See <https://docs.astropy.org/en/stable/visualization/wcsaxes/index.html> for more information.
         """
         # This code is reused from Astropy
         return WCSAxes, {'wcs': self.wcs}
