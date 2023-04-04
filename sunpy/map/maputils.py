@@ -458,7 +458,9 @@ def _bresenham(*, x1, y1, x2, y2):
 
 @deprecated("5.0", message="The extract_along_coord function is deprecated and may be removed in "
                            "version 5.1. Use pixelate_coord_path, and then pass its output to "
-                           "sample_at_coords.")
+                           "sample_at_coords. pixelate_coord_path uses a different line algorithm "
+                           "by default, but you can specify bresenham=True to use the same line "
+                           "algorithm as extract_along_coord.")
 def extract_along_coord(smap, coord):
     """
     Extract pixel values from a map along a path that approximates a coordinate path.
