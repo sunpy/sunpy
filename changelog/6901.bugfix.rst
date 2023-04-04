@@ -1,0 +1,2 @@
+added a deprecated warning message when the ``ctype solar-x/solar-y`` conversion happens in `sunpy/map/mapbase.py`.
+It will also help in discovering other map source dependents of this conversion, which can be fixed.
