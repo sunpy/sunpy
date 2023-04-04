@@ -401,7 +401,7 @@ class GenericMap(NDData):
         ax.semilogy()
         # Explicitly set the power limits for the X axis formatter to avoid text overlaps
         ax.xaxis.get_major_formatter().set_powerlimits((-3, 4))
-        ax.set_xlabel('Pixel value in linear bins')
+        ax.set_xlabel(f"Pixel value{' (' + str(self.unit) + ')' if self.unit else ''} in linear bins")
         ax.set_ylabel('# of pixels')
         ax.set_title('Distribution of pixel values [click for cumulative]')
         hist_src = _figure_to_base64(fig)
@@ -422,7 +422,7 @@ class GenericMap(NDData):
         ax.set_facecolor('white')
         ax.set_xscale('symlog')
         ax.set_yscale('log')
-        ax.set_xlabel('Pixel value in equalized bins')
+        ax.set_xlabel(f"Pixel value{' (' + str(self.unit) + ')' if self.unit else ''} in equalized bins")
         ax.set_ylabel('Cumulative # of pixels')
         ax.set_title('Cumulative distribution of pixel values')
         cdf_src = _figure_to_base64(fig)
