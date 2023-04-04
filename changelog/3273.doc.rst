@@ -1,0 +1,7 @@
+Changed applicable coding documentation references to include valid DOIs from the original url form
+(primarily in the sunpy/sunpy code and sunpy/example files).
+Formatted the code for possible word choice errors or spelling mistakes.
+Researched new up-to-date links by the same author for references that
+led to expired websites.
+
+This pull request was completed in an attempt to work on the #3273 issue.
