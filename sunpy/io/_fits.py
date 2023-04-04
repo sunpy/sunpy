@@ -285,9 +285,9 @@ def extract_waveunit(header):
 
     Parameters
     ----------
-    header : `sunpy._io.header.FileHeader`
-        One `~sunpy._io.header.FileHeader` instance which was created by
-        reading a FITS file. For example, `sunpy._io.fits.get_header` returns a list of
+    header : `sunpy.io.header.FileHeader`
+        One `~sunpy.io.header.FileHeader` instance which was created by
+        reading a FITS file. For example, `sunpy.io._fits.get_header` returns a list of
         such instances.
 
     Returns
