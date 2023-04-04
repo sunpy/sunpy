@@ -2431,7 +2431,8 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
+            axes (e.g., a difference in rotation angle).If ``imshow``, this
+            method will use :meth:`~matplotlib.axes.Axes.imshow`,  If ``pcolormesh``, this
             method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
             default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
             equivalent to specifying ``pcolormesh``.
@@ -2463,8 +2464,8 @@ class GenericMap(NDData):
         manager may be appropriate.
         """
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+        if autoalign not in [False, True, 'pcolormesh', 'imshow']:
+            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh', or 'imshow'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
 
@@ -2554,6 +2555,9 @@ class GenericMap(NDData):
             ret = axes.pcolormesh(np.arange(data.shape[1] + 1) - 0.5,
                                   np.arange(data.shape[0] + 1) - 0.5,
                                   data, **imshow_args)
+        elif autoalign == 'imshow':
+            ret = axes.imshow(data, **imshow_args)
+
         else:
             ret = axes.imshow(data, **imshow_args)
 
