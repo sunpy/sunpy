@@ -52,7 +52,7 @@ from sunpy.util.decorators import (
     check_arithmetic_compatibility,
     deprecate_positional_args_since,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_metadata, warn_user, warn_deprecated
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -1124,9 +1124,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("The ctype1 solar-x/solar_x conversion is deprecated and will be removed in the future release.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("The ctype2 solar-y/solar_y conversion is deprecated and will be removed in the future release.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
