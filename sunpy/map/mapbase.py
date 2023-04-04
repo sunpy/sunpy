@@ -52,7 +52,7 @@ from sunpy.util.decorators import (
     check_arithmetic_compatibility,
     deprecate_positional_args_since,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user, warn_deprecated
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
