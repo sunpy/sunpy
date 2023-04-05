@@ -4,7 +4,7 @@ Saving and loading coordinates with asdf
 ========================================
 
 In this example we are going to look at saving and loading collections of
-coordinates with `asdf <10.5281/zenodo.7448607>`__.
+coordinates with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 
 asdf is a modern file format designed to meet the needs of the astronomy
 community. It has deep integration with Python and sunpy and Astropy as well as
