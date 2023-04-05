@@ -1,0 +1,1 @@
+Add 'spline' and 'cubic' interpolation options to sample_at_coords

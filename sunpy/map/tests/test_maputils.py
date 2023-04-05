@@ -207,6 +207,10 @@ def test_on_disk_bounding_coordinates(aia171_test_map):
 
 
 def test_data_at_coordinates(aia171_test_map, aia_test_arc):
+
+    with pytest.raises(ValueError,match='the method paramater must be either "nearest", "linear" or "cubic"'):
+        _ = sample_at_coords(aia171_test_map,aia_test_arc.coordinates(),method = None)
+    
     data = sample_at_coords(aia171_test_map, aia_test_arc.coordinates())
     pixels = np.asarray(np.rint(
         aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
