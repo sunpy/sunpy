@@ -112,7 +112,7 @@ P1 = sun.P(obstime)
 ##########################################################################
 # Now we can use this information to create a new header using the helper
 # function :func:`~sunpy.map.header_helper.make_fitswcs_header`. This will
-# create a MetaDict which we contain all the necessary WCS information to
+# create a MetaDict which will contain all the necessary WCS information to
 # create a `~sunpy.map.Map`. We provide a reference coordinate (in HPC),
 # the spatial scale of the observation (i.e., ``cdelt1`` and ``cdelt2``),
 # and the rotation angle (P1). Note that here, 1 is subtracted from the
