@@ -376,15 +376,13 @@ def test_table_has_info_required_lyra(client):
     assert 'Info Required' in res.keys() and len(res) > 0
   
 @pytest.mark.remote_data
-def test_fetch_swap(client):
+def test_fetch_swap(client, tmp_path):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'))
-    tmp_dir = '/tmp'
-    files = client.fetch(res[0:1], path=tmp_dir)
+    files = client.fetch(res[0:1], path=tmp_path)
     assert len(files) == 1
 
 @pytest.mark.remote_data
-def test_fetch_lyra(client):
+def test_fetch_lyra(client, tmp_path):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
-    tmp_dir = '/tmp'
-    files = client.fetch(res[0:1], path=tmp_dir)
+    files = client.fetch(res[0:1], path=tmp_path)
     assert len(files) == 1
