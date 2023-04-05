@@ -59,7 +59,7 @@ def findpeaks(series, DELTA):
     lookformax = True
     start = True
     # Iterate over items in series
-    for time_pos, value in series.iteritems():
+    for time_pos, value in series.items():
         if value > mx:
             mx = value
             mxpos = time_pos
@@ -98,8 +98,10 @@ def findpeaks(series, DELTA):
 # Now we take the column 'sunspot SWO' of this TimeSeries and try to find it's
 # extrema using the function findpeaks. We take the value of DELTA to be
 # approximately the length of smallest peak that we wish to detect.
+
 series = my_timeseries.to_dataframe()['xrsa']
 minpeaks, maxpeaks = findpeaks(series, DELTA=1e-7)
+
 # Plotting the figure and extremum points
 plt.figure()
 plt.xlabel('Time')
