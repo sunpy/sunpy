@@ -26,7 +26,7 @@ except ImportError:
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
@@ -401,7 +401,7 @@ class GenericMap(NDData):
         ax.semilogy()
         # Explicitly set the power limits for the X axis formatter to avoid text overlaps
         ax.xaxis.get_major_formatter().set_powerlimits((-3, 4))
-        ax.set_xlabel('Pixel value in linear bins')
+        ax.set_xlabel(f"Pixel value{' (' + str(self.unit) + ')' if self.unit else ''} in linear bins")
         ax.set_ylabel('# of pixels')
         ax.set_title('Distribution of pixel values [click for cumulative]')
         hist_src = _figure_to_base64(fig)
@@ -422,7 +422,7 @@ class GenericMap(NDData):
         ax.set_facecolor('white')
         ax.set_xscale('symlog')
         ax.set_yscale('log')
-        ax.set_xlabel('Pixel value in equalized bins')
+        ax.set_xlabel(f"Pixel value{' (' + str(self.unit) + ')' if self.unit else ''} in equalized bins")
         ax.set_ylabel('Cumulative # of pixels')
         ax.set_title('Cumulative distribution of pixel values')
         cdf_src = _figure_to_base64(fig)
@@ -669,7 +669,7 @@ class GenericMap(NDData):
             ...
 
         and this will generate a plot with the correct WCS coordinates on the
-        axes. See https://wcsaxes.readthedocs.io for more information.
+        axes. See <https://docs.astropy.org/en/stable/visualization/wcsaxes/index.html> for more information.
         """
         # This code is reused from Astropy
         return WCSAxes, {'wcs': self.wcs}
@@ -989,15 +989,15 @@ class GenericMap(NDData):
         """
         The physical coordinate at the center of the bottom left ([0, 0]) pixel.
         """
-        return self.pixel_to_world(0*u.pix, 0*u.pix)
+        return self.wcs.pixel_to_world(0, 0)
 
     @property
     def top_right_coord(self):
         """
         The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
-        top_right = u.Quantity(self.dimensions) - 1 * u.pix
-        return self.pixel_to_world(*top_right)
+        top_right = np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1
+        return self.wcs.pixel_to_world(*top_right)
 
     @property
     def center(self):
@@ -1007,8 +1007,8 @@ class GenericMap(NDData):
         If the array has an even number of pixels in a given dimension,
         the coordinate returned lies on the edge between the two central pixels.
         """
-        center = (u.Quantity(self.dimensions) - 1 * u.pix) / 2.
-        return self.pixel_to_world(*center)
+        center = (np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1) / 2.
+        return self.wcs.pixel_to_world(*center)
 
     @u.quantity_input
     def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
@@ -1979,13 +1979,18 @@ class GenericMap(NDData):
         return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
+    @_parse_submap_input.register(BaseCoordinateFrame)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
         # Use helper function to get top_right as a SkyCoord
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
-        frame = bottom_left.frame
+
+        if isinstance(bottom_left, SkyCoord):
+            frame = bottom_left.frame
+
+        frame = bottom_left
         left_lon, bottom_lat = self._get_lon_lat(bottom_left)
         right_lon, top_lat = self._get_lon_lat(top_right)
         corners = SkyCoord([left_lon, left_lon, right_lon, right_lon],

@@ -1,5 +1,6 @@
 import json
 import pathlib
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 
@@ -125,14 +126,23 @@ def _update_cdaweb_dataset_data():
     ])
     # Mapping from dataset ID to description
     all_datasets = {}
-    for group in all_obs['Group']:
-        print(f'🛰 Getting datasets for {group}')
-        group_url = url + f'?observatoryGroup={group}'
-        response = requests.get(group_url, headers=_CDAS_HEADERS)
+    # Number of parallel threads we spawn
+    N = 3
 
-        datasets = response.json()['DatasetDescription']
+    def _fetch_cdaweb_dataset(group, url=url):
+        print(f'🛰 Getting datasets for {group}')
+        u = url + f'?observatoryGroup={group}'
+        res = requests.get(u, headers=_CDAS_HEADERS)
+        datasets = res.json()['DatasetDescription']
         dataset_ids = {ds['Id']: ds['Label'] for ds in datasets}
         all_datasets.update(dataset_ids)
+
+    with ThreadPoolExecutor(max_workers=N) as executor:
+        # Submit each URL to the thread pool
+        futures = [executor.submit(_fetch_cdaweb_dataset, group) for group in all_obs['Group']]
+        # Wait for all tasks to complete
+        for future in futures:
+            future.result()
 
     attr_file = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
     with open(attr_file, 'w') as attrs_file:

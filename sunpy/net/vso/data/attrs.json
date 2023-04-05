@@ -53,10 +53,6 @@
       "High Resolution Coronal Imager 2.1"
     ],
     [
-      "L1",
-      "Coronado solar telescope L1"
-    ],
-    [
       "C1",
       "Coronograph 1"
     ],
@@ -157,10 +153,6 @@
       ""
     ],
     [
-      "L2",
-      "Coronado solar telescope L2"
-    ],
-    [
       "VAULT-2014",
       "None"
     ],
@@ -199,6 +191,10 @@
     [
       "FG",
       "None"
+    ],
+    [
+      "ANDOR_ZYLA-4.2",
+      "Andor Zyla-4.2(VSC-02594) CCD Camera"
     ],
     [
       "LFR",
@@ -567,10 +563,6 @@
       "Extreme Ultravoilet Imager"
     ],
     [
-      "CLIMSO",
-      "Christian Latouche IMageur SOlaire"
-    ],
-    [
       "MERGED GONG",
       "None"
     ],
@@ -673,6 +665,10 @@
     [
       "Big Bear",
       "Big Bear Solar Observatory, California TON and GONG+ sites"
+    ],
+    [
+      "T1-HALPHA",
+      "T1 H\u03b1 Fulldisk"
     ],
     [
       "EIT",
@@ -921,6 +917,10 @@
       "STEREO Science Center, NASA/Goddard"
     ],
     [
+      "NAOJ",
+      "Solar Science Observatory National Astronomical Observatory of Japan, Mitaka"
+    ],
+    [
       "ESA",
       "European Space Agency"
     ],
@@ -943,10 +943,6 @@
     [
       "SHA",
       "Stanford Helioseismology Archive, Stanford U."
-    ],
-    [
-      "OMP",
-      "Observatoire Midi-Pyr\u00e9n\u00e9es"
     ],
     [
       "LASP",
@@ -1075,6 +1071,10 @@
       "None"
     ],
     [
+      "SFT",
+      "Solar Flare Telescope"
+    ],
+    [
       "EUNIS",
       "Extreme Ultraviolet Normal-incidence Spectrograph"
     ],
@@ -1093,6 +1093,10 @@
     [
       "ISOON",
       "Improved Solar Observing Optical Network"
+    ],
+    [
+      "SO2",
+      "None"
     ],
     [
       "PSP",
@@ -1133,10 +1137,6 @@
     [
       "CLASP2",
       "Chromospheric LAyer SpectroPolarimeter 2"
-    ],
-    [
-      "OMP",
-      "Pic-du-Midi, France"
     ],
     [
       "MCCD",

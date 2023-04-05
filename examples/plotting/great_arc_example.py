@@ -41,13 +41,12 @@ ax = fig.add_subplot(projection=m)
 m.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
 ax.plot_coord(great_arc.coordinates(), color='c')
 
-plt.show()
-
 ###############################################################################
 # Now we can get the intensity along the great arc coordinates, along with the
 # angular distance from the start of the arc
 coords = great_arc.coordinates()
-intensity, intensity_coords = sunpy.map.extract_along_coord(m, coords)
+intensity_coords = sunpy.map.pixelate_coord_path(m, coords)
+intensity = sunpy.map.sample_at_coords(m, intensity_coords)
 separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 
 ###############################################################################

@@ -1,0 +1,1 @@
+Moved the Helioviewer migration guide from the tutorial to guide section of the docs.

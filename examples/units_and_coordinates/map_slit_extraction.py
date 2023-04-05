@@ -28,13 +28,13 @@ line_coords = SkyCoord([-1024, -908], [20, 633], unit=(u.arcsec, u.arcsec),
 
 
 ###############################################################################
-# Next we call the `sunpy.map.extract_along_coord` function with the map and
-# the coordinates we want to extract.
-# This function returns two items, the first is a numpy array of all the
-# intensities and the second is a `~astropy.coordinates.SkyCoord` object of the
-# same length, which describes the world coordinates of each pixel that has
-# been extracted.
-intensity, intensity_coords = sunpy.map.extract_along_coord(aia_map, line_coords)
+# Next we call the :func:`sunpy.map.pixelate_coord_path` function with the map
+# and the coordinate path to obtain the coordinates of the map pixels that
+# intersect that path.  We pass those coordinates to
+# :func:`sunpy.map.sample_at_coords` to extract the values for those map
+# pixels.
+intensity_coords = sunpy.map.pixelate_coord_path(aia_map, line_coords)
+intensity = sunpy.map.sample_at_coords(aia_map, intensity_coords)
 
 
 ###############################################################################
@@ -45,7 +45,7 @@ angular_separation = intensity_coords.separation(intensity_coords[0]).to(u.arcse
 
 ###############################################################################
 # Finally let's plot the results.
-fig = plt.figure()
+fig = plt.figure(figsize=(10, 4))
 ax1 = fig.add_subplot(121, projection=aia_map)
 aia_map.plot(axes=ax1)
 ax1.plot_coord(intensity_coords)

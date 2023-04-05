@@ -24,9 +24,11 @@ from sunpy.map.maputils import (
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
+    pixelate_coord_path,
     sample_at_coords,
     solar_angular_radius,
 )
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 @pytest.fixture
@@ -216,9 +218,9 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
         aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
     x = pixels[0, :]
     y = pixels[1, :]
-    intensity_along_arc = aia171_test_map.data[y, x]
-    np.testing.assert_almost_equal(data[0], intensity_along_arc[0], decimal=1)
-    np.testing.assert_almost_equal(data[-1], intensity_along_arc[-1], decimal=1)
+    intensity_along_arc = aia171_test_map.data[y, x] * aia171_test_map.unit
+    assert_quantity_allclose(data[0], intensity_along_arc[0])
+    assert_quantity_allclose(data[-1], intensity_along_arc[-1])
 
 
 def test_contains_solar_center(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map, sub_smap):
@@ -283,7 +285,8 @@ def test_extract_along_coord(aia171_test_map):
     nmax = max(*aia171_test_map.data.shape)
     top_right = aia171_test_map.pixel_to_world((nmax-1)*u.pix, (nmax-1)*u.pix)
     line = SkyCoord([aia171_test_map.bottom_left_coord, top_right])
-    intensity, line_discrete = extract_along_coord(aia171_test_map, line)
+    with pytest.warns(SunpyDeprecationWarning):
+        intensity, line_discrete = extract_along_coord(aia171_test_map, line)
     pix_diag = np.array([(i, i) for i in range(nmax)])
     intensity_diag = u.Quantity(
         [aia171_test_map.data[i[0], i[1]] for i in pix_diag],
@@ -297,12 +300,51 @@ def test_extract_along_coord(aia171_test_map):
 
 def test_extract_along_coord_one_point_exception(aia171_test_map):
     with pytest.raises(ValueError, match='At least two points are required*'):
-        _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
+        with pytest.warns(SunpyDeprecationWarning):
+            _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
     with pytest.raises(ValueError, match='At least two points are required*'):
-        _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
+        with pytest.warns(SunpyDeprecationWarning):
+            _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
 
 
 def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
     point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
     with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
-        _ = extract_along_coord(aia171_test_map, point)
+        with pytest.warns(SunpyDeprecationWarning):
+            _ = extract_along_coord(aia171_test_map, point)
+
+
+@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+                         [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
+                          ([1, 5], [1, 2], [1, 2, 3, 3, 4, 5], [1, 1, 1, 2, 2, 2]),
+                          ([1, 5], [1, 3], [1, 2, 2, 3, 4, 4, 5], [1, 1, 2, 2, 2, 3, 3]),
+                          ([1, 5], [1.0, 4.0], [1, 2, 2, 3, 3, 4, 4, 5], [1, 1, 2, 2, 3, 3, 4, 4]),
+                          ([1, 5], [1.0, 3.6], [1, 2, 2, 3, 3, 4, 5, 5], [1, 1, 2, 2, 3, 3, 3, 4]),
+                          ([1, 5], [1.4, 3.6], [1, 1, 2, 3, 3, 4, 5, 5], [1, 2, 2, 2, 3, 3, 3, 4])])
+def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
+    # Also test the x<->y transpose
+    for xx, yy, sxx, syy in [(x, y, sampled_x, sampled_y), (y, x, sampled_y, sampled_x)]:
+        # Using the AIA test map for a "real" WCS, but the actual WCS is irrelevant for this test
+        line = aia171_test_map.wcs.pixel_to_world(xx, yy)
+        sampled_coords = pixelate_coord_path(aia171_test_map, line)
+        sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
+        assert np.allclose(sampled_pixels[0], sxx)
+        assert np.allclose(sampled_pixels[1], syy)
+
+
+@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+                         [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
+                          ([1, 5], [1, 2], [1, 2, 3, 4, 5], [1, 1, 1, 2, 2]),
+                          ([1, 5], [1, 3], [1, 2, 3, 4, 5], [1, 1, 2, 2, 3]),
+                          ([1, 5], [1.0, 4.0], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
+                          ([1, 5], [1.0, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
+                          ([1, 5], [1.4, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4])])
+def test_pixelate_coord_path_bresenham(aia171_test_map, x, y, sampled_x, sampled_y):
+    # Also test the x<->y transpose
+    for xx, yy, sxx, syy in [(x, y, sampled_x, sampled_y), (y, x, sampled_y, sampled_x)]:
+        # Using the AIA test map for a "real" WCS, but the actual WCS is irrelevant for this test
+        line = aia171_test_map.wcs.pixel_to_world(xx, yy)
+        sampled_coords = pixelate_coord_path(aia171_test_map, line, bresenham=True)
+        sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
+        assert np.allclose(sampled_pixels[0], sxx)
+        assert np.allclose(sampled_pixels[1], syy)

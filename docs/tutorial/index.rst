@@ -1,4 +1,4 @@
-.. _guide:
+.. _tutorial:
 
 **********************
 The sunpy tutorial
@@ -27,11 +27,9 @@ The one exception is the two chapters that explore Maps and Timeseries - these a
    :maxdepth: 2
 
    installation
-   logger
    units
    time
    coordinates
    acquiring_data/index
    maps
    timeseries
-   plotting

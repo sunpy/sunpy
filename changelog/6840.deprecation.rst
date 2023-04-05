@@ -1,0 +1,2 @@
+The utility function :func:`sunpy.map.extract_along_coord` is deprecated.
+Use :func:`sunpy.map.pixelate_coord_path`, and then pass its output to :func:`sunpy.map.sample_at_coords`.

@@ -19,7 +19,7 @@ from sunpy.util.exceptions import warn_deprecated
 
 warn_deprecated(
     "The sunpy.database module is no longer actively maintained and has a number of outstanding issues. "
-    "It is anticiapted that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0. "
+    "It will be removed in sunpy 6.0. "
     "If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495"
 )
 
