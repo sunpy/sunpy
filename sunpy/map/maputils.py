@@ -156,7 +156,7 @@ def _get_neighboring_indexes(array, dimensions):
 
 def _get_value(neighbors_array, aia_map, coord, method):
     """
-    Get interpolated value for one coordiante
+    Get interpolated value for one coordinate
     """
     array_to_coord = aia_map.wcs.array_index_to_world(neighbors_array[0],
                                                       neighbors_array[1])
@@ -173,7 +173,7 @@ def _get_value(neighbors_array, aia_map, coord, method):
 def sample_at_coords(smap, coordinates, method="nearest"):
     """
     Samples the data in a map at given series of coordinates
-    and an interpolation `method`.If no `method` paramater is put.
+    and an interpolation `method`.If no `method` parameter is put.
     The `sample_at_coords` method Uses nearest-neighbor
     interpolation of coordinates in map, as
     it effectively uses array indexing.
@@ -200,7 +200,7 @@ def sample_at_coords(smap, coordinates, method="nearest"):
     """
 
     if method not in ["nearest", "linear", "cubic"]:
-        raise ValueError('the method paramater must be either "nearest", "linear" or "cubic"')
+        raise ValueError('the method parameter must be either "nearest", "linear" or "cubic"')
 
     "using this approach is faster for nearest neighbor interpolation than using scipy"
     if method == "nearest":
