@@ -133,7 +133,8 @@ def solar_angular_radius(coordinates):
     _verify_coordinate_helioprojective(coordinates)
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
-def _get_neighboring_indexes(array,dimensions):
+
+def _get_neighboring_indexes(array, dimensions):
     """
     Get neighboring array indexes for a particular index location
     """
@@ -149,28 +150,30 @@ def _get_neighboring_indexes(array,dimensions):
     if array[1] > 0:
         y.append(array[1] - 1)
 
-    return tuple(np.array(np.meshgrid(x,y)).reshape(2,-1))
+    return tuple(np.array(np.meshgrid(x, y)).reshape(2, -1))
 
-def _get_value(neighbors_array,aia_map,coord,method):
+
+def _get_value(neighbors_array, aia_map, coord, method):
     """
     Get interpolated value for one coordiante
     """
     array_to_coord = aia_map.wcs.array_index_to_world(neighbors_array[0],
                                                       neighbors_array[1])
-    
+
     value = griddata((array_to_coord.Tx.value,
                       array_to_coord.Ty.value),
-                      aia_map.data[neighbors_array],
-                      (coord.Tx.value,coord.Ty.value),
-                      method = method)
-    
+                     aia_map.data[neighbors_array],
+                     (coord.Tx.value, coord.Ty.value),
+                     method=method)
+
     return value
 
-def sample_at_coords(smap,coordinates,method = "nearest"):
+
+def sample_at_coords(smap, coordinates, method="nearest"):
     """
-    Samples the data in a map at given series of coordinates 
+    Samples the data in a map at given series of coordinates
     and an interpolation `method`.If no `method` paramater is put.
-    The `sample_at_coords` method Uses nearest-neighbor 
+    The `sample_at_coords` method Uses nearest-neighbor
     interpolation of coordinates in map, as
     it effectively uses array indexing.
 
@@ -182,8 +185,8 @@ def sample_at_coords(smap,coordinates,method = "nearest"):
         Input coordinates.
     method : 'str'
         Accepts scipy.interpolate.griddata method parameter values.
-        "nearest", "linear", "cubic" represent nearest-neighbor, 
-        linear, and cubic interpolation,respectively 
+        "nearest", "linear", "cubic" represent nearest-neighbor,
+        linear, and cubic interpolation,respectively
 
     Returns
     -------
@@ -200,9 +203,9 @@ def sample_at_coords(smap,coordinates,method = "nearest"):
     else:
         array_indexes = smap.wcs.world_to_array_index(coordinates)
         values = list()
-        for x,coord in zip(np.array(array_indexes).T,coordinates):
-            neighbors_indexes = _get_neighboring_indexes(x,smap.dimensions)
-            values.append(_get_value(neighbors_indexes,smap,coord,method))
+        for x, coord in zip(np.array(array_indexes).T, coordinates):
+            neighbors_indexes = _get_neighboring_indexes(x, smap.dimensions)
+            values.append(_get_value(neighbors_indexes, smap, coord, method))
         return np.array(values)
 
 
