@@ -11,6 +11,7 @@ This sub-package contains:
 
 The SunPy coordinate framework extends the
 :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
+The :ref:`coordinates guide <sunpy-coordinates>` provides in depth discussion of the structure and concepts underlying the coordinates framework.
 
 .. _sunpy-coordinate-systems:
 
@@ -83,8 +84,6 @@ For a description of these coordinate systems,
 see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
 and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
 (and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
-
-The :ref:`coordinates guide <sunpy-coordinates>` provides in depth discussion of the structure and concepts underlying the coordinates framework.
 
 
 Reference/API
