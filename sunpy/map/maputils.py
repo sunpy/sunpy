@@ -214,7 +214,6 @@ def sample_at_coords(smap, coordinates, method="nearest"):
         return u.Quantity(np.array(values), smap.unit)
 
 
-
 def _edge_coordinates(smap):
     # Calculate all the edge pixels
     edges = map_edges(smap)
