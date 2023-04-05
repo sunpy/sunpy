@@ -1,0 +1,1 @@
+Adding data unit into html repr for `sunpy.map.Map`
