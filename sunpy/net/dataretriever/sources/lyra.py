@@ -32,7 +32,6 @@ class LYRAClient(GenericClient):
     2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A 419.0625
     2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  30.9375
     <BLANKLINE>
-
     """
     baseurl = (r'http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                r'lyra_(\d){8}-000000_lev(\d){1}_std.fits')
