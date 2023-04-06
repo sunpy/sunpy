@@ -18,7 +18,7 @@ Some things to note: NOAA have recently re-processed the GOES 13,
 14 and 15 XRS science quality data, such that the SWPC scaling factor
 has been removed. This means that the fluxes will have a different values,
 and so will flare peak fluxes from previous 13, 14 and 15 XRS data. See
-`here <https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf>`__
+`here <https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/GOES_1-15_XRS_Science-Quality_Data_Readme.pdf>`__
 for more details. The sunpy GOES XRS client for Fido now provides this
 new re-processed data. We now also provide the data for GOES 16 and 17.
 
@@ -71,7 +71,7 @@ goes_15.peek()
 
 #############################################################
 # The resulting `~sunpy.timeseries.TimeSeries` can be filtered by GOES quality flags. For more information
-# refer to the `GOES Data Guide <https://satdat.ngdc.noaa.gov/sem/goes/data/science/xrs/GOES_13-15_XRS_Science-Quality_Data_Readme.pdf>`__.
+# refer to the `GOES Data Guide <https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/GOES_1-15_XRS_Science-Quality_Data_Readme.pdf>`__.
 
 df = goes_15.to_dataframe()
 df = df[(df["xrsa_quality"] == 0) & (df["xrsb_quality"] == 0)]
