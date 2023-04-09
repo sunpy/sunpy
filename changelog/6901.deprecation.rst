@@ -1,0 +1,1 @@
+We have deprecated the conversion of WCS ``ctype`` values of "solar-x", "solar_x" within `~sunpy.map.Map`.
