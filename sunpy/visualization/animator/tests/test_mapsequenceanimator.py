@@ -11,6 +11,7 @@ from sunpy.visualization.animator import MapSequenceAnimator
 
 
 @pytest.fixture
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_map_sequence(aia171_test_map):
     return sunpy.map.Map(
         aia171_test_map,

@@ -62,6 +62,7 @@ def test_wcs(eit_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     eit_map.pixel_to_world(0*u.pix, 0*u.pix)
 
+
 @pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_old_eit_date():
     eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))

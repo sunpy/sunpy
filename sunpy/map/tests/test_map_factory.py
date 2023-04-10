@@ -45,11 +45,13 @@ def test_two_map_inputs(args1, args2):
     else:
         assert isinstance(out, sunpy.map.GenericMap)
 
+
 @pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_mapsequence(eit_fits_directory):
     # Test making a MapSequence
     sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True)
     assert isinstance(sequence, sunpy.map.MapSequence)
+
 
 @pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_mapsequence_sortby(eit_fits_directory):
