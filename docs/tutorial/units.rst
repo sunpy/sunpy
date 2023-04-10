@@ -104,7 +104,7 @@ For now, it is just important to know that this function returns the location of
 Dropping Units
 ==============
 
-Not every package in the scientific Python ecosystem understand units.
+Not every package in the scientific Python ecosystem understands units.
 As such, it is sometimes necessary to drop the units before passing `~astropy.units.Quantity` to such functions.
 As shown above, you can retrieve the just the numerical value of a `~astropy.units.Quantity`,::
 
