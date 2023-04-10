@@ -26,7 +26,7 @@ We can create a `~astropy.units.Quantity` by multiplying a number by a unit::
    >>> length
    <Quantity 10. m>
 
-A `~astropy.units.Quantity` can be decomposed into its unit and numerical value using the ``.unit`` and ``.value`` attributes, respectively::
+A `~astropy.units.Quantity` can be decomposed into its unit and numerical value using the ``.unit`` and ``.value`` attributes::
 
   >>> length.value
   10.0
