@@ -129,7 +129,7 @@ The `~astropy.units.quantity_input` decorator, combined with `function annotatio
   ... def speed(length: u.m, time: u.s):
   ...     return length / time
 
-Now, when this function is called, if the inputs are not convertible to the units specified, an error will be raised stating that the units are incorrect or missing::
+Now when this function is called, if the inputs are not convertible to the units specified, an error will be raised stating that the units are incorrect or missing::
 
   >>> speed(1*u.m, 10*u.m)
   Traceback (most recent call last):
