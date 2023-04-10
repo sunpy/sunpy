@@ -16,7 +16,7 @@ Adding Units to Data
 ====================
 
 To use units we must first import them from Astropy.
-Note that it is standard practice to import the units module as ``u``::
+It is standard practice to import the units module as ``u``::
 
    >>> import astropy.units as u
 
