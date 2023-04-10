@@ -36,6 +36,7 @@ VALID_MAP_INPUTS = [
 
 @pytest.mark.parametrize('args1', VALID_MAP_INPUTS)
 @pytest.mark.parametrize('args2', VALID_MAP_INPUTS)
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_two_map_inputs(args1, args2):
     out = sunpy.map.Map(*args1, *args2)
     if isinstance(out, list):
@@ -44,13 +45,13 @@ def test_two_map_inputs(args1, args2):
     else:
         assert isinstance(out, sunpy.map.GenericMap)
 
-
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_mapsequence(eit_fits_directory):
     # Test making a MapSequence
     sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True)
     assert isinstance(sequence, sunpy.map.MapSequence)
 
-
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_mapsequence_sortby(eit_fits_directory):
     # Test making a MapSequence with sortby kwarg
     sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True, sortby=None)
@@ -67,6 +68,7 @@ def test_composite():
 
 
 @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_patterns(eit_fits_directory):
     # Test different Map pattern matching
 
@@ -262,6 +264,7 @@ def test_map_list_urls_cache():
     ["swap_lv1_20140606_000113.header", sunpy.map.sources.SWAPMap],
     ["HinodeXRT.header", sunpy.map.sources.XRTMap],
 ])
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_sources(file, mapcls):
     p = pathlib.Path(get_test_filepath(file))
     if p.suffix == '.header':

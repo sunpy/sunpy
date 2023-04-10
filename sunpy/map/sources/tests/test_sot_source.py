@@ -13,11 +13,13 @@ def sot():
     return get_dummy_map_from_header(get_test_filepath("HinodeSOT.header"))
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_fitstoSOT(sot):
     """Tests the creation of SOTMap using FITS."""
     assert isinstance(sot, SOTMap)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_is_datasource_for(sot):
     """Test the is_datasource_for method of SOTMap.
     Note that header data to be provided as an argument
@@ -25,27 +27,32 @@ def test_is_datasource_for(sot):
     assert sot.is_datasource_for(sot.data, sot.meta)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_observatory(sot):
     """Tests the observatory property of the SOTMap object."""
     assert sot.observatory == "Hinode"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_detector(sot):
     """Tests the detector property of the SOTMap object"""
     assert sot.detector == "SOT"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_measurement(sot):
     """Tests the measurement property of the SOTMap object."""
     assert sot.measurement is None
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_instruments(sot):
     """Tests the Instruments object of SOTMap."""
     assert (sot.Instruments == ['SOT/WB',
                                 'SOT/NB', 'SOT/SP', 'SOT/CT'])
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_waves(sot):
     """Tests the Waves object of SOTMap."""
     assert (sot.Waves == ['6302A', 'BFI no move',
@@ -56,6 +63,7 @@ def test_waves(sot):
                           'red cont 6684'])
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_obstype(sot):
     """Tests the Observation_Type object of SOTMap."""
     assert (sot.Observation_Type == ['FG (simple)',
@@ -64,6 +72,7 @@ def test_obstype(sot):
                                      'FG shutterless Stokes', 'SP IQUV 4D array'])
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wcs(sot):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):

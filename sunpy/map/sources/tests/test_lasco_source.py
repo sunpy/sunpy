@@ -31,11 +31,13 @@ def lasco_helioviewer():
     return Map(get_test_filepath("2013_05_13__16_54_06_137__SOHO_LASCO_C3_white-light.jp2"))
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_fitstoLASCO(lasco_map):
     """Tests the creation of LASCOMap using FITS."""
     assert isinstance(lasco_map, LASCOMap)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_is_datasource_for(lasco_map):
     """Test the is_datasource_for method of LASCOMap.
     Note that header data to be provided as an argument
@@ -43,38 +45,45 @@ def test_is_datasource_for(lasco_map):
     assert lasco_map.is_datasource_for(lasco_map.data, lasco_map.meta)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_measurement(lasco_map):
     """Tests the measurement property of the LASCOMap object."""
     assert lasco_map.measurement == "white-light"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wavelength(lasco_map):
     """Tests wavelength property."""
     assert lasco_map.wavelength is None
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_date(lasco_map):
     assert lasco_map.date == parse_time(
         {'C2': '2009-02-28T00:05:33.380',
          'C3': '2002-05-21T00:18:06.516'}[lasco_map.detector])
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_nickname(lasco_map):
     assert lasco_map.nickname == {'C2': 'LASCO-C2 Orange',
                                   'C3': 'LASCO-C3 Clear'}[lasco_map.detector]
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_observatory(lasco_map):
     """Tests the observatory property of the LASCOMap object."""
     assert lasco_map.observatory == "SOHO"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_norm_clip(lasco_map):
     # Tests that the default normalizer has clipping disabled
     assert not lasco_map.plot_settings['norm'].clip
 
 
 @skip_glymur
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_helioviewer_rotation(lasco_map, lasco_helioviewer):
     """Tests that rotation metadata is correctly removed
     for JPEG2000 images provided by Helioviewer.org."""
@@ -84,6 +93,7 @@ def test_helioviewer_rotation(lasco_map, lasco_helioviewer):
     np.testing.assert_array_equal(lasco_helioviewer.rotation_matrix, [[1., 0.], [0., 1.]])
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wcs(lasco_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):

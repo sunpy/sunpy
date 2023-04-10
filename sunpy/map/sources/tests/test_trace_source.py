@@ -12,11 +12,13 @@ def trace_map():
     return get_dummy_map_from_header(get_test_filepath("tsi20010130_025823_a2.header"))
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_fitstoTRACE(trace_map):
     """Tests the creation of TRACEMap using FITS."""
     assert isinstance(trace_map, TRACEMap)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_is_datasource_for(trace_map):
     """Test the is_datasource_for method of TRACEMap.
     Note that header data to be provided as an argument
@@ -24,21 +26,25 @@ def test_is_datasource_for(trace_map):
     assert trace_map.is_datasource_for(trace_map.data, trace_map.meta)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_measurement(trace_map):
     """Tests the measurement property of the TRACEMap object."""
     assert int(trace_map.measurement) == 171
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_observatory(trace_map):
     """Tests the observatory property of the TRACEMap object."""
     assert trace_map.observatory == "TRACE"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_norm_clip(trace_map):
     # Tests that the default normalizer has clipping disabled
     assert not trace_map.plot_settings['norm'].clip
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wcs(trace_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):

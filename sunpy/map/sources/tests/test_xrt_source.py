@@ -16,11 +16,13 @@ def xrt_map():
     return get_dummy_map_from_header(get_test_filepath("HinodeXRT.header"))
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_fits_to_xrt(xrt_map):
     """Tests the creation of XRTMap using FITS."""
     assert isinstance(xrt_map, XRTMap)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_is_datasource_for(xrt_map):
     """Test the is_datasource_for method of XRTMap.
     Note that header data to be provided as an argument
@@ -28,33 +30,40 @@ def test_is_datasource_for(xrt_map):
     assert xrt_map.is_datasource_for(xrt_map.data, xrt_map.meta)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_observatory(xrt_map):
     """Tests the observatory property of the XRTMap object."""
     assert xrt_map.observatory == "Hinode"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_measurement(xrt_map):
     """Tests the measurement property of the XRTMap object."""
     assert xrt_map.measurement == 'Be thin-Open'
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_unit(xrt_map):
     """Tests the unit property of the XRTMap object."""
     assert xrt_map.unit == u.ct / u.second
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_level_number(xrt_map):
     assert xrt_map.processing_level == 1
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_heliographic_longitude(xrt_map):
     assert u.allclose(xrt_map.heliographic_longitude, 0 * u.deg)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_heliographic_latitude(xrt_map):
     assert u.allclose(xrt_map.heliographic_latitude, 3.33047459 * u.deg)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wheel_measurements(xrt_map):
     """Tests the filter_wheel_measurements objects present
     in the XRTMap object."""
@@ -64,6 +73,7 @@ def test_wheel_measurements(xrt_map):
             ["Open", "Al_mesh", "Al_thick", "Be_thick", "Gband", "Ti_poly"])
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wcs(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     xrt_map.pixel_to_world(0*u.pix, 0*u.pix)

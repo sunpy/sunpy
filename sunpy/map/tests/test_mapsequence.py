@@ -136,6 +136,7 @@ def test_all_meta(mapsequence_all_the_same):
         [meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     """
     Tests that overridden __repr__ functionality works as expected. Test

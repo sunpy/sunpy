@@ -19,11 +19,13 @@ def eit_map(request):
     return get_dummy_map_from_header(request.param)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_fitstoEIT(eit_map):
     """Tests the creation of EITMap using FITS."""
     assert isinstance(eit_map, EITMap)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_is_datasource_for(eit_map):
     """Test the is_datasource_for method of EITMap.
     Note that header data to be provided as an argument
@@ -31,31 +33,36 @@ def test_is_datasource_for(eit_map):
     assert eit_map.is_datasource_for(eit_map.data, eit_map.meta)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_observatory(eit_map):
     """Tests the observatory property of the EITMap object."""
     assert eit_map.observatory == "SOHO"
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_measurement(eit_map):
     """Tests the measurement property of the EITMap object."""
     assert eit_map.measurement.value in [195, 171]
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_rsun(eit_map):
     """Tests the measurement property of the EITMap object."""
     assert u.allclose(eit_map.rsun_obs, 979.0701*u.arcsec)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_norm_clip(eit_map):
     # Tests that the default normalizer has clipping disabled
     assert not eit_map.plot_settings['norm'].clip
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_wcs(eit_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     eit_map.pixel_to_world(0*u.pix, 0*u.pix)
 
-
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_old_eit_date():
     eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
