@@ -60,7 +60,7 @@ However, operations with incompatible units raise an error::
 Converting Units
 ================
 
-These `~astropy.units.Quantity` objects can also be converted to other units or unit systems::
+`~astropy.units.Quantity` objects can also be converted to other units or unit systems::
 
   >>> length.to(u.km)
   <Quantity 0.01 km>
