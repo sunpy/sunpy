@@ -122,7 +122,7 @@ For instance, if we define a function to calculate speed as above, the inputs sh
   >>> def speed(length, time):
   ...     return length / time
 
-However, this assumes that the two arguments passed in have units consistent with distance and time.
+However, this assumes that the two arguments passed in have units consistent with distance and time without checking.
 The `~astropy.units.quantity_input` decorator, combined with `function annotations <https://python-3-for-scientists.readthedocs.io/en/latest/python3_features.html#function-annotations>`__, enforces compatible units on the function inputs::
 
   >>> @u.quantity_input
