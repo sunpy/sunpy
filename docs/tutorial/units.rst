@@ -4,7 +4,7 @@
 Units
 *****
 
-In this section of the guide, you will learn about representing physical units in sunpy.
+In this section of the tutorial you will learn about representing physical units in sunpy.
 All functions in sunpy that accept or return numbers associated with physical quantities do so using `astropy.units.Quantity` objects.
 These objects represent a number (or an array of numbers) and a unit.
 This means sunpy is always explicit about the units associated with a value.
