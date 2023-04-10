@@ -34,8 +34,8 @@ A `~astropy.units.Quantity` can be decomposed into its unit and numerical value 
   >>> length.unit
   Unit("m")
 
-Arithmetic Operations With Units
-================================
+Arithmetic With Units
+=====================
 
 `~astropy.units.Quantity` objects propagate units through arithmetic operations::
 
