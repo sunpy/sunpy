@@ -19,6 +19,7 @@ def test_map_sequence(aia171_test_map):
         sequence=True,
     )
 
+
 @pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_construct_map_sequence_animator(test_map_sequence):
     map_animator = MapSequenceAnimator(test_map_sequence)
