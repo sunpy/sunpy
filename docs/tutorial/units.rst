@@ -116,8 +116,7 @@ As shown above, you can retrieve the just the numerical value of a `~astropy.uni
 Quantities as function arguments
 ================================
 
-When calling a function that relies on inputs corresponding to physical quantities, there is often an implicit
-assumption that these input arguments are expressed in the expected units of that function.
+When calling a function that relies on inputs corresponding to physical quantities, there is often an implicit assumption that these input arguments are expressed in the expected units of that function.
 For instance, if we define a function to calculate speed as above, the inputs should correspond to a distance and a time::
 
   >>> def speed(length, time):
