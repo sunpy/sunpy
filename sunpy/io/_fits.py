@@ -150,11 +150,11 @@ def format_comments_and_history(input_header):
     `sunpy.io.header.FileHeader`
     """
     try:
-        comment = "".join(input_header['COMMENT']).strip()
+        comment = "\n".join(input_header['COMMENT']).strip()
     except KeyError:
         comment = ""
     try:
-        history = "".join(input_header['HISTORY']).strip()
+        history = "\n".join(input_header['HISTORY']).strip()
     except KeyError:
         history = ""
 
