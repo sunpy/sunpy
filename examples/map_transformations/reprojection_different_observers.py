@@ -63,11 +63,15 @@ plt.legend([limb_aia[0], limb_euvi[0]],
            ['Limb as seen by AIA', 'Limb as seen by EUVI A'])
 
 ######################################################################
-# Due to a mismatch between the solar radius as defined in ``map_aia``
-# and ``map_euvi``, our reprojection will not behave correctly on pixels
-# very near the limb. This can be prevented by equating the two radii.
+# Data providers can set the radius at which emission in the map is assumed
+# to have come from. Most maps use a default value for photospheric
+# radius (including EUVI maps), but some maps (including AIA maps) are set
+# to a slightly different value. A mismatch in solar radius means a reprojection
+# will not work correctly on pixels near the limb. This can be prevented by
+# replacing the value for the solar radius in the AIA map with the default value,
+# thereby assuming that the emission in both maps is emitted at the same radius.
 
-map_euvi.meta['rsun_ref'] = map_aia.meta['rsun_ref']
+map_aia.wcs.wcs.aux.rsun_ref = sunpy.sun.constants.radius.to_value('m')
 
 ######################################################################
 # We can reproject the EUVI map to the AIA observer wcs using
