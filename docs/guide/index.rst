@@ -1,8 +1,8 @@
 .. _guide:
 
-******
-Guides
-******
+************
+Topic Guides
+************
 
 These guides provide a set of in-depth explanations for various parts of the ``sunpy`` core package.
 They assumes you have some knowledge of what ``sunpy`` is and how it works - if you're starting fresh you might want to check out the :ref:`tutorial` first.
@@ -17,4 +17,5 @@ Although there are code snippets in various bits of the guides, these are to hel
 
    installation
    logger
+   coordinates/index
    helioviewer

@@ -1,5 +1,6 @@
 .. _sunpy-coordinates-wcs:
 
+*******************
 Coordinates and WCS
 *******************
 
