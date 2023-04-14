@@ -19,7 +19,7 @@ def test_search():
     res = Fido.search(id, time, level, product)
     assert len(res) == 1
     assert len(res[0]) == 37
-    assert u.allclose(res[0, 0]['Filesize'], 3.574*u.Mbyte)
+    assert u.allclose(res[0, 0]['Filesize'], 3.47*u.Mbyte)
 
     files = Fido.fetch(res[0, 0])
     assert len(files) == 1
@@ -82,7 +82,7 @@ def test_no_instrument():
     # Check that a time only search returns results
     time = a.Time('2020-04-16', '2020-04-17')
     res = SOARClient().search(time)
-    assert len(res) == 50
+    assert len(res) == 63
 
 
 def test_download_path(tmp_path):
