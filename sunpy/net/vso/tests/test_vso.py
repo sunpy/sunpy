@@ -333,6 +333,7 @@ def test_response_block_properties(client):
     assert len(properties) == 0
 
 
+@pytest.mark.filterwarnings(r'ignore:ERFA function "d2dtf" yielded 1 of "dubious year \(Note 5\)"')
 def test_response_block_properties_table(mocker, mock_response):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     legacy_response = QueryResponse.create(mock_response)
