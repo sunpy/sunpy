@@ -306,12 +306,13 @@ def parse_time(time_string, *, format=None, **kwargs):
 
     format : `str`, optional
         Specifies the format user has provided the time_string in.
-        We support the same formats of `astropy.time.Time`.
-
-        The allowed values for ``format`` can be listed with::
+        We support the same formats as `astropy.time.Time`, which are are::
 
           >>> list(astropy.time.Time.FORMATS)
           {astropy_time_formats}
+
+    **kwargs :
+        Additional keyword arguments are passed to `astropy.time.Time`
 
     Returns
     -------
@@ -332,7 +333,7 @@ def parse_time(time_string, *, format=None, **kwargs):
 
     The list of time formats are show by the following examples::
 
-      {parse_time_formats}
+    {parse_time_formats}
     """
     if isinstance(time_string, str) and time_string == 'now':
         rt = Time.now()
