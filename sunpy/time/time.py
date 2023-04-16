@@ -333,7 +333,7 @@ def parse_time(time_string, *, format=None, **kwargs):
 
     The list of time formats are show by the following examples::
 
-    {parse_time_formats}
+      {parse_time_formats}
     """
     if isinstance(time_string, str) and time_string == 'now':
         rt = Time.now()
