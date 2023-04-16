@@ -110,6 +110,7 @@ def _verify_coordinate_helioprojective(coordinates):
                          "but must be in the Helioprojective frame.")
 
 
+@deprecated(since="5.0", alternative="sunpy.coordinates.sun.solar_angular_radius(coordinates.observer)")
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
@@ -206,7 +207,7 @@ def contains_full_disk(smap):
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and contains_solar_center(smap)
+    return np.all(coordinate_angles > sun.solar_angular_radius(edge_of_world.observer)) and contains_solar_center(smap)
 
 
 def contains_solar_center(smap):
@@ -253,7 +254,7 @@ def coordinate_is_on_solar_disk(coordinates):
     _verify_coordinate_helioprojective(coordinates)
     # Calculate the angle of every pixel from the center of the Sun and compare it the angular
     # radius of the Sun.
-    return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
+    return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < sun.solar_angular_radius(coordinates.observer)
 
 
 def is_all_off_disk(smap):
@@ -287,7 +288,7 @@ def is_all_off_disk(smap):
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the solar center is
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~contains_solar_center(smap)
+    return np.all(coordinate_angles > sun.solar_angular_radius(edge_of_world.observer)) and ~contains_solar_center(smap)
 
 
 def is_all_on_disk(smap):

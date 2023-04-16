@@ -20,7 +20,7 @@ from sunpy.coordinates.frames import (
     HeliographicStonyhurst,
     Helioprojective,
 )
-from sunpy.coordinates.sun import angular_radius
+from sunpy.coordinates.sun import solar_angular_radius
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -434,7 +434,7 @@ def test_hgc_incomplete_observer():
 
 def test_angular_radius():
     coord = Helioprojective(0*u.deg, 0*u.deg, 5*u.km, obstime="2010/01/01T00:00:00", observer="earth")
-    assert_quantity_allclose(coord.angular_radius, angular_radius(coord.obstime))
+    assert_quantity_allclose(coord.angular_radius, solar_angular_radius(coord))
 
 
 def test_angular_radius_no_observer():

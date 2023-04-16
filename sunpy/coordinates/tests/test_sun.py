@@ -12,6 +12,7 @@ from astropy.utils.exceptions import ErfaWarning
 
 from sunpy.coordinates import sun
 from sunpy.sun.constants import radius
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import assert_longitude_allclose
 
 # Ignore warnings that astropy throws when trying and failing to update ephemeris
@@ -68,20 +69,43 @@ def test_apparent_latitude(t1, t2):
 
 
 def test_angular_radius(t2):
+    # Check that solar_angular_radius and angular_radius agree
+    # Can be removed when solar_angular_radius is removed in sunpy 5.1
+    angular_radius_1 = sun.solar_angular_radius(sun.get_earth(t2))
+    with pytest.warns(SunpyDeprecationWarning, match='The angular_radius function is deprecated'):
+        angular_radius_2 = sun.angular_radius(t2)
+    assert_quantity_allclose(angular_radius_1, angular_radius_2)
+
+
+def test_solar_angular_radius(t2):
     # Validate against a published value from the Astronomical Almanac (2013, C13)
     # The Astromomical Almanac uses a slightly different radius for the Sun (6.96e5 km)
     # The Astronomical Almanac also uses a small-angle approximation
     # See https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n212/mode/1up
-    assert_quantity_allclose(sun.angular_radius(t2),
-                             Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
-                             atol=0.005*u.arcsec)
+
+    assert_quantity_allclose(
+        sun.solar_angular_radius(sun.get_earth(t2)),
+        Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
+        atol=0.005*u.arcsec
+    )
 
     # Regression-only test
-    assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.875*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(
+        sun.solar_angular_radius(sun.get_earth("2012/11/11")),
+        968.875*u.arcsec,
+        atol=1e-3*u.arcsec
+    )
     with pytest.warns(ErfaWarning):
-        assert_quantity_allclose(sun.angular_radius("2043/03/01"),
-                                 968.330*u.arcsec, atol=1e-3*u.arcsec)
-    assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.042*u.arcsec, atol=1e-3*u.arcsec)
+        assert_quantity_allclose(
+            sun.solar_angular_radius(sun.get_earth("2043/03/01")),
+            968.330*u.arcsec,
+            atol=1e-3*u.arcsec
+        )
+    assert_quantity_allclose(
+        sun.solar_angular_radius(sun.get_earth("2001/07/21")),
+        944.042*u.arcsec,
+        atol=1e-3*u.arcsec
+    )
 
 
 def test_mean_obliquity_of_ecliptic(t1, t2):

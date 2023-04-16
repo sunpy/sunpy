@@ -28,7 +28,7 @@ from sunpy import log
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring
+from sunpy.util.decorators import add_common_docstring, deprecated
 from .ephemeris import get_earth
 from .frames import HeliographicStonyhurst
 from .transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
@@ -37,7 +37,8 @@ __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
 
 __all__ = [
-    "angular_radius", "sky_position", "carrington_rotation_number",
+    "angular_radius", "solar_angular_radius",
+    "sky_position", "carrington_rotation_number",
     "carrington_rotation_time",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
@@ -47,6 +48,30 @@ __all__ = [
 ]
 
 
+def solar_angular_radius(observer):
+    """
+    Calculates the solar angular radius as seen from a given observer coordinate.
+
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
+
+    Parameters
+    ----------
+    observer : `~astropy.coordinates.SkyCoord`
+        The input observer coordinate(s).
+
+    Returns
+    -------
+    angle : `~astropy.units.Quantity`
+        The solar angular radius.
+    """
+    observer = observer.transform_to(HeliographicStonyhurst())
+    return _angular_radius(observer.rsun, observer.radius)
+
+
+@deprecated(since="5.0", alternative="sunpy.coordinates.sun.solar_angular_radius(get_earth(t))")
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def angular_radius(t='now'):
     """
@@ -468,7 +493,7 @@ def print_params(t='now'):
     """
     print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
     print('Distance = {}'.format(earth_distance(t)))
-    print('Semidiameter = {}'.format(angular_radius(t)))
+    print('Semidiameter = {}'.format(solar_angular_radius(get_earth(t))))
     print('True (long, lat) = ({}, {})'.format(true_longitude(t).to_string(),
                                                true_latitude(t).to_string()))
     print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t).to_string(),

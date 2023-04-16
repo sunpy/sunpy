@@ -145,7 +145,8 @@ def test_map_edges(all_off_disk_map):
 
 def test_solar_angular_radius(aia171_test_map):
     on_disk = aia171_test_map.center
-    sar = solar_angular_radius(on_disk)
+    with pytest.warns(SunpyDeprecationWarning, match='The solar_angular_radius function is deprecated'):
+        sar = solar_angular_radius(on_disk)
     assert isinstance(sar, u.Quantity)
     np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
 
@@ -243,8 +244,9 @@ def test_verify_coordinate_helioprojective(aia171_test_map, all_off_disk_map, al
 
 
 def test_functions_raise_non_frame_coords(non_helioprojective_skycoord):
-    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
-        solar_angular_radius(non_helioprojective_skycoord)
+    with pytest.warns(SunpyDeprecationWarning, match='The solar_angular_radius function is deprecated'):
+        with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
+            solar_angular_radius(non_helioprojective_skycoord)
     with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         coordinate_is_on_solar_disk(non_helioprojective_skycoord)
 

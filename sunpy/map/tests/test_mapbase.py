@@ -236,13 +236,16 @@ def test_rsun_meters(generic_map):
 
 def test_rsun_obs_without_rsun_ref(generic_map):
     assert_quantity_allclose(generic_map.rsun_obs,
-                             sun.angular_radius(generic_map.date))
+                             sun.solar_angular_radius(generic_map.observer_coordinate))
 
 
 def test_rsun_obs_with_rsun_ref(generic_map):
     generic_map.meta['rsun_ref'] = sunpy.sun.constants.radius.to_value(u.m)
     # The following should not raise a warning because we can calculate it exactly
-    assert_quantity_allclose(generic_map.rsun_obs, sun.angular_radius(generic_map.date))
+    assert_quantity_allclose(
+        generic_map.rsun_obs,
+        sun.solar_angular_radius(generic_map.observer_coordinate)
+    )
 
 
 def test_coordinate_system(generic_map):

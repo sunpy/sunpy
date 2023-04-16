@@ -42,3 +42,26 @@ Deprecation of IO readers
 ``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
 
 This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
+
+Simplified way to get the solar angular radius
+==============================================
+``sunpy.coordinates.sun.angular_radius``, which gets the angular radius of the Sun as observed from Earth at a given time, and ``sunpy.map.maputils.solar_angular_radius``, which gets the angular radius of the Sun for a given helioprojective coordinate, are both deprecated.
+
+They have been replaced with `sunpy.coordinates.sun.solar_angular_radius`, which is more general, taking a single observer coordinate as input that can be in any coordinate frame transformable to heliographic Stonyhurst.
+
+To replace uses of ``sunpy.coordinates.sun.angular_radius``, do::
+
+    >>> from sunpy.coordinates.sun import solar_angular_radius, get_earth
+    >>> solar_angular_radius(get_earth("2023-04-16"))
+    <Angle 956.08106379 arcsec>
+
+
+To replace uses of ``sunpy.map.maputils.solar_angular_radius``, do::
+
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import Helioprojective
+    >>> from sunpy.coordinates.sun import solar_angular_radius
+    >>>
+    >>> my_coord = Helioprojective(0*u.arcsec, 0*u.arcsec, observer=get_earth("2023-04-16"))
+    >>> solar_angular_radius(my_coord.observer)
+    <Angle 956.08106379 arcsec>
