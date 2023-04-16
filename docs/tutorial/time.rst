@@ -13,7 +13,7 @@ Parsing Times
 =============
 
 Solar data is associated with a number of different time formats.
-To handle all these formats, sunpy has the `sunpy.time.parse_time()` that accepts a variety of inputs, and returns a consistent `~astropy.time.Time` object.
+To handle all these formats, sunpy has :meth:`sunpy.time.parse_time` that accepts a variety of inputs, and returns a consistent `~astropy.time.Time` object.
 You might have come across another way of storing time that's built into Python itself, `datetime.datetime`.
 `~datetime.datetime` does not provide support for common time formats used in solar physics or leap seconds, hence the use of `astropy.time.Time` throughout sunpy.
 
@@ -42,7 +42,7 @@ A TimeRange object can be created by providing a start time and an end time::
     >>> from sunpy.time import TimeRange
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
 
-`~sunpy.time.TimeRange` makes use of parse_time() so it can accept a wide variety of time formats.
+`~sunpy.time.TimeRange` makes use of :meth:`sunpy.time.parse_time` so it can accept a wide variety of time formats.
 Alternatively, you can specify a start time and a duration::
 
     >>> import astropy.units as u
