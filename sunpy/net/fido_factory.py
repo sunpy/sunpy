@@ -385,6 +385,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # Avoid more than one connection for JSOC only requests.
         from sunpy.net.jsoc import JSOCClient
 
+        max_splits = kwargs.get('max_splits', 5)
         is_jsoc_only = False
         for query_result in query_results:
             if isinstance(query_result, UnifiedResponse):
@@ -394,8 +395,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if downloader is None:
             if is_jsoc_only:
                 max_conn = 1
-                kwargs['max_splits'] = 1
-            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+                max_splits = 1
+            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
         elif not isinstance(downloader, parfive.Downloader):
             raise TypeError("The downloader argument must be a parfive.Downloader instance.")
 
