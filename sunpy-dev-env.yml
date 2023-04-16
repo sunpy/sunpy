@@ -60,6 +60,7 @@ dependencies:
   - sphinx-design
   - sphinx-gallery
   - sphinx-hoverxref
+  - sphinxext-opengraph
   - towncrier
 
   # Installation
@@ -73,5 +74,4 @@ dependencies:
   - pip:
     - sphinx-bootstrap-theme
     - sphinx-changelog
-    - sphinxext-opengraph
     - sunpy-sphinx-theme
