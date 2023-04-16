@@ -15,6 +15,7 @@ which include a wide range of
 `blend modes <https://en.wikipedia.org/wiki/Blend_modes>`__ for image overlays.
 
 .. note::
+
    This example requires `mplcairo <https://github.com/matplotlib/mplcairo>`__
    to be installed. Installation via ``pip`` will work in most cases, but you
    may need to refer to
@@ -22,7 +23,7 @@ which include a wide range of
 """
 
 ###############################################################################
-# We need to tell ``matplotlib`` to use a backend from ``mplcairo``.  The
+# We need to tell ``matplotlib`` to use a backend from ``mplcairo``. The
 # backend formally needs to be set prior to importing ``matplotlib.pyplot``.
 # The ``mplcairo.qt`` GUI backend should work on Linux and Windows, but
 # you will need to use something different on macOS or Jupyter (see

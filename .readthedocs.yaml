@@ -7,8 +7,6 @@ build:
   jobs:
     pre_install:
       - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
-    post_install:
-      - pip install -U git+https://github.com/sphinx-gallery/sphinx-gallery
 
 conda:
   environment: .rtd-environment.yml
