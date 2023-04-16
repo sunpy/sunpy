@@ -1,7 +1,7 @@
 The minimum required versions of several core dependencies have been updated:
 
 - Python 3.9
-- astropy 5.0.0
+- astropy 5.0.1
 - numpy 1.21.0
 
 The minimum required versions of these optional dependencies has also been updated:

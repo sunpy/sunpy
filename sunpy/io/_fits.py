@@ -1,17 +1,11 @@
 """
-This module provides a FITS file reader.
+This module provides a FITS file reader for internal use.
 
-.. warning::
-
-   ``sunpy.io.fits`` is deprecated, and will be removed in sunpy 4.1. This is
-   because it was designed for internal use only. We instead recommend users
-   use the `astropy.io.fits` module, which provides more generic functionality
-   to read FITS files.
-
+We instead recommend users use the `astropy.io.fits` module,
+which provides more generic functionality to read FITS files.
 
 Notes
 -----
-
 1. FITS files allow comments to be attached to every value in the header.
    This is implemented in this module as a KEYCOMMENTS dictionary in the
    sunpy header. To add a comment to the file on write, add a comment to this
@@ -291,9 +285,9 @@ def extract_waveunit(header):
 
     Parameters
     ----------
-    header : `sunpy._io.header.FileHeader`
-        One `~sunpy._io.header.FileHeader` instance which was created by
-        reading a FITS file. For example, `sunpy._io.fits.get_header` returns a list of
+    header : `sunpy.io.header.FileHeader`
+        One `~sunpy.io.header.FileHeader` instance which was created by
+        reading a FITS file. For example, `sunpy.io._fits.get_header` returns a list of
         such instances.
 
     Returns
