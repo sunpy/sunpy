@@ -74,8 +74,7 @@ Unit Equivalencies
 It is commonplace to convert between units which are only compatible under certain assumptions.
 For example, in spectroscopy, spectral energy and wavelength are equivalent given the relation
 :math:`E=hc/\lambda`.
-If we try to convert a wavelength to energy using what we learned in the previous section,
-we get an exception because length and energy are, in general, not compatible units,::
+If we try to convert a wavelength to energy using what we learned in the previous section, we get an exception because length and energy are, in general, not compatible units,::
 
   >>> length.to(u.keV)
   Traceback (most recent call last):
