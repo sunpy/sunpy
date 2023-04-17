@@ -125,8 +125,7 @@ def test_write_with_metadict_header_astropy(tmpdir):
         data, header = fits_file[0].data, fits_file[0].header
     meta_header = MetaDict(OrderedDict(header))
     temp_file = tmpdir / "temp.fits"
-    with pytest.warns(SunpyMetadataWarning, match='The meta key comment is not valid ascii'):
-        _fits.write(str(temp_file), data, meta_header)
+    _fits.write(str(temp_file), data, meta_header)
     assert temp_file.exists()
     fits_file.close()
 
@@ -182,3 +181,27 @@ def test_read_memmap():
 
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
     assert data.base is None
+
+
+def test_merge_multiple_comment_history_entries():
+    header = fits.Header()
+    history = "First history entry\nSecond history entry"
+    comment = "First comment\nSecond comment"
+    for hist in history.split("\n"):
+        header.add_history(hist)
+    for com in comment.split("\n"):
+        header.add_comment(com)
+    file_header = _fits.format_comments_and_history(header)
+    assert file_header["HISTORY"] == history
+    assert file_header["COMMENT"] == comment
+
+
+def test_split_multiline_comment_history_entries():
+    header_dict = {
+        "history": "First history entry\nSecond history entry",
+        "comment": "First comment\nSecond comment",
+    }
+    fits_header = _fits.header_to_fits(header_dict)
+    for k, v in header_dict.items():
+        for v_fits, v_dict in zip(fits_header[k.upper()], v.split("\n")):
+            assert v_fits == v_dict
