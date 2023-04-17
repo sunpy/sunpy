@@ -71,14 +71,14 @@ class XRSClient(GenericClient):
     pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
     # The reprocessed 8-15 data should be taken from NOAA.
     baseurl_new = (r"https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/"
-                   r"goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/%Y/%m/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d%Y%m%d_.*\.nc")
-    pattern_new = ("{}/goes{SatelliteNumber:02d}/gxrs-l2-irrad_science/{year:4d}/"
-                   "{month:2d}/sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+                   r"goes{SatelliteNumber:02d}/{filename_res}-l2-{resolution}_science/%Y/%m/sci_{filename_res}-l2-{resolution}_g{SatelliteNumber:02d}_d%Y%m%d_.*\.nc")
+    pattern_new = ("{}/goes{SatelliteNumber:02d}/{filename_res}-l2-{resolution}_science/{year:4d}/"
+                   "{month:2d}/sci_{filename_res}-l2-{resolution}_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
     # GOES-R Series 16-17 XRS data from NOAA.
     baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
-                 r"/l2/data/xrsf-l2-flx1s_science/%Y/%m/sci_xrsf-l2-flx1s_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
-    pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-flx1s_science/{year:4d}/"
-                 "{month:2d}/sci_xrsf-l2-flx1s_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+                 r"/l2/data/xrsf-l2-{Resolution}_science/%Y/%m/sci_xrsf-l2-{Resolution}_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+    pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-{Resolution}_science/{year:4d}/"
+                 "{month:2d}/sci_xrsf-l2-{Resolution}_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
 
     @property
     def info_url(self):
@@ -98,6 +98,10 @@ class XRSClient(GenericClient):
         rowdict["Physobs"] = matchdict["Physobs"][0]
         rowdict["url"] = i["url"]
         rowdict["Source"] = matchdict["Source"][0]
+        if "avg1m" in i["url"]:
+            rowdict["Resolution"] = "avg1m"
+        else:
+            rowdict["Resolution"] = "flx1s"
         if i["url"].endswith(".fits"):
             rowdict["Provider"] = matchdict["Provider"][0]
         else:
@@ -141,16 +145,27 @@ class XRSClient(GenericClient):
         # The data before the re-processed GOES 8-15 data.
         if (matchdict["End Time"] < "2001-03-01") or (matchdict["End Time"] >= "2001-03-01" and matchdict["Provider"] == ["sdac"]):
             metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
-        # New data from NOAA.
+        # New data from NOAA. It searches for both the high cadence and 1minute average data.
         else:
             if matchdict["End Time"] >= "2017-02-07":
                 for sat in [16, 17]:
-                    metalist += self._get_metalist_fn(matchdict,
-                                                      self.baseurl_r.format(SatelliteNumber=sat), self.pattern_r)
+                    for res in matchdict["Resolution"]:
+                        metalist += self._get_metalist_fn(matchdict,
+                                                          self.baseurl_r.format(SatelliteNumber=sat, Resolution=res), self.pattern_r)
             if matchdict["End Time"] <= "2020-03-04":
                 for sat in [8, 9, 10, 11, 12, 13, 14, 15]:
-                    metalist += self._get_metalist_fn(matchdict,
-                                                      self.baseurl_new.format(SatelliteNumber=sat), self.pattern_new)
+                    # the 1min average data is at a different base url to that of the high cadence data which is why things are done this way.
+                    for res in matchdict["Resolution"]:
+                        if res == "avg1m":
+                            filename_res = "xrsf"
+                            resolution = "avg1m"
+                            metalist += self._get_metalist_fn(matchdict,
+                                                              self.baseurl_new.format(SatelliteNumber=sat, filename_res=filename_res, resolution=resolution), self.pattern_new)
+                        else:
+                            filename_res = "gxrs"
+                            resolution = "irrad"
+                            metalist += self._get_metalist_fn(matchdict,
+                                                              self.baseurl_new.format(SatelliteNumber=sat, filename_res=filename_res, resolution=resolution), self.pattern_new)
         return metalist
 
     @classmethod
@@ -168,7 +183,9 @@ class XRSClient(GenericClient):
             attrs.Source: [("GOES", "The Geostationary Operational Environmental Satellite Program.")],
             attrs.Provider: [('SDAC', 'The Solar Data Analysis Center.'),
                              ('NOAA', 'The National Oceanic and Atmospheric Administration.')],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
+            attrs.Resolution: [('flx1s', 'High-cadence measurements XRS observation, 1s for GOES-R, 2s for GOES 13-15, 3s for GOES<13'),
+                               ('avg1m', '1-minute averages of XRS measurements')]}
         return adict
 
 
