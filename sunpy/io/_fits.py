@@ -239,8 +239,17 @@ def header_to_fits(header):
     fits_header = fits.Header()
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
-
+    # This first iteration separates out COMMENTS and HISTORY into their own
+    # entries.
+    header_items = []
     for k, v in header.items():
+        if k.upper() in ('COMMENT', 'HV_COMMENT', 'HISTORY'):
+            for v_line in str(v).split('\n'):
+                header_items.append((k, v_line))
+        else:
+            header_items.append((k, v))
+
+    for k, v in header_items:
         # Drop any keys that have non-ascii characters
         if not fits.Card._ascii_text_re.match(str(v)):
             warn_metadata(f'The meta key {k} is not valid ascii, dropping from the FITS header')
@@ -257,13 +266,9 @@ def header_to_fits(header):
             continue
 
         if k.upper() in ('COMMENT', 'HV_COMMENT'):
-            comments = str(v).split('\n')
-            for com in comments:
-                fits_header.add_comment(com)
+            fits_header.add_comment(v)
         elif k.upper() == 'HISTORY':
-            hists = str(v).split('\n')
-            for hist in hists:
-                fits_header.add_history(hist)
+            fits_header.add_history(v)
         elif isinstance(v, fits.header._HeaderCommentaryCards):
             if k != '':
                 fits_header.append(fits.Card(k, str(v).split('\n')))
