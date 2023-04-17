@@ -37,7 +37,7 @@ Contribution Guidelines
 
   * Always create a figure instance using ``plt.figure()`` prior to creating a plot.
 
-  * Always create an Axes instance, and where possible use this to modify the plot instead of using the ``pyplot`` interface (for example use ``ax.set_label()``` instead of ``plt.xlabel()``).
+  * Always create an Axes instance, and where possible use this to modify the plot instead of using the ``pyplot`` interface (for example use ``ax.set_xlabel()``` instead of ``plt.xlabel()``).
 
   * If an axes instance is created, it should be explicitly passed as a keyword argument wherever possible (e.g. in `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.draw_grid`).
 
