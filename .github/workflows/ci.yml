@@ -12,6 +12,8 @@ on:
       - '!*pre*'
       - '!*post*'
   pull_request:
+    branches:
+        - 'main'
   # Allow manual runs through the web UI
   workflow_dispatch:
 
