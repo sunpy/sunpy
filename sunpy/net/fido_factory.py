@@ -14,6 +14,7 @@ from collections.abc import Sequence
 
 import numpy as np
 import parfive
+from packaging.version import Version
 
 from astropy.table import Table
 
@@ -25,6 +26,8 @@ from sunpy.util.parfive_helpers import Downloader, Results
 from sunpy.util.util import get_width
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
+
+parfive_version = Version(parfive.__version__)
 
 
 class UnifiedResponse(Sequence):
@@ -381,7 +384,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
 
-        # TODO: Remove when parfive allows us to special case URLS.
         # Avoid more than one connection for JSOC only requests.
         from sunpy.net.jsoc import JSOCClient
 
@@ -396,7 +398,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             if is_jsoc_only:
                 max_conn = 1
                 max_splits = 1
-            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
+            if parfive_version >= Version("2.0.0"):
+                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
+            else:
+                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
         elif not isinstance(downloader, parfive.Downloader):
             raise TypeError("The downloader argument must be a parfive.Downloader instance.")
 
@@ -431,8 +436,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                     reslist.append(result)
 
         results = downloader.download()
-        # Combine the results objects from all the clients into one Results
-        # object.
+        # Combine the results objects from all the clients into one Results object.
         for result in reslist:
             if not isinstance(result, Results):
                 raise TypeError(
