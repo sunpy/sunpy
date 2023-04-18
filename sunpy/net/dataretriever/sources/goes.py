@@ -145,7 +145,7 @@ class XRSClient(GenericClient):
         # The data before the re-processed GOES 8-15 data.
         if (matchdict["End Time"] < "2001-03-01") or (matchdict["End Time"] >= "2001-03-01" and matchdict["Provider"] == ["sdac"]):
             metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
-        # New data from NOAA. It searches for both the high cadence and 1minute average data.
+        # New data from NOAA. It searches for both the high cadence and 1 minute average data.
         else:
             if matchdict["End Time"] >= "2017-02-07":
                 for sat in [16, 17]:
@@ -154,7 +154,7 @@ class XRSClient(GenericClient):
                                                           self.baseurl_r.format(SatelliteNumber=sat, Resolution=res), self.pattern_r)
             if matchdict["End Time"] <= "2020-03-04":
                 for sat in [8, 9, 10, 11, 12, 13, 14, 15]:
-                    # the 1min average data is at a different base url to that of the high cadence data which is why things are done this way.
+                    # The 1 minute average data is at a different base URL to that of the high cadence data which is why things are done this way.
                     for res in matchdict["Resolution"]:
                         if res == "avg1m":
                             filename_res = "xrsf"
