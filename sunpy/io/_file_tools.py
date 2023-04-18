@@ -51,6 +51,22 @@ _readers = Readers({
 })
 
 
+def _read(filepath, function_name, filetype=None, **kwargs):
+    filepath = str(filepath)
+    if filetype is not None:
+        return getattr(_readers[filetype], function_name)(filepath, **kwargs)
+    try:
+        readername = _detect_filetype(filepath)
+    except UnrecognizedFileTypeError:
+        readername = None
+    for extension, name in _known_extensions.items():
+        if filepath.endswith(extension) or filetype in extension:
+            readername = name
+    if readername is not None:
+        return getattr(_readers[readername], function_name)(filepath, **kwargs)
+    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
+
+
 def read_file(filepath, filetype=None, **kwargs):
     """
     Automatically determine the filetype and read the file.
@@ -73,19 +89,7 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    filepath = str(filepath)
-    if filetype is not None:
-        return _readers[filetype].read(filepath, **kwargs)
-    try:
-        readername = _detect_filetype(filepath)
-    except UnrecognizedFileTypeError:
-        readername = None
-    for extension, name in _known_extensions.items():
-        if filepath.endswith(extension) or filetype in extension:
-            readername = name
-    if readername is not None:
-        return _readers[readername].read(filepath, **kwargs)
-    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
+    return _read(filepath, 'read', filetype, **kwargs)
 
 
 def read_file_header(filepath, filetype=None, **kwargs):
@@ -109,18 +113,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
-    if filetype is not None:
-        return _readers[filetype].get_header(filepath, **kwargs)
-    try:
-        readername = _detect_filetype(filepath)
-    except UnrecognizedFileTypeError:
-        readername = None
-    for extension, name in _known_extensions.items():
-        if filepath.endswith(extension) or filetype in extension:
-            readername = name
-    if readername is not None:
-        return _readers[readername].get_header(filepath, **kwargs)
-    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
+    return _read(filepath, 'get_header', filetype, **kwargs)
 
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
