@@ -30,9 +30,9 @@ def LCClient():
       'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2008/06/sci_gxrs-l2-irrad_g10_d20080604_v0-0-0.nc'),
      (Time('2020/08/02', '2020/08/04'),
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-      'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-1-0.nc',
+      'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-2-0.nc',
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-      'goes17/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g17_d20200804_v2-1-0.nc')])
+      'goes17/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g17_d20200804_v2-2-0.nc')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
