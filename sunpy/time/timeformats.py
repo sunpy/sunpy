@@ -12,9 +12,18 @@ class TimeUTime(TimeFromEpoch):
 
     Notes
     -----
-    This format is very similar to the default output format of the the ``anytim``
-    routine in SSW.  However, there are discrepancies of up to a second on days with
-    a leap second.
+    This format "ignores" leap seconds by treating each day as spanned by exactly
+    86400 seconds, which means that this format's second is not actually uniform in
+    duration.  On a day without a leap second, this format's second is equal to an
+    SI second.  On a day with a leap second, this format's second is larger than an
+    SI second by 1/86400 of an SI second.
+
+    This format is very similar to the default output format of the ``anytim``
+    routine in SSW in that there are exactly 86400 seconds assigned for each day.
+    However, ``anytim`` treats the seconds as always equal to an SI second, and thus
+    the 86400 seconds span only the first 86400/86401 of the day, and the leap
+    second is skipped over.  This results in discrepancies of up to a second on days
+    with a leap second.
 
     This format is equivalent to `~astropy.time.TimeUnix`, except that the epoch is
     9 years later.

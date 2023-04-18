@@ -1,5 +1,6 @@
 .. _sunpy-coordinates-velocities:
 
+*************************************
 Coordinates with velocity information
 *************************************
 

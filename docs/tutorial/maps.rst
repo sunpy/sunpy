@@ -47,7 +47,7 @@ If the type of FITS file is not recognized then **sunpy** will try some default 
 **sunpy** can also create Maps using the JPEG 2000 files from `helioviewer.org <https://helioviewer.org/>`__.
 
 The :ref:`sphx_glr_generated_gallery_acquiring_data` section of the Example Gallery has several examples of retrieving data using the `~sunpy.net.Fido` tool.
-For more details, check out the :ref:`fido_guide` guide.
+For more details, check out the :ref:`acquiring_data` guide.
 See :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.py` for a demonstration of saving a map as a FITS file and `~sunpy.map.GenericMap.save` for more details on saving.
 
 .. _inspecting-maps:

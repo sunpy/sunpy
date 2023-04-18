@@ -21,8 +21,8 @@ from sunpy.timeseries import TimeSeries
 goes_lc = TimeSeries(GOES_XRS_TIMESERIES)
 my_timeseries = goes_lc.truncate('2011/06/07 06:10', '2011/06/07 09:00')
 
-plt.figure()
-my_timeseries.plot()
+fig, ax = plt.subplots()
+my_timeseries.plot(axes=ax)
 
 ##############################################################################
 # To find extrema in any TimeSeries, we first define a function findpeaks that
@@ -59,7 +59,7 @@ def findpeaks(series, DELTA):
     lookformax = True
     start = True
     # Iterate over items in series
-    for time_pos, value in series.iteritems():
+    for time_pos, value in series.items():
         if value > mx:
             mx = value
             mxpos = time_pos
@@ -98,17 +98,19 @@ def findpeaks(series, DELTA):
 # Now we take the column 'sunspot SWO' of this TimeSeries and try to find it's
 # extrema using the function findpeaks. We take the value of DELTA to be
 # approximately the length of smallest peak that we wish to detect.
+
 series = my_timeseries.to_dataframe()['xrsa']
 minpeaks, maxpeaks = findpeaks(series, DELTA=1e-7)
+
 # Plotting the figure and extremum points
-plt.figure()
-plt.xlabel('Time')
-plt.ylabel("Flux (Wm$^{-2}$")
-plt.title('Peaks in TimeSeries')
-series.plot()
-plt.scatter(*zip(*minpeaks), color='red', label='min')
-plt.scatter(*zip(*maxpeaks), color='green', label='max')
-plt.legend()
-plt.grid(True)
+fig, ax = plt.subplots()
+ax.set_xlabel('Time')
+ax.set_ylabel("Flux (Wm$^{-2}$")
+ax.set_title('Peaks in TimeSeries')
+series.plot(axes=ax)
+ax.scatter(*zip(*minpeaks), color='red', label='min')
+ax.scatter(*zip(*maxpeaks), color='green', label='max')
+ax.legend()
+ax.grid(True)
 
 plt.show()
