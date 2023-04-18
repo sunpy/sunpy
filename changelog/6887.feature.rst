@@ -1,1 +1,1 @@
-Add support to SunPy so Users can download files from REST/TAP Data Providers in the VSO.
+Able to download files from REST/TAP Data Providers from the VSO.
