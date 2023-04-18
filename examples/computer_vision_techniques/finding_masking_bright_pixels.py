@@ -54,6 +54,7 @@ scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 ###############################################################################
 # Let's plot the results.
 
-plt.figure()
-scaled_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=scaled_map)
+scaled_map.plot(axes=ax)
 plt.show()

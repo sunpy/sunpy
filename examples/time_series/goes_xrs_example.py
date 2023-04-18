@@ -82,7 +82,8 @@ goes_15 = ts.TimeSeries(df, goes_15.meta, goes_15.units)
 # channel is known as the "xrsa" channel and the 1-8 angstrom channel is known
 # as the "xrsb" channel.
 
-goes_15.plot(columns=["xrsb"])
+fig, ax = plt.subplots()
+goes_15.plot(axes=ax, columns=["xrsb"])
 plt.show()
 
 ###############################################################

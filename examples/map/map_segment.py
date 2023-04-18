@@ -49,9 +49,10 @@ segment_mask |= np.isnan(all_hgs.lon)
 # To plot the segment separately, we create a new map with the segment as the mask.
 
 new_frame_map = sunpy.map.Map(smap.data, smap.meta, mask=segment_mask)
-plt.figure()
-new_frame_map.plot()
-new_frame_map.draw_grid(color='red')
+fig = plt.figure()
+ax = fig.add_subplot(projection=new_frame_map)
+new_frame_map.plot(axes=ax)
+new_frame_map.draw_grid(axes=ax, color='red')
 plt.show()
 
 ######################################################################
