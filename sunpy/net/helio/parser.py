@@ -39,7 +39,7 @@ def webservice_parser(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.webservice_parser()  # doctest: +SKIP
+    >>> parser.webservice_parser()  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService',
     'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService',
     'http://voparis-helio.obspm.fr/helio-hec/HelioService',
@@ -94,7 +94,7 @@ def endpoint_parser(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +SKIP
+    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService?wsdl',
     'http://helio.mssl.ucl.ac.uk/helio-hec/HelioService1_0?wsdl',
     'http://helio.mssl.ucl.ac.uk/helio-hec/HelioService1_0b?wsdl',
@@ -140,7 +140,7 @@ def taverna_parser(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.taverna_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +SKIP
+    >>> parser.taverna_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl']
 
     """
@@ -176,9 +176,9 @@ def link_test(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> result = parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +SKIP
+    >>> result = parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
 
-    >>> print(parser.link_test('http://rrnx.invalid_url5523.com'))  # doctest: +SKIP
+    >>> print(parser.link_test('http://rrnx.invalid_url5523.com'))  # doctest: +REMOTE_DATA
         None
     """
     try:
@@ -212,7 +212,7 @@ def wsdl_retriever(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.wsdl_retriever()  # doctest: +SKIP
+    >>> parser.wsdl_retriever()  # doctest: +REMOTE_DATA
     'http://helio.mssl.ucl.ac.uk/helio-hec/HelioTavernaService?wsdl'
 
     Notes
