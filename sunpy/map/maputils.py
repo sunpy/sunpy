@@ -10,6 +10,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import Helioprojective, sun
+from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -18,7 +19,7 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'contains_limb', 'coordinate_is_on_solar_disk',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
-           'extract_along_coord']
+           'extract_along_coord', 'pixelate_coord_path']
 
 
 def all_pixel_indices_from_map(smap):
@@ -148,11 +149,14 @@ def sample_at_coords(smap, coordinates):
 
     Returns
     -------
-    `numpy.array`
-        A `numpy.array` corresponding to the data obtained from the map,
-        at the input coordinates.
+    `~astropy.units.Quantity`
+        An array of the map data at the input coordinates.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.map.sample_at_coords
     """
-    return smap.data[smap.wcs.world_to_array_index(coordinates)]
+    return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
 
 
 def _edge_coordinates(smap):
@@ -415,7 +419,7 @@ def contains_coordinate(smap, coordinates):
 
 def _bresenham(*, x1, y1, x2, y2):
     """
-    Returns an array of all pixel coordinates which the line defined by `x1, y1` and
+    Returns an array of pixel coordinates which the line defined by `x1, y1` and
     `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
     a line. This was adapted from ginga.
 
@@ -452,6 +456,11 @@ def _bresenham(*, x1, y1, x2, y2):
     return np.array(res)
 
 
+@deprecated("5.0", message="The extract_along_coord function is deprecated and may be removed in "
+                           "version 5.1. Use pixelate_coord_path, and then pass its output to "
+                           "sample_at_coords. pixelate_coord_path uses a different line algorithm "
+                           "by default, but you can specify bresenham=True to use the same line "
+                           "algorithm as extract_along_coord.")
 def extract_along_coord(smap, coord):
     """
     Extract pixel values from a map along a path that approximates a coordinate path.
@@ -482,10 +491,6 @@ def extract_along_coord(smap, coord):
     The provided coordinates are first rounded to the nearest corresponding pixel,
     which means that the coordinates used for calculations may be shifted relative
     to the provided coordinates by up to half a pixel.
-
-    Examples
-    --------
-    .. minigallery:: sunpy.map.extract_along_coord
     """
     if not len(coord.shape) or coord.shape[0] < 2:
         raise ValueError('At least two points are required for extracting intensity along a '
@@ -511,3 +516,98 @@ def extract_along_coord(smap, coord):
     pixel_coords = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
 
     return pixel_values, pixel_coords
+
+
+def _intersected_pixels(*, x1, y1, x2, y2):
+    """
+    Returns an array of all pixel coordinates which the line defined by `x1, y1` and
+    `x2, y2` crosses.
+
+    Parameters
+    ----------
+    x1, y1, x2, y2 : `float`
+    """
+    dx = x2 - x1
+    dy = y2 - y1
+    dr = np.sqrt(dx ** 2 + dy ** 2)
+
+    # Get the integer pixels for the start and end points
+    ix1, iy1, ix2, iy2 = np.rint([x1, y1, x2, y2]).astype(int)
+
+    # Create the arrays for pixel indices
+    nx = np.abs(ix2 - ix1) + 1
+    ny = np.abs(iy2 - iy1) + 1
+    x, y = np.indices((nx, ny))
+    x = x * np.sign(dx) + ix1
+    y = y * np.sign(dy) + iy1
+
+    # Calculate the distance from the line segment in pixels
+    distance = np.abs(dy * (x - x1) - dx * (y - y1)) / dr
+
+    # The threshold distance is half a pixel times an adjustment for line angle
+    threshold = 0.5 * (np.abs(dx) + np.abs(dy)) / dr
+
+    use = distance <= threshold
+    return np.stack([x[use], y[use]], axis=1)
+
+
+def pixelate_coord_path(smap, coord_path, *, bresenham=False):
+    """
+    Return the pixel coordinates for every pixel that intersects with a coordinate
+    path.
+
+    Each pair of consecutive coordinates in the provided coordinate array defines a
+    line segment.  Each pixel that intersects with a line segment has the
+    coordinates of its center returned in the output.
+
+    To obtain the values of these pixels, pass the output to
+    :func:`~sunpy.map.sample_at_coords`.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        The sunpy map.
+    coord : `~astropy.coordinates.SkyCoord`
+        The coordinate path.
+    bresenham : `bool`
+        If ``True``, use Bresenham's line algorithm instead of the default
+        algorithm.  Bresenham's line algorithm is faster, but simplifies each
+        coordinate-path point to the nearest pixel center and can skip a pixel on
+        the path if two of its neighbors are diagonally connected and also on the
+        path.
+
+    Notes
+    -----
+    If a pixel intersects the coordinate path at only its corner, it may not be
+    returned due to the limitations of floating-point comparisons.
+
+    Returns
+    -------
+    `~astropy.coordinates.SkyCoord`
+         The coordinates for the pixels that intersect with the coordinate path.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.map.pixelate_coord_path
+    """
+    if not len(coord_path.shape) or coord_path.shape[0] < 2:
+        raise ValueError("The coordinate path must have at least two points.")
+
+    px, py = smap.wcs.world_to_pixel(coord_path)
+    if bresenham:
+        px, py = np.rint(px).astype(int), np.rint(py).astype(int)
+
+    pix = []
+    for i in range(len(px) - 1):
+        algorithm = _bresenham if bresenham else _intersected_pixels
+        this_pix = algorithm(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
+
+        # After the first line segment, skip the start point since it is the same as the end point
+        # of the previous line segment
+        if i > 0:
+            this_pix = this_pix[1:]
+        pix.append(this_pix)
+    pix = np.vstack(pix)
+
+    pixel_coords = smap.wcs.pixel_to_world(pix[:, 0], pix[:, 1])
+    return pixel_coords

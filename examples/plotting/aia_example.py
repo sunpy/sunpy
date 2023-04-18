@@ -22,10 +22,11 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 # Let's plot the result. Setting the projection is necessary to ensure that
 # pixels can be converted accurately to coordinates values.
 
-plt.figure()
-aiamap.plot()
-aiamap.draw_limb()
-aiamap.draw_grid()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax)
+aiamap.draw_limb(axes=ax)
+aiamap.draw_grid(axes=ax)
 plt.show()
 
 ##############################################################################
@@ -34,8 +35,9 @@ plt.show()
 # ``clip_interval`` to clip out pixels with extreme values. Here, we clip out
 # the darkest 1% of pixels and the brightest 0.01% of pixels.
 
-plt.figure()
-aiamap.plot(clip_interval=(1, 99.99)*u.percent)
-aiamap.draw_limb()
-aiamap.draw_grid()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+aiamap.draw_limb(axes=ax)
+aiamap.draw_grid(axes=ax)
 plt.show()

@@ -48,7 +48,7 @@ except ImportError:
 
         Notes
         -----
-        The obsgeo array as accessed on a `.WCS` object is a length 6 numpy array
+        The obsgeo array as accessed in a `.WCS` object is a length 6 numpy array
         where the first three elements are the coordinate in a cartesian
         representation and the second 3 are the coordinate in a spherical
         representation.

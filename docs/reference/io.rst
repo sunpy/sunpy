@@ -8,8 +8,6 @@ Unified File Readers
 
 .. automodapi:: sunpy.io
 
-.. automodapi:: sunpy.io.header
-
 .. _iojp2:
 .. automodapi:: sunpy.io.jp2
 
@@ -21,7 +19,6 @@ Special File Readers
 
 .. _iospecialgenx:
 .. automodapi:: sunpy.io.special.genx
-
 
 asdf (Advanced Scientific Data Format)
 --------------------------------------
@@ -90,7 +87,6 @@ Also if the custom map subclass is not registered with `sunpy.map.Map` upon load
 This approach has been chosen despite these limitations so that once a map is saved to an ASDF file it can always be loaded back into a map rather than the asdf library returning it as a Python dictionary.
 It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialised and the way meta data is handled depends solely on the contents of the ``.meta`` attribute.
 
-
 CDF (common data format)
 ------------------------
 
@@ -100,3 +96,14 @@ sunpy provides support for reading in CDF files that conform to the
 `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
 
 .. automodapi:: sunpy.io.cdf
+
+Internal API
+============
+
+These are readers and other utilities that are used internally by ``sunpy`` to read files.
+They are not intended to be used directly by users and we do not guarantee that they will
+work for all files of a given type nor will the API be stable.
+
+.. automodapi:: sunpy.io._fits
+
+.. automodapi:: sunpy.io.header

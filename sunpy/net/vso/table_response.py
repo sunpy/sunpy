@@ -74,22 +74,19 @@ class VSOQueryResponseTable(QueryResponseTable):
                     if key == "size":
                         # size is in bytes with a very high degree of precision.
                         value = (value * u.Kibyte).to(u.Mibyte).round(5)
-
                     key = key.capitalize() if key not in cls.hide_keys else key
                     row[key] = value
                 else:
                     if key == "wave":
                         # Some records in the VSO have 'kev' which astropy
-                        # doesn't recognise as a unit, so fix it.
+                        # doesn't recognize as a unit, so fix it.
                         waveunit = value['waveunit']
                         waveunit = 'keV' if waveunit == 'kev' else waveunit
-
                         row["Wavelength"] = None
                         if value['wavemin'] is not None and value['wavemax'] is not None:
                             row["Wavelength"] = u.Quantity(
                                 [float(value['wavemin']), float(value['wavemax'])],
                                 unit=waveunit)
-
                         row["Wavetype"] = value['wavetype']
                         continue
                     for subkey, subvalue in value.items():
@@ -99,7 +96,6 @@ class VSOQueryResponseTable(QueryResponseTable):
                             key_template = f"{key.capitalize()} {subkey.capitalize()}"
                         row[key_template] = subvalue
             data.append(row)
-
         data = cls(data, client=client)
         # Parse times
         for col in data.colnames:

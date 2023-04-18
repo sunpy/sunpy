@@ -580,7 +580,7 @@ def L0(time='now',
       and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`__
     * Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's
       Physical Ephemeris in The Astronomical Almanac"
-      `(link) <http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
+      `(link) <https://apps.dtic.mil/sti/pdfs/ADA482955.pdf>`__
     """
     obstime = parse_time(time)
     earth = get_earth(obstime)

@@ -98,8 +98,9 @@ array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
 outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
 
-plt.figure()
-outmap.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=outmap)
+outmap.plot(axes=ax)
 
 plt.show()
 
@@ -137,9 +138,9 @@ weights = [(w / np.nanmax(w)) ** 3 for w in weights]
 for w in weights:
     w[np.isnan(w)] = 0
 
-plt.figure()
-plt.imshow(weights[0])
-plt.colorbar()
+fig, ax = plt.subplots()
+im = ax.imshow(weights[0])
+fig.colorbar(im)
 
 plt.show()
 
@@ -169,7 +170,7 @@ outmap.plot_settings = maps[0].plot_settings
 outmap.nickname = 'AIA + EUVI/A + EUVI/B'
 
 fig = plt.figure(figsize=(10, 5))
-ax = fig.add_subplot(projection=out_wcs)
+ax = fig.add_subplot(projection=outmap)
 im = outmap.plot(axes=ax, vmin=400)
 
 lon, lat = ax.coords

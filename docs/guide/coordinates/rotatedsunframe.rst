@@ -1,5 +1,6 @@
 .. _sunpy-coordinates-rotatedsunframe:
 
+*********************************************
 Differential rotation using coordinate frames
 *********************************************
 
