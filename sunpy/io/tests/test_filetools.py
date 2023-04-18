@@ -48,7 +48,6 @@ def test_read_file_fits_multple_hdu():
 
 
 def test_read_file_fits_gzip():
-    # Test read gzipped fits file
     gzip_fits_files = ["gzip_test.fts.gz", "gzip_test.fits.gz", "gzip_test.fit.gz", "gzip_fits_test.file"]
     for filename in gzip_fits_files:
         pair = sunpy.io.read_file(get_test_filepath(filename))

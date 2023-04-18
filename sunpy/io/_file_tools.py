@@ -23,7 +23,6 @@ except ImportError:
 
 __all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 
-# File formats supported by SunPy
 _known_extensions = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
@@ -31,8 +30,8 @@ _known_extensions = {
 }
 
 
-# Define a dict which raises a custom error message if the value is None
 class Readers(dict):
+    # Define a dict which raises a custom error message if the value is None
     def __init__(self, *args):
         dict.__init__(self, *args)
 
@@ -45,7 +44,6 @@ class Readers(dict):
         return val
 
 
-# Map the readers
 _readers = Readers({
     'fits': fits,
     'jp2': _jp2,
@@ -75,26 +73,18 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    # Convert Path objects to strings as the filepath can also be a URL
     filepath = str(filepath)
-    # Use the explicitly passed filetype
     if filetype is not None:
         return _readers[filetype].read(filepath, **kwargs)
-
-    # If filetype is not apparent from the extension, attempt to detect it
     try:
         readername = _detect_filetype(filepath)
     except UnrecognizedFileTypeError:
         readername = None
-
-    # Go through the known extensions
     for extension, name in _known_extensions.items():
         if filepath.endswith(extension) or filetype in extension:
             readername = name
-
     if readername is not None:
         return _readers[readername].read(filepath, **kwargs)
-
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
@@ -119,24 +109,17 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
-    # Use the explicitly passed filetype
     if filetype is not None:
         return _readers[filetype].get_header(filepath, **kwargs)
-
-    # If filetype is not apparent from the extension, attempt to detect it
     try:
         readername = _detect_filetype(filepath)
     except UnrecognizedFileTypeError:
         readername = None
-
-    # Go through the known extensions
     for extension, name in _known_extensions.items():
         if filepath.endswith(extension) or filetype in extension:
             readername = name
-
     if readername is not None:
         return _readers[readername].get_header(filepath, **kwargs)
-
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
@@ -165,12 +148,9 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     if filetype == 'auto':
         # Get the extension without the leading dot
         filetype = pathlib.Path(fname).suffix[1:]
-
     for extension, readername in _known_extensions.items():
         if filetype in extension:
             return _readers[readername].write(fname, data, header, **kwargs)
-
-    # Nothing has matched, report an error
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
 
@@ -189,11 +169,8 @@ def _detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
-
     if detect_filetype(filepath) in _readers.keys():
         return detect_filetype(filepath)
-
-    # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
@@ -211,18 +188,16 @@ def detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
-
-    # Open file and read in first two lines
     with open(filepath, 'rb') as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
         fp.seek(0)
         first80 = fp.read(80)
-        # first 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
+        # First 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
         fp.seek(0)
         first_8bytes = fp.read(8)
-        # first 4 bytes of CDF
+        # First 4 bytes of CDF
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
 
@@ -257,7 +232,6 @@ def detect_filetype(filepath):
     if cdf_magic_number in ['cdf30001', 'cdf26002', '0000ffff']:
         return 'cdf'
 
-    # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
