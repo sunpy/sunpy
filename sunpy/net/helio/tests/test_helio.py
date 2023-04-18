@@ -15,7 +15,7 @@ from sunpy.net.helio.parser import (
 
 # Currently helio makes unverified requests - this filter should be removed when
 # https://github.com/sunpy/sunpy/issues/4401 is fixed
-pytestmark = [pytest.mark.filterwarnings('ignore:Unverified HTTPS request is being made'), pytest.mark.xfail(reason="HEC is currently down")]
+pytestmark = pytest.mark.filterwarnings('ignore:Unverified HTTPS request is being made')
 
 
 def wsdl_endpoints():
