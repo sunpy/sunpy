@@ -58,3 +58,7 @@ For more complete code examples, see the how-to guides above.
      - :meth:`TimeSeries.concatenate() <sunpy.timeseries.GenericTimeSeries.concatenate>`
    * - parse the string representation of a timestamp
      - :func:`~sunpy.time.parse_time`
+   * - calculate the Carrington rotation number at a given time
+     - :func:`~sunpy.coordinates.sun.carrington_rotation_number`
+   * - calculate the time corresponding to a given Carrington rotation
+     - :func:`~sunpy.coordinates.sun.carrington_rotation_time`
