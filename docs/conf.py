@@ -119,6 +119,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinx_design',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -238,6 +239,8 @@ hoverxref_role_types = {
     "ref": "tooltip", # Would be used by hoverxref_auto_ref if we set it to True
     "term": "tooltip",
 }
+
+# Panels options
 
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
