@@ -56,7 +56,9 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     if filetype is not None:
         return getattr(_readers[filetype], function_name)(filepath, **kwargs)
     try:
-        readername = _detect_filetype(filepath)
+        readername = detect_filetype(filepath)
+        if readername not in _readers.keys():
+            readername = None
     except UnrecognizedFileTypeError:
         readername = None
     for extension, name in _known_extensions.items():
@@ -147,26 +149,6 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
 
-def _detect_filetype(filepath):
-    """
-    Attempts to determine the type of data contained in a file and returns
-    the filetype if the available readers exist within sunpy.io
-
-    Parameters
-    ----------
-    filepath : `str`
-        Where the file is.
-
-    Returns
-    -------
-    filetype : `str`
-        The type of file.
-    """
-    if detect_filetype(filepath) in _readers.keys():
-        return detect_filetype(filepath)
-    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
-
-
 def detect_filetype(filepath):
     """
     Attempts to determine the type of file a given filepath is.
@@ -181,6 +163,9 @@ def detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
+    if "http" in filepath or "ftp" in filepath:
+        return None
+
     with open(filepath, 'rb') as fp:
         line1 = fp.readline()
         line2 = fp.readline()
