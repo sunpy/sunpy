@@ -482,7 +482,7 @@ class JSOCClient(BaseClient):
         max_splits = kwargs.get('max_splits', 1)
         if max_splits != 1:
             log.info(f"Setting max_splits to it's maximum allowed value of 1 for requests made by the JSOCClient.")
-        kwargs['max_splits'] = 1
+            max_splits = 1
 
         # Convert Responses to a list if not already
         if isinstance(requests, str) or not isiterable(requests):
@@ -532,7 +532,7 @@ class JSOCClient(BaseClient):
             # Private communication from JSOC say we should not use more than one connection.
             if max_conn != self.default_max_conn:
                 log.info(f"Setting max parallel downloads to 1 for the JSOC client.")
-            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1)
+            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1, max_splits=max_splits)
 
         urls = []
         for request in requests:
@@ -540,7 +540,7 @@ class JSOCClient(BaseClient):
                 if request.protocol == 'as-is' or request.method == 'url-tar':
                     urls.extend(list(request.urls.url))
                 else:
-                    for index, data in request.data.iterrows():
+                    for _, data in request.data.iterrows():
                         url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))
 
