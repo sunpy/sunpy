@@ -36,7 +36,7 @@ Next Steps
 * :doc:`Example gallery <generated/gallery/index>` contains short-form guides on accomplishing common tasks using sunpy.
 * :ref:`how_to_guide` contains short snippets of code for accomplishing specific tasks with sunpy. This section is most useful for answering "How do I..." questions.
 * :ref:`guide` contains in-depth explanations of key topics and concepts in sunpy. This section of the documentation is more advanced than the others and is most useful for answering "why" questions.
-* :ref:`API reference<reference>` contains a technical description of the inputs, outputs, and behavior of each component of sunpy core.
+* :ref:`API reference <reference>` contains a technical description of the inputs, outputs, and behavior of each component of sunpy core.
 
 Further Info
 ============
