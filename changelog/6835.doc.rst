@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_plotting_mplcairo_plotting.py`) to blend two maps using ``mplcairo``.

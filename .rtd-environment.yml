@@ -6,3 +6,4 @@ dependencies:
   - pip
   - openjpeg
   - graphviz!=2.42.*,!=2.43.*
+  - pycairo
