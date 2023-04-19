@@ -16,7 +16,7 @@ It provides search and download functionality, data containers for image and tim
         :link-type: ref
         :text-align: center
 
-        :material-outlined:`accessibility_new;8em`
+        :material-outlined:`accessibility_new;8em;sd-text-secondary`
 
         **New users start here!** Walkthrough on how to install sunpy and use the key features of the package.
 
@@ -25,7 +25,7 @@ It provides search and download functionality, data containers for image and tim
         :link-type: ref
         :text-align: center
 
-        :material-outlined:`menu_book;8em`
+        :material-outlined:`menu_book;8em;sd-text-secondary`
 
         Snippets of code for accomplishing specific tasks with sunpy. Most useful for answering "How do I..." questions.
 
@@ -33,7 +33,7 @@ It provides search and download functionality, data containers for image and tim
         :link: generated/gallery
         :text-align: center
 
-        :material-outlined:`palette;8em`
+        :material-outlined:`palette;8em;sd-text-secondary`
 
         Examples including plots on accomplishing common tasks using sunpy.
 
@@ -42,7 +42,7 @@ It provides search and download functionality, data containers for image and tim
         :link-type: ref
         :text-align: center
 
-        :material-outlined:`school;8em`
+        :material-outlined:`school;8em;sd-text-secondary`
 
         In-depth explanations of concepts and key topics. Most useful for answering "why" questions.
 
@@ -51,35 +51,35 @@ It provides search and download functionality, data containers for image and tim
         :link-type: ref
         :text-align: center
 
-        :material-outlined:`code;8em`
+        :material-outlined:`code;8em;sd-text-secondary`
 
         Technical description of the inputs, outputs, and behavior of each component of sunpy.
 
     .. grid-item-card:: Get Help
         :text-align: center
 
-        :material-outlined:`support;8em`
+        :material-outlined:`support;8em;sd-text-secondary`
 
         .. button-link:: https://app.element.io/#/room/#sunpy:openastronomy.org
             :shadow:
             :expand:
             :color: warning
 
-            Join the chat
+            **Join the chat**
 
         .. button-link:: https://github.com/sunpy/sunpy/issues
             :shadow:
             :expand:
             :color: warning
 
-            Report an issue
+            **Report an issue**
 
         .. button-link:: https://community.openastronomy.org/c/sunpy/5
             :shadow:
             :expand:
             :color: warning
 
-            Post on Discourse
+            **Post on Discourse**
 
 
 .. button-link:: https://community.openastronomy.org/c/sunpy/5
