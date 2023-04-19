@@ -100,8 +100,10 @@ class XRSClient(GenericClient):
         rowdict["Source"] = matchdict["Source"][0]
         if "avg1m" in i["url"]:
             rowdict["Resolution"] = "avg1m"
-        else:
+        elif "fix1s" in i["url"]:
             rowdict["Resolution"] = "flx1s"
+        else:
+            raise RuntimeError("Could not parse resolution from URL")
         if i["url"].endswith(".fits"):
             rowdict["Provider"] = matchdict["Provider"][0]
         else:
