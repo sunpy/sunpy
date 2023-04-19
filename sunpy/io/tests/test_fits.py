@@ -205,3 +205,24 @@ def test_split_multiline_comment_history_entries():
     for k, v in header_dict.items():
         for v_fits, v_dict in zip(fits_header[k.upper()], v.split("\n")):
             assert v_fits == v_dict
+
+
+def test_roundtrip_comment_history_entries(tmpdir):
+    # Construct FITS file from header with multiple history and comment cards
+    header = fits.Header.fromtextfile(get_test_filepath("solo_L1_eui-fsi304-image_20201021T145510206_V03.header"))
+    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
+    outfilename = str(tmpdir / 'roundtrip-comments-history-astropy.fits')
+    fits.writeto(outfilename, data, header)
+    # Check roundtripping
+    (dh_pair, ) = _fits.read(outfilename)
+    header_dict = dh_pair.header
+    assert header_dict["HISTORY"] == "\n".join(header["HISTORY"])
+    assert header_dict["COMMENT"] == "\n".join(header["COMMENT"])
+    outfilename = str(tmpdir / 'roundtrip-comments-history-sunpy.fits')
+    _fits.write(outfilename, data, header_dict)
+    with fits.open(outfilename) as hdul:
+        header_rt = hdul[0].header
+    for key in ("HISTORY", "COMMENT"):
+        assert len(header_rt[key]) == len(header[key])
+        for card_rt, card in zip(header_rt[key], header[key]):
+            assert card_rt == card
