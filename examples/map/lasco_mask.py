@@ -35,10 +35,10 @@ lasco_map = Map(lasco_file)
 # :ref:`sphx_glr_generated_gallery_computer_vision_techniques_finding_masking_bright_pixels.py`
 # to express the coordinates relative to the occulter center.
 
-hpc_coords = all_coordinates_from_map(lasco_map)
-occult_coord = SkyCoord(0*u.deg, 0*u.deg, frame="helioprojective")
-pixel_radii = np.sqrt((hpc_coords.Tx-occult_coord.Tx)**2 +
-                      (hpc_coords.Ty-occult_coord.Ty)**2)
+pixel_coords = all_coordinates_from_map(lasco_map)
+solar_center = SkyCoord(0*u.deg, 0*u.deg, frame=lasco_map.coordinate_frame)
+pixel_radii = np.sqrt((pixel_coords.Tx-solar_center.Tx)**2 +
+                      (pixel_coords.Ty-solar_center.Ty)**2)
 # Note that the inner mask extends just beyond 2 solar radii to mask the
 # Fresnel diffraction caused by the occulter edge.
 mask_inner = pixel_radii < lasco_map.rsun_obs*2.4
