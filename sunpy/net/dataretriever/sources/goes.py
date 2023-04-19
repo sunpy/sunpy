@@ -100,7 +100,7 @@ class XRSClient(GenericClient):
         rowdict["Source"] = matchdict["Source"][0]
         if "avg1m" in i["url"]:
             rowdict["Resolution"] = "avg1m"
-        elif "fix1s" in i["url"]:
+        elif "flx1s" or "irrad" in i["url"]:
             rowdict["Resolution"] = "flx1s"
         else:
             raise RuntimeError("Could not parse resolution from URL")
@@ -150,24 +150,29 @@ class XRSClient(GenericClient):
         # New data from NOAA. It searches for both the high cadence and 1 minute average data.
         else:
             if matchdict["End Time"] >= "2017-02-07":
-                for sat in [16, 17]:
-                    for res in matchdict["Resolution"]:
-                        metalist += self._get_metalist_fn(matchdict,
-                                                          self.baseurl_r.format(SatelliteNumber=sat, Resolution=res), self.pattern_r)
+                for sat in matchdict["SatelliteNumber"]:
+                    if int(sat) >= 16:  # here check for GOES 16 and 17
+                        for res in matchdict["Resolution"]:
+                            metalist += self._get_metalist_fn(matchdict,
+                                                              self.baseurl_r.format(SatelliteNumber=int(sat), Resolution=res), self.pattern_r)
+
             if matchdict["End Time"] <= "2020-03-04":
-                for sat in [8, 9, 10, 11, 12, 13, 14, 15]:
-                    # The 1 minute average data is at a different base URL to that of the high cadence data which is why things are done this way.
-                    for res in matchdict["Resolution"]:
-                        if res == "avg1m":
-                            filename_res = "xrsf"
-                            resolution = "avg1m"
-                            metalist += self._get_metalist_fn(matchdict,
-                                                              self.baseurl_new.format(SatelliteNumber=sat, filename_res=filename_res, resolution=resolution), self.pattern_new)
-                        else:
-                            filename_res = "gxrs"
-                            resolution = "irrad"
-                            metalist += self._get_metalist_fn(matchdict,
-                                                              self.baseurl_new.format(SatelliteNumber=sat, filename_res=filename_res, resolution=resolution), self.pattern_new)
+                for sat in matchdict["SatelliteNumber"]:
+                    if (int(sat) >= 8) & (int(sat) <= 15):  # here check for GOES 8-15
+                        # The 1 minute average data is at a different base URL to that of the high cadence data which is why things are done this way.
+                        for res in matchdict["Resolution"]:
+                            if res == "avg1m":
+                                filename_res = "xrsf"
+                                resolution = "avg1m"
+                                metalist += self._get_metalist_fn(matchdict,
+                                                                  self.baseurl_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution), self.pattern_new)
+                            elif res == "flx1s":
+                                filename_res = "gxrs"
+                                resolution = "irrad"
+                                metalist += self._get_metalist_fn(matchdict,
+                                                                  self.baseurl_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution), self.pattern_new)
+                            else:
+                                raise RuntimeError("Could not parse resolution from URL")
         return metalist
 
     @classmethod
