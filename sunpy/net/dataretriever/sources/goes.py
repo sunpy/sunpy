@@ -98,16 +98,16 @@ class XRSClient(GenericClient):
         rowdict["Physobs"] = matchdict["Physobs"][0]
         rowdict["url"] = i["url"]
         rowdict["Source"] = matchdict["Source"][0]
-        if "avg1m" in i["url"]:
-            rowdict["Resolution"] = "avg1m"
-        elif ("flx1s" or "irrad") in i["url"]:
-            rowdict["Resolution"] = "flx1s"
-        else:
-            raise RuntimeError("Could not parse resolution from URL")
-        if i["url"].endswith(".fits"):
+        if i["url"].endswith(".fits"):  # for older FITS files
             rowdict["Provider"] = matchdict["Provider"][0]
-        else:
+        else:  # only Resolution attrs for the netcdf files
             rowdict["Provider"] = matchdict["Provider"][1]
+            if "avg1m" in i["url"]:
+                rowdict["Resolution"] = "avg1m"
+            elif ("flx1s" in i["url"]) or ("irrad" in i["url"]):
+                rowdict["Resolution"] = "flx1s"
+            else:
+                raise RuntimeError("Could not parse resolution from URL")
         return rowdict
 
     def search(self, *args, **kwargs):
