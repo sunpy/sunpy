@@ -56,43 +56,35 @@ It provides search and download functionality, data containers for image and tim
         Technical description of the inputs, outputs, and behavior of each component of sunpy.
 
     .. grid-item-card:: Get Help
-        :link: whatsnew
-        :link-type: ref
         :text-align: center
 
         :material-outlined:`support;8em`
 
-        Find out how to join the chat room or post to discourse or GitHub to get help
+        .. button-link:: https://app.element.io/#/room/#sunpy:openastronomy.org
+            :shadow:
+            :expand:
+            :color: warning
 
-    .. grid-item-card:: What's New
-        :link: whatsnew
-        :link-type: ref
-        :text-align: center
+            Join the chat
 
-        :material-outlined:`wb_sunny;8em`
+        .. button-link:: https://github.com/sunpy/sunpy/issues
+            :shadow:
+            :expand:
+            :color: warning
 
-        Find out what's new in sunpy
+            Report an issue
 
-    .. grid-item-card:: Known Issues
-        :link: known_issues
-        :link-type: ref
-        :text-align: center
+        .. button-link:: https://community.openastronomy.org/c/sunpy/5
+            :shadow:
+            :expand:
+            :color: warning
 
-        :material-outlined:`wb_sunny;8em`
-
-        View a list of known issues or report new issues on our `GitHub issue tracker`_.
-
-    .. grid-item-card:: Developer's Guide
-        :link: dev_guide
-        :link-type: ref
-        :text-align: center
-
-        :material-outlined:`wb_sunny;8em`
-
-        Read the developer's guide to start contributing to the SunPy project.
+            Post on Discourse
 
 
-.. _GitHub issue tracker: https://github.com/sunpy/sunpy/issues
+.. button-link:: https://community.openastronomy.org/c/sunpy/5
+
+    Post on Discourse
 
 .. toctree::
     :maxdepth: 1
