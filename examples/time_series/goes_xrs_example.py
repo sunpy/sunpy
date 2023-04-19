@@ -46,14 +46,16 @@ result = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"))
 print(result)
 
 #############################################################
-# As we can see this now returns three results, one file for GOES
+# As we can see this now returns six results, two files for each GOES
 # 13, one for GOES 14 and one for GOES 15, which can be identified
-# by the ``SatelliteNumber`` column. However, we probably will only want
-# one of these files for our analysis, so we can query by the `sunpy.net.attrs`:
+# by the ``SatelliteNumber`` column.
+# The GOES data provided can either be high-cadence (1s/2s/3s based on GOES satellite) or avergaed over 1 minute.
+# This can be noted in the ``Resolution`` column, where the `avg1m` and `flx1s` attributes are the 1 minute average and the high-cadence data, respectively.
+# However, we probably will only want one of these files for our analysis, so we can query by the `sunpy.net.attrs`:
 # `sunpy.net.dataretriever.attrs.goes.SatelliteNumber` to specify what GOES satellite number we want
-# to use.
+# to use, and `sunpy.net.dataretriever.attrs.Resolution` for the resolution. Here we will use the high-cadence observations.
 
-result_goes15 = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"), a.goes.SatelliteNumber(15))
+result_goes15 = Fido.search(a.Time(tstart, tend), a.Instrument("XRS"), a.goes.SatelliteNumber(15), a.Resolution("flx1s"))
 print(result_goes15)
 
 #############################################################
@@ -113,9 +115,9 @@ plt.show()
 # which are now and its now available through sunpy.net.Fido.
 
 ###############################################################
-# Lets query for some recent data over two days.
+# Lets query for some data over two days.
 
-results = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00"), a.Instrument("XRS"))
+results = Fido.search(a.Time("2020-11-20 00:00", "2020-11-21 23:00"), a.Instrument("XRS"), a.Resolution("flx1s"))
 print(results)
 
 ###############################################################
