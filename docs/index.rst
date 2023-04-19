@@ -81,11 +81,6 @@ It provides search and download functionality, data containers for image and tim
 
             **Post on Discourse**
 
-
-.. button-link:: https://community.openastronomy.org/c/sunpy/5
-
-    Post on Discourse
-
 .. toctree::
     :maxdepth: 1
     :hidden:
