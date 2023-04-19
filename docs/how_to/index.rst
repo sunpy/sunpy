@@ -29,33 +29,33 @@ For more complete code examples, see the how-to guides above.
    * - create a map from a FITS file
      - :mod:`Map('file.fits') <sunpy.map>`
    * - save a map to a FITS file
-     - :meth:`Map.save() <sunpy.map.GenericMap.save>`
+     - `Map.save() <sunpy.map.GenericMap.save>`
    * - get a quicklook summary of a map
-     - :meth:`Map.quicklook() <sunpy.map.GenericMap.quicklook>`
+     - `Map.quicklook() <sunpy.map.GenericMap.quicklook>`
    * - plot a map
-     - :meth:`Map.plot() <sunpy.map.GenericMap.plot>`
+     - `Map.plot() <sunpy.map.GenericMap.plot>`
    * - access the underlying data array of a map
-     - :attr:`Map.data <sunpy.map.GenericMap.data>`
+     - `Map.data <sunpy.map.GenericMap.data>`
    * - access the metadata of a map
-     - :attr:`Map.meta <sunpy.map.GenericMap.meta>`
+     - `Map.meta <sunpy.map.GenericMap.meta>`
    * - access the observer location of a map
-     - :attr:`Map.observer_coordinate <sunpy.map.GenericMap.observer_coordinate>`
+     - `Map.observer_coordinate <sunpy.map.GenericMap.observer_coordinate>`
    * - find the pixel in a map corresponding to a world coordinate
-     - :meth:`Map.world_to_pixel <sunpy.map.GenericMap.world_to_pixel>`
+     - `Map.world_to_pixel() <sunpy.map.GenericMap.world_to_pixel>`
    * - derotate a map to remove the roll angle
-     - :meth:`Map.rotate() <sunpy.map.GenericMap.rotate>`
+     - `Map.rotate() <sunpy.map.GenericMap.rotate>`
    * - resample a map to a different resolution
-     - :meth:`Map.resample() <sunpy.map.GenericMap.resample>`
+     - `Map.resample() <sunpy.map.GenericMap.resample>`
    * - reproject a map to a different coordinate system
-     - :meth:`Map.reproject_to() <sunpy.map.GenericMap.reproject_to>`
+     - `Map.reproject_to() <sunpy.map.GenericMap.reproject_to>`
    * - plot the solar limb on top of a map
-     - :meth:`Map.draw_limb() <sunpy.map.GenericMap.draw_limb>`
+     - `Map.draw_limb() <sunpy.map.GenericMap.draw_limb>`
    * - overlay a heliographic grid on top a map
-     - :meth:`Map.draw_grid() <sunpy.map.GenericMap.draw_grid>`
+     - `Map.draw_grid() <sunpy.map.GenericMap.draw_grid>`
    * - plot a time series
-     - :meth:`TimeSeries.plot() <sunpy.timeseries.GenericTimeSeries.plot>`
+     - `TimeSeries.plot() <sunpy.timeseries.GenericTimeSeries.plot>`
    * - concatenate two time series together
-     - :meth:`TimeSeries.concatenate() <sunpy.timeseries.GenericTimeSeries.concatenate>`
+     - `TimeSeries.concatenate() <sunpy.timeseries.GenericTimeSeries.concatenate>`
    * - parse the string representation of a timestamp
      - :func:`~sunpy.time.parse_time`
    * - calculate the Carrington rotation number at a given time
