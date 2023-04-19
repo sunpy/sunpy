@@ -25,7 +25,6 @@ if parfive_version < Version("2.0.0"):
         def __init__(self, *args, **kwargs):
             headers = kwargs.pop("headers", {})
             kwargs["headers"] = {**sunpy_headers, **headers}
-
             # Works with conftest to hide the progress bar.
             progress = os.environ.get("PARFIVE_HIDE_PROGESS", None)
             if progress:
