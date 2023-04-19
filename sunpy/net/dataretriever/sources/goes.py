@@ -52,17 +52,21 @@ class XRSClient(GenericClient):
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    4 Results from the XRSClient:
+    8 Results from the XRSClient:
     Source: <8: https://umbra.nascom.nasa.gov/goes/fits
     8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
     16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
-           Start Time               End Time        Instrument ... Source Provider
-    ----------------------- ----------------------- ---------- ... ------ --------
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS ...   GOES     NOAA
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS ...   GOES     NOAA
+           Start Time               End Time        ... Provider Resolution
+    ----------------------- ----------------------- ... -------- ----------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      flx1s
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      flx1s
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      avg1m
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      avg1m
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      flx1s
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      flx1s
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      avg1m
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      avg1m
     <BLANKLINE>
     <BLANKLINE>
     """
