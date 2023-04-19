@@ -100,7 +100,7 @@ class XRSClient(GenericClient):
         rowdict["Source"] = matchdict["Source"][0]
         if "avg1m" in i["url"]:
             rowdict["Resolution"] = "avg1m"
-        elif "flx1s" or "irrad" in i["url"]:
+        elif ("flx1s" or "irrad") in i["url"]:
             rowdict["Resolution"] = "flx1s"
         else:
             raise RuntimeError("Could not parse resolution from URL")
@@ -172,7 +172,7 @@ class XRSClient(GenericClient):
                                 metalist += self._get_metalist_fn(matchdict,
                                                                   self.baseurl_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution), self.pattern_new)
                             else:
-                                raise RuntimeError("Could not parse resolution from URL")
+                                raise RuntimeError(f"{res}` is not an accepted resolution attrs for the XRSClient")
         return metalist
 
     @classmethod

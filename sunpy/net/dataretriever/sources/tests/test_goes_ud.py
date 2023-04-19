@@ -149,6 +149,25 @@ def test_new_logic(LCClient):
 
 
 @pytest.mark.remote_data
+def test_resolution_attrs(LCClient):
+    qr_high_cadence = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.flx1s)
+    assert len(qr_high_cadence) == 2
+    assert "irrad" in qr_high_cadence[0]["url"]  # GOES < 16 have irrad in filename rather than flx1s
+
+    qr_high_cadence_GOESR = LCClient.search(Time('2021/10/4 20:20', '2021/10/4 21:00'), Instrument('XRS'), a.Resolution.flx1s)
+    assert len(qr_high_cadence_GOESR) == 2
+    assert "flx1s" in qr_high_cadence_GOESR[0]["url"]  # GOES < 16 have irrad in filename rather than flx1s
+
+    qr_avg = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.avg1m)
+    assert len(qr_avg) == 2
+    assert "avg1m" in qr_avg[0]["url"]
+
+    # check is incorrect resolution attrs passed
+    with pytest.raises(RuntimeError):
+        qr_wrong_resolution = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.ctime)
+
+
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, expected_num_files",
     [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 8),
