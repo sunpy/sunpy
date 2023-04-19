@@ -1,3 +1,5 @@
+from urllib.error import URLError, HTTPError
+
 import pytest
 from parfive import Results
 
@@ -9,9 +11,16 @@ from sunpy.net import attrs as a
 from sunpy.net.vso import attrs as va
 from sunpy.net.vso.legacy_response import QueryResponse
 from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
-from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
+from sunpy.net.vso.vso import (
+    VSOClient,
+    build_client,
+    check_cgi_connection,
+    check_connection,
+    get_online_vso_url,
+)
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 class MockQRRecord:
@@ -245,6 +254,22 @@ def test_vso_hmi(client, tmpdir):
         fileids = dri.fileiditem.fileid
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
+
+
+def test_check_connection(mocker):
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=HTTPError('http://notathing.com/', 400, 'Bad Request', {}, None))
+    with pytest.warns(SunpyUserWarning, match='Connection to http://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
+        assert check_connection('http://notathing.com/') is False
+
+
+def test_check_cgi_connection(mocker):
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=HTTPError('http://notathing.com/', 400, 'Bad Request', {}, None))
+    with pytest.warns(SunpyUserWarning, match='Connection to http://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
+        assert check_cgi_connection('http://notathing.com/') is False
+
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=URLError('http://notathing.com/', 400))
+    with pytest.warns(SunpyUserWarning, match='Connection to http://notathing.com/ failed with error <urlopen error http://notathing.com/>.'):
+        assert check_cgi_connection('http://notathing.com/') is False
 
 
 def test_get_online_vso_url(mocker):

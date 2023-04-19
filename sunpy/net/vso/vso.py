@@ -55,7 +55,6 @@ class _Str(str):
     meta = None
 
 
-# ----------------------------------------
 def check_connection(url):
     try:
         return urlopen(url, timeout=15).getcode() == 200
