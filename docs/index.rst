@@ -58,7 +58,7 @@ It provides search and download functionality, data containers for image and tim
     .. grid-item-card:: Get Help
         :text-align: center
 
-        :material-outlined:`support;8em;sd-text-secondary`
+        :material-outlined:`live_help;8em;sd-text-secondary`
 
         .. button-link:: https://app.element.io/#/room/#sunpy:openastronomy.org
             :shadow:
