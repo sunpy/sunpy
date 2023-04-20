@@ -21,7 +21,11 @@ The minimum required versions of several core dependencies have been updated:
 - Python 3.9
 - astropy 5.0.1
 - numpy 1.21.0
-- parfive 2.0
+- parfive 2.0.0
+
+
+We are aware the change in the ``parfive`` minimum version is a release earlier than our dependency policy allows for.
+However, due to significant issues that ``parfive`` v2.0.0 solves and changes to remote servers, we have decided to increase it to improve the user experience when downloading files.
 
 The minimum required versions of these optional dependencies has also been updated:
 
