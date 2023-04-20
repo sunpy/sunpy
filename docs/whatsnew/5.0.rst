@@ -13,7 +13,6 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 5.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-
 Updates to minimum dependencies
 ===============================
 The minimum required versions of several core dependencies have been updated:
@@ -42,3 +41,58 @@ Deprecation of IO readers
 ``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
 
 This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
+
+1 minute GOES data now available
+================================
+Searching for GOES data now returns 1 minute averaged data in addition to the high-cadence data for GOES 13-17.
+As with all Fido clients, the results of a search will return all available data.
+For example, searching over a single day will provide multiple results for the different satellites available and the different resolution data.
+This can be seen in the Resolution column below.
+Here, the ``flx1s`` refers to the high-cadence 1s data and the ``avg1m`` refers to the averaged 1 minute sampling data.
+In the past, ``sunpy`` only provided a search over the high-cadence data.
+
+.. code-block:: python
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> res = Fido.search(a.Time("2022-02-15", "2022-02-15"),
+    ...                   a.Instrument("XRS"))  # doctest: +REMOTE_DATA
+    >>> res  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    4 Results from the XRSClient:
+    Source: <8: https://umbra.nascom.nasa.gov/goes/fits
+    8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
+    16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
+    <BLANKLINE>
+           Start Time               End Time        ... Provider Resolution
+    ----------------------- ----------------------- ... -------- ----------
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      flx1s
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      flx1s
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
+    <BLANKLINE>
+    <BLANKLINE>
+
+If you want to download just the 1 minute data, you can do so by specifying the resolution in the query by passing the ``a.Resolution`` attribute.
+If you want the 1s resolution data, you would instead pass ``a.Resolution("flx1s")`` instead.
+
+.. code-block:: python
+
+    >>> res = Fido.search(a.Time("2022-02-15", "2022-02-15"),
+    ...                   a.Instrument("XRS"), a.Resolution("avg1m"))  # doctest: +REMOTE_DATA
+    >>> res  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the XRSClient:
+    Source: <8: https://umbra.nascom.nasa.gov/goes/fits
+    8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
+    16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
+    <BLANKLINE>
+           Start Time               End Time        ... Provider Resolution
+    ----------------------- ----------------------- ... -------- ----------
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
+    <BLANKLINE>
+    <BLANKLINE>

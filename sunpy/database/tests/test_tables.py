@@ -128,7 +128,7 @@ def test_tag_hashability():
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
     # 68 entries for 8 instruments in fido_search_result
-    assert len(entries) == 68
+    assert len(entries) == 70
     # First 2 entries are from lyra
     assert entries[0] == DatabaseEntry(
         source='PROBA2', provider='ESA', physobs='irradiance',
@@ -155,7 +155,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         size=None,
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
-    # 2 entries from goes
+    # 4 entries from goes
     assert entries[60] == DatabaseEntry(
         source='GOES', provider='NOAA', physobs='irradiance',
         fileid='https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes15/'
@@ -165,7 +165,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='XRS')
     # 1 entry from noaa-indices
-    assert entries[62] == DatabaseEntry(
+    assert entries[64] == DatabaseEntry(
         source='SIDC', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
         observation_time_start=None,
@@ -173,7 +173,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Indices')
     # 1 entry from noaa-predict
-    assert entries[63] == DatabaseEntry(
+    assert entries[65] == DatabaseEntry(
         source='ISES', provider='SWPC', physobs='sunspot number',
         fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
         observation_time_start=None,
@@ -181,7 +181,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='NOAA-Predict')
     # 2 entries from norh
-    assert entries[64] == DatabaseEntry(
+    assert entries[66] == DatabaseEntry(
         source='NAOJ', provider='NRO', physobs=None,
         fileid=("ftp://solar-pub.nao.ac.jp/"
                 "pub/nsro/norh/data/tcx/2012/01/tca120101"),
@@ -190,10 +190,10 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
     # 2 entries from rhessi
-    assert 'hsi_obssumm_20120101' in entries[66].fileid
-    assert entries[66] == DatabaseEntry(
+    assert 'hsi_obssumm_20120101' in entries[68].fileid
+    assert entries[68] == DatabaseEntry(
         source="RHESSI", provider='NASA', physobs='summary_lightcurve',
-        fileid=entries[66].fileid,
+        fileid=entries[68].fileid,
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,

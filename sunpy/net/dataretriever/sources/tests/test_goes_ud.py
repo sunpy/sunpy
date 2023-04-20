@@ -32,7 +32,7 @@ def LCClient():
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
       'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-2-0.nc',
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-      'goes17/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g17_d20200804_v2-2-0.nc')])
+      'goes17/l2/data/xrsf-l2-avg1m_science/2020/08/sci_xrsf-l2-avg1m_g17_d20200804_v2-2-0.nc')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
@@ -58,11 +58,11 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [(a.Time("2009/08/30 00:10", "2009/09/02"),
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2009/08/sci_gxrs-l2-irrad_g10_d20090830_v0-0-0.nc",
-                           "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes14/gxrs-l2-irrad_science/2009/09/sci_gxrs-l2-irrad_g14_d20090902_v0-0-0.nc")])
+                           "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes14/xrsf-l2-avg1m_science/2009/09/sci_xrsf-l2-avg1m_g14_d20090902_v1-0-0.nc")])
 def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
-    assert len(urls) == 6
+    assert len(urls) == 8
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
@@ -149,10 +149,29 @@ def test_new_logic(LCClient):
 
 
 @pytest.mark.remote_data
+def test_resolution_attrs(LCClient):
+    qr_high_cadence = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.flx1s)
+    assert len(qr_high_cadence) == 2
+    assert "irrad" in qr_high_cadence[0]["url"]  # GOES < 16 have irrad in filename rather than flx1s
+
+    qr_high_cadence_GOESR = LCClient.search(Time('2021/10/4 20:20', '2021/10/4 21:00'), Instrument('XRS'), a.Resolution.flx1s)
+    assert len(qr_high_cadence_GOESR) == 2
+    assert "flx1s" in qr_high_cadence_GOESR[0]["url"]  # GOES < 16 have irrad in filename rather than flx1s
+
+    qr_avg = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.avg1m)
+    assert len(qr_avg) == 2
+    assert "avg1m" in qr_avg[0]["url"]
+
+    # check is incorrect resolution attrs passed
+    with pytest.raises(RuntimeError):
+        qr_wrong_resolution = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.ctime)
+
+
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, expected_num_files",
-    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 4),
-     (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 2)])
+    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 8),
+     (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 4)])
 def test_fido(time, instrument, expected_num_files):
     qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)
