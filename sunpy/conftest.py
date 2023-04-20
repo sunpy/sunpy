@@ -115,6 +115,16 @@ def undo_config_dir_patch():
 
 
 @pytest.fixture(scope='session', autouse=True)
+def parfive_header_test(request):
+    """
+    Add a keyword to tell parfive this is a test run.
+    """
+    os.environ["PARFIVE_SUNPY_TESTS"] = "True"
+    yield
+    del os.environ["PARFIVE_SUNPY_TESTS"]
+
+
+@pytest.fixture(scope='session', autouse=True)
 def hide_parfive_progress(request):
     """
     Set the PARFIVE_HIDE_PROGESS to hide the parfive progress bar in tests.

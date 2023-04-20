@@ -398,10 +398,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             if is_jsoc_only:
                 max_conn = 1
                 max_splits = 1
-            if parfive_version >= Version("2.0.0"):
-                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
-            else:
-                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
         elif not isinstance(downloader, parfive.Downloader):
             raise TypeError("The downloader argument must be a parfive.Downloader instance.")
 
