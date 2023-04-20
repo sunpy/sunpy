@@ -46,7 +46,12 @@ This because they are designed for internal use only, and removing it from the p
 
 1 minute GOES data now available
 ================================
-Searching for GOES data now returns 1 minute averaged data in addition.
+Searching for GOES data now returns 1 minute averaged data in addition to the high-cadence data for GOES 13-17.
+As with all Fido clients, the results of a search will return all available data.
+For example, searching over a single day will provide multplie results for the different satellites available and the
+different resolution data. This can be seen in the Resolution column below.
+Here, the `flx1s` refers to the high-cadence 1s data and the `avg1m` refers to the averaged 1 minute sampling data.
+In the past, sunpy only provided a search over the high-cadence data.
 
 .. code-block:: python
 
@@ -65,7 +70,9 @@ Searching for GOES data now returns 1 minute averaged data in addition.
     2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              17 irradiance   GOES      flx1s     NOAA
     2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              17 irradiance   GOES      avg1m     NOAA
 
-If you want to download just the 1 minute data, you can do so by specifying the resolution in the query.
+If you want to download just the 1 minute data, you can do so by specifying the resolution in the query, such by
+passing the `a.Resolution` attribute.
+If you want the 1s resolution data, you would instead pass `a.Resolution("flx1s")` instead.
 
 .. code-block:: python
 
