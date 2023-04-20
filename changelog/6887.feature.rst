@@ -1,1 +1,0 @@
-Able to download files from REST/TAP Data Providers from the VSO.
