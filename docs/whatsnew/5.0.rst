@@ -1,3 +1,5 @@
+.. doctest-skip-all
+
 .. _whatsnew-5.0:
 
 ************************
@@ -12,7 +14,6 @@ On this page, you can read about some of the big changes in this release.
     :depth: 1
 
 ``sunpy`` 5.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
-
 
 Updates to minimum dependencies
 ===============================
@@ -42,3 +43,42 @@ Deprecation of IO readers
 ``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
 
 This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
+
+1 minute GOES data now available
+================================
+Searching for GOES data now returns 1 minute averaged data in addition.
+
+.. code-block:: python
+
+    >>> res = Fido.search(a.Time("2022-02-15", "2022-02-15"),
+                a.Instrument("XRS"))
+    >>> res
+    4 Results from the XRSClient:
+    Source: <8: https://umbra.nascom.nasa.gov/goes/fits
+    8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
+    16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
+
+        Start Time               End Time        Instrument SatelliteNumber  Physobs   Source Resolution Provider
+    ----------------------- ----------------------- ---------- --------------- ---------- ------ ---------- --------
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              16 irradiance   GOES      flx1s     NOAA
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              16 irradiance   GOES      avg1m     NOAA
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              17 irradiance   GOES      flx1s     NOAA
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              17 irradiance   GOES      avg1m     NOAA
+
+If you want to download just the 1 minute data, you can do so by specifying the resolution in the query.
+
+.. code-block:: python
+
+    >>> res = Fido.search(a.Time("2022-02-15", "2022-02-15"),
+                a.Instrument("XRS"), a.Resolution("avg1m"))
+    >>> res
+    2 Results from the XRSClient:
+    4 Results from the XRSClient:
+    Source: <8: https://umbra.nascom.nasa.gov/goes/fits
+    8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
+    16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
+
+        Start Time               End Time        Instrument SatelliteNumber  Physobs   Source Resolution Provider
+    ----------------------- ----------------------- ---------- --------------- ---------- ------ ---------- --------
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              16 irradiance   GOES      avg1m     NOAA
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS              17 irradiance   GOES      avg1m     NOAA
