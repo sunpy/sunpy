@@ -86,7 +86,7 @@ def sunpy_cache(mocker, tmp_path):
         ParfiveDownloader(),
         InMemStorage(),
         tmp_path,
-        None
+        None,
     )
 
     def add(self, url, path):

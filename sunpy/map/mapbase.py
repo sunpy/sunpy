@@ -169,7 +169,7 @@ class GenericMap(NDData):
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
     """
-    _registry = dict()
+    _registry = {}
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
     # Enabling the GenericMap reflected operators is a bit subtle.  The GenericMap
@@ -243,7 +243,7 @@ class GenericMap(NDData):
         self.plot_settings = {'cmap': 'gray',
                               'norm': norm,
                               'interpolation': 'nearest',
-                              'origin': 'lower'
+                              'origin': 'lower',
                               }
         if plot_settings:
             self.plot_settings.update(plot_settings)
@@ -1153,7 +1153,7 @@ class GenericMap(NDData):
                                                         'lat': self.meta.get('crlt_obs'),
                                                         'radius': self.meta.get('dsun_obs'),
                                                         'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_carrington"}), ]
+                                                        'frame': "heliographic_carrington"}) ]
 
     @property
     def _default_observer_coordinate(self):
@@ -2203,7 +2203,7 @@ class GenericMap(NDData):
             self.observer_coordinate,
             resolution=resolution,
             rsun=self.rsun_meters,
-            **kwargs
+            **kwargs,
         )
 
     @u.quantity_input

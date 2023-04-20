@@ -65,7 +65,7 @@ class Chaincode(np.ndarray):
 
     def matchany(self, coordinates, index):
         return np.all(
-            np.allclose(self.coordinates[:, index],  np.asarray(coordinates))
+            np.allclose(self.coordinates[:, index],  np.asarray(coordinates)),
         )
 
     def boundingbox(self):

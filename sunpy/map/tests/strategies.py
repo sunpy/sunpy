@@ -15,7 +15,7 @@ def matrix_meta(draw, key):
     """
     arr = draw(arrays(
         float, (2, 2),
-        elements=st.floats(min_value=-1, max_value=1, allow_nan=False))
+        elements=st.floats(min_value=-1, max_value=1, allow_nan=False)),
     )
     # Make sure matrix isn't singular by manually computing the determinant
     assume(np.abs(arr[1, 1]*arr[0, 0] - arr[0, 1]*arr[1, 0]) > 1e-8)

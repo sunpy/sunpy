@@ -178,7 +178,7 @@ def test_make_recordset_errors(client):
     d1.update({
         'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
         'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
-        'primekey': {'T_REC': '2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI'}
+        'primekey': {'T_REC': '2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI'},
     })
 
     with pytest.raises(ValueError):
@@ -188,7 +188,7 @@ def test_make_recordset_errors(client):
         'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
         'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
         'wavelength': 604*u.AA,
-        'primekey': {'WAVELNTH': '604'}
+        'primekey': {'WAVELNTH': '604'},
     })
 
     with pytest.raises(ValueError):
@@ -199,7 +199,7 @@ def test_make_recordset_errors(client):
 def test_make_recordset(client):
     d1 = {'series': 'aia.lev1_euv_12s',
           'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
-          'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai')
+          'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
           }
     exp = 'aia.lev1_euv_12s[2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
@@ -220,7 +220,7 @@ def test_make_recordset(client):
     d1 = {'series': 'hmi.v_45s',
           'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
           'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
-          'segment': 'foo,bar'
+          'segment': 'foo,bar',
           }
     exp = 'hmi.v_45s[2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI]{foo,bar}'
     assert client._make_recordset(**d1) == exp
@@ -232,7 +232,7 @@ def test_make_recordset(client):
           'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
           'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
           'segment': ['continuum', 'magnetogram'],
-          'primekey': {'HARPNUM': '4864'}
+          'primekey': {'HARPNUM': '4864'},
           }
     exp = 'hmi.sharp_720s[4864][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI]'\
           '{continuum,magnetogram}'
@@ -296,7 +296,7 @@ def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     cutout = a.jsoc.Cutout(
         SkyCoord(-500*u.arcsec, -275*u.arcsec, frame=aia171_test_map.coordinate_frame),
         top_right=SkyCoord(150*u.arcsec, 375*u.arcsec, frame=aia171_test_map.coordinate_frame),
-        tracking=True
+        tracking=True,
     )
     q = client.search(
         a.Time(aia171_test_map.date, aia171_test_map.date + 1 * u.min),
@@ -363,10 +363,7 @@ def test_empty_response_fetch(client):
     # Could do a search like below, but to save a JSOC query in the tests
     # just test against an empty response.
     #
-    # response = client.search(
-    #     a.Time('1990-12-12T00:00:00', '1990-12-12T0:01:00'),
     #    a.jsoc.Series.hmi_b_720s
-    # )
     response = JSOCResponse()
     assert len(response) == 0
     result = client.fetch(response)

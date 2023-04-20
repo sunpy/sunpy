@@ -315,7 +315,7 @@ class MapFactory(BasicRegistrationFactory):
         as `memmap` for FITS files.
         """
         data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, **kwargs)
-        new_maps = list()
+        new_maps = []
 
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
@@ -353,7 +353,7 @@ class MapFactory(BasicRegistrationFactory):
 
     def _check_registered_widgets(self, data, meta, **kwargs):
 
-        candidate_widget_types = list()
+        candidate_widget_types = []
 
         for key in self.registry:
 

@@ -59,7 +59,7 @@ def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
 
 def test_at_least_one_map_has_mask(mapsequence_all_the_same,
                                    mapsequence_all_the_same_all_have_masks,
-                                   mapsequence_all_the_same_some_have_masks
+                                   mapsequence_all_the_same_some_have_masks,
                                    ):
     """ Test that we can detect the presence of at least one masked map."""
     assert not mapsequence_all_the_same.at_least_one_map_has_mask()

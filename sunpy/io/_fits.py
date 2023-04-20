@@ -348,8 +348,6 @@ def extract_waveunit(header):
         waveunit = parse_waveunit_comment(waveunit_comment)
     elif wavelnth_comment is not None:
         # supported formats (where $UNIT is the unit like "nm" or "Angstrom"):
-        #   "Observed wavelength ($UNIT)"
-        #   "[$UNIT] ..."
         parentheses_pattern = r'Observed wavelength \((\w+?)\)$'
         brackets_pattern = r'^\[(\w+?)\]'
         for pattern in [parentheses_pattern, brackets_pattern]:

@@ -238,7 +238,7 @@ def test_path(tmp_path):
 @skip_windows
 def test_path_read_only(tmp_path):
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/1"), a.Instrument.lyra, a.Level.two
+        a.Time("2012/1/1", "2012/1/1"), a.Instrument.lyra, a.Level.two,
     )
     # chmod doesn't seem to work correctly on the windows CI
     os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)

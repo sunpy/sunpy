@@ -46,7 +46,7 @@ two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], {'obstime': '2011/01/01T00:00:00'}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {'obstime': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec], {'representation_type': 'unitspherical'})
+    ([0 * u.deg, 0 * u.arcsec], {'representation_type': 'unitspherical'}),
 ]
 """
 These are common 3D params, kwargs are frame specific
@@ -59,7 +59,7 @@ three_D_parameters = [
      None),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)], None), (
         [SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
-        {'obstime': '2011/01/01T00:00:00'})
+        {'obstime': '2011/01/01T00:00:00'}),
 ]
 
 # ==============================================================================

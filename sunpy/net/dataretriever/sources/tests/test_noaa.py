@@ -43,7 +43,7 @@ def mock_query_object(start_date, end_date):
         'Physobs': 'sunspot number',
         'Source': 'SIDC',
         'Provider': 'SWPC',
-        'url': 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'
+        'url': 'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
     }
     results = QueryResponse([obj], client=noaa.NOAAIndicesClient())
     return results

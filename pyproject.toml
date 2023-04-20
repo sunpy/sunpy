@@ -86,7 +86,7 @@ test-requires = ["opencv_python==4.6.0.66"]
 
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 line-length = 110
 exclude=[
     ".git,",
@@ -94,8 +94,8 @@ exclude=[
     "build",
     "sunpy/extern/**",
     "sunpy/version.py",
+    "tools/**",
 ]
-
 select = [
        "E",
        "F",
@@ -108,37 +108,50 @@ select = [
        "NPY",
        "RUF",
        "PGH",
-       #"PTH",
-       #"BLE",
-       #"FBT",
-       #"B",
-       #"A",
-       #"COM",
-       #"C4",
-       #"T20",
-       #"RSE",
-       #"ERA",
-
+       "PTH",
+       "BLE",
+       "FBT",
+       "B",
+       "A",
+       "COM",
+       "C4",
+       "T20",
+       "RSE",
+       "ERA",
+]
+fixable = [
+       "E",
+       "F",
+       "W",
+       "UP",
+       "PT",
+       "RET",
+       "TID",
+       "PLE",
+       "NPY",
+       "RUF",
+       "PGH",
+       "PTH",
+       "BLE",
+       "FBT",
+       "B",
+       "A",
+       "COM",
+       "C4",
+       "T20",
+       "RSE",
+       "ERA",
 ]
 extend-ignore = [
-    # pycodestyle (E, W)
-    "E501",  # LineTooLong                             # TODO! fix
-
+    "E501", # Line length, we will get black to fix it in the future
     # pytest (PT)
     "PT001",  # Always use pytest.fixture()
     "PT004",  # Fixtures which don't return anything should have leading _
-    "PT007",  # Parametrize should be lists of tuples  # TODO! fix
-    "PT011",  # Too broad exception assert             # TODO! fix
     "PT023",  # Always use () on pytest decorators
-
-    # Return (RET)
-    # Ignore all non-autofix
-    # TODO! fix
-    "RET504",  # Unnecessary variable assignment before return statement
-    "RET505",  # Unnecessary {branch} after return statement
-    "RET506",  # Unnecessary {branch} after raise statement
-    "RET507",  # Unnecessary {branch} after continue statement
-    "RET508",  # Unnecessary {branch} after break statement
+    # General
+    "PGH004", # NOQA IS THE BEST OF ALL TIME
+    "FBT003", # Boolean positional value in function call
+    "FBT002", # Boolean default value in function definition
 ]
 
 [tool.ruff.flake8-tidy-imports]
@@ -158,6 +171,9 @@ extend-ignore = [
 "sunpy/util/exceptions.py" = ["TID251"]
 "sunpy/util/tests/test_logger.py" = ["TID251"]
 "sunpy/util/decorators.py" = ["TID251"]
+"examples/*.py" = [
+    "T201", # We need print in our examples
+]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

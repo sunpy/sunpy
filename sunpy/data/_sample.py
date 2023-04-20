@@ -115,11 +115,11 @@ def _retry_sample_data(results, new_url_base):
 def _handle_final_errors(results):
     for err in results.errors:
         file_name = err.url.split("/")[-1]
-        log.debug(f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}"
+        log.debug(f"Failed to download {_SAMPLE_FILES[file_name]} from {err.url}: {err.exception}",
                   )
         log.error(
             f"Failed to download {_SAMPLE_FILES[file_name]} from all mirrors,"
-            "the file will not be available."
+            "the file will not be available.",
         )
 
 

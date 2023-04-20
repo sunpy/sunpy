@@ -47,7 +47,7 @@ def get_observatory_groups():
     url = '/'.join([
         _CDAS_BASEURL,
         'dataviews', _DATAVIEW,
-        'observatoryGroups'
+        'observatoryGroups',
     ])
     response = requests.get(url, headers=_CDAS_HEADERS)
     obs_groups = response.json()
@@ -99,7 +99,7 @@ def get_datasets(observatory):
     url = '/'.join([
         _CDAS_BASEURL,
         'dataviews', _DATAVIEW,
-        'datasets'
+        'datasets',
     ])
     url = f'{url}?observatory={observatory}'
     response = requests.get(url, headers=_CDAS_HEADERS)
@@ -122,7 +122,7 @@ def _update_cdaweb_dataset_data():
     url = '/'.join([
         _CDAS_BASEURL,
         'dataviews', _DATAVIEW,
-        'datasets'
+        'datasets',
     ])
     # Mapping from dataset ID to description
     all_datasets = {}

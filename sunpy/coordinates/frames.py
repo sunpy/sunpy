@@ -181,7 +181,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         }
         for prop, docstring in property_docstrings.items():
             if getattr(cls, prop).__doc__ is None:
-                setattr(getattr(cls, prop), '__doc__', docstring)
+                getattr(cls, prop).__doc__ = docstring
 
 
 # TODO: Remove this after the minimum Astropy dependency includes astropy/astropy#12005
@@ -434,7 +434,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     default_differential = CartesianDifferential
 
     frame_specific_representation_info = {
-        CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)]
+        CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)],
     }
 
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
@@ -564,7 +564,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         lat, lon = rep.lat, rep.lon
 
         # Check for the use of floats with lower precision than the native Python float
-        if not set([lon.dtype.type, lat.dtype.type]).issubset([float, np.float64, np.longdouble]):
+        if not {lon.dtype.type, lat.dtype.type}.issubset([float, np.float64, np.longdouble]):
             warn_user("The Helioprojective component values appear to be lower "
                       "precision than the native Python float: "
                       f"Tx is {lon.dtype.name}, and Ty is {lat.dtype.name}. "
@@ -594,7 +594,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         # within the stack trace.
         stack_trace = traceback.format_stack()
         matching_string = 'wcsaxes.*_draw_grid'
-        bypass = any([re.search(matching_string, string) for string in stack_trace])
+        bypass = any(re.search(matching_string, string) for string in stack_trace)
         if not bypass and np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "
                       "because off-disk coordinates need an additional assumption to be mapped to "
@@ -667,7 +667,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             cls._spherical_screen = {
                 'center': center,
                 'radius': center_hgs.radius,
-                'only_off_disk': only_off_disk
+                'only_off_disk': only_off_disk,
             }
             yield
         finally:

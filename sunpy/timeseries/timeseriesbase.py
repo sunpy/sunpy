@@ -84,7 +84,7 @@ class GenericTimeSeries:
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
-    _registry = dict()
+    _registry = {}
 
     # Title to show when .peek()ing
     _peek_title = ''
@@ -293,7 +293,7 @@ class GenericTimeSeries:
         # histogram plotting methods for consistency.
         cols = ['b', 'g', 'r', 'c', 'm', 'y', 'tab:blue', 'tab:orange',
                 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray',
-                'tab:green', 'tab:olive', 'tab:cyan', 'palegreen', 'pink'
+                'tab:green', 'tab:olive', 'tab:cyan', 'palegreen', 'pink',
                 ]
         dat = self.to_dataframe()
         fig, axs = plt.subplots(
@@ -408,14 +408,14 @@ class GenericTimeSeries:
         >>> goes_lc.quicklook()  # doctest: +SKIP
         """
         with NamedTemporaryFile(
-            "w", delete=False, prefix="sunpy.timeseries.", suffix=".html"
+            "w", delete=False, prefix="sunpy.timeseries.", suffix=".html",
         ) as f:
             url = "file://" + f.name
             f.write(textwrap.dedent(f"""\
                 <html>
                     <title>Quicklook summary for {html.escape(object.__repr__(self))}</title>
                     <body>{self._repr_html_()}</body>
-                </html>""")
+                </html>"""),
                     )
         webbrowser.open_new_tab(url)
 
@@ -587,9 +587,6 @@ class GenericTimeSeries:
         # TODO: allow the extract function to pick more than one column
         # TODO: Fix this?
         # if isinstance(self, pandas.Series):
-        #    return self
-        # else:
-        #    return GenericTimeSeries(self._data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
 
         # Extract column and remove empty rows
         data = self._data[[column_name]].dropna()
@@ -667,14 +664,14 @@ class GenericTimeSeries:
         kwargs["sort"] = kwargs.pop("sort", False)
         meta = self.meta.concatenate([series.meta for series in others])
         data = pd.concat(
-            [self._data.copy(), *list(series.to_dataframe() for series in others)], **kwargs
+            [self._data.copy(), *[series.to_dataframe() for series in others]], **kwargs,
         )
 
         # Add all the new units to the dictionary.
         units = OrderedDict()
         units.update(self.units)
         units.update(
-            {k: v for unit in list(series.units for series in others) for k, v in unit.items()}
+            {k: v for unit in [series.units for series in others] for k, v in unit.items()},
         )
         units = {k: v for k, v in units.items() if k in data.columns}
 
@@ -715,7 +712,7 @@ class GenericTimeSeries:
 
         axes = self._data[columns].plot(ax=axes, **plot_args)
 
-        units = set([self.units[col] for col in columns])
+        units = {self.units[col] for col in columns}
         if len(units) == 1:
             # If units of all columns being plotted are the same, add a unit
             # label to the y-axis.

@@ -7,7 +7,7 @@ This module provides a JPEG 2000 file reader for internal use.
     because it was designed for internal use only.
 """
 import os
-from xml.etree import cElementTree as ET
+from xml.etree import ElementTree as ET
 
 import numpy as np
 

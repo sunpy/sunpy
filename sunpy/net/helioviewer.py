@@ -68,7 +68,7 @@ class HelioviewerClient:
 
         Here is a list of all of them: https://api.helioviewer.org/docs/v2/#appendix_datasources
         """
-        data_sources_dict = dict()
+        data_sources_dict = {}
         datasources = self.get_data_sources()
         for name, observ in datasources.items():
             # TRACE only has measurements and is thus nested once
@@ -143,7 +143,7 @@ class HelioviewerClient:
         params = {
             "action": "getClosestImage",
             "date": self._format_date(date),
-            "sourceId": source_id
+            "sourceId": source_id,
         }
         response = self._get_json(params)
 
@@ -376,7 +376,7 @@ class HelioviewerClient:
             "scaleX": scale_x,
             "scaleY": scale_y,
             # Returns the image which we do not want a user to change.
-            "display": True
+            "display": True,
         }
 
         # We want to enforce that all values of x1, x2, y1, y2 are not None.

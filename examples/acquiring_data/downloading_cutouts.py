@@ -15,7 +15,7 @@ from astropy.coordinates import SkyCoord
 from astropy.time import Time
 from astropy.visualization import ImageNormalize, SqrtStretch
 
-import sunpy.coordinates  # NOQA
+import sunpy.coordinates
 import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a

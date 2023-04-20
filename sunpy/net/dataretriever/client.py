@@ -131,7 +131,7 @@ class GenericClient(BaseClient):
         class uses to dispatch queries to this Client.
         """
         regattrs_dict = cls.register_values()
-        optional = {k for k in regattrs_dict.keys()} - cls.required
+        optional = set(regattrs_dict.keys()) - cls.required
         if not cls.check_attr_types_in_query(query, cls.required, optional):
             return False
         for key in regattrs_dict:

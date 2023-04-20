@@ -54,7 +54,7 @@ def mock_query_object(timerange):
             'Source': 'NAOJ',
             'Provider': 'NRO',
             'Wavelength': wave,
-            'url': create_url(start_time, wave)
+            'url': create_url(start_time, wave),
         }
         resp.append(obj)
     results = QueryResponse(resp, client=norh.NoRHClient())
@@ -64,16 +64,16 @@ def mock_query_object(timerange):
 @pytest.mark.parametrize(("timerange", "url_start", "url_end"), [
     (a.Time('2012/4/21', '2012/4/21'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
-     'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421'
+     'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
      ),
     (a.Time('2012/12/1', '2012/12/2'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121201',
-     'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121202'
+     'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121202',
      ),
     (a.Time('2012/3/7', '2012/3/14'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307',
-     'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
-     )
+     'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314',
+     ),
 ])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     with mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.search',

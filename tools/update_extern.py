@@ -8,7 +8,6 @@ from pathlib import Path
 
 SUNPY_EXTERN_DIR = Path(__file__).parent.parent / "sunpy" / "extern"
 
-# "filename": ["user", "repository", "path_to_file"]
 PACKAGES = {
     "appdirs.py": ["ActiveState", "appdirs", "appdirs.py"],
     "appdirs_license.txt": ["ActiveState", "appdirs", "LICENSE.txt"],

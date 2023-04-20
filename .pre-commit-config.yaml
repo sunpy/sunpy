@@ -1,7 +1,7 @@
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.254"
+    rev: "v0.0.262"
     hooks:
       - id: ruff
         args: ["--fix"]

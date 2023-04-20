@@ -49,7 +49,7 @@ out_header = sunpy.map.make_fitswcs_header(
     out_shape,
     origin,
     scale=[0.4, 0.4]*u.deg/u.pix,
-    projection_code="ARC"
+    projection_code="ARC",
 )
 
 ###############################################################################

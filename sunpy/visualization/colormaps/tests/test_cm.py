@@ -31,7 +31,7 @@ def test_invalid_show_cmaps():
      [ct.sot_color_table, r'Invalid \(or not supported\) SOT type.'],
      [ct.iris_sji_color_table, 'Invalid IRIS SJI waveband.'],
      [ct.stereo_hi_color_table, 'Valid HI cameras are 1 and 2'],
-     [ct.suvi_color_table, 'Invalid SUVI wavelength.']]
+     [ct.suvi_color_table, 'Invalid SUVI wavelength.']],
 )
 def test_invalid_wavelengths(f, match):
     # Check that accessing non-existent color table values raises a ValueError

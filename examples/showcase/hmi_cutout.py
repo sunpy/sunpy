@@ -57,7 +57,7 @@ norm = matplotlib.colors.SymLogNorm(50, vmin=-7.5e2, vmax=7.5e2)
 # sphinx_gallery_defer_figures
 
 ax1 = fig.add_subplot(121, projection=magnetogram_big)
-magnetogram_big.plot(axes=ax1, cmap='RdBu_r', norm=norm, annotate=False,)
+magnetogram_big.plot(axes=ax1, cmap='RdBu_r', norm=norm, annotate=False)
 magnetogram_big.draw_grid(axes=ax1, color='black', alpha=0.25, lw=0.5)
 
 ################################################################################
@@ -84,7 +84,7 @@ magnetogram_big.draw_quadrangle(left_corner, top_right=right_corner, edgecolor='
 
 magnetogram_small = magnetogram.submap(left_corner, top_right=right_corner)
 ax2 = fig.add_subplot(122, projection=magnetogram_small)
-im = magnetogram_small.plot(axes=ax2, norm=norm, cmap='RdBu_r', annotate=False,)
+im = magnetogram_small.plot(axes=ax2, norm=norm, cmap='RdBu_r', annotate=False)
 ax2.grid(alpha=0)
 
 ################################################################################
@@ -95,9 +95,9 @@ ax2.grid(alpha=0)
 lon, lat = ax2.coords[0], ax2.coords[1]
 lon.frame.set_linewidth(1)
 lat.frame.set_linewidth(1)
-lon.set_axislabel('Helioprojective Longitude',)
+lon.set_axislabel('Helioprojective Longitude')
 lon.set_ticks_position('b')
-lat.set_axislabel('Helioprojective Latitude',)
+lat.set_axislabel('Helioprojective Latitude')
 lat.set_axislabel_position('r')
 lat.set_ticks_position('r')
 lat.set_ticklabel_position('r')
@@ -111,20 +111,20 @@ lat.set_ticklabel_position('r')
 xpix, ypix = magnetogram_big.wcs.world_to_pixel(right_corner)
 con1 = ConnectionPatch(
     (0, 1), (xpix, ypix), 'axes fraction', 'data', axesA=ax2, axesB=ax1,
-    arrowstyle='-', color='black', lw=1
+    arrowstyle='-', color='black', lw=1,
 )
 xpix, ypix = magnetogram_big.wcs.world_to_pixel(
     SkyCoord(right_corner.Tx, left_corner.Ty, frame=magnetogram_big.coordinate_frame))
 con2 = ConnectionPatch(
     (0, 0), (xpix, ypix), 'axes fraction', 'data', axesA=ax2, axesB=ax1,
-    arrowstyle='-', color='black', lw=1
+    arrowstyle='-', color='black', lw=1,
 )
 ax2.add_artist(con1)
 ax2.add_artist(con2)
 
 pos = ax2.get_position().get_points()
 cax = fig.add_axes([
-    pos[0, 0], pos[1, 1]+0.01, pos[1, 0]-pos[0, 0], 0.025
+    pos[0, 0], pos[1, 1]+0.01, pos[1, 0]-pos[0, 0], 0.025,
 ])
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 

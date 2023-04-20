@@ -40,7 +40,7 @@ class SunpyLogger(AstropyLogger):
         # name.  The module.__file__ is the original source file name.
         mod_name = None
         mod_path, ext = os.path.splitext(mod_path)
-        for name, mod in list(sys.modules.items()):
+        for _name, mod in list(sys.modules.items()):
             try:
                 # Believe it or not this can fail in some cases:
                 # https://github.com/astropy/astropy/issues/2671

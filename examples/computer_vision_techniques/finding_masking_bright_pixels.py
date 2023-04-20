@@ -6,7 +6,6 @@ Finding and masking bright pixels
 How to find and overplot the location of the brightest
 pixel and then mask pixels around that region.
 """
-# sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
 import numpy as np

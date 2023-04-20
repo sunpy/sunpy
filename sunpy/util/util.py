@@ -93,7 +93,7 @@ def expand_list(inp):
     ----------
     * https://stackoverflow.com/questions/2185822/expanding-elements-in-a-list/2185971#2185971
     """
-    return [item for item in expand_list_generator(inp)]
+    return list(expand_list_generator(inp))
 
 
 def expand_list_generator(inp):

@@ -505,7 +505,6 @@ def test_hgs_hcrs_sunspice():
     #
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HAE', /au, /degrees
-    # IDL> print, coord
     #        1.0000000      -108.65371       10.642778
 
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
@@ -518,7 +517,6 @@ def test_hgs_hcrs_sunspice():
     # Transform to HAE precessed to the mean ecliptic of date instead of J2000.0
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HAE', /precess, /au, /degrees
-    # IDL> print, coord
     #        1.0000000      -108.38240       10.640314
 
     new = old.transform_to(HeliocentricMeanEcliptic(equinox='2019-06-01'))
@@ -535,7 +533,6 @@ def test_hgs_hgc_sunspice():
     #
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'Carrington', /au, /degrees
-    # IDL> print, coord
     #        1.0000000       16.688242       10.000000
 
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
@@ -558,7 +555,6 @@ def test_hgs_hcc_sunspice():
     # IDL> coord = [7d5, 8d5, 9d5]
     # IDL> convert_sunspice_coord, '2019-06-01', coord, 'HEQ', 'HGRTN'
     # Assuming Earth observation
-    # IDL> print, coord
     #        688539.32       800000.00       908797.89
 
     old = SkyCoord(CartesianRepresentation([7e5, 8e5, 9e5]*u.km),
@@ -664,7 +660,6 @@ def test_hme_hee_sunspice():
     #
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'HEE', /au, /degrees
-    # IDL> print, coord
     #        1.0000000       110.01610       10.000300
 
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricMeanEcliptic(obstime='2019-06-01'))
@@ -677,7 +672,6 @@ def test_hme_hee_sunspice():
     # Transform from HAE precessed to the mean ecliptic of date instead of J2000.0
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'HEE', /au, /degrees, /precess
-    # IDL> print, coord
     #        1.0000000       109.74535       10.000070
 
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricMeanEcliptic(obstime='2019-06-01',
@@ -712,7 +706,6 @@ def test_hee_gse_sunspice():
     #
     # IDL> coord = [0.7d, -20.d, 10.d]
     # IDL> convert_sunspice_coord, '2019-06-01', coord, 'HEE', 'GSE', /au, /degrees
-    # IDL> print, coord
     #       0.45215884       32.777377       15.594639
 
     old = SkyCoord(-20*u.deg, 10*u.deg, 0.7*u.AU,
@@ -741,7 +734,6 @@ def test_hgs_hci_sunspice():
     #
     # IDL> coord = [1.d, 120.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HCI', /au, /degrees
-    # IDL> print, coord
     #        1.0000000      -65.736793       10.000000
 
     old = SkyCoord(120*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
@@ -775,7 +767,6 @@ def test_hme_gei_sunspice():
     #
     # IDL> coord = [1.d, 120.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'GEI', /au, /degrees
-    # IDL> print, coord
     #        1.8197210       95.230617       28.830109
 
     old = SkyCoord(120*u.deg, 10*u.deg, 1*u.AU,
@@ -789,7 +780,6 @@ def test_hme_gei_sunspice():
     # Transform from HAE precessed to the mean ecliptic of date instead of J2000.0
     # IDL> coord = [1.d, 120.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'GEI', /au, /degrees, /precess
-    # IDL> print, coord
     #        1.8217103       95.079030       28.827750
 
     old = SkyCoord(120*u.deg, 10*u.deg, 1*u.AU,

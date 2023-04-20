@@ -445,7 +445,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         return new_timeseries
 
     def _get_matching_widget(self, **kwargs):
-        candidate_widget_types = list()
+        candidate_widget_types = []
 
         for key in self.registry:
             # Call the registered validation function for each registered class

@@ -50,7 +50,7 @@ Base = declarative_base()
 # required for the many-to-many relation on tags:entries
 association_table = Table('association', Base.metadata,
                           Column('tag_name', String, ForeignKey('tags.name')),
-                          Column('entry_id', Integer, ForeignKey('data.id'))
+                          Column('entry_id', Integer, ForeignKey('data.id')),
                           )
 
 
@@ -657,7 +657,6 @@ def entries_from_file(file, default_waveunit=None,
         entry = DatabaseEntry(path=filename)
         for key, value in header.items():
             # Yes, it is possible to have an empty key in a FITS file.
-            # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
             if key == '':
                 value = str(value)
@@ -751,7 +750,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     2
 
     """
-    for dirpath, dirnames, filenames in os.walk(fitsdir):
+    for dirpath, _dirnames, filenames in os.walk(fitsdir):
         filename_paths = (os.path.join(dirpath, name) for name in sorted(filenames))
         for path in fnmatch.filter(filename_paths, pattern):
             try:
@@ -763,7 +762,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             if filetype == 'fits':
                 for entry in entries_from_file(
                         path, default_waveunit,
-                        time_string_parse_format=time_string_parse_format
+                        time_string_parse_format=time_string_parse_format,
                 ):
                     yield entry, path
         if not recursive:

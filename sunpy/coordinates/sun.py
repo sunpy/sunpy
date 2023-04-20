@@ -43,7 +43,7 @@ __all__ = [
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
     "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
     "print_params",
-    "B0", "L0", "P", "earth_distance", "orientation"
+    "B0", "L0", "P", "earth_distance", "orientation",
 ]
 
 

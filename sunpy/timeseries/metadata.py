@@ -324,7 +324,7 @@ class TimeSeriesMetaData:
         metadata = []
 
         # Append to metadata only key:value pairs with requested keys
-        for i, entry in enumerate(full_metadata.metadata):
+        for _i, entry in enumerate(full_metadata.metadata):
             metadict = MetaDict()
             for curkey, value in entry[2].items():
                 for key in keys:
@@ -492,7 +492,7 @@ class TimeSeriesMetaData:
         """
         all_vals = set()
         for metatuple in self.metadata:
-            for key, value in metatuple[2].items():
+            for _key, value in metatuple[2].items():
                 all_vals.add(str(value))
         all_vals = list(all_vals)
         all_vals.sort()

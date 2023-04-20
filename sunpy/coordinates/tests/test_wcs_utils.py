@@ -28,7 +28,7 @@ from sunpy.coordinates.wcs_utils import (
                                           [['HPLT', 'HPLN'], Helioprojective],
                                           [['HGLN', 'HGLT'], HeliographicStonyhurst],
                                           [['CRLN', 'CRLT'], HeliographicCarrington],
-                                          [['SOLX', 'SOLY'], Heliocentric]
+                                          [['SOLX', 'SOLY'], Heliocentric],
                                           ])
 def test_wcs_frame_mapping(ctype, frame):
     wcs = WCS(naxis=2)

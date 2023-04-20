@@ -12,11 +12,11 @@ from sunpy.util.sysinfo import (
 def test_find_dependencies():
     missing, installed = find_dependencies()
     assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive"])
+    assert sorted(installed.keys()) == sorted(["astropy", "numpy", "packaging", "parfive"])
 
     missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
     assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(['asdf',
+    assert sorted(installed.keys()) == sorted(['asdf',
                                                      'asdf-astropy',
                                                      'astropy',
                                                      'numpy',
@@ -44,7 +44,7 @@ def test_find_dependencies():
 
 def test_missing_dependencies_by_extra():
     missing = missing_dependencies_by_extra()
-    assert sorted(list(missing.keys())) == sorted(['all',
+    assert sorted(missing.keys()) == sorted(['all',
                                                    'asdf',
                                                    'required',
                                                    'dask',
@@ -59,7 +59,7 @@ def test_missing_dependencies_by_extra():
                                                    'timeseries',
                                                    'visualization'])
     missing = missing_dependencies_by_extra(exclude_extras=["all"])
-    assert sorted(list(missing.keys())) == sorted(['asdf', 'required', 'dask', 'database', 'dev', 'docs',
+    assert sorted(missing.keys()) == sorted(['asdf', 'required', 'dask', 'database', 'dev', 'docs',
                                                    'image', 'jpeg2000', 'map', 'net', 'tests', 'timeseries',
                                                    'visualization'])
 

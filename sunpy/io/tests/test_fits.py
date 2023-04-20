@@ -26,7 +26,7 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
     [(TEST_RHESSI_IMAGE, None, 4),
      (TEST_RHESSI_IMAGE, 1, 1),
      (TEST_RHESSI_IMAGE, [1, 2], 2),
-     (TEST_RHESSI_IMAGE, range(0, 2), 2)]
+     (TEST_RHESSI_IMAGE, range(0, 2), 2)],
 )
 def test_read_hdus(fname, hdus, length):
     pairs = _fits.read(fname, hdus=hdus)
@@ -42,7 +42,7 @@ def test_read_hdus(fname, hdus, length):
      (MQ_IMAGE, 'angstrom'),
      (NA_IMAGE, 'm'),
      (TEST_SWAP_HEADER, 'angstrom'),
-     (SVSM_IMAGE, 'nm')]
+     (SVSM_IMAGE, 'nm')],
 )
 def test_extract_waveunit(fname, waveunit):
     if Path(fname).suffix == '.header':
@@ -92,7 +92,7 @@ def test_simple_write_compressed_difftypeinst(tmpdir):
 @pytest.mark.parametrize(
     ('kwargs', 'should_fail'),
     [({}, False),
-     ({'quantize_level': -32}, True)]
+     ({'quantize_level': -32}, True)],
 )
 def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
     data, header = _fits.read(TEST_AIA_IMAGE)[0]

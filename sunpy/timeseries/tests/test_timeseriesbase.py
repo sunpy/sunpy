@@ -47,7 +47,7 @@ def truncation_slice_test_ts_1(eve_test_ts):
 def truncation_slice_test_ts_2(eve_test_ts):
     # Truncate by keeping only the second quarter.
     return eve_test_ts.truncate(
-        int(len(eve_test_ts.to_dataframe()) / 4), int(len(eve_test_ts.to_dataframe()) / 2), None
+        int(len(eve_test_ts.to_dataframe()) / 4), int(len(eve_test_ts.to_dataframe()) / 2), None,
     )
 
 
@@ -55,7 +55,7 @@ def truncation_slice_test_ts_2(eve_test_ts):
 def truncation_slice_test_ts_3(eve_test_ts):
     # Truncate by keeping only the third quarter.
     return eve_test_ts.truncate(
-        int(len(eve_test_ts.to_dataframe()) / 2), int(3 * len(eve_test_ts.to_dataframe()) / 4), None
+        int(len(eve_test_ts.to_dataframe()) / 2), int(3 * len(eve_test_ts.to_dataframe()) / 4), None,
     )
 
 
@@ -63,7 +63,7 @@ def truncation_slice_test_ts_3(eve_test_ts):
 def truncation_slice_test_ts_4(eve_test_ts):
     # Truncate by keeping only the fourth quarter.
     return eve_test_ts.truncate(
-        int(3 * len(eve_test_ts.to_dataframe()) / 4), len(eve_test_ts.to_dataframe()), None
+        int(3 * len(eve_test_ts.to_dataframe()) / 4), len(eve_test_ts.to_dataframe()), None,
     )
 
 
@@ -267,14 +267,13 @@ def concatenated_slices_test_list(truncation_slice_test_ts_1, truncation_slice_t
                                   truncation_slice_test_ts_3, truncation_slice_test_ts_4):
     # Concatenate the slices in a list to make a TS similar to the original
     return truncation_slice_test_ts_1.concatenate(
-        [truncation_slice_test_ts_2, truncation_slice_test_ts_3, truncation_slice_test_ts_4]
+        [truncation_slice_test_ts_2, truncation_slice_test_ts_3, truncation_slice_test_ts_4],
     )
 
 
 def test_concatenation_of_slices_ts(eve_test_ts, concatenated_slices_test_ts):
     # Test resulting DataFrame is similar to the original
     assert_frame_equal(concatenated_slices_test_ts.to_dataframe(), eve_test_ts.to_dataframe())
-    # Otherwise: concatenated_ts.data.equals(eve_test_ts)
     # Compare timeranges from before and after match for both metadata and TS
     assert eve_test_ts.meta.time_range == concatenated_slices_test_ts.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_ts.time_range
@@ -288,7 +287,6 @@ def test_concatenation_of_slices_ts(eve_test_ts, concatenated_slices_test_ts):
 def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list):
     # Test resulting DataFrame is similar to the original
     assert_frame_equal(concatenated_slices_test_list.to_dataframe(), eve_test_ts.to_dataframe())
-    # Otherwise: concatenated_ts.data.equals(eve_test_ts)
     # Compare timeranges from before and after match for both metadata and TS
     assert eve_test_ts.meta.time_range == concatenated_slices_test_list.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_list.time_range
@@ -313,8 +311,6 @@ def test_concat_list(eve_test_ts, fermi_gbm_test_ts):
 def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
                                             different_data_concat):
     # TODO: test the metadata is as expected using the below. (note ATM this fails if the order is changed)
-    # assert different_data_concat.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
-    # assert different_data_concat.meta.metadata[1] == eve_test_ts.meta.metadata[0]
     value = True
     for key in list(different_data_concat.meta.metadata[0][2]
                     .keys()):

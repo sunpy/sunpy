@@ -40,7 +40,7 @@ class MockQRResponse:
 
     def __init__(self, records=None, errors=None):
 
-        self.provideritem = list()
+        self.provideritem = []
 
         if records is not None:
             self.provideritem = [MockObject(record=MockObject(recorditem=list(records)))]
@@ -243,8 +243,8 @@ def test_vso_hmi(client, tmpdir):
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
         fileids = dri.fileiditem.fileid
-        series = list(map(lambda x: x.split(':')[0], fileids))
-        assert all([s == series[0] for s in series])
+        series = [x.split(':')[0] for x in fileids]
+        assert all(s == series[0] for s in series)
 
 
 def test_get_online_vso_url(mocker):
@@ -290,8 +290,8 @@ def test_incorrect_content_disposition(client):
 @pytest.mark.parametrize(('query', 'handle'), [
     ((a.Time("2011/01/01", "2011/01/02"),), True),
     ((a.Physobs.los_magnetic_field,), False),
-    ((a.Time("2011/01/01", "2011/01/02"), a.Provider("SDAC"),), True),
-    ((a.jsoc.Series("wibble"), a.Physobs.los_magnetic_field,), False),
+    ((a.Time("2011/01/01", "2011/01/02"), a.Provider("SDAC")), True),
+    ((a.jsoc.Series("wibble"), a.Physobs.los_magnetic_field), False),
 ])
 def test_can_handle_query(query, handle):
     assert VSOClient._can_handle_query(*query) is handle

@@ -149,7 +149,7 @@ def test_time_xor():
     assert a == attr.AttrOr([
         core_attrs.Time((2010, 1, 1), (2010, 1, 1, 1)),
         core_attrs.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
-        core_attrs.Time((2010, 1, 1, 5), (2010, 1, 2))
+        core_attrs.Time((2010, 1, 1, 5), (2010, 1, 2)),
     ])
 
 

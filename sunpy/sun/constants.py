@@ -13,7 +13,7 @@ __all__ = [
     'volume', 'surface_area', 'average_density', 'equatorial_surface_gravity',
     'effective_temperature', 'luminosity', 'mass_conversion_rate', 'escape_velocity', 'sfu',
     'average_angular_size', 'sidereal_rotation_rate', 'first_carrington_rotation',
-    'mean_synodic_period'
+    'mean_synodic_period',
 ]
 
 constants = _con.physical_constants
@@ -89,7 +89,7 @@ def print_all():
     for key, this_constant in constants.items():
         data_rows.append([
             key, this_constant.name, this_constant.value, this_constant.uncertainty,
-            str(this_constant.unit), this_constant.reference
+            str(this_constant.unit), this_constant.reference,
         ])
 
     t = Table(rows=data_rows, names=('key', 'name', 'value', 'uncertainty', 'unit', 'Reference'))

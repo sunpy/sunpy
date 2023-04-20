@@ -35,13 +35,13 @@ from collections import defaultdict
 
 EVENTS = [
     'AR', 'CME', 'CD', 'CH', 'CW', 'FI', 'FE', 'FA', 'FL', 'LP', 'OS', 'SS',
-    'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
+    'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO',
 ]
 
 # For some reason, the event type is "ce" but all its attributes start with
 # "CME". This dict is here to consider this.
 NAMES = defaultdict(lambda: None, {
-    'CME': 'CE'
+    'CME': 'CE',
 })
 # These are just groups for attributes that are not _ListAttrs themselves.
 OTHER = ['Area', 'BoundBox', 'Bound', 'OBS', 'Skel', 'FRM', 'Event', 'Outflow']
@@ -233,7 +233,7 @@ fields = {
     'WavelMaxPowerUncert': '_StringParamAttrWrapper',
     'WavelMaxRange': '_StringParamAttrWrapper',
     'WavelMinRange': '_StringParamAttrWrapper',
-    'WavelUnit': '_StringParamAttrWrapper'
+    'WavelUnit': '_StringParamAttrWrapper',
 }
 
 
@@ -242,7 +242,7 @@ def mk_gen(rest):
     ret = ''
     ret += '@_makeinstance\nclass Misc:\n'
     for elem in sorted(rest):
-        ret += '    {} = {}({!r})\n'.format(elem, fields[elem], elem)
+        ret += f'    {elem} = {fields[elem]}({elem!r})\n'
     return ret
 
 
@@ -251,7 +251,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
         name = key
 
     keys = sorted(
-        [(k, v) for k, v in fields.items() if k.startswith(key)]
+        [(k, v) for k, v in fields.items() if k.startswith(key)],
     )
     used.update({k for k, v in keys})
     if not keys:
@@ -264,7 +264,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
     else:
         ret += '@_makeinstance\nclass %s:\n' % name
     for k, v in keys:
-        ret += '    {} = {}({!r})\n'.format(k[len(key) + pad:], v, k)
+        ret += f'    {k[len(key) + pad:]} = {v}({k!r})\n'
     if init:
         ret += '''\n    def __init__(self):
         super().__init__(%r)''' % name.lower()

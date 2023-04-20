@@ -21,18 +21,18 @@ __email__ = "keith.hughitt@nasa.gov"
 
 # Valid keyword arguments for each plotting method
 ACCEPTED_IMSHOW_KWARGS = get_keywords(
-    [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]
+    [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__],
 ) | get_set_methods(AxesImage)
 
 ACCEPTED_PCOLORMESH_KWARGS = (get_keywords(
-    [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__]
+    [GenericMap.plot, plt.Axes.pcolormesh, QuadMesh.__init__, Collection.__init__],
 ) | get_set_methods(QuadMesh)) - {
     'color', 'ec', 'edgecolor', 'facecolor', 'linestyle', 'linestyles',
-    'linewidth', 'linewidths', 'ls', 'lw'
+    'linewidth', 'linewidths', 'ls', 'lw',
 }
 
 ACCEPTED_CONTOUR_KWARGS = get_keywords(
-    [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
+    [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args],
 )
 
 
@@ -339,11 +339,11 @@ class CompositeMap:
                         'heliographic_longitude']
         if index is None:
             for i, amap in enumerate(self._maps):
-                if all([hasattr(amap, k) for k in needed_attrs]):
+                if all(hasattr(amap, k) for k in needed_attrs):
                     index = i
                     break
 
-        index_check = all([hasattr(self._maps[index], k) for k in needed_attrs])
+        index_check = all(hasattr(self._maps[index], k) for k in needed_attrs)
         if not index_check or index is None:
             raise ValueError("Specified index does not have all"
                              " the required attributes to draw grid.")
@@ -354,7 +354,7 @@ class CompositeMap:
     @add_common_docstring(
         ACCEPTED_IMSHOW_KWARGS=sorted(ACCEPTED_IMSHOW_KWARGS),
         ACCEPTED_PCOLORMESH_KWARGS=sorted(ACCEPTED_PCOLORMESH_KWARGS),
-        ACCEPTED_CONTOUR_KWARGS=sorted(ACCEPTED_CONTOUR_KWARGS)
+        ACCEPTED_CONTOUR_KWARGS=sorted(ACCEPTED_CONTOUR_KWARGS),
     )
     def plot(self, axes=None, annotate=True,
              title="SunPy Composite Plot", **matplot_args):

@@ -87,7 +87,7 @@ class XRSTimeSeries(GenericTimeSeries):
         data = self.to_dataframe()
         for channel in columns:
             axes.plot_date(
-                data.index, data[channel], "-", label=plot_settings[channel][1], color=plot_settings[channel][0], lw=2, **kwargs
+                data.index, data[channel], "-", label=plot_settings[channel][1], color=plot_settings[channel][0], lw=2, **kwargs,
             )
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
@@ -261,7 +261,7 @@ class XRSTimeSeries(GenericTimeSeries):
             warn_user(
                 f"There is one leap second timestamp present in: {Path(filepath).name}, "
                 "This timestamp has been rounded to `:59.999` to allow its conversion into a Python datetime. "
-                f"The leap second timestamp was: {times.isot[idx]}"
+                f"The leap second timestamp was: {times.isot[idx]}",
             )
             times[idx] = Time(times[idx].isot.tolist()[0][0][:17] + "59.999").unix
             times = times.datetime
@@ -272,7 +272,7 @@ class XRSTimeSeries(GenericTimeSeries):
                 ("xrsb", u.W/u.m**2),
                 ("xrsa_quality", u.dimensionless_unscaled),
                 ("xrsb_quality", u.dimensionless_unscaled),
-            ]
+            ],
         )
         # Adds primary detector info for GOES-R satellites
         if detector_info:

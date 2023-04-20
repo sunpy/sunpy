@@ -92,7 +92,6 @@ def test_override_file(manager, storage, downloader, data_function, tmpdir):
     # TODO: this combined with the check above fails on windows
     # with manager.override_file('test_file', f'{folder}/another_file'):
     #     # Inside the file is replaced
-    #     data_function(override_file_tester)
 
     # check the function works with hash provided
     with manager.override_file('test_file', f'file://{folder}/another_file', MOCK_HASH):
@@ -123,7 +122,7 @@ def test_wrong_hash_error(manager, storage):
     storage._store.append({
         'file_path': '/tmp/test_file',
         'file_hash': 'aa',
-        'url': 'url1'
+        'url': 'url1',
     })
 
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
@@ -203,7 +202,7 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
         assert len(storage._store) == 1
 
         assert Path(
-            module_patched_manager._file_cache['test_file']['fake_module.']
+            module_patched_manager._file_cache['test_file']['fake_module.'],
         ).name == 'fake_module.new_file'
 
         # Storage still contains original test_file
@@ -217,7 +216,7 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
 
     # new_file entry in manager._file_cache is replaced with the original test_file
     assert Path(
-        module_patched_manager._file_cache['test_file']['fake_module.']
+        module_patched_manager._file_cache['test_file']['fake_module.'],
     ).name == 'fake_module.test_file'
 
     # Storage still contains original test_file

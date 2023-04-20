@@ -10,7 +10,7 @@ from setuptools import Extension
 def get_extensions():
 
     if get_compiler() == 'msvc' or os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION", None):
-        return list()
+        return []
     else:
         cfg = defaultdict(list)
         cfg['include_dirs'].append(numpy.get_include())

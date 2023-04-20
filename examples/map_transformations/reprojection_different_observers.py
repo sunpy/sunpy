@@ -11,7 +11,6 @@ different observers.  We use data from these two instruments:
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
-# sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
 
@@ -73,7 +72,7 @@ out_header = sunpy.map.make_fitswcs_header(
     scale=u.Quantity(map_aia.scale),
     instrument="EUVI",
     observatory="AIA Observer",
-    wavelength=map_euvi.wavelength
+    wavelength=map_euvi.wavelength,
 )
 
 ######################################################################
@@ -129,7 +128,7 @@ mars_header = sunpy.map.make_fitswcs_header(
     scale=u.Quantity(map_aia.scale),
     rotation_matrix=map_aia.rotation_matrix,
     instrument="AIA",
-    wavelength=map_aia.wavelength
+    wavelength=map_aia.wavelength,
 )
 
 ######################################################################

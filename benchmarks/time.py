@@ -15,4 +15,4 @@ def mem_parse_time():
 
 
 def peakmem_parse_time():
-    t = parse_time('1995-12-31 23:59:60')
+    parse_time('1995-12-31 23:59:60')

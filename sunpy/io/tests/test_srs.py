@@ -30,7 +30,7 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
 @pytest.mark.filterwarnings('ignore:dropping mask in Quantity column')
 @pytest.mark.parametrize(
     ('path', 'number_of_rows'),
-    [(get_test_filepath(elem['file']), elem['rows']) for elem in filenames]
+    [(get_test_filepath(elem['file']), elem['rows']) for elem in filenames],
 )
 def test_number_of_rows(path, number_of_rows):
     table = srs.read_srs(path)

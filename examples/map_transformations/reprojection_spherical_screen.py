@@ -11,7 +11,6 @@ features in the image are unlikely to actually lie on this spherical screen.
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6
 or higher installed.
 """
-# sphinx_gallery_thumbnail_number = 4
 
 import matplotlib.pyplot as plt
 
@@ -56,7 +55,7 @@ out_header = sunpy.map.make_fitswcs_header(
     scale=u.Quantity(aia_map.scale),
     rotation_matrix=aia_map.rotation_matrix,
     instrument=aia_map.instrument,
-    wavelength=aia_map.wavelength
+    wavelength=aia_map.wavelength,
 )
 
 ######################################################################

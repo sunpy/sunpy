@@ -286,7 +286,7 @@ def test_extract_along_coord(aia171_test_map):
     pix_diag = np.array([(i, i) for i in range(nmax)])
     intensity_diag = u.Quantity(
         [aia171_test_map.data[i[0], i[1]] for i in pix_diag],
-        aia171_test_map.unit
+        aia171_test_map.unit,
     )
     line_discrete_pix = aia171_test_map.world_to_pixel(line_discrete)
     assert np.allclose(pix_diag[:, 0], line_discrete_pix.x.value)
@@ -310,7 +310,7 @@ def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
             _ = extract_along_coord(aia171_test_map, point)
 
 
-@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+@pytest.mark.parametrize(('x', 'y', 'sampled_x', 'sampled_y'),
                          [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
                           ([1, 5], [1, 2], [1, 2, 3, 3, 4, 5], [1, 1, 1, 2, 2, 2]),
                           ([1, 5], [1, 3], [1, 2, 2, 3, 4, 4, 5], [1, 1, 2, 2, 2, 3, 3]),
@@ -328,7 +328,7 @@ def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
         assert np.allclose(sampled_pixels[1], syy)
 
 
-@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+@pytest.mark.parametrize(('x', 'y', 'sampled_x', 'sampled_y'),
                          [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
                           ([1, 5], [1, 2], [1, 2, 3, 4, 5], [1, 1, 1, 2, 2]),
                           ([1, 5], [1, 3], [1, 2, 3, 4, 5], [1, 1, 2, 2, 3]),

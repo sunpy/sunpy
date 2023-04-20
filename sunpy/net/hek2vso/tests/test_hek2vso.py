@@ -1,5 +1,4 @@
 # Author: Michael Malocha
-# e-mail: mmalocha13@gmail.com
 # Version: June 11th, 2013
 #
 
@@ -77,10 +76,10 @@ def test_vso_attribute_parse(hek_client):
 
     # Checking Wavelength
     assert vso_query[3].min == hek_query[0]["obs_meanwavel"] * u.Unit(
-        hek_query[0]["obs_wavelunit"]
+        hek_query[0]["obs_wavelunit"],
     )
     assert vso_query[3].max == hek_query[0]["obs_meanwavel"] * u.Unit(
-        hek_query[0]["obs_wavelunit"]
+        hek_query[0]["obs_wavelunit"],
     )
     assert vso_query[3].unit == u.Unit("Angstrom")
 
@@ -116,7 +115,7 @@ def test_full_query(h2v_client, hek_client):
     h2v_q_1 = h2v.full_query(
         (a.Time(startTime, "2011/08/09 07:35"),
          a.hek.EventType(eventType),
-         a.hek.FL.PeakFlux > 1000)
+         a.hek.FL.PeakFlux > 1000),
     )
 
     assert h2v.num_of_records > 1
@@ -143,7 +142,7 @@ def test_full_query(h2v_client, hek_client):
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
     h2v.full_query(
-        (a.Time(startTime, endTime), a.hek.EventType(eventType), a.hek.FL.PeakFlux > 1000)
+        (a.Time(startTime, endTime), a.hek.EventType(eventType), a.hek.FL.PeakFlux > 1000),
     )
 
     assert h2v.num_of_records != 0

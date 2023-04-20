@@ -119,7 +119,7 @@ class CDAWEBClient(BaseClient):
             _CDAS_BASEURL,
             'dataviews', _DATAVIEW,
             'datasets', dataset,
-            'orig_data', f'{start},{end}'
+            'orig_data', f'{start},{end}',
         ])
         response = requests.get(url, headers=_CDAS_HEADERS)
         return response.json()

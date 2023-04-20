@@ -19,7 +19,7 @@ from sunpy.util.decorators import add_common_docstring
 __all__ = [
     'find_time', 'parse_time', 'is_time',
     'is_time_in_given_format', 'is_time_equal',
-    'julian_centuries'
+    'julian_centuries',
 ]
 
 # Mapping of time format codes to regular expressions.

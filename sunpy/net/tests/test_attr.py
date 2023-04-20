@@ -92,7 +92,7 @@ def test_empty():
 
 
 @pytest.mark.parametrize("different_type", [
-    int, str, float, list, set, tuple, dict, object
+    int, str, float, list, set, tuple, dict, object,
 ])
 def test_empty_type(different_type):
     attr_ = attr.Attr()
@@ -249,7 +249,6 @@ def test_or_nesting():
 
 
 def test_attr_metamagic(AIA, HMI):
-    # {cls: cls.register_values()}
     attr.Attr.update_values({GenericClient: {Instrument: [('AIA', 'This is AIA, it takes data')]}})
     # .name is the attribute name return
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower()]
@@ -361,7 +360,7 @@ def test_asterisk_attrs(ALL):
 
 
 @pytest.mark.parametrize("wrong_name", [
-    ("not star",), ("*whoops",)
+    ("not star",), ("*whoops",),
 ])
 def test_single_pair_argument_attrs(wrong_name):
     # This checks that other single string entries fail.

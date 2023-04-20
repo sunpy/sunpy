@@ -112,7 +112,7 @@ class QueryResponse(BaseQueryResponse):
             else:
                 record_items['Wavelength'].append(None)
         # If we have no wavelengths for the whole list, drop the col
-        if all([a is None for a in record_items['Wavelength']]):
+        if all(a is None for a in record_items['Wavelength']):
             record_items.pop('Wavelength')
             keywords.remove('Wavelength')
         else:

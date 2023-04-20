@@ -38,10 +38,10 @@ def test_MockObject_attr(mocked_mockobject):
     assert hasattr(mocked_mockobject, 'records') is True
     assert hasattr(mocked_mockobject, 'cost') is False
 
-    assert getattr(mocked_mockobject, 'records') == 12
+    assert mocked_mockobject.records == 12
 
     with pytest.raises(AttributeError):
-        getattr(mocked_mockobject, 'jobs')
+        mocked_mockobject.jobs
 
 
 def test_MockObject_get(mocked_mockobject):

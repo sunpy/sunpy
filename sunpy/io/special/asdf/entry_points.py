@@ -48,5 +48,5 @@ def get_extensions():
                                    # Register that this is a replacement for
                                    # the old extension so old files still work.
                                    # without throwing a warning.
-                                   legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"])
+                                   legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"]),
     ]

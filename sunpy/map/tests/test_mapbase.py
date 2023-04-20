@@ -170,7 +170,7 @@ date_begend = date_dict['DATE-BEG'] + (date_dict['DATE-END'] - date_dict['DATE-B
                           [['DATE-BEG', 'DATE-END'], date_begend],
                           [['DATE-BEG'], date_dict['DATE-BEG']],
                           [['DATE-END'], date_dict['DATE-END']],
-                          [[], 'now']
+                          [[], 'now'],
                           ))
 def test_date(generic_map, keys, expected_date):
     # Remove pre-existing date keys
@@ -401,7 +401,7 @@ def test_crota_scale():
         'CUNIT2': 'arcsec',
         'CTYPE1': 'HPLN-TAN',
         'CTYPE2': 'HPLT-TAN',
-        'DATE-OBS': '2020-01-01 00:00:00'
+        'DATE-OBS': '2020-01-01 00:00:00',
     }
 
     header.update({'CROTA2': 0, 'CDELT1': 1, 'CDELT2': 2})
@@ -567,8 +567,8 @@ pixel_corners = [
 @pytest.mark.parametrize(("rect", "submap_out"), pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
-    for r in [dict(bottom_left=rect[0], top_right=rect[1]),
-              dict(bottom_left=rect[1], top_right=rect[0])]:
+    for r in [{"bottom_left": rect[0], "top_right": rect[1]},
+              {"bottom_left": rect[1], "top_right": rect[0]}]:
         submap = simple_map.submap(**r)
         np.testing.assert_equal(submap.data, submap_out)
 
@@ -583,9 +583,9 @@ def test_submap_world(simple_map, rect, submap_out):
     corner2 = simple_map.pixel_to_world(*rect[1])
     corners = simple_map.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
                                         u.Quantity([rect[0][1], rect[1][1]]))
-    for r in [dict(bottom_left=corner1, top_right=corner2),
-              dict(bottom_left=corner2, top_right=corner1),
-              dict(bottom_left=corners, ),
+    for r in [{"bottom_left": corner1, "top_right": corner2},
+              {"bottom_left": corner2, "top_right": corner1},
+              {"bottom_left": corners },
               ]:
         submap = simple_map.submap(**r)
         np.testing.assert_equal(submap.data, submap_out)
@@ -1065,7 +1065,7 @@ def test_rotate_assumed_obstime():
 def test_as_mpl_axes_aia171(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)
-    assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
+    assert all(ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype))
 
 
 def test_validate_meta(generic_map):
@@ -1090,7 +1090,7 @@ def test_validate_meta(generic_map):
             'obsrvtry': 'Foo',
             'detector': 'bar',
             'wavelnth': 10,
-            'waveunit': 'ANGSTROM'
+            'waveunit': 'ANGSTROM',
         }
         sunpy.map.Map((generic_map.data, bad_header))
 
@@ -1281,11 +1281,11 @@ def test_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords
 
     inputs = (
-        ((bl_coord,), dict(top_right=tr_coord)),
-        ((bl_coord,), dict(width=width_deg, height=height_deg)),
+        ((bl_coord,), {"top_right": tr_coord}),
+        ((bl_coord,), {"width": width_deg, "height": height_deg}),
         ((bl_tr_coord,), {}),
-        ((bl_pix,), dict(top_right=tr_pix)),
-        ((bl_pix,), dict(width=width_pix, height=height_pix)),
+        ((bl_pix,), {"top_right": tr_pix}),
+        ((bl_pix,), {"width": width_pix, "height": height_pix}),
         ((bl_tr_coord.frame,), {}),
     )
 
@@ -1425,9 +1425,9 @@ def test_meta_modifications(aia171_test_map):
     # Check that rotate doesn't modify the original metadata
     aiamap_rot = aiamap.rotate(30 * u.deg)
     assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
-    assert set(aiamap_rot.meta.added_items.keys()) == set(['pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
-    assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
-    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+    assert set(aiamap_rot.meta.added_items.keys()) == {'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'}
+    assert set(aiamap_rot.meta.removed_items.keys()) == {'crota2'}
+    assert set(aiamap_rot.meta.modified_items) == {'cdelt1', 'crpix1', 'crpix2', 'crval1'}
 
 
 def test_no_wcs_observer_info(heliographic_test_map):

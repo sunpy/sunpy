@@ -75,7 +75,7 @@ class SUVIMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings["cmap"] = self._get_cmap_name()
         self.plot_settings["norm"] = ImageNormalize(
-            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
+            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False,
         )
 
     @property
@@ -94,5 +94,5 @@ class SUVIMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
         return str(header.get("instrume", "")).startswith(
-            "GOES-R Series Solar Ultraviolet Imager"
+            "GOES-R Series Solar Ultraviolet Imager",
         )

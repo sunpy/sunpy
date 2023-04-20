@@ -76,5 +76,3 @@ map_hmi.plot(axes=ax1, autoalign=True, alpha=0.5)
 ax1.set_title('HMI overlaid on AIA')
 
 plt.show()
-
-# sphinx_gallery_thumbnail_number = 2

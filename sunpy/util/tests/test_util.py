@@ -50,7 +50,7 @@ def test_expand_list():
 
 
 def test_expand_list_generator():
-    lst = ['a', 'b', [], (['c', 'd']), tuple(), ['e']]
+    lst = ['a', 'b', [], (['c', 'd']), (), ['e']]
     assert list(util.expand_list_generator(lst)) == ['a', 'b', 'c', 'd', 'e']
 
 

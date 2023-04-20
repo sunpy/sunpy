@@ -16,7 +16,7 @@ __all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
 LINK_TIMEOUT = 10
 REG_LINKS = [
     'http://registry.helio-vo.eu/helio_registry/viewResourceEntry_body.jsp?XML=true&IVORN=ivo://helio-vo.eu/',
-    'https://helio.ukssdc.ac.uk/helio_registry/viewResourceEntry_body.jsp?XML=true&IVORN=ivo://helio-vo.eu/'
+    'https://helio.ukssdc.ac.uk/helio_registry/viewResourceEntry_body.jsp?XML=true&IVORN=ivo://helio-vo.eu/',
 ]
 
 

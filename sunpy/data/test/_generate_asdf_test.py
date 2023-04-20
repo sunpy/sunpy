@@ -19,5 +19,4 @@ if __name__ == "__main__":
     test_map = rootdir / "aia_171_level1.fits"
     obj = sunpy.map.Map(test_map)
     obj = obj.resample((2, 2)*u.pix)
-    # obj = obj.shift(10*u.arcsec, 0*u.arcsec)
     generate_asdf_tree(obj, "aiamap_genericmap_1.0.0.asdf")

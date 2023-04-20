@@ -6,7 +6,7 @@ class SunpyFrameConverter(FrameConverter):
         # Sort the tags in reverse alphabetical order and pick the first (i.e.
         # the one with the highest version). This assumes that all the tags for
         # this converter are named the same other than the version number.
-        tags = list(sorted(tags, reverse=True))
+        tags = sorted(tags, reverse=True)
         return tags[0]
 
 
@@ -21,34 +21,34 @@ class HeliographicCarringtonConverter(SunpyFrameConverter):
 SUNPY_FRAME_CONVERTERS = [
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-*",
-        "sunpy.coordinates.frames.HeliographicStonyhurst"
+        "sunpy.coordinates.frames.HeliographicStonyhurst",
     ),
     HeliographicCarringtonConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-*",
-        "sunpy.coordinates.frames.HeliographicCarrington"
+        "sunpy.coordinates.frames.HeliographicCarrington",
     ),
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/helioprojective-*",
-        "sunpy.coordinates.frames.Helioprojective"
+        "sunpy.coordinates.frames.Helioprojective",
     ),
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-*",
-        "sunpy.coordinates.frames.HeliocentricInertial"
+        "sunpy.coordinates.frames.HeliocentricInertial",
     ),
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/heliocentricearthecliptic-*",
-        "sunpy.coordinates.frames.HeliocentricEarthEcliptic"
+        "sunpy.coordinates.frames.HeliocentricEarthEcliptic",
     ),
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/heliocentric-*",
-        "sunpy.coordinates.frames.Heliocentric"
+        "sunpy.coordinates.frames.Heliocentric",
     ),
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarecliptic-*",
-        "sunpy.coordinates.frames.GeocentricSolarEcliptic"
+        "sunpy.coordinates.frames.GeocentricSolarEcliptic",
     ),
     SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-*",
-        "sunpy.coordinates.frames.GeocentricEarthEquatorial"
+        "sunpy.coordinates.frames.GeocentricEarthEquatorial",
     ),
 ]

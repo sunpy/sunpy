@@ -229,7 +229,6 @@ def test_B0_sunspice():
     # IDL> load_sunspice_gen
     # IDL> cspice_str2et, '2013-01-01', et
     # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT', 'Earth', spoint, trgepc, srfvec
-    # IDL> print, spclat * cspice_dpr()
     #       -3.0347784
     jpl_values = {'2013-01-01': -3.0347784,
                   '2013-02-01': -6.0319658,
@@ -310,7 +309,6 @@ def test_L0_sunspice():
     # IDL> cspice_str2et, '2013-01-01', et
     # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT+S', 'Earth', spoint1, trgepc1, srfvec1
     # IDL> cspice_reclat, spoint1, spcrad1, spclon1, spclat1
-    # IDL> print, spclon1 * cspice_dpr()
     #       -33.025998
     values1 = {'2013-01-01': -33.025998,
                '2013-02-01': -81.226108,
@@ -334,7 +332,6 @@ def test_L0_sunspice():
     #
     # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT', 'Earth', spoint2, trgepc2, srfvec2
     # IDL> cspice_reclat, spoint2, spcrad2, spclon2, spclat2
-    # IDL> print, spclon2 * cspice_dpr()
     #       -33.020271
     values2 = {'2013-01-01': -33.020271,
                '2013-02-01': -81.220344,
@@ -358,7 +355,6 @@ def test_L0_sunspice():
     #
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2013-01-01', coord, 'HEQ', 'Carrington', /au, /degrees
-    # IDL> print, coord
     #        1.0000000       326.89956       10.000000
     values3 = {'2013-01-01': 326.89956,
                '2013-02-01': 278.69932,
@@ -475,7 +471,7 @@ def test_carrington_rotation_starttime(crot, julian_days):
 
 @pytest.mark.parametrize(("crot", "longitude", "crot_fractional"),
                          [(2000, 360, 2000.0),
-                          (2000.0, 270, 2000.25)
+                          (2000.0, 270, 2000.25),
                           ])
 def test_carrington_rotation_time_longitude(crot, longitude, crot_fractional):
     assert sun.carrington_rotation_time(crot*u.one, longitude*u.deg) == \
@@ -487,7 +483,7 @@ def test_carrington_rotation_time_longitude(crot, longitude, crot_fractional):
                              (np.array([2000, 2000]), np.array(
                                  [180, 90]), np.array([2000.5, 2000.75])),
                              (2000, np.array([180, 90]), np.array([2000.5, 2000.75])),
-                             (np.array([2000, 2000]), 180, np.array([2000.5, 2000.5]))
+                             (np.array([2000, 2000]), 180, np.array([2000.5, 2000.5])),
                          ])
 def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fractional):
     assert all(sun.carrington_rotation_time(crot*u.one, longitude*u.deg) ==

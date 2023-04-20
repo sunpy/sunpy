@@ -5,7 +5,6 @@ Histograming map data
 
 How to inspect the histogram of the data of a map.
 """
-# sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,10 +42,10 @@ fig, ax = plt.subplots()
 # row in the array as a different dataset to histogram.
 ax.hist(aia_smap.data.ravel(), bins=bins, label='Histogram', histtype='step')
 ax.set_xlabel('Intensity')
-ax.axvline(aia_smap.min(), label='Data min={:.2f}'.format(aia_smap.min()), color='black')
-ax.axvline(aia_smap.max(), label='Data max={:.2f}'.format(aia_smap.max()), color='black')
+ax.axvline(aia_smap.min(), label=f'Data min={aia_smap.min():.2f}', color='black')
+ax.axvline(aia_smap.max(), label=f'Data max={aia_smap.max():.2f}', color='black')
 ax.axvline(aia_smap.data.mean(),
-           label='mean={:.2f}'.format(aia_smap.data.mean()), color='green')
+           label=f'mean={aia_smap.data.mean():.2f}', color='green')
 one_sigma = np.array([aia_smap.data.mean() - aia_smap.data.std(),
                       aia_smap.data.mean() + aia_smap.data.std()])
 ax.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',

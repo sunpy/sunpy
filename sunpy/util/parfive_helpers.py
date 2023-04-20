@@ -14,7 +14,7 @@ __all__ = ["Downloader", "Results"]
 parfive_version = Version(parfive.__version__)
 sunpy_headers = {
     "User-Agent": f"sunpy/{sunpy.__version__} parfive/{parfive.__version__} "
-    f"aiohttp/{aiohttp.__version__} python/{sys.version[:5]}"
+    f"aiohttp/{aiohttp.__version__} python/{sys.version[:5]}",
 }
 
 

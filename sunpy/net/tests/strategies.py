@@ -128,7 +128,7 @@ def srs_time(draw, time=Times(
 def range_time(min_date, max_date=Time.now()):
     time = Times(
         min_value=parse_time(min_date).datetime,
-        max_value=parse_time(max_date).datetime
+        max_value=parse_time(max_date).datetime,
     )
 
     return time_attr(time=time)

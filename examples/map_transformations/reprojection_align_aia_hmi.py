@@ -81,5 +81,3 @@ out_hmi.plot(axes=ax1, alpha=0.5)
 plt.title('HMI overlaid on AIA')
 
 plt.show()
-
-# sphinx_gallery_thumbnail_number = 2

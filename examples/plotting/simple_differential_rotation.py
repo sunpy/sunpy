@@ -9,10 +9,9 @@ the rotation rate near the equator (rotation period of approximately 25 days).
 This is possible because the Sun is not a solid body. Though it is still poorly
 understood, it is fairly well measured and must be taken into account
 when comparing observations of features on the Sun over time.
-A good review can be found in Beck 1999 Solar Physics 191, 47–70.
+A good review can be found in Beck 1999 Solar Physics 191, 47-70.
 This example illustrates solar differential rotation.
 """
-# sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -37,7 +36,7 @@ rotation_period = [360 * u.deg / this_rate for this_rate in rotation_rate]
 plt.figure()
 plt.plot(np.sin(latitudes), [this_period.value for this_period in rotation_period])
 plt.ylim(38, 24)
-plt.ylabel('Rotation Period [{}]'.format(rotation_period[0].unit))
+plt.ylabel(f'Rotation Period [{rotation_period[0].unit}]')
 plt.xlabel('Sin(Latitude)')
 plt.title('Solar Differential Rotation Rate')
 
@@ -65,7 +64,7 @@ future_date = aia_map.date + dt
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
-ax.set_title('The effect of {} days of differential rotation'.format(dt.to(u.day).value))
+ax.set_title(f'The effect of {dt.to(u.day).value} days of differential rotation')
 aia_map.draw_grid(axes=ax)
 
 for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):

@@ -5,7 +5,6 @@ Plotting a difference image
 
 This example shows how to compute and plot a difference image.
 """
-# sphinx_gallery_thumbnail_number = 3
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 
@@ -66,7 +65,7 @@ plt.show()
 m_seq_base = sunpy.map.Map([m - m_seq[0].quantity for m in m_seq[1:]], sequence=True)
 m_seq_running = sunpy.map.Map(
     [m - prev_m.quantity for m, prev_m in zip(m_seq[1:], m_seq[:-1])],
-    sequence=True
+    sequence=True,
 )
 
 ###########################################################################

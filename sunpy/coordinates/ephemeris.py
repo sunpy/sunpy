@@ -300,7 +300,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         id_type = 'majorbody'
 
     if isinstance(time, dict):
-        if set(time.keys()) != set(['start', 'stop', 'step']):
+        if set(time.keys()) != {'start', 'stop', 'step'}:
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
         epochs = time
         jpl_fmt = '%Y-%m-%d %H:%M:%S'

@@ -89,7 +89,7 @@ class MapSequence:
         return len(self.maps)
 
     def __repr__(self):
-        names = set([m.__class__.__name__ for m in self.maps])
+        names = {m.__class__.__name__ for m in self.maps}
         return (object.__repr__(self) + "\n" +
                 f'MapSequence of {len(self.maps)} elements, with maps from {", ".join(names)}')
 

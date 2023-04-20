@@ -24,7 +24,7 @@ missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
 if missing_requirements:
     print(
         f"The {' '.join(missing_requirements.keys())} package(s) could not be found and "
-        "is needed to build the documentation, please install the 'docs' requirements."
+        "is needed to build the documentation, please install the 'docs' requirements.",
     )
     sys.exit(1)
 
@@ -42,7 +42,7 @@ from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
-copyright = '{}, {}'.format(datetime.datetime.now().year, author)
+copyright = f'{datetime.datetime.now().year}, {author}'
 
 
 # Register remote data option with doctest
@@ -93,7 +93,7 @@ ogp_custom_meta_tags = [
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
-suppress_warnings = ['app.add_directive', ]
+suppress_warnings = ['app.add_directive' ]
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -125,7 +125,6 @@ extensions = [
 automodapi_toctreedirnm = "generated/api"
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -248,7 +247,6 @@ from sunpy_sphinx_theme.conf import *  # NOQA
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
 
 # Render inheritance diagrams in SVG
 graphviz_output_format = "svg"
@@ -259,7 +257,7 @@ graphviz_dot_args = [
     '-Efontsize=10',
     '-Efontname=Helvetica Neue, Helvetica, Arial, sans-serif',
     '-Gfontsize=10',
-    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif'
+    '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif',
 ]
 
 # -- Sphinx Gallery ------------------------------------------------------------
@@ -281,7 +279,7 @@ sphinx_gallery_conf = {
         '../examples/saving_and_loading_data',
         '../examples/computer_vision_techniques',
         '../examples/showcase',
-        '../examples/developer_tools'
+        '../examples/developer_tools',
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
@@ -338,7 +336,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
-with open('./reference/sunpy_stability.yaml', 'r') as estability:
+with open('./reference/sunpy_stability.yaml') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
@@ -358,7 +356,7 @@ def rstjinja(app, docname, source):
     if docname in files_to_render:
         print(f"Jinja rendering {docname}")
         rendered = app.builder.templates.render_string(
-            source[0], app.config.html_context
+            source[0], app.config.html_context,
         )
         source[0] = rendered
 

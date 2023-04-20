@@ -294,7 +294,7 @@ def deprecate_positional_args_since(since, keyword_only=False):
         sig = signature(f)
         kwonly_args = []
         all_args = []
-        keyword_only = keyword_only or tuple()
+        keyword_only = keyword_only or ()
 
         for name, param in sig.parameters.items():
             if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
@@ -306,7 +306,7 @@ def deprecate_positional_args_since(since, keyword_only=False):
         def inner_f(*args, **kwargs):
             extra_args = len(args) - len(all_args)
             if extra_args > 0:
-                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:]):
+                for name, _arg in zip(kwonly_args[:extra_args], args[-extra_args:]):
                     if name in keyword_only:
                         raise TypeError(f"{name} must be specified as a keyword argument.")
 
@@ -318,7 +318,7 @@ def deprecate_positional_args_since(since, keyword_only=False):
                 warn_deprecated(f"Pass {', '.join(args_msg)} as keyword args. "
                                 f"From version {last_supported_version} "
                                 "passing these as positional arguments will result in an error.")
-            kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
+            kwargs.update(dict(zip(sig.parameters, args)))
             return f(**kwargs)
         return inner_f
     return deprecate_positional_args

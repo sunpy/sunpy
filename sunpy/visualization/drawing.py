@@ -223,7 +223,6 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
         is_visible = np.ones_like(coord.spherical.distance, bool, subok=False)
 
     # Identify discontinuities. Uses the same approach as
-    # astropy.visualization.wcsaxes.grid_paths.get_lon_lat_path()
     step = np.sqrt((vertices[1:, 0] - vertices[:-1, 0]) ** 2 +
                    (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
     continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])

@@ -330,7 +330,7 @@ class CommandManager:
         try:
             last_undo_command = self.undo_commands.pop()
         except IndexError:
-            raise EmptyCommandStackError()
+            raise EmptyCommandStackError
         return last_undo_command
 
     def push_redo_command(self, command):
@@ -346,7 +346,7 @@ class CommandManager:
         try:
             last_redo_command = self.redo_commands.pop()
         except IndexError:
-            raise EmptyCommandStackError()
+            raise EmptyCommandStackError
         return last_redo_command
 
     def do(self, command):

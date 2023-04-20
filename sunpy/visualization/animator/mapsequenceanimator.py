@@ -80,7 +80,6 @@ class MapSequenceAnimator(BaseFuncAnimator):
         # Having this line in means the plot will resize for non-homogenous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.
-        # im.set_extent(self.mapsequence[i].xrange + self.mapsequence[i].yrange)
         if self.annotate:
             self._annotate_plot(i)
 

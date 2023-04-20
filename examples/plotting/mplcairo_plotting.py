@@ -100,5 +100,3 @@ operator_t.SCREEN.patch_artist(im131)
 
 ax.set_title('mplcairo composite using screen blending')
 plt.show()
-
-# sphinx_gallery_thumbnail_number = 2

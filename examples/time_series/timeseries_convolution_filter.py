@@ -28,7 +28,7 @@ goes_lc = TimeSeries(GOES_XRS_TIMESERIES).truncate('2011/06/07 06:10', '2011/06/
 
 goes_lc = goes_lc.add_column(
     'xrsa_smoothed',
-    convolve(goes_lc.quantity('xrsa'), kernel=Box1DKernel(50))
+    convolve(goes_lc.quantity('xrsa'), kernel=Box1DKernel(50)),
 )
 
 ###############################################################################

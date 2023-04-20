@@ -166,7 +166,7 @@ class HEKRow(Row):
     def vso_time(self):
         return core_attrs.Time(
             self['event_starttime'],
-            self['event_endtime']
+            self['event_endtime'],
         )
 
     @property
@@ -188,7 +188,7 @@ class HEKRow(Row):
         params = {
             "cmd": "export-voevent",
             "cosec": 1,
-            "ivorn": self['kb_archivid']
+            "ivorn": self['kb_archivid'],
         }
         url = base_url + urllib.parse.urlencode(params)
 

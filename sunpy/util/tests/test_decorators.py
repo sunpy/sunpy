@@ -29,7 +29,7 @@ def test_removal_version_not_since_lts():
          'The foo function will be deprecated in version 2.0.'),
         ('2.0', False, SunpyDeprecationWarning,
          'Custom deprecation message', 'Custom deprecation message'),
-    ]
+    ],
 )
 def test_deprecated_warning_message(since, pending, warning, message, warning_message):
     @deprecated(since, pending=pending, message=message)

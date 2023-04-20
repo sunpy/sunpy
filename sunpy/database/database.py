@@ -28,7 +28,7 @@ from sunpy.net.vso import VSOClient
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
     'liedtke.simon@googlemail.com',
-    'rajul09@gmail.com'
+    'rajul09@gmail.com',
 ]
 
 
@@ -629,7 +629,7 @@ class Database:
         # If any of the DatabaseEntry-s lack the sorting attribute, the
         # sorting key should fall back to 'id', otherwise it fails with
         # TypeError on py3
-        if any([getattr(entry, sortby) is None for entry in db_entries]):
+        if any(getattr(entry, sortby) is None for entry in db_entries):
             sortby = 'id'
 
         return sorted(db_entries, key=operator.attrgetter(sortby))
@@ -958,7 +958,7 @@ class Database:
         entries = tables.entries_from_dir(
             path, recursive, pattern, self.default_waveunit,
             time_string_parse_format=time_string_parse_format)
-        for database_entry, filepath in entries:
+        for database_entry, _filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)

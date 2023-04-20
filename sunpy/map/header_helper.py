@@ -381,7 +381,7 @@ _map_meta_keywords = {
     'CD2_1':
     'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.',
     'CD2_2':
-    'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.'
+    'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.',
 }
 
 
@@ -452,7 +452,7 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
         # See Section 5.5, Thompson 2006
         scale = [
             360 / int(shape[1]),
-            (180 / np.pi) / (int(shape[0]) / 2)
+            (180 / np.pi) / (int(shape[0]) / 2),
         ] * u.deg / u.pix
 
     header = make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code)

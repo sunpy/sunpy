@@ -90,7 +90,7 @@ def create_aia_wave_dict():
         193*u.angstrom: (c1, c0, c2),
         211*u.angstrom: (c1, c0, c3),
         304*u.angstrom: (r0, g0, b0),
-        335*u.angstrom: (c2, c0, c1)
+        335*u.angstrom: (c2, c0, c1),
     }
     return aia_wave_dict
 
@@ -173,7 +173,7 @@ def sxt_color_table(sxt_filter):
     try:
         r, g, b = {
             'al': (sxt_gold_r, sxt_gold_g, sxt_gold_b),
-            'wh': (grayscale, grayscale, grayscale)
+            'wh': (grayscale, grayscale, grayscale),
         }[sxt_filter]
     except KeyError:
         raise ValueError("Invalid SXT filter type number. Valid values are "
@@ -283,7 +283,7 @@ def iris_sji_color_table(measurement, aialike=False):
         '5000': (c1, c1, c0),
         'FUV': (rr, gg, bb),
         'NUV': (c1, c3, c2),
-        'SJI_NUV': (c0, c0, c0)
+        'SJI_NUV': (c0, c0, c0),
     })
 
     try:
@@ -357,7 +357,7 @@ def suvi_color_table(wavelength: u.angstrom):
     except KeyError:
         raise ValueError(
             "Invalid SUVI wavelength. Valid values are "
-            "94, 131, 171, 195, 284, 304."
+            "94, 131, 171, 195, 284, 304.",
         )
     return _cmap_from_rgb(r, g, b, f'GOES-R SUVI {str(wavelength):s}')
 
@@ -376,5 +376,5 @@ def euvi_color_table(wavelength: u.angstrom):
     except OSError:
         raise ValueError(
             "Invalid EUVI wavelength. Valid values are "
-            "171, 195, 284, 304."
+            "171, 195, 284, 304.",
         )

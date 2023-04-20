@@ -274,7 +274,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             "Parsing SDO/EVE level 0CS average files is deprecated, and will be removed in "
             "sunpy 6.0. Parsing this data is untested, and we cannot find a file to test it with. "
             "If you know where level 0CS 'averages' files can be found, please get in touch at "
-            "https://community.openastronomy.org/c/sunpy/5."
+            "https://community.openastronomy.org/c/sunpy/5.",
         )
         return "", read_csv(filepath, sep=",", index_col=0, parse_dates=True)
 

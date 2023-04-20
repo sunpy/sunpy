@@ -56,7 +56,7 @@ for num, lng, lat in zip(numbers, lngs.value, lats.value):
                 backgroundcolor=transparent_white,
                 color='red',
                 fontweight='bold',
-                arrowprops=dict(facecolor=transparent_white, width=1, headwidth=10),
+                arrowprops={'facecolor': transparent_white, 'width': 1, 'headwidth': 10},
                 horizontalalignment='right', verticalalignment='top')
     lat_text += 10
 

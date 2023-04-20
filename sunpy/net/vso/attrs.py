@@ -37,7 +37,7 @@ class Field(_attr.ValueAttr):
 
     def __init__(self, fielditem):
         _attr.ValueAttr.__init__(self, {
-            ('field', 'fielditem'): fielditem
+            ('field', 'fielditem'): fielditem,
         })
 
 
@@ -197,8 +197,8 @@ def _create(wlk, root, api):
 # attrs member.
 _walker.add_converter(Extent)(
     lambda x: _attr.ValueAttr(
-        {('extent', k): v for k, v in vars(x).items()}
-    )
+        {('extent', k): v for k, v in vars(x).items()},
+    ),
 )
 
 
@@ -208,12 +208,12 @@ _walker.add_converter(_attrs.Time)(
         ('time', 'end'): x.end.strftime(_TIMEFORMAT),
         ('time', 'near'): (
             x.near.strftime(_TIMEFORMAT) if x.near is not None else None),
-    })
+    }),
 )
 
 
 _walker.add_converter(_attr.SimpleAttr)(
-    lambda x: _attr.ValueAttr({(x.__class__.__name__.lower(), ): x.value})
+    lambda x: _attr.ValueAttr({(x.__class__.__name__.lower(), ): x.value}),
 )
 
 
@@ -222,5 +222,5 @@ _walker.add_converter(_attrs.Wavelength)(
         ('wave', 'wavemin'): x.min.value,
         ('wave', 'wavemax'): x.max.value,
         ('wave', 'waveunit'): x.unit.name,
-    })
+    }),
 )

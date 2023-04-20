@@ -69,8 +69,6 @@ def parse_observing_summary_hdulist(hdulist):
     reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0],
                                    format='utime')
     time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
-    # label_unit = fits[5].data.field('DIM1_UNIT')[0]
-    # labels = fits[5].data.field('DIM1_IDS')
     labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
               '800 - 7000 keV', '7000 - 20000 keV']

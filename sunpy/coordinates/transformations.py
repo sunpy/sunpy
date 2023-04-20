@@ -280,7 +280,6 @@ def _observers_are_equal(obs_1, obs_2):
     if obs_1 is obs_2:
         return True
 
-    # obs_1 != obs_2
     if obs_1 is None:
         raise ConvertError("The source observer is set to None, but the transformation requires "
                            "the source observer to be specified, as the destination observer "
@@ -430,9 +429,6 @@ def _matrix_hcc_to_hpc():
     # Returns the transformation matrix that permutes/swaps axes from HCC to HPC
 
     # HPC spherical coordinates are a left-handed frame with these equivalent Cartesian axes:
-    #   HPC_X = -HCC_Z
-    #   HPC_Y = HCC_X
-    #   HPC_Z = HCC_Y
     # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
     return np.array([[0, 0, -1],
                      [1, 0, 0],
@@ -500,9 +496,6 @@ def _rotation_matrix_hcc_to_hgs(longitude, latitude):
     # Returns the rotation matrix from HCC to HGS based on the observer longitude and latitude
 
     # Permute the axes of HCC to match HGS Cartesian equivalent
-    #   HGS_X = HCC_Z
-    #   HGS_Y = HCC_X
-    #   HGS_Z = HCC_Y
     axes_matrix = np.array([[0, 0, 1],
                             [1, 0, 0],
                             [0, 1, 0]])

@@ -60,7 +60,7 @@ def make_table(header, section_lines):
                     'LL': np.dtype('i8'),
                     'NN': np.dtype('i8'),
                     'MagType': np.dtype('S4'),
-                    'Lat': np.dtype('i8')
+                    'Lat': np.dtype('i8'),
                 }
                 for c in t1.itercols():
                     # Put data types of columns in empty table to correct types,

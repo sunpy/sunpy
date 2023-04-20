@@ -11,7 +11,7 @@ import sunpy.coordinates.frames as frames
 from sunpy.tests.helpers import asdf_entry_points
 from .helpers import roundtrip_object
 
-sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
+sunpy_frames = [getattr(frames, name) for name in frames.__all__]
 # Don't test the two base frames
 sunpy_frames = [frame for frame in sunpy_frames if 'base' not in frame.name]
 

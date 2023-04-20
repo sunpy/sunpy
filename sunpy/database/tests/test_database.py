@@ -67,7 +67,7 @@ def fido_search_result():
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*units.GHz)) |
-        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve"))
+        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve")),
     )
 
 
@@ -598,7 +598,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
     search_result = Fido.search(
         net_attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
         net_attrs.jsoc.Series('hmi.m_45s'),
-        net_attrs.jsoc.Notify("sunpy@sunpy.org")
+        net_attrs.jsoc.Notify("sunpy@sunpy.org"),
     )
     with pytest.raises(ValueError):
         database.add_from_fido_search_result(search_result)
@@ -970,12 +970,12 @@ def test_fetch_separate_filenames():
 
     download_query = [
         net_attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-        net_attrs.Instrument('AIA')
+        net_attrs.Instrument('AIA'),
     ]
 
     tmp_test_dir = os.path.join(
         sunpy.config.get('downloads', 'download_dir'),
-        'tmp_test_dir/'
+        'tmp_test_dir/',
     )
 
     if not os.path.isdir(tmp_test_dir):

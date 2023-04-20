@@ -119,7 +119,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
                   'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
                   'allen': [14.44, -3.0, 0] * u.deg / u.day,
-                  'rigid': sidereal_rotation_rate * [1, 0, 0]
+                  'rigid': sidereal_rotation_rate * [1, 0, 0],
                   }
 
     if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:

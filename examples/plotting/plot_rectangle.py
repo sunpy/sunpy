@@ -47,7 +47,7 @@ aia_map.draw_quadrangle(
     edgecolor="blue",
     linestyle="-",
     linewidth=2,
-    label='2-element SkyCoord'
+    label='2-element SkyCoord',
 )
 
 ################################################################################
@@ -64,7 +64,7 @@ aia_map.draw_quadrangle(
     edgecolor="green",
     linestyle="--",
     linewidth=2,
-    label='two SkyCoords'
+    label='two SkyCoords',
 )
 
 ################################################################################
@@ -83,7 +83,7 @@ aia_map.draw_quadrangle(
     edgecolor="yellow",
     linestyle="-.",
     linewidth=2,
-    label='width/height'
+    label='width/height',
 )
 
 ################################################################################
@@ -98,7 +98,7 @@ aia_map.draw_quadrangle(
     edgecolor="red",
     linestyle=":",
     linewidth=2,
-    label='pixel_to_world()'
+    label='pixel_to_world()',
 )
 ax.legend()
 

@@ -50,11 +50,11 @@ fig, ax = plt.subplots()
 ax.plot(noaa.time, noaa.quantity('sunspot RI'), label='Sunspot Number')
 ax.plot(
     noaa_predict.time, noaa_predict.quantity('sunspot'),
-    color='grey', label='Near-term Prediction'
+    color='grey', label='Near-term Prediction',
 )
 ax.fill_between(
     noaa_predict.time, noaa_predict.quantity('sunspot low'),
-    noaa_predict.quantity('sunspot high'), alpha=0.3, color='grey'
+    noaa_predict.quantity('sunspot high'), alpha=0.3, color='grey',
 )
 ax.set_ylim(bottom=0)
 ax.set_ylabel('Sunspot Number')

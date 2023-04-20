@@ -17,16 +17,16 @@ def GSClient():
 @pytest.mark.parametrize(("timerange", "url_start", "url_end"), [
     (a.Time('2020/1/30', '2020/2/1'),
      'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200130/mrzqs200130t0004c2227_349.fits.gz',
-     'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200131/mrzqs200131t2314c2227_323.fits.gz'
+     'https://gong2.nso.edu/oQR/zqs/202001/mrzqs200131/mrzqs200131t2314c2227_323.fits.gz',
      ),
     (a.Time('2020/4/21', '2020/4/22'),
      'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t0004c2230_348.fits.gz',
-     'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t2314c2230_335.fits.gz'
+     'https://gong2.nso.edu/oQR/zqs/202004/mrzqs200421/mrzqs200421t2314c2230_335.fits.gz',
      ),
     (a.Time('2006/9/19', '2006/9/19 22:00'),
      'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1154c2048_323.fits.gz',
-     'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1754c2048_320.fits.gz'
-     )
+     'https://gong2.nso.edu/oQR/zqs/200609/mrzqs060919/mrzqs060919t1754c2048_320.fits.gz',
+     ),
 ])
 def test_get_url_for_time_range(GSClient, timerange, url_start, url_end):
     qresponse = GSClient.search(timerange)
@@ -72,7 +72,7 @@ def test_fido(time, instrument):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
-    assert all(map(lambda x: x.endswith('.gz'), response))
+    assert all(x.endswith('.gz') for x in response)
 
 
 def test_attr_reg():

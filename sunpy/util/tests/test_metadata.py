@@ -102,7 +102,7 @@ def atomic_weights_keycomments():
                 'chromium': 'Cr',
                 'extra key 1': 'foo',
                 'MERCURY': 'Hg',
-                'extra key 2': 'bar'
+                'extra key 2': 'bar',
             }]]
 
 
@@ -117,7 +117,7 @@ def atomic_weights_pruned_keycomments():
             ['iridium', 77],
             ['keycomments', {
                 'chromium': 'Cr',
-                'MERCURY': 'Hg'
+                'MERCURY': 'Hg',
             }]]
 
 
@@ -129,7 +129,7 @@ def atomic_weights_keycomments_after_removal():
     return [['chromium', 24],
             ['iridium', 77],
             ['keycomments', {
-                'chromium': 'Cr'
+                'chromium': 'Cr',
             }]]
 
 

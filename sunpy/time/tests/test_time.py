@@ -283,7 +283,7 @@ def test_parse_time_leap_second():
     (51544.0, 'mjd'),
     (730120.0003703703, 'plot_date'),
     (946684800.0, 'unix'),
-    ('2000:001:00:00:00.000', 'yday')
+    ('2000:001:00:00:00.000', 'yday'),
 ])
 def test_parse_time_astropy_formats(ts, fmt):
     dt = parse_time(ts, format=fmt)
@@ -306,7 +306,7 @@ def test_parse_time_int_float():
     'tdb',
     'tt',
     'ut1',
-    'utc'
+    'utc',
 ])
 def test_parse_time_scale(scale):
     dt = parse_time('2007-05-04T21:08:12', scale=scale)

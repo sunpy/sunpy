@@ -62,7 +62,7 @@ class DataManager:
                         file_hash = hash_file(file_path)
                     else:
                         file_path, file_hash, _ = self._cache._download_and_hash(
-                            [replace['uri']], self._namespace
+                            [replace['uri']], self._namespace,
                         )
                     if replace['hash'] and file_hash != replace['hash']:
                         # if hash provided to replace function doesn't match the hash of the file

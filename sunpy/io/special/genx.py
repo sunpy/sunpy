@@ -137,7 +137,7 @@ class Unpacker:
 
     def unpack_farray(self, n, unpack_item):
         list = []
-        for i in range(n):
+        for _i in range(n):
             list.append(unpack_item())
         return list
 
@@ -183,8 +183,6 @@ def read_struct_skeleton(xdrdata):
         if typedata == 8:  # it's a structure
             if dim == 2 and arr_size[0] == 1:
                 # For when structures has been defined with 2 dim but only has one:
-                # bb = replicate({tata: 1, bebe:2, casa:'asa'}, 3)
-                # dd = replicate({tata: 1, bebe:2, casa:'asa'}, 1, 3)
                 # print,size(bb), size(dd)
                 #            1           3           8           3
                 #            2           1           3           8           3
@@ -234,7 +232,7 @@ def struct_to_data(xdrdata, subskeleton):
         if isinstance(subskeleton[key], OrderedDict):
             struct_to_data(xdrdata, subskeleton[key])
         elif isinstance(subskeleton[key], np.ndarray):
-            testlist = list()
+            testlist = []
             struct_shape = subskeleton[key].shape
             for elem in subskeleton[key].flatten():
                 elem2 = copy.deepcopy(elem)
@@ -321,5 +319,4 @@ def read_genx(filename):
                                                          ('RELEASE', release)])
     skeleton['HEADER']['TEXT'] = text
     # TODO: for python >= 3.2; so we can keep the original order as how it's stored in the file
-    # skeleton.move_to_end('HEADER', last=False)
     return skeleton

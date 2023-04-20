@@ -31,8 +31,8 @@ def iter_sort_response(response):
     `list`
         Sorted record items w.r.t. their start time.
     """
-    has_time_recs = list()
-    has_notime_recs = list()
+    has_time_recs = []
+    has_notime_recs = []
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue

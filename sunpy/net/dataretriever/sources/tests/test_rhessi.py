@@ -195,7 +195,7 @@ def mock_query_object(LCClient):
         'Source': 'RHESSI',
         'Provider': 'NASA',
         'url': ('https://hesperia.gsfc.nasa.gov/hessidata/metadata/'
-                'catalog/hsi_obssumm_20160101_078.fits')
+                'catalog/hsi_obssumm_20160101_078.fits'),
     }
     results = QueryResponse([obj], client=LCClient)
     return results

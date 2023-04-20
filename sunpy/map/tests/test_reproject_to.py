@@ -25,7 +25,7 @@ def hgs_header(aia171_test_map):
                  obstime=aia171_test_map.date,
                  rsun=aia171_test_map.coordinate_frame.rsun),
         scale=(1, 1)*u.deg/u.pix,
-        projection_code='CAR'
+        projection_code='CAR',
     )
 
 
@@ -42,7 +42,7 @@ def hpc_header(aia171_test_map):
                  observer=new_observer,
                  rsun=aia171_test_map.coordinate_frame.rsun),
         scale=u.Quantity(aia171_test_map.scale),
-        projection_code='TAN'
+        projection_code='TAN',
     )
 
 

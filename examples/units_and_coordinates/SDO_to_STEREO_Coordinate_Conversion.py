@@ -6,7 +6,6 @@ AIA to STEREO coordinate conversion
 How to convert a point of a source on an AIA image
 to a position on a STEREO image.
 """
-# sphinx_gallery_thumbnail_number = 5
 
 import matplotlib.pyplot as plt
 

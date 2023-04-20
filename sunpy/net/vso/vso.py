@@ -203,13 +203,13 @@ class VSOClient(BaseClient):
         for block in walker.create(query, self.api):
             try:
                 query_response = self.api.service.Query(
-                    QueryRequest(block=block)
+                    QueryRequest(block=block),
                 )
                 for resp in query_response:
                     if resp["error"]:
                         warn_user(resp["error"])
                 responses.append(
-                    VSOQueryResponse(query_response)
+                    VSOQueryResponse(query_response),
                 )
             except Exception as ex:
                 exceptions.append(ex)
@@ -251,7 +251,7 @@ class VSOClient(BaseClient):
                         if record_item.fileid not in fileids:
                             fileids.add(record_item.fileid)
                             providers[provider].record.recorditem.append(
-                                record_item
+                                record_item,
                             )
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
@@ -432,7 +432,7 @@ class VSOClient(BaseClient):
 
         return self.create_getdatarequest(
             {g[0]['Provider']: list(g['fileid']) for g in response.group_by('Provider').groups},
-            methods, info
+            methods, info,
         )
 
     def create_getdatarequest(self, maps, methods, info=None):
@@ -463,14 +463,14 @@ class VSOClient(BaseClient):
         # Iterate over the series and make a DRI for each.
         # groupby creates an iterator based on a key function, in this case
         # based on the series (the part before the first ':')
-        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+        for _series, fileids in itertools.groupby(series_sorted, key=series_func):
             dris.append(self.make('DataRequestItem',
                                   provider='JSOC',
                                   fileiditem={'fileid': list(fileids)}))
 
         request = {'method': {'methodtype': methods},
                    'info': info,
-                   'datacontainer': {'datarequestitem': dris}
+                   'datacontainer': {'datarequestitem': dris},
                    }
 
         return self.make('VSOGetDataRequest', request=request)
@@ -507,7 +507,7 @@ class VSOClient(BaseClient):
                             downloader,
                             path,
                             qr[dataitem.fileiditem.fileid[0]],
-                            **kwargs
+                            **kwargs,
                         )
                     except NoData:
                         results.add_error('', '', DownloadFailed(dresponse))
@@ -517,7 +517,7 @@ class VSOClient(BaseClient):
                 if code == '300':
                     try:
                         methods = self.multiple_choices(
-                            dresponse.method.methodtype, dresponse
+                            dresponse.method.methodtype, dresponse,
                         )
                     except NoData:
                         results.add_error('', '', MultipleChoices(dresponse))
@@ -525,7 +525,7 @@ class VSOClient(BaseClient):
                 elif code == '412':
                     try:
                         info = self.missing_information(
-                            info, dresponse.info
+                            info, dresponse.info,
                         )
                     except NoData:
                         results.add_error('', '', MissingInformation(dresponse))
@@ -542,12 +542,12 @@ class VSOClient(BaseClient):
                     files.extend(dataitem.fileiditem.fileid)
 
                 request = self.create_getdatarequest(
-                    {dresponse.provider: files}, methods, info
+                    {dresponse.provider: files}, methods, info,
                 )
 
                 self.download_all(
                     self.api.service.GetData(request), methods, downloader, path,
-                    qr, info, **kwargs
+                    qr, info, **kwargs,
                 )
             else:
                 results.add_error('', '', UnknownStatus(dresponse))

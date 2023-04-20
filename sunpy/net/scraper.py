@@ -97,7 +97,7 @@ class Scraper:
             self.now = now.strftime('{start}{milli:03d}{end}'.format(
                 start=self.pattern[0:milliseconds.start()],
                 milli=milliseconds_,
-                end=self.pattern[milliseconds.end():]
+                end=self.pattern[milliseconds.end():],
             ))
 
     def matches(self, filepath, date):
@@ -225,8 +225,8 @@ class Scraper:
             re_together = re_together.replace(k, v)
 
         # Lists to contain the unique elements of the date and the pattern
-        final_date = list()
-        final_pattern = list()
+        final_date = []
+        final_pattern = []
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
         for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':
@@ -315,7 +315,7 @@ class Scraper:
                         log.debug(f"Converting retry_after failed: {e}")
                         retry_after = 2
                     log.debug(
-                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
+                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying.",
                     )
                     sleep(retry_after)
                     # Put this dir back on the queue
@@ -328,7 +328,7 @@ class Scraper:
 
     def _ftpfileslist(self, timerange):
         directories = self.range(timerange)
-        filesurls = list()
+        filesurls = []
         ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
@@ -358,7 +358,7 @@ class Scraper:
             prefix = 'file://'
         self.pattern = pattern_temp
         directories = self.range(timerange)
-        filepaths = list()
+        filepaths = []
         for directory in directories:
             for file_i in os.listdir(directory):
                 fullpath = directory + file_i

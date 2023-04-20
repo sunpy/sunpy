@@ -58,7 +58,7 @@ def fido_search_result():
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
-        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve"))
+        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve")),
     )
 
 
@@ -205,7 +205,7 @@ def test_entries_from_fido_search_result_JSOC():
     search_result = Fido.search(
         net_attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
         net_attrs.jsoc.Series('hmi.m_45s'),
-        net_attrs.jsoc.Notify("sunpy@sunpy.org")
+        net_attrs.jsoc.Notify("sunpy@sunpy.org"),
     )
     with pytest.raises(ValueError):
         # Using list() here is important because the

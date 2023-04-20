@@ -60,7 +60,7 @@ def mock_query_object(suvi_client):
         'Wavelength': wave,
         'url': ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites'
                 '/goes/goes16/l2/data/suvi-l2-ci094/2019/05/25/'
-                'dr_suvi-l2-ci094_g16_s20190525T005200Z_e20190525T005600Z_v1-0-0.fits')
+                'dr_suvi-l2-ci094_g16_s20190525T005200Z_e20190525T005600Z_v1-0-0.fits'),
     }
     results = QueryResponse([obj], client=suvi_client)
     return results
@@ -113,7 +113,7 @@ def test_fetch_working(suvi_client):
                           ('2019/05/25 00:50', '2019/05/25 00:52', 171, 1),
                           ('2019/05/25 00:50', '2019/05/25 00:52', 195, 1),
                           ('2019/05/25 00:50', '2019/05/25 00:52', 284, 1),
-                          ('2019/05/25 00:50', '2019/05/25 00:52', 304, 1)]
+                          ('2019/05/25 00:50', '2019/05/25 00:52', 304, 1)],
                          )
 def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_num_files):
     goes_sat = a.goes.SatelliteNumber.sixteen
@@ -125,7 +125,7 @@ def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_n
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(('start', 'end', 'expected_num_files'),
-                         [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
+                         [('2019/05/25 00:50', '2019/05/25 00:52', 6)],
                          )
 def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
@@ -143,7 +143,7 @@ def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected
                           ('2019/05/25 00:50', '2019/05/25 00:54', 171, 2),
                           ('2019/05/25 00:50', '2019/05/25 00:54', 195, 7),
                           ('2019/05/25 00:50', '2019/05/25 00:54', 284, 2),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)]
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)],
                          )
 def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
@@ -162,7 +162,7 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
                           ('2019/05/25 00:50', '2019/05/25 00:54', 171, 2),
                           ('2019/05/25 00:50', '2019/05/25 00:54', 195, 7),
                           ('2019/05/25 00:50', '2019/05/25 00:54', 284, 2),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)]
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)],
                          )
 def test_fido_onewave_level1b(start, end, wave, expected_num_files):
     goes_sat = a.goes.SatelliteNumber.sixteen
@@ -178,7 +178,7 @@ def test_fido_onewave_level1b(start, end, wave, expected_num_files):
                           ('2019/05/25 00:50', '2019/05/25 00:54', 1, 180, 11),
                           ('2019/05/25 00:50', '2019/05/25 00:54', 1, 200, 18),
                           ('2019/05/25 00:50', '2019/05/25 00:54', 1, 300, 20),
-                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 310, 24)]
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 310, 24)],
                          )
 def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
@@ -191,7 +191,7 @@ def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(('start', 'end', 'expected_num_files'),
-                         [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
+                         [('2019/05/25 00:50', '2019/05/25 00:52', 6)],
                          )
 def test_query(suvi_client, start, end, expected_num_files):
     goes_sat = a.goes.SatelliteNumber.sixteen
