@@ -7,9 +7,10 @@ Since the field of view in SECCHI COR2 images can span 2 to 15 solar radii,
 we often observe stars in these image data. In this example, we will use the
 `Astroquery package <https://astroquery.readthedocs.io/en/latest/>`__ to query the
 `VizieR star catalog <http://vizier.u-strasbg.fr/viz-bin/VizieR>`__ for stars observed
-by the `Gaia satellite <https://sci.esa.int/web/gaia/>`__ within the SECCHI COR2 field of view.
-Then we will use the coordinates framework in SunPy and AstroPy to transform the coordinates
-returned by VizieR into SECCHI COR2 image coordinates. As a bonus, we'll also identify Mars."
+by the `Gaia satellite <https://www.esa.int/Science_Exploration/Space_Science/Gaia>`__ within
+the SECCHI COR2 field of view. Then we will use the coordinates framework in SunPy and AstroPy
+to transform the coordinates returned by VizieR into SECCHI COR2 image coordinates.
+As a bonus, we'll also identify Mars."
 
 This requires the installation of the `astroquery <https://astroquery.readthedocs.io/en/latest/>`__
 package, which can be installed on top of the existing sunpy conda
@@ -26,12 +27,16 @@ from astropy.time import Time
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.time import parse_time
+from sunpy.util.config import get_and_create_download_dir
 
 ###############################################################################
 # Let's download a STEREO-A SECCHI COR2 image from Helioviewer.org which provide
 # pre-processed images and load it into a Map.
+# We download to the default sunpy download directory.
 
-cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime, hvpy.DataSource.COR2_A.value), "COR2.JPEG2000")
+cor2_file = hvpy.save_file(hvpy.getJP2Image(parse_time('2014/05/15 07:54').datetime,
+                                            hvpy.DataSource.COR2_A.value),
+                           get_and_create_download_dir() + "/COR2.jp2")
 cor2_map = sunpy.map.Map(cor2_file)
 
 ###############################################################################

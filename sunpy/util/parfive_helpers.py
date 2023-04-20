@@ -18,19 +18,17 @@ sunpy_headers = {
 }
 
 
-if parfive_version < Version("2.0a0"):
+if parfive_version < Version("2.0.0"):
     # Overload the parfive downloader class to set the User-Agent string
     class Downloader(parfive.Downloader):
         @wraps(parfive.Downloader.__init__)
         def __init__(self, *args, **kwargs):
             headers = kwargs.pop("headers", {})
             kwargs["headers"] = {**sunpy_headers, **headers}
-
             # Works with conftest to hide the progress bar.
             progress = os.environ.get("PARFIVE_HIDE_PROGESS", None)
             if progress:
                 kwargs["progress"] = False
-
             super().__init__(*args, **kwargs)
 
 else:
@@ -48,5 +46,4 @@ else:
             # when we depend on 2+ we should remove this.
             headers = kwargs.pop("headers", {})
             kwargs["config"].headers = {**kwargs["config"].headers, **headers}
-
             super().__init__(*args, **kwargs)

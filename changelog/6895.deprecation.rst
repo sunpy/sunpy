@@ -1,0 +1,2 @@
+``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
+This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.

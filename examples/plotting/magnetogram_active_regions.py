@@ -28,17 +28,9 @@ srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == '
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers.
-# :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord` will error on some
-# versions of Astropy if a coordinate component contains a mask, but since
-# none of the masks in these arrays here actually mask any elements, we simply
-# remove the masks.
 
 lats = srs_table['Latitude']
-if hasattr(lats, 'mask'):
-    lats = lats.unmasked
 lngs = srs_table['Longitude']
-if hasattr(lngs, 'mask'):
-    lngs = lngs.unmasked
 numbers = srs_table['Number']
 
 ##############################################################################

@@ -47,10 +47,12 @@ class Scraper:
     pattern : `str`
         A string containing the url with the date encoded as datetime formats,
         and any other parameter as ``kwargs`` as a string format.
+        This can also be a uri to a local file patterns.
 
     regex : `bool`
-        Set to `True` if parts of the pattern uses regexp symbols. Be careful that
-        periods ``.`` matches any character and therefore it's better to escape them.
+        Set to `True` if parts of the pattern uses regexp symbols.
+        This only works for the filename part of the pattern rather than the full url.
+        Be careful that periods ``.`` matches any character and therefore it's better to escape them.
         If regexp is used, other ``kwargs`` are ignored and string replacement is
         not possible. Default is `False`.
 

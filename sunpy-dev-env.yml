@@ -60,6 +60,7 @@ dependencies:
   - sphinx-design
   - sphinx-gallery
   - sphinx-hoverxref
+  - sphinxext-opengraph
   - towncrier
 
   # Installation
@@ -70,8 +71,11 @@ dependencies:
   # Development
   - pre-commit
 
+  # Indirect dependency for mplcairo
+  - pycairo
+
   - pip:
+    - mplcairo
     - sphinx-bootstrap-theme
     - sphinx-changelog
-    - sphinxext-opengraph
     - sunpy-sphinx-theme

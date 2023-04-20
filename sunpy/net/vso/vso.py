@@ -418,7 +418,15 @@ class VSOClient(BaseClient):
         return results
 
     def make_getdatarequest(self, response, methods=None, info=None):
-        """ Make datarequest with methods from response. """
+        """
+        Make datarequest with methods from response.
+        """
+        # Pass back the Apache session ID to the VSO if it exists in the response
+        for item in response:
+            info_required = item.get("Info Required", None)
+            if info_required is not None:
+                info['required'] = item['Info Required']
+
         if methods is None:
             methods = [*self.method_order, 'URL']
 

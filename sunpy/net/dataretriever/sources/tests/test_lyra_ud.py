@@ -68,7 +68,8 @@ def test_query(LCClient, time):
 @pytest.mark.parametrize(("time", "instrument"), [
     (Time('2013/8/27', '2013/8/27'), Instrument('lyra'))])
 def test_get(LCClient, time, instrument):
-    qr1 = LCClient.search(time, instrument)
+    # Cut it down to one file with the level
+    qr1 = LCClient.search(time, instrument, a.Level.two)
     download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
 
@@ -76,9 +77,10 @@ def test_get(LCClient, time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     ("time", "instrument"),
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument.lyra)])
+    [(a.Time('2012/10/4', '2012/10/4'), a.Instrument.lyra)])
 def test_fido(time, instrument):
-    qr = Fido.search(time, instrument)
+    # Cut it down to one file with the level
+    qr = Fido.search(time, instrument, a.Level.two)
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile

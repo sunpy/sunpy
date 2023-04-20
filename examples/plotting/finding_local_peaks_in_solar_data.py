@@ -23,8 +23,9 @@ from sunpy.map.maputils import all_pixel_indices_from_map
 # We will first create a Map using some sample data and display it.
 
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
-plt.figure()
-aiamap.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax)
 plt.colorbar()
 
 ###############################################################################
@@ -63,7 +64,7 @@ plt.show()
 # Now we need to turn the pixel coordinates into the world location so
 # they can be easily overlaid on the Map.
 
-hpc_max = aiamap.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.pixel)
+hpc_max = aiamap.wcs.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.pixel)
 
 ###############################################################################
 # Finally we do an AIA plot to check for the local maxima locations

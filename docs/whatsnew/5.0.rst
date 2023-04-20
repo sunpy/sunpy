@@ -19,13 +19,26 @@ Updates to minimum dependencies
 The minimum required versions of several core dependencies have been updated:
 
 - Python 3.9
-- astropy 5.0.0
+- astropy 5.0.1
 - numpy 1.21.0
 
 The minimum required versions of these optional dependencies has also been updated:
 
 - Matplotlib 3.5.0
 - dask 2021.4.0
+- h5netcdf 0.11.0
 - pandas 1.2.0
 - scikit-image 0.18.0
 - scipy 1.7.0
+
+``sunpy.database`` deprecation
+==============================
+The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
+It has now been formally deprecated, and will be removed in sunpy 6.0.
+If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+
+Deprecation of IO readers
+=========================
+``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
+
+This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.

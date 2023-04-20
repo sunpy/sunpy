@@ -8,6 +8,7 @@ from pathlib import Path
 import drms
 import numpy as np
 import parfive
+from packaging.version import Version
 
 import astropy.table
 import astropy.time
@@ -26,6 +27,7 @@ __all__ = ['JSOCClient', 'JSOCResponse']
 
 PRIMEKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
                       'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
+parfive_version = Version(parfive.__version__)
 
 
 class NotExportedError(Exception):
@@ -482,7 +484,7 @@ class JSOCClient(BaseClient):
         max_splits = kwargs.get('max_splits', 1)
         if max_splits != 1:
             log.info("Setting max_splits to it's maximum allowed value of 1 for requests made by the JSOCClient.")
-        kwargs['max_splits'] = 1
+            max_splits = 1
 
         # Convert Responses to a list if not already
         if isinstance(requests, str) or not isiterable(requests):
@@ -532,7 +534,11 @@ class JSOCClient(BaseClient):
             # Private communication from JSOC say we should not use more than one connection.
             if max_conn != self.default_max_conn:
                 log.info("Setting max parallel downloads to 1 for the JSOC client.")
-            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=1)
+                max_conn = 1
+            if parfive_version >= Version("2.0.0"):
+                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
+            else:
+                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
 
         urls = []
         for request in requests:
@@ -540,7 +546,7 @@ class JSOCClient(BaseClient):
                 if request.protocol == 'as-is' or request.method == 'url-tar':
                     urls.extend(list(request.urls.url))
                 else:
-                    for index, data in request.data.iterrows():
+                    for _, data in request.data.iterrows():
                         url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))
 
@@ -549,7 +555,7 @@ class JSOCClient(BaseClient):
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
             for aurl, fname in zip(urls, paths):
-                downloader.enqueue_file(aurl, filename=fname)
+                downloader.enqueue_file(aurl, filename=fname, max_splits=max_splits)
 
         if dl_set and not wait:
             return Results()

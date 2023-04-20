@@ -6,7 +6,6 @@ from collections import OrderedDict
 
 import h5netcdf
 import numpy as np
-import packaging.version
 from pandas import DataFrame
 
 import astropy.units as u
@@ -15,7 +14,7 @@ from astropy.time import Time, TimeDelta
 import sunpy.io
 from sunpy import log
 from sunpy.extern import parse
-from sunpy.io.file_tools import UnrecognizedFileTypeError
+from sunpy.io._file_tools import UnrecognizedFileTypeError
 from sunpy.time import is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.exceptions import warn_user
@@ -60,11 +59,7 @@ class XRSTimeSeries(GenericTimeSeries):
     _peek_title = "GOES X-ray flux"
 
     _netcdf_read_kw = {}
-    h5netcdf_version = packaging.version.parse(h5netcdf.__version__)
-    if h5netcdf_version == packaging.version.parse("0.9"):
-        _netcdf_read_kw['decode_strings'] = True
-    if h5netcdf_version >= packaging.version.parse("0.10"):
-        _netcdf_read_kw['decode_vlen_strings'] = True
+    _netcdf_read_kw['decode_vlen_strings'] = True
 
     def plot(self, axes=None, columns=None, **kwargs):
         """
@@ -131,7 +126,7 @@ class XRSTimeSeries(GenericTimeSeries):
             or self.meta.metas[0].get("Instrument", "").strip()
         )
         if isinstance(id, bytes):
-            # Needed for old versions of h5netcdf
+            # Needed for h5netcdf < 0.14.0
             id = id.decode('ascii')
         if id is None:
             log.debug("Unable to get a satellite number from 'Instrument', 'TELESCOP' or 'id' ")

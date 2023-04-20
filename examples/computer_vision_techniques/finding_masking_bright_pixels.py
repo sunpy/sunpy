@@ -28,7 +28,7 @@ aia = sunpy.map.Map(AIA_171_IMAGE)
 # then transform that pixel coordinate to a map coordinate.
 
 pixel_pos = np.argwhere(aia.data == aia.data.max()) * u.pixel
-hpc_max = aia.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
+hpc_max = aia.wcs.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
 
 ###############################################################################
 # Let's plot the results.
@@ -54,6 +54,7 @@ scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 ###############################################################################
 # Let's plot the results.
 
-plt.figure()
-scaled_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=scaled_map)
+scaled_map.plot(axes=ax)
 plt.show()

@@ -252,9 +252,6 @@ def test_heliographic_quadrangle_top_right(heliographic_test_map):
     heliographic_test_map.draw_quadrangle(bottom_left, top_right=top_right, edgecolor='cyan')
 
 
-# This warning filter can be removed once we depend on Astropy 5.0+.
-# See https://github.com/sunpy/sunpy/issues/4294
-@pytest.mark.filterwarnings(r'ignore:Numpy has detected that you \(may be\) writing to an array with\noverlapping memory')
 @figure_test
 def test_heliographic_grid_annotations(heliographic_test_map):
     heliographic_test_map.plot()

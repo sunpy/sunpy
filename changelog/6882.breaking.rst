@@ -1,0 +1,1 @@
+Changed the output of :func:`sunpy.map.sample_at_coords` to return the sampled values as `~astropy.units.Quantity` with the appropriate units instead of merely numbers.

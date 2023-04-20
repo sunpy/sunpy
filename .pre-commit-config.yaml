@@ -5,7 +5,6 @@ repos:
     hooks:
       - id: ruff
         args: ["--fix"]
-
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
@@ -27,7 +26,6 @@ repos:
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
       - id: mixed-line-ending
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
-
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
@@ -42,9 +40,8 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
+    rev: v2.2.4
     hooks:
       - id: codespell
         args: ['--config setup.cfg']

@@ -20,7 +20,7 @@ class LYRAClient(GenericClient):
     ...                       a.Instrument.lyra)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 1 Provider:
+    Results from 2 Providers:
     <BLANKLINE>
     4 Results from the LYRAClient:
     Source: http://proba2.oma.be/lyra/data/bsd
@@ -32,8 +32,18 @@ class LYRAClient(GenericClient):
     2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     2
     2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     3
     <BLANKLINE>
+    3 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    Total estimated size: 2.914 Gbyte
     <BLANKLINE>
-
+           Start Time               End Time        Source ... Extent Type   Size
+                                                           ...              Mibyte
+    ----------------------- ----------------------- ------ ... ----------- --------
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  2328.75
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A 419.0625
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  30.9375
+    <BLANKLINE>
+    <BLANKLINE>
     """
     baseurl = (r'http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                r'lyra_(\d){8}-000000_lev(\d){1}_std.fits')

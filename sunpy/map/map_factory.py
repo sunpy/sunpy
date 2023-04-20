@@ -10,7 +10,7 @@ from astropy.wcs import WCS
 
 from sunpy import log
 from sunpy.data import cache
-from sunpy.io.file_tools import read_file
+from sunpy.io._file_tools import read_file
 from sunpy.io.header import FileHeader
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
