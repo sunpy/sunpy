@@ -1,3 +1,24 @@
+4.1.5 (2023-04-20)
+==================
+
+New Features
+------------
+
+- Able to download files from REST/TAP Data Providers from the VSO. (`#6887 <https://github.com/sunpy/sunpy/pull/6887>`__)
+
+
+Bug Fixes
+---------
+
+- Pass in "max_splits" to Parfive to prevent multi connections to JSOC for JSOC only queries. (`#6921 <https://github.com/sunpy/sunpy/pull/6921>`__)
+
+
+Documentation
+-------------
+
+- Added clarifying detail (in the `~sunpy.time.TimeUTime` docstring) for how the ``utime`` time format handles seconds on a day with a leap second. (`#6894 <https://github.com/sunpy/sunpy/pull/6894>`__)
+
+
 4.1.4 (2023-03-31)
 ==================
 

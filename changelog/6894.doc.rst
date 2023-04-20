@@ -1,1 +1,0 @@
-Added clarifying detail (in the `~sunpy.time.TimeUTime` docstring) for how the ``utime`` time format handles seconds on a day with a leap second.
