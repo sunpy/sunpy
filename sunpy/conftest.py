@@ -115,6 +115,17 @@ def undo_config_dir_patch():
 
 
 @pytest.fixture(scope='session', autouse=True)
+def sunpy_test_run(request):
+    """
+    Add a environmental keyword to allow us to check and execute
+    specific code within a pytest run (e.g., update headers for the online tests).
+    """
+    os.environ["SUNPY_PYTEST_RUN"] = "True"
+    yield
+    del os.environ["SUNPY_PYTEST_RUN"]
+
+
+@pytest.fixture(scope='session', autouse=True)
 def hide_parfive_progress(request):
     """
     Set the PARFIVE_HIDE_PROGESS to hide the parfive progress bar in tests.

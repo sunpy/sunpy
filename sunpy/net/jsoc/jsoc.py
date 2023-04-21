@@ -534,11 +534,7 @@ class JSOCClient(BaseClient):
             # Private communication from JSOC say we should not use more than one connection.
             if max_conn != self.default_max_conn:
                 log.info(f"Setting max parallel downloads to 1 for the JSOC client.")
-            if parfive_version >= Version("2.0.0"):
-                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
-            else:
-                downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
-
+            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
         urls = []
         for request in requests:
             if request.status == 0:
