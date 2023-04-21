@@ -30,25 +30,13 @@ To create a `~sunpy.map.Map` from a sample AIA image,
 
 .. code-block:: python
 
-    >>> import sunpy
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
-**sunpy** automatically detects the type of file (e.g. FITS), the instrument associated with it (e.g. AIA, EIT, LASCO), and finds the FITS keywords it needs to interpret the coordinate system.
-If the type of FITS file is not recognized then **sunpy** will try some default FITS keywords and return a `~sunpy.map.GenericMap`, but results may vary.
+sunpy automatically detects the type of file (e.g. FITS) as well as the the instrument associated with it (e.g. AIA, EIT, LASCO).
+To make sure this has all worked correctly, we can take a quick look at ``my_map``,
 
-.. _inspecting-maps:
-
-Inspecting Maps
-===============
-
-A Map contains a number of data-associated attributes.
-To get a quick look at your Map simply type:
-
-.. code-block:: python
-
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> my_map  # doctest: +REMOTE_DATA
     <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
@@ -79,9 +67,13 @@ To get a quick look at your Map simply type:
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
             -128.03072  , -128.03072  ]], dtype=float32)
 
-This will show a representation of the data as well as some of its associated attributes.
-Typing the above command in a Jupyter Notebook will show a rich HTML view of the table along with two plots of your data.
-The HTML view can also be accessed using the :func:`~sunpy.map.GenericMap.quicklook` method, which will open the view in your default browser.
+This should show a representation of the data as well as some of its associated attributes.
+If you are in a Jupyter Notebook, this will show a rich HTML view of the table along with several quick-look plots.
+
+.. _inspecting-maps:
+
+Inspecting Maps
+===============
 
 A number of other attributes are also available.
 For example, the `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`, `~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`).
