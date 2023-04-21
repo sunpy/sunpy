@@ -45,6 +45,10 @@ For more complete code examples, see the how-to guides above.
      - `my_map.data <sunpy.map.GenericMap.data>`
    * - access the map metadata
      - `my_map.meta <sunpy.map.GenericMap.meta>`
+   * - make a copy of the map data array
+     - `my_map.data.copy()`
+   * - make a copy of the whole map
+     - `copy.deepcopy(my_map)`
    * - access the observer location
      - `my_map.observer_coordinate <sunpy.map.GenericMap.observer_coordinate>`
    * - remove the roll angle

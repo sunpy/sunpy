@@ -37,6 +37,8 @@ To create a `~sunpy.map.Map` from a sample AIA image,
 sunpy automatically detects the type of file (e.g. FITS) as well as the the instrument associated with it (e.g. AIA, EIT, LASCO).
 To make sure this has all worked correctly, we can take a quick look at ``my_map``,
 
+.. code-block:: python
+
     >>> my_map  # doctest: +REMOTE_DATA
     <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
@@ -72,57 +74,66 @@ If you are in a Jupyter Notebook, this will show a rich HTML view of the table a
 
 .. _inspecting-maps:
 
-Inspecting Maps
-===============
+Inspecting Map Metadata
+=======================
 
-A number of other attributes are also available.
-For example, the `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`, `~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`).
-The full list can be found on `~sunpy.map.GenericMap`:
-
-.. code-block:: python
-
-    >>> map_date = my_map.date  # doctest: +REMOTE_DATA
-    >>> map_exptime = my_map.exposure_time  # doctest: +REMOTE_DATA
-    >>> map_center = my_map.center  # doctest: +REMOTE_DATA
-
-To get a list of all of the attributes check the documentation by typing:
+The metadata for a Map is exposed via attributes on the Map.
+These attributes can be accessed by typing `my_map.<attribute-name>`.
+For example, to access the date of the observation,
 
 .. code-block:: python
 
-    >>> help(my_map)  # doctest: +SKIP
+    >>> my_map.date  # doctest: +REMOTE_DATA
+    <Time object: scale='utc' format='isot' value=2011-06-07T06:33:02.770>
 
-Many attributes and functions of the map classes accept and return `~astropy.units.quantity.Quantity` or `~astropy.coordinates.SkyCoord` objects.
-Please refer to :ref:`units-sunpy` and :ref:`coordinates-sunpy` for more details.
-
-The metadata for the map is accessed by:
+Notice that this is an `~astropy.time.Time` object which we discussed in the previous section :ref:`time-in-sunpy`.
+Similarly, we can access the exposure time of the image,
 
 .. code-block:: python
 
-    >>> header = my_map.meta  # doctest: +REMOTE_DATA
+    >>> my_map.exposure_time  # doctest: +REMOTE_DATA
+    <Quantity 0.234256 s>
 
-This references the metadata dictionary with the header information as read from the source file.
-To see if the metadata of a Map source has been modified, see :ref:`sphx_glr_generated_gallery_map_map_metadata_modification.py` for a demonstration.
+Notice that this returns an `~astropy.units.Quantity` object which we discussed in the previous section :ref:`units-sunpy`.
+The full list of attributes can be found on `~sunpy.map.GenericMap`.
+These metadata attributes are all derived from the underlying FITS metadata, but are represented as rich Python objects, rather than simple strings or floating point numbers.
 
 .. _map-data:
 
 Map Data
 ========
 
-The data in a Map object is accessible through the `~sunpy.map.GenericMap.data` attribute.
-The data is stored as a NumPy `~numpy.ndarray`.
+The data in a Map is stored as a `numpy.ndarray` object and is accessible through the `~sunpy.map.GenericMap.data` attribute:
+
+.. code-block:: python
+
+    >>> my_map.data  # doctest: +REMOTE_DATA
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+        -127.96519  , -127.96519  ],
+       [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+        -104.04137  , -127.919716 ],
+       [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+         -37.95505  , -127.87541  ],
+       ...,
+       [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+        -128.01454  , -128.01454  ],
+       [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+        -127.899666 , -127.899666 ],
+       [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+        -128.03072  , -128.03072  ]], dtype=float32)
+
+This array can then be indexed like any other NumPy array.
 For example, to get the 0th element in the array:
 
 .. code-block:: python
 
     >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
     -95.92475
-    >>> my_map.data[0][0]  # doctest: +REMOTE_DATA
-    -95.92475
 
-The first index is for the y direction while the second index is for the x direction.
+The first index corresponds to the y direction and the second to the x direction in the two-dimensional pixel coordinate system.
 For more information about indexing, please refer to the `numpy documentation <https://numpy.org/doc/stable/user/basics.indexing.html#indexing-on-ndarrays>`__.
 
-Data attributes like `~numpy.ndarray.dtype` and `~sunpy.map.GenericMap.dimensions` are accessible through a GenericMap object:
+Data attributes like dimensionality and type are also accessible as attributes on ``my_map``:
 
 .. code-block:: python
 
@@ -131,26 +142,7 @@ Data attributes like `~numpy.ndarray.dtype` and `~sunpy.map.GenericMap.dimension
     >>> my_map.dtype  # doctest: +REMOTE_DATA
     dtype('float32')
 
-Here, the dimensions attribute is similar to the `~numpy.ndarray.shape` attribute, however returning an `~astropy.units.quantity.Quantity`.
-
-You can store the data of a `~sunpy.map.GenericMap` object in a separate `~numpy.ndarray` by either of the following actions:
-
-.. code-block:: python
-
-    >>> var = my_map.data  # doctest: +REMOTE_DATA
-    >>> var = my_map.data.copy()  # doctest: +REMOTE_DATA
-
-To create a complete copy of a Map object that is entirely independent of the original, use the built-in `copy.deepcopy` function:
-
-.. code-block:: python
-
-    >>> import copy   # doctest: +REMOTE_DATA
-    >>> my_map_deepcopy = copy.deepcopy(my_map)   # doctest: +REMOTE_DATA
-
-A deepcopy ensures that any changes in the original Map object are not reflected in the copied object and vice versa.
-Note that this copies the data of the Map object as well as all of the other attributes and methods.
-
-Some basic statistical functions are built into Map objects:
+Additional, there are several methods that provide basic summary statistics of the data:
 
 .. code-block:: python
 
@@ -160,14 +152,6 @@ Some basic statistical functions are built into Map objects:
     192130.17
     >>> my_map.mean()  # doctest: +REMOTE_DATA
     427.02252
-
-All the other `~numpy.ndarray` functions and attributes can be accessed through the data array directly.
-For example:
-
-.. code-block:: python
-
-    >>> my_map.data.std()  # doctest: +REMOTE_DATA
-    826.41016
 
 .. _plotting-maps:
 
