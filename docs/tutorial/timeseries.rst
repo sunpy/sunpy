@@ -21,10 +21,7 @@ Lastly, :ref:`ts-metadata` describes how to view and extract information from th
 Creating a TimeSeries
 =====================
 
-A TimeSeries object can be created from local files.
-For convenience, **sunpy** can download several example time series of observational data.
-These files have names like ``sunpy.data.sample.EVE_TIMESERIES`` and ``sunpy.data.sample.GOES_XRS_TIMESERIES``.
-To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries`, type the following into your interactive Python shell:
+To create a `TimeSeries` from some sample GOES XRS data:
 
 .. code-block:: python
 

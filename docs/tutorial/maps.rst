@@ -4,51 +4,39 @@
 Maps
 ****
 
-Map objects in **sunpy** are two-dimensional data associated with a coordinate system.
-This class offers many advantages over using packages such as `astropy.io.fits` to open 2D solar data in Python.
-**sunpy** Maps be used with any image with two spatial axes that has FITS standard compliant metadata.
-There are also 19 sources (see :ref:`map` for a complete list) that provide instrument-specific information when plotting and in some cases interpret missing metadata when it is missing from the original file.
+In this section of the tutorial, you will learn about the `Map <sunpy.map.GenericMap>` object, the primary data structure provided by sunpy.
+Map objects hold two-dimensional data along with the accompanying metadata.
+They can be used with any two-dimensional data array with two spatial axes and FITS-compliant metadata.
+As you will see in this tutorial, the primary advantage of using a Map object over just a bare NumPy array is the ability to perform coordinate aware operations on the underlying array, such as rotating the Map to remove the roll angle of an instrument or cropping a Map to a specific field of view.
+Additionally, because Map is capable of ingesting data from many different sources, it provides a common interface for any two-dimensional data product.
 
-Part of the philosophy of the Map object is to provide most of the basic functionality that a scientist would want.
-Therefore, a Map also contains a number of methods such as resizing or grabbing a subview.
-See `~sunpy.map.mapbase.GenericMap` for summaries of all attributes and methods.
+By the end of this tutorial, you will learn how to create a Map, access the underlying data and metadata, and the basics visualizing a Map.
+Additionally, you will learn how to combine multiple Maps into a `~sunpy.map.MapSequence` or a `~sunpy.map.CompositeMap`.
+Lastly, you will learn how to create Maps from data sources not supported in sunpy.
 
-:ref:`creating-maps` and :ref:`inspecting-maps` demonstrate how to create a Map object and view a summary of the data in the object.
-:ref:`map-data` describes how data is stored and accessed in a Map, and :ref:`plotting-maps` introduces some basics of visualizing Map data in **sunpy**.
-:ref:`map-sequences` and :ref:`composite-maps` detail how **sunpy** can handle multiple Maps from similar and different instruments.
-Lastly, :ref:`custom-maps` shows how you can create Maps from data sources not supported in **sunpy**.
+.. note:: In this section and in :ref:`timeseries_guide`, we will use the sample data included with
+          sunpy. These data are primarily useful for demonstration purposes or simple debugging.
+          These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and
+          ``sunpy.data.sample.RHESSI_IMAGE`` and are automatically downloaded to your computer as
+          you need them. Once downloaded, these sample data files will be paths to their location
+          on your computer.
 
 .. _creating-maps:
 
 Creating Maps
 =============
 
-To make things easy, **sunpy** can download sample data which are used throughout the docs.
-These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``.
-To create a `~sunpy.map.Map` from a sample AIA image, type the following into your Python shell:
+To create a `~sunpy.map.Map` from a sample AIA image,
 
 .. code-block:: python
 
     >>> import sunpy
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-
-The variable ``my_map`` is an `~sunpy.map.sources.AIAMap` object.
-To create a Map from a local FITS file try the following:
-
-.. code-block:: python
-
-    >>> my_map = sunpy.map.Map('/mydirectory/mymap.fits')   # doctest: +SKIP
 
 **sunpy** automatically detects the type of file (e.g. FITS), the instrument associated with it (e.g. AIA, EIT, LASCO), and finds the FITS keywords it needs to interpret the coordinate system.
 If the type of FITS file is not recognized then **sunpy** will try some default FITS keywords and return a `~sunpy.map.GenericMap`, but results may vary.
-**sunpy** can also create Maps using the JPEG 2000 files from `helioviewer.org <https://helioviewer.org/>`__.
-
-The :ref:`sphx_glr_generated_gallery_acquiring_data` section of the Example Gallery has several examples of retrieving data using the `~sunpy.net.Fido` tool.
-For more details, check out the :ref:`acquiring_data` guide.
-See :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.py` for a demonstration of saving a map as a FITS file and `~sunpy.map.GenericMap.save` for more details on saving.
 
 .. _inspecting-maps:
 
