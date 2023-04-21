@@ -16,7 +16,8 @@ sunpy_headers = {
     "User-Agent": f"sunpy/{sunpy.__version__} parfive/{parfive.__version__} "
     f"aiohttp/{aiohttp.__version__} python/{sys.version[:5]} "
 }
-if os.environ.get("PARFIVE_SUNPY_TESTS"):
+if os.environ.get("SUNPY_PYTEST_RUN"):
+    # We want to allow remote servers to filter users from our online tests
     sunpy_headers["User-Agent"] = f"sunpy-CI-tests/{sunpy.__version__} parfive/{parfive.__version__} "
 config = SessionConfig(headers=sunpy_headers)
 

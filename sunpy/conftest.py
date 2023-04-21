@@ -115,13 +115,14 @@ def undo_config_dir_patch():
 
 
 @pytest.fixture(scope='session', autouse=True)
-def parfive_header_test(request):
+def sunpy_test_run(request):
     """
-    Add a keyword to tell parfive this is a test run.
+    Add a environmental keyword to allow us to check and execute
+    specific code within a pytest run (e.g., update headers for the online tests).
     """
-    os.environ["PARFIVE_SUNPY_TESTS"] = "True"
+    os.environ["SUNPY_PYTEST_RUN"] = "True"
     yield
-    del os.environ["PARFIVE_SUNPY_TESTS"]
+    del os.environ["SUNPY_PYTEST_RUN"]
 
 
 @pytest.fixture(scope='session', autouse=True)
