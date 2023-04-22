@@ -3,7 +3,7 @@
 Search for multiple wavelengths with Fido
 =========================================
 
-Use the `~sunpy.net.attrs.Wavelength` attr to search for a particular wavelength::
+Use the `~sunpy.net.attrs.Wavelength` attr to search for a particular wavelength:
 
 .. code-block:: python
 
@@ -31,7 +31,7 @@ Use the `~sunpy.net.attrs.Wavelength` attr to search for a particular wavelength
     <BLANKLINE>
 
 
-The "|" operator can be used to combine multiple wavelengths::
+The "|" operator can be used to combine multiple wavelengths:
 
 .. code-block:: python
 
@@ -65,7 +65,7 @@ The "|" operator can be used to combine multiple wavelengths::
     <BLANKLINE>
     <BLANKLINE>
 
-When searching for more than two wavelengths, it is more practical to use the :func:`sunpy.net.attrs.AttrOr` function::
+When searching for more than two wavelengths, it is more practical to use the :func:`sunpy.net.attrs.AttrOr` function:
 
 .. code-block:: python
 
