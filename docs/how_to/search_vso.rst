@@ -84,7 +84,7 @@ For example, the AIA query above can also be expressed using the AND (&) operato
     <BLANKLINE>
     <BLANKLINE>
 
-Additionally, multiple operators can be chained together to, for example, search for only the 171 :math:`\AA` channel,
+Additionally, multiple operators can be chained together to, for example, search for only the 171 channel,
 
 .. code-block:: python
 
