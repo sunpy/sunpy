@@ -1,0 +1,1 @@
+Migrated example gallery entries for searching the VSO, using ``parse_time``, using the data manager, and using solar constants to the how-to guide.
