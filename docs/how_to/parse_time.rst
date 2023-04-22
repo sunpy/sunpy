@@ -1,100 +1,105 @@
-"""
+.. _how_to_parse_times_with_parse_time
+
+Parse times with `sunpy.time.parse_time`
 ========================================
-Parsing times with sunpy.time.parse_time
-========================================
 
-This is an example to show some possible usage of ``parse_time``.
-``parse_time`` is a function that can be useful to create `~astropy.time.Time`
-objects from various other time objects and strings.
-"""
-##############################################################################
-# Import the required modules.
-import time
-from datetime import date, datetime
+.. code-block:: python
 
-import numpy as np
-import pandas
+    >>> import time
+    >>> from datetime import date, datetime
+    >>> import numpy as np
+    >>> import pandas
+    >>> from sunpy.time import parse_time
 
-from sunpy.time import parse_time
+The following examples show how to use `sunpy.time.parse_time` to parse various time formats, including both strings and objects, into an `astropy.time.Time` object(s).
 
-##############################################################################
-# Suppose you want to parse some strings, ``parse_time`` can do that.
+* strings:
 
-t1 = parse_time('1995-12-31 23:59:60')
+.. code-block:: python
 
-##############################################################################
-# Of course you could do the same with `~astropy.time.Time`.
-# But sunpy ``parse_time`` can parse even more formats of time strings.
-# And as you see from the examples, thanks to `~astropy.time.Time`, ``parse_time``
-# can handle leap seconds too.
+    >>> parse_time('1995-12-31 23:59:60')
+    <Time object: scale='utc' format='isot' value=1995-12-31T23:59:60.000>
 
-t2 = parse_time('1995-Dec-31 23:59:60')
+* string with the ``scale=`` keyword argument (See `this list: <https://docs.astropy.org/en/stable/time/#time-scale>`__ for the list of all allowed scales):
 
+.. code-block:: python
 
-##############################################################################
-# You can mention the scale of the time as a keyword parameter if you need.
-# Similar to scale you can pass in any astropy Time compatible keywords to
-# ``parse_time``. See all arguments
-# `here: <https://docs.astropy.org/en/stable/time/#creating-a-time-object>`__
+    >>> parse_time('2012:124:21:08:12', scale='tai')
+    <Time object: scale='tai' format='isot' value=2012-05-03T21:08:12.000>
 
-t3 = parse_time('2012:124:21:08:12', scale='tai')
+* tuples:
 
-##############################################################################
-# Now that you are done with strings, let's see other type ``parse_time`` handles,
-# tuples. `~astropy.time.Time` does not handle tuples but ``parse_time`` does.
+.. code-block:: python
 
-t4 = parse_time((1998, 11, 14))
-t5 = parse_time((2001, 1, 1, 12, 12, 12, 8899))
+    >>> parse_time((1998, 11, 14))
+    <Time object: scale='utc' format='isot' value=1998-11-14T00:00:00.000>
+    >>> parse_time((2001, 1, 1, 12, 12, 12, 8899))
+    <Time object: scale='utc' format='isot' value=2001-01-01T12:12:12.009>
 
-##############################################################################
-# This also means that you can parse a ``time.struct_time``.
+* `time.struct_time`:
 
-t6 = parse_time(time.localtime())
+.. code-block:: python
 
-##############################################################################
-# ``parse_time`` also parses ``datetime`` and ``date`` objects.
+    >>> parse_time(time.gmtime(0))
+    <Time object: scale='utc' format='isot' value=1970-01-01T00:00:00.000>
 
-t7 = parse_time(datetime.now())
-t8 = parse_time(date.today())
+* `datetime.datetime`, and `datetime.date`:
 
-##############################################################################
-# ``parse_time`` can return ``astropy.time.Time`` objects for ``pandas.Timestamp``,
-# ``pandas.Series`` and ``pandas.DatetimeIndex``.
+.. code-block:: python
 
-t9 = parse_time(pandas.Timestamp(datetime(1966, 2, 3)))
+    >>> parse_time(datetime(1990, 10, 15, 14, 30))
+    <Time object: scale='utc' format='datetime' value=1990-10-15 14:30:00>
+    >>> parse_time(date(2023, 4, 22))
+    <Time object: scale='utc' format='iso' value=2023-04-22 00:00:00.000>
 
-t10 = parse_time(
-    pandas.Series([[datetime(2012, 1, 1, 0, 0),
-                    datetime(2012, 1, 2, 0, 0)],
-                   [datetime(2012, 1, 3, 0, 0),
-                    datetime(2012, 1, 4, 0, 0)]]))
+* `pandas` time objects such as `pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`:
 
-t11 = parse_time(
-    pandas.DatetimeIndex([
-        datetime(2012, 1, 1, 0, 0),
-        datetime(2012, 1, 2, 0, 0),
-        datetime(2012, 1, 3, 0, 0),
-        datetime(2012, 1, 4, 0, 0)
-    ]))
+.. code-block:: python
 
-##############################################################################
-# ``parse_time`` can parse ``numpy.datetime64`` objects.
+    >>> parse_time(pandas.Timestamp(datetime(1966, 2, 3)))
+    <Time object: scale='utc' format='datetime64' value=1966-02-03T00:00:00.000000000>
+    >>> parse_time(pandas.Series([[datetime(2012, 1, 1, 0, 0), datetime(2012, 1, 2, 0, 0)],
+    ...                           [datetime(2012, 1, 3, 0, 0), datetime(2012, 1, 4, 0, 0)]]))
+    <Time object: scale='utc' format='datetime' value=[[datetime.datetime(2012, 1, 1, 0, 0) datetime.datetime(2012, 1, 2, 0, 0)]
+                                                       [datetime.datetime(2012, 1, 3, 0, 0) datetime.datetime(2012, 1, 4, 0, 0)]]>
+    >>> parse_time(pandas.DatetimeIndex([datetime(2012, 1, 1, 0, 0),
+    ...                                  datetime(2012, 1, 2, 0, 0),
+    ...                                  datetime(2012, 1, 3, 0, 0),
+    ...                                  datetime(2012, 1, 4, 0, 0)]))
+    <Time object: scale='utc' format='datetime' value=[datetime.datetime(2012, 1, 1, 0, 0)
+                                                       datetime.datetime(2012, 1, 2, 0, 0)
+                                                       datetime.datetime(2012, 1, 3, 0, 0)
+                                                       datetime.datetime(2012, 1, 4, 0, 0)]>
 
-t12 = parse_time(np.datetime64('2014-02-07T16:47:51.008288123'))
-t13 = parse_time(
-    np.array(
-        ['2014-02-07T16:47:51.008288123', '2014-02-07T18:47:51.008288123'],
-        dtype='datetime64'))
+* `numpy.datetime64`:
 
-##############################################################################
-# Parse time returns `~astropy.time.Time` object for every parsable input that
-# you give to it.
-# ``parse_time`` can handle all formats that `~astropy.time.Time` can handle.
-# That is,
-# ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime',
-# 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
-# at the time of writing. This can be used by passing format keyword argument
-# to ``parse_time``.
+.. code-block:: python
 
-parse_time(1234.0, format='jd')
-parse_time('B1950.0', format='byear_str')
+    >>> parse_time(np.datetime64('2014-02-07T16:47:51.008288123'))
+    <Time object: scale='utc' format='isot' value=2014-02-07T16:47:51.008>
+    >>> parse_time(np.array(['2014-02-07T16:47:51.008288123', '2014-02-07T18:47:51.008288123'],
+    ...                     dtype='datetime64'))
+    <Time object: scale='utc' format='isot' value=['2014-02-07T16:47:51.008' '2014-02-07T18:47:51.008']>
+
+All formats that handled by `astropy.time.Time` (See this list of all allowed formats, see `this list <https://docs.astropy.org/en/stable/time/#time-format>`__):
+
+.. code-block:: python
+
+    >>> parse_time(1234.0, format='jd')
+    <Time object: scale='utc' format='jd' value=1234.0>
+    >>> parse_time('B1950.0', format='byear_str')
+    <Time object: scale='tt' format='byear_str' value=B1950.000>
+
+* Format output by the ``anytim`` routine in SSW (see the documentation for `~sunpy.time.TimeUTime` for more information):
+
+.. code-block:: python
+
+    >>> parse_time(662738003, format='utime')
+    <Time object: scale='utc' format='utime' value=662738003.0>
+
+* Format output by the ``anytim2tai`` routine in SSW (see the documentation for `~sunpy.time.TaiSeconds` for more information):
+
+.. code-block:: python
+
+    >>> parse_time(1824441848, format='tai_seconds')
+    <Time object: scale='tai' format='tai_seconds' value=1824441848.0>
