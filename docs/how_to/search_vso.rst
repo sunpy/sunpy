@@ -1,7 +1,7 @@
-.. _how_to_search_the_vso
+.. _how_to_search_the_vso:
 
-Searching the Virtual Solar Observatory (VSO)
-=============================================
+Search the Virtual Solar Observatory (VSO)
+==========================================
 
 To search the Virtual Solar Observatory (VSO) for SDO AIA data in all channels over a given time range,
 use the timerange (`~sunpy.net.attrs.Time`) and the instrument (`~sunpy.net.attrs.Instrument`) attrs,
