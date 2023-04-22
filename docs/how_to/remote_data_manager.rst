@@ -1,61 +1,51 @@
-"""
-=========================
-Using Remote Data Manager
-=========================
+.. _how_to_use_the_remote_data_manager:
 
-This is an example to show how to use remote data manager to
-handle remote data in Sunpy.
-"""
+Use the Remote Data Manager
+===========================
 
-##############################################################################
-# Remote data manager is used to handle the usage of remote files in the code
-# base with file verification using hashes.
+Often, data prep or analysis functions require files to be downloaded from a remote server.
+The remote data manager handles the usage of remote data files including file verification using hashes.
+For example, say a function, ``test_function``, requires the remote data file http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has the SHA256 hash '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11'.
+To ensure that this exact version of the file is downloaded when ``test_function`` is called, use the `~sunpy.data.data_manager.manager.require` decorator.
 
-from sunpy.data import manager
+.. code-block:: python
 
-##############################################################################
-# Let's start by defining a function which uses some remote files.
-# Let's assume the function requires a file,
-# say http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has
-# the SHA256 hash '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11'.
+    >>> from sunpy.data import manager
+    >>> @manager.require('test_file',
+    ...                  ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
+    ...                  '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
+    ... def test_function():
+    ...     pass
 
+The first time the function is called, the file will be downloaded and then cached such that subsequent function calls will not trigger a download.
 
-@manager.require('test_file',
-                 ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
-                 '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
-def test_function_1():
-    pass
+.. code-block:: python
 
-##############################################################################
-# To access the downloaded file inside the function, you can use
-# `~sunpy.data.data_manager.manager.DataManager.get` function
-# which returns a `pathlib.Path` object.
+    >>> test_function()  # The file will be downloaded  # doctest: +REMOTE_DATA
+    >>> test_function()  # No downloading here  # doctest: +REMOTE_DATA
 
+To access the downloaded file inside the function, use the :meth:`~sunpy.data.data_manager.manager.DataManager.get` method,
 
-@manager.require('test_file',
-                 ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
-                 '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
-def test_function_2():
-    return manager.get('test_file')
+.. code-block:: python
 
-##############################################################################
-# The first time the function is called, the file will be downloaded.
-# During subsequent calls, no downloading will take place.
+    >>> @manager.require('test_file',
+    ...                  ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
+    ...                  '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
+    ... def test_function():
+    ...     return manager.get('test_file')
 
+To call a function that uses the data manager, but skip the hash check, use the `~sunpy.data.data_manager.manager.DataManager.skip_hash_check` context manager.
 
-print(test_function_2())  # The file will be downloaded
-print(test_function_2())  # No downloading here
+.. code-block:: python
 
-##############################################################################
-# In case the user wants to skip the hash check, there is a helper context manager
-# `~sunpy.data.data_manager.manager.DataManager.skip_hash_check`.
+    >>> with manager.skip_hash_check():
+    ...     test_function()  # doctest: +REMOTE_DATA
+    PosixPath('.../sunpy/data_manager/predicted-sunspot-radio-flux.txt')
 
-with manager.skip_hash_check():
-    print(test_function_2())
+To replace the required file with another version, use the `~sunpy.data.data_manager.manager.DataManager.override_file` context manager.
 
-##############################################################################
-# If the user knows the function is going to use a file and want to replace it with another version
-# they can do that too.
+.. code-block:: python
 
-with manager.override_file('test_file', 'http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits'):
-    print(test_function_2())
+    >>> with manager.override_file('test_file', 'http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits'):
+    ...     test_function()  # doctest: +REMOTE_DATA
+    PosixPath('.../sunpy/data_manager/AIA20110319_105400_0171.fits')
