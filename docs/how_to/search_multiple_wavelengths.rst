@@ -3,7 +3,7 @@
 Search for multiple wavelengths with Fido
 =========================================
 
-Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength::
+Use the `~sunpy.net.attrs.Wavelength` attr to search for a particular wavelength::
 
     >>> from astropy import units as u
     >>> from sunpy.net import Fido

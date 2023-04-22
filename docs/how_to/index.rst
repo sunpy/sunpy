@@ -11,6 +11,7 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
 .. toctree::
    :maxdepth: 1
 
+   search_vso.rst
    search_multiple_wavelengths.rst
 
 
