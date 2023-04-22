@@ -13,6 +13,8 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
 
    search_vso.rst
    search_multiple_wavelengths.rst
+   parse_time.rst
+   remote_data_manager.rst
 
 
 Quick Reference
@@ -60,4 +62,4 @@ For more complete code examples, see the how-to guides above.
    * - calculate the time corresponding to a given Carrington rotation
      - :func:`~sunpy.coordinates.sun.carrington_rotation_time`
    * - see all of the available solar constants
-     - :func:`sunpy.sun.constants.print_all`, :func: `sunpy.sun.constants.keys`
+     - :func:`sunpy.sun.constants.print_all`, :func:`sunpy.sun.constants.keys`
