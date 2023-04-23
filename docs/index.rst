@@ -27,7 +27,8 @@ It provides search and download functionality, data containers for image and tim
 
         :material-outlined:`menu_book;8em;sd-text-secondary`
 
-        Snippets of code for accomplishing specific tasks with sunpy. Most useful for answering "How do I..." questions.
+        Snippets of code for accomplishing specific tasks with sunpy.
+        Most useful for answering "How do I..." questions.
 
     .. grid-item-card:: Example gallery
         :link: generated/gallery
