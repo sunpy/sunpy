@@ -15,6 +15,8 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
    search_multiple_wavelengths
    parse_time
    remote_data_manager
+   coord_components
+
 
 Quick Reference
 ---------------
