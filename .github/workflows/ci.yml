@@ -174,7 +174,7 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
       sdist: false
-      test_extras: 'test'
+      test_extras: 'all,tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
