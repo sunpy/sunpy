@@ -61,6 +61,10 @@
       "None"
     ],
     [
+      "GSENSE2020BSI",
+      "Scientific backside-illuminated CMOS image sensor"
+    ],
+    [
       "HI2",
       "Heliospheric Imager 2"
     ],
@@ -341,10 +345,6 @@
       "None"
     ],
     [
-      "DSLP",
-      "None"
-    ],
-    [
       "STE",
       "Suprathermal Electron Telescope"
     ],
@@ -463,10 +463,6 @@
       "Kanzelh\u00f6he Photoheliograph"
     ],
     [
-      "ChroTel",
-      "Chromospheric Telescope"
-    ],
-    [
       "SWAN",
       "Solar Wind Anisotropies"
     ],
@@ -475,16 +471,16 @@
       "Shortwave EUV observation of Sun with EUNIS (2006 flight)"
     ],
     [
-      "dpm",
-      "Digital Prominence Monitor"
-    ],
-    [
       "LASCO",
       "Large Angle and Spectrometric Coronagraph"
     ],
     [
       "VAULT-2002",
       "Very High Angular Resolution Ultraviolet Telescope (2002 flight)"
+    ],
+    [
+      "SUTRI",
+      "The Solar Upper Transition Region Imager"
     ],
     [
       "solar fts spectrometer",
@@ -497,10 +493,6 @@
     [
       "ISOON",
       "Improved Solar Observing Optical Network"
-    ],
-    [
-      "chp",
-      "Chromospheric Helium-I Imaging Photometer"
     ],
     [
       "60-ft SHG",
@@ -615,10 +607,6 @@
       "Michelson Doppler Imager"
     ],
     [
-      "mk4",
-      "Mk. IV coronagraph"
-    ],
-    [
       "IRIS",
       "Interface Region Imaging Spectrograph"
     ],
@@ -653,10 +641,6 @@
     [
       "UVCS",
       "Ultraviolet Coronagraph Spectrometer"
-    ],
-    [
-      "K-Cor",
-      "None"
     ],
     [
       "SXT",
@@ -725,10 +709,6 @@
     [
       "EIS",
       "EUV Imaging Spectrometer"
-    ],
-    [
-      "DSLP",
-      "None"
     ],
     [
       "CDS",
@@ -821,10 +801,6 @@
       "1.5"
     ],
     [
-      "1.0",
-      "1.0"
-    ],
-    [
       "0D",
       "0D"
     ]
@@ -905,8 +881,8 @@
       "National Solar Observatory"
     ],
     [
-      "KIS",
-      "Kiepenheuer-Institut f\u00fcr Sonnenphysik"
+      "HSOS",
+      "Hairou Solar Observing Station, Chines Academy of Science, Beijing, China"
     ],
     [
       "ROB",
@@ -1015,10 +991,6 @@
       "None"
     ],
     [
-      "MLSO",
-      "Mauna Loa Solar Observatory"
-    ],
-    [
       "SMM",
       "Solar Maximum Mission"
     ],
@@ -1049,10 +1021,6 @@
     [
       "Evans",
       "Evans Solar Telescope, Sacramento Peak"
-    ],
-    [
-      "ChroTel",
-      "Chromospheric Telescope, Observatorio del Teide, Tenerife, Canary Islands"
     ],
     [
       "McMath",
@@ -1095,10 +1063,6 @@
       "Improved Solar Observing Optical Network"
     ],
     [
-      "SO2",
-      "None"
-    ],
-    [
       "PSP",
       "Parker Solar Probe"
     ],
@@ -1113,6 +1077,10 @@
     [
       "FOXSI2",
       "Focusing Optics X-ray Solar Imager (flight #2:  12/11/14)"
+    ],
+    [
+      "SATech-01",
+      "Space Advanced Technology (demonstration satellite)"
     ],
     [
       "OACT",
@@ -1167,12 +1135,12 @@
       "Mt Wilson Solar Observatory"
     ],
     [
-      "IRIS",
-      "Interface Region Imaging Spectrograph"
-    ],
-    [
       "PROBA2",
       "PRoject for Onboard Autonomy"
+    ],
+    [
+      "IRIS",
+      "Interface Region Imaging Spectrograph"
     ]
   ]
 }
