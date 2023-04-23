@@ -119,7 +119,6 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
-    'sphinx_design',
 ]
 
 # Set automodapi to generate files inside the generated directory
