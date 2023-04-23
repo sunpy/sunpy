@@ -2607,6 +2607,12 @@ class GenericMap(NDData):
         from skimage import measure
 
         level = self._process_levels_arg(level)
+        if level.size != 1:
+            raise ValueError("level must be a single scalar value")
+        else:
+            # _process_levels_arg converts level to a 1D array, but
+            # find_contours expects a scalar below
+            level = level[0]
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
