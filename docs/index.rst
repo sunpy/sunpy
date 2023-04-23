@@ -45,7 +45,8 @@ It provides search and download functionality, data containers for image and tim
 
         :material-outlined:`school;8em;sd-text-secondary`
 
-        In-depth explanations of concepts and key topics. Most useful for answering "why" questions.
+        In-depth explanations of concepts and key topics.
+        Most useful for answering "why" questions.
 
     .. grid-item-card:: Reference
         :link: reference
