@@ -12,6 +12,9 @@ representation (e.g., Cartesian versus spherical).
 For the helioprojective frame, the theta_x and theta_y components are accessed as
 ``Tx`` and ``Ty``, respectively::
 
+  >>> from astropy.coordinates import SkyCoord
+  >>> import astropy.units as u
+  >>> from sunpy.coordinates import frames
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
   <Longitude -500. arcsec>
