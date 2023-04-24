@@ -320,7 +320,7 @@ try:
     # Construct the full URL for warpAffine/filter2D
     warpAffine_full = f"{base_url}/{version}/{warpAffine}"
     filter2D_full = f"{base_url}/{version}/{filter2D}"
-except:
+except Exception:
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
     filter2D_full = ""
