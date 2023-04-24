@@ -1,4 +1,4 @@
-.. _extending_fido:
+.. _how-to-add-new-sources-to-fido:
 
 ***************************************
 Extending Fido with New Sources of Data
