@@ -14,12 +14,12 @@ By the end of this tutorial, you will learn how to create a Map, access the unde
 Additionally, you will learn how to combine multiple Maps into a `~sunpy.map.MapSequence` or a `~sunpy.map.CompositeMap`.
 Lastly, you will learn how to create Maps from data sources not supported in sunpy.
 
-.. note:: In this section and in :ref:`timeseries_guide`, we will use the sample data included with
-          sunpy. These data are primarily useful for demonstration purposes or simple debugging.
-          These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and
-          ``sunpy.data.sample.RHESSI_IMAGE`` and are automatically downloaded to your computer as
-          you need them. Once downloaded, these sample data files will be paths to their location
-          on your computer.
+.. note::
+
+    In this section and in :ref:`timeseries_guide`, we will use the sample data included with sunpy.
+    These data are primarily useful for demonstration purposes or simple debugging.
+    These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE`` and are automatically downloaded to your computer as you need them.
+    Once downloaded, these sample data files will be paths to their location on your computer.
 
 .. _creating-maps:
 
@@ -155,10 +155,10 @@ Additional, there are several methods that provide basic summary statistics of t
 
 .. _plotting-maps:
 
-Plotting Maps
-=============
+Visualizing Maps
+================
 
-The `~sunpy.map.GenericMap` object has a built-in plot method such that it is easy to quickly view your map.
+The Map object has a built-in plot method such that it is easy to quickly view your map.
 sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
 We refer the reader to the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`__ to learn more about the Matplotlib and to become familiar with the basics.
 To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
