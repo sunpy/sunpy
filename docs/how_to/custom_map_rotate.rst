@@ -1,8 +1,8 @@
-.. _map_rotate_custom:
+.. _how-to-add-a-new-rotation-method-to-map:
 
-****************************
-Adding a new rotation method
-****************************
+***************************************
+How to add a new rotation method to Map
+***************************************
 
 It is possible to select from a number of rotation methods when using :func:`sunpy.image.transform.affine_transform` and :meth:`sunpy.map.GenericMap.rotate`.
 You can add a custom rotation method using the decorator :func:`sunpy.image.transform.add_rotation_function`:
@@ -29,6 +29,5 @@ Then you can do:
     hmi_map = sunpy.map.Map(sample.HMI_LOS_IMAGE)
 
     rot_map = hmi_map.rotate(order=3, recenter=True, method="my_rotate")
-
 
 The available rotation methods are all implemented using the :func:`~sunpy.image.transform.add_rotation_function` decorator, so you can look in `sunpy/image/transform.py <https://github.com/sunpy/sunpy/blob/main/sunpy/image/transform.py>`__ for examples of how to use this decorator.
