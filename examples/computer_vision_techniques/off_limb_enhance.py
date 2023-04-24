@@ -53,7 +53,7 @@ fig, ax = plt.subplots()
 
 ax.plot(rsun_array, y, label='data')
 best_fit = np.exp(np.poly1d(params)(rsun_array))
-label = r'best fit: {:.2f}$e^{{{:.2f}r}}$'.format(best_fit[0], params[0])
+label = fr'best fit: {best_fit[0]:.2f}$e^{{{params[0]:.2f}r}}$'
 ax.plot(rsun_array, best_fit, label=label)
 ax.set_yscale('log')
 ax.set_ylabel(r'mean DN', fontsize=fontsize)

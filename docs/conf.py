@@ -42,7 +42,7 @@ from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
-copyright = '{}, {}'.format(datetime.datetime.now().year, author)
+copyright = f'{datetime.datetime.now().year}, {author}'
 
 
 # Register remote data option with doctest
@@ -339,7 +339,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
-with open('./reference/sunpy_stability.yaml', 'r') as estability:
+with open('./reference/sunpy_stability.yaml') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
