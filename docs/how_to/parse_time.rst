@@ -1,4 +1,4 @@
-.. _how_to_parse_times_with_parse_time
+.. _how_to_parse_times_with_parse_time:
 
 Parse times with `sunpy.time.parse_time`
 ========================================
@@ -97,7 +97,7 @@ All formats that handled by `astropy.time.Time` (See this list of all allowed fo
     >>> parse_time(662738003, format='utime')
     <Time object: scale='utc' format='utime' value=662738003.0>
 
-* Format output by the ``anytim2tai`` routine in SSW (see the documentation for `~sunpy.time.TaiSeconds` for more information):
+* Format output by the ``anytim2tai`` routine in SSW (see the documentation for `~sunpy.time.TimeTaiSeconds` for more information):
 
 .. code-block:: python
 

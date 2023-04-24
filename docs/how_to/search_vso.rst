@@ -34,7 +34,7 @@ use the timerange (`~sunpy.net.attrs.Time`) and the instrument (`~sunpy.net.attr
     <BLANKLINE>
     <BLANKLINE>
 
-You can also search for specific physical observables using `~sunpy.net.attr.Physobs`.
+You can also search for specific physical observables using `~sunpy.net.attrs.Physobs`.
 For example, you can search for line-of-sight (LOS) magnetic field measurements from HMI in
 the same time range,
 

@@ -6,7 +6,7 @@ Use the Remote Data Manager
 Often, data prep or analysis functions require files to be downloaded from a remote server.
 The remote data manager handles the usage of remote data files including file verification using hashes.
 For example, say a function, ``test_function``, requires the remote data file http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has the SHA256 hash '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11'.
-To ensure that this exact version of the file is downloaded when ``test_function`` is called, use the `~sunpy.data.data_manager.manager.require` decorator.
+To ensure that this exact version of the file is downloaded when ``test_function`` is called, use the `~sunpy.data.data_manager.manager.DataManager.require` decorator.
 
 .. code-block:: python
 
