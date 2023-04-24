@@ -1,9 +1,10 @@
 .. _how-to-search-for-multiple-wavelengths-with-fido:
 
+*****************************************
 Search for multiple wavelengths with Fido
-=========================================
+*****************************************
 
-Use the `~sunpy.net.attrs.Wavelength` attr to search for a particular wavelength:
+Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength:
 
 .. code-block:: python
 
