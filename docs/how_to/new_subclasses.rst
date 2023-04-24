@@ -1,10 +1,10 @@
-.. _new_maps_ts_etc:
+.. _how-to-create-new-maps-and-timeseries:
 
-************************************************
-Creating new sunpy Subclasses (Maps, TimeSeries)
-************************************************
+***********************************************
+How to create new Map and TimeSeries subclasses
+***********************************************
 
-Writing a new Instrument Map Class
+Writing a new instrument Map class
 ==================================
 
 All instrument Map classes are subclasses of the generic `~sunpy.map.GenericMap` subclass.
@@ -17,13 +17,15 @@ Any subclass of `~sunpy.map.GenericMap` which defines a method named ``is_dataso
 The ``is_datasource_for`` method is used by the `~sunpy.map.Map` factory to check if a file should use a particular instrument Map class.
 This function can run any test it needs to determine this.
 For example, it might check the value of the ``INSTRUMENT`` key in the metadata dictionary.
-The following example shows how this works and includes a sample doc string that is compatible with the :ref:`Docs Guidelines for Data Sources`.
+The following example shows how this works and includes a sample doc string that is compatible with the :ref:`Docs Guidelines for Data Sources`:
 
 .. code-block:: python
 
     import sunpy.map
+
     class NextGenerationTelescopeMap(sunpy.map.GenericMap):
-      "NextGenerationTelescope Map.
+      """
+      NextGenerationTelescope Map.
 
       The Next Generation Telescope is a type A telescope on board the XYZ mission.
       It operates in low Earth orbit with an altitude of 600 kmn and an inclination of 28.5 degrees.
@@ -45,25 +47,26 @@ The following example shows how this works and includes a sample doc string that
       References
       ----------
       * List of all required references
-      "
+      """
 
         def __init__(self, data, header, **kwargs):
 
-            # will process the header according to common standards
+            # Will process the header according to FITS common standards
             super(FutureMap, self).__init__(data, header, **kwargs)
 
             # Any NextGenerationTelescope Instrument-specific manipulation.
             # This typically involves editing the `self.meta` attribute.
 
-        # used by the Map factory to determine if this subclass should be used
+        # Used by the Map factory to determine if this subclass should be used
         @classmethod
         def is_datasource_for(cls, data, header, **kwargs):
-            """Determines if data, header corresponds to a NextGenerationTelescope image"""
-            # returns True only if this is data and header from NextGenerationTelescope
+            """
+            Determines if data, header corresponds to a NextGenerationTelescope image
+            """
+            # Returns True only if this is data and header from NextGenerationTelescope
             return header.get('instrume', '').startswith('NextGenerationTelescope')
 
+Writing a new instrument Map class
+==================================
 
-Writing a new Instrument TimeSeries Class
-=========================================
-
-To be written.
+NotImplemented
