@@ -227,7 +227,7 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
     step = np.sqrt((vertices[1:, 0] - vertices[:-1, 0]) ** 2 +
                    (vertices[1:, 1] - vertices[:-1, 1]) ** 2)
     continuous = np.concatenate([[True, True], step[1:] < 100 * step[:-1]])
-    if not close_path is True:
+    if close_path is not True:
         continuous[0] = False
         continuous[-1] = False
 

@@ -18,6 +18,7 @@ from urllib.request import Request, urlopen
 import zeep
 
 from sunpy import config, log
+from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
@@ -25,7 +26,6 @@ from sunpy.net.vso.attrs import _walker as walker
 from sunpy.util.exceptions import warn_user
 from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
-from .. import _attrs as core_attrs
 from .exceptions import (
     DownloadFailed,
     MissingInformation,
