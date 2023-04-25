@@ -244,6 +244,7 @@ hoverxref_role_types = {
 # a list of builtin themes.
 
 from sunpy_sphinx_theme.conf import *  # NOQA
+from sunpy_sphinx_theme.conf import png_icon  # NOQA
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

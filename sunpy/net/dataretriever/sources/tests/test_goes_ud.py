@@ -164,7 +164,7 @@ def test_resolution_attrs(LCClient):
 
     # check is incorrect resolution attrs passed
     with pytest.raises(RuntimeError):
-        qr_wrong_resolution = LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.ctime)
+        LCClient.search(Time('2012/10/4 20:20', '2012/10/4 21:00'), Instrument('XRS'), a.Resolution.ctime)
 
 
 @pytest.mark.remote_data

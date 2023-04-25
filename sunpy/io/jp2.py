@@ -1,4 +1,4 @@
-from _jp2 import *  # noqa: F401
+from _jp2 import *  # noqa: F403
 
 from sunpy.util.exceptions import warn_deprecated
 from . import _jp2
