@@ -71,6 +71,19 @@ To make sure this has all worked correctly, we can take a quick look at ``my_map
 
 This should show a representation of the data as well as some of its associated attributes.
 If you are in a Jupyter Notebook, this will show a rich HTML view of the table along with several quick-look plots.
+Otherwise, you can use the :meth:`~sunpy.map.GenericMap.quicklook` method to see these quick-look plots.
+
+.. code-block:: python
+
+    >>> my_map.quicklook()  # doctest: +SKIP
+
+.. generate:: html
+    :html_border:
+
+    import sunpy.map
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    print(my_map._repr_html_())
 
 .. _inspecting-maps:
 
@@ -153,37 +166,118 @@ Additional, there are several methods that provide basic summary statistics of t
     >>> my_map.mean()  # doctest: +REMOTE_DATA
     427.02252
 
+.. _coordinates-wcs-maps:
+
+Maps, Coordinates, and the World Coordinate System
+==================================================
+
+In :ref:`coordinates-sunpy`, you learned how to define coordinates with `~astropy.coordinates.SkyCoord` using different solar coordinate frames.
+The coordinate frame of a Map is provided as an attribute,
+
+.. code-block:: python
+
+    >>> my_map.coordinate_frame  # doctest: +REMOTE_DATA
+    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
+
+This tells us that the coordinate system of the image is Helioprojective (HPC) and that it is defined by an observer at a particular location.
+This observer coordinate is also provided as an attribute,
+
+.. code-block:: python
+
+    >>> my_map.observer_coordinate  # doctest: +REMOTE_DATA
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>
+
+This tells us the location of the spacecraft, in this case SDO, when it recorded this partiuclar observation, as derived from the FITS metadata.
+Map has several additional coordinate-related attributes that provide the coordinates of the center and corners of the Map,
+
+.. code-block:: python
+
+    >>> my_map.center  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (3.22309951, 1.38578135)>
+    >>> my_map.bottom_left_coord  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (-1228.76466158, -1224.62447509)>
+    >>> my_map.top_right_coord  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (1235.21095899, 1227.39598836)>
+
+But what if we wanted to know what pixel these physical coordinates correspond to?
+Thankfully, each Map has an associated World Coordinate System, or WCS, which is derived from the underlying metadata and expressed as an `astropy.wcs.WCS` object.
+The WCS is accessible as an attribute:
+
+.. code-block:: python
+
+    >>> my_map.wcs  # doctest: +REMOTE_DATA
+    WCS Keywords
+    <BLANKLINE>
+    Number of WCS axes: 2
+    CTYPE : 'HPLN-TAN'  'HPLT-TAN'
+    CRVAL : 0.00089530541880571  0.00038493926472939
+    CRPIX : 512.5  512.5
+    PC1_1 PC1_2  : 0.99999706448085  0.0024230207763071
+    PC2_1 PC2_2  : -0.0024230207763071  0.99999706448085
+    CDELT : 0.00066744222222222  0.00066744222222222
+    NAXIS : 1024  1024
+
+WCS is a fairly complex topic, but all we need to know for now is that the WCS provides the transformation between the pixel coordinates of the image and physical or "world" coordinates.
+In particular, we will only focus on two methods: `~astropy.wcs.WCS.world_to_pixel` and `~astropy.wcs.WCS.pixel_to_world`.
+First, let's find the pixel location corresponding to the center of the Map,
+
+.. code-block:: python
+
+    >>> center_pixel = my_map.wcs.world_to_pixel(my_map.center)  # doctest: +REMOTE_DATA
+    >>> center_pixel  # doctest: +REMOTE_DATA
+    (array(511.5), array(511.5))
+
+Notice that these coordinates are not necessarily integers.
+The corresponding pixel-to-world transformation should then give us back our center coordinate from above,
+
+.. code-block:: python
+
+    >>> my_map.wcs.pixel_to_world(center_pixel[0], center_pixel[1])  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (3.22309951, 1.38578135)>
+
+As another example, if we transform the center of the lower-left pixel to a world coordinate, it should correspond to bottom left coordinate from above,
+
+.. code-block:: python
+
+    >>> my_map.wcs.pixel_to_world(0, 0)  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (-1228.76466158, -1224.62447509)>
+
+These two methods are extremely useful when trying to understand which pixels correspond to which physical coordinates or when trying to locate the same physical location in images taken by separate spacecraft.
+
 .. _plotting-maps:
 
 Visualizing Maps
 ================
+
+.. plot::
+    :nofigs:
+    :context: close-figs
+
+    # This is here to put my_map in the scope of the plot directives.
+    # This avoids repeating code in the example source code that is actually displayed.
+    import sunpy.map
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 The Map object has a built-in plot method such that it is easy to quickly view your map.
 sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
 We refer the reader to the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`__ to learn more about the Matplotlib and to become familiar with the basics.
 To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
 
-peek()
-------
-For quick and easy access to a plot `~sunpy.map.GenericMap` and `~sunpy.timeseries.GenericTimeSeries` (see next section), both define their own ``peek()`` methods which create a plot for you and show it without you having to deal with any Matplotlib setup.
-This is so that it is easy to take a quick look at your data.
-
-For example, to create a plot just type:
-
-.. plot::
-    :include-source:
-
-    import sunpy.map
-    import sunpy.data.sample
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia_map.peek()
-
-
-This creates a plot window with all axes defined, a plot title, and the image of the map data defined by the contents of the map.
-In non-interactive mode the plot window blocks execution and must be closed before doing anything else.
-
-plot()
-------
+Basic Plotting
+--------------
 
 For more advanced plotting the base sunpy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
 This command is similar to the pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and axes object for you if you haven't already.
@@ -241,8 +335,8 @@ You can also view or make changes to the default settings through the ``sunpy.ma
 See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of this workflow for changing plot settings.
 
 
-Colormaps and Normalization
----------------------------
+Changing the Colormap and Normalization
+----------------------------------------
 
 Image data is generally shown in false color in order to better identify it or to better visualize structures in the image.
 Matplotlib handles this colormapping process through the `~matplotlib.colors` module.
@@ -328,8 +422,8 @@ Meanwhile, the data values associated with each color do change because the norm
 
 .. _wcsaxes-plotting:
 
-Maps with coordinate systems
-----------------------------
+Overlaying Coordinates
+----------------------
 
 By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
 the representation of world coordinates, and calling
@@ -400,80 +494,19 @@ Here we can plot a sunpy map, and also overplot some points defined in arcsecond
     plt.show()
 
 It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
-Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`.
 
 
 Check out the following foundational examples in the Example Gallery for plotting Maps:
 
 * :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`
 
+* :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`
+
 * :ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`
 
 * :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py`
 
 * :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py`
-
-
-Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
-units to plot a AIA image and a zoomed in view of an active region.
-
-.. plot::
-    :include-source:
-
-    import matplotlib.pyplot as plt
-    from matplotlib import patches
-    import astropy.units as u
-    from astropy.coordinates import SkyCoord
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    # Define a region of interest
-    length = 250 * u.arcsec
-    x0 = -100 * u.arcsec
-    y0 = -400 * u.arcsec
-
-    # Create a sunpy Map, and a second submap over the region of interest.
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    bottom_left = SkyCoord(x0 - length, y0 - length,
-                        frame=aia_map.coordinate_frame)
-    top_right = SkyCoord(x0 + length, y0 + length,
-                        frame=aia_map.coordinate_frame)
-    submap = aia_map.submap(bottom_left, top_right=top_right)
-
-    # Create a new matplotlib figure, larger than default.
-    fig = plt.figure(figsize=(5, 12))
-
-    # Add a first Axis, using the WCS from the map.
-    ax1 = fig.add_subplot(2, 1, 1, projection=aia_map)
-
-    # Plot the Map on the axes with default settings.
-    aia_map.plot()
-
-    # Draw a box on the image
-    aia_map.draw_quadrangle(bottom_left, height=length * 2, width=length * 2)
-
-    # Create a second axis on the plot.
-    ax2 = fig.add_subplot(2, 1, 2, projection=submap)
-
-    submap.plot()
-
-    # Add a overlay grid.
-    submap.draw_grid(grid_spacing=10*u.deg)
-
-    # Change the title.
-    ax2.set_title('Zoomed View', pad=35)
-
-    # Add some text
-    ax2.text(
-        (-100*u.arcsec).to_value(u.deg),
-        (-300*u.arcsec).to_value(u.deg),
-        'A point on the Sun',
-        color="white",
-        transform=ax2.get_transform('world')
-    )
-
-    plt.show()
 
 
 Clipping and Masking Data
@@ -559,12 +592,6 @@ A `~sunpy.map.MapSequence` can be created by supplying multiple existing maps:
     >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
     >>> mc = sunpy.map.Map([map1, map2], sequence=True)  # doctest: +REMOTE_DATA
 
-or by providing a directory full of image files:
-
-.. code-block:: python
-
-    >>> mc = sunpy.map.Map('path/to/my/files/*.fits', sequence=True)   #  doctest: +SKIP
-
 The earliest map in the MapSequence can be accessed by indexing the maps list:
 
 .. code-block:: python
@@ -631,262 +658,3 @@ The following two examples demonstrate how to create a composite map of AIA and 
 * :ref:`sphx_glr_generated_gallery_map_hmi_contours_wcsaxes.py`
 
 For a more advanced tutorial on combining data from several maps, see :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_aia_euvi_mosaic.py`.
-
-.. _custom-maps:
-
-Creating Custom Maps
-====================
-
-It is also possible to create Maps using custom data (e.g. from a simulation or an observation from a data source that is not explicitly supported in **sunpy**).
-To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate meta information.
-The meta information informs `sunpy.map.Map` of the correct coordinate information associated with the data array and should be provided to `sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
-See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
-
-The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
-**sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a :func:`~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
-
-.. code-block:: python
-
-    >>> from sunpy.map.header_helper import meta_keywords
-
-    >>> meta_keywords() # doctest: +SKIP
-    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
-     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
-     'crval1': 'Coordinate value at reference point on naxis1 **required'
-     ...
-
-The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
-All the metadata keywords that a Map will parse along with their description are listed in the :ref:`Meta Keywords Table` at the end of this page.
-
-The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
-This function returns a `sunpy.util.MetaDict`.
-The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
-
-The :func:`~sunpy.map.header_helper.make_fitswcs_header` function also takes optional keyword arguments including ``reference_pixel`` and ``scale`` that describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively.
-If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
-
-Here's an example of creating a header from some generic data and an `astropy.coordinates.SkyCoord`:
-
-.. code-block:: python
-
-    >>> import numpy as np
-    >>> from astropy.coordinates import SkyCoord
-    >>> import astropy.units as u
-
-    >>> from sunpy.coordinates import frames
-    >>> from sunpy.map.header_helper import make_fitswcs_header
-
-    >>> data = np.arange(0,100).reshape(10,10)
-    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
-    >>> header = make_fitswcs_header(data, coord)
-    >>> for key, value in header.items():
-    ...     print(f"{key}: {value}")
-    wcsaxes: 2
-    crpix1: 5.5
-    crpix2: 5.5
-    cdelt1: 1.0
-    cdelt2: 1.0
-    cunit1: arcsec
-    cunit2: arcsec
-    ctype1: HPLN-TAN
-    ctype2: HPLT-TAN
-    crval1: 0.0
-    crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
-    mjdref: 0.0
-    date-obs: 2013-10-28T00:00:00.000
-    rsun_ref: 695700000.0
-    dsun_obs: 148644585949.49
-    hgln_obs: 0.0
-    hglt_obs: 4.7711570596394
-    naxis: 2
-    naxis1: 10
-    naxis2: 10
-    pc1_1: 1.0
-    pc1_2: -0.0
-    pc2_1: 0.0
-    pc2_2: 1.0
-    rsun_obs: 965.3829548285768
-
-From this we can see now that the function returned a `sunpy.util.MetaDict` that populated the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`, and the data array.
-Since the ``reference_pixel`` and keywords were not passed in the example above, the values of ``crpix`` and ``cdelt`` were set to the default values.
-
-These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
-Here's another example of passing ``reference_pixel`` and ``scale`` to the function:
-
-.. code-block:: python
-
-    >>> header = make_fitswcs_header(data, coord,
-    ...                                        reference_pixel=u.Quantity([5, 5]*u.pixel),
-    ...                                        scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
-    >>> for key, value in header.items():
-    ...     print(f"{key}: {value}")
-    wcsaxes: 2
-    crpix1: 6.0
-    crpix2: 6.0
-    cdelt1: 2.0
-    cdelt2: 2.0
-    cunit1: arcsec
-    cunit2: arcsec
-    ctype1: HPLN-TAN
-    ctype2: HPLT-TAN
-    crval1: 0.0
-    crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
-    mjdref: 0.0
-    date-obs: 2013-10-28T00:00:00.000
-    rsun_ref: 695700000.0
-    dsun_obs: 148644585949.49
-    hgln_obs: 0.0
-    hglt_obs: 4.7711570596394
-    naxis: 2
-    naxis1: 10
-    naxis2: 10
-    pc1_1: 1.0
-    pc1_2: -0.0
-    pc2_1: 0.0
-    pc2_2: 1.0
-    rsun_obs: 965.3829548285768
-
-As we can see, a list of WCS and observer meta information is contained within the generated headers, however we may want to include other meta information including the observatory name, the wavelength and waveunit of the observation.
-Any of the keywords in the dictionary returned by :func:`~sunpy.map.header_helper.meta_keywords` can be passed to the :func:`~sunpy.map.header_helper.make_fitswcs_header` and will then populate the returned MetaDict header.
-Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function: ``observatory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
-
-An example of creating a header with these additional keywords:
-
-.. code-block:: python
-
-    >>> header = make_fitswcs_header(data, coord,
-    ...                                        reference_pixel = u.Quantity([5, 5]*u.pixel),
-    ...                                        scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
-    ...                                        telescope = 'Test case', instrument = 'UV detector',
-    ...                                        wavelength = 1000*u.angstrom)
-    >>> for key, value in header.items():
-    ...     print(f"{key}: {value}")
-    wcsaxes: 2
-    crpix1: 6.0
-    crpix2: 6.0
-    cdelt1: 2.0
-    cdelt2: 2.0
-    cunit1: arcsec
-    cunit2: arcsec
-    ctype1: HPLN-TAN
-    ctype2: HPLT-TAN
-    crval1: 0.0
-    crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
-    mjdref: 0.0
-    date-obs: 2013-10-28T00:00:00.000
-    rsun_ref: 695700000.0
-    dsun_obs: 148644585949.49
-    hgln_obs: 0.0
-    hglt_obs: 4.7711570596394
-    instrume: UV detector
-    telescop: Test case
-    wavelnth: 1000.0
-    waveunit: Angstrom
-    naxis: 2
-    naxis1: 10
-    naxis2: 10
-    pc1_1: 1.0
-    pc1_2: -0.0
-    pc2_1: 0.0
-    pc2_2: 1.0
-    rsun_obs: 965.3829548285768
-
-From these header MetaDict's that are generated, we can now create a custom map:
-
-.. code-block:: python
-
-    >>> my_map = sunpy.map.Map(data, header)
-
-.. _Meta Keywords Table:
-
-.. list-table:: Meta Keywords
-   :widths: 7 30
-   :header-rows: 1
-
-   * - Keyword
-     - Description
-   * - cunit1
-     - Units of the coordinate increments along naxis1 e.g. arcsec (required)
-   * - cunit2
-     - Units of the coordinate increments along naxis2 e.g. arcsec (required)
-   * - crval1
-     - Coordinate value at reference point on naxis1 (required)
-   * - crval2
-     - Coordinate value at reference point on naxis2 (required)
-   * - cdelt1
-     - Spatial scale of pixels for naxis1, i.e. coordinate increment at reference point
-   * - cdelt2
-     - Spatial scale of pixels for naxis2, i.e. coordinate increment at reference point
-   * - crpix1
-     - Pixel coordinate at reference point naxis1
-   * - crpix2
-     - Pixel coordinate at reference point naxis2
-   * - ctype1
-     - Coordinate type projection along naxis1 of data e.g. HPLT-TAN
-   * - ctype2
-     - Coordinate type projection along naxis2 of data e.g. HPLN-TAN
-   * - hgln_obs
-     - Heliographic longitude of observation
-   * - hglt_obs
-     - Heliographic latitude of observation
-   * - dsun_obs
-     - distance to Sun from observation in metres
-   * - rsun_obs
-     - radius of Sun in meters from observation
-   * - dateobs
-     - date of observation e.g. 2013-10-28 00:00
-   * - date_obs
-     - date of observation e.g. 2013-10-28 00:00
-   * - rsun_ref
-     - reference radius of Sun in meters
-   * - solar_r
-     - radius of Sun in meters from observation
-   * - radius
-     - radius of Sun in meters from observation
-   * - crln_obs
-     - Carrington longitude of observation
-   * - crlt_obs
-     - Heliographic latitude of observation
-   * - solar_b0
-     - Solar B0 angle
-   * - detector
-     - name of detector e.g. AIA
-   * - exptime
-     - exposure time of observation, in seconds e.g 2
-   * - instrume
-     - name of instrument
-   * - wavelnth
-     - wavelength of observation
-   * - waveunit
-     - unit for which observation is taken e.g. angstom
-   * - obsrvtry
-     - name of observatory of observation
-   * - telescop
-     - name of telescope of observation
-   * - lvl_num
-     - FITS processing level
-   * - crota2
-     - Rotation of the horizontal and vertical axes in degrees
-   * - PC1_1
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - PC1_2
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - PC2_1
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - PC2_2
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - CD1_1
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-   * - CD1_2
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-   * - CD2_1
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-   * - CD2_2
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
