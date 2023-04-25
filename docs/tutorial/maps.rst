@@ -10,9 +10,8 @@ They can be used with any two-dimensional data array with two spatial axes and F
 As you will see in this tutorial, the primary advantage of using a Map object over just a bare NumPy array is the ability to perform coordinate aware operations on the underlying array, such as rotating the Map to remove the roll angle of an instrument or cropping a Map to a specific field of view.
 Additionally, because Map is capable of ingesting data from many different sources, it provides a common interface for any two-dimensional data product.
 
-By the end of this tutorial, you will learn how to create a Map, access the underlying data and metadata, and the basics visualizing a Map.
+By the end of this tutorial, you will learn how to create a Map, access the underlying data and metadata, convert physical coordinates to the world coordinate of a Map, and the basics visualizing a Map.
 Additionally, you will learn how to combine multiple Maps into a `~sunpy.map.MapSequence` or a `~sunpy.map.CompositeMap`.
-Lastly, you will learn how to create Maps from data sources not supported in sunpy.
 
 .. note::
 
@@ -34,7 +33,8 @@ To create a `~sunpy.map.Map` from a sample AIA image,
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
-sunpy automatically detects the type of file (e.g. FITS) as well as the the instrument associated with it (e.g. AIA, EIT, LASCO).
+sunpy automatically detects the type of file as well as the the instrument associated with it.
+In this case, we have a FITS file from the AIA instrument onboard SDO.
 To make sure this has all worked correctly, we can take a quick look at ``my_map``,
 
 .. code-block:: python
@@ -264,6 +264,7 @@ Visualizing Maps
 .. plot::
     :nofigs:
     :context: close-figs
+    :show-source-link: False
 
     # This is here to put my_map in the scope of the plot directives.
     # This avoids repeating code in the example source code that is actually displayed.
@@ -271,48 +272,55 @@ Visualizing Maps
     import sunpy.data.sample
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-The Map object has a built-in plot method such that it is easy to quickly view your map.
-sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
-We refer the reader to the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`__ to learn more about the Matplotlib and to become familiar with the basics.
-To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
+In the :ref:`creating-maps` section, you learned how to generate a quicklook summary of a Map.
+However, the Map object also has a :meth:`~sunpy.map.GenericMap.plot` method that allows for more fine-grained control over how the Map is visualized and is especially useful for generating publication-quality plots.
+In this section of the tutorial, you will learn how to build up an increasingly detailed visualization of a Map, including adjusting the colormap and normalization and and overlaying coordinates and contours.
 
 Basic Plotting
 --------------
 
-For more advanced plotting the base sunpy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
-This command is similar to the pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and axes object for you if you haven't already.
-
-When you create a plot with `~sunpy.map.GenericMap.peek` or
-`~sunpy.map.GenericMap.plot`, sunpy will use `astropy.visualization.wcsaxes` to
-represent coordinates on the image accurately, for more information see
-:ref:`wcsaxes-plotting`.
-
-Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the
-plot by combining sunpy and matplotlib commands, for example you can over plot
-contours on the Map:
+First, let's create a basic plot of our Map, including a colorbar,
 
 .. plot::
     :include-source:
+    :context: close-figs
 
     import matplotlib.pyplot as plt
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax)
+    plt.colorbar()
+    plt.show()
+
+.. note::
+
+    We imported `matplotlib.pyplot` in order to create the figure and the axis we plotted on our map onto.
+    Under the hood, sunpy uses of `matplotlib` to visualize the image meaning that plots built with sunpy can be further customized using `matplotlib`.
+    **However, for the purposes of this tutorial, you do not need to be familiar with matplotlib.**
+    Fore a series of detailed examples showing how to heavily customize your Map plots, see the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>`.
+
+Note that the title and colormap have been determined based on the accompanying metadata.
+Furthermore, the tick and axes labels have been automatically set based on the coordinate system of the Map.
+
+Looking at the plot above, you likely notice that the resulting image is a bit dim.
+To fix this, we can use the ``clip_interval`` keyword to clip out the dimmest 1% and the brightest 0.5% of pixels.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
     import astropy.units as u
 
-    import sunpy.map
-    import sunpy.data.sample
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia_map.plot()
-    aia_map.draw_limb()
-
-    # let's add contours as well
-    aia_map.draw_contours([10,20,30,40,50,60,70,80,90] * u.percent)
-
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
     plt.colorbar()
     plt.show()
 
 
-Plotting Keywords
------------------
+Changing the Colormap and Normalization
+----------------------------------------
 
 For Map plotting, `~matplotlib.pyplot.imshow` does most of the heavy lifting in the background while **sunpy** makes a number of choices for you (e.g. colortable, plot title).
 Changing these defaults is made possible through two simple interfaces.
@@ -331,39 +339,15 @@ For example, the following plot changes the default colormap to use an inverse G
     plt.colorbar()
     plt.show()
 
-You can also view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
-See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of this workflow for changing plot settings.
-
-
-Changing the Colormap and Normalization
-----------------------------------------
-
 Image data is generally shown in false color in order to better identify it or to better visualize structures in the image.
 Matplotlib handles this colormapping process through the `~matplotlib.colors` module.
 First, the data array is mapped onto the range 0-1 using an instance of `~matplotlib.colors.Normalize` or a subclass.
 Then, the data is mapped to a color using a `~matplotlib.colors.Colormap`.
 
-**sunpy** provides colormaps for each mission as defined by the mission teams.
-The Map object chooses the appropriate colormap for you when it is created as long as it recognizes the instrument.
-To see what colormaps are available:
+.. note::
 
-.. code-block:: python
-
-    >>> import sunpy.visualization.colormaps as cm
-    >>> cm.cmlist.keys()
-    dict_keys(['goes-rsuvi94', 'goes-rsuvi131', 'goes-rsuvi171', 'goes-rsuvi195',
-    'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
-    ...
-
-The **sunpy** colormaps are registered with Matplotlib so you can grab them like you would any other colormap:
-
-.. code-block:: python
-
-    >>> import matplotlib.pyplot as plt
-    >>> import sunpy.visualization.colormaps
-    >>> cmap = plt.get_cmap('sdoaia171')
-
-See `~sunpy.visualization.colormaps` for a plot of all available colormaps.
+    sunpy provides specific colormaps for many different instruments.
+    For a list of all colormaps provided by sunpy, see the documentation for `sunpy.visualization.colormaps`.
 
 If you want to override the built-in colormap, consider the following example which plots an AIA map using an EIT colormap.
 
@@ -419,39 +403,41 @@ The following example shows the difference between a linear and logarithmic norm
 Note how the colorbar does not change since these two plots share the same colormap.
 Meanwhile, the data values associated with each color do change because the normalization is different.
 
+.. note::
+
+    You can also view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
+    See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of of how to change the default plot settings.
+
 
 .. _wcsaxes-plotting:
 
-Overlaying Coordinates
-----------------------
+Overlaying Contours and Coordinates
+-----------------------------------
+
+.. plot::
+    :include-source:
+
+    import matplotlib.pyplot as plt
+    import astropy.units as u
+
+    import sunpy.map
+    import sunpy.data.sample
+
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia_map.plot()
+    aia_map.draw_limb()
+
+    # let's add contours as well
+    aia_map.draw_contours([10,20,30,40,50,60,70,80,90] * u.percent)
+
+    plt.colorbar()
+    plt.show()
 
 By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
 the representation of world coordinates, and calling
 `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use wcsaxes
 for plotting. Unless a standard `matplotlib.axes.Axes` object is explicitly
 created.
-
-To explicitly create a `~astropy.visualization.wcsaxes.WCSAxes` instance do the
-following ::
-
-    >>> fig = plt.figure()   # doctest: +SKIP
-    >>> ax = plt.subplot(projection=smap)   # doctest: +SKIP
-
-when plotting on an `~astropy.visualization.wcsaxes.WCSAxes` axes, it will by
-default plot in pixel coordinates, you can override this behavior and plot in
-'world' coordinates by getting the transformation from the axes with
-``ax.get_transform('world')``.
-
-.. note::
-
-    World coordinates are always in **degrees** so you will have to convert to degrees.
-
-.. code-block:: python
-
-    >>> aia_map.plot()   # doctest: +SKIP
-    >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
-    ...         transform=ax.get_transform('world'))   # doctest: +SKIP
-
 
 In this next example, the `~matplotlib.figure.Figure` and
 `~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
@@ -493,89 +479,12 @@ Here we can plot a sunpy map, and also overplot some points defined in arcsecond
     plt.colorbar()
     plt.show()
 
-It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
+The :ref:`Plotting section of Example Gallery <sphx_glr_generated_gallery_plotting>` contains many more detailed examples of how to customize Map visualizations.
 
+.. _cropping-maps:
 
-Check out the following foundational examples in the Example Gallery for plotting Maps:
-
-* :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`
-
-* :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py`
-
-
-Clipping and Masking Data
--------------------------
-
-It is often necessary to ignore certain data in an image.
-For example, a large data value could be due to cosmic ray hits and should be ignored.
-The most straightforward way to ignore this kind of data in plots, without altering the data, is to clip it.
-This can be achieved very easily by using the ``clip_interval`` keyword. For example:
-
-.. code-block:: python
-
-    >>> import astropy.units as u
-    >>> smap.plot(clip_interval=(1, 99.5)*u.percent)  #doctest: +SKIP
-
-This clips out the dimmest 1% of pixels and the brightest 0.5% of pixels.
-With those outlier pixels clipped, the resulting image makes better use of the full range of colors.
-If you'd like to see what areas of your images got clipped, you can modify the colormap:
-
-.. code-block:: python
-
-    >>> cmap = map.cmap  # doctest: +SKIP
-    >>> cmap.set_over('blue')  # doctest: +SKIP
-    >>> cmap.set_under('green')  # doctest: +SKIP
-
-This will color the areas above and below in red and green respectively (similar to this `matplotlib example <https://matplotlib.org/examples/pylab_examples/image_masked.html>`__).
-You can use the following colorbar command to display these choices:
-
-.. code-block:: python
-
-    >>> plt.colorbar(extend='both')   # doctest: +SKIP
-
-Here is an example of this put to use on an AIA image.
-
-.. plot::
-    :include-source:
-
-    import astropy.units as u
-    import matplotlib.pyplot as plt
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = smap.cmap.copy()
-    cmap.set_over('blue')
-    cmap.set_under('green')
-
-    fig = plt.figure(figsize=(12, 4))
-
-    ax1 = fig.add_subplot(1, 2, 1, projection=smap)
-    smap.plot(title='Without clipping')
-    plt.colorbar()
-
-    ax2 = fig.add_subplot(1, 2, 2, projection=smap)
-    smap.plot(clip_interval=(1, 99.5)*u.percent, title='With clipping')
-    plt.colorbar(extend='both')
-
-    plt.show()
-
-
-Masking is another approach to ignoring certain data.
-A mask is a boolean array that can give you fine-grained control over what is not being displayed.
-The `~numpy.ma.MaskedArray` is a subclass of a NumPy array with the addition of an associated boolean array which holds the mask.
-See the following two examples for applications of this technique:
-
-* :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py`
-
-* :ref:`sphx_glr_generated_gallery_computer_vision_techniques_finding_masking_bright_pixels.py`
+Cropping Maps
+=============
 
 .. _map-sequences:
 
