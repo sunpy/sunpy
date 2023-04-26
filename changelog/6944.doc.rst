@@ -1,0 +1,2 @@
+Significantly revised the :ref:`map_guide` part of the tutorial to better match a tutorial in the diátaxis definition.
+This included moving the section on custom maps to the :ref:`how_to_guide` section.
