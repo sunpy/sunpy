@@ -58,7 +58,7 @@ class _Str(str):
 def check_connection(url):
     try:
         return urlopen(url, timeout=15).getcode() == 200
-    except (socket.error, socket.timeout, HTTPError, URLError) as e:
+    except (OSError, HTTPError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
 
@@ -76,7 +76,7 @@ def check_cgi_connection(url):
             return True
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
-    except (socket.error, socket.timeout, URLError) as e:
+    except (OSError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
 
