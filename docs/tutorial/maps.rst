@@ -91,7 +91,7 @@ Inspecting Map Metadata
 =======================
 
 The metadata for a Map is exposed via attributes on the Map.
-These attributes can be accessed by typing `my_map.<attribute-name>`.
+These attributes can be accessed by typing ``my_map.<attribute-name>``.
 For example, to access the date of the observation,
 
 .. code-block:: python
@@ -108,7 +108,7 @@ Similarly, we can access the exposure time of the image,
     <Quantity 0.234256 s>
 
 Notice that this returns an `~astropy.units.Quantity` object which we discussed in the previous section :ref:`units-sunpy`.
-The full list of attributes can be found on `~sunpy.map.GenericMap`.
+The full list of attributes can be found in the reference documentation for `~sunpy.map.GenericMap`.
 These metadata attributes are all derived from the underlying FITS metadata, but are represented as rich Python objects, rather than simple strings or floating point numbers.
 
 .. _map-data:
@@ -270,6 +270,8 @@ Visualizing Maps
     # This avoids repeating code in the example source code that is actually displayed.
     import sunpy.map
     import sunpy.data.sample
+    from astropy.coordinates import SkyCoord
+    import astropy.units as u
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 In the :ref:`creating-maps` section, you learned how to generate a quicklook summary of a Map.
@@ -286,7 +288,6 @@ First, let's create a basic plot of our Map, including a colorbar,
     :context: close-figs
 
     import matplotlib.pyplot as plt
-
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_map)
     my_map.plot(axes=ax)
@@ -311,7 +312,6 @@ To fix this, we can use the ``clip_interval`` keyword to clip out the dimmest 1%
     :context: close-figs
 
     import astropy.units as u
-
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_map)
     my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
@@ -322,86 +322,48 @@ To fix this, we can use the ``clip_interval`` keyword to clip out the dimmest 1%
 Changing the Colormap and Normalization
 ----------------------------------------
 
-For Map plotting, `~matplotlib.pyplot.imshow` does most of the heavy lifting in the background while **sunpy** makes a number of choices for you (e.g. colortable, plot title).
-Changing these defaults is made possible through two simple interfaces.
-You can pass any `~matplotlib.pyplot.imshow` keyword into the plot command to override the defaults for that particular plot.
-For example, the following plot changes the default colormap to use an inverse Grey color table.
+Historically, particular colormaps are assigned to images based on what instrument they are from and what wavelength is being observed.
+By default, sunpy will select the colormap based on the available metadata.
+This default colormap is available as an attribute,
+
+.. code-block:: python
+
+    >>> my_map.cmap.name  # doctest: +REMOTE_DATA
+    'SDO AIA 171.0 Angstrom'
+
+When visualizing a Map, you can change the colormap using the ``cmap`` keyword argument.
+For example, you can use the 'inferno' colormap from `matplotlib`.
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     fig = plt.figure()
-    aia_map.plot(cmap=plt.cm.Greys_r)
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, cmap='inferno', clip_interval=(1,99.5)*u.percent)
     plt.colorbar()
     plt.show()
-
-Image data is generally shown in false color in order to better identify it or to better visualize structures in the image.
-Matplotlib handles this colormapping process through the `~matplotlib.colors` module.
-First, the data array is mapped onto the range 0-1 using an instance of `~matplotlib.colors.Normalize` or a subclass.
-Then, the data is mapped to a color using a `~matplotlib.colors.Colormap`.
 
 .. note::
 
     sunpy provides specific colormaps for many different instruments.
     For a list of all colormaps provided by sunpy, see the documentation for `sunpy.visualization.colormaps`.
 
-If you want to override the built-in colormap, consider the following example which plots an AIA map using an EIT colormap.
+The normalization, or the mapping between the data values and the colors in our colormap, is also determined based on the underlying metadata.
+Notice that in the plots we've made so far, the ticks on our colorbar are not linearly spaced.
+Just like in the case of the colormap, we can use a normalization other than the default by passing a keyword argument to the :meth:`~sunpy.map.GenericMap.plot` method.
+For example, we can use a logarithmic normalization instead.
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = plt.get_cmap('sohoeit171')
-
+    import matplotlib.colors
     fig = plt.figure()
-    aia_map.plot(cmap=cmap)
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(norm=matplotlib.colors.LogNorm())
     plt.colorbar()
     plt.show()
-
-You can also change the colormap for the Map itself:
-
-.. code-block:: python
-
-    >>> smap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')  # doctest: +SKIP
-
-The normalization is set automatically so that all the data from minimum to maximum is displayed as best as possible.
-Just like the colormap, the default normalization can be changed through the ``plot_settings`` dictionary or directly for the individual plot by passing a keyword argument.
-
-Alternate normalizations are available from `matplotlib <https://matplotlib.org/stable/tutorials/colors/colormapnorms.html>`__ and `astropy <https://docs.astropy.org/en/stable/visualization/normalization.html>`__.
-The following example shows the difference between a linear and logarithmic normalization on an AIA image.
-
-.. plot::
-    :include-source:
-
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-    import matplotlib.colors as colors
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-    fig = plt.figure(figsize=(4, 9))
-
-    ax1 = fig.add_subplot(2, 1, 1, projection=aia_map)
-    aia_map.plot(norm=colors.Normalize(), title='Linear normalization')
-    plt.colorbar()
-
-    ax2 = fig.add_subplot(2, 1, 2, projection=aia_map)
-    aia_map.plot(norm=colors.LogNorm(), title='Logarithmic normalization')
-    plt.colorbar()
-
-    plt.show()
-
-Note how the colorbar does not change since these two plots share the same colormap.
-Meanwhile, the data values associated with each color do change because the normalization is different.
 
 .. note::
 
@@ -414,156 +376,176 @@ Meanwhile, the data values associated with each color do change because the norm
 Overlaying Contours and Coordinates
 -----------------------------------
 
-.. plot::
-    :include-source:
-
-    import matplotlib.pyplot as plt
-    import astropy.units as u
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia_map.plot()
-    aia_map.draw_limb()
-
-    # let's add contours as well
-    aia_map.draw_contours([10,20,30,40,50,60,70,80,90] * u.percent)
-
-    plt.colorbar()
-    plt.show()
-
-By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
-the representation of world coordinates, and calling
-`~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use wcsaxes
-for plotting. Unless a standard `matplotlib.axes.Axes` object is explicitly
-created.
-
-In this next example, the `~matplotlib.figure.Figure` and
-`~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
-then used to modify the plot.
-
-Here we can plot a sunpy map, and also overplot some points defined in arcseconds, highlighting the advantage of using WCSAxes.
+When plotting images, we often want to highlight certain features or overlay certain data points.
+There are several methods attached to Map that make this task easy.
+For example, we can draw contours corresponding to particularly percentages of our data..
 
 .. plot::
     :include-source:
-
-    import matplotlib.pyplot as plt
-    import astropy.units as u
-    from astropy.coordinates import SkyCoord
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    :context: close-figs
 
     fig = plt.figure()
-    # Provide the Map as a projection, which creates a WCSAxes object
-    ax = plt.subplot(projection=aia_map)
-
-    im = aia_map.plot()
-
-    # Prevent the image from being re-scaled while overplotting.
-    ax.set_autoscale_on(False)
-
-    xc = [0,100,1000] * u.arcsec
-    yc = [0,100,1000] * u.arcsec
-
-    coords = SkyCoord(xc, yc, frame=aia_map.coordinate_frame)
-
-    p = ax.plot_coord(coords, 'o')
-
-    # Set title.
-    ax.set_title('Custom plot with WCSAxes')
-
-    plt.colorbar()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    my_map.draw_contours([2, 5, 10, 50, 90] * u.percent, axes=ax)
     plt.show()
 
-The :ref:`Plotting section of Example Gallery <sphx_glr_generated_gallery_plotting>` contains many more detailed examples of how to customize Map visualizations.
+Additionally, the solar limb, as determined by the location of the observing instrument at the time of the observation, can be easily overlaid on an image.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    my_map.draw_limb(axes=ax, color='C0')
+    plt.show()
+
+We can also overlay a box denoting a particular a region of interest as expressed in world coordinates using the the coordinate frame of our image.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    roi_bottom_left = SkyCoord(Tx=-300*u.arcsec, Ty=-100*u.arcsec, frame=my_map.coordinate_frame)
+    roi_top_right = SkyCoord(Tx=200*u.arcsec, Ty=400*u.arcsec, frame=my_map.coordinate_frame)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    my_map.draw_quadrangle(roi_bottom_left, top_right=roi_top_right, axes=ax, color='C0')
+    plt.show()
+
+Because our visualization knows about the coordinate system of our Map, it can transform any coordinate to the coordinate frame of our Map and then use the underlying WCS that we discussed in the :ref:`coordinates-wcs-maps` section to translate this to a pixel position.
+This makes it simple to plot *any* coordinate on top of our Map using the :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord` method.
+The following example shows how to plot some points on our Map, including the center coordinate of our Map.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    coords = SkyCoord(Tx=[100,1000] * u.arcsec, Ty=[100,1000] * u.arcsec, frame=my_map.coordinate_frame)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    ax.plot_coord(coords, 'o')
+    ax.plot_coord(my_map.center, 'X')
+    plt.show()
+
+.. note::
+
+    Map visualizations can be heavily customized using both `matplotlib` and `astropy.visualization.wcsaxes`.
+    See the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` for more detailed examples of how to customize Map visualizations.
 
 .. _cropping-maps:
 
-Cropping Maps
-=============
+Cropping Maps and Combining Pixels
+==================================
+
+It analyzing images of the Sun, we often want to choose a smaller portion of the full disk to look at more closely.
+Let's use the region of interest we defined above to crop out that portion of our image.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    my_submap = my_map.submap(roi_bottom_left, top_right=roi_top_right)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_submap)
+    my_submap.plot(axes=ax)
+    plt.show()
+
+Additionally, we also may want to combine multiple pixels into a single pixel (a so called "superpixel") to, for example, increase our signal-to-noise ratio.
+We can accomplish this with the `~sunpy.map.GenericMap.superpixel` method by specifying how many pixels, in each dimension, we want our new superpixels to contain.
+For example, we can combine 4 pixels in each dimension such that our new superpixels contain 16 original pixels.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    my_super_submap = my_submap.superpixel((5,5)*u.pixel)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_super_submap)
+    my_super_submap.plot(axes=ax)
+    plt.show()
+
+.. note::
+
+    Map provides additional methods for manipulating the underlying image data.
+    See the reference documentation for `~sunpy.map.GenericMap` for a complete list of available methods as well as the :ref:`Map section of the Example Gallery <sphx_glr_generated_gallery_map>` for more detailed examples.
 
 .. _map-sequences:
 
 Map Sequences
 =============
 
-A `~sunpy.map.MapSequence` is an ordered list of maps.
-By default, the maps are ordered by their observation date, from earliest to latest date.
+While `~sunpy.map.GenericMap` can only contain a two-dimensional array and metadata corresponding to a single observation, a `~sunpy.map.MapSequence` is comprisded of an ordered list of maps.
+By default, the Maps are ordered by their observation date, from earliest to latest date.
 A `~sunpy.map.MapSequence` can be created by supplying multiple existing maps:
 
 .. code-block:: python
 
-    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
-    >>> mc = sunpy.map.Map([map1, map2], sequence=True)  # doctest: +REMOTE_DATA
+    >>> another_map = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
+    >>> map_seq = sunpy.map.Map([my_map, another_map], sequence=True)  # doctest: +REMOTE_DATA
 
-The earliest map in the MapSequence can be accessed by indexing the maps list:
+A map sequence can be indexed in the same manner as a list.
+For example, the following should return the same quicklook view as in :ref:`creating-maps`.
 
 .. code-block:: python
 
-    >>> mc.maps[0]   # doctest: +SKIP
+    >>> map_seq.maps[0]   # doctest: +REMOTE_DATA
+    <sunpy.map.sources.sdo.AIAMap object at ...>
+    SunPy Map
+    ---------
+    Observatory:                 SDO
+    Instrument:          AIA 3
+    Detector:            AIA
+    Measurement:                 171.0 Angstrom
+    Wavelength:          171.0 Angstrom
+    Observation Date:    2011-06-07 06:33:02
+    Exposure Time:               0.234256 s
+    Dimension:           [1024. 1024.] pix
+    Coordinate System:   helioprojective
+    Scale:                       [2.402792 2.402792] arcsec / pix
+    Reference Pixel:     [511.5 511.5] pix
+    Reference Coord:     [3.22309951 1.38578135] arcsec
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+            -127.96519  , -127.96519  ],
+           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+            -104.04137  , -127.919716 ],
+           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+             -37.95505  , -127.87541  ],
+           ...,
+           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+            -128.01454  , -128.01454  ],
+           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+            -127.899666 , -127.899666 ],
+           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+            -128.03072  , -128.03072  ]], dtype=float32)
 
 MapSequences can hold maps that have different shapes.
 To test if all the maps in a `~sunpy.map.MapSequence` have the same shape:
 
 .. code-block:: python
 
-    >>> mc.all_maps_same_shape()  # doctest: +REMOTE_DATA
+    >>> map_seq.all_maps_same_shape()  # doctest: +REMOTE_DATA
     True
 
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
 .. code-block:: python
 
-    >>> mc_array = mc.as_array()   # doctest: +REMOTE_DATA
+    >>> map_seq_array = map_seq.as_array()   # doctest: +REMOTE_DATA
 
-Note that an array is returned only if all the maps have the same shape.
-If this is not true, a `ValueError` is raised.
-If all the maps have nx pixels in the x-direction, and ny pixels in the y-direction, and there are n maps in the MapSequence, the returned `~numpy.ndarray` array has shape (ny, nx, n).
-The data of the first map in the `~sunpy.map.MapSequence` appears in the `~numpy.ndarray` in position ``[:, :, 0]``, the data of second map in position ``[:, :, 1]``, and so on.
-The order of maps in the `~sunpy.map.MapSequence` is reproduced in the returned `~numpy.ndarray`.
-
-The metadata from each map can be obtained using:
+Since all of the maps in our sequence of the same shape, the first two dimensions of our combined array will be the same as the component maps while the last dimension will correspond to the number of maps in the map sequence.
+We can confirm this by looking at the shape of the above array.
 
 .. code-block:: python
 
-    >>> mc.all_meta()   # doctest: +SKIP
+    >>> map_seq_array.shape
+    (1024, 1024, 2)
 
-This returns a list of map meta objects that have the same order as the maps in the `~sunpy.map.MapSequence`.
+.. warning::
 
-For information on coaligning images and compensating for solar rotation in Map Sequences, see the `sunkit-image example gallery <https://docs.sunpy.org/projects/sunkit-image/en/stable/generated/gallery/index.html>`__ and the `sunkit_image.coalignment` module.
-
-.. _composite-maps:
-
-Composite Maps and Overlaying Maps
-==================================
-
-The `~sunpy.map.Map` method can also handle a list of maps.
-If a series of maps are supplied as inputs, `~sunpy.map.Map` will return a list of maps as the output.
-If the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` object is returned.
-This is useful if the maps are of a different type (e.g. different instruments).
-For example, to create a simple Composite Map:
-
-.. code-block:: python
-
-    >>> my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)  # doctest: +REMOTE_DATA
-
-A `~sunpy.map.CompositeMap` is different from a regular `~sunpy.map.GenericMap` object and therefore different associated methods.
-To list which maps are part of your Composite Map use:
-
-.. code-block:: python
-
-    >>> my_maps.list_maps()  # doctest: +REMOTE_DATA
-    [<class 'sunpy.map.sources.soho.EITMap'>, <class 'sunpy.map.sources.rhessi.RHESSIMap'>]
-
-The following two examples demonstrate how to create a composite map of AIA and HMI data and how to overlay HMI contours on an AIA map (without creating a composite map object):
-
-* :ref:`sphx_glr_generated_gallery_map_composite_map_AIA_HMI.py`
-
-* :ref:`sphx_glr_generated_gallery_map_hmi_contours_wcsaxes.py`
-
-For a more advanced tutorial on combining data from several maps, see :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_aia_euvi_mosaic.py`.
+    `~sunpy.map.MapSequence` does not automatically perform any coalignment between the maps comprising a sequence.
+    For information on coaligning images and compensating for solar rotation, see :ref:`this section of the Example Gallery <sphx_glr_generated_gallery_map_transformations>` as well as the `sunkit_image.coalignment` module.
