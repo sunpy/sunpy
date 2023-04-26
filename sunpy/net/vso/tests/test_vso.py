@@ -297,7 +297,7 @@ def fail_to_open_nso_cgi(disallowed_url, url, **kwargs):
     return urlopen(url, **kwargs)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fallback_if_cgi_offline(mocker):
     """
     This test takes the cgi endpoint URL out of the WDSL, and then disables it,
