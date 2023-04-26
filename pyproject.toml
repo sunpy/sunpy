@@ -13,8 +13,8 @@ write_to = "sunpy/_version.py"
 
 # Until we have h5py binaries we can't test wheels on Python 3.11
 [tool.cibuildwheel]
-test-skip = "cp311-*"
-test-requires = ["opencv_python==4.6.0.66"]
+test-command = "pytest -p no:warnings --doctest-rst -m 'not mpl_image_compare' --pyargs sunpy"
+test-extras = ["all,tests"]
 
 [ tool.gilesbot ]
   [ tool.gilesbot.circleci_artifacts ]
