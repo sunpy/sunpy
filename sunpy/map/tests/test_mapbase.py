@@ -9,7 +9,7 @@ from unittest import mock
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from packaging import version
 
@@ -880,7 +880,12 @@ def test_superpixel_fractional_inputs(generic_map):
 
 
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
-@settings(max_examples=10, deadline=1000)
+@settings(
+    max_examples=10,
+    # Lots of draws can be discarded when checking matrix is non-singular
+    suppress_health_check=[HealthCheck.filter_too_much],
+    deadline=1000,
+)
 @given(pc=matrix_meta('pc'))
 def test_resample_rotated_map_pc(pc, method):
     smap = make_simple_map()
@@ -896,7 +901,12 @@ def test_resample_rotated_map_pc(pc, method):
 
 
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
-@settings(max_examples=10, deadline=1000)
+@settings(
+    max_examples=10,
+    # Lots of draws can be discarded when checking matrix is non-singular
+    suppress_health_check=[HealthCheck.filter_too_much],
+    deadline=1000,
+)
 @given(cd=matrix_meta('cd'))
 def test_resample_rotated_map_cd(cd, method):
     smap = make_simple_map()
