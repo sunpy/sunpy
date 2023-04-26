@@ -109,8 +109,6 @@ In addition, a reference section must be provided with links to the following re
 * information to interpret metadata keywords such as FITS header reference
 * the data archive
 
-An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide <new_maps_ts_etc>`.
-
 Sphinx
 ======
 

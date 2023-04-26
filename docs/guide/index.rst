@@ -20,6 +20,7 @@ Although there are code snippets in various bits of the guides, these are to hel
    coordinates/index
    history_comments
    custom_map_rotate
+   extending_fido
    new_subclasses
    remote_data_manager
    helioviewer
