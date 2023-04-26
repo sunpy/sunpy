@@ -9,19 +9,7 @@ The meta information informs `sunpy.map.Map` of the correct coordinate informati
 See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
-**sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a :func:`~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
-
-.. code-block:: python
-
-    >>> from sunpy.map.header_helper import meta_keywords
-
-    >>> meta_keywords() # doctest: +SKIP
-    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
-     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
-     'crval1': 'Coordinate value at reference point on naxis1 **required'
-     ...
-
+sunpy provides a Map header helper function to assist in creating a header that contains the correct meta information.
 The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 All the metadata keywords that a Map will parse along with their description are listed in the :ref:`Meta Keywords Table` at the end of this page.
 
@@ -168,7 +156,34 @@ From these header MetaDict's that are generated, we can now create a custom map:
 
 .. code-block:: python
 
+    >>> import sunpy.map
     >>> my_map = sunpy.map.Map(data, header)
+    >>> my_map
+    <sunpy.map.mapbase.GenericMap object at ...>
+    SunPy Map
+    ---------
+    Observatory:                 Test case
+    Instrument:          UV detector
+    Detector:
+    Measurement:                 1000.0 Angstrom
+    Wavelength:          1000.0 Angstrom
+    Observation Date:    2013-10-28 00:00:00
+    Exposure Time:               Unknown
+    Dimension:           [10. 10.] pix
+    Coordinate System:   helioprojective
+    Scale:                       [2. 2.] arcsec / pix
+    Reference Pixel:     [5. 5.] pix
+    Reference Coord:     [0. 0.] arcsec
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+           [30, 31, 32, 33, 34, 35, 36, 37, 38, 39],
+           [40, 41, 42, 43, 44, 45, 46, 47, 48, 49],
+           [50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
+           [60, 61, 62, 63, 64, 65, 66, 67, 68, 69],
+           [70, 71, 72, 73, 74, 75, 76, 77, 78, 79],
+           [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+           [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]])
 
 .. _Meta Keywords Table:
 
