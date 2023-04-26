@@ -13,9 +13,6 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
 
    search_vso.rst
    search_multiple_wavelengths.rst
-   custom_map_rotate
-   remote_data_manager
-   new_subclasses
 
 Quick Reference
 ---------------

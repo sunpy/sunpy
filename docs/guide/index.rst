@@ -18,5 +18,8 @@ Although there are code snippets in various bits of the guides, these are to hel
    installation
    logger
    coordinates/index
-   helioviewer
    history_comments
+   custom_map_rotate
+   new_subclasses
+   remote_data_manager
+   helioviewer
