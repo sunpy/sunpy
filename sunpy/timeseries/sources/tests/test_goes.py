@@ -74,7 +74,7 @@ def test_columns_units(goes_nc_files):
     assert np.all([isinstance(unit_val, u.UnitBase) for unit_val in ts_goes.units.values()])
 
 
-@pytest.mark.parametrize("goes_nc_files, times",
+@pytest.mark.parametrize(('goes_nc_files', 'times'),
                          [(goes_fits_filepath_com, '2012-05-31 23:59:59.089'),
                           (goes13_filepath_nc, '2017-09-01 00:00:00.631'),
                           (goes15_filepath_nc, '2013-10-28 00:00:01.385'),
@@ -86,7 +86,7 @@ def test_goes_netcdf_time_parsing15(goes_nc_files, times):
     assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == times
 
 
-@pytest.mark.parametrize("goes_nc_files, times",
+@pytest.mark.parametrize(('goes_nc_files', 'times'),
                          [(goes17_filepath_nc, '2020-10-16 00:00:00.477'),
                           (goes16_1m_avg_filepath, '2021-01-01 22:20:00.000')])
 def test_goes_netcdf_time_parsing17(goes_nc_files, times):

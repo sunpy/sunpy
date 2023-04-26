@@ -169,7 +169,7 @@ def test_resolution_attrs(LCClient):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument, expected_num_files",
+    ("time", "instrument", "expected_num_files"),
     [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes, 8),
      (a.Time('2013-10-28 01:00', '2013-10-28 03:00'), a.Instrument('XRS'), 4)])
 def test_fido(time, instrument, expected_num_files):

@@ -76,7 +76,7 @@ def test_get(LCClient, time, instrument):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
-    "time, instrument",
+    ("time", "instrument"),
     [(a.Time('2012/10/4', '2012/10/4'), a.Instrument.lyra)])
 def test_fido(time, instrument):
     # Cut it down to one file with the level
