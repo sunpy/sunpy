@@ -21,7 +21,7 @@ Lastly, :ref:`ts-metadata` describes how to view and extract information from th
 Creating a TimeSeries
 =====================
 
-To create a `TimeSeries` from some sample GOES XRS data:
+To create a `~sunpy.timeseries.TimeSeries` from some sample GOES XRS data:
 
 .. code-block:: python
 
