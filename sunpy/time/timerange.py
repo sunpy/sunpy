@@ -272,7 +272,7 @@ class TimeRange:
         center = self.center.strftime(TIME_FORMAT)
         fully_qualified_name = f'{self.__class__.__module__}.{self.__class__.__name__}'
 
-        return ('   <{} object at {}>'.format(fully_qualified_name, hex(id(self))) +
+        return (f'   <{fully_qualified_name} object at {hex(id(self))}>' +
                 '\n    Start:'.ljust(12) + t1 +
                 '\n    End:'.ljust(12) + t2 +
                 '\n    Center:'.ljust(12) + center +

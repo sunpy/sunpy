@@ -152,7 +152,7 @@ class CDAWEBClient(BaseClient):
         from sunpy.net import attrs as a
 
         attrs_path = pathlib.Path(__file__).parent / 'data' / 'attrs.json'
-        with open(attrs_path, 'r') as attrs_file:
+        with open(attrs_path) as attrs_file:
             all_datasets = json.load(attrs_file)
 
         # Convert from dict to list of tuples

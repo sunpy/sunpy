@@ -159,7 +159,7 @@ class BaseCache(metaclass=ABCMeta):
         return OrderedDict.fromkeys(iterable, value)
 
     def __repr__(self):
-        return '{}({!r})'.format(self.__class__.__name__, dict(self._dict))
+        return f'{self.__class__.__name__}({dict(self._dict)!r})'
 
 
 class LRUCache(BaseCache):
