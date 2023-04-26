@@ -28,12 +28,12 @@ hekTime = a.Time(startTime, endTime)
 hekEvent = a.hek.EventType(eventType)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def h2v_client():
     return hek2vso.H2VClient()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def hek_client():
     return hek.HEKClient()
 

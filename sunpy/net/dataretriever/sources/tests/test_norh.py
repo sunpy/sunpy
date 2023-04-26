@@ -61,7 +61,7 @@ def mock_query_object(timerange):
     return results
 
 
-@pytest.mark.parametrize("timerange,url_start,url_end", [
+@pytest.mark.parametrize(("timerange", "url_start", "url_end"), [
     (a.Time('2012/4/21', '2012/4/21'),
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421'
@@ -115,7 +115,7 @@ def test_query(time, wave):
         assert qr1[-1]['End Time'] <= time.end + TimeDelta(1*u.day)
 
 
-@pytest.mark.parametrize("time,instrument,wave", [
+@pytest.mark.parametrize(("time", "instrument", "wave"), [
     (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz)),
     (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(34*u.GHz))])
 def test_get(LCClient, time, instrument, wave):
@@ -129,7 +129,7 @@ def test_get(LCClient, time, instrument, wave):
 
 
 @pytest.mark.parametrize(
-    "time, instrument, wave",
+    ("time", "instrument", "wave"),
     [(a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz) | a.Wavelength(34*u.GHz))])
 def test_fido(tmp_path, time, instrument, wave):
     with mock.patch('sunpy.net.Fido.search',

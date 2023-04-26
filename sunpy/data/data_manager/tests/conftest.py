@@ -42,7 +42,7 @@ def cache(tmp_path, downloader, storage, mocker):
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
     cache = Cache(downloader, storage, tmp_path)
-    yield cache
+    return cache
 
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def manager(tmp_path, downloader, storage, mocker):
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
-    yield manager
+    return manager
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ def sqlmanager(tmp_path, downloader, sqlstorage, mocker):
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
-    yield sqlmanager
+    return sqlmanager
 
 
 @pytest.fixture
@@ -85,7 +85,7 @@ def module_patched_manager(tmp_path, downloader, storage, mocker):
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
-    yield module_patched_manager
+    return module_patched_manager
 
 
 @pytest.fixture

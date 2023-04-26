@@ -29,7 +29,7 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
 
 @pytest.mark.filterwarnings('ignore:dropping mask in Quantity column')
 @pytest.mark.parametrize(
-    "path, number_of_rows",
+    ('path', 'number_of_rows'),
     [(get_test_filepath(elem['file']), elem['rows']) for elem in filenames]
 )
 def test_number_of_rows(path, number_of_rows):
@@ -37,19 +37,19 @@ def test_number_of_rows(path, number_of_rows):
     assert len(table) == number_of_rows
 
 
-@pytest.mark.parametrize("text, longitude",
+@pytest.mark.parametrize(('text', 'longitude'),
                          [(elem['text'], elem['longitude']) for elem in COORDINATES])
 def test_parse_longitude(text, longitude):
     assert srs.parse_longitude(text) == longitude
 
 
-@pytest.mark.parametrize("text, latitude",
+@pytest.mark.parametrize(('text', 'latitude'),
                          [(elem['text'], elem['latitude']) for elem in COORDINATES])
 def test_parse_latitude(text, latitude):
     assert srs.parse_latitude(text) == latitude
 
 
-@pytest.mark.parametrize("loc_column, exp_longitude, exp_latitude",
+@pytest.mark.parametrize(('loc_column', 'exp_longitude', 'exp_latitude'),
                          [(LOCATION, LONGLAT['Longitude'], LONGLAT['Latitude'])])
 def test_parse_location(loc_column, exp_longitude, exp_latitude):
     latitude, longitude = srs.parse_location(loc_column)

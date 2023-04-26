@@ -467,7 +467,8 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
                                                      path=str(tmpdir.join('{file}.fits')),
                                                      file_pattern=str(tmpdir.join('*.fits')))
 
-    assert len(database) == num_of_fits_headers and len(database) > 0
+    assert len(database) == num_of_fits_headers
+    assert len(database) > 0
 
     # Emptying the database
     database.clear()
@@ -478,7 +479,8 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
                                                        path=str(tmpdir.join('{file}.type1')),
                                                        file_pattern=str(tmpdir.join('*.type1')))
 
-    assert len(database) == num_of_fits_headers_1 and len(database) > 0
+    assert len(database) == num_of_fits_headers_1
+    assert len(database) > 0
 
     # Downloading for all query response blocks
     num_of_fits_headers_2 = num_entries_from_vso_query(database, download_qr,
@@ -511,7 +513,8 @@ def test_vso_query_block_caching_with_overwrite_true_flag(database,
                                                      path=str(tmpdir.join('{file}.fits')),
                                                      file_pattern=str(tmpdir.join('*.fits')))
 
-    assert len(database) == num_of_fits_headers and len(database) > 0
+    assert len(database) == num_of_fits_headers
+    assert len(database) > 0
 
     # Only downloading for the first query response block with caching disabled
 
