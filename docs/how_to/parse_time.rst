@@ -104,7 +104,7 @@ See this list of all allowed formats, see `this list <https://docs.astropy.org/e
 ``anytim`` output
 ------------------
 
-Format output by the ``anytim`` routine in SSW (see the documentation for `~sunpy.time.TimeUTime` for more information):
+Format output by the ``anytim`` routine in SolarSoft (see the documentation for `~sunpy.time.TimeUTime` for more information):
 
 .. code-block:: python
 
