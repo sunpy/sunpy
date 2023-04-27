@@ -1,0 +1,1 @@
+Move examples of how to create a Map from reference pages to a how-to guide.
