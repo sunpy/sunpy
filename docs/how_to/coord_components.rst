@@ -1,6 +1,6 @@
 
-Accessing coordinate components
--------------------------------
+Access coordinate components
+----------------------------
 
 Individual coordinates can be accessed via attributes on the SkyCoord object,
 but the names of the components of the coordinates can depend on the the frame and the chosen
