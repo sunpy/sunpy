@@ -1,8 +1,8 @@
 .. _how-to-create-new-maps-and-timeseries:
 
-***********************************************
-How to create new Map and TimeSeries subclasses
-***********************************************
+******************************
+How to create new Map subclass
+******************************
 
 Writing a new instrument Map class
 ==================================
@@ -66,7 +66,4 @@ The following example shows how this works and includes a sample doc string that
             # Returns True only if this is data and header from NextGenerationTelescope
             return header.get('instrume', '').startswith('NextGenerationTelescope')
 
-Writing a new instrument Map class
-==================================
 
-NotImplemented
