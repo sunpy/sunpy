@@ -11,7 +11,7 @@ Parse times with `sunpy.time.parse_time`
     >>> import pandas
     >>> from sunpy.time import parse_time
 
-The following examples show how to use `sunpy.time.parse_time` to parse various time formats, including both strings and objects, into an `astropy.time.Time` object(s).
+The following examples show how to use `sunpy.time.parse_time` to parse various time formats, including both strings and objects, into an `astropy.time.Time` object.
 
 strings
 -------
