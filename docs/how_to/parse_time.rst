@@ -114,7 +114,7 @@ Format output by the ``anytim`` routine in SolarSoft (see the documentation for 
 ``anytim2tai`` output
 ---------------------
 
-Format output by the ``anytim2tai`` routine in SSW (see the documentation for `~sunpy.time.TimeTaiSeconds` for more information):
+Format output by the ``anytim2tai`` routine in SolarSoft (see the documentation for `~sunpy.time.TimeTaiSeconds` for more information):
 
 .. code-block:: python
 
