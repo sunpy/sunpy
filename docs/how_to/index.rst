@@ -48,7 +48,7 @@ For more complete code examples, see the how-to guides above.
    * - access the map metadata
      - `my_map.meta <sunpy.map.GenericMap.meta>`
    * - make a copy of the map data array
-     - `my_map.data.copy() <np.ndarray.copy>`
+     - `my_map.data.copy() <numpy.ndarray.copy>`
    * - make a copy of the whole map
      - `copy.deepcopy(my_map) <copy.deepcopy>`
    * - access the observer location
