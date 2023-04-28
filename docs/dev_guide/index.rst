@@ -70,6 +70,7 @@ This section contains the various guidelines to be followed by anyone working on
 
             contents/public_api
             contents/logger
+            contents/remote_data_manager
 
 {%else%}
 

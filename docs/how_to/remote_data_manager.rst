@@ -8,9 +8,7 @@ The remote data manager handles the usage of remote data files including file ve
 For example, say a function, ``test_function``, requires the remote data file http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has the SHA256 hash '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11'.
 To ensure that this exact version of the file is downloaded when ``test_function`` is called, use the `~sunpy.data.data_manager.manager.DataManager.require` decorator.
 
-The remote data manager provides developers with a way to download the files easily and ensure that the files are intact when they are used.
-If the file is changed on the remote server, the data manager will raise an error so that the user is made aware that the intended file is not available.
-If the file has changed on disk, the data manager will redownload the file after warning the user.
+.. code-block:: python
 
     >>> from sunpy.data import manager
     >>> @manager.require('test_file',
@@ -21,19 +19,12 @@ If the file has changed on disk, the data manager will redownload the file after
 
 The first time the function is called, the file will be downloaded and then cached such that subsequent function calls will not trigger a download.
 
-The manager has to be imported before it is used:
-
 .. code-block:: python
 
     >>> test_function()  # The file will be downloaded  # doctest: +REMOTE_DATA
     >>> test_function()  # No downloading here  # doctest: +REMOTE_DATA
 
-`~sunpy.data.data_manager.manager.DataManager.require` is a decorator which is used to inform the data manager that the function requires a file for its execution.
-`~sunpy.data.data_manager.manager.DataManager.get` function is used to access the file inside the function.
-Suppose a function requires a file with url 'http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt' which has a SHA256 hash of '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11'.
-The following example will show how this function can be implemented:
-
-.. code-block:: python
+To access the downloaded file inside the function, use the :meth:`~sunpy.data.data_manager.manager.DataManager.get` method,
 
 .. code-block:: python
 
@@ -47,39 +38,14 @@ To call a function that uses the data manager, but skip the hash check, use the 
 
 .. code-block:: python
 
-The following example shows how cache can be used:
-
-.. code-block:: python
+    >>> with manager.skip_hash_check():
+    ...     test_function()  # doctest: +REMOTE_DATA
+    PosixPath('.../sunpy/data_manager/predicted-sunspot-radio-flux.txt')
 
 To replace the required file with another version, use the `~sunpy.data.data_manager.manager.DataManager.override_file` context manager.
 
 .. code-block:: python
 
-
-    test_function()  # The file will be downloaded with this call
-    test_function()  # subsequent calls won't redownload the file
-
-Testing
-=======
-
-A pytest fixture is provided for ease of mocking network requests when using cache.
-The following example demonstrates the usage of the fixture:
-
-.. code-block:: python
-
-    @pytest.fixture()
-    def local_cache(sunpy_cache):
-        sunpy_cache = sunpy_cache('sunpy.test_module.cache')
-        sunpy_cache.add('http://example.com/test_file',
-                        'test_data_path')
-
-The above snippet creates a pytest fixture called ``local_cache``. This fixture can be used in wherever the files have to be mocked.
-An example is given below:
-
-.. code-block:: python
-
-    def test_test_function(local_cache):
-        # inside this function the mocked cache is used
-
-        # test_function uses 'http://example.com/test_file'
-        assert test_function() == True
+    >>> with manager.override_file('test_file', 'http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits'):
+    ...     test_function()  # doctest: +REMOTE_DATA
+    PosixPath('.../sunpy/data_manager/AIA20110319_105400_0171.fits')

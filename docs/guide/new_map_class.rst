@@ -1,4 +1,4 @@
-.. _how-to-create-new-maps-and-timeseries:
+.. _how-to-create-new-maps:
 
 ******************************
 How to create new Map subclass
@@ -65,5 +65,3 @@ The following example shows how this works and includes a sample doc string that
             """
             # Returns True only if this is data and header from NextGenerationTelescope
             return header.get('instrume', '').startswith('NextGenerationTelescope')
-
-
