@@ -1,11 +1,11 @@
 .. _how_to_custom_maps:
 
-Create Custom Maps
-==================
+Create Custom Maps by Hand
+==========================
 
-It is also possible to create Maps using custom data (e.g. from a simulation or an observation from a data source that is not explicitly supported in **sunpy**).
-To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate meta information.
-The meta information informs `sunpy.map.Map` of the correct coordinate information associated with the data array and should be provided to `sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
+It is possible to create Maps using custom data, e.g. from a simulation or an observation from a data source that is not explicitly supported by **sunpy**
+To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate metadata.
+The metadata informs `sunpy.map.Map` of the correct coordinate information associated with the data array and should be provided to `sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
 See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
@@ -13,13 +13,7 @@ sunpy provides a Map header helper function to assist in creating a header that 
 The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 All the metadata keywords that a Map will parse along with their description are listed in the :ref:`Meta Keywords Table` at the end of this page.
 
-The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
-This function returns a `sunpy.util.MetaDict`.
-The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
-
-The :func:`~sunpy.map.header_helper.make_fitswcs_header` function also takes optional keyword arguments including ``reference_pixel`` and ``scale`` that describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively.
-If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
-
+:func:`~sunpy.map.header_helper.make_fitswcs_header` also takes optional keyword arguments including ``reference_pixel`` and ``scale`` that describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively.
 Here's an example of creating a header from some generic data and an `astropy.coordinates.SkyCoord`:
 
 .. code-block:: python
@@ -31,9 +25,9 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> from sunpy.coordinates import frames
     >>> from sunpy.map.header_helper import make_fitswcs_header
 
-    >>> data = np.arange(0,100).reshape(10,10)
-    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
-    >>> header = make_fitswcs_header(data, coord)
+    >>> data = np.arange(0, 100).reshape(10, 10)
+    >>> reference_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
+    >>> header = make_fitswcs_header(data, reference_coord)
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
