@@ -35,6 +35,16 @@ The minimum required versions of these optional dependencies has also been updat
 - scikit-image 0.18.0
 - scipy 1.7.0
 
+New documentation structure
+===========================
+There has been a major overhaul of the documentation structure
+The new structure has four major distinct sections:
+
+- :ref:`tutorial`, a step-by-step introduction to sunpy.
+- :ref:`how_to_guide`, a set of small self contained guides to getting specific tasks done.
+- :ref:`guide`, a set of more in depth guides that explain how and why different parts of sunpy work.
+- :ref:`reference`, a listing of the contents of the sunpy package.
+
 Getting pixels along a coordinate path
 ======================================
 A new function, :func:`sunpy.map.pixelate_coord_path`, has been added to get all pixels that are intersected by a given coordinate path.
