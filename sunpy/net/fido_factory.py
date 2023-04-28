@@ -14,6 +14,7 @@ from collections.abc import Sequence
 
 import numpy as np
 import parfive
+from packaging.version import Version
 
 from astropy.table import Table
 
@@ -25,6 +26,8 @@ from sunpy.util.parfive_helpers import Downloader, Results
 from sunpy.util.util import get_width
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
+
+parfive_version = Version(parfive.__version__)
 
 
 class UnifiedResponse(Sequence):
@@ -161,9 +164,9 @@ class UnifiedResponse(Sequence):
     def _repr_html_(self):
         nprov = len(self)
         if nprov == 1:
-            ret = 'Results from {} Provider:</br></br>'.format(len(self))
+            ret = f'Results from {len(self)} Provider:</br></br>'
         else:
-            ret = 'Results from {} Providers:</br></br>'.format(len(self))
+            ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
             ret += "{} Results from the {}:</br>".format(len(block),
                                                          block.client.__class__.__name__)
@@ -178,9 +181,9 @@ class UnifiedResponse(Sequence):
     def __str__(self):
         nprov = len(self)
         if nprov == 1:
-            ret = 'Results from {} Provider:\n\n'.format(len(self))
+            ret = f'Results from {len(self)} Provider:\n\n'
         else:
-            ret = 'Results from {} Providers:\n\n'.format(len(self))
+            ret = f'Results from {len(self)} Providers:\n\n'
         for block in self:
             ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
             if block.client.info_url is not None:
@@ -381,10 +384,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
 
-        # TODO: Remove when parfive allows us to special case URLS.
         # Avoid more than one connection for JSOC only requests.
         from sunpy.net.jsoc import JSOCClient
 
+        max_splits = kwargs.get('max_splits', 5)
         is_jsoc_only = False
         for query_result in query_results:
             if isinstance(query_result, UnifiedResponse):
@@ -394,8 +397,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if downloader is None:
             if is_jsoc_only:
                 max_conn = 1
-                kwargs['max_splits'] = 1
-            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+                max_splits = 1
+            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite, max_splits=max_splits)
         elif not isinstance(downloader, parfive.Downloader):
             raise TypeError("The downloader argument must be a parfive.Downloader instance.")
 
@@ -430,8 +433,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                     reslist.append(result)
 
         results = downloader.download()
-        # Combine the results objects from all the clients into one Results
-        # object.
+        # Combine the results objects from all the clients into one Results object.
         for result in reslist:
             if not isinstance(result, Results):
                 raise TypeError(

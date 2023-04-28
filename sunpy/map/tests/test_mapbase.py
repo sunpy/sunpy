@@ -8,7 +8,7 @@ import contextlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from packaging import version
 
@@ -162,7 +162,7 @@ date_dict = {'DATE-AVG': parse_time('2020-01-01'),
 date_begend = date_dict['DATE-BEG'] + (date_dict['DATE-END'] - date_dict['DATE-BEG']) / 2
 
 
-@pytest.mark.parametrize('keys, expected_date',
+@pytest.mark.parametrize(("keys", "expected_date"),
                          ([['DATE-AVG', 'DATE-OBS', 'DATE-BEG', 'DATE-END'], date_dict['DATE-OBS']],
                           [['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-AVG']],
                           [['DATE-BEG', 'DATE-END'], date_begend],
@@ -562,7 +562,7 @@ pixel_corners = [
 ]
 
 
-@pytest.mark.parametrize('rect, submap_out', pixel_corners)
+@pytest.mark.parametrize(("rect", "submap_out"), pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
     for r in [dict(bottom_left=rect[0], top_right=rect[1]),
@@ -574,7 +574,7 @@ def test_submap_pixel(simple_map, rect, submap_out):
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
 # converting to world coordinates due to round-off error when round-tripping
 # through pixel_to_world -> world_to_pixel
-@pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
+@pytest.mark.parametrize(("rect", "submap_out"), pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
     corner1 = simple_map.pixel_to_world(*rect[0])
@@ -688,7 +688,7 @@ resample_test_data = [('linear', (100, 200) * u.pixel),
                       ('spline', (200, 200) * u.pixel)]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
+@pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
@@ -696,7 +696,7 @@ def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     assert resampled_map.dimensions[1] == new_dimensions[1]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
+@pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
 def test_resample_metadata(generic_map, sample_method, new_dimensions):
     """
     Check that the resampled map has correctly adjusted metadata.
@@ -728,7 +728,7 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
-@pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
+@pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
 def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     # Put the reference pixel at the top-right of the bottom-left pixel
     simple_map.meta['crpix1'] = 1.5
@@ -778,7 +778,7 @@ def test_superpixel_dims_values(aia171_test_map, f):
     assert_quantity_allclose(superpix_map.data[0, 0], expected)
 
 
-@pytest.mark.parametrize('f, dimensions', [(np.sum, (2, 3)*u.pix),
+@pytest.mark.parametrize(("f", "dimensions"), [(np.sum, (2, 3)*u.pix),
                                            (np.mean, (3, 2)*u.pix)])
 def test_superpixel_metadata(generic_map, f, dimensions):
     superpix_map = generic_map.superpixel(dimensions, func=f)
@@ -846,7 +846,12 @@ def test_superpixel_fractional_inputs(generic_map):
 
 
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
-@settings(max_examples=10, deadline=1000)
+@settings(
+    max_examples=10,
+    # Lots of draws can be discarded when checking matrix is non-singular
+    suppress_health_check=[HealthCheck.filter_too_much],
+    deadline=1000,
+)
 @given(pc=matrix_meta('pc'))
 def test_resample_rotated_map_pc(pc, method):
     smap = make_simple_map()
@@ -862,7 +867,12 @@ def test_resample_rotated_map_pc(pc, method):
 
 
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
-@settings(max_examples=10, deadline=1000)
+@settings(
+    max_examples=10,
+    # Lots of draws can be discarded when checking matrix is non-singular
+    suppress_health_check=[HealthCheck.filter_too_much],
+    deadline=1000,
+)
 @given(cd=matrix_meta('cd'))
 def test_resample_rotated_map_cd(cd, method):
     smap = make_simple_map()
@@ -1211,7 +1221,7 @@ def test_quicklook(mocker, aia171_test_map):
     file_url = mockwbopen.call_args[0][0]
     assert file_url.startswith('file://')
     # Open the file specified in the URL and confirm that it contains the HTML
-    with open(file_url[7:], 'r') as f:
+    with open(file_url[7:]) as f:
         html_string = f.read()
     assert aia171_test_map._repr_html_() in html_string
 
@@ -1305,6 +1315,8 @@ def test_contour(simple_map):
     assert contour.obstime == simple_map.date
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+    with pytest.raises(ValueError, match='level must be a single scalar value'):
+        simple_map.contour([1.5, 2.5])
 
 
 def test_contour_units(simple_map):
@@ -1555,7 +1567,7 @@ def test_map_arithmetic_neg(aia171_test_map):
     check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
 
 
-@pytest.mark.parametrize('value,warn_context', [
+@pytest.mark.parametrize(("value", "warn_context"), [
     ('map', pytest.warns(RuntimeWarning)),
     ('foobar', contextlib.nullcontext()),
     (None, contextlib.nullcontext()),
@@ -1567,7 +1579,7 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError):  # noqa: PT012
         # A runtime warning is thrown when dividing by zero in the case of
         # the map test
         with warn_context:

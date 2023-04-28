@@ -40,6 +40,7 @@ edge_map = sunpy.map.Map(edge_enhanced_im, aia_smap.meta)
 ###############################################################################
 # Let's plot the results.
 
-plt.figure()
-edge_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=edge_map)
+edge_map.plot(axes=ax)
 plt.show()

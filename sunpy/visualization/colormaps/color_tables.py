@@ -115,7 +115,7 @@ def aia_color_table(wavelength: u.angstrom):
         raise ValueError("Invalid AIA wavelength. Valid values are "
                          "1600,1700,4500,94,131,171,193,211,304,335.")
 
-    return _cmap_from_rgb(r, g, b, 'SDO AIA {:s}'.format(str(wavelength)))
+    return _cmap_from_rgb(r, g, b, f'SDO AIA {str(wavelength):s}')
 
 
 @u.quantity_input
@@ -136,7 +136,7 @@ def eit_color_table(wavelength: u.angstrom):
         raise ValueError("Invalid EIT wavelength. Valid values are "
                          "171, 195, 284, 304.")
 
-    return cmap_from_rgb_file('SOHO EIT {:s}'.format(str(wavelength)), f'eit_{color}.csv')
+    return cmap_from_rgb_file(f'SOHO EIT {str(wavelength):s}', f'eit_{color}.csv')
 
 
 def sswidl_lasco_color_table(number):
@@ -178,7 +178,7 @@ def sxt_color_table(sxt_filter):
     except KeyError:
         raise ValueError("Invalid SXT filter type number. Valid values are "
                          "'al', 'wh'.")
-    return _cmap_from_rgb(r, g, b, 'Yohkoh SXT {:s}'.format(sxt_filter.title()))
+    return _cmap_from_rgb(r, g, b, f'Yohkoh SXT {sxt_filter.title():s}')
 
 
 def xrt_color_table():
@@ -359,7 +359,7 @@ def suvi_color_table(wavelength: u.angstrom):
             "Invalid SUVI wavelength. Valid values are "
             "94, 131, 171, 195, 284, 304."
         )
-    return _cmap_from_rgb(r, g, b, 'GOES-R SUVI {:s}'.format(str(wavelength)))
+    return _cmap_from_rgb(r, g, b, f'GOES-R SUVI {str(wavelength):s}')
 
 
 def rhessi_color_table():

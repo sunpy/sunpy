@@ -48,6 +48,7 @@ manual_map = sunpy.map.Map(data, header)
 ##############################################################################
 # Let's plot the result.
 
-plt.figure()
-manual_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=manual_map)
+manual_map.plot(axes=ax)
 plt.show()

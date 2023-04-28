@@ -2,63 +2,86 @@
 sunpy core Documentation
 ************************
 
-``sunpy`` is a community-developed, free and open-source solar data analysis environment for Python.
-It provides search and download functionality, data containers for image and time series data, as well as commonly used coordinate frames and transformations between such frames.
-
 .. image:: tour.svg
   :align: center
 
-New Users
-==========
+``sunpy`` is a community-developed, free and open-source solar data analysis environment for Python.
+It includes an interface for searching and downloading data from multiple data providers, data containers for image and time series data, commonly used solar coordinate frames and associated transformations, as well as other functionality needed for solar data analysis.
 
-For help installing ``sunpy`` refer to our :ref:`installation guide <installing>`.
+.. grid:: 1 2 3 3
+    :gutter: 2
 
-.. todo::
+    .. grid-item-card:: Tutorial
+        :link: tutorial
+        :link-type: ref
+        :text-align: center
 
-    if #6615 is completed link here
-    Introduction to sunpy core
+        :material-outlined:`accessibility_new;8em;sd-text-secondary`
 
-If you are a first time user or new to Python, our **tutorial** provides a walkthrough on how to use the key features of sunpy core.
-Once you've installed sunpy, start here.
+        **New users start here!** Walkthrough on how to install sunpy and use the key features of the package.
 
-* :ref:`tutorial`
-    #. :ref:`installing`
-    #. :ref:`units-sunpy`
-    #. :ref:`time-in-sunpy`
-    #. :ref:`coordinates-sunpy`
-    #. :ref:`acquiring_data`
-    #. :ref:`map_guide`
-    #. :ref:`timeseries_guide`
+    .. grid-item-card:: How-to Guides
+        :link: how_to_guide
+        :link-type: ref
+        :text-align: center
 
-Next Steps
-==========
+        :material-outlined:`menu_book;8em;sd-text-secondary`
 
-* :ref:`guide` contains in depth guides for different parts of sunpy.
-* :doc:`Example gallery <generated/gallery/index>` contains short-form guides on accomplishing common tasks using sunpy.
-* :ref:`API reference<reference>` contains a technical description of the inputs, outputs, and behaviour of each component of sunpy core.
+        Snippets of code for accomplishing specific tasks with sunpy.
+        Most useful for answering "How do I..." questions.
 
-.. todo::
+    .. grid-item-card:: Example gallery
+        :link: generated/gallery
+        :text-align: center
 
-    When a page or subgallery containing more diataxis like how-to (longer form) guides is added then link here
-    [How to guides] provide detailed overview on some of the features of sunpy. These assume some level of experience using sunpy.
+        :material-outlined:`palette;8em;sd-text-secondary`
 
-.. todo::
+        Examples including plots on accomplishing common tasks using sunpy.
 
-    Index explanation pages (e.g. different map rotation methods and then link here.)
-    [Topic guides] discuss key topics and concepts at a fairly high level and provide useful background information and explanation.
+    .. grid-item-card:: Topic Guides
+        :link: guide
+        :link-type: ref
+        :text-align: center
 
-Further Info
-============
+        :material-outlined:`school;8em;sd-text-secondary`
 
-* Find out :ref:`what's new <whatsnew>` with sunpy.
-* View a list of :ref:`known issues <known_issues>` or report new issues on our `GitHub issue tracker`_.
-* Join our `chat room`_ or post to our `discourse`_ for help.
-* Read the :ref:`Developers guide <dev_guide>` to start contributing to the SunPy project.
+        In-depth explanations of concepts and key topics.
+        Most useful for answering "why" questions.
 
+    .. grid-item-card:: Reference
+        :link: reference
+        :link-type: ref
+        :text-align: center
 
-.. _chat room: https://app.element.io/#/room/#sunpy:openastronomy.org
-.. _GitHub issue tracker: https://github.com/sunpy/sunpy/issues
-.. _discourse: https://community.openastronomy.org/c/sunpy/5
+        :material-outlined:`code;8em;sd-text-secondary`
+
+        Technical description of the inputs, outputs, and behavior of each component of sunpy.
+
+    .. grid-item-card:: Get Help
+        :text-align: center
+
+        :material-outlined:`live_help;8em;sd-text-secondary`
+
+        .. button-link:: https://app.element.io/#/room/#sunpy:openastronomy.org
+            :shadow:
+            :expand:
+            :color: warning
+
+            **Join the chat**
+
+        .. button-link:: https://github.com/sunpy/sunpy/issues
+            :shadow:
+            :expand:
+            :color: warning
+
+            **Report an issue**
+
+        .. button-link:: https://community.openastronomy.org/c/sunpy/5
+            :shadow:
+            :expand:
+            :color: warning
+
+            **Post on Discourse**
 
 .. toctree::
     :maxdepth: 1
@@ -67,6 +90,7 @@ Further Info
     tutorial/index
     tutorial/installation
     generated/gallery/index
+    how_to/index
     guide/index
     reference/index
     whatsnew/index

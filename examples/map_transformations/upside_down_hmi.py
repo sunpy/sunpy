@@ -18,8 +18,9 @@ from sunpy.data.sample import HMI_LOS_IMAGE
 # than negative to positive).
 
 hmi_map = sunpy.map.Map(HMI_LOS_IMAGE)
-plt.figure()
-hmi_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=hmi_map)
+hmi_map.plot(axes=ax)
 
 plt.show()
 
@@ -37,7 +38,8 @@ plt.show()
 # in this case, 3 refers to bi-cubic.
 
 hmi_rotated = hmi_map.rotate(order=3)
-plt.figure()
-hmi_rotated.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=hmi_rotated)
+hmi_rotated.plot(axes=ax)
 
 plt.show()

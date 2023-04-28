@@ -5,7 +5,6 @@ This module provides a wrapper around the VSO API.
 import os
 import copy
 import json
-import socket
 import inspect
 import datetime
 import itertools
@@ -18,6 +17,7 @@ from urllib.request import Request, urlopen
 import zeep
 
 from sunpy import config, log
+from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
@@ -25,7 +25,6 @@ from sunpy.net.vso.attrs import _walker as walker
 from sunpy.util.exceptions import warn_user
 from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
-from .. import _attrs as core_attrs
 from .exceptions import (
     DownloadFailed,
     MissingInformation,
@@ -55,7 +54,7 @@ class _Str(str):
 def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
-    except (socket.error, socket.timeout, HTTPError, URLError) as e:
+    except (OSError, HTTPError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return None
 
@@ -418,7 +417,15 @@ class VSOClient(BaseClient):
         return results
 
     def make_getdatarequest(self, response, methods=None, info=None):
-        """ Make datarequest with methods from response. """
+        """
+        Make datarequest with methods from response.
+        """
+        # Pass back the Apache session ID to the VSO if it exists in the response
+        for item in response:
+            info_required = item.get("Info Required", None)
+            if info_required is not None:
+                info['required'] = item['Info Required']
+
         if methods is None:
             methods = self.method_order + ['URL']
 
@@ -619,7 +626,7 @@ class VSOClient(BaseClient):
         from sunpy.net import attrs as a
 
         here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
             keyword_info = json.load(attrs_file)
 
         # Now to traverse the saved dict and give them attr keys.

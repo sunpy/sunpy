@@ -36,12 +36,12 @@ class LYRAClient(GenericClient):
     Source: http://vso.stanford.edu/cgi-bin/search
     Total estimated size: 2.914 Gbyte
     <BLANKLINE>
-           Start Time       ...          Info Required
-                            ...
-    ----------------------- ... --------------------------------
-    2016-01-01 09:41:00.000 ... ...
-    2016-01-01 09:41:00.000 ... ...
-    2016-01-01 09:41:00.000 ... ...
+           Start Time               End Time        Source ... Extent Type   Size
+                                                           ...              Mibyte
+    ----------------------- ----------------------- ------ ... ----------- --------
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  2328.75
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A 419.0625
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  30.9375
     <BLANKLINE>
     <BLANKLINE>
     """

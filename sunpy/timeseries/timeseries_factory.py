@@ -17,7 +17,7 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
-from sunpy.io.file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
+from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io.header import FileHeader
 from sunpy.timeseries.sources import source_names
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -142,7 +142,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 if detect_filetype(fname) == 'cdf':
                     # Put import here to ensure there is no import dependency
                     # on cdflib for TimeSeries
-                    from sunpy.io.cdf import read_cdf
+                    from sunpy.io._cdf import read_cdf
                     return read_cdf(os.fspath(fname), **kwargs)
             except UnrecognizedFileTypeError:
                 pass

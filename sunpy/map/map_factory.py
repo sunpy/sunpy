@@ -10,7 +10,7 @@ from astropy.wcs import WCS
 
 from sunpy import log
 from sunpy.data import cache
-from sunpy.io.file_tools import read_file
+from sunpy.io._file_tools import read_file
 from sunpy.io.header import FileHeader
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
@@ -160,7 +160,7 @@ class MapFactory(BasicRegistrationFactory):
         try:
             pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
-            raise IOError(f"Failed to read {fname}\n{e}") from e
+            raise OSError(f"Failed to read {fname}\n{e}") from e
 
         new_pairs = []
         for pair in pairs:

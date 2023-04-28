@@ -466,9 +466,9 @@ def print_params(t='now'):
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
-    print('Distance = {}'.format(earth_distance(t)))
-    print('Semidiameter = {}'.format(angular_radius(t)))
+    print(f'Solar Ephemeris for {parse_time(t).utc} UTC\n')
+    print(f'Distance = {earth_distance(t)}')
+    print(f'Semidiameter = {angular_radius(t)}')
     print('True (long, lat) = ({}, {})'.format(true_longitude(t).to_string(),
                                                true_latitude(t).to_string()))
     print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t).to_string(),
@@ -479,8 +479,8 @@ def print_params(t='now'):
                                                  apparent_declination(t).to_string()))
     print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
                                                                         B0(t).to_string()))
-    print('Position angle of north pole = {}'.format(P(t)))
-    print('Carrington rotation number = {}'.format(carrington_rotation_number(t)))
+    print(f'Position angle of north pole = {P(t)}')
+    print(f'Carrington rotation number = {carrington_rotation_number(t)}')
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())

@@ -50,7 +50,7 @@ def iter_sort_response(response):
 
 
 class VSOQueryResponseTable(QueryResponseTable):
-    hide_keys = ['fileid', 'fileurl']
+    hide_keys = ['fileid', 'fileurl', 'Info Required']
     errors = TableAttribute(default=[])
     size_column = 'Size'
 

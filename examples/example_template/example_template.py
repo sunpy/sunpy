@@ -34,20 +34,20 @@ x = np.linspace(-np.pi, np.pi, 300)
 xx, yy = np.meshgrid(x, x)
 z = np.cos(xx) + np.cos(yy)
 
-plt.figure()
-plt.imshow(z)
+fig, ax = plt.subplots()
+ax.imshow(z)
 plt.colorbar()
-plt.xlabel('$x$')
-plt.ylabel('$y$')
+ax.set_xlabel('$x$')
+ax.set_ylabel('$y$')
 
 ###########################################################################
 # Again it is possible to continue the discussion with a new Python string. This
 # time to introduce the next code block generates 2 separate figures.
 
-plt.figure()
-plt.imshow(z, cmap=matplotlib.colormaps['hot'])
-plt.figure()
-plt.imshow(z, cmap=matplotlib.colormaps['Spectral'], interpolation='none')
+fig, ax = plt.subplots()
+ax.imshow(z, cmap=matplotlib.colormaps['hot'])
+fig, ax = plt.subplots()
+ax.imshow(z, cmap=matplotlib.colormaps['Spectral'], interpolation='none')
 
 ##########################################################################
 # There's some subtle differences between rendered html rendered comment

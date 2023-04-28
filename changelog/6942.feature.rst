@@ -1,0 +1,4 @@
+Increased minimum version of `parfive` to 2.0.0.
+
+We are aware the change in the ``parfive`` minimum version is a release earlier than our dependency policy allows for.
+However, due to significant issues that ``parfive`` v2.0.0 solves and changes to remote servers, we have decided to increase it to improve the user experience when downloading files.

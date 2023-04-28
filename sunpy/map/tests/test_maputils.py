@@ -294,23 +294,22 @@ def test_extract_along_coord(aia171_test_map):
     assert u.quantity.allclose(intensity_diag, intensity)
 
 
+@pytest.mark.filterwarnings("ignore:The extract_along_coord function is deprecated:sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_extract_along_coord_one_point_exception(aia171_test_map):
     with pytest.raises(ValueError, match='At least two points are required*'):
-        with pytest.warns(SunpyDeprecationWarning):
-            _ = extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
+        extract_along_coord(aia171_test_map, aia171_test_map.bottom_left_coord)
     with pytest.raises(ValueError, match='At least two points are required*'):
-        with pytest.warns(SunpyDeprecationWarning):
-            _ = extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
+        extract_along_coord(aia171_test_map, SkyCoord([aia171_test_map.bottom_left_coord]))
 
 
+@pytest.mark.filterwarnings("ignore:The extract_along_coord function is deprecated:sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_extract_along_coord_out_of_bounds_exception(aia171_test_map):
     point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
     with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.*'):
-        with pytest.warns(SunpyDeprecationWarning):
-            _ = extract_along_coord(aia171_test_map, point)
+        extract_along_coord(aia171_test_map, point)
 
 
-@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+@pytest.mark.parametrize(('x', 'y', 'sampled_x', 'sampled_y'),
                          [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
                           ([1, 5], [1, 2], [1, 2, 3, 3, 4, 5], [1, 1, 1, 2, 2, 2]),
                           ([1, 5], [1, 3], [1, 2, 2, 3, 4, 4, 5], [1, 1, 2, 2, 2, 3, 3]),
@@ -328,7 +327,7 @@ def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
         assert np.allclose(sampled_pixels[1], syy)
 
 
-@pytest.mark.parametrize('x, y, sampled_x, sampled_y',
+@pytest.mark.parametrize(('x', 'y', 'sampled_x', 'sampled_y'),
                          [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
                           ([1, 5], [1, 2], [1, 2, 3, 4, 5], [1, 1, 1, 2, 2]),
                           ([1, 5], [1, 3], [1, 2, 3, 4, 5], [1, 1, 2, 2, 3]),

@@ -1,0 +1,1 @@
+Pass in "max_splits" to Parfive to prevent multi connections to JSOC for JSOC only queries.

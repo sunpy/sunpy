@@ -1,0 +1,2 @@
+Multi-line ``HISTORY`` and ``COMMENT`` keys metadata dictionaries are now correctly split into
+multiple history and comment cards when writing a FITS file.

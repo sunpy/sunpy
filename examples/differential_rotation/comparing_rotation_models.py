@@ -63,8 +63,9 @@ for model in ['howard', 'snodgrass', 'allen', 'rigid']:
 # Note that the "rigid" model appears as the meridian again as expected for a
 # rotation of exactly one sidereal period.
 
-plt.figure()
-aiamap.plot(clip_interval=(0.5, 99.9)*u.percent)
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax, clip_interval=(0.5, 99.9)*u.percent)
 
 colors = {
     'howard': 'red',
@@ -73,10 +74,10 @@ colors = {
     'rigid': 'white',
 }
 for model, coord in rotated_meridian.items():
-    aiamap.draw_quadrangle(coord, edgecolor=colors[model],
+    aiamap.draw_quadrangle(coord, axes=ax, edgecolor=colors[model],
                            label=model.capitalize())
-plt.legend()
 
-plt.title(f'{sidereal_period:.2f} of solar rotation')
+ax.legend()
+ax.set_title(f'{sidereal_period:.2f} of solar rotation')
 
 plt.show()

@@ -41,7 +41,8 @@ scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask)
 ###############################################################################
 # Let's plot the results using our modified colormap.
 
-plt.figure()
-scaled_map.plot(cmap=palette)
-scaled_map.draw_limb()
+fig = plt.figure()
+ax = fig.add_subplot(projection=scaled_map)
+scaled_map.plot(axes=ax, cmap=palette)
+scaled_map.draw_limb(axes=ax)
 plt.show()

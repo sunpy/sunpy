@@ -19,7 +19,7 @@ def test_removal_version_not_since_lts():
 
 
 @pytest.mark.parametrize(
-    'since,pending,warning,message,warning_message',
+    ('since', 'pending', 'warning', 'message', 'warning_message'),
     [
         ('2.0', False, SunpyDeprecationWarning, '',
          'The foo function is deprecated and may be removed in version 2.1.'),

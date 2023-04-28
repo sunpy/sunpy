@@ -468,7 +468,7 @@ class GenericTimeSeries:
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
-        if not (colname in self.columns):
+        if colname not in self.columns:
             units[colname] = unit
 
         # Convert the given quantity into values for given units if necessary.
@@ -477,7 +477,7 @@ class GenericTimeSeries:
             values = values.to(units[colname]).value
 
         # Update or add the data.
-        if not (colname in self.columns) or overwrite:
+        if colname not in self.columns or overwrite:
             data[colname] = values
 
         # Return a new TimeSeries with the given updated/added column.

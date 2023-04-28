@@ -20,9 +20,9 @@ To link to other methods, classes, or modules in sunpy you have to use backticks
 
 .. code-block:: rst
 
-    `sunpy.io.read_file`
+    `sunpy.map.GenericMap`
 
-generates a link like this: `sunpy.io.read_file`.
+generates a link like this: `sunpy.map.GenericMap`.
 
 We use the sphinx setting ``default_role = 'obj'`` so that you do not nor **SHOULD NOT** use the ``:class:`` qualifier, but ``:func:``, ``:meth:`` are different (more on this below).
 
@@ -31,9 +31,9 @@ As long as the target is unambiguous you can simply leave them out:
 
 .. code-block:: rst
 
-    `.read_file`
+    `.GenericMap`
 
-and the link still works: `.read_file`.
+and the link still works: `.GenericMap`.
 
 If there are multiple code elements with the same name (e.g. ``peek()`` is a method in multiple classes), you'll have to extend the definition:
 

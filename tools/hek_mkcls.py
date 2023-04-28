@@ -242,7 +242,7 @@ def mk_gen(rest):
     ret = ''
     ret += '@_makeinstance\nclass Misc:\n'
     for elem in sorted(rest):
-        ret += '    {} = {}({!r})\n'.format(elem, fields[elem], elem)
+        ret += f'    {elem} = {fields[elem]}({elem!r})\n'
     return ret
 
 
@@ -264,7 +264,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
     else:
         ret += '@_makeinstance\nclass %s:\n' % name
     for k, v in keys:
-        ret += '    {} = {}({!r})\n'.format(k[len(key) + pad:], v, k)
+        ret += f'    {k[len(key) + pad:]} = {v}({k!r})\n'
     if init:
         ret += '''\n    def __init__(self):
         super().__init__(%r)''' % name.lower()

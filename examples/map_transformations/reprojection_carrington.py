@@ -20,8 +20,9 @@ from sunpy.map.header_helper import make_heliographic_header
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 
-plt.figure()
-aia_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aia_map)
+aia_map.plot(axes=ax)
 
 ###############################################################################
 # Reproject works by transforming an input image to a desired World Coordinate
@@ -43,8 +44,9 @@ outmap = aia_map.reproject_to(carr_header)
 ###############################################################################
 # Plot the result.
 
-plt.figure()
-outmap.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=outmap)
+outmap.plot(axes=ax)
 outmap.draw_limb(color='blue')
 
 plt.show()

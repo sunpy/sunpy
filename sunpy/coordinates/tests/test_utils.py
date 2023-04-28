@@ -20,7 +20,7 @@ from sunpy.sun import constants
 # https://en.wikipedia.org/wiki/Great-circle_distance
 
 
-@pytest.mark.parametrize("start, end", [((0, 0), (0, 45)),
+@pytest.mark.parametrize(("start", "end"), [((0, 0), (0, 45)),
                                         ((0, 0), (45, 0)),
                                         ((0, 45), (0, 0)),
                                         ((45, 0), (0, 0)),
@@ -59,7 +59,7 @@ def test_great_arc_calculable(start, end):
 
 # Test the calculation of coordinates using varying numbers of points on
 # initialization of the GreatArc object.
-@pytest.mark.parametrize("points_requested, points_expected, first_point, last_point, last_inner_angle, last_distance",
+@pytest.mark.parametrize(("points_requested", "points_expected", "first_point", "last_point", "last_inner_angle", "last_distance"),
                          # Test default
                          [(None, 100, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
                           # Test int as an option
@@ -189,9 +189,12 @@ def test_great_arc_points_differentiates(aia171_test_map):
     coordinates = gc.coordinates(10)
     inner_angles = gc.inner_angles(11)
     distances = gc.distances(12)
-    assert len(coordinates) == 10 and len(gc.coordinates()) == 100
-    assert len(inner_angles) == 11 and len(gc.inner_angles()) == 100
-    assert len(distances) == 12 and len(gc.distances()) == 100
+    assert len(coordinates) == 10
+    assert len(gc.coordinates()) == 100
+    assert len(inner_angles) == 11
+    assert len(gc.inner_angles()) == 100
+    assert len(distances) == 12
+    assert len(gc.distances()) == 100
 
 
 # Test that the great arc code properly understands different observers
@@ -304,7 +307,7 @@ def test_rectangle_bottom_left_different_types(rectangle_args):
 
     assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
     assert bottom_left.spherical.lat + height == top_right_1.spherical.lat
-    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)
+    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)  # noqa: E721
 
     bottom_left_2, top_right_2 = get_rectangle_coordinates(bottom_left, width=width, height=height)
 

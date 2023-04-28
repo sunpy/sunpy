@@ -34,11 +34,11 @@ goes_lc = goes_lc.add_column(
 ###############################################################################
 # Plotting original and smoothed timeseries.
 
-plt.figure()
-plt.xlabel('Time')
-plt.ylabel("Flux (Wm$^{-2}$")
-plt.title('Smoothing of Time Series')
-plt.plot(goes_lc.quantity('xrsa'), label='original')
-plt.plot(goes_lc.quantity('xrsa_smoothed'), label='smoothed')
-plt.legend()
+fig, ax = plt.subplots()
+ax.set_xlabel('Time')
+ax.set_ylabel("Flux (Wm$^{-2}$")
+ax.set_title('Smoothing of Time Series')
+ax.plot(goes_lc.quantity('xrsa'), label='original')
+ax.plot(goes_lc.quantity('xrsa_smoothed'), label='smoothed')
+ax.legend()
 plt.show()

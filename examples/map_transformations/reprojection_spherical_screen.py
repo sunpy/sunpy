@@ -30,9 +30,9 @@ aia_map = sunpy.map.Map(AIA_171_IMAGE)
 aia_map.plot_settings['norm'].vmin = 0
 aia_map.plot_settings['norm'].vmax = 10000
 
-plt.figure()
-plt.subplot(projection=aia_map)
-aia_map.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aia_map)
+aia_map.plot(axes=ax)
 plt.show()
 
 ######################################################################
@@ -68,8 +68,9 @@ out_header = sunpy.map.make_fitswcs_header(
 
 outmap_default = aia_map.reproject_to(out_header)
 
-plt.figure()
-outmap_default.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=outmap_default)
+outmap_default.plot(axes=ax)
 plt.show()
 
 ######################################################################
@@ -82,8 +83,9 @@ plt.show()
 with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate):
     outmap_screen_all = aia_map.reproject_to(out_header)
 
-plt.figure()
-outmap_screen_all.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=outmap_screen_all)
+outmap_screen_all.plot(axes=ax)
 plt.show()
 
 ######################################################################
@@ -95,6 +97,7 @@ with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate,
                                              only_off_disk=True):
     outmap_screen_off_disk = aia_map.reproject_to(out_header)
 
-plt.figure()
-outmap_screen_off_disk.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=outmap_screen_off_disk)
+outmap_screen_off_disk.plot(axes=ax)
 plt.show()

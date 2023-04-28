@@ -3,7 +3,7 @@ import numpy as np
 import astropy.units as u
 
 from sunpy.data.test import get_test_filepath
-from sunpy.io.cdf import read_cdf
+from sunpy.io._cdf import read_cdf
 from sunpy.timeseries import GenericTimeSeries
 
 filepath = get_test_filepath('solo_L2_epd-ept-north-hcad_20200713_V02.cdf')

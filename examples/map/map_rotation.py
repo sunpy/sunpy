@@ -28,8 +28,9 @@ aia_rotated = aia_map.rotate(angle=30 * u.deg)
 ###############################################################################
 # Let's now plot the results.
 
-plt.figure()
-aia_rotated.plot(clip_interval=(1, 99.99)*u.percent)
-aia_rotated.draw_limb()
-aia_rotated.draw_grid()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aia_rotated)
+aia_rotated.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+aia_rotated.draw_limb(axes=ax)
+aia_rotated.draw_grid(axes=ax)
 plt.show()

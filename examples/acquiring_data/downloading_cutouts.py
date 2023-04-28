@@ -74,7 +74,8 @@ files.sort()
 
 sequence = sunpy.map.Map(files, sequence=True)
 
-plt.figure()
-ani = sequence.plot(norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+fig = plt.figure()
+ax = fig.add_subplot(projection=sequence.maps[0])
+ani = sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
 
 plt.show()

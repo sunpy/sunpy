@@ -185,12 +185,12 @@ def test_errors(tmpdir):
     p = tmpdir.mkdir("sub").join("hello.fits")
     p.write("content")
     files = [AIA_171_IMAGE, p.strpath]
-    with pytest.raises(OSError, match=(fr"Failed to read *")):
+    with pytest.raises(OSError, match=(r"Failed to read *")):
         sunpy.map.Map(files)
 
 
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
-@pytest.mark.parametrize('silence,error,match',
+@pytest.mark.parametrize(('silence', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
                              (False, sunpy.map.mapbase.MapMetaValidationError,
                               'Image coordinate units for axis 1 not present in metadata.')])
@@ -242,13 +242,13 @@ def test_map_list_urls_cache():
     """
     Test for https://github.com/sunpy/sunpy/issues/4006
     """
-    urls = ['http://jsoc.stanford.edu/SUM80/D136597189/S00000/image_lev1.fits',
-            'http://jsoc.stanford.edu/SUM79/D136597240/S00000/image_lev1.fits']
+    urls = ['https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits',
+            'https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits']
     sunpy.map.Map(urls)
 
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
-@pytest.mark.parametrize('file, mapcls', [
+@pytest.mark.parametrize(('file', 'mapcls'), [
     ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
     ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],
     ["mdi.fd_Ic.20101015_230100_TAI.data.header", sunpy.map.sources.MDIMap],

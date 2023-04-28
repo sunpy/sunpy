@@ -127,7 +127,7 @@ def test_rigid(seconds_per_day):
 
 def test_fail(seconds_per_day):
     with pytest.raises(ValueError):
-        rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
+        diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
 
 
 def test_solar_rotate_coordinate():
@@ -148,7 +148,7 @@ def test_solar_rotate_coordinate():
         d = solar_rotate_coordinate(c, observer='earth')
 
     # Test that the code properly filters the time keyword
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):  # noqa: PT012
         with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
             d = solar_rotate_coordinate(c, time='noon')
 

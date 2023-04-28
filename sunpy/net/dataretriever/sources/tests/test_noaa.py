@@ -74,7 +74,7 @@ def test_fetch_working(indices_client, tmpdir):
 
 
 @pytest.mark.parametrize(
-    "timerange,url_start,url_end",
+    ('timerange', 'url_start', 'url_end'),
     [(Time('1995/06/03', '1995/06/04'),
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
       'https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json'),

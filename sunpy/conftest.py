@@ -100,7 +100,7 @@ def sunpy_cache(mocker, tmp_path):
     def func(mocked):
         mocker.patch(mocked, cache)
         return cache
-    yield func
+    return func
 
 
 @pytest.fixture()
@@ -112,6 +112,17 @@ def undo_config_dir_patch():
     del os.environ["SUNPY_CONFIGDIR"]
     yield
     os.environ["SUNPY_CONFIGDIR"] = oridir
+
+
+@pytest.fixture(scope='session', autouse=True)
+def sunpy_test_run(request):
+    """
+    Add a environmental keyword to allow us to check and execute
+    specific code within a pytest run (e.g., update headers for the online tests).
+    """
+    os.environ["SUNPY_PYTEST_RUN"] = "True"
+    yield
+    del os.environ["SUNPY_PYTEST_RUN"]
 
 
 @pytest.fixture(scope='session', autouse=True)

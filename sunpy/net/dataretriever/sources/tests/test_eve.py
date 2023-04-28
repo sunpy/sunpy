@@ -16,7 +16,7 @@ def LCClient():
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange,url_start,url_end", [
+@pytest.mark.parametrize(("timerange", "url_start", "url_end"), [
     (Time('2012/4/21', '2012/4/21'),
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
@@ -68,7 +68,7 @@ def test_query(LCClient):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
+@pytest.mark.parametrize(("time", "instrument"), [
     (Time('2012/11/27', '2012/11/27'), Instrument('eve')),
 ])
 def test_get(LCClient, time, instrument):

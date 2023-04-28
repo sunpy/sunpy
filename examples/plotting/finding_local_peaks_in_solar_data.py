@@ -23,8 +23,9 @@ from sunpy.map.maputils import all_pixel_indices_from_map
 # We will first create a Map using some sample data and display it.
 
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
-plt.figure()
-aiamap.plot()
+fig = plt.figure()
+ax = fig.add_subplot(projection=aiamap)
+aiamap.plot(axes=ax)
 plt.colorbar()
 
 ###############################################################################

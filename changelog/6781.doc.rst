@@ -1,0 +1,1 @@
+Created a "Showcase" section of the gallery, which includes a new example (:ref:`sphx_glr_generated_gallery_showcase_where_is_stereo.py`) and a relocated example (:ref:`sphx_glr_generated_gallery_showcase_hmi_cutout.py`).

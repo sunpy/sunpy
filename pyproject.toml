@@ -8,10 +8,13 @@ requires = [
          ]
 build-backend = 'setuptools.build_meta'
 
+[tool.setuptools_scm]
+write_to = "sunpy/_version.py"
+
 # Until we have h5py binaries we can't test wheels on Python 3.11
 [tool.cibuildwheel]
-test-skip = "cp311-*"
-test-requires = ["opencv_python==4.6.0.66"]
+test-command = "pytest -p no:warnings --doctest-rst -m 'not mpl_image_compare' --pyargs sunpy"
+test-extras = ["all,tests"]
 
 [ tool.gilesbot ]
   [ tool.gilesbot.circleci_artifacts ]
@@ -83,3 +86,63 @@ test-requires = ["opencv_python==4.6.0.66"]
       directory = "trivial"
       name = "Internal Changes"
       showcontent = true
+
+
+[tool.ruff]
+target-version = "py39"
+line-length = 110
+exclude=[
+    ".git,",
+    "__pycache__",
+    "build",
+    "sunpy/extern/**",
+    "sunpy/version.py",
+]
+
+select = [
+       "E",
+       "F",
+       "W",
+       "UP",
+       "PT",
+       #"RET",
+       #"TID",
+
+]
+extend-ignore = [
+    # pycodestyle (E, W)
+    "E501",  # LineTooLong                             # TODO! fix
+
+    # pytest (PT)
+    "PT001",  # Always use pytest.fixture()
+    "PT004",  # Fixtures which don't return anything should have leading _
+    "PT007",  # Parametrize should be lists of tuples  # TODO! fix
+    "PT011",  # Too broad exception assert             # TODO! fix
+    "PT023",  # Always use () on pytest decorators
+]
+
+[tool.ruff.flake8-tidy-imports]
+[tool.ruff.flake8-tidy-imports.banned-api]
+"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
+
+[tool.ruff.per-file-ignores]
+# Part of configuration, not a package.
+"setup.py" = ["INP001"]
+"conftest.py" = ["INP001"]
+# implicit-namespace-package. The examples are not a package.
+"docs/*.py" = ["INP001"]
+
+"__init__.py" = ["E402", "F401", "F403"]
+"test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
+
+# Need to import clients to register them, but don't use them in file
+"sunpy/net/__init__.py" = ["F811"]
+# These files are allowed to use warnings.warn
+"sunpy/util/exceptions.py" = ["TID251"]
+"sunpy/util/tests/test_logger.py" = ["TID251"]
+"sunpy/util/decorators.py" = ["TID251"]
+# Notebook config for binder uses undefined variable
+".jupyter/jupyter_notebook_config.py" = ["F821"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"

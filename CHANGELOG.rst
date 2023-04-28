@@ -834,7 +834,7 @@ Added/Improved Documentation
 - Added an example (:ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`)
   of how pixel and SkyCoords work when plotted with `~astropy.visualization.wcsaxes`. (`#4867 <https://github.com/sunpy/sunpy/pull/4867>`__)
 - Added a gallery example  (:ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py`) on how to create a blank map and mark locations. (`#5077 <https://github.com/sunpy/sunpy/pull/5077>`__)
-- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_hmi_cutout.py`)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_hmi_cutout.py`)
   demonstrating how to add a HMI zoomed-in region next to a full disk HMI image. (`#5090 <https://github.com/sunpy/sunpy/pull/5090>`__)
 - Updated the :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py` example to generate the mask using :func:`sunpy.map.coordinate_is_on_solar_disk`. (`#5114 <https://github.com/sunpy/sunpy/pull/5114>`__)
 - Added a gallery example (:ref:`sphx_glr_generated_gallery_map_map_segment.py`)

@@ -22,12 +22,12 @@ def _get_bibtex():
     citation_file = os.path.join(os.path.dirname(__file__), 'CITATION.rst')
 
     # Explicitly specify UTF-8 encoding in case the system's default encoding is problematic
-    with open(citation_file, 'r', encoding='utf-8') as citation:
+    with open(citation_file, encoding='utf-8') as citation:
         # Extract the first bibtex block:
         ref = citation.read().partition(".. code:: bibtex\n\n")[2]
         lines = ref.split("\n")
         # Only read the lines which are indented
-        lines = lines[:[l.startswith("    ") for l in lines].index(False)]
+        lines = lines[:[line.startswith("    ") for line in lines].index(False)]
         ref = textwrap.dedent('\n'.join(lines))
     return ref
 

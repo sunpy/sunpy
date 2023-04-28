@@ -1,0 +1,1 @@
+Redesigned the landing page to highlight the different sections of the documentation.

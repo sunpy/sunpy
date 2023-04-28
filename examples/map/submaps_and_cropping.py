@@ -30,12 +30,12 @@ swap_submap = swap_map.submap(bottom_left, top_right=top_right)
 # Let's plot the results.
 
 fig = plt.figure()
-image = swap_submap.plot()
-swap_submap.draw_limb()
-swap_submap.draw_grid()
+ax = fig.add_subplot(projection=swap_submap)
+image = swap_submap.plot(axes=ax)
+swap_submap.draw_limb(axes=ax)
+swap_submap.draw_grid(axes=ax)
 
 # Make some room and put the title at the top of the figure
-ax = image.axes
 ax.set_position([0.1, 0.1, 0.8, 0.7])
 ax.set_title(ax.get_title(), pad=45)
 

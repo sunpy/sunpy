@@ -51,7 +51,9 @@ list_of_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS')
 combined_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS', concatenate=True)
 # Manually
 combined_goes_ts = list_of_goes_ts[0].concatenate(list_of_goes_ts[1])
-combined_goes_ts.plot()
+
+fig, ax = plt.subplots()
+combined_goes_ts.plot(axes=ax)
 
 plt.show()
 
@@ -133,7 +135,8 @@ ts_goes_trunc = ts_goes.truncate(TimeRange('2011-06-07 05:00', '2011-06-07 06:30
 # Or using strings
 ts_goes_trunc = ts_goes.truncate('2011-06-07 05:00', '2011-06-07 06:30')
 
-ts_goes_trunc.plot()
+fig, ax = plt.subplots()
+ts_goes_trunc.plot(axes=ax)
 
 plt.show()
 
@@ -147,8 +150,9 @@ df_downsampled = ts_goes_trunc.to_dataframe().resample('10T').mean()
 ts_downsampled = sunpy.timeseries.TimeSeries(df_downsampled,
                                              ts_goes_trunc.meta,
                                              ts_goes_trunc.units)
-ts_downsampled.plot()
 
+fig, ax = plt.subplots()
+ts_downsampled.plot(axes=ax)
 plt.show()
 
 ##############################################################################
@@ -176,6 +180,6 @@ units = OrderedDict([('intensity', u.W / u.m**2)])
 # Create the TimeSeries
 ts_custom = sunpy.timeseries.TimeSeries(data, meta, units)
 
-ts_custom.plot()
-
+fig, ax = plt.subplots()
+ts_custom.plot(axes=ax)
 plt.show()

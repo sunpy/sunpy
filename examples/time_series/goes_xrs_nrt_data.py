@@ -66,7 +66,7 @@ goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 ###############################################################################
 # Finally, we can plot the timeseries.
 
-plt.figure()
-goes_ts.plot()
+fig, ax = plt.subplots()
+goes_ts.plot(axes=ax)
 
 plt.show()

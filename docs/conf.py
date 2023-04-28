@@ -42,7 +42,7 @@ from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
 # -- Project information -------------------------------------------------------
 project = 'SunPy'
 author = 'The SunPy Community'
-copyright = '{}, {}'.format(datetime.datetime.now().year, author)
+copyright = f'{datetime.datetime.now().year}, {author}'
 
 
 # Register remote data option with doctest
@@ -62,6 +62,9 @@ warnings.filterwarnings("ignore", message='The sunpy.database module is no longe
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+warnings.filterwarnings("ignore", message="The `sunpy.io.cdf` module is deprecated",category=SunpyDeprecationWarning)
+warnings.filterwarnings("ignore", message="The `sunpy.io.jp2` module is deprecated",category=SunpyDeprecationWarning)
+warnings.filterwarnings("ignore", message="The `sunpy.io.file_tools` module is deprecated",category=SunpyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
@@ -241,6 +244,7 @@ hoverxref_role_types = {
 # a list of builtin themes.
 
 from sunpy_sphinx_theme.conf import *  # NOQA
+from sunpy_sphinx_theme.conf import png_icon  # NOQA
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -277,6 +281,7 @@ sphinx_gallery_conf = {
         '../examples/differential_rotation',
         '../examples/saving_and_loading_data',
         '../examples/computer_vision_techniques',
+        '../examples/showcase',
         '../examples/developer_tools'
     ]),
     'within_subsection_order': ExampleTitleSortKey,
@@ -316,7 +321,7 @@ try:
     # Construct the full URL for warpAffine/filter2D
     warpAffine_full = f"{base_url}/{version}/{warpAffine}"
     filter2D_full = f"{base_url}/{version}/{filter2D}"
-except:
+except Exception:
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
     filter2D_full = ""
@@ -334,7 +339,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
-with open('./reference/sunpy_stability.yaml', 'r') as estability:
+with open('./reference/sunpy_stability.yaml') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
