@@ -4,8 +4,9 @@
 Times
 *****
 
-This section of the tutorial walks through representing and working with times in sunpy.
+In this section of the tutorial,  you will learn how times are represented and manipulated in sunpy.
 sunpy makes extensive use of the `astropy.time` module for this task.
+By the end of this section of the tutorial, you will learn how to parse times from different formats as well as construct and inspect time ranges.
 
 .. _parse-time:
 
@@ -22,13 +23,8 @@ Here's a few examples of using `~sunpy.time.parse_time` to create `~astropy.time
     >>> from sunpy.time import parse_time
     >>> parse_time('2007-05-04T21:08:12')
     <Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>
-    >>> parse_time('2007-May-04 21:08:12')
-    <Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>
     >>> parse_time(894316092.00000000, format='utime')
     <Time object: scale='utc' format='utime' value=894316092.0>
-    >>> import datetime
-    >>> parse_time(datetime.datetime(2007, 5, 4, 21, 8, 12))
-    <Time object: scale='utc' format='datetime' value=2007-05-04 21:08:12>
 
 See the documentation for `sunpy.time.parse_time` for a full list of allowed arguments.
 
@@ -37,7 +33,7 @@ Time Ranges
 
 Another standard task in data analysis is dealing with pairs of times or time ranges.
 To deal with time ranges sunpy provides the `sunpy.time.TimeRange` object.
-A TimeRange object can be created by providing a start time and an end time::
+A `sunpy.time.TimeRange` object can be created by providing a start time and an end time::
 
     >>> from sunpy.time import TimeRange
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
