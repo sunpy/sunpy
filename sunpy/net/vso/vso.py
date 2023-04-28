@@ -38,25 +38,47 @@ from .legacy_response import QueryResponse
 from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
-DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-                     'port': 'nsoVSOi'},
-                    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
-                     'port': 'sdacVSOi'}]
+DEFAULT_URL_PORT = [
+    {'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl', 'port': 'nsoVSOi'},
+    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl', 'port': 'sdacVSOi'},
+    # This connects to the same cgi as the first WSDL file, but if that file
+    # isn't accessible and the SDAC cgi is unreachable, this might still work.
+    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl', 'port': 'nsoVSOi'},
+]
 
 
 class _Str(str):
-    """ Subclass of string that contains a meta attribute for the
-    record_item associated with the file. """
+    """
+    Subclass of string that contains a meta attribute for the
+    record_item associated with the file.
+    """
     meta = None
 
 
-# ----------------------------------------
 def check_connection(url):
     try:
-        return urlopen(url).getcode() == 200
+        return urlopen(url, timeout=15).getcode() == 200
     except (OSError, HTTPError, URLError) as e:
         warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
-        return None
+        return False
+
+
+def check_cgi_connection(url):
+    """
+    At the moment there is no way to make an "are you alive" request to the
+    cgi, so we just hit it with a HTTP get and it gives us back a 411 response.
+    This is weird enough that it probably satisfies us for this check.
+    """
+    try:
+        return urlopen(url, timeout=15).getcode() == 411
+    except HTTPError as e:
+        if e.code == 411:
+            return True
+        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        return False
+    except (OSError, URLError) as e:
+        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        return False
 
 
 def get_online_vso_url():
@@ -65,6 +87,13 @@ def get_online_vso_url():
     """
     for mirror in DEFAULT_URL_PORT:
         if check_connection(mirror['url']):
+            # Now we get the port URL from the WSDL and test that
+            wsdl = zeep.wsdl.Document(mirror["url"], zeep.Transport())
+            # I think that accessing "VSOiService" here is equivalent to the
+            # set_ns_prefix call in the build_client function below
+            url = wsdl.services["VSOiService"].ports[mirror["port"]].binding_options["address"]
+            if not check_cgi_connection(url):
+                continue
             return mirror
 
 
