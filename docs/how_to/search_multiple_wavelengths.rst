@@ -3,7 +3,9 @@
 Search for multiple wavelengths with Fido
 =========================================
 
-Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength::
+Use the `~sunpy.net.attrs.Wavelength` attr to search for a particular wavelength:
+
+.. code-block:: python
 
     >>> from astropy import units as u
     >>> from sunpy.net import Fido
@@ -29,7 +31,9 @@ Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength::
     <BLANKLINE>
 
 
-The "|" operator can be used to combine multiple wavelengths::
+The "|" operator can be used to combine multiple wavelengths:
+
+.. code-block:: python
 
     >>> aia_search = Fido.search(time_range,
     ...                          a.Instrument.aia,
@@ -61,7 +65,9 @@ The "|" operator can be used to combine multiple wavelengths::
     <BLANKLINE>
     <BLANKLINE>
 
-When searching for more than two wavelengths, it is more practical to use the :func:`sunpy.net.attrs.AttrOr` function::
+When searching for more than two wavelengths, it is more practical to use the :func:`sunpy.net.attrs.AttrOr` function:
+
+.. code-block:: python
 
     >>> wavelengths = [94, 131, 171, 193, 211]*u.angstrom
     >>> aia_search = Fido.search(time_range,
