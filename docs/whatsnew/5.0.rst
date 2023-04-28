@@ -35,17 +35,12 @@ The minimum required versions of these optional dependencies has also been updat
 - scikit-image 0.18.0
 - scipy 1.7.0
 
-``sunpy.database`` deprecation
-==============================
-The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
-It has now been formally deprecated, and will be removed in sunpy 6.0.
-If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+Getting pixels along a coordinate path
+======================================
+A new function, :func:`sunpy.map.pixelate_coord_path`, has been added to get all pixels that are intersected by a given coordinate path.
+See the following pages for examples of its use:
 
-Deprecation of IO readers
-=========================
-``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
-
-This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
+.. minigallery:: sunpy.map.pixelate_coord_path
 
 1 minute GOES data now available
 ================================
@@ -101,3 +96,16 @@ If you want the 1s resolution data, you would instead pass ``a.Resolution("flx1s
     2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
     <BLANKLINE>
     <BLANKLINE>
+
+
+``sunpy.database`` deprecation
+==============================
+The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
+It has now been formally deprecated, and will be removed in sunpy 6.0.
+If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+
+Deprecation of IO readers
+=========================
+``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
+
+This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
