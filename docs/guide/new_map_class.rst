@@ -1,11 +1,8 @@
-.. _how-to-create-new-maps:
+.. _topic-guide-create-new-map-class:
 
-******************************
-How to create new Map subclass
-******************************
-
+**********************************
 Writing a new instrument Map class
-==================================
+**********************************
 
 All instrument Map classes are subclasses of the generic `~sunpy.map.GenericMap` subclass.
 `~sunpy.map.GenericMap` expects to be provided the data array and a header dictionary and will parse the header metadata to the best of its ability based on common standards.

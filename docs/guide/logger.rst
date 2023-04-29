@@ -1,4 +1,4 @@
-.. _logger:
+.. _topic-guide-logging-system:
 
 **************
 Logging system

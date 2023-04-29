@@ -1,8 +1,8 @@
-.. _history_comments:
+.. _topic-guide-history-comments:
 
-***********************************************************
-How "HISTORY" and "COMMENT" FITS Keys are Handled in SunPy
-***********************************************************
+**********************************************************
+How "HISTORY" and "COMMENT" FITS Keys are Handled in sunpy
+**********************************************************
 
 In FITS files, there are often multiple entries for both the ``HISTORY`` and ``COMMENT`` keys.
 For example, when applying a prep routine to an image, a ``HISTORY`` entry may be added to the FITS header for every step in the prep pipeline.

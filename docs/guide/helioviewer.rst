@@ -1,3 +1,5 @@
+.. _topic-guide-using-helioviewer:
+
 ************************************************
 Switching from ``HelioviewerClient`` to ``hvpy``
 ************************************************

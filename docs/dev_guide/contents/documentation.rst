@@ -109,7 +109,7 @@ In addition, a reference section must be provided with links to the following re
 * information to interpret metadata keywords such as FITS header reference
 * the data archive
 
-Examples be found in any class defined in any Python file in ``sunpy/map/sources/`` such as `~sunpy.map.sources.AIAMap`.
+Examples can be found in any class defined in any Python file in ``sunpy/map/sources/`` such as `~sunpy.map.sources.AIAMap`.
 
 Sphinx
 ======

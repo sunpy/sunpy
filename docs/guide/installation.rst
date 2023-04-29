@@ -1,4 +1,4 @@
-.. _guide_installing:
+.. _topic-guide-installing:
 
 ************
 Installation

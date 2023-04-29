@@ -1,8 +1,8 @@
-.. _how-to-add-new-sources-to-fido:
+.. _topic-guide-new-sources-for-fido:
 
-***********************************
-How to extend Fido with new sources
-***********************************
+*******************************
+Adding new data sources to Fido
+*******************************
 
 sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
 There are two ways of defining a new client, depending on the complexity of the web service.
@@ -14,7 +14,7 @@ Before writing a new client, ensure you are familiar with how searches are speci
 When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
 The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
-.. _how-to-add-new-scraper-client:
+.. _topic-guide-add-new-scraper-client:
 
 Writing a new "scraper" client
 ==============================
@@ -132,7 +132,7 @@ So the desired key names for returned dictionary should be written in the ``patt
 
         return adict
 
-.. _how-to-add-new-full-client:
+.. _topic-guide-add-new-full-client:
 
 Writing a "full" client
 =======================
