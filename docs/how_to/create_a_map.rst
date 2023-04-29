@@ -10,7 +10,8 @@ These are enumerated below.
 File name
 ---------
 
-This is the easiest and recommended way to create a Map. This can be either a string or a `pathlib.Path`.
+This is the easiest and recommended way to create a Map.
+This can be either a string or a `pathlib.Path`.
 
 .. code-block:: python
 
