@@ -84,7 +84,7 @@ sunpy-Specific Rules
 .. _Docs Guidelines for Data Sources:
 
 Documenting Data Sources
-----------------------------
+------------------------
 
 Subclasses of `~sunpy.map.GenericMap` or `~sunpy.timeseries.TimeSeries` must provide a detailed docstring providing an overview of the data source that the object represents.
 In order to maintain consistency and completeness, the following information must be provided by a data source docstring, if available, and preferably in the following order:
@@ -109,7 +109,7 @@ In addition, a reference section must be provided with links to the following re
 * information to interpret metadata keywords such as FITS header reference
 * the data archive
 
-An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide <new_maps_ts_etc>`.
+Examples can be found in any class defined in any Python file in ``sunpy/map/sources/`` such as `~sunpy.map.sources.AIAMap`.
 
 Sphinx
 ======

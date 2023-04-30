@@ -39,7 +39,7 @@ It includes an interface for searching and downloading data from multiple data p
         Examples including plots on accomplishing common tasks using sunpy.
 
     .. grid-item-card:: Topic Guides
-        :link: guide
+        :link: topic-guide-index
         :link-type: ref
         :text-align: center
 

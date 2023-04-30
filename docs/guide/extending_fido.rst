@@ -1,10 +1,10 @@
-.. _extending_fido:
+.. _topic-guide-new-sources-for-fido:
 
-***************************************
-Extending Fido with New Sources of Data
-***************************************
+*******************************
+Adding new data sources to Fido
+*******************************
 
-Sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
+sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
 There are two ways of defining a new client, depending on the complexity of the web service.
 A "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` which provides helper methods for downloading from a list of URLs.
 If the service you want to add has easily accessible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
@@ -14,7 +14,7 @@ Before writing a new client, ensure you are familiar with how searches are speci
 When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
 The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
-.. _new_scraper_client:
+.. _topic-guide-add-new-scraper-client:
 
 Writing a new "scraper" client
 ==============================
@@ -132,7 +132,7 @@ So the desired key names for returned dictionary should be written in the ``patt
 
         return adict
 
-.. _new_full_client:
+.. _topic-guide-add-new-full-client:
 
 Writing a "full" client
 =======================
@@ -327,7 +327,7 @@ Assuming the walker is the one we defined above, queries would be a list of dict
 .. note::
 
     If you want your search method to be able to be called independently of Fido, then you should accept a variable number of positional arguments (``*args``) and they should have the AND operator applied to them.
-    This looks like
+    This looks like:
 
     .. code-block:: python
 
@@ -476,7 +476,7 @@ If your filepath is a callback function, pass this to the ``filename=`` argument
 
 Your fetch method does not need to return anything, as long as ``enqueue_file`` is called for every file you want ``Fido`` to download.
 
-Putting it all Together
+Putting it all together
 -----------------------
 
 An example client class may look something like

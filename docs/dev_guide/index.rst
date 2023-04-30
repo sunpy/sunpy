@@ -69,11 +69,8 @@ This section contains the various guidelines to be followed by anyone working on
             :maxdepth: 1
 
             contents/public_api
-            contents/extending_fido
             contents/logger
-            contents/new_objects
-            contents/remote_data
-            contents/map_rotate_custom
+            contents/remote_data_manager
 
 {%else%}
 
