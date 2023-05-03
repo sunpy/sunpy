@@ -516,7 +516,15 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
             observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
             observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
-            instrument='VIRGO', size=14.0)]
+            instrument='VIRGO', size=14.0),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_Minute.fits',
+            observation_time_start=datetime(1996, 2, 22, 0, 0, 50),
+            observation_time_end=datetime(2023, 2, 20, 23, 57, 13),
+            instrument='VIRGO', size=332814.0),
+    ]
+
 
     for e in entries:
         assert e in expected
