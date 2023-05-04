@@ -32,7 +32,7 @@ To create a `~sunpy.map.Map` from a sample AIA image,
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
-    PosixPath('.../sunpy/AIA20110607_063302_0171_lowres.fits')
+    PosixPath('.../AIA20110607_063302_0171_lowres.fits')
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
 In many cases sunpy automatically detects the type of file as well as the the instrument associated with it.
