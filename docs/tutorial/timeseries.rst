@@ -28,51 +28,24 @@ Lastly, :ref:`ts-metadata` describes how to view and extract information from th
 Creating a TimeSeries
 =====================
 
-A TimeSeries object can be created from local files.
-For convenience, **sunpy** can download several example time series of observational data.
-These files have names like ``sunpy.data.sample.EVE_TIMESERIES`` and ``sunpy.data.sample.GOES_XRS_TIMESERIES``.
-To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries`, type the following into your interactive Python shell:
+To create a `sunpy.timeseries.TimeSeries`,:
 
 .. code-block:: python
 
-    >>> import sunpy.timeseries as ts
+    >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
+    >>> sunpy.data.sample.GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
 
-This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time series from a GOES XRS FITS file.
+In many cases, sunpy will automatically detect the type of the file as well as the instrument associated with it.
+In this case, we have a FITS file containing an X-ray light curve as observed by the the XRS instrument on the GOES satellite.
 
-The variable ``my_timeseries`` is a `~sunpy.timeseries.GenericTimeSeries` object.
-To create one from a local GOES/XRS FITS file try the following:
+.. note::
 
-.. code-block:: python
+    Time series data are stored in a variety of file types (e.g. FITS, csv, CDF), and so it is not always possible to detect the source.
+    **sunpy** ships with a number of known instrumental sources, and can also load CDF files that conform to the `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`__.
 
-    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
-
-**sunpy** will attempt to detect automatically the instrument source for most FITS files.
-However time series data are stored in a variety of file types (FITS, txt, csv, CDF), and so it is not always possible to detect the source.
-**sunpy** ships with a number of known instrumental sources, and can also load CDF files that conform to the `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`__.
-If you would like **sunpy** to include another instrumental source see the `Newcomers' Guide <https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html>`__.
-
-The `~sunpy.timeseries.TimeSeries` factory has the ability to create a list of TimeSeries objects using a list of filepaths, a folder or a glob, for example:
-
-.. code-block:: python
-
-    >>> my_ts_list = ts.TimeSeries('filepath1', 'filepath2', source='XRS')   # doctest: +SKIP
-    >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='XRS')   # doctest: +SKIP
-    >>> my_ts_list = ts.TimeSeries(glob, source='XRS')   # doctest: +SKIP
-
-When manually specifying the source this functionality will only work with files from the same single source, generating a source specific child of the `~sunpy.timeseries.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above.
-
-Instead of creating a list of one TimeSeries object per file, you can create a single time series from multiple files using the keyword argument ``concatenate=True``:
-
-.. code-block:: python
-
-    >>> my_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS', concatenate=True)  # doctest: +REMOTE_DATA
-
-Again these must all be from the same source if the ``source`` keyword is explicitly specified.
-The `.GenericTimeSeries.concatenate` method can be used to make a single time series from multiple TimeSeries from different sources if they are already in the form of TimeSeries objects.
-
-For a quick look at a TimeSeries, type:
+To make sure this has all worked correctly, we can take a quick look at ``my_timeseries``,
 
 .. code-block:: python
 
@@ -105,21 +78,35 @@ For a quick look at a TimeSeries, type:
     <BLANKLINE>
     [42177 rows x 2 columns]
 
-This shows a table of information taken from the metadata and a preview of your data.
-If you execute this command in a Jupyter Notebook, a rich HTML version of this quick look will be shown that includes plots of the data.
-Alternatively, the :func:`~sunpy.timeseries.GenericTimeSeries.quicklook` command will show the HTML view in your default browser.
+This should show a table of information taken from the metadata and a preview of your data.
+If you are in a Jupyter Notebook, this will show a rich HTML version that includes plots of the data.
+Otherwise, you can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quicklook` method to see this quick-look plots,
+
+.. code-block:: python
+
+    >>> my_timeseries.quicklook()  # doctest: +SKIP
+
+.. generate:: html
+    :html_border:
+
+    import sunpy.timeseries
+    import sunpy.data.sample
+    my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+    print(my_timeseries._repr_html_())
 
 .. _timeseries-data:
 
 TimeSeries Data
 ===============
 
-To get a column of the data use the `~sunpy.timeseries.GenericTimeSeries.quantity` method:
+To pull out the XRS-A data use the :meth:`~sunpy.timeseries.GenericTimeSeries.quantity` method:
 
 .. code-block:: python
 
     >>> my_timeseries.quantity('xrsa') # doctest: +REMOTE_DATA
     <Quantity [1.e-09, 1.e-09, 1.e-09, ..., 1.e-09, 1.e-09, 1.e-09] W / m2>
+
+Notice that this is a `~astropy.units.Quantity` object which we discussed in :ref:`units-sunpy`.
 
 .. _inspecting-timeseries:
 
