@@ -4,17 +4,14 @@
 Timeseries
 **********
 
-Time series data are a fundamental part of many data analysis projects in heliophysics as well as other areas.
-**sunpy** provides a TimeSeries object to handle this type of data.
-Much like the `~sunpy.map.Map` object, the `~sunpy.timeseries.TimeSeries` object can load generic filetypes, and recognizes data from nine specific sources to provide instrument specific data loading and plotting capabilities.
-For more information about TimeSeries, and what file types and data sources are supported, check out :ref:`timeseries_code_ref`.
+In this section of the tutorial, you will learn about the `TimeSeries <sunpy.timeseries.GenericTimeSeries>` object.
+TimeSeries objects hold time-dependent data with their accompanying metadata.
+They can be used with multiple one-dimensional arrays which are all associated with a common time axis.
+Much like the `~sunpy.map.Map` object, the `~sunpy.timeseries.TimeSeries` object can handle generic data, but also provides instrument specific data loading and plotting capabilities.
+Importantly, TimeSeries allows you to select specific time ranges or combine multiple TimeSeries in a metadata-aware way.
 
-:ref:`creating-timeseries` describes how to create a TimeSeries object from single or multiple observational sources.
-:ref:`inspecting-timeseries` describes how to examine the data and metadata.
-:ref:`plotting-timeseries` outlines the basics of how **sunpy** will plot a TimeSeries object.
-:ref:`manipulating-timeseries` describes how to modify data, truncate a TimeSeries, down- and up-sample data, concatenate data, and create an Astropy Table from a TimeSeries.
-:ref:`custom-timeseries` details how to create a TimeSeries object from a Pandas DataFrame or an Astropy Table.
-Lastly, :ref:`ts-metadata` describes how to view and extract information from the metadata.
+By the end of this tutorial, you will learn how to create a TimeSeries, extract the data and metadata, and easily visualize the TimeSeries.
+Additionally, you will learn how to truncate a TimeSeries to a specific window in time as well as combine multiple TimeSeries objects.
 
 .. note::
 
@@ -35,6 +32,7 @@ To create a `sunpy.timeseries.TimeSeries`,:
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> sunpy.data.sample.GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
+    PosixPath('.../go1520110607.fits')
     >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
 
 In many cases, sunpy will automatically detect the type of the file as well as the instrument associated with it.
@@ -80,7 +78,7 @@ To make sure this has all worked correctly, we can take a quick look at ``my_tim
 
 This should show a table of information taken from the metadata and a preview of your data.
 If you are in a Jupyter Notebook, this will show a rich HTML version that includes plots of the data.
-Otherwise, you can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quicklook` method to see this quick-look plots,
+Otherwise, you can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quicklook` method to see this quick-look plot,
 
 .. code-block:: python
 
@@ -99,7 +97,15 @@ Otherwise, you can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quicklook`
 TimeSeries Data
 ===============
 
-To pull out the XRS-A data use the :meth:`~sunpy.timeseries.GenericTimeSeries.quantity` method:
+We can easily check which columns are contained in the TimeSeries,:abbr:
+
+.. code-block:: python
+
+    >>> my_timeseries.columns  # doctest: +REMOTE_DATA
+    ['xrsa', 'xrsb']
+
+"xrsa" denotes the short wavelength channel of the XRS data which contains emission between 0.5 and 4 Angstroms.
+To pull out the just the data corresponding to this column, we can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quantity` method:
 
 .. code-block:: python
 
@@ -107,14 +113,49 @@ To pull out the XRS-A data use the :meth:`~sunpy.timeseries.GenericTimeSeries.qu
     <Quantity [1.e-09, 1.e-09, 1.e-09, ..., 1.e-09, 1.e-09, 1.e-09] W / m2>
 
 Notice that this is a `~astropy.units.Quantity` object which we discussed in :ref:`units-sunpy`.
+Additionally, the timestamp associated with each point and the time range of the observation are accessible as attributes,
+
+.. code-block:: python
+
+    >>> my_timeseries.time  # doctest: +REMOTE_DATA
+    <Time object: scale='utc' format='iso' value=['2011-06-06 23:59:59.962' '2011-06-07 00:00:02.009'
+     '2011-06-07 00:00:04.059' ... '2011-06-07 23:59:53.539'
+     '2011-06-07 23:59:55.585' '2011-06-07 23:59:57.632']>
+    >>> my_timeseries.time_range  # doctest: +REMOTE_DATA
+       <sunpy.time.timerange.TimeRange object at ...>
+        Start: 2011-06-06 23:59:59
+        End:   2011-06-07 23:59:57
+        Center:2011-06-07 11:59:58
+        Duration:0.9999730324069096 days or
+               23.99935277776583 hours or
+               1439.9611666659498 minutes or
+               86397.66999995698 seconds
+    <BLANKLINE>
+
+Notice that these return a `astropy.time.Time` and `sunpy.time.TimeRange`, both of which we covered in :ref:`time-in-sunpy`.
 
 .. _inspecting-timeseries:
 
 Inspecting TimeSeries Metadata
 ===============================
 
-A TimeSeries object holds both data as well as metadata and unit data.
-The metadata for the time series is accessed by:
+A TimeSeries object also includes metadata associated with that observation.
+Some of this metadata is exposed via attributes on the TimeSeries.
+For example, to find out which observatory observed this data,
+
+.. code-block:: python
+
+    >>> my_timeseries.observatory  # doctest: +REMOTE_DATA
+    'GOES-15'
+
+Additionally, to find out which instrument this timeseries data came from,
+
+.. code-block:: python
+
+    >>> my_timeseries.source  # doctest: +REMOTE_DATA
+    'xrs'
+
+All of the metadata can also be accessed using the `~sunpy.timeseries.GenericTimeSeries.meta` attribute,
 
 .. code-block:: python
 
@@ -136,47 +177,45 @@ The metadata for the time series is accessed by:
     |-------------------------------------------------------------------------------------------------|
     <BLANKLINE>
 
-This references the `~sunpy.timeseries.TimeSeriesMetaData` object with the header information as read from the source files.
-A word of caution: many data sources provide little to no meta data so this variable might be empty.
-The meta data is described in more detail later in this guide.
-Similarly there are properties for getting `~sunpy.timeseries.GenericTimeSeries.columns` as a list of strings, `~sunpy.timeseries.GenericTimeSeries.time` values and `~sunpy.timeseries.GenericTimeSeries.time_range` of the data.
+.. warning::
+
+    A word of caution: many data sources provide little to no meta data so this variable might be empty.
+    See :ref:`timeseries-metadata-explanation` for a more detailed explanation of how metadata on TimeSeries objects is handled.
+
 
 .. _plotting-timeseries:
 
 Visualizing TimeSeries
 ======================
 
-The **sunpy** TimeSeries object has its own built-in plot methods so that it is easy to quickly view your time series.
-To create a plot just type:
-
 .. plot::
-    :include-source:
+    :nofigs:
+    :context: close-figs
+    :show-source-link: False
 
-    import sunpy.timeseries as ts
+    # This is here to put my_timeseries in the scope of the plot directives.
+    # This avoids repeating code in the example source code that is actually displayed.
+    # This snippet of code is not visible in the rendered documentation.
+    import sunpy.timeseries
     import sunpy.data.sample
+    my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
 
-    ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
-    ts.peek()
-
-This will open a Matplotlib plot on your screen.
-If you want to save this to a PNG file you can do so from the Matplotlib GUI.
-
-In addition, to enable users to modify the plot it is possible to use the `~sunpy.timeseries.GenericTimeSeries.plot` command.
-This makes it possible to use the **sunpy** plot as the foundation for a more complicated figure:
+The **sunpy** TimeSeries object has its own built-in plot methods so that it is easy to quickly view your time series.
+To create a plot,
 
 .. plot::
    :include-source:
+   :context: close-figs
 
    import matplotlib.pyplot as plt
 
-   import sunpy.timeseries as ts
-   import sunpy.data.sample
-
-   ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
    fig, ax = plt.subplots()
-   ts.plot(axes=ax)
-   # Add code to modify the figure here if desired
-   fig.savefig('figure.png')
+   my_timeseries.plot(axes=ax)
+   plt.show()
+
+.. note::
+
+    For additional examples of building more complex visualization with TimeSeries, see the examples in :ref:`sphx_glr_download_generated_gallery_time_series`.
 
 Adding Columns
 ==============
@@ -242,9 +281,8 @@ To do this you can still use the `~sunpy.timeseries.GenericTimeSeries.concatenat
 
 .. code-block:: python
 
-    >>> eve_ts = ts.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='eve') # doctest: +REMOTE_DATA
-    >>> goes_ts = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES) # doctest: +REMOTE_DATA
-    >>> concatenated_timeseries = goes_ts.concatenate(eve_ts) # doctest: +REMOTE_DATA
+    >>> eve_ts = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='eve') # doctest: +REMOTE_DATA
+    >>> concatenated_timeseries = my_timeseries.concatenate(eve_ts) # doctest: +REMOTE_DATA
 
 Note that the more complex `~sunpy.timeseries.TimeSeriesMetaData` object now has 2 entries and shows details on both:
 
