@@ -23,7 +23,7 @@ See the following pages for detailed discussion of specific topics:
    rotatedsunframe
    velocities
    wcs
-
+   rsun
 
 Design of the Coordinates Sub-Package
 =====================================
