@@ -66,9 +66,9 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
 
 .. code-block:: python
 
-    >>> header = make_fitswcs_header(data, coord,
-    ...                                        reference_pixel=u.Quantity([5, 5]*u.pixel),
-    ...                                        scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
+    >>> reference_pixel = u.Quantity([5, 5], u.pixel)
+    >>> scale = u.Quantity([2, 2], u.arcsec/u.pixel)
+    >>> header = make_fitswcs_header(data, reference_coord, reference_pixel=reference_pixel, scale=scale)
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
@@ -107,11 +107,10 @@ An example of creating a header with these additional keywords:
 
 .. code-block:: python
 
-    >>> header = make_fitswcs_header(data, coord,
-    ...                                        reference_pixel = u.Quantity([5, 5]*u.pixel),
-    ...                                        scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
-    ...                                        telescope = 'Test case', instrument = 'UV detector',
-    ...                                        wavelength = 1000*u.angstrom)
+    >>> header = make_fitswcs_header(data, reference_coord, reference_pixel=reference_pixel, scale=scale,
+    ...                              telescope='Test case',
+    ...                              instrument='UV detector',
+    ...                              wavelength=1000*u.angstrom)
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
