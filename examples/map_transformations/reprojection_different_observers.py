@@ -68,10 +68,9 @@ plt.legend([limb_aia[0], limb_euvi[0]],
 # radius (including EUVI maps), but some maps (including AIA maps) are set
 # to a slightly different value. A mismatch in solar radius means a reprojection
 # will not work correctly on pixels near the limb. This can be prevented by
-# replacing the value for the solar radius in the AIA map with the default value,
-# thereby assuming that the emission in both maps is emitted at the same radius.
+# modifying the values for rsun on one map to match the other.
 
-map_aia.wcs.wcs.aux.rsun_ref = sunpy.sun.constants.radius.to_value('m')
+map_euvi.meta['rsun_ref'] = map_aia.meta['rsun_ref']
 
 ######################################################################
 # We can reproject the EUVI map to the AIA observer wcs using
