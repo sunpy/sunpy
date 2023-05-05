@@ -9,7 +9,7 @@ The metadata informs `sunpy.map.Map` of the correct coordinate information assoc
 See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
 
 The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
-sunpy provides a Map header helper function to assist in creating a header that contains the correct meta information.
+sunpy provides a Map header helper function to assist the user in creating a header that contains the correct meta information needed to create a Map.
 The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
 All the metadata keywords that a Map will parse along with their description are listed in the :ref:`Meta Keywords Table` at the end of this page.
 
@@ -59,7 +59,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
     rsun_obs: 965.3829548285768
 
 From this we can see now that the function returned a `sunpy.util.MetaDict` that populated the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`, and the data array.
-Since the ``reference_pixel`` and keywords were not passed in the example above, the values of ``crpix`` and ``cdelt`` were set to the default values.
+Since the ``reference_pixel`` and ``scale`` keywords were not passed in the example above, the values of the ``crpix`` and ``cdelts`` keys were set to the center of the data array and 1, respectively, by default.
 
 These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function:

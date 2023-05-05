@@ -191,7 +191,7 @@ This observer coordinate is also provided as an attribute,
     <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406308, 0.04787238, 1.51846026e+11)>
 
-This tells us the location of the spacecraft, in this case SDO, when it recorded this partiuclar observation, as derived from the FITS metadata.
+This tells us the location of the spacecraft, in this case SDO, when it recorded this particular observation, as derived from the FITS metadata.
 Map has several additional coordinate-related attributes that provide the coordinates of the center and corners of the Map,
 
 .. code-block:: python
@@ -302,7 +302,7 @@ First, let's create a basic plot of our Map, including a colorbar,
     We imported `matplotlib.pyplot` in order to create the figure and the axis we plotted on our map onto.
     Under the hood, sunpy uses of `matplotlib` to visualize the image meaning that plots built with sunpy can be further customized using `matplotlib`.
     **However, for the purposes of this tutorial, you do not need to be familiar with Matplotlib.**
-    Fore a series of detailed examples showing how to heavily customize your Map plots, see the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>`.
+    Fore a series of detailed examples showing how to heavily customize your Map plots, see the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` as well as the documentation for `astropy.visualization.wcsaxes`.
 
 Note that the title and colormap have been set by sunpy based on the observing instrument and wavelength.
 Furthermore, the tick and axes labels have been automatically set based on the coordinate system of the Map.
@@ -445,7 +445,7 @@ The following example shows how to plot some points on our Map, including the ce
 Cropping Maps and Combining Pixels
 ==================================
 
-It analyzing images of the Sun, we often want to choose a smaller portion of the full disk to look at more closely.
+In analyzing images of the Sun, we often want to choose a smaller portion of the full disk to look at more closely.
 Let's use the region of interest we defined above to crop out that portion of our image.
 
 .. plot::
@@ -482,7 +482,7 @@ For example, we can combine 4 pixels in each dimension such that our new superpi
 Map Sequences
 =============
 
-While `~sunpy.map.GenericMap` can only contain a two-dimensional array and metadata corresponding to a single observation, a `~sunpy.map.MapSequence` is comprisded of an ordered list of maps.
+While `~sunpy.map.GenericMap` can only contain a two-dimensional array and metadata corresponding to a single observation, a `~sunpy.map.MapSequence` is comprised of an ordered list of maps.
 By default, the Maps are ordered by their observation date, from earliest to latest date.
 A `~sunpy.map.MapSequence` can be created by supplying multiple existing maps:
 
