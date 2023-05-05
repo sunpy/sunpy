@@ -24,3 +24,4 @@ Although there are code snippets in various parts of each topic guide, these are
    logger
    new_map_class
    timeseries_metadata
+   rsun
