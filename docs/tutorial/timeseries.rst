@@ -97,7 +97,7 @@ Otherwise, you can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quicklook`
 TimeSeries Data
 ===============
 
-We can easily check which columns are contained in the TimeSeries,:abbr:
+We can easily check which columns are contained in the TimeSeries,
 
 .. code-block:: python
 
@@ -215,7 +215,7 @@ To create a plot,
 
 .. note::
 
-    For additional examples of building more complex visualization with TimeSeries, see the examples in :ref:`sphx_glr_download_generated_gallery_time_series`.
+    For additional examples of building more complex visualization with TimeSeries, see the examples in :ref:`sphx_glr_generated_gallery_time_series`.
 
 Adding Columns
 ==============
