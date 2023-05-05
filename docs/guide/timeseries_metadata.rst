@@ -1,6 +1,6 @@
 .. _timeseries-metadata-explanation:
 
-A Detailed Look at the Metadata
+A Detailed Look at the TimeSeries Metadata
 ===============================
 
 TimeSeries store metadata in a `~sunpy.timeseries.TimeSeriesMetaData` object, this object is designed to be able to store multiple basic `~sunpy.util.metadata.MetaDict` (case-insensitive ordered dictionary) objects and able to identify the relevant metadata for a given cell in the data.
@@ -33,7 +33,7 @@ You can easily get an overview of the metadata, this will show you a basic repre
     |-------------------------------------------------------------------------------------------------|
     <BLANKLINE>
 
-The data within a `~sunpy.timeseries.TimeSeriesMetaData` object is stored as a list of tuples, each tuple representing the metadata from a source file or time series.
+The data within a `~sunpy.timeseries.TimeSeriesMetaData` object is stored as a list of tuples, each tuple representing the metadata from a source file or provided when creating the time series.
 The tuple will contain a `~sunpy.time.TimeRange` telling us which rows the metadata applies to, a list of column name strings for which the metadata applies to and finally a `~sunpy.util.metadata.MetaDict` object for storing the key/value pairs of the metadata itself.
 Each time a TimeSeries is concatenated to the original a new set of rows and/or columns will be added to the `~pandas.DataFrame` and a new entry will be added into the metadata.
 Note that entries are ordered chronologically based on
@@ -83,5 +83,5 @@ You can update the values for these entries efficiently using the `~sunpy.timese
 
     >>> my_timeseries.meta.update({'telescop': 'G15'}, colname='xrsa', overwrite=True) # doctest: +REMOTE_DATA
 
-Here we have to specify the ``overwrite=False`` keyword parameter to allow us to overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict` objects, this helps protect the integrity of the original metadata and without this set (or with it set to False) you can still add new key/value pairs.
+Here we have to specify the ``overwrite=True`` keyword parameter to allow us to overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict` objects, this helps protect the integrity of the original metadata and without this set (or with it set to False) you can still add new key/value pairs.
 Note that the `~sunpy.util.metadata.MetaDict` objects are both case-insensitive for key strings and have ordered entries, where possible the order is preserved when updating values.

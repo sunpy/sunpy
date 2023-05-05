@@ -48,7 +48,7 @@ This `~pandas.DataFrame` can then be used to construct a TimeSeries:
 Creating Custom TimeSeries from an Astropy Table
 ------------------------------------------------
 
-A Pandas `~pandas.DataFrame` is the underlying object used to store the data within a TimeSeries, so the above example is the most lightweight to create a custom TimeSeries, but being scientific data it will often be more convenient to use an Astropy `~astropy.table.Table` and let the factory convert this.
+A Pandas `~pandas.DataFrame` is the underlying object used to store the data within a TimeSeries, so the above example is the most lightweight to create a custom TimeSeries, but being scientific data it will often be more convenient to use an Astropy `~astropy.table.Table` to create a TimeSeries.
 An advantage of this method is it allows you to include metadata and Astropy `~astropy.units.quantity.Quantity` values, which are both supported in tables, without additional arguments.
 For example:
 
