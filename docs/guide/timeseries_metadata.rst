@@ -9,6 +9,9 @@ The metadata can be accessed by:
 
 .. code-block:: python
 
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> meta = my_timeseries.meta # doctest: +REMOTE_DATA
 
 You can easily get an overview of the metadata, this will show you a basic representation of the metadata entries that are relevant to this TimeSeries.
