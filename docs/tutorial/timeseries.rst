@@ -104,7 +104,7 @@ We can easily check which columns are contained in the TimeSeries,:abbr:
     >>> my_timeseries.columns  # doctest: +REMOTE_DATA
     ['xrsa', 'xrsb']
 
-"xrsa" denotes the short wavelength channel of the XRS data which contains emission between 0.5 and 4 Angstroms.
+"xrsa" denotes the short wavelength channel of the XRS data which contains emission between 0.5 and 4 Angstrom.
 To pull out the just the data corresponding to this column, we can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quantity` method:
 
 .. code-block:: python
