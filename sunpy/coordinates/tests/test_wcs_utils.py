@@ -46,6 +46,25 @@ def test_wcs_frame_mapping_none():
     assert result is None
 
 
+def test_wcs_frame_mapping_dateavg():
+    wcs = WCS(naxis=2)
+    wcs.wcs.dateavg = "2020-01-01T00:00:00"
+    wcs.wcs.ctype = ["HPLN", "HPLT"]
+
+    result = solar_wcs_frame_mapping(wcs)
+
+    assert result.obstime == Time("2020-01-01T00:00:00")
+
+    wcs = WCS(naxis=2)
+    wcs.wcs.dateavg = "2020-01-01T00:00:00"
+    wcs.wcs.dateobs = "2020-01-01T01:00:00"
+    wcs.wcs.ctype = ["HPLN", "HPLT"]
+
+    result = solar_wcs_frame_mapping(wcs)
+
+    assert result.obstime == Time("2020-01-01T00:00:00")
+
+
 def test_wcs_frame_mapping_observer_hgc_self():
     # Test whether a WCS with HGC coordinates for the observer location uses observer="self"
     wcs = WCS(naxis=2)
