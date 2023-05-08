@@ -1,7 +1,7 @@
 .. _timeseries-metadata-explanation:
 
 A Detailed Look at the TimeSeries Metadata
-===============================
+==========================================
 
 TimeSeries store metadata in a `~sunpy.timeseries.TimeSeriesMetaData` object, this object is designed to be able to store multiple basic `~sunpy.util.metadata.MetaDict` (case-insensitive ordered dictionary) objects and able to identify the relevant metadata for a given cell in the data.
 This enables a single TimeSeries to be created by combining/concatenating multiple TimeSeries source files together into one and to keep a reliable track of all the metadata relevant to each cell, column or row.
