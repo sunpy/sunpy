@@ -50,7 +50,6 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
-    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -2731,18 +2730,12 @@ class GenericMap(NDData):
         # Reconstruct header
         target_header = MetaDict(target_wcs.to_header())
         if preserve_meta:
-            from .header_helper import _set_instrument_meta
-            target_header = _set_instrument_meta(target_header,
-                                                 self.instrument,
-                                                 self.meta.get('telescop', None),
-                                                 self.observatory,
-                                                 self.wavelength,
-                                                 self.exposure_time,
-                                                 self.unit)
+            original_header = copy.deepcopy(self.meta)
+            original_header.update(target_header)
+            target_header = original_header
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_header,
-                            plot_settings=self.plot_settings)
+        outmap = self._new_instance(output_array, target_header, plot_settings=self.plot_settings)
 
         if return_footprint:
             return outmap, footprint
