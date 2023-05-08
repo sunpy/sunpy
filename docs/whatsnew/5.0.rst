@@ -41,8 +41,8 @@ There has been a major overhaul of the documentation structure.
 The documentation is now organised into four major distinct sections:
 
 - :ref:`tutorial`, a step-by-step introduction to sunpy.
-- :ref:`how_to_guide`, a set of small self contained guides for getting specific tasks done.
-- :ref:`guide`, a set of more in depth guides that explain how and why different parts of sunpy work.
+- :ref:`how_to_guide`, a set of small self-contained guides for getting specific tasks done.
+- :ref:`guide`, in-depth explanations that detail how and why different parts of sunpy work.
 - :ref:`reference`, a listing of the contents of the sunpy package.
 
 OS agnostic packaging
@@ -55,7 +55,8 @@ This should mean simpler and faster installs on such platforms, which include th
 Getting pixels along a coordinate path
 ======================================
 A new function, :func:`sunpy.map.pixelate_coord_path`, has been added to return all pixels that are intersected by a given coordinate path.
-See the following pages for examples of its use:
+This replaces the now-deprected :func:`sunpy.map.extract_along_coord`.
+See the following pages for examples of how to use :func:`~sunpy.map.pixelate_coord_path`,
 
 .. minigallery:: sunpy.map.pixelate_coord_path
 
