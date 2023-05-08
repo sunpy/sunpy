@@ -2667,8 +2667,8 @@ class GenericMap(NDData):
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
         preserve_meta : `bool`
-            If ``True``, a subset of the metadata from the input map is passed
-            to the reprojected map.
+            If ``True``, all of the non-WCS related metadata from the origonal
+            map will be preserved in the reprojected map.
 
         Returns
         -------
@@ -2683,13 +2683,7 @@ class GenericMap(NDData):
         Notes
         -----
         By default, the reprojected map does not preserve any metadata beyond the WCS-associated
-        metadata. If ``preserve_meta=True``, the following map properties are preserved,
-
-        * `~sunpy.map.GenericMap.instrument`
-        * `~sunpy.map.GenericMap.observatory`
-        * `~sunpy.map.GenericMap.wavelength`
-        * `~sunpy.map.GenericMap.exposure_time`
-        * `~sunpy.map.GenericMap.unit`
+        metadata. If ``preserve_meta=True``, all of the non-WCS metadata will also be preserved.
 
         The supported `reproject` algorithms are:
 

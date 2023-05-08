@@ -14,6 +14,7 @@ from astropy.wcs import WCS
 import sunpy.map
 from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.metadata import MetaDict
 
 
 @pytest.fixture
@@ -132,11 +133,15 @@ def test_deprecated_positional_args(aia171_test_map, hpc_header):
 
 def test_preserve_metadata(aia171_test_map, hpc_header):
     aia171_repr = aia171_test_map.reproject_to(hpc_header, preserve_meta=True)
-    aia171_test_map.reproject_to(hpc_header, preserve_meta=False)
-    preserved_properties = ['instrument',
-                            'observatory',
-                            'wavelength',
-                            'exposure_time',
-                            'unit']
-    for p in preserved_properties:
-        assert getattr(aia171_repr, p) == getattr(aia171_test_map, p)
+    aia171_repr_no_preserve = aia171_test_map.reproject_to(hpc_header, preserve_meta=False)
+    # WCS keys should match, regardless of preserving metadata
+    wcs_keys = MetaDict(aia171_test_map.wcs.to_header()).keys()
+    for k in wcs_keys:
+        assert aia171_repr.meta.get(k) == aia171_repr_no_preserve.meta.get(k)
+    # non-WCS keys should match original metadata
+    non_wcs_keys = [k for k in aia171_test_map.meta if k not in wcs_keys]
+    for k in non_wcs_keys:
+        assert aia171_repr.meta.get(k) == aia171_test_map.meta.get(k)
+    # Check that source-specific Map class is preserved when preserving metadata
+    assert isinstance(aia171_repr, aia171_test_map.__class__)
+    assert isinstance(aia171_repr_no_preserve, sunpy.map.GenericMap)
