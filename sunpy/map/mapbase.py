@@ -2732,10 +2732,9 @@ class GenericMap(NDData):
         if preserve_meta:
             original_header = copy.deepcopy(self.meta)
             original_header.update(target_header)
-            target_header = original_header
-
-        # Create and return a new GenericMap
-        outmap = self._new_instance(output_array, target_header, plot_settings=self.plot_settings)
+            outmap = self._new_instance(output_array, original_header, plot_settings=self.plot_settings)
+        else:
+            outmap = GenericMap(output_array, target_header, plot_settings=self.plot_settings)
 
         if return_footprint:
             return outmap, footprint

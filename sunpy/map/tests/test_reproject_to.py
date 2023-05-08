@@ -132,6 +132,7 @@ def test_deprecated_positional_args(aia171_test_map, hpc_header):
 
 def test_preserve_metadata(aia171_test_map, hpc_header):
     aia171_repr = aia171_test_map.reproject_to(hpc_header, preserve_meta=True)
+    aia171_test_map.reproject_to(hpc_header, preserve_meta=False)
     preserved_properties = ['instrument',
                             'observatory',
                             'wavelength',
