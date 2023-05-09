@@ -35,17 +35,30 @@ The minimum required versions of these optional dependencies has also been updat
 - scikit-image 0.18.0
 - scipy 1.7.0
 
-``sunpy.database`` deprecation
-==============================
-The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
-It has now been formally deprecated, and will be removed in sunpy 6.0.
-If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+New documentation structure
+===========================
+There has been a major overhaul of the documentation structure.
+The documentation is now organised into four major distinct sections:
 
-Deprecation of IO readers
-=========================
-``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
+- :ref:`tutorial`, a step-by-step introduction to sunpy.
+- :ref:`how_to_guide`, a set of small self-contained guides for getting specific tasks done.
+- :ref:`topic-guide-index`, in-depth explanations that detail how and why different parts of sunpy work.
+- :ref:`reference`, a listing of the contents of the sunpy package.
 
-This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users.
+OS agnostic packaging
+=====================
+A pure Python sunpy distribution is now published on PyPI with each release.
+This distribution contains all the functionality of sunpy apart from the code for reading ANA files.
+pip will default to installing the pure Python distribution instead of the source distribution on platforms other than Linux (x86-64) and macOS (x86-64 and ARM64).
+This should mean simpler and faster installs on such platforms, which include the Raspberry Pi as well as some cloud computing services.
+
+Getting pixels along a coordinate path
+======================================
+A new function, :func:`sunpy.map.pixelate_coord_path`, has been added to return all pixels that are intersected by a given coordinate path.
+This replaces the now-deprected :func:`sunpy.map.extract_along_coord`.
+See the following pages for examples of how to use :func:`~sunpy.map.pixelate_coord_path`,
+
+.. minigallery:: sunpy.map.pixelate_coord_path
 
 1 minute GOES data now available
 ================================
@@ -101,3 +114,16 @@ If you want the 1s resolution data, you would instead pass ``a.Resolution("flx1s
     2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
     <BLANKLINE>
     <BLANKLINE>
+
+
+``sunpy.database`` deprecation
+==============================
+The ``sunpy.database`` module is no longer actively maintained and has a number of outstanding issues.
+It has now been formally deprecated, and will be removed in sunpy 6.0.
+If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+
+Deprecation of IO readers
+=========================
+``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
+
+These are designed for internal use only, and removing them from the public API gives the developers more flexibility to modify them without impacting users.
