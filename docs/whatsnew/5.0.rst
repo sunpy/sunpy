@@ -42,7 +42,7 @@ The documentation is now organised into four major distinct sections:
 
 - :ref:`tutorial`, a step-by-step introduction to sunpy.
 - :ref:`how_to_guide`, a set of small self-contained guides for getting specific tasks done.
-- :ref:`guide`, in-depth explanations that detail how and why different parts of sunpy work.
+- :ref:`topic_guide`, in-depth explanations that detail how and why different parts of sunpy work.
 - :ref:`reference`, a listing of the contents of the sunpy package.
 
 OS agnostic packaging
