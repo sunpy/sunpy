@@ -98,7 +98,7 @@ def solar_wcs_frame_mapping(wcs):
     if hasattr(wcs, "coordinate_frame"):
         return wcs.coordinate_frame
 
-    dateobs = wcs.wcs.dateobs or None
+    dateobs = wcs.wcs.dateavg or wcs.wcs.dateobs or None
 
     # Get observer coordinate from the WCS auxiliary information
     required_attrs = {HeliographicStonyhurst: ['hgln_obs', 'hglt_obs', 'dsun_obs'],
