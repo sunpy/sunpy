@@ -4,19 +4,20 @@
 The role of ``rsun`` in ``sunpy``
 *********************************
 
-When constructing a ``map.wcs`` a key component is ``rsun``, the height at which the emission originates.
-Data providers often provide this information to end users via the fits keyword: ``RSUN_REF``,
-where this keyword is not available ``sunpy`` assumes a standard value defined by `sunpy.sun.constants.radius`.
+When a ``map.wcs`` is constructed, a key variable is ``rsun``; the height at which emission originates.
+Data providers often include this information for end users via the fits keyword: ``RSUN_REF``,
+where this keyword is not available ``sunpy`` assumes a standard value defined by `sunpy.sun.constants`.
 
-``rsun`` can be important when working with coordinates and transforms, as it provides 3 dimensional information about the location of a map pixel.
-In practice, the radiation detected by a single filter, especially for coronal emission,
+In theory, the radiation detected by a single filter, especially for coronal emission,
 comes from a variety of heights and ``rsun`` is only a loose approximation.
+In practice though, the value of ``rsun`` is important when working with coordinates and transforms, it provides 3 dimensional information about the location of a map pixel.
+Idiosyncrasies can occur which can be pre-empted or fixed by an understanding of behaviors surrounding ``rsun``.
 
 Reprojecting between frames with different ``rsun``
 ===================================================
 
 When the values of ``rsun`` from two wcs instances are different, issues with reprojecting between those frames can be encountered:
-:meth:`~sunpy.map.GenericMap.reproject_to` by default enforces a round-trip behavior, 
+:meth:`~sunpy.map.GenericMap.reproject_to` by default enforces a round-trip behavior,
 the idea being that you should only trust the reprojection if the 2D coordinates from each observer both resolve to the same 3D point (within a pixel volume).
 When the values for ``rsun`` are different, that criterion fails towards the limb.
 In other cases, this furthers results in banding as the criterion fails, then succeeds and then fails again.
