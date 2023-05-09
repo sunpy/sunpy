@@ -14,8 +14,11 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
    search_vso
    search_multiple_wavelengths
    parse_time
-   remote_data_manager
+   create_coords
+   coord_components
+   transform_coords
    create_a_map
+   remote_data_manager
 
 
 Quick Reference
