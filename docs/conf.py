@@ -282,7 +282,6 @@ sphinx_gallery_conf = {
         '../examples/saving_and_loading_data',
         '../examples/computer_vision_techniques',
         '../examples/showcase',
-        '../examples/developer_tools'
     ]),
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': os.path.join('generated', 'gallery'),
