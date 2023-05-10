@@ -192,6 +192,7 @@ This observer coordinate is also provided as an attribute,
         (-0.00406308, 0.04787238, 1.51846026e+11)>
 
 This tells us the location of the spacecraft, in this case SDO, when it recorded this particular observation, as derived from the FITS metadata.
+
 Map has several additional coordinate-related attributes that provide the coordinates of the center and corners of the Map,
 
 .. code-block:: python
@@ -381,7 +382,7 @@ Overlaying Contours and Coordinates
 
 When plotting images, we often want to highlight certain features or overlay certain data points.
 There are several methods attached to Map that make this task easy.
-For example, we can draw contours corresponding to particularly percentages of our data..
+For example, we can draw contours around the brightest 0.5% percent of pixels in the image:
 
 .. plot::
     :include-source:
