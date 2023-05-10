@@ -20,9 +20,7 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
    create_a_map
    remote_data_manager
 
-
-Quick Reference
----------------
+**Quick Reference**
 
 The following table is meant as a quick reference.
 For more complete code examples, see the how-to guides above.
