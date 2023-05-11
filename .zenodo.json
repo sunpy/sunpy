@@ -241,7 +241,9 @@
             "orcid": "0000-0002-5662-9604"
         },
         {
-            "name": "Akshit Tyagi"
+            "name": "Akshit Tyagi",
+            "orcid": "0009-0005-4804-9035",
+            "affiliation": "Jaypee Institute of Information Technology, Noida, India"
         },
         {
             "name": "Jose Ivan Campos Rozo",
@@ -280,7 +282,9 @@
             "affiliation": " University of Hong Kong (Hong Kong SAR), University of London (Great Britain)"
         },
         {
-            "name": "Aryan Shukla"
+            "name": "Aryan Shukla",
+            "orcid": "0009-0001-9467-4836",
+            "affiliation": "Indian Institute of Technology, Roorkee, India"
         },
         {
             "name": "Jan Gieseler"
@@ -354,7 +358,9 @@
             "name": "Matt Bates"
         },
         {
-            "name": "ryuusama"
+            "name": "ryuusama",
+            "orcid": "0009-0000-0795-8471",
+            "affiliation": "Dwarkadas J Sanghvi college of engineering"
         },
         {
             "name": "Devansh Shukla",
@@ -477,7 +483,9 @@
             "name": "Krish Agrawal"
         },
         {
-            "name": "Nischal Singh"
+            "name": "Nischal Singh",
+            "orcid": "0009-0007-2165-052X",
+            "affiliation": "Madhav Institute of Technology and Science, Gwalior, India"
         },
         {
             "name": "Priyank Lodha"
@@ -511,7 +519,9 @@
             "name": "Andrew Hill"
         },
         {
-            "name": "Ansh Dixit"
+            "name": "Ansh Dixit",
+            "orcid": "0009-0004-7872-0419",
+            "affiliation": "GEU"
         },
         {
             "name": "Benjamin Mampaey",
@@ -585,7 +595,9 @@
             "name": "Abijith Bahuleyan"
         },
         {
-            "name": "Akhoury Shauryam"
+            "name": "Akhoury Shauryam",
+            "orcid": "0009-0005-8038-8301",
+            "affiliation": "Chennai Mathematical Institute"
         },
         {
             "name": "Alex Kaszynski"
@@ -606,7 +618,9 @@
             "name": "Arfon Smith"
         },
         {
-            "name": "Aritra Sinha"
+            "name": "Aritra Sinha",
+            "orcid": "0009-0008-2531-1012",
+            "affiliation": "National Institute of Technology Karnataka, Surathkal, India"
         },
         {
             "name": "Arseniy Kustov"
@@ -735,7 +749,9 @@
             "name": "Shubham Jain"
         },
         {
-            "name": "Suleiman Farah"
+            "name": "Suleiman Farah",
+            "orcid": "0009-0001-3304-2923",
+            "affiliation": "University of Toronto"
         },
         {
             "name": "Swapnil Kannojia",
@@ -743,10 +759,14 @@
             "affiliation": "Maulana Azad National Institute of Technology, Bhopal"
         },
         {
-            "name": "Syed Md Mihan Chistie"
+            "name": "Syed Md Mihan Chistie",
+            "orcid": "0009-0007-5883-2749",
+            "affiliation": "Dayananda Sagar University, Bangalore"
         },
         {
-            "name": "Tan Jia Qing"
+            "name": "Tan Jia Qing",
+            "orcid": "0009-0003-6749-982X",
+            "affiliation": "Nanyang Technological University"
         },
         {
             "name": "Tannmay Yadav",
