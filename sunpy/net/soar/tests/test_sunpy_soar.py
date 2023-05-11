@@ -111,6 +111,25 @@ def test_registered_instr_attrs():
     assert "stix" in instr_attr._attr_registry[instr_attr].name
 
 
+def test_registered_soop_names():
+    # Check if the soop names are registered in a.soar.SOOP
+    soop_attr = str(a.soar.SOOP)
+    assert "\nr_small_mres_mcad_ar_long_term" in soop_attr
+
+
+def test_search_soop():
+    instr = a.Instrument("EUI")
+    time = a.Time("2022-04-01 01:00", "2022-04-01 02:00")
+    soop_attr = a.soar.SOOP.r_small_mres_mcad_ar_long_term
+    res = Fido.search(time, instr, soop_attr)
+    assert "SOOP Name" in res[0].columns
+    assert res.file_num == 16
+
+    # test non valid soop name passed
+    res = Fido.search(time, instr, a.soar.SOOP("hello"))
+    assert res.file_num == 0
+
+
 def test_when_soar_provider_passed():
     # Tests when a.Provider.soar is passed that only SOARClient results are returned
     id = a.Instrument('EUI')

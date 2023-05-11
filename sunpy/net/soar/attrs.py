@@ -25,6 +25,12 @@ class Identifier(Product):
         super().__init__(*args, **kwargs)
 
 
+class SOOP(SimpleAttr):
+    """
+    The SOOP name to search for.
+    """
+
+
 walker = AttrWalker()
 
 
@@ -123,3 +129,8 @@ def _(wlk, attr, params):
 @walker.add_applier(a.Provider)
 def _(wlk, attr, params):
     params.append(f"provider='{attr.value}'")
+
+
+@walker.add_applier(SOOP)
+def _(wlk, attr, params):
+    params.append(f"soop_name='{attr.value}'")
