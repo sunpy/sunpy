@@ -348,7 +348,7 @@ def test_rotation_matrix_defaults(generic_map, i, j, key):
             del generic_map.meta[keyword]
 
     keyword = f'{key}{i}_{j}'
-    # Abitrary number
+    # Arbitrary number
     generic_map.meta[keyword] = 1.2
     if key == 'CD':
         expected = np.zeros((2, 2))
