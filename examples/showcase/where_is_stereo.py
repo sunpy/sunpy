@@ -168,4 +168,7 @@ for mission, coord in mission_coords.items():
     ax.plot(x, y, 'o', color=color)
     ax.text(x + 0.05, y, mission_labels[mission], color=color)
 
+# Reset the default rcParams
+mpl.rcdefaults()
+
 plt.show()
