@@ -1,0 +1,1 @@
+Changed the reprojecting images to different observers example (:ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`) to avoid using custom wcs headers where possible.
