@@ -315,6 +315,37 @@ def test_rotation_matrix_crota(aia171_test_map):
                                          [3.38820761e-04, 9.99999943e-01]]))
 
 
+_PC_KEYWORDS = ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']
+_CD_KEYWORDS = ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
+
+@pytest.mark.parametrize('key', ['PC', 'CD'])
+@pytest.mark.parametrize('i', [1, 2])
+@pytest.mark.parametrize('j', [1, 2])
+def test_rotation_matrix_defaults(generic_map, i, j, key):
+    # Check that missing rotation keywords are set to correct defaults
+    #
+    # Relevant bit of the FITS standard:
+    #
+    # > PCi_j – [floating point; defaults: 1.0 when i = j, 0.0 otherwise]
+    # > if any CDi_j keywords are present in the HDU, all other unspecified CDi_j keywords shall default to zero
+    for keyword in _PC_KEYWORDS + _CD_KEYWORDS:
+        if keyword in generic_map.meta:
+            del generic_map.meta[keyword]
+
+    keyword = f'{key}{i}_{j}'
+    # Arbitrary number
+    generic_map.meta[keyword] = 1.2
+    if key == 'CD':
+        expected = np.zeros((2, 2))
+        expected[i-1, j-1] = 0.12
+    elif key == 'PC':
+        expected = np.eye(2)
+        expected[i-1, j-1] = 1.2
+
+    rot_mat = generic_map.rotation_matrix
+    np.testing.assert_equal(rot_mat, expected)
+
+
 def test_rotation_matrix_cd_cdelt():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
