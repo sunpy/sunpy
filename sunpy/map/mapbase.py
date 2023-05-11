@@ -1316,13 +1316,20 @@ class GenericMap(NDData):
         It general it does not have to be a pure rotation matrix, and can encode
         other transformations e.g., skews for non-orthgonal coordinate systems.
         """
-        if 'PC1_1' in self.meta:
-            return np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
-                             [self.meta['PC2_1'], self.meta['PC2_2']]])
-
-        elif 'CD1_1' in self.meta:
-            cd = np.array([[self.meta['CD1_1'], self.meta['CD1_2']],
-                           [self.meta['CD2_1'], self.meta['CD2_2']]])
+        if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
+            return np.array(
+                [
+                    [self.meta.get('PC1_1', 1), self.meta.get('PC1_2', 0)],
+                    [self.meta.get('PC2_1', 0), self.meta.get('PC2_2', 1)]
+                ]
+            )
+        elif any(key in self.meta for key in ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']):
+            cd = np.array(
+                [
+                    [self.meta.get('CD1_1', 0), self.meta.get('CD1_2', 0)],
+                    [self.meta.get('CD2_1', 0), self.meta.get('CD2_2', 0)]
+                ]
+            )
 
             cdelt = u.Quantity(self.scale).value
 
