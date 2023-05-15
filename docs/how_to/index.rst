@@ -14,11 +14,16 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
    search_vso
    search_multiple_wavelengths
    parse_time
+   create_coords
+   coord_components
+   transform_coords
+   create_a_map
    remote_data_manager
    create_custom_timeseries
+   create_custom_map
 
-Quick Reference
----------------
+
+**Quick Reference**
 
 The following table is meant as a quick reference.
 For more complete code examples, see the how-to guides above.
@@ -34,13 +39,17 @@ For more complete code examples, see the how-to guides above.
    * - save a map to a FITS file
      - `my_map.save('another_file.fits') <sunpy.map.GenericMap.save>`
    * - get a quicklook summary of a map
-     - `my_map.quicklook() <sunpy.map.GenericMap.quicklook>`
+     - `my_map.quicklook() <sunpy.map.GenericMap.quicklook>`, `my_map.peek() <sunpy.map.GenericMap.peek>`
    * - plot a map
      - `my_map.plot() <sunpy.map.GenericMap.plot>`
    * - access the underlying data array of a map
      - `my_map.data <sunpy.map.GenericMap.data>`
    * - access the map metadata
      - `my_map.meta <sunpy.map.GenericMap.meta>`
+   * - make a copy of the map data array
+     - `my_map.data.copy() <numpy.ndarray.copy>`
+   * - make a copy of the whole map
+     - `copy.deepcopy(my_map) <copy.deepcopy>`
    * - access the observer location
      - `my_map.observer_coordinate <sunpy.map.GenericMap.observer_coordinate>`
    * - remove the roll angle

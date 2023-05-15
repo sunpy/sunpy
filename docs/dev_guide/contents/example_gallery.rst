@@ -46,4 +46,4 @@ Contribution Guidelines
 
   * If you need to use ``astropy.visualization.{quantity_support, time_support}``, import these functions at the top of the example, and call them directly before the first plot that needs them.
 
-.. note:: We have an example template located at :file:`sunpy/examples/example_template/example_template.py`.
+We recommend checking the other examples in the gallery to see how they are structured and what they contain.

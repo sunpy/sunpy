@@ -40,6 +40,21 @@ It is also possible to convert three dimensional positions to astrophysical fram
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
     (49.84856512, 0.05394699, 1417743.94689472)>
 
+`~astropy.coordinates.SkyCoord` and all coordinate frames
+support array coordinates. These work the same as single-value coordinates,
+but they store multiple coordinates in a single object. When you're going to
+apply the same operation to many different coordinates, this is a better choice
+than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
+*much* faster than applying the operation to each
+`~astropy.coordinates.SkyCoord` in a ``for`` loop::
+
+   >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame=frames.Helioprojective)
+   >>> c
+   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec
+       [(-500.,  100.), ( 400.,  200.)]>
+   >>> c[0]
+   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec
+       (-500.,  100.)>
 
 Observer Location
 -----------------

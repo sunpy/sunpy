@@ -38,7 +38,6 @@ obstime = parse_time('now')
 
 hee_frame = HeliocentricEarthEcliptic(obstime=obstime)
 
-
 def get_first_orbit(coord):
     lon = coord.transform_to(hee_frame).spherical.lon
     shifted = Longitude(lon - lon[0])
@@ -46,7 +45,6 @@ def get_first_orbit(coord):
     if ends.size > 0:
         return coord[:ends[0]]
     return coord
-
 
 ##############################################################################
 # Obtain the locations and trajectories of the various planets and spacecraft.
@@ -68,7 +66,6 @@ mission_coords = {mission: get_first_orbit(get_horizons_coord(mission, {'start':
                                                                         'step': '1d'}))
                   for mission in missions}
 
-
 ##############################################################################
 # Define a convenience function for converting coordinates to plot positions
 # in the ecliptic plane.
@@ -80,7 +77,6 @@ def coord_to_heexy(coord):
 
 ##############################################################################
 # Set Matplotlib settings to the desired appearance and initialize the axes.
-
 
 mpl.rcParams.update({'figure.facecolor': 'black',
                      'axes.edgecolor': 'white',
@@ -169,3 +165,8 @@ for mission, coord in mission_coords.items():
     ax.text(x + 0.05, y, mission_labels[mission], color=color)
 
 plt.show()
+
+# This is necessary to reset the Matplotlib settings after plotting for our documentation.
+# You don't need this in your own code.
+mpl.rcParams.update(mpl.rcParamsDefault)
+mpl.rcParams.update({'axes.titlecolor': 'black'})

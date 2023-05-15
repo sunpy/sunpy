@@ -4,63 +4,43 @@
 Maps
 ****
 
-Map objects in **sunpy** are two-dimensional data associated with a coordinate system.
-This class offers many advantages over using packages such as `astropy.io.fits` to open 2D solar data in Python.
-**sunpy** Maps be used with any image with two spatial axes that has FITS standard compliant metadata.
-There are also 19 sources (see :ref:`map` for a complete list) that provide instrument-specific information when plotting and in some cases interpret missing metadata when it is missing from the original file.
+In this section of the tutorial, you will learn about the `Map <sunpy.map.GenericMap>` object.
+Map objects hold two-dimensional data along with the accompanying metadata.
+They can be used with any two-dimensional data array with two spatial axes and FITS-compliant metadata.
+As you will see in this tutorial, the primary advantage of using a Map object over just a bare NumPy array is the ability to perform coordinate aware operations on the underlying array, such as rotating the Map to remove the roll angle of an instrument or cropping a Map to a specific field of view.
+Additionally, because Map is capable of ingesting data from many different sources, it provides a common interface for any two-dimensional data product.
 
-Part of the philosophy of the Map object is to provide most of the basic functionality that a scientist would want.
-Therefore, a Map also contains a number of methods such as resizing or grabbing a subview.
-See `~sunpy.map.mapbase.GenericMap` for summaries of all attributes and methods.
+By the end of this tutorial, you will learn how to create a Map, access the underlying data and metadata, convert between physical coordinates and pixel coordinates of a Map, and the basics of visualizing a Map.
+Additionally, you will learn how to combine multiple Maps into a `~sunpy.map.MapSequence` or a `~sunpy.map.CompositeMap`.
 
-:ref:`creating-maps` and :ref:`inspecting-maps` demonstrate how to create a Map object and view a summary of the data in the object.
-:ref:`map-data` describes how data is stored and accessed in a Map, and :ref:`plotting-maps` introduces some basics of visualizing Map data in **sunpy**.
-:ref:`map-sequences` and :ref:`composite-maps` detail how **sunpy** can handle multiple Maps from similar and different instruments.
-Lastly, :ref:`custom-maps` shows how you can create Maps from data sources not supported in **sunpy**.
+.. note::
+
+    In this section and in :ref:`timeseries_guide`, we will use the sample data included with sunpy.
+    These data are primarily useful for demonstration purposes or simple debugging.
+    These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE`` and are automatically downloaded to your computer as you need them.
+    Once downloaded, these sample data files will be paths to their location on your computer.
 
 .. _creating-maps:
 
 Creating Maps
 =============
 
-To make things easy, **sunpy** can download sample data which are used throughout the docs.
-These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE``.
-To create a `~sunpy.map.Map` from a sample AIA image, type the following into your Python shell:
+To create a `~sunpy.map.Map` from a sample AIA image,
 
 .. code-block:: python
 
-    >>> import sunpy
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-
+    >>> sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
+    PosixPath('.../AIA20110607_063302_0171_lowres.fits')
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
-The variable ``my_map`` is an `~sunpy.map.sources.AIAMap` object.
-To create a Map from a local FITS file try the following:
+In many cases sunpy automatically detects the type of file as well as the the instrument associated with it.
+In this case, we have a FITS file from the AIA instrument onboard SDO.
+To make sure this has all worked correctly, we can take a quick look at ``my_map``,
 
 .. code-block:: python
 
-    >>> my_map = sunpy.map.Map('/mydirectory/mymap.fits')   # doctest: +SKIP
-
-**sunpy** automatically detects the type of file (e.g. FITS), the instrument associated with it (e.g. AIA, EIT, LASCO), and finds the FITS keywords it needs to interpret the coordinate system.
-If the type of FITS file is not recognized then **sunpy** will try some default FITS keywords and return a `~sunpy.map.GenericMap`, but results may vary.
-**sunpy** can also create Maps using the JPEG 2000 files from `helioviewer.org <https://helioviewer.org/>`__.
-
-The :ref:`sphx_glr_generated_gallery_acquiring_data` section of the Example Gallery has several examples of retrieving data using the `~sunpy.net.Fido` tool.
-For more details, check out the :ref:`acquiring_data` guide.
-See :ref:`sphx_glr_generated_gallery_saving_and_loading_data_genericmap_in_fits.py` for a demonstration of saving a map as a FITS file and `~sunpy.map.GenericMap.save` for more details on saving.
-
-.. _inspecting-maps:
-
-Inspecting Maps
-===============
-
-A Map contains a number of data-associated attributes.
-To get a quick look at your Map simply type:
-
-.. code-block:: python
-
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> my_map  # doctest: +REMOTE_DATA
     <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
@@ -91,58 +71,84 @@ To get a quick look at your Map simply type:
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
             -128.03072  , -128.03072  ]], dtype=float32)
 
-This will show a representation of the data as well as some of its associated attributes.
-Typing the above command in a Jupyter Notebook will show a rich HTML view of the table along with two plots of your data.
-The HTML view can also be accessed using the :func:`~sunpy.map.GenericMap.quicklook` method, which will open the view in your default browser.
-
-A number of other attributes are also available.
-For example, the `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`, `~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`).
-The full list can be found on `~sunpy.map.GenericMap`:
+This should show a representation of the data as well as some of its associated attributes.
+If you are in a Jupyter Notebook, this will show a rich HTML view of the table along with several quick-look plots.
+Otherwise, you can use the :meth:`~sunpy.map.GenericMap.quicklook` method to see these quick-look plots.
 
 .. code-block:: python
 
-    >>> map_date = my_map.date  # doctest: +REMOTE_DATA
-    >>> map_exptime = my_map.exposure_time  # doctest: +REMOTE_DATA
-    >>> map_center = my_map.center  # doctest: +REMOTE_DATA
+    >>> my_map.quicklook()  # doctest: +SKIP
 
-To get a list of all of the attributes check the documentation by typing:
+.. generate:: html
+    :html_border:
+
+    import sunpy.map
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    print(my_map._repr_html_())
+
+.. _inspecting-maps:
+
+Inspecting Map Metadata
+=======================
+
+The metadata for a Map is exposed via attributes on the Map.
+These attributes can be accessed by typing ``my_map.<attribute-name>``.
+For example, to access the date of the observation,
 
 .. code-block:: python
 
-    >>> help(my_map)  # doctest: +SKIP
+    >>> my_map.date  # doctest: +REMOTE_DATA
+    <Time object: scale='utc' format='isot' value=2011-06-07T06:33:02.770>
 
-Many attributes and functions of the map classes accept and return `~astropy.units.quantity.Quantity` or `~astropy.coordinates.SkyCoord` objects.
-Please refer to :ref:`units-sunpy` and :ref:`coordinates-sunpy` for more details.
-
-The metadata for the map is accessed by:
+Notice that this is an `~astropy.time.Time` object which we discussed in the previous :ref:`time-in-sunpy` section of the tutorial.
+Similarly, we can access the exposure time of the image,
 
 .. code-block:: python
 
-    >>> header = my_map.meta  # doctest: +REMOTE_DATA
+    >>> my_map.exposure_time  # doctest: +REMOTE_DATA
+    <Quantity 0.234256 s>
 
-This references the metadata dictionary with the header information as read from the source file.
-To see if the metadata of a Map source has been modified, see :ref:`sphx_glr_generated_gallery_map_map_metadata_modification.py` for a demonstration.
+Notice that this returns an `~astropy.units.Quantity` object which we discussed in the previous :ref:`units-sunpy` section of the tutorial.
+The full list of attributes can be found in the reference documentation for `~sunpy.map.GenericMap`.
+These metadata attributes are all derived from the underlying FITS metadata, but are represented as rich Python objects, rather than simple strings or numbers.
 
 .. _map-data:
 
 Map Data
 ========
 
-The data in a Map object is accessible through the `~sunpy.map.GenericMap.data` attribute.
-The data is stored as a NumPy `~numpy.ndarray`.
+The data in a Map is stored as a `numpy.ndarray` object and is accessible through the `~sunpy.map.GenericMap.data` attribute:
+
+.. code-block:: python
+
+    >>> my_map.data  # doctest: +REMOTE_DATA
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+        -127.96519  , -127.96519  ],
+       [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+        -104.04137  , -127.919716 ],
+       [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+         -37.95505  , -127.87541  ],
+       ...,
+       [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+        -128.01454  , -128.01454  ],
+       [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+        -127.899666 , -127.899666 ],
+       [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+        -128.03072  , -128.03072  ]], dtype=float32)
+
+This array can then be indexed like any other NumPy array.
 For example, to get the 0th element in the array:
 
 .. code-block:: python
 
     >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
     -95.92475
-    >>> my_map.data[0][0]  # doctest: +REMOTE_DATA
-    -95.92475
 
-The first index is for the y direction while the second index is for the x direction.
+The first index corresponds to the y direction and the second to the x direction in the two-dimensional pixel coordinate system.
 For more information about indexing, please refer to the `numpy documentation <https://numpy.org/doc/stable/user/basics.indexing.html#indexing-on-ndarrays>`__.
 
-Data attributes like `~numpy.ndarray.dtype` and `~sunpy.map.GenericMap.dimensions` are accessible through a GenericMap object:
+Data attributes like dimensionality and type are also accessible as attributes on ``my_map``:
 
 .. code-block:: python
 
@@ -151,26 +157,7 @@ Data attributes like `~numpy.ndarray.dtype` and `~sunpy.map.GenericMap.dimension
     >>> my_map.dtype  # doctest: +REMOTE_DATA
     dtype('float32')
 
-Here, the dimensions attribute is similar to the `~numpy.ndarray.shape` attribute, however returning an `~astropy.units.quantity.Quantity`.
-
-You can store the data of a `~sunpy.map.GenericMap` object in a separate `~numpy.ndarray` by either of the following actions:
-
-.. code-block:: python
-
-    >>> var = my_map.data  # doctest: +REMOTE_DATA
-    >>> var = my_map.data.copy()  # doctest: +REMOTE_DATA
-
-To create a complete copy of a Map object that is entirely independent of the original, use the built-in `copy.deepcopy` function:
-
-.. code-block:: python
-
-    >>> import copy   # doctest: +REMOTE_DATA
-    >>> my_map_deepcopy = copy.deepcopy(my_map)   # doctest: +REMOTE_DATA
-
-A deepcopy ensures that any changes in the original Map object are not reflected in the copied object and vice versa.
-Note that this copies the data of the Map object as well as all of the other attributes and methods.
-
-Some basic statistical functions are built into Map objects:
+Additionally, there are several methods that provide basic summary statistics of the data:
 
 .. code-block:: python
 
@@ -181,748 +168,388 @@ Some basic statistical functions are built into Map objects:
     >>> my_map.mean()  # doctest: +REMOTE_DATA
     427.02252
 
-All the other `~numpy.ndarray` functions and attributes can be accessed through the data array directly.
-For example:
+.. _coordinates-wcs-maps:
+
+Maps, Coordinates, and the World Coordinate System
+==================================================
+
+In :ref:`coordinates-sunpy`, you learned how to define coordinates with `~astropy.coordinates.SkyCoord` using different solar coordinate frames.
+The coordinate frame of a Map is provided as an attribute,
 
 .. code-block:: python
 
-    >>> my_map.data.std()  # doctest: +REMOTE_DATA
-    826.41016
+    >>> my_map.coordinate_frame  # doctest: +REMOTE_DATA
+    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
+
+This tells us that the coordinate system of the image is Helioprojective (HPC) and that it is defined by an observer at a particular location.
+This observer coordinate is also provided as an attribute,
+
+.. code-block:: python
+
+    >>> my_map.observer_coordinate  # doctest: +REMOTE_DATA
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>
+
+This tells us the location of the spacecraft, in this case SDO, when it recorded this particular observation, as derived from the FITS metadata.
+
+Map has several additional coordinate-related attributes that provide the coordinates of the center and corners of the Map,
+
+.. code-block:: python
+
+    >>> my_map.center  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (3.22309951, 1.38578135)>
+    >>> my_map.bottom_left_coord  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (-1228.76466158, -1224.62447509)>
+    >>> my_map.top_right_coord  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (1235.21095899, 1227.39598836)>
+
+But what if we wanted to know what pixel these physical coordinates correspond to?
+Each Map has an associated World Coordinate System, or WCS, which is derived from the underlying metadata and expressed as an `astropy.wcs.WCS` object.
+The WCS is accessible as an attribute:
+
+.. code-block:: python
+
+    >>> my_map.wcs  # doctest: +REMOTE_DATA
+    WCS Keywords
+    <BLANKLINE>
+    Number of WCS axes: 2
+    CTYPE : 'HPLN-TAN'  'HPLT-TAN'
+    CRVAL : 0.00089530541880571  0.00038493926472939
+    CRPIX : 512.5  512.5
+    PC1_1 PC1_2  : 0.99999706448085  0.0024230207763071
+    PC2_1 PC2_2  : -0.0024230207763071  0.99999706448085
+    CDELT : 0.00066744222222222  0.00066744222222222
+    NAXIS : 1024  1024
+
+WCS is a fairly complex topic, but all we need to know for now is that the WCS provides the transformation between the pixel coordinates of the image and physical or "world" coordinates.
+In particular, we will only focus on two methods: `~astropy.wcs.WCS.world_to_pixel` and `~astropy.wcs.WCS.pixel_to_world`.
+First, let's find the pixel location corresponding to the center of the Map,
+
+.. code-block:: python
+
+    >>> center_pixel = my_map.wcs.world_to_pixel(my_map.center)  # doctest: +REMOTE_DATA
+    >>> center_pixel  # doctest: +REMOTE_DATA
+    (array(511.5), array(511.5))
+
+Notice that these coordinates are not necessarily integers.
+The corresponding pixel-to-world transformation should then give us back our center coordinate from above,
+
+.. code-block:: python
+
+    >>> my_map.wcs.pixel_to_world(center_pixel[0], center_pixel[1])  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (3.22309951, 1.38578135)>
+
+As another example, if we transform the center of the lower-left pixel to a world coordinate, it should correspond to bottom left coordinate from above,
+
+.. code-block:: python
+
+    >>> my_map.wcs.pixel_to_world(0, 0)  # doctest: +REMOTE_DATA
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        (-1228.76466158, -1224.62447509)>
+
+These two methods are extremely useful when trying to understand which pixels correspond to which physical coordinates or when trying to locate the same physical location in images taken by separate spacecraft.
 
 .. _plotting-maps:
 
-Plotting Maps
-=============
-
-The `~sunpy.map.GenericMap` object has a built-in plot method such that it is easy to quickly view your map.
-sunpy makes use of `Matplotlib <https://matplotlib.org/>`_ for all of its plotting - as such, it tries to follow the Matplotlib plotting philosophy.
-We refer the reader to the `Matplotlib usage documentation <https://matplotlib.org/stable/users/explain/api_interfaces.html>`__ to learn more about the Matplotlib and to become familiar with the basics.
-To be consistent with Matplotlib, sunpy has developed a standard plotting interface which supports both simple and advanced Matplotlib usage.
-
-peek()
-------
-For quick and easy access to a plot `~sunpy.map.GenericMap` and `~sunpy.timeseries.GenericTimeSeries` (see next section), both define their own ``peek()`` methods which create a plot for you and show it without you having to deal with any Matplotlib setup.
-This is so that it is easy to take a quick look at your data.
-
-For example, to create a plot just type:
+Visualizing Maps
+================
 
 .. plot::
-    :include-source:
+    :nofigs:
+    :context: close-figs
+    :show-source-link: False
 
+    # This is here to put my_map in the scope of the plot directives.
+    # This avoids repeating code in the example source code that is actually displayed.
+    # This snippet of code is not visible in the rendered documentation.
     import sunpy.map
     import sunpy.data.sample
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia_map.peek()
-
-
-This creates a plot window with all axes defined, a plot title, and the image of the map data defined by the contents of the map.
-In non-interactive mode the plot window blocks execution and must be closed before doing anything else.
-
-plot()
-------
-
-For more advanced plotting the base sunpy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
-This command is similar to the pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and axes object for you if you haven't already.
-
-When you create a plot with `~sunpy.map.GenericMap.peek` or
-`~sunpy.map.GenericMap.plot`, sunpy will use `astropy.visualization.wcsaxes` to
-represent coordinates on the image accurately, for more information see
-:ref:`wcsaxes-plotting`.
-
-Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the
-plot by combining sunpy and matplotlib commands, for example you can over plot
-contours on the Map:
-
-.. plot::
-    :include-source:
-
-    import matplotlib.pyplot as plt
+    from astropy.coordinates import SkyCoord
     import astropy.units as u
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-    import sunpy.map
-    import sunpy.data.sample
+In the :ref:`creating-maps` section, you learned how to generate a quicklook summary of a Map.
+However, the Map object also has a :meth:`~sunpy.map.GenericMap.plot` method that allows for more fine-grained control over how the Map is visualized and is especially useful for generating publication-quality plots.
+In this section of the tutorial, you will learn how to build up an increasingly detailed visualization of a Map, including adjusting the colormap and normalization and and overlaying coordinates and contours.
 
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia_map.plot()
-    aia_map.draw_limb()
+Basic Plotting
+--------------
 
-    # let's add contours as well
-    aia_map.draw_contours([10,20,30,40,50,60,70,80,90] * u.percent)
-
-    plt.colorbar()
-    plt.show()
-
-
-Plotting Keywords
------------------
-
-For Map plotting, `~matplotlib.pyplot.imshow` does most of the heavy lifting in the background while **sunpy** makes a number of choices for you (e.g. colortable, plot title).
-Changing these defaults is made possible through two simple interfaces.
-You can pass any `~matplotlib.pyplot.imshow` keyword into the plot command to override the defaults for that particular plot.
-For example, the following plot changes the default colormap to use an inverse Grey color table.
+First, let's create a basic plot of our Map, including a colorbar,
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import sunpy.map
-    import sunpy.data.sample
     import matplotlib.pyplot as plt
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     fig = plt.figure()
-    aia_map.plot(cmap=plt.cm.Greys_r)
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax)
     plt.colorbar()
     plt.show()
 
-You can also view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
-See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of this workflow for changing plot settings.
+.. note::
 
+    We imported `matplotlib.pyplot` in order to create the figure and the axis we plotted on our map onto.
+    Under the hood, sunpy uses of `matplotlib` to visualize the image meaning that plots built with sunpy can be further customized using `matplotlib`.
+    **However, for the purposes of this tutorial, you do not need to be familiar with Matplotlib.**
+    Fore a series of detailed examples showing how to heavily customize your Map plots, see the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` as well as the documentation for `astropy.visualization.wcsaxes`.
 
-Colormaps and Normalization
----------------------------
+Note that the title and colormap have been set by sunpy based on the observing instrument and wavelength.
+Furthermore, the tick and axes labels have been automatically set based on the coordinate system of the Map.
 
-Image data is generally shown in false color in order to better identify it or to better visualize structures in the image.
-Matplotlib handles this colormapping process through the `~matplotlib.colors` module.
-First, the data array is mapped onto the range 0-1 using an instance of `~matplotlib.colors.Normalize` or a subclass.
-Then, the data is mapped to a color using a `~matplotlib.colors.Colormap`.
-
-**sunpy** provides colormaps for each mission as defined by the mission teams.
-The Map object chooses the appropriate colormap for you when it is created as long as it recognizes the instrument.
-To see what colormaps are available:
-
-.. code-block:: python
-
-    >>> import sunpy.visualization.colormaps as cm
-    >>> cm.cmlist.keys()
-    dict_keys(['goes-rsuvi94', 'goes-rsuvi131', 'goes-rsuvi171', 'goes-rsuvi195',
-    'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
-    ...
-
-The **sunpy** colormaps are registered with Matplotlib so you can grab them like you would any other colormap:
-
-.. code-block:: python
-
-    >>> import matplotlib.pyplot as plt
-    >>> import sunpy.visualization.colormaps
-    >>> cmap = plt.get_cmap('sdoaia171')
-
-See `~sunpy.visualization.colormaps` for a plot of all available colormaps.
-
-If you want to override the built-in colormap, consider the following example which plots an AIA map using an EIT colormap.
+Looking at the plot above, you likely notice that the resulting image is a bit dim.
+To fix this, we can use the ``clip_interval`` keyword to automatically adjust the colorbar limits to clip out the dimmest 1% and the brightest 0.5% of pixels.
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
+    import astropy.units as u
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1, 99.5)*u.percent)
+    plt.colorbar()
+    plt.show()
 
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = plt.get_cmap('sohoeit171')
+
+Changing the Colormap and Normalization
+----------------------------------------
+
+Historically, particular colormaps are assigned to images based on what instrument they are from and what wavelength is being observed.
+By default, sunpy will select the colormap based on the available metadata.
+This default colormap is available as an attribute,
+
+.. code-block:: python
+
+    >>> my_map.cmap.name  # doctest: +REMOTE_DATA
+    'SDO AIA 171.0 Angstrom'
+
+When visualizing a Map, you can change the colormap using the ``cmap`` keyword argument.
+For example, you can use the 'inferno' colormap from `matplotlib`.
+
+.. plot::
+    :include-source:
+    :context: close-figs
 
     fig = plt.figure()
-    aia_map.plot(cmap=cmap)
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, cmap='inferno', clip_interval=(1,99.5)*u.percent)
     plt.colorbar()
     plt.show()
 
-You can also change the colormap for the Map itself:
+.. note::
 
-.. code-block:: python
+    sunpy provides specific colormaps for many different instruments.
+    For a list of all colormaps provided by sunpy, see the documentation for `sunpy.visualization.colormaps`.
 
-    >>> smap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')  # doctest: +SKIP
-
-The normalization is set automatically so that all the data from minimum to maximum is displayed as best as possible.
-Just like the colormap, the default normalization can be changed through the ``plot_settings`` dictionary or directly for the individual plot by passing a keyword argument.
-
-Alternate normalizations are available from `matplotlib <https://matplotlib.org/stable/tutorials/colors/colormapnorms.html>`__ and `astropy <https://docs.astropy.org/en/stable/visualization/normalization.html>`__.
-The following example shows the difference between a linear and logarithmic normalization on an AIA image.
+The normalization, or the mapping between the data values and the colors in our colormap, is also determined based on the underlying metadata.
+Notice that in the plots we've made so far, the ticks on our colorbar are not linearly spaced.
+Just like in the case of the colormap, we can use a normalization other than the default by passing a keyword argument to the :meth:`~sunpy.map.GenericMap.plot` method.
+For example, we can use a logarithmic normalization instead.
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-    import matplotlib.colors as colors
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-    fig = plt.figure(figsize=(4, 9))
-
-    ax1 = fig.add_subplot(2, 1, 1, projection=aia_map)
-    aia_map.plot(norm=colors.Normalize(), title='Linear normalization')
+    import matplotlib.colors
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(norm=matplotlib.colors.LogNorm())
     plt.colorbar()
-
-    ax2 = fig.add_subplot(2, 1, 2, projection=aia_map)
-    aia_map.plot(norm=colors.LogNorm(), title='Logarithmic normalization')
-    plt.colorbar()
-
     plt.show()
 
-Note how the colorbar does not change since these two plots share the same colormap.
-Meanwhile, the data values associated with each color do change because the normalization is different.
+.. note::
+
+    You can also view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
+    See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of of how to change the default plot settings.
 
 
 .. _wcsaxes-plotting:
 
-Maps with coordinate systems
-----------------------------
+Overlaying Contours and Coordinates
+-----------------------------------
 
-By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
-the representation of world coordinates, and calling
-`~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use wcsaxes
-for plotting. Unless a standard `matplotlib.axes.Axes` object is explicitly
-created.
+When plotting images, we often want to highlight certain features or overlay certain data points.
+There are several methods attached to Map that make this task easy.
+For example, we can draw contours around the brightest 0.5% percent of pixels in the image:
 
-To explicitly create a `~astropy.visualization.wcsaxes.WCSAxes` instance do the
-following ::
+.. plot::
+    :include-source:
+    :context: close-figs
 
-    >>> fig = plt.figure()   # doctest: +SKIP
-    >>> ax = plt.subplot(projection=smap)   # doctest: +SKIP
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    my_map.draw_contours([2, 5, 10, 50, 90] * u.percent, axes=ax)
+    plt.show()
 
-when plotting on an `~astropy.visualization.wcsaxes.WCSAxes` axes, it will by
-default plot in pixel coordinates, you can override this behavior and plot in
-'world' coordinates by getting the transformation from the axes with
-``ax.get_transform('world')``.
+Additionally, the solar limb, as determined by the location of the observing instrument at the time of the observation, can be easily overlaid on an image.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    my_map.draw_limb(axes=ax, color='C0')
+    plt.show()
+
+We can also overlay a box denoting a particular a region of interest as expressed in world coordinates using the the coordinate frame of our image.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    roi_bottom_left = SkyCoord(Tx=-300*u.arcsec, Ty=-100*u.arcsec, frame=my_map.coordinate_frame)
+    roi_top_right = SkyCoord(Tx=200*u.arcsec, Ty=400*u.arcsec, frame=my_map.coordinate_frame)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    my_map.draw_quadrangle(roi_bottom_left, top_right=roi_top_right, axes=ax, color='C0')
+    plt.show()
+
+Because our visualization knows about the coordinate system of our Map, it can transform any coordinate to the coordinate frame of our Map and then use the underlying WCS that we discussed in the :ref:`coordinates-wcs-maps` section to translate this to a pixel position.
+This makes it simple to plot *any* coordinate on top of our Map using the :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord` method.
+The following example shows how to plot some points on our Map, including the center coordinate of our Map.
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    coords = SkyCoord(Tx=[100,1000] * u.arcsec, Ty=[100,1000] * u.arcsec, frame=my_map.coordinate_frame)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_map)
+    my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
+    ax.plot_coord(coords, 'o')
+    ax.plot_coord(my_map.center, 'X')
+    plt.show()
 
 .. note::
 
-    World coordinates are always in **degrees** so you will have to convert to degrees.
+    Map visualizations can be heavily customized using both `matplotlib` and `astropy.visualization.wcsaxes`.
+    See the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` for more detailed examples of how to customize Map visualizations.
 
-.. code-block:: python
+.. _cropping-maps:
 
-    >>> aia_map.plot()   # doctest: +SKIP
-    >>> ax.plot((100*u.arcsec).to_value(u.deg), (500*u.arcsec).to_value(u.deg),
-    ...         transform=ax.get_transform('world'))   # doctest: +SKIP
+Cropping Maps and Combining Pixels
+==================================
 
-
-In this next example, the `~matplotlib.figure.Figure` and
-`~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
-then used to modify the plot.
-
-Here we can plot a sunpy map, and also overplot some points defined in arcseconds, highlighting the advantage of using WCSAxes.
+In analyzing images of the Sun, we often want to choose a smaller portion of the full disk to look at more closely.
+Let's use the region of interest we defined above to crop out that portion of our image.
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import matplotlib.pyplot as plt
-    import astropy.units as u
-    from astropy.coordinates import SkyCoord
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
+    my_submap = my_map.submap(roi_bottom_left, top_right=roi_top_right)
     fig = plt.figure()
-    # Provide the Map as a projection, which creates a WCSAxes object
-    ax = plt.subplot(projection=aia_map)
-
-    im = aia_map.plot()
-
-    # Prevent the image from being re-scaled while overplotting.
-    ax.set_autoscale_on(False)
-
-    xc = [0,100,1000] * u.arcsec
-    yc = [0,100,1000] * u.arcsec
-
-    coords = SkyCoord(xc, yc, frame=aia_map.coordinate_frame)
-
-    p = ax.plot_coord(coords, 'o')
-
-    # Set title.
-    ax.set_title('Custom plot with WCSAxes')
-
-    plt.colorbar()
+    ax = fig.add_subplot(projection=my_submap)
+    my_submap.plot(axes=ax)
     plt.show()
 
-It is possible to create the same plot, explicitly not using `~astropy.visualization.wcsaxes`, however, this will not have the features of `~astropy.visualization.wcsaxes` which include correct representation of rotation and plotting in different coordinate systems.
-Please see this example :ref:`sphx_glr_generated_gallery_map_plot_frameless_image.py`.
-
-
-Check out the following foundational examples in the Example Gallery for plotting Maps:
-
-* :ref:`sphx_glr_generated_gallery_plotting_aia_example.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py`
-
-* :ref:`sphx_glr_generated_gallery_plotting_grid_plotting.py`
-
-
-Finally, here is a more complex example using sunpy maps, wcsaxes and Astropy
-units to plot a AIA image and a zoomed in view of an active region.
+Additionally, we also may want to combine multiple pixels into a single pixel (a so called "superpixel") to, for example, increase our signal-to-noise ratio.
+We can accomplish this with the `~sunpy.map.GenericMap.superpixel` method by specifying how many pixels, in each dimension, we want our new superpixels to contain.
+For example, we can combine 4 pixels in each dimension such that our new superpixels contain 16 original pixels.
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    import matplotlib.pyplot as plt
-    from matplotlib import patches
-    import astropy.units as u
-    from astropy.coordinates import SkyCoord
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    # Define a region of interest
-    length = 250 * u.arcsec
-    x0 = -100 * u.arcsec
-    y0 = -400 * u.arcsec
-
-    # Create a sunpy Map, and a second submap over the region of interest.
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    bottom_left = SkyCoord(x0 - length, y0 - length,
-                        frame=aia_map.coordinate_frame)
-    top_right = SkyCoord(x0 + length, y0 + length,
-                        frame=aia_map.coordinate_frame)
-    submap = aia_map.submap(bottom_left, top_right=top_right)
-
-    # Create a new matplotlib figure, larger than default.
-    fig = plt.figure(figsize=(5, 12))
-
-    # Add a first Axis, using the WCS from the map.
-    ax1 = fig.add_subplot(2, 1, 1, projection=aia_map)
-
-    # Plot the Map on the axes with default settings.
-    aia_map.plot()
-
-    # Draw a box on the image
-    aia_map.draw_quadrangle(bottom_left, height=length * 2, width=length * 2)
-
-    # Create a second axis on the plot.
-    ax2 = fig.add_subplot(2, 1, 2, projection=submap)
-
-    submap.plot()
-
-    # Add a overlay grid.
-    submap.draw_grid(grid_spacing=10*u.deg)
-
-    # Change the title.
-    ax2.set_title('Zoomed View', pad=35)
-
-    # Add some text
-    ax2.text(
-        (-100*u.arcsec).to_value(u.deg),
-        (-300*u.arcsec).to_value(u.deg),
-        'A point on the Sun',
-        color="white",
-        transform=ax2.get_transform('world')
-    )
-
+    my_super_submap = my_submap.superpixel((5,5)*u.pixel)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=my_super_submap)
+    my_super_submap.plot(axes=ax)
     plt.show()
 
+.. note::
 
-Clipping and Masking Data
--------------------------
-
-It is often necessary to ignore certain data in an image.
-For example, a large data value could be due to cosmic ray hits and should be ignored.
-The most straightforward way to ignore this kind of data in plots, without altering the data, is to clip it.
-This can be achieved very easily by using the ``clip_interval`` keyword. For example:
-
-.. code-block:: python
-
-    >>> import astropy.units as u
-    >>> smap.plot(clip_interval=(1, 99.5)*u.percent)  #doctest: +SKIP
-
-This clips out the dimmest 1% of pixels and the brightest 0.5% of pixels.
-With those outlier pixels clipped, the resulting image makes better use of the full range of colors.
-If you'd like to see what areas of your images got clipped, you can modify the colormap:
-
-.. code-block:: python
-
-    >>> cmap = map.cmap  # doctest: +SKIP
-    >>> cmap.set_over('blue')  # doctest: +SKIP
-    >>> cmap.set_under('green')  # doctest: +SKIP
-
-This will color the areas above and below in red and green respectively (similar to this `matplotlib example <https://matplotlib.org/examples/pylab_examples/image_masked.html>`__).
-You can use the following colorbar command to display these choices:
-
-.. code-block:: python
-
-    >>> plt.colorbar(extend='both')   # doctest: +SKIP
-
-Here is an example of this put to use on an AIA image.
-
-.. plot::
-    :include-source:
-
-    import astropy.units as u
-    import matplotlib.pyplot as plt
-
-    import sunpy.map
-    import sunpy.data.sample
-
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = smap.cmap.copy()
-    cmap.set_over('blue')
-    cmap.set_under('green')
-
-    fig = plt.figure(figsize=(12, 4))
-
-    ax1 = fig.add_subplot(1, 2, 1, projection=smap)
-    smap.plot(title='Without clipping')
-    plt.colorbar()
-
-    ax2 = fig.add_subplot(1, 2, 2, projection=smap)
-    smap.plot(clip_interval=(1, 99.5)*u.percent, title='With clipping')
-    plt.colorbar(extend='both')
-
-    plt.show()
-
-
-Masking is another approach to ignoring certain data.
-A mask is a boolean array that can give you fine-grained control over what is not being displayed.
-The `~numpy.ma.MaskedArray` is a subclass of a NumPy array with the addition of an associated boolean array which holds the mask.
-See the following two examples for applications of this technique:
-
-* :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py`
-
-* :ref:`sphx_glr_generated_gallery_computer_vision_techniques_finding_masking_bright_pixels.py`
+    Map provides additional methods for manipulating the underlying image data.
+    See the reference documentation for `~sunpy.map.GenericMap` for a complete list of available methods as well as the :ref:`Map section of the Example Gallery <sphx_glr_generated_gallery_map>` for more detailed examples.
 
 .. _map-sequences:
 
 Map Sequences
 =============
 
-A `~sunpy.map.MapSequence` is an ordered list of maps.
-By default, the maps are ordered by their observation date, from earliest to latest date.
+While `~sunpy.map.GenericMap` can only contain a two-dimensional array and metadata corresponding to a single observation, a `~sunpy.map.MapSequence` is comprised of an ordered list of maps.
+By default, the Maps are ordered by their observation date, from earliest to latest date.
 A `~sunpy.map.MapSequence` can be created by supplying multiple existing maps:
 
 .. code-block:: python
 
-    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
-    >>> mc = sunpy.map.Map([map1, map2], sequence=True)  # doctest: +REMOTE_DATA
+    >>> another_map = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
+    >>> map_seq = sunpy.map.Map([my_map, another_map], sequence=True)  # doctest: +REMOTE_DATA
 
-or by providing a directory full of image files:
-
-.. code-block:: python
-
-    >>> mc = sunpy.map.Map('path/to/my/files/*.fits', sequence=True)   #  doctest: +SKIP
-
-The earliest map in the MapSequence can be accessed by indexing the maps list:
+A map sequence can be indexed in the same manner as a list.
+For example, the following returns the same information as in :ref:`creating-maps`.
 
 .. code-block:: python
 
-    >>> mc.maps[0]   # doctest: +SKIP
+    >>> map_seq.maps[0]   # doctest: +REMOTE_DATA
+    <sunpy.map.sources.sdo.AIAMap object at ...>
+    SunPy Map
+    ---------
+    Observatory:                 SDO
+    Instrument:          AIA 3
+    Detector:            AIA
+    Measurement:                 171.0 Angstrom
+    Wavelength:          171.0 Angstrom
+    Observation Date:    2011-06-07 06:33:02
+    Exposure Time:               0.234256 s
+    Dimension:           [1024. 1024.] pix
+    Coordinate System:   helioprojective
+    Scale:                       [2.402792 2.402792] arcsec / pix
+    Reference Pixel:     [511.5 511.5] pix
+    Reference Coord:     [3.22309951 1.38578135] arcsec
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+            -127.96519  , -127.96519  ],
+           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+            -104.04137  , -127.919716 ],
+           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+             -37.95505  , -127.87541  ],
+           ...,
+           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+            -128.01454  , -128.01454  ],
+           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+            -127.899666 , -127.899666 ],
+           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+            -128.03072  , -128.03072  ]], dtype=float32)
 
 MapSequences can hold maps that have different shapes.
 To test if all the maps in a `~sunpy.map.MapSequence` have the same shape:
 
 .. code-block:: python
 
-    >>> mc.all_maps_same_shape()  # doctest: +REMOTE_DATA
+    >>> map_seq.all_maps_same_shape()  # doctest: +REMOTE_DATA
     True
 
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
 .. code-block:: python
 
-    >>> mc_array = mc.as_array()   # doctest: +REMOTE_DATA
+    >>> map_seq_array = map_seq.as_array()  # doctest: +REMOTE_DATA
 
-Note that an array is returned only if all the maps have the same shape.
-If this is not true, a `ValueError` is raised.
-If all the maps have nx pixels in the x-direction, and ny pixels in the y-direction, and there are n maps in the MapSequence, the returned `~numpy.ndarray` array has shape (ny, nx, n).
-The data of the first map in the `~sunpy.map.MapSequence` appears in the `~numpy.ndarray` in position ``[:, :, 0]``, the data of second map in position ``[:, :, 1]``, and so on.
-The order of maps in the `~sunpy.map.MapSequence` is reproduced in the returned `~numpy.ndarray`.
-
-The metadata from each map can be obtained using:
+Since all of the maps in our sequence of the same shape, the first two dimensions of our combined array will be the same as the component maps while the last dimension will correspond to the number of maps in the map sequence.
+We can confirm this by looking at the shape of the above array.
 
 .. code-block:: python
 
-    >>> mc.all_meta()   # doctest: +SKIP
+    >>> map_seq_array.shape  # doctest: +REMOTE_DATA
+    (1024, 1024, 2)
 
-This returns a list of map meta objects that have the same order as the maps in the `~sunpy.map.MapSequence`.
+.. warning::
 
-For information on coaligning images and compensating for solar rotation in Map Sequences, see the `sunkit-image example gallery <https://docs.sunpy.org/projects/sunkit-image/en/stable/generated/gallery/index.html>`__ and the `sunkit_image.coalignment` module.
-
-.. _composite-maps:
-
-Composite Maps and Overlaying Maps
-==================================
-
-The `~sunpy.map.Map` method can also handle a list of maps.
-If a series of maps are supplied as inputs, `~sunpy.map.Map` will return a list of maps as the output.
-If the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` object is returned.
-This is useful if the maps are of a different type (e.g. different instruments).
-For example, to create a simple Composite Map:
-
-.. code-block:: python
-
-    >>> my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)  # doctest: +REMOTE_DATA
-
-A `~sunpy.map.CompositeMap` is different from a regular `~sunpy.map.GenericMap` object and therefore different associated methods.
-To list which maps are part of your Composite Map use:
-
-.. code-block:: python
-
-    >>> my_maps.list_maps()  # doctest: +REMOTE_DATA
-    [<class 'sunpy.map.sources.soho.EITMap'>, <class 'sunpy.map.sources.rhessi.RHESSIMap'>]
-
-The following two examples demonstrate how to create a composite map of AIA and HMI data and how to overlay HMI contours on an AIA map (without creating a composite map object):
-
-* :ref:`sphx_glr_generated_gallery_map_composite_map_AIA_HMI.py`
-
-* :ref:`sphx_glr_generated_gallery_map_hmi_contours_wcsaxes.py`
-
-For a more advanced tutorial on combining data from several maps, see :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_aia_euvi_mosaic.py`.
-
-.. _custom-maps:
-
-Creating Custom Maps
-====================
-
-It is also possible to create Maps using custom data (e.g. from a simulation or an observation from a data source that is not explicitly supported in **sunpy**).
-To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate meta information.
-The meta information informs `sunpy.map.Map` of the correct coordinate information associated with the data array and should be provided to `sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
-See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
-
-The keys required for the header information follow the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`__.
-**sunpy** provides a Map header helper function to assist in creating a header that contains the correct meta information.
-This includes a :func:`~sunpy.map.header_helper.meta_keywords` function that will return a `dict` of the meta keywords used when creating a Map.
-
-.. code-block:: python
-
-    >>> from sunpy.map.header_helper import meta_keywords
-
-    >>> meta_keywords() # doctest: +SKIP
-    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
-     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
-     'crval1': 'Coordinate value at reference point on naxis1 **required'
-     ...
-
-The utility function :func:`~sunpy.map.header_helper.make_fitswcs_header` will return a header with the appropriate FITS keywords once the Map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is provided.
-All the metadata keywords that a Map will parse along with their description are listed in the :ref:`Meta Keywords Table` at the end of this page.
-
-The `astropy.coordinates.SkyCoord` is defined by the user and contains information on the reference frame, reference coordinate, and observer location.
-This function returns a `sunpy.util.MetaDict`.
-The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
-
-The :func:`~sunpy.map.header_helper.make_fitswcs_header` function also takes optional keyword arguments including ``reference_pixel`` and ``scale`` that describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinates.SkyCoord`) and the spatial scale of the pixels, respectively.
-If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
-
-Here's an example of creating a header from some generic data and an `astropy.coordinates.SkyCoord`:
-
-.. code-block:: python
-
-    >>> import numpy as np
-    >>> from astropy.coordinates import SkyCoord
-    >>> import astropy.units as u
-
-    >>> from sunpy.coordinates import frames
-    >>> from sunpy.map.header_helper import make_fitswcs_header
-
-    >>> data = np.arange(0,100).reshape(10,10)
-    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
-    >>> header = make_fitswcs_header(data, coord)
-    >>> for key, value in header.items():
-    ...     print(f"{key}: {value}")
-    wcsaxes: 2
-    crpix1: 5.5
-    crpix2: 5.5
-    cdelt1: 1.0
-    cdelt2: 1.0
-    cunit1: arcsec
-    cunit2: arcsec
-    ctype1: HPLN-TAN
-    ctype2: HPLT-TAN
-    crval1: 0.0
-    crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
-    mjdref: 0.0
-    date-obs: 2013-10-28T00:00:00.000
-    rsun_ref: 695700000.0
-    dsun_obs: 148644585949.49
-    hgln_obs: 0.0
-    hglt_obs: 4.7711570596394
-    naxis: 2
-    naxis1: 10
-    naxis2: 10
-    pc1_1: 1.0
-    pc1_2: -0.0
-    pc2_1: 0.0
-    pc2_2: 1.0
-    rsun_obs: 965.3829548285768
-
-From this we can see now that the function returned a `sunpy.util.MetaDict` that populated the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`, and the data array.
-Since the ``reference_pixel`` and keywords were not passed in the example above, the values of ``crpix`` and ``cdelt`` were set to the default values.
-
-These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
-Here's another example of passing ``reference_pixel`` and ``scale`` to the function:
-
-.. code-block:: python
-
-    >>> header = make_fitswcs_header(data, coord,
-    ...                                        reference_pixel=u.Quantity([5, 5]*u.pixel),
-    ...                                        scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
-    >>> for key, value in header.items():
-    ...     print(f"{key}: {value}")
-    wcsaxes: 2
-    crpix1: 6.0
-    crpix2: 6.0
-    cdelt1: 2.0
-    cdelt2: 2.0
-    cunit1: arcsec
-    cunit2: arcsec
-    ctype1: HPLN-TAN
-    ctype2: HPLT-TAN
-    crval1: 0.0
-    crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
-    mjdref: 0.0
-    date-obs: 2013-10-28T00:00:00.000
-    rsun_ref: 695700000.0
-    dsun_obs: 148644585949.49
-    hgln_obs: 0.0
-    hglt_obs: 4.7711570596394
-    naxis: 2
-    naxis1: 10
-    naxis2: 10
-    pc1_1: 1.0
-    pc1_2: -0.0
-    pc2_1: 0.0
-    pc2_2: 1.0
-    rsun_obs: 965.3829548285768
-
-As we can see, a list of WCS and observer meta information is contained within the generated headers, however we may want to include other meta information including the observatory name, the wavelength and waveunit of the observation.
-Any of the keywords in the dictionary returned by :func:`~sunpy.map.header_helper.meta_keywords` can be passed to the :func:`~sunpy.map.header_helper.make_fitswcs_header` and will then populate the returned MetaDict header.
-Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function: ``observatory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
-
-An example of creating a header with these additional keywords:
-
-.. code-block:: python
-
-    >>> header = make_fitswcs_header(data, coord,
-    ...                                        reference_pixel = u.Quantity([5, 5]*u.pixel),
-    ...                                        scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
-    ...                                        telescope = 'Test case', instrument = 'UV detector',
-    ...                                        wavelength = 1000*u.angstrom)
-    >>> for key, value in header.items():
-    ...     print(f"{key}: {value}")
-    wcsaxes: 2
-    crpix1: 6.0
-    crpix2: 6.0
-    cdelt1: 2.0
-    cdelt2: 2.0
-    cunit1: arcsec
-    cunit2: arcsec
-    ctype1: HPLN-TAN
-    ctype2: HPLT-TAN
-    crval1: 0.0
-    crval2: 0.0
-    lonpole: 180.0
-    latpole: 0.0
-    mjdref: 0.0
-    date-obs: 2013-10-28T00:00:00.000
-    rsun_ref: 695700000.0
-    dsun_obs: 148644585949.49
-    hgln_obs: 0.0
-    hglt_obs: 4.7711570596394
-    instrume: UV detector
-    telescop: Test case
-    wavelnth: 1000.0
-    waveunit: Angstrom
-    naxis: 2
-    naxis1: 10
-    naxis2: 10
-    pc1_1: 1.0
-    pc1_2: -0.0
-    pc2_1: 0.0
-    pc2_2: 1.0
-    rsun_obs: 965.3829548285768
-
-From these header MetaDict's that are generated, we can now create a custom map:
-
-.. code-block:: python
-
-    >>> my_map = sunpy.map.Map(data, header)
-
-.. _Meta Keywords Table:
-
-.. list-table:: Meta Keywords
-   :widths: 7 30
-   :header-rows: 1
-
-   * - Keyword
-     - Description
-   * - cunit1
-     - Units of the coordinate increments along naxis1 e.g. arcsec (required)
-   * - cunit2
-     - Units of the coordinate increments along naxis2 e.g. arcsec (required)
-   * - crval1
-     - Coordinate value at reference point on naxis1 (required)
-   * - crval2
-     - Coordinate value at reference point on naxis2 (required)
-   * - cdelt1
-     - Spatial scale of pixels for naxis1, i.e. coordinate increment at reference point
-   * - cdelt2
-     - Spatial scale of pixels for naxis2, i.e. coordinate increment at reference point
-   * - crpix1
-     - Pixel coordinate at reference point naxis1
-   * - crpix2
-     - Pixel coordinate at reference point naxis2
-   * - ctype1
-     - Coordinate type projection along naxis1 of data e.g. HPLT-TAN
-   * - ctype2
-     - Coordinate type projection along naxis2 of data e.g. HPLN-TAN
-   * - hgln_obs
-     - Heliographic longitude of observation
-   * - hglt_obs
-     - Heliographic latitude of observation
-   * - dsun_obs
-     - distance to Sun from observation in metres
-   * - rsun_obs
-     - radius of Sun in meters from observation
-   * - dateobs
-     - date of observation e.g. 2013-10-28 00:00
-   * - date_obs
-     - date of observation e.g. 2013-10-28 00:00
-   * - rsun_ref
-     - reference radius of Sun in meters
-   * - solar_r
-     - radius of Sun in meters from observation
-   * - radius
-     - radius of Sun in meters from observation
-   * - crln_obs
-     - Carrington longitude of observation
-   * - crlt_obs
-     - Heliographic latitude of observation
-   * - solar_b0
-     - Solar B0 angle
-   * - detector
-     - name of detector e.g. AIA
-   * - exptime
-     - exposure time of observation, in seconds e.g 2
-   * - instrume
-     - name of instrument
-   * - wavelnth
-     - wavelength of observation
-   * - waveunit
-     - unit for which observation is taken e.g. angstom
-   * - obsrvtry
-     - name of observatory of observation
-   * - telescop
-     - name of telescope of observation
-   * - lvl_num
-     - FITS processing level
-   * - crota2
-     - Rotation of the horizontal and vertical axes in degrees
-   * - PC1_1
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - PC1_2
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - PC2_1
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - PC2_2
-     - Matrix element PCi_j describing the rotation required to align solar North with the top of the image.
-   * - CD1_1
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-   * - CD1_2
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-   * - CD2_1
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
-   * - CD2_2
-     - Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
+    `~sunpy.map.MapSequence` does not automatically perform any coalignment between the maps comprising a sequence.
+    For information on coaligning images and compensating for solar rotation, see :ref:`this section of the Example Gallery <sphx_glr_generated_gallery_map_transformations>` as well as the `sunkit_image.coalignment` module.

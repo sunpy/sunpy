@@ -25,7 +25,7 @@ Additionally, you will learn how to truncate a TimeSeries to a specific window i
 Creating a TimeSeries
 =====================
 
-To create a `sunpy.timeseries.TimeSeries`,:
+To create a `~sunpy.timeseries.TimeSeries` from some sample GOES XRS data:
 
 .. code-block:: python
 
