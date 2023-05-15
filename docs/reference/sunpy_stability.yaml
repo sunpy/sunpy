@@ -5,8 +5,8 @@ data:
   status: mature
   comments: Should see no major changes.
 database:
-  status: pendingdep
-  comments: Pending deprecation. See https://community.openastronomy.org/t/deprecating-sunpy-database/495/2 for community discussion.
+  status: deprecated
+  comments: Deprecated. See https://community.openastronomy.org/t/deprecating-sunpy-database/495/2 for community discussion.
 image:
   status: stable
   comments: Any future changes should largely maintain backwards compatibility.
