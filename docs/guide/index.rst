@@ -22,4 +22,5 @@ Although there are code snippets in various bits of the guides, these are to hel
    custom_map_rotate
    extending_fido
    new_map_class
+   timeseries_metadata
    helioviewer

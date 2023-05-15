@@ -1,0 +1,1 @@
+Cleaned up and simplified the :ref:`timeseries_guide` section of the tutorial.

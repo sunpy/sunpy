@@ -19,6 +19,7 @@ If you're starting fresh you might want to check out the :ref:`tutorial` first.
    transform_coords
    create_a_map
    remote_data_manager
+   create_custom_timeseries
    create_custom_map
 
 
@@ -63,6 +64,10 @@ For more complete code examples, see the how-to guides above.
      - `my_timeseries.plot() <sunpy.timeseries.GenericTimeSeries.plot>`
    * - concatenate two time series together
      - `my_timeseries.concatenate(another_timeseries) <sunpy.timeseries.GenericTimeSeries.concatenate>`
+   * - convert a time series to a `pandas.DataFrame`
+     - `my_timeseries.to_dataframe() <sunpy.timeseries.GenericTimeSeries.to_dataframe>`
+   * - convert a time series to an `astropy.table.Table`
+     - `my_timeseries.to_table() <sunpy.timeseries.GenericTimeSeries.to_table>`
    * - parse the string representation of a timestamp
      - :func:`~sunpy.time.parse_time`
    * - calculate the Carrington rotation number at a given time
