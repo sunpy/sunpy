@@ -53,10 +53,8 @@ The people who have contributed to the code for this release are:
 -  Timo Laitinen  *
 -  Will Barnes
 -  William Jamieson  *
--  dependabot[bot]  *
 -  ejm4567  *
 -  pradeep  *
--  pre-commit-ci[bot]
 -  ryuusama  *
 -  tal66  *
 
