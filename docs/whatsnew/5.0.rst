@@ -13,6 +13,53 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 5.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
+This release of sunpy contains 1279 commits in 182 merged pull requests closing 115 issues from 36 people, 21 of which are first-time contributors.
+
+* 1279 commits have been added since 4.1
+* 115 issues have been closed since 4.1
+* 182 pull requests have been merged since 4.1
+* 36 people have contributed since 4.1
+* 21 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Akash Verma
+-  Akhoury Shauryam  *
+-  Akshit Tyagi  *
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Ansh Dixit  *
+-  Aritra Sinha  *
+-  Aryan Shukla  *
+-  Conor MacBride
+-  Daniel Garcia Briseno
+-  David Stansby
+-  Ed Behn  *
+-  Jan Gieseler
+-  Krish Agrawal
+-  Laura Hayes
+-  Lazar Zivadinovic
+-  Marius Giger  *
+-  Matt Wentzel-Long  *
+-  Nabil Freij
+-  Naveen Srinivasan  *
+-  Nick Murphy
+-  Nischal Singh  *
+-  OussCHE  *
+-  Stuart Mumford
+-  Suleiman Farah  *
+-  Syed Md Mihan Chistie  *
+-  Tan Jia Qing  *
+-  Timo Laitinen  *
+-  Will Barnes
+-  William Jamieson  *
+-  ejm4567  *
+-  pradeep  *
+-  ryuusama  *
+-  tal66  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
+
 Updates to minimum dependencies
 ===============================
 The minimum required versions of several core dependencies have been updated:

@@ -2323,7 +2323,6 @@
   "VOYAGER2_PLS_IONS_L": "Voyager-2, Jupiter Low-Resolution Ion Current Spectra - Dr. John D. Richardson (MIT Kavli Institute)",
   "VOYAGER2_PLS_IONS_M": "Voyager-2, Jupiter High-Resolution Ion Current Spectra - Dr. John D. Richardson (MIT Kavli Institute)",
   "WILD2_HELIO1DAY_POSITION": "Position in heliocentric coordinates from SPDF Helioweb - Natalia Papitashvili (NASA/GSFC/SPDF)",
-  "WIND_3DP_ECHSFITS_E0-DAY": "Wind spacecraft, 3DP accurate electron parameters - Chadi S. Salem (University of California, Berkeley)",
   "WIND_3DP_ECHSFITS_E0-YR": "Wind spacecraft, 3DP accurate electron parameters - Chadi S. Salem (University of California, Berkeley)",
   "WI_AT_DEF": "Wind Definitive Attitude",
   "WI_AT_PRE": "Wind Predicted Attitude",

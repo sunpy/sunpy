@@ -241,11 +241,19 @@
       "None"
     ],
     [
+      "2",
+      "None"
+    ],
+    [
       "Fairchild 2020 scientific CMOS sensor",
       "None"
     ],
     [
       "SEM",
+      "None"
+    ],
+    [
+      "1",
       "None"
     ],
     [
@@ -389,6 +397,10 @@
       ""
     ],
     [
+      "3",
+      "None"
+    ],
+    [
       "OUTER",
       "None"
     ],
@@ -407,6 +419,10 @@
     [
       "PHOENIX",
       "7-shell detector with collimator"
+    ],
+    [
+      "4",
+      "None"
     ],
     [
       "C3",
@@ -471,6 +487,10 @@
       "Shortwave EUV observation of Sun with EUNIS (2006 flight)"
     ],
     [
+      "dpm",
+      "Digital Prominence Monitor"
+    ],
+    [
       "LASCO",
       "Large Angle and Spectrometric Coronagraph"
     ],
@@ -487,12 +507,20 @@
       "Solar FTS Spectrometer"
     ],
     [
+      "SoloHI",
+      "Solar Orbiter Heliospheric Imager"
+    ],
+    [
       "LONGWAVE-LOBE-07",
       "Full longwave EUV observation of Sun with EUNIS (2007 flight)"
     ],
     [
       "ISOON",
       "Improved Solar Observing Optical Network"
+    ],
+    [
+      "chp",
+      "Chromospheric Helium-I Imaging Photometer"
     ],
     [
       "60-ft SHG",
@@ -607,6 +635,10 @@
       "Michelson Doppler Imager"
     ],
     [
+      "mk4",
+      "Mk. IV coronagraph"
+    ],
+    [
       "IRIS",
       "Interface Region Imaging Spectrograph"
     ],
@@ -641,6 +673,10 @@
     [
       "UVCS",
       "Ultraviolet Coronagraph Spectrometer"
+    ],
+    [
+      "K-Cor",
+      "None"
     ],
     [
       "SXT",
@@ -991,6 +1027,10 @@
       "None"
     ],
     [
+      "MLSO",
+      "Mauna Loa Solar Observatory"
+    ],
+    [
       "SMM",
       "Solar Maximum Mission"
     ],
@@ -1135,12 +1175,12 @@
       "Mt Wilson Solar Observatory"
     ],
     [
-      "PROBA2",
-      "PRoject for Onboard Autonomy"
-    ],
-    [
       "IRIS",
       "Interface Region Imaging Spectrograph"
+    ],
+    [
+      "PROBA2",
+      "PRoject for Onboard Autonomy"
     ]
   ]
 }
