@@ -1,1 +1,0 @@
-Reorganized some parts of the coordinates topic guide into multiple how-to guides.

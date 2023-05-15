@@ -1,2 +1,0 @@
-Joined ``HISTORY`` keys with newline characters when parsing ``HISTORY`` cards from
-FITS header.

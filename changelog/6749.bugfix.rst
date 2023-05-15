@@ -1,1 +1,0 @@
-Updated `~sunpy.database` to be compatible with ``SQLAlchemy`` versions >=2.0
