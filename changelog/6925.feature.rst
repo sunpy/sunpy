@@ -1,1 +1,0 @@
-Added the ability to query for the GOES-XRS 1 minute average data with the `.XRSClient`.

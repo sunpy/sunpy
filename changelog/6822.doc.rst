@@ -1,1 +1,0 @@
-Updated examples in the gallery to always explicitly create an Axes and use that for plotting, instead of using the Matplotlib pyplot API.

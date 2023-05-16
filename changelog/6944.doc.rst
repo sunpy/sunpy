@@ -1,2 +1,0 @@
-Significantly revised and improved the :ref:`map_guide` part of the tutorial.
-This included moving the section on custom maps to the :ref:`how_to_guide` section.

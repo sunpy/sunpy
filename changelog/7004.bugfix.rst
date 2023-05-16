@@ -1,1 +1,0 @@
-`sunpy.map.GenericMap.rotation_matrix` now applies the default values if any FITS rotation matrix keywords are missing from the header.
