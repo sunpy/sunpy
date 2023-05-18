@@ -1,3 +1,15 @@
+4.1.6 (2023-05-18)
+==================
+
+Bug Fixes
+---------
+
+- When converting an `astropy.wcs.WCS` object to a solar coordinate frame the
+  ``DATE-AVG`` key will be used before the ``DATE-OBS`` key, previously only
+  ``DATE-OBS`` was checked. (`#6995 <https://github.com/sunpy/sunpy/pull/6995>`__)
+- `sunpy.map.GenericMap.rotation_matrix` now applies the default values if any FITS rotation matrix keywords are missing from the header. (`#7004 <https://github.com/sunpy/sunpy/pull/7004>`__)
+
+
 4.1.5 (2023-04-20)
 ==================
 
