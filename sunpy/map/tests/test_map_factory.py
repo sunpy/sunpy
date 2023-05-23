@@ -315,3 +315,26 @@ def test_map_fits():
     fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=True)
     assert isinstance(fits_map, sunpy.map.GenericMap)
     assert fits_map.data.base is not None
+
+def test_map_list_of_files():
+    files = [AIA_171_IMAGE, get_test_filepath('aia_lev1_211a_2022_03_30t17_21_21_63z_image_lev1.fits')]
+    with pytest.warns(SunpyUserWarning, match='Failed to read'):
+        amap = sunpy.map.Map(files, silence_errors=True)
+        assert amap.data.shape == (128,128)
+
+    files = [AIA_171_IMAGE, get_test_filepath('aia_lev1_211a_2022_03_30t17_21_21_63z_image_lev1.fits'), AIA_171_IMAGE]
+    with pytest.warns(SunpyUserWarning, match='Failed to read'):
+        amap = sunpy.map.Map(files, silence_errors=True)
+        assert len(amap) == 2    
+
+    with pytest.warns(SunpyUserWarning, match='Failed to read'):
+        amap = sunpy.map.Map(files, silence_errors=True, sequence=True)
+        assert len(amap) == 2    
+
+    with pytest.raises(OSError, match='Failed to read'):
+        sunpy.map.Map(files, silence_errors=False)
+
+
+
+
+

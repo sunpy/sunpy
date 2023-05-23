@@ -97,7 +97,11 @@ class MapFactory(BasicRegistrationFactory):
         try:
             pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
-            raise OSError(f"Failed to read {fname}\n{e}") from e
+            msg = f"Failed to read {fname}\n{e}"
+            if kwargs.get("silence_errors"): 
+                warn_user(msg)
+                return []
+            raise OSError(msg) from e
 
         new_pairs = []
         for pair in pairs:
@@ -177,7 +181,7 @@ class MapFactory(BasicRegistrationFactory):
         data_header_pairs = []
         for arg in args:
             try:
-                data_header_pairs += self._parse_arg(arg, **kwargs)
+                data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, **kwargs)
             except NoMapsInFileError as e:
                 if not silence_errors:
                     raise
