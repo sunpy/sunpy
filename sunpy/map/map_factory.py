@@ -98,7 +98,7 @@ class MapFactory(BasicRegistrationFactory):
             pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}\n{e}"
-            if kwargs.get("silence_errors"): 
+            if kwargs.get("silence_errors"):
                 warn_user(msg)
                 return []
             raise OSError(msg) from e

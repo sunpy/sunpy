@@ -325,16 +325,11 @@ def test_map_list_of_files():
     files = [AIA_171_IMAGE, get_test_filepath('aia_lev1_211a_2022_03_30t17_21_21_63z_image_lev1.fits'), AIA_171_IMAGE]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map(files, silence_errors=True)
-        assert len(amap) == 2    
+        assert len(amap) == 2
 
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map(files, silence_errors=True, sequence=True)
-        assert len(amap) == 2    
+        assert len(amap) == 2
 
     with pytest.raises(OSError, match='Failed to read'):
         sunpy.map.Map(files, silence_errors=False)
-
-
-
-
-
