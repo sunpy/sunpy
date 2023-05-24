@@ -1,7 +1,6 @@
-from _cdf import *  # NOQA
-
 from sunpy.util.exceptions import warn_deprecated
 from . import _cdf
+from ._cdf import *  # NOQA
 
 __doc__ = _cdf.__doc__
 __all__ = _cdf.__all__
