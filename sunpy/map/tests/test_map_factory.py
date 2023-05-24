@@ -206,8 +206,8 @@ def test_silence_errors(silence, error, match):
                          [(True, RuntimeError, 'No maps loaded'),
                           (False, sunpy.map.mapbase.MapMetaValidationError,
                            'Image coordinate units for axis 1 not present in metadata.')])
-def test_skip_errors(allow_errors, error, match):
-    # Check that the correct errors are raised depending on skip_errors value
+def test_allow_errors(allow_errors, error, match):
+    # Check that the correct errors are raised depending on allow_errors value
     data = np.arange(0, 100).reshape(10, 10)
     with pytest.raises(error, match=match):
         sunpy.map.Map(data, {}, allow_errors=allow_errors)
