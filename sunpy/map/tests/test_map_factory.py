@@ -189,18 +189,28 @@ def test_errors(tmpdir):
         sunpy.map.Map(files)
 
 
+@pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('silence', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
-                             (False, sunpy.map.mapbase.MapMetaValidationError,
-                              'Image coordinate units for axis 1 not present in metadata.')])
+                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                           'Image coordinate units for axis 1 not present in metadata.')])
 def test_silence_errors(silence, error, match):
     # Check that the correct errors are raised depending on silence_errors value
     data = np.arange(0, 100).reshape(10, 10)
-    header = {}
     with pytest.raises(error, match=match):
-        _ = sunpy.map.Map(data, header, silence_errors=silence)
+        sunpy.map.Map(data, {}, silence_errors=silence)
 
+@pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
+@pytest.mark.parametrize(('allow_errors', 'error', 'match'),
+                         [(True, RuntimeError, 'No maps loaded'),
+                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                           'Image coordinate units for axis 1 not present in metadata.')])
+def test_skip_errors(allow_errors, error, match):
+    # Check that the correct errors are raised depending on skip_errors value
+    data = np.arange(0, 100).reshape(10, 10)
+    with pytest.raises(error, match=match):
+        sunpy.map.Map(data, {}, allow_errors=allow_errors)
 
 def test_dask_array():
     dask_array = pytest.importorskip('dask.array')

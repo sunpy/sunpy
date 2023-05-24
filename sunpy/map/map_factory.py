@@ -184,7 +184,7 @@ class MapFactory(BasicRegistrationFactory):
             try:
                 data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, **kwargs)
             except NoMapsInFileError as e:
-                if not silence_errors or not allow_errors:
+                if not (silence_errors or allow_errors):
                     raise
                 warn_user(f"One of the arguments failed to parse with error: {e}")
 
@@ -279,7 +279,7 @@ class MapFactory(BasicRegistrationFactory):
                 new_maps.append(new_map)
             except (NoMatchError, MultipleMatchError,
                     ValidationFunctionError, MapMetaValidationError) as e:
-                if not silence_errors or not allow_errors:
+                if not (silence_errors or allow_errors):
                     raise
                 warn_user(f"One of the data, header pairs failed to validate with: {e}")
 
