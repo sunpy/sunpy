@@ -10,6 +10,7 @@ import cdflib
 import numpy as np
 import pandas as pd
 from cdflib.epochs import CDFepoch
+from packaging.version import Version
 
 import astropy.units as u
 
@@ -40,14 +41,17 @@ def read_cdf(fname):
     Space Physics Guidelines for CDF https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html
     """
     cdf = cdflib.CDF(str(fname))
-
     # Extract the time varying variables
     cdf_info = cdf.cdf_info()
     meta = cdf.globalattsget()
-    all_var_keys = cdf_info['rVariables'] + cdf_info['zVariables']
+    cdflib_version = Version(cdflib.__version__)
+    if cdflib_version > Version('0.4.9'):
+        all_var_keys = cdf_info.rVariables + cdf_info.zVariables
+    else:
+        all_var_keys = cdf_info['rVariables'] + cdf_info['zVariables']
     var_attrs = {key: cdf.varattsget(key) for key in all_var_keys}
     # Get keys that depend on time
-    var_keys = [var for var in var_attrs if 'DEPEND_0' in var_attrs[var]]
+    var_keys = [var for var in var_attrs if 'DEPEND_0' in var_attrs[var] and var_attrs[var]['DEPEND_0'] is not None]
 
     # Get unique time index keys
     time_index_keys = sorted(set([var_attrs[var]['DEPEND_0'] for var in var_keys]))
@@ -75,7 +79,11 @@ def read_cdf(fname):
                 continue
 
             # Get data
-            if cdf.varinq(var_key)['Last_Rec'] == -1:
+            if cdflib_version > Version('0.4.9'):
+                var_last_rec = cdf.varinq(var_key).Last_Rec
+            else:
+                var_last_rec = cdf.varinq(var_key)['Last_Rec']
+            if var_last_rec == -1:
                 log.debug(f'Skipping {var_key} in {fname} as it has zero elements')
                 continue
 
