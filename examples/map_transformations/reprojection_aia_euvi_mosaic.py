@@ -175,7 +175,7 @@ im = outmap.plot(axes=ax, vmin=400)
 
 lon, lat = ax.coords
 lon.set_coord_type("longitude")
-lon.coord_wrap = 180
+lon.coord_wrap = 180 * u.deg
 lon.set_format_unit(u.deg)
 lat.set_coord_type("latitude")
 lat.set_format_unit(u.deg)
