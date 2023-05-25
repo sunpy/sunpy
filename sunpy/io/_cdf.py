@@ -44,8 +44,7 @@ def read_cdf(fname):
     # Extract the time varying variables
     cdf_info = cdf.cdf_info()
     meta = cdf.globalattsget()
-    cdflib_version = Version(cdflib.__version__)
-    if cdflib_version > Version('0.4.9'):
+    if hasattr(cdflib, "__version__") and Version(cdflib.__version__) >= Version('1.0.0'):
         all_var_keys = cdf_info.rVariables + cdf_info.zVariables
     else:
         all_var_keys = cdf_info['rVariables'] + cdf_info['zVariables']
@@ -64,9 +63,6 @@ def read_cdf(fname):
         except ValueError:
             # Empty index for cdflib >= 0.3.20
             continue
-        if index is None:
-            # Empty index for cdflib <0.3.20
-            continue
         # TODO: use to_astropy_time() instead here when we drop pandas in timeseries
         index = CDFepoch.to_datetime(index)
         df = pd.DataFrame(index=pd.DatetimeIndex(name=index_key, data=index))
@@ -79,7 +75,7 @@ def read_cdf(fname):
                 continue
 
             # Get data
-            if cdflib_version > Version('0.4.9'):
+            if hasattr(cdflib, "__version__") and Version(cdflib.__version__) >= Version('1.0.0'):
                 var_last_rec = cdf.varinq(var_key).Last_Rec
             else:
                 var_last_rec = cdf.varinq(var_key)['Last_Rec']
