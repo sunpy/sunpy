@@ -49,7 +49,7 @@ lat.set_ticks_visible(False)
 lat.set_ticklabel_visible(False)
 lon.set_ticklabel_visible(False)
 
-lon.coord_wrap = 180
+lon.coord_wrap = 180 * u.deg
 lon.set_major_formatter('dd')
 
 # Plot the Heliographic Stonyhurst grid

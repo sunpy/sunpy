@@ -71,7 +71,7 @@ overlay.grid()
 x, y = overlay
 
 # Wrap the longitude at 180 deg rather than the default 360.
-x.set_coord_type('longitude', 180.)
+x.set_coord_type('longitude', 180*u.deg)
 
 # Set the tick spacing
 x.set_ticks(spacing=250*u.arcsec)
