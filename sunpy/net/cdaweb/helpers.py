@@ -81,15 +81,16 @@ def get_datasets(observatory):
     >>>
     >>> datasets = get_datasets('STEREOB') #doctest: +REMOTE_DATA
     >>> datasets['Id'] #doctest: +REMOTE_DATA
-    <Column name='Id' dtype='str17' length=4>
+    <Column name='Id' dtype='str17' length=5>
         STB_LB_IMPACT
     STB_L1_IMPACT_HKP
            STB_L1_HET
+      STB_L2_SWEA_PAD
      STB_L1_SWEA_SPEC
     >>> datasets.loc['STB_L1_SWEA_SPEC']['Label'] #doctest: +REMOTE_DATA
     'STEREO Behind IMPACT/SWEA Spectra - J. Luhmann (UCB/SSL)'
     >>> datasets.loc['STB_L1_SWEA_SPEC'][['Start', 'End']] #doctest: +REMOTE_DATA
-    <Row index=3>
+    <Row index=4>
              Start                     End
              str24                    str24
     ------------------------ ------------------------
