@@ -1,6 +1,7 @@
 """
 This module implements a SRS File Reader.
 """
+import re
 import datetime
 from collections import OrderedDict
 
@@ -49,6 +50,10 @@ def make_table(header, section_lines):
             key = list(meta_data['id'].keys())[i]
             t1 = astropy.io.ascii.read(lines)
 
+            # change column names into titlecase
+            column_names = list(t1.columns)
+            t1.rename_columns(column_names, new_names=[col.title() for col in column_names])
+
             if len(t1) == 0:
                 col_data_types = {
                     # ID : <class 'str'>
@@ -57,9 +62,9 @@ def make_table(header, section_lines):
                     'Lo': np.dtype('i8'),
                     'Area': np.dtype('i8'),
                     'Z': np.dtype('U3'),
-                    'LL': np.dtype('i8'),
-                    'NN': np.dtype('i8'),
-                    'MagType': np.dtype('S4'),
+                    'Ll': np.dtype('i8'),
+                    'Nl': np.dtype('i8'),
+                    'Magtype': np.dtype('S4'),
                     'Lat': np.dtype('i8')
                 }
                 for c in t1.itercols():
@@ -88,11 +93,16 @@ def make_table(header, section_lines):
         del out_table['Lat']
 
     # Give columns more sensible names
-    out_table.rename_column("Nmbr", "Number")
-    out_table.rename_column("NN", "Number of Sunspots")
-    out_table.rename_column("Lo", "Carrington Longitude")
-    out_table.rename_column("MagType", "Mag Type")
-    out_table.rename_column("LL", "Longitudinal Extent")
+    column_mapping = {
+        "Nmbr": "Number",
+        "Lo": "Carrington Longitude",
+        "Magtype": "Mag Type",
+        "Ll": "Longitudinal Extent",
+        "Nn": "Number of Sunspots"
+    }
+
+    for old_name, new_name in column_mapping.items():
+        out_table.rename_column(old_name, new_name)
 
     # Define a Solar Hemispere Unit
     a = {}
@@ -136,13 +146,13 @@ def split_lines(file_lines):
         file_lines[line] = '# ' + file_lines[line]
     t1_lines = file_lines[section_lines[0]:section_lines[1]]
     # Remove the space so table reads it correctly
-    t1_lines[1] = t1_lines[1].replace('Mag Type', 'MagType')
+    t1_lines[1] = re.sub(r'Mag\s*Type', r'Magtype', t1_lines[1], flags=re.IGNORECASE)
     t2_lines = file_lines[section_lines[1]:section_lines[2]]
     t3_lines = file_lines[section_lines[2]:]
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
-        if ll[2].strip() == 'None':
+        if ll[2].strip().lower() == 'none':
             del ll[2]
 
     return header, lines
