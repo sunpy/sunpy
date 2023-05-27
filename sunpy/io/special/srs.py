@@ -63,7 +63,7 @@ def make_table(header, section_lines):
                     'Area': np.dtype('i8'),
                     'Z': np.dtype('U3'),
                     'Ll': np.dtype('i8'),
-                    'Nl': np.dtype('i8'),
+                    'Nn': np.dtype('i8'),
                     'Magtype': np.dtype('S4'),
                     'Lat': np.dtype('i8')
                 }
