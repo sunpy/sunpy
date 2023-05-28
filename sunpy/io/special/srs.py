@@ -264,14 +264,16 @@ def parse_lat_col(column, latitude_column):
 
 def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
     """
-    Try drop ``column_name_to_drop`` from ``data_lines``
+    Try dropping an empty ``column_name_to_drop`` from ``data_lines``.
 
     Parameters
     ----------
     column_name_to_drop : `str`
-        Name of the column to be dropped
+        Name of the empty column to be dropped
     data_lines : `list[str]`
-        List of strings corresponding to the header (``data_lines[0]``) and data (``data_lines[1:]``)
+        List of lines extracted from a file (each line is a string)
+        corresponding to the header (e.g. ``header = data_lines[0]``)
+        and the data (``data = data_lines[1:]``)
     pattern_dict : `dict`
         A dictionary specifying the patterns to match for each column
 
@@ -280,6 +282,17 @@ def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
     `list[str]`
         The modified ``data_lines`` in titlecase with the specified column dropped, if all validations pass.
 
+    Example
+    -------
+    >>> data_lines = ['NMBR  LOCATION  LO  COMMENT', '8000  S14W96   232']
+    >>> expected_pattern_dict = {
+    ...     'Nmbr': r'^\\d+$',
+    ...     'Location': r'[NESW]\\d{2}[NESW]\\d{2}',
+    ...     'Lo': r'^\\d+$',
+    ... }
+    >>> column_name_to_drop = 'COMMENT'
+    >>> _try_drop_column(column_name_to_drop, data_lines, expected_pattern_dict)
+    ['Nmbr Location Lo', '8000 S14W96 232']
     """
     if not isinstance(column_name_to_drop, str):
         raise ValueError("``column_name_to_drop`` must be a string.")
