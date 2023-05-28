@@ -48,7 +48,7 @@ def make_table(header, section_lines):
     for i, lines in enumerate(section_lines):
         if lines:
             key = list(meta_data['id'].keys())[i]
-            t1 = astropy.io.ascii.read(lines, guess=False, fast_reader=False)
+            t1 = astropy.io.ascii.read(lines)
 
             # change column names into titlecase
             column_names = list(t1.columns)
@@ -94,11 +94,11 @@ def make_table(header, section_lines):
 
     # Give columns more sensible names
     column_mapping = {
-        "Nmbr": "Number",
-        "Lo": "Carrington Longitude",
-        "Magtype": "Mag Type",
-        "Ll": "Longitudinal Extent",
-        "Nn": "Number of Sunspots"
+        'Nmbr': 'Number',
+        'Nn': 'Number of Sunspots',
+        'Lo': 'Carrington Longitude',
+        'Magtype': 'Mag Type',
+        'Ll': 'Longitudinal Extent',
     }
 
     for old_name, new_name in column_mapping.items():
@@ -139,11 +139,12 @@ def split_lines(file_lines):
         if line.startswith(("I.", "IA.", "II.")):
             section_lines.append(i)
         # !TODO consider modifying this
-        if line.startswith(("III", "COMMENT", "EFFECTIVE 2 OCT 2000")):
+        if line.startswith(("III", "COMMENT", "EFFECTIVE 2 OCT 2000", "NNN")):
             # The SRS files are seen to have sections for supplementary data
             # ``III. COMMENTS`` (or ``III,``)
             # ``COMMENT`` is sometimes used instead of III
-            # and ``EFFECTIVE 2 OCT 2000`` is sometimes used after "COMMENT" or on its own.
+            # ``EFFECTIVE 2 OCT 2000`` is sometimes used after "COMMENT" or on its own.
+            # ``NNN`` occurs at the end of some times
             final_section_lines.append(i)
 
     if len(final_section_lines) != 0:
@@ -168,12 +169,7 @@ def split_lines(file_lines):
             'Lo': r'^\d+$',
             }
         # try drop the comment column and return in original format.
-
-        if t2_lines[2].strip().title() != "None":
-            t2_lines[1:] = _try_drop_column("COMMENT", t2_lines[1:], expected_pattern_dict)
-        else:
-            # if row is `None`, just drop the column
-            t2_lines[1] = ' '.join(t2_lines[1].split()[:-2])
+        t2_lines[1:] = _try_drop_column("COMMENT", t2_lines[1:], expected_pattern_dict)
 
     t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
 
@@ -196,7 +192,7 @@ def get_meta_data(header):
 
     meta_data = {}
     for m in meta_lines:
-        if re.search("Corrected\\s*Copy", m, re.IGNORECASE):
+        if re.search(r'Corrected\s*Copy', m, re.IGNORECASE):
             meta_data['corrected'] = True
             continue
         k, v = m.strip().split(':')[1:]
@@ -275,7 +271,7 @@ def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
     column_name_to_drop : `str`
         Name of the column to be dropped
     data_lines : `list[str]`
-        List of strings corresponding to the header, and data
+        List of strings corresponding to the header (``data_lines[0]``) and data (``data_lines[1:]``)
     pattern_dict : `dict`
         A dictionary specifying the patterns to match for each column
 
@@ -310,6 +306,7 @@ def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
 
     # if the data is `None`, just return the header/data
     if row_lines[0].strip().title() == "None":
+        # return as titlecase
         column_list = [col.title() for col in column_list]
         return [' '.join(column_list)] + row_lines
 
@@ -322,7 +319,7 @@ def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
     if not row_lengths_equal:
         raise ValueError("not all rows have the same number of values as the remaining columns.")
 
-    # check that the rows are all consistent with the provided pattern
+    # check that the row values are consistent with the provided pattern dictionary
     matching_pattern = all(all(re.match(pattern_dict_lower[column], value) for column, value in zip(column_list, row.split())) for row in row_lines)
     if not matching_pattern:
         raise ValueError("not all rows match the provided pattern.")
