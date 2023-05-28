@@ -169,7 +169,7 @@ def split_lines(file_lines):
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
-        if ll[2].strip().title() == 'None':
+        if len(ll) > 2 and ll[2].strip().title() == 'None':
             del ll[2]
 
     return header, lines
