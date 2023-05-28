@@ -48,7 +48,7 @@ def make_table(header, section_lines):
     for i, lines in enumerate(section_lines):
         if lines:
             key = list(meta_data['id'].keys())[i]
-            t1 = astropy.io.ascii.read(lines)
+            t1 = astropy.io.ascii.read(lines, guess=False, fast_reader=False)
 
             # change column names into titlecase
             column_names = list(t1.columns)
@@ -134,9 +134,20 @@ def split_lines(file_lines):
     is not 'None'.
     """
     section_lines = []
+    final_section_lines = []
     for i, line in enumerate(file_lines):
         if line.startswith(("I.", "IA.", "II.")):
             section_lines.append(i)
+        # !TODO consider modifying this
+        if line.startswith(("III", "COMMENT", "EFFECTIVE 2 OCT 2000")):
+            # The SRS files are seen to have sections for supplementary data
+            # ``III. COMMENTS`` (or ``III,``)
+            # ``COMMENT`` is sometimes used instead of III
+            # and ``EFFECTIVE 2 OCT 2000`` is sometimes used after "COMMENT" or on its own.
+            final_section_lines.append(i)
+
+    if len(final_section_lines) != 0:
+        section_lines.append(sorted(final_section_lines)[0])
 
     header = file_lines[:section_lines[0]]
     header += [file_lines[s] for s in section_lines]
@@ -148,7 +159,23 @@ def split_lines(file_lines):
     # Remove the space so table reads it correctly
     t1_lines[1] = re.sub(r'Mag\s*Type', r'Magtype', t1_lines[1], flags=re.IGNORECASE)
     t2_lines = file_lines[section_lines[1]:section_lines[2]]
-    t3_lines = file_lines[section_lines[2]:]
+
+    # SRS files before 2000-10-02 files may have an empty `COMMENT` column in ``t2_lines``
+    if "COMMENT" in t2_lines[1].split():
+        expected_pattern_dict = {
+            'Nmbr': r'^\d+$',
+            'Location': r'[NESW]\d{2}[NESW]\d{2}',
+            'Lo': r'^\d+$',
+            }
+        # try drop the comment column and return in original format.
+
+        if t2_lines[2].strip().title() != "None":
+            t2_lines[1:] = _try_drop_column("COMMENT", t2_lines[1:], expected_pattern_dict)
+        else:
+            # if row is `None`, just drop the column
+            t2_lines[1] = ' '.join(t2_lines[1].split()[:-2])
+
+    t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
@@ -169,7 +196,7 @@ def get_meta_data(header):
 
     meta_data = {}
     for m in meta_lines:
-        if "Corrected Copy" in m:
+        if re.search("Corrected\\s*Copy", m, re.IGNORECASE):
             meta_data['corrected'] = True
             continue
         k, v = m.strip().split(':')[1:]
@@ -238,3 +265,68 @@ def parse_lat_col(column, latitude_column):
             latitude_column.mask[i] = False
             latitude_column[i] = parse_latitude(loc)
     return latitude_column
+
+def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
+    """
+    Try drop ``column_name_to_drop`` from ``data_lines``
+
+    Parameters
+    ----------
+    column_name_to_drop : `str`
+        Name of the column to be dropped
+    data_lines : `list[str]`
+        List of strings corresponding to the header, and data
+    pattern_dict : `dict`
+        A dictionary specifying the patterns to match for each column
+
+    Returns
+    -------
+    `list[str]`
+        The modified ``data_lines`` in titlecase with the specified column dropped, if all validations pass.
+
+    """
+    if not isinstance(column_name_to_drop, str):
+        raise ValueError("``column_name_to_drop`` must be a string.")
+
+    if not isinstance(data_lines, list) or len(data_lines) < 2:
+        raise ValueError("``data_lines`` must be a list with at least two elements.")
+
+    if not isinstance(pattern_dict, dict):
+        raise ValueError("``pattern_dict`` must be a dictionary.")
+
+    # create a lowercase pattern dict
+    pattern_dict_lower= {key.lower(): value for key, value in pattern_dict.items()}
+
+    # extract columns and rows
+    header_line, *row_lines = data_lines
+    column_list = [column.strip().lower() for column in header_line.split()]
+
+    # drop ``column_name_to_drop`` if exists
+    try:
+        column_index = column_list.index(column_name_to_drop.strip().lower())
+        column_list.pop(column_index)
+    except ValueError:
+        raise ValueError(f"The column '{column_name_to_drop}' does not exist.")
+
+    # if the data is `None`, just return the header/data
+    if row_lines[0].strip().title() == "None":
+        column_list = [col.title() for col in column_list]
+        return [' '.join(column_list)] + row_lines
+
+    # check if the number of remaining columns matches the pattern_dict
+    if len(column_list) != len(list(pattern_dict_lower.keys())):
+        raise ValueError("the number of remaining columns in ``data_lines`` and ``pattern_dict`` are not equal")
+
+    # check if all rows have the same length as the remaining columns
+    row_lengths_equal = all(len(row.split()) == len(column_list) for row in row_lines)
+    if not row_lengths_equal:
+        raise ValueError("not all rows have the same number of values as the remaining columns.")
+
+    # check that the rows are all consistent with the provided pattern
+    matching_pattern = all(all(re.match(pattern_dict_lower[column], value) for column, value in zip(column_list, row.split())) for row in row_lines)
+    if not matching_pattern:
+        raise ValueError("not all rows match the provided pattern.")
+
+    # return as titlecase
+    column_list = [col.title() for col in column_list]
+    return [' '.join(column_list)] + row_lines
