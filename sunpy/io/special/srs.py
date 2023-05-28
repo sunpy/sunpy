@@ -136,19 +136,13 @@ def split_lines(file_lines):
     section_lines = []
     final_section_lines = []
     for i, line in enumerate(file_lines):
-        if line.startswith(("I.", "IA.", "II.")):
+        if re.match(r'^(I\.|IA\.|II\.)', line):
             section_lines.append(i)
-        # !TODO consider modifying this
-        if line.startswith(("III", "COMMENT", "EFFECTIVE 2 OCT 2000", "NNN")):
-            # The SRS files are seen to have sections for supplementary data
-            # ``III. COMMENTS`` (or ``III,``)
-            # ``COMMENT`` is sometimes used instead of III
-            # ``EFFECTIVE 2 OCT 2000`` is sometimes used after "COMMENT" or on its own.
-            # ``NNN`` occurs at the end of some times
+        if re.match(r'^(III|COMMENT|EFFECTIVE 2 OCT 2000|PLAIN|NNN)', line, re.IGNORECASE):
             final_section_lines.append(i)
 
-    if len(final_section_lines) != 0:
-        section_lines.append(sorted(final_section_lines)[0])
+    if final_section_lines and final_section_lines[0] > section_lines[0]:
+        section_lines.append(final_section_lines[0])
 
     header = file_lines[:section_lines[0]]
     header += [file_lines[s] for s in section_lines]
@@ -292,7 +286,7 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     ... }
     >>> column_name_to_drop = 'COMMENT'
     >>> _try_drop_column(column_name_to_drop, data_lines, expected_pattern_dict)
-    ['Nmbr Location Lo', '8000 S14W96 232']
+    ['Nmbr Location Lo', '8000  S14W96   232']
     """
     if not isinstance(column_name_to_drop, str):
         raise ValueError("``column_name_to_drop`` must be a string.")
