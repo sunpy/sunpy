@@ -169,7 +169,7 @@ def split_lines(file_lines):
             'Lo': r'^\d+$',
             }
         # try drop the comment column and return in original format.
-        t2_lines[1:] = _try_drop_column("COMMENT", t2_lines[1:], expected_pattern_dict)
+        t2_lines[1:] = _try_drop_empty_column("COMMENT", t2_lines[1:], expected_pattern_dict)
 
     t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
 
@@ -262,7 +262,7 @@ def parse_lat_col(column, latitude_column):
             latitude_column[i] = parse_latitude(loc)
     return latitude_column
 
-def _try_drop_column(column_name_to_drop, data_lines, pattern_dict):
+def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     """
     Try dropping an empty ``column_name_to_drop`` from ``data_lines``.
 
