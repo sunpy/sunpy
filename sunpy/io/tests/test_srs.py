@@ -73,7 +73,8 @@ def expected_pattern_dict():
         'Nmbr': r'^\d+$',
         'Location': r'[NESW]\d{2}[NESW]\d{2}',
         'Lo': r'^\d+$',
-        # 'Comment': r'^[a-zA-Z]+$', # having this causes an issue
+        'Comment': r'^[a-zA-Z]+$', # having this causes an issue
+        'Additional Number': r'^\d+$',
     }
 
 @pytest.fixture
@@ -84,8 +85,14 @@ def test_try_drop_empty_column(data_lines, expected_pattern_dict, column_name_to
     result = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
     out = data_lines.copy()
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
-    print(out[0])
-    print(result)
+    assert result == out
+
+def test_try_drop_empty_column_smallest_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
+    keys_to_keep = ['Nmbr', 'Location', 'Lo']
+    filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
+    result = srs._try_drop_empty_column(column_name_to_drop, data_lines, filtered_dict)
+    out = data_lines.copy()
+    out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
 
 def test_tdec_colname_format(expected_pattern_dict, column_name_to_drop):
@@ -93,7 +100,7 @@ def test_tdec_colname_format(expected_pattern_dict, column_name_to_drop):
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
 
-def test_tdec_incorrect_data_format(data_lines, column_name_to_drop):
+def test_tdec_incorrect_dict_format(data_lines, column_name_to_drop):
     expected_pattern_dict = [r'^\d+$', r'[NESW]\d{2}[NESW]\d{2}', r'^\d+$']
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
