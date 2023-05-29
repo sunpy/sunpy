@@ -11,7 +11,7 @@ import astropy.io.ascii
 import astropy.units as u
 from astropy.table import Column, MaskedColumn, QTable, vstack
 
-__all__ = ['read_srs']
+__all__ = ["read_srs"]
 
 
 def read_srs(filepath):
@@ -47,32 +47,33 @@ def make_table(header, section_lines):
     tables = []
     for i, lines in enumerate(section_lines):
         if lines:
-            key = list(meta_data['id'].keys())[i]
+            key = list(meta_data["id"].keys())[i]
             t1 = astropy.io.ascii.read(lines)
 
             # change column names into titlecase
             column_names = list(t1.columns)
-            t1.rename_columns(column_names, new_names=[col.title() for col in column_names])
+            t1.rename_columns(
+                column_names, new_names=[col.title() for col in column_names]
+            )
 
             if len(t1) == 0:
                 col_data_types = {
                     # ID : <class 'str'>
-                    'Nmbr': np.dtype('i4'),
-                    'Location': np.dtype('U6'),
-                    'Lo': np.dtype('i8'),
-                    'Area': np.dtype('i8'),
-                    'Z': np.dtype('U3'),
-                    'Ll': np.dtype('i8'),
-                    'Nn': np.dtype('i8'),
-                    'Magtype': np.dtype('S4'),
-                    'Lat': np.dtype('i8')
+                    "Nmbr": np.dtype("i4"),
+                    "Location": np.dtype("U6"),
+                    "Lo": np.dtype("i8"),
+                    "Area": np.dtype("i8"),
+                    "Z": np.dtype("U3"),
+                    "Ll": np.dtype("i8"),
+                    "Nn": np.dtype("i8"),
+                    "Magtype": np.dtype("S4"),
+                    "Lat": np.dtype("i8"),
                 }
                 for c in t1.itercols():
                     # Put data types of columns in empty table to correct types,
                     # or else vstack will fail.
                     c.dtype = col_data_types[c._name]
-                t1.add_column(
-                    Column(data=None, name="ID", dtype=('S2')), index=0)
+                t1.add_column(Column(data=None, name="ID", dtype=("S2")), index=0)
             else:
                 t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
 
@@ -81,24 +82,24 @@ def make_table(header, section_lines):
     out_table = vstack(tables)
 
     # Parse the Location column in Table 1
-    if 'Location' in out_table.columns:
-        col_lat, col_lon = parse_location(out_table['Location'])
-        del out_table['Location']
+    if "Location" in out_table.columns:
+        col_lat, col_lon = parse_location(out_table["Location"])
+        del out_table["Location"]
         out_table.add_column(col_lat)
         out_table.add_column(col_lon)
 
     # Parse the Lat column in Table 3
-    if 'Lat' in out_table.columns:
-        parse_lat_col(out_table['Lat'], out_table['Latitude'])
-        del out_table['Lat']
+    if "Lat" in out_table.columns:
+        parse_lat_col(out_table["Lat"], out_table["Latitude"])
+        del out_table["Lat"]
 
     # Give columns more sensible names
     column_mapping = {
-        'Nmbr': 'Number',
-        'Nn': 'Number of Sunspots',
-        'Lo': 'Carrington Longitude',
-        'Magtype': 'Mag Type',
-        'Ll': 'Longitudinal Extent',
+        "Nmbr": "Number",
+        "Nn": "Number of Sunspots",
+        "Lo": "Carrington Longitude",
+        "Magtype": "Mag Type",
+        "Ll": "Longitudinal Extent",
     }
 
     for old_name, new_name in column_mapping.items():
@@ -111,18 +112,19 @@ def make_table(header, section_lines):
         represents=(2 * np.pi * u.solRad**2),
         prefixes=True,
         namespace=a,
-        doc="A solar hemisphere is the area of the visible solar disk.")
+        doc="A solar hemisphere is the area of the visible solar disk.",
+    )
 
     # Set units on the table
-    out_table['Carrington Longitude'].unit = u.deg
-    out_table['Area'].unit = a['uSH']
-    out_table['Longitudinal Extent'].unit = u.deg
+    out_table["Carrington Longitude"].unit = u.deg
+    out_table["Area"].unit = a["uSH"]
+    out_table["Longitudinal Extent"].unit = u.deg
 
     out_table.meta = meta_data
 
     # Number should be formatted in 10000 after 2002-06-15.
-    if out_table.meta['issued'] > datetime.datetime(2002, 6, 15):
-        out_table['Number'] += 10000
+    if out_table.meta["issued"] > datetime.datetime(2002, 6, 15):
+        out_table["Number"] += 10000
 
     return QTable(out_table)
 
@@ -136,40 +138,48 @@ def split_lines(file_lines):
     section_lines = []
     final_section_lines = []
     for i, line in enumerate(file_lines):
-        if re.match(r'^(I\.|IA\.|II\.)', line):
+        if re.match(r"^(I\.|IA\.|II\.)", line):
             section_lines.append(i)
-        if re.match(r'^(III|COMMENT|EFFECTIVE 2 OCT 2000|PLAIN|This message is for users of the NOAA/SEC Space|NNN)', line, re.IGNORECASE):
+        if re.match(
+            r"^(III|COMMENT|EFFECTIVE 2 OCT 2000|PLAIN|This message is for users of the NOAA/SEC Space|NNN)",
+            line,
+            re.IGNORECASE,
+        ):
             final_section_lines.append(i)
 
     if final_section_lines and final_section_lines[0] > section_lines[-1]:
         section_lines.append(final_section_lines[0])
 
-    header = file_lines[:section_lines[0]]
+    header = file_lines[: section_lines[0]]
     header += [file_lines[s] for s in section_lines]
 
     # Append comments to the comment lines
     for line in section_lines:
-        file_lines[line] = '# ' + file_lines[line]
-    t1_lines = file_lines[section_lines[0]:section_lines[1]]
+        file_lines[line] = "# " + file_lines[line]
+    t1_lines = file_lines[section_lines[0] : section_lines[1]]
     # Remove the space so table reads it correctly
-    t1_lines[1] = re.sub(r'Mag\s*Type', r'Magtype', t1_lines[1], flags=re.IGNORECASE)
-    t2_lines = file_lines[section_lines[1]:section_lines[2]]
+    t1_lines[1] = re.sub(r"Mag\s*Type", r"Magtype", t1_lines[1], flags=re.IGNORECASE)
+    t2_lines = file_lines[section_lines[1] : section_lines[2]]
 
     # SRS files before 2000-10-02 files may have an empty `COMMENT` column in ``t2_lines``
     if "COMMENT" in t2_lines[1].split():
         expected_pattern_dict = {
-            'Nmbr': r'^\d+$',
-            'Location': r'[NESW]\d{2}[NESW]\d{2}',
-            'Lo': r'^\d+$',
-            }
+            "Nmbr": r"^\d+$",
+            "Location": r"[NESW]\d{2}[NESW]\d{2}",
+            "Lo": r"^\d+$",
+        }
         # try drop the comment column and return in original format.
-        t2_lines[1:] = _try_drop_empty_column("COMMENT", t2_lines[1:], expected_pattern_dict)
+        t2_lines[1:] = _try_drop_empty_column(
+            "COMMENT", t2_lines[1:], expected_pattern_dict
+        )
 
-    t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
+    t3_lines = file_lines[
+        section_lines[2] : section_lines[3] if len(section_lines) > 3 else None
+    ]
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
-        if len(ll) > 2 and ll[2].strip().title() == 'None':
+        if len(ll) > 2 and ll[2].strip().title() == "None":
             del ll[2]
 
     return header, lines
@@ -181,29 +191,30 @@ def get_meta_data(header):
     """
     meta_lines = []
     for line in header:
-        if line.startswith(':'):
+        if line.startswith(":"):
             meta_lines.append(line)
 
     meta_data = {}
     for m in meta_lines:
-        if re.search(r'Corrected\s*Copy', m, re.IGNORECASE):
-            meta_data['corrected'] = True
+        if re.search(r"Corrected\s*Copy", m, re.IGNORECASE):
+            meta_data["corrected"] = True
             continue
-        k, v = m.strip().split(':')[1:]
+        k, v = m.strip().split(":")[1:]
         meta_data[k.lower()] = v.strip()
-    meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],
-                                                     "%Y %b %d %H%M UTC")
+    meta_data["issued"] = datetime.datetime.strptime(
+        meta_data["issued"], "%Y %b %d %H%M UTC"
+    )
 
     # Get ID descriptions
-    meta_data['id'] = OrderedDict()
+    meta_data["id"] = OrderedDict()
     for h in header:
         if h.startswith(("I.", "IA.", "II.")):
-            i = h.find('.')
+            i = h.find(".")
             k = h[:i]
-            v = h[i + 2:]
-            meta_data['id'][k] = v.strip()
+            v = h[i + 2 :]
+            meta_data["id"][k] = v.strip()
 
-    meta_data['header'] = [h.strip() for h in header]
+    meta_data["header"] = [h.strip() for h in header]
     return meta_data
 
 
@@ -211,7 +222,7 @@ def parse_longitude(value):
     """
     Parse longitude in the form "W10" or "E10".
     """
-    lonsign = {'W': 1, 'E': -1}
+    lonsign = {"W": 1, "E": -1}
     if "W" in value or "E" in value:
         return lonsign[value[3]] * float(value[4:])
 
@@ -220,7 +231,7 @@ def parse_latitude(value):
     """
     Parse latitude in the form "S10" or "N10".
     """
-    latsign = {'N': 1, 'S': -1}
+    latsign = {"N": 1, "S": -1}
     if "N" in value or "S" in value:
         return latsign[value[0]] * float(value[1:3])
 
@@ -256,6 +267,7 @@ def parse_lat_col(column, latitude_column):
             latitude_column[i] = parse_latitude(loc)
     return latitude_column
 
+
 def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     """
     Try dropping an empty ``column_name_to_drop`` from ``data_lines``.
@@ -285,7 +297,7 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     ...     'Lo': r'^\\d+$',
     ... }
     >>> column_name_to_drop = 'COMMENT'
-    >>> _try_drop_column(column_name_to_drop, data_lines, expected_pattern_dict)
+    >>> _try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
     ['Nmbr Location Lo', '8000  S14W96   232']
     """
     if not isinstance(column_name_to_drop, str):
@@ -298,7 +310,7 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
         raise ValueError("``pattern_dict`` must be a dictionary.")
 
     # create a lowercase pattern dict
-    pattern_dict_lower= {key.lower(): value for key, value in pattern_dict.items()}
+    pattern_dict_lower = {key.lower(): value for key, value in pattern_dict.items()}
 
     # extract columns and rows
     header_line, *row_lines = data_lines
@@ -315,22 +327,32 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     if row_lines[0].strip().title() == "None":
         # return as titlecase
         column_list = [col.title() for col in column_list]
-        return [' '.join(column_list)] + row_lines
+        return [" ".join(column_list)] + row_lines
 
     # check if the number of remaining columns matches the pattern_dict
     if len(column_list) != len(list(pattern_dict_lower.keys())):
-        raise ValueError("the number of remaining columns in ``data_lines`` and ``pattern_dict`` are not equal")
+        raise ValueError(
+            "the number of remaining columns in ``data_lines`` and ``pattern_dict`` are not equal"
+        )
 
     # check if all rows have the same length as the remaining columns
     row_lengths_equal = all(len(row.split()) == len(column_list) for row in row_lines)
     if not row_lengths_equal:
-        raise ValueError("not all rows have the same number of values as the remaining columns.")
+        raise ValueError(
+            "not all rows have the same number of values as the remaining columns."
+        )
 
     # check that the row values are consistent with the provided pattern dictionary
-    matching_pattern = all(all(re.match(pattern_dict_lower[column], value) for column, value in zip(column_list, row.split())) for row in row_lines)
+    matching_pattern = all(
+        all(
+            re.match(pattern_dict_lower[column], value)
+            for column, value in zip(column_list, row.split())
+        )
+        for row in row_lines
+    )
     if not matching_pattern:
         raise ValueError("not all rows match the provided pattern.")
 
     # return as titlecase
     column_list = [col.title() for col in column_list]
-    return [' '.join(column_list)] + row_lines
+    return [" ".join(column_list)] + row_lines
