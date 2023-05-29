@@ -301,15 +301,20 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     except ValueError:
         raise ValueError(f"The column '{column_name_to_drop}' does not exist.")
 
+    # Remove the dropped column from pattern_dict
+    pattern_dict_lower.pop(column_name_to_drop.strip().lower(), None)
+
     # if the data is `None`, just return the header/data
     if row_lines[0].strip().title() == 'None':
         # return as titlecase
         column_list = [col.title() for col in column_list]
         return [" ".join(column_list)] + row_lines
 
-    # check if the number of remaining columns matches the pattern_dict
-    if len(column_list) != len(list(pattern_dict_lower.keys())):
-        raise ValueError("the number of remaining columns in ``data_lines`` and ``pattern_dict`` are not equal")
+    # Check if the remaining columns are a subset of the columns in pattern_dict
+    remaining_columns_set = set(column_list)
+    pattern_columns_set = set(pattern_dict_lower.keys())
+    if not remaining_columns_set.issubset(pattern_columns_set):
+        raise ValueError("The remaining columns are not a subset of the columns in ``pattern_dict``.")
 
     # check if all rows have the same length as the remaining columns
     row_lengths_equal = all(len(row.split()) == len(column_list) for row in row_lines)
