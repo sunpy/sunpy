@@ -63,6 +63,8 @@ def test_parse_location(loc_column, exp_longitude, exp_latitude):
     assert_quantity_allclose(latitude, exp_latitude)
     assert_quantity_allclose(longitude, exp_longitude)
 
+# test _try_drop_empty_column (tdec)
+
 @pytest.fixture
 def data_lines():
     return ['NMBR  LOCATION  LO  COMMENT', '8000  S14W96   232']
@@ -73,7 +75,7 @@ def expected_pattern_dict():
         'Nmbr': r'^\d+$',
         'Location': r'[NESW]\d{2}[NESW]\d{2}',
         'Lo': r'^\d+$',
-        'Comment': r'^[a-zA-Z]+$', # having this causes an issue
+        'Comment': r'^[a-zA-Z]+$',
         'Additional Number': r'^\d+$',
     }
 
@@ -81,13 +83,13 @@ def expected_pattern_dict():
 def column_name_to_drop():
     return 'COMMENT'
 
-def test_try_drop_empty_column(data_lines, expected_pattern_dict, column_name_to_drop):
+def test_tdec(data_lines, expected_pattern_dict, column_name_to_drop):
     result = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
     out = data_lines.copy()
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
 
-def test_try_drop_empty_column_smallest_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
+def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
     keys_to_keep = ['Nmbr', 'Location', 'Lo']
     filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
     result = srs._try_drop_empty_column(column_name_to_drop, data_lines, filtered_dict)
@@ -95,7 +97,7 @@ def test_try_drop_empty_column_smallest_dict_example(data_lines, expected_patter
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
 
-def test_tdec_colname_format(expected_pattern_dict, column_name_to_drop):
+def test_tdec_only_header(expected_pattern_dict, column_name_to_drop):
     data_lines = ['NMBR  LOCATION  LO  COMMENT']
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
