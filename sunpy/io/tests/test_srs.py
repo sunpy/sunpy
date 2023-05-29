@@ -100,6 +100,16 @@ def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_na
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
 
+def test_tdec_too_small_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
+    """
+    columns aren't a subset of the dictionary
+    (no pattern to match for column `LO`)
+    """
+    keys_to_keep = ['Nmbr', 'Location']
+    filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
+    with pytest.raises(ValueError):
+        _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, filtered_dict)
+
 def test_tdec_no_data(expected_pattern_dict, column_name_to_drop):
     """
     No data associated with header
