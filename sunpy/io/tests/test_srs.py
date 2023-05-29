@@ -7,22 +7,19 @@ from astropy.tests.helper import assert_quantity_allclose
 from sunpy.data.test import get_test_filepath
 from sunpy.io.special import srs
 
-filenames = [
-            # Mixedcase files
-            {'file': '20150906SRS.txt', 'rows': 5},
-            {'file': '20150306SRS.txt', 'rows': 4},
-            {'file': '20150101SRS.txt', 'rows': 9},
-            {'file': '20100621SRS.txt', 'rows': 3},  # This is a corrected copy
-            # Uppercase files
-            {'file': '19960106SRS.txt', 'rows': 4},  # inc. spurious `NNN` on final line
-            {'file': '19960430SRS.txt', 'rows': 1},
-            {'file': '19960513SRS.txt', 'rows': 4},  # inc. empty `COMMENT` column
-            {'file': '20000922SRS.txt', 'rows': 10},  # inc. line with `III.`
-            {'file': '20000927SRS.txt', 'rows': 9},  # inc. line with `EFFECTIVE 2 OCT`
-            {'file': '20001001SRS.txt', 'rows': 12},  # inc. line with `COMMENT`
-            {'file': '20020624SRS.txt', 'rows': 14},  # inc. line with `PLAIN`
-            {'file': '20020628SRS.txt', 'rows': 13},  # inc. line with `This message`
-        ]
+filenames = [{'file': '20150906SRS.txt', 'rows': 5},
+             {'file': '20150306SRS.txt', 'rows': 4},
+             {'file': '20150101SRS.txt', 'rows': 9},
+             {'file': '20100621SRS.txt', 'rows': 3},  # This is a corrected copy
+             # Uppercase files
+             {'file': '19960106SRS.txt', 'rows': 4},  # inc. spurious `NNN` on final line
+             {'file': '19960430SRS.txt', 'rows': 1},
+             {'file': '19960513SRS.txt', 'rows': 4},  # inc. empty `COMMENT` column
+             {'file': '20000922SRS.txt', 'rows': 10},  # inc. line with `III.`
+             {'file': '20000927SRS.txt', 'rows': 9},  # inc. line with `EFFECTIVE 2 OCT`
+             {'file': '20001001SRS.txt', 'rows': 12},  # inc. line with `COMMENT`
+             {'file': '20020624SRS.txt', 'rows': 14},  # inc. line with `PLAIN`
+             {'file': '20020628SRS.txt', 'rows': 13}]  # inc. line with `This message`
 
 COORDINATES = [{'text': 'N10W05', 'latitude': 10, 'longitude': 5},
                {'text': 'N89E00', 'latitude': 89, 'longitude': 0},
