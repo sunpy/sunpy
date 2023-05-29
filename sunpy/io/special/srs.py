@@ -52,9 +52,7 @@ def make_table(header, section_lines):
 
             # change column names into titlecase
             column_names = list(t1.columns)
-            t1.rename_columns(
-                column_names, new_names=[col.title() for col in column_names]
-            )
+            t1.rename_columns(column_names, new_names=[col.title() for col in column_names])
 
             if len(t1) == 0:
                 col_data_types = {
@@ -150,7 +148,7 @@ def split_lines(file_lines):
     if final_section_lines and final_section_lines[0] > section_lines[-1]:
         section_lines.append(final_section_lines[0])
 
-    header = file_lines[: section_lines[0]]
+    header = file_lines[:section_lines[0]]
     header += [file_lines[s] for s in section_lines]
 
     # Append comments to the comment lines
@@ -171,7 +169,7 @@ def split_lines(file_lines):
         # try drop the comment column and return in original format.
         t2_lines[1:] = _try_drop_empty_column("COMMENT", t2_lines[1:], expected_pattern_dict)
 
-    t3_lines = file_lines[section_lines[2] : section_lines[3] if len(section_lines) > 3 else None]
+    t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
@@ -198,7 +196,7 @@ def get_meta_data(header):
         k, v = m.strip().split(':')[1:]
         meta_data[k.lower()] = v.strip()
     meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],
-                                                               '%Y %b %d %H%M UTC')
+                                                    '%Y %b %d %H%M UTC')
 
     # Get ID descriptions
     meta_data['id'] = OrderedDict()
