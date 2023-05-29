@@ -62,3 +62,14 @@ def test_parse_location(loc_column, exp_longitude, exp_latitude):
     latitude, longitude = srs.parse_location(loc_column)
     assert_quantity_allclose(latitude, exp_latitude)
     assert_quantity_allclose(longitude, exp_longitude)
+
+def test_try_drop_empty_column():
+    data_lines = ['NMBR  LOCATION  LO  COMMENT', '8000  S14W96   232']
+    expected_pattern_dict = {
+        'Nmbr': r'^\d+$',
+        'Location': r'[NESW]\d{2}[NESW]\d{2}',
+        'Lo': r'^\d+$',
+    }
+    column_name_to_drop = 'COMMENT'
+    result = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
+    assert result == ['Nmbr Location Lo', '8000  S14W96   232']

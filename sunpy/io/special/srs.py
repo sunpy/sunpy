@@ -281,9 +281,9 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     -------
     >>> data_lines = ['NMBR  LOCATION  LO  COMMENT', '8000  S14W96   232']
     >>> expected_pattern_dict = {
-    ...     'Nmbr': r'^\\d+$',
-    ...     'Location': r'[NESW]\\d{2}[NESW]\\d{2}',
-    ...     'Lo': r'^\\d+$',
+    ...    'Nmbr': '^\\d+$',
+    ...     'Location': '[NESW]\\d{2}[NESW]\\d{2}',
+    ...     'Lo': '^\\d+$',
     ... }
     >>> column_name_to_drop = 'COMMENT'
     >>> _try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
