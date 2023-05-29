@@ -138,11 +138,7 @@ def split_lines(file_lines):
     for i, line in enumerate(file_lines):
         if re.match(r'^(I\.|IA\.|II\.)', line):
             section_lines.append(i)
-        if re.match(
-            r'^(III|COMMENT|EFFECTIVE 2 OCT 2000|PLAIN|This message is for users of the NOAA/SEC Space|NNN)',
-            line,
-            re.IGNORECASE,
-        ):
+        if re.match(r'^(III|COMMENT|EFFECTIVE 2 OCT 2000|PLAIN|This message is for users of the NOAA/SEC Space|NNN)', line, re.IGNORECASE):
             final_section_lines.append(i)
 
     if final_section_lines and final_section_lines[0] > section_lines[-1]:
@@ -196,7 +192,7 @@ def get_meta_data(header):
         k, v = m.strip().split(':')[1:]
         meta_data[k.lower()] = v.strip()
     meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],
-                                                    '%Y %b %d %H%M UTC')
+                                                     "%Y %b %d %H%M UTC")
 
     # Get ID descriptions
     meta_data['id'] = OrderedDict()
