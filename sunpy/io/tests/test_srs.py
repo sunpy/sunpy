@@ -73,7 +73,7 @@ def data_lines():
 def expected_pattern_dict():
     return {
         'Nmbr': r'^\d+$',
-        'Location': r'[NESW]\d{2}[NESW]\d{2}',
+        'Location': r'^(?:[NESW](?:\d{2})){1,2}$',
         'Lo': r'^\d+$',
         'Comment': r'^[a-zA-Z]+$',
         'Additional Number': r'^\d+$',
@@ -90,6 +90,9 @@ def test_tdec(data_lines, expected_pattern_dict, column_name_to_drop):
     assert result == out
 
 def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
+    """
+    smallest possible dictionary given the ``data_lines``
+    """
     keys_to_keep = ['Nmbr', 'Location', 'Lo']
     filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
     result = srs._try_drop_empty_column(column_name_to_drop, data_lines, filtered_dict)
@@ -97,17 +100,65 @@ def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_na
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
 
+def test_tdec_no_data(expected_pattern_dict, column_name_to_drop):
+    """
+    No data associated with header
+    """
+    data_lines = ['NMBR  LOCATION  LO  COMMENT', 'NONE']
+    out = data_lines.copy()
+    out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
+    assert out == srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
+
+def test_tdec_col_not_empty(expected_pattern_dict, column_name_to_drop):
+    """
+    Column not empty
+    """
+    data_lines = [
+        'NMBR  LOCATION  LO  COMMENT',
+        '8000  S14W96   232',
+        '3020 N20E20  210 additional_info',
+        ]
+    with pytest.raises(ValueError):
+        _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
+
+def test_tdec_col_not_match_pattern(expected_pattern_dict, column_name_to_drop):
+    """
+    `LOCATION` column doesn't match the correct pattern
+    """
+    data_lines = [
+        'NMBR  LOCATION  LO  COMMENT',
+        '8000  S14W926   232',
+        ]
+    with pytest.raises(ValueError):
+        _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
+
+def test_tdec_colname_not_exist(data_lines, expected_pattern_dict):
+    """
+    try remove column name that does not exist in data
+    """
+    with pytest.raises(ValueError):
+        _ = srs._try_drop_empty_column('nonexistent_column_name', data_lines, expected_pattern_dict)
+
 def test_tdec_only_header(expected_pattern_dict, column_name_to_drop):
+    """
+    only header from ``data_lines``
+    """
     data_lines = ['NMBR  LOCATION  LO  COMMENT']
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
 
 def test_tdec_incorrect_dict_format(data_lines, column_name_to_drop):
+    """
+    ``expected_pattern_dict`` not a dictionary
+    """
     expected_pattern_dict = [r'^\d+$', r'[NESW]\d{2}[NESW]\d{2}', r'^\d+$']
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
 
 def test_tdec_incorrect_colname_format(data_lines, expected_pattern_dict):
+    """
+    ``column_name_to_drop`` not a string
+    """
     column_name_to_drop = 2
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)

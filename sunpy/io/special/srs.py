@@ -159,7 +159,7 @@ def split_lines(file_lines):
     if "COMMENT" in t2_lines[1].split():
         expected_pattern_dict = {
             'Nmbr': r'^\d+$',
-            'Location': r'[NESW]\d{2}(?:[NESW]\d{2})?',
+            'Location': r'^(?:[NESW](?:\d{2})){1,2}$',
             'Lo': r'^\d+$',
         }
         # try drop the comment column and return in original format.
