@@ -159,7 +159,7 @@ def split_lines(file_lines):
     if "COMMENT" in t2_lines[1].split():
         expected_pattern_dict = {
             'Nmbr': r'^\d+$',
-            'Location': r'[NESW]\d{2}[NESW]\d{2}',
+            'Location': r'[NESW]\d{2}(?:[NESW]\d{2})?',
             'Lo': r'^\d+$',
         }
         # try drop the comment column and return in original format.
@@ -277,17 +277,6 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     `list[str]`
         The modified ``data_lines`` in titlecase with the specified column dropped, if all validations pass.
 
-    Example
-    -------
-    >>> data_lines = ['NMBR  LOCATION  LO  COMMENT', '8000  S14W96   232']
-    >>> expected_pattern_dict = {
-    ...    'Nmbr': '^\\d+$',
-    ...     'Location': '[NESW]\\d{2}[NESW]\\d{2}',
-    ...     'Lo': '^\\d+$',
-    ... }
-    >>> column_name_to_drop = 'COMMENT'
-    >>> _try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
-    ['Nmbr Location Lo', '8000  S14W96   232']
     """
     if not isinstance(column_name_to_drop, str):
         raise ValueError("``column_name_to_drop`` must be a string.")
