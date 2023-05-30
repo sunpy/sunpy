@@ -32,17 +32,17 @@ def read_srs(filepath):
     with open(filepath) as srs:
         file_lines = srs.readlines()
 
-    header, section_lines = split_lines(file_lines)
+    header, section_lines, supplementary_lines = split_lines(file_lines)
 
-    return make_table(header, section_lines)
+    return make_table(header, section_lines, supplementary_lines)
 
 
-def make_table(header, section_lines):
+def make_table(header, section_lines, supplementary_lines):
     """
     From the separated section lines and the header, clean up the data and
     convert to a `~astropy.table.QTable`.
     """
-    meta_data = get_meta_data(header)
+    meta_data = get_meta_data(header, supplementary_lines)
 
     tables = []
     for i, lines in enumerate(section_lines):
@@ -165,17 +165,22 @@ def split_lines(file_lines):
         # Try to drop the comment column and return in original format
         t2_lines[1:] = _try_drop_empty_column("COMMENT", t2_lines[1:], expected_pattern_dict)
 
-    t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
+    if len(section_lines) > 3:
+        t3_lines = file_lines[section_lines[2]:section_lines[3]]
+        supplementary_lines = file_lines[section_lines[3]:]
+    else:
+        t3_lines = file_lines[section_lines[2]:]
+        supplementary_lines = None
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
         if len(ll) > 2 and ll[2].strip().title() == 'None':
             del ll[2]
 
-    return header, lines
+    return header, lines, supplementary_lines
 
 
-def get_meta_data(header):
+def get_meta_data(header, supplementary_lines):
     """
     Convert a list of header lines into a meta data dict.
     """
@@ -204,6 +209,10 @@ def get_meta_data(header):
             meta_data['id'][k] = v.strip()
 
     meta_data['header'] = [h.strip() for h in header]
+
+    if supplementary_lines:
+        meta_data['supplementary_lines'] = supplementary_lines
+
     return meta_data
 
 
