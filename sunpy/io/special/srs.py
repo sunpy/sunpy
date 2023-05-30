@@ -278,15 +278,6 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
         The modified ``data_lines`` in titlecase with the specified column dropped, if all validations pass.
 
     """
-    if not isinstance(column_name_to_drop, str):
-        raise ValueError("``column_name_to_drop`` must be a string.")
-
-    if not isinstance(data_lines, list) or len(data_lines) < 2:
-        raise ValueError("``data_lines`` must be a list with at least two elements.")
-
-    if not isinstance(pattern_dict, dict):
-        raise ValueError("``pattern_dict`` must be a dictionary.")
-
     # Create a lowercase pattern dict
     pattern_dict_lower = {key.lower(): value for key, value in pattern_dict.items()}
 

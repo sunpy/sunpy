@@ -147,27 +147,3 @@ def test_tdec_colname_not_exist(data_lines, expected_pattern_dict):
     """
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column('nonexistent_column_name', data_lines, expected_pattern_dict)
-
-def test_tdec_only_header(expected_pattern_dict, column_name_to_drop):
-    """
-    Only header from ``data_lines``
-    """
-    data_lines = ['NMBR  LOCATION  LO  COMMENT']
-    with pytest.raises(ValueError):
-        _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
-
-def test_tdec_incorrect_dict_format(data_lines, column_name_to_drop):
-    """
-    ``expected_pattern_dict`` not a dictionary
-    """
-    expected_pattern_dict = [r'^\d+$', r'[NESW]\d{2}[NESW]\d{2}', r'^\d+$']
-    with pytest.raises(ValueError):
-        _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
-
-def test_tdec_incorrect_colname_format(data_lines, expected_pattern_dict):
-    """
-    ``column_name_to_drop`` not a string
-    """
-    column_name_to_drop = 2
-    with pytest.raises(ValueError):
-        _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
