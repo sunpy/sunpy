@@ -130,8 +130,9 @@ def make_table(header, section_lines, supplementary_lines):
 def split_lines(file_lines):
     """
     Given all the lines in the file split based on the three sections and
-    return the lines for the header and a list of lines for each section that
-    is not 'None'.
+    return the lines for the header, a list of lines for each section that
+    is not 'None', and a list of supplementary lines after the main sections 
+    if not 'None'.
     """
     section_lines = []
     final_section_lines = []
@@ -182,7 +183,7 @@ def split_lines(file_lines):
 
 def get_meta_data(header, supplementary_lines):
     """
-    Convert a list of header lines into a meta data dict.
+    Convert a list of header lines and a list of supplementary lines (if not 'None') into a meta data dict.
     """
     meta_lines = []
     for line in header:
