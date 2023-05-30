@@ -91,7 +91,7 @@ def test_tdec(data_lines, expected_pattern_dict, column_name_to_drop):
 
 def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
     """
-    smallest possible dictionary given the ``data_lines``
+    Smallest possible dictionary given the ``data_lines``
     """
     keys_to_keep = ['Nmbr', 'Location', 'Lo']
     filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
@@ -102,8 +102,7 @@ def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_na
 
 def test_tdec_too_small_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
     """
-    columns aren't a subset of the dictionary
-    (no pattern to match for column `LO`)
+    Columns aren't a subset of the dictionary: no pattern to match for column `LO`
     """
     keys_to_keep = ['Nmbr', 'Location']
     filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
@@ -144,14 +143,14 @@ def test_tdec_col_not_match_pattern(expected_pattern_dict, column_name_to_drop):
 
 def test_tdec_colname_not_exist(data_lines, expected_pattern_dict):
     """
-    try remove column name that does not exist in data
+    Try remove column name that does not exist in data
     """
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column('nonexistent_column_name', data_lines, expected_pattern_dict)
 
 def test_tdec_only_header(expected_pattern_dict, column_name_to_drop):
     """
-    only header from ``data_lines``
+    Only header from ``data_lines``
     """
     data_lines = ['NMBR  LOCATION  LO  COMMENT']
     with pytest.raises(ValueError):

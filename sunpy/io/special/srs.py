@@ -50,7 +50,7 @@ def make_table(header, section_lines):
             key = list(meta_data['id'].keys())[i]
             t1 = astropy.io.ascii.read(lines)
 
-            # change column names into titlecase
+            # Change column names into titlecase
             column_names = list(t1.columns)
             t1.rename_columns(column_names, new_names=[col.title() for col in column_names])
 
@@ -162,7 +162,7 @@ def split_lines(file_lines):
             'Location': r'^(?:[NESW](?:\d{2})){1,2}$',
             'Lo': r'^\d+$',
         }
-        # try drop the comment column and return in original format.
+        # Try to drop the comment column and return in original format
         t2_lines[1:] = _try_drop_empty_column("COMMENT", t2_lines[1:], expected_pattern_dict)
 
     t3_lines = file_lines[section_lines[2]:section_lines[3] if len(section_lines) > 3 else None]
@@ -264,7 +264,7 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     Parameters
     ----------
     column_name_to_drop : `str`
-        Name of the empty column to be dropped
+        Name of the empty column to be dropped.
     data_lines : `list[str]`
         List of lines extracted from a file (each line is a string)
         corresponding to the header (e.g. ``header = data_lines[0]``)
@@ -287,14 +287,14 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     if not isinstance(pattern_dict, dict):
         raise ValueError("``pattern_dict`` must be a dictionary.")
 
-    # create a lowercase pattern dict
+    # Create a lowercase pattern dict
     pattern_dict_lower = {key.lower(): value for key, value in pattern_dict.items()}
 
-    # extract columns and rows
+    # Extract columns and rows
     header_line, *row_lines = data_lines
     column_list = [column.strip().lower() for column in header_line.split()]
 
-    # drop ``column_name_to_drop`` if exists
+    # Drop ``column_name_to_drop`` if exists
     try:
         column_index = column_list.index(column_name_to_drop.strip().lower())
         column_list.pop(column_index)
@@ -304,9 +304,9 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     # Remove the dropped column from pattern_dict
     pattern_dict_lower.pop(column_name_to_drop.strip().lower(), None)
 
-    # if the data is `None`, just return the header/data
+    # If the data is `None`, just return the header/data
     if row_lines[0].strip().title() == 'None':
-        # return as titlecase
+        # Return as titlecase
         column_list = [col.title() for col in column_list]
         return [" ".join(column_list)] + row_lines
 
@@ -316,16 +316,16 @@ def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
     if not remaining_columns_set.issubset(pattern_columns_set):
         raise ValueError("The remaining columns are not a subset of the columns in ``pattern_dict``.")
 
-    # check if all rows have the same length as the remaining columns
+    # Check if all rows have the same length as the remaining columns
     row_lengths_equal = all(len(row.split()) == len(column_list) for row in row_lines)
     if not row_lengths_equal:
         raise ValueError("not all rows have the same number of values as the remaining columns.")
 
-    # check that the row values are consistent with the provided pattern dictionary
+    # Check that the row values are consistent with the provided pattern dictionary
     matching_pattern = all(all(re.match(pattern_dict_lower[column], value) for column, value in zip(column_list, row.split())) for row in row_lines)
     if not matching_pattern:
         raise ValueError("not all rows match the provided pattern.")
 
-    # return as titlecase
+    # Return as titlecase
     column_list = [col.title() for col in column_list]
     return [" ".join(column_list)] + row_lines
