@@ -211,7 +211,7 @@ def get_meta_data(header, supplementary_lines):
     meta_data['header'] = [h.strip() for h in header]
 
     if supplementary_lines:
-        meta_data['supplementary_lines'] = supplementary_lines
+        meta_data['supplementary_lines'] = [sl.strip() for sl in supplementary_lines]
 
     return meta_data
 
