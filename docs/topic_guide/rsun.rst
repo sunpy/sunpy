@@ -1,24 +1,22 @@
 .. _topic-guide-rsun:
 
-*********************************
-The role of ``rsun`` in ``sunpy``
-*********************************
+***************************
+The role of "rsun" in sunpy
+***************************
 
-When dealing with many solar coordinate systems, ``rsun``, the height at which emission is presumed to originate, can be important.
-For example, when loading a fits file with `sunpy.map.Map` a ``map.wcs`` is constructed with a value for ``rsun`` collected for use in coordinate transformations.
+When dealing with many solar coordinate systems, "rsun", the height at which emission is presumed to originate, can be important.
+For example, when loading a fits file with `sunpy.map.Map` a ``map.wcs`` is constructed with a value for "rsun" collected for use in coordinate transformations.
 
-Data providers often include this information for end users via the fits keyword: ``RSUN_REF``,
-where this keyword is not available ``sunpy`` assumes a standard value defined by `sunpy.sun.constants`.
-In theory, the radiation detected by a single filter, especially for coronal emission,
-comes from a variety of heights and ``rsun`` is only a loose approximation.
-In practice, the exact value of ``rsun`` is important when working with coordinates and transforms, it provides 3 dimensional information about the location of a map pixel.
-When manipulating these coordinates, idiosyncrasies and unexpected behavior can be encountered which can be preempted by an understanding of behaviors surrounding ``rsun``.
+Data providers often include this information for end users via the fits keyword: "RSUN_REF", where this keyword is not available, ``sunpy`` assumes a standard value defined by `sunpy.sun.constants`.
+In theory, the radiation detected by a single filter, especially for coronal emission, comes from a variety of heights and "rsun" is only a loose approximation.
+In practice, the exact value of "rsun" is important when working with coordinates and transforms, it provides 3 dimensional information about the location of a map pixel.
+When manipulating these coordinates, idiosyncrasies and unexpected behavior can be encountered which can be preempted by an understanding of behaviors surrounding "rsun".
 
-Transforming between ``helioprojective`` frames
-===============================================
+Transforming between Helioprojective frames
+===========================================
 
 It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective` frame with one observer location to another `~sunpy.coordinates.frames.Helioprojective` frame with a different observer location.
-The transformation requires the coordinate to be 3D, so if the initial coordinate is only 2D, the default assumption maps that 2D coordinate to the surface of the Sun, at a radius defined by the ``rsun`` frame attribute.
+The transformation requires the coordinate to be 3D, so if the initial coordinate is only 2D, the default assumption maps that 2D coordinate to the surface of the Sun, at a radius defined by the "rsun" frame attribute.
 The conversion can be performed as follows:
 
 .. code-block:: python
@@ -31,23 +29,24 @@ The conversion can be performed as follows:
     >>> hpc_out = sunpy.coordinates.Helioprojective(observer="venus", obstime="2017-07-26")
     >>> hpc2 = hpc1.transform_to(hpc_out)
 
-An example with two maps, named ``aia`` and ``stereo``::
+An example with two maps, named ``aia`` and ``stereo``:
+
+.. code-block:: python
 
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)  # doctest: +SKIP
   >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)  # doctest: +SKIP
 
-Reprojecting between frames with different ``rsun``
-===================================================
+Reprojecting between frames with different "rsun"
+=================================================
 
-When the values of ``rsun`` from two wcs instances are different, issues with reprojecting between those frames can be encountered:
-:meth:`~sunpy.map.GenericMap.reproject_to` by default enforces a round-trip behavior,
-the idea being that you should only trust the reprojection if the 2D coordinates from each observer both resolve to the same 3D point (within a pixel volume).
-When the values for ``rsun`` are different, that criterion fails towards the limb.
+When the values of "rsun" from two wcs instances are different, issues with reprojecting between those frames can be encountered.
+:meth:`~sunpy.map.GenericMap.reproject_to` by default, enforces a round-trip behavior, the idea being that you should only trust the reprojection if the 2D coordinates from each observer both resolve to the same 3D point (within a pixel volume).
+When the values for "rsun" are different, that criterion fails towards the limb.
 In other cases, this furthers results in banding as the criterion fails, then succeeds and then fails again.
 
-Changing the value of ``rsun`` can fix this issue:
-Take the example, :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`
-If we run the reprojection twice, once before fixing the discrepancy in the ``rsun_ref`` metadata and once after:
+Changing the value of "rsun" can fix this issue.
+Take the example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`.
+If we run the reprojection twice, once before fixing the discrepancy in the "rsun_ref" metadata and once after:
 
 .. plot::
     :include-source:
