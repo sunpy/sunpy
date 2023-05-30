@@ -131,7 +131,7 @@ def split_lines(file_lines):
     """
     Given all the lines in the file split based on the three sections and
     return the lines for the header, a list of lines for each section that
-    is not 'None', and a list of supplementary lines after the main sections 
+    is not 'None', and a list of supplementary lines after the main sections
     if not 'None'.
     """
     section_lines = []
