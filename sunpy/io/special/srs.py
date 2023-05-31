@@ -1,6 +1,7 @@
 """
 This module implements a SRS File Reader.
 """
+import re
 import datetime
 from collections import OrderedDict
 
@@ -31,23 +32,27 @@ def read_srs(filepath):
     with open(filepath) as srs:
         file_lines = srs.readlines()
 
-    header, section_lines = split_lines(file_lines)
+    header, section_lines, supplementary_lines = split_lines(file_lines)
 
-    return make_table(header, section_lines)
+    return make_table(header, section_lines, supplementary_lines)
 
 
-def make_table(header, section_lines):
+def make_table(header, section_lines, supplementary_lines):
     """
     From the separated section lines and the header, clean up the data and
     convert to a `~astropy.table.QTable`.
     """
-    meta_data = get_meta_data(header)
+    meta_data = get_meta_data(header, supplementary_lines)
 
     tables = []
     for i, lines in enumerate(section_lines):
         if lines:
             key = list(meta_data['id'].keys())[i]
             t1 = astropy.io.ascii.read(lines)
+
+            # Change column names into titlecase
+            column_names = list(t1.columns)
+            t1.rename_columns(column_names, new_names=[col.title() for col in column_names])
 
             if len(t1) == 0:
                 col_data_types = {
@@ -57,10 +62,10 @@ def make_table(header, section_lines):
                     'Lo': np.dtype('i8'),
                     'Area': np.dtype('i8'),
                     'Z': np.dtype('U3'),
-                    'LL': np.dtype('i8'),
-                    'NN': np.dtype('i8'),
-                    'MagType': np.dtype('S4'),
-                    'Lat': np.dtype('i8')
+                    'Ll': np.dtype('i8'),
+                    'Nn': np.dtype('i8'),
+                    'Magtype': np.dtype('S4'),
+                    'Lat': np.dtype('i8'),
                 }
                 for c in t1.itercols():
                     # Put data types of columns in empty table to correct types,
@@ -88,11 +93,16 @@ def make_table(header, section_lines):
         del out_table['Lat']
 
     # Give columns more sensible names
-    out_table.rename_column("Nmbr", "Number")
-    out_table.rename_column("NN", "Number of Sunspots")
-    out_table.rename_column("Lo", "Carrington Longitude")
-    out_table.rename_column("MagType", "Mag Type")
-    out_table.rename_column("LL", "Longitudinal Extent")
+    column_mapping = {
+        'Nmbr': 'Number',
+        'Nn': 'Number of Sunspots',
+        'Lo': 'Carrington Longitude',
+        'Magtype': 'Mag Type',
+        'Ll': 'Longitudinal Extent',
+    }
+
+    for old_name, new_name in column_mapping.items():
+        out_table.rename_column(old_name, new_name)
 
     # Define a Solar Hemispere Unit
     a = {}
@@ -120,13 +130,20 @@ def make_table(header, section_lines):
 def split_lines(file_lines):
     """
     Given all the lines in the file split based on the three sections and
-    return the lines for the header and a list of lines for each section that
-    is not 'None'.
+    return the lines for the header, a list of lines for each section that
+    is not 'None', and a list of supplementary lines after the main sections
+    if not 'None'.
     """
     section_lines = []
+    final_section_lines = []
     for i, line in enumerate(file_lines):
-        if line.startswith(("I.", "IA.", "II.")):
+        if re.match(r'^(I\.|IA\.|II\.)', line):
             section_lines.append(i)
+        if re.match(r'^(III|COMMENT|EFFECTIVE 2 OCT 2000|PLAIN|This message is for users of the NOAA/SEC Space|NNN)', line, re.IGNORECASE):
+            final_section_lines.append(i)
+
+    if final_section_lines and final_section_lines[0] > section_lines[-1]:
+        section_lines.append(final_section_lines[0])
 
     header = file_lines[:section_lines[0]]
     header += [file_lines[s] for s in section_lines]
@@ -136,21 +153,37 @@ def split_lines(file_lines):
         file_lines[line] = '# ' + file_lines[line]
     t1_lines = file_lines[section_lines[0]:section_lines[1]]
     # Remove the space so table reads it correctly
-    t1_lines[1] = t1_lines[1].replace('Mag Type', 'MagType')
+    t1_lines[1] = re.sub(r'Mag\s*Type', r'Magtype', t1_lines[1], flags=re.IGNORECASE)
     t2_lines = file_lines[section_lines[1]:section_lines[2]]
-    t3_lines = file_lines[section_lines[2]:]
+
+    # SRS files before 2000-10-02 files may have an empty `COMMENT` column in ``t2_lines``
+    if "COMMENT" in t2_lines[1].split():
+        expected_pattern_dict = {
+            'Nmbr': r'^\d+$',
+            'Location': r'^(?:[NESW](?:\d{2})){1,2}$',
+            'Lo': r'^\d+$',
+        }
+        # Try to drop the comment column and return in original format
+        t2_lines[1:] = _try_drop_empty_column("COMMENT", t2_lines[1:], expected_pattern_dict)
+
+    if len(section_lines) > 3:
+        t3_lines = file_lines[section_lines[2]:section_lines[3]]
+        supplementary_lines = file_lines[section_lines[3]:]
+    else:
+        t3_lines = file_lines[section_lines[2]:]
+        supplementary_lines = None
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
-        if ll[2].strip() == 'None':
+        if len(ll) > 2 and ll[2].strip().title() == 'None':
             del ll[2]
 
-    return header, lines
+    return header, lines, supplementary_lines
 
 
-def get_meta_data(header):
+def get_meta_data(header, supplementary_lines):
     """
-    Convert a list of header lines into a meta data dict.
+    Convert a list of header lines and a list of supplementary lines (if not 'None') into a meta data dict.
     """
     meta_lines = []
     for line in header:
@@ -159,7 +192,7 @@ def get_meta_data(header):
 
     meta_data = {}
     for m in meta_lines:
-        if "Corrected Copy" in m:
+        if re.search(r'Corrected\s*Copy', m, re.IGNORECASE):
             meta_data['corrected'] = True
             continue
         k, v = m.strip().split(':')[1:]
@@ -177,6 +210,10 @@ def get_meta_data(header):
             meta_data['id'][k] = v.strip()
 
     meta_data['header'] = [h.strip() for h in header]
+
+    if supplementary_lines:
+        meta_data['supplementary_lines'] = [sl.strip() for sl in supplementary_lines]
+
     return meta_data
 
 
@@ -228,3 +265,68 @@ def parse_lat_col(column, latitude_column):
             latitude_column.mask[i] = False
             latitude_column[i] = parse_latitude(loc)
     return latitude_column
+
+
+def _try_drop_empty_column(column_name_to_drop, data_lines, pattern_dict):
+    """
+    Try dropping an empty ``column_name_to_drop`` from ``data_lines``.
+
+    Parameters
+    ----------
+    column_name_to_drop : `str`
+        Name of the empty column to be dropped.
+    data_lines : `list[str]`
+        List of lines extracted from a file (each line is a string)
+        corresponding to the header (e.g. ``header = data_lines[0]``)
+        and the data (``data = data_lines[1:]``)
+    pattern_dict : `dict`
+        A dictionary specifying the patterns to match for each column
+
+    Returns
+    -------
+    `list[str]`
+        The modified ``data_lines`` in titlecase with the specified column dropped, if all validations pass.
+
+    """
+    # Create a lowercase pattern dict
+    pattern_dict_lower = {key.lower(): value for key, value in pattern_dict.items()}
+
+    # Extract columns and rows
+    header_line, *row_lines = data_lines
+    column_list = [column.strip().lower() for column in header_line.split()]
+
+    # Drop ``column_name_to_drop`` if exists
+    try:
+        column_index = column_list.index(column_name_to_drop.strip().lower())
+        column_list.pop(column_index)
+    except ValueError:
+        raise ValueError(f"The column '{column_name_to_drop}' does not exist.")
+
+    # Remove the dropped column from pattern_dict
+    pattern_dict_lower.pop(column_name_to_drop.strip().lower(), None)
+
+    # If the data is `None`, just return the header/data
+    if row_lines[0].strip().title() == 'None':
+        # Return as titlecase
+        column_list = [col.title() for col in column_list]
+        return [" ".join(column_list)] + row_lines
+
+    # Check if the remaining columns are a subset of the columns in pattern_dict
+    remaining_columns_set = set(column_list)
+    pattern_columns_set = set(pattern_dict_lower.keys())
+    if not remaining_columns_set.issubset(pattern_columns_set):
+        raise ValueError("The remaining columns are not a subset of the columns in ``pattern_dict``.")
+
+    # Check if all rows have the same length as the remaining columns
+    row_lengths_equal = all(len(row.split()) == len(column_list) for row in row_lines)
+    if not row_lengths_equal:
+        raise ValueError("not all rows have the same number of values as the remaining columns.")
+
+    # Check that the row values are consistent with the provided pattern dictionary
+    matching_pattern = all(all(re.match(pattern_dict_lower[column], value) for column, value in zip(column_list, row.split())) for row in row_lines)
+    if not matching_pattern:
+        raise ValueError("not all rows match the provided pattern.")
+
+    # Return as titlecase
+    column_list = [col.title() for col in column_list]
+    return [" ".join(column_list)] + row_lines
