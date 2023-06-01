@@ -1,10 +1,10 @@
-.. _topic-guide-using-helioviewer:
+.. _sunpy-topic-guide-using-helioviewer:
 
 ************************************************
 Switching from ``HelioviewerClient`` to ``hvpy``
 ************************************************
 
-In order versions of sunpy it was possible to query Heliovewer using ``HelioviewerClient``.
+In older versions of sunpy it was possible to query Helioviewer using the ``HelioviewerClient``.
 The Helioviewer Project now maintains a Python wrapper around their API that supersedes this.
 It is called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ and their documentation has several examples of how to use it.
 This page explains how to migrate from ``HelioviewerClient`` to ``hvpy``.
@@ -14,6 +14,7 @@ This page explains how to migrate from ``HelioviewerClient`` to ``hvpy``.
 .. code-block:: python
 
    >>> import hvpy
+
    >>> print(hvpy.DataSource.AIA_131)
    DataSource.AIA_131
 
@@ -23,7 +24,6 @@ It also supports tab-complete, to find the data source you want.
 
 .. code-block:: python
 
-   >>> import hvpy
    >>> hvpy.getDataSources()  # doctest: +REMOTE_DATA
    {...'SDO': {...'HMI': {'continuum': {'sourceId': 18,
    ...
@@ -33,7 +33,7 @@ It also supports tab-complete, to find the data source you want.
 .. code-block:: python
 
    >>> from datetime import datetime
-   >>> import hvpy
+
    >>> hvpy.getClosestImage(date=datetime(2022, 1, 1), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
     {'id': '79024526', 'date': '2022-01-01 00:04:57', 'name': 'AIA 171', 'scale': 0.5899466652089547, 'width': 4096, 'height': 4096, 'refPixelX': 2048.5, 'refPixelY': 2048.5, 'rsun': 1626.6638, 'sunCenterOffsetParams': [], 'layeringOrder': 1}
 
@@ -41,8 +41,6 @@ It also supports tab-complete, to find the data source you want.
 
 .. code-block:: python
 
-   >>> from datetime import datetime
-   >>> import hvpy
    >>> filepath = hvpy.save_file(hvpy.getJP2Image(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171), filename="~/example.jpeg")  # doctest: +REMOTE_DATA
    >>> filepath.unlink()  # doctest: +REMOTE_DATA
 
@@ -52,8 +50,6 @@ Furthermore, the header is returned as a XML string, which you will need to pars
 
 .. code-block:: python
 
-   >>> from datetime import datetime
-   >>> import hvpy
    >>> metadata = hvpy.getClosestImage(date=datetime.today(), sourceId=hvpy.DataSource.AIA_171)  # doctest: +REMOTE_DATA
    >>> hvpy.getJP2Header(metadata['id'])  # doctest: +REMOTE_DATA
    '<?xml version="1.0" encoding="utf-8"?>...
@@ -62,8 +58,6 @@ Furthermore, the header is returned as a XML string, which you will need to pars
 
 .. code-block:: python
 
-   >>> from datetime import datetime
-   >>> import hvpy
    >>> screenshot_location = hvpy.createScreenshot(
    ...     date=datetime.today(),
    ...     layers=hvpy.create_layers([(hvpy.DataSource.AIA_171, 100)]),
