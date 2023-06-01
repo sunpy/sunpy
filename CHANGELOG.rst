@@ -1,3 +1,12 @@
+4.1.7 (2023-06-02)
+==================
+
+Bug Fixes
+---------
+
+- Fixed incompatibility with cdflib 1.0.0 and above (`#7031 <https://github.com/sunpy/sunpy/pull/7031>`__)
+
+
 4.1.6 (2023-05-18)
 ==================
 
