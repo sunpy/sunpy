@@ -13,13 +13,17 @@ The conversion can be performed as follows:
 
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
+
     >>> from sunpy.coordinates import frames
     >>> import sunpy.coordinates
+
     >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, observer="earth", obstime="2017-07-26", frame=frames.Helioprojective)
     >>> hpc_out = sunpy.coordinates.Helioprojective(observer="venus", obstime="2017-07-26")
     >>> hpc2 = hpc1.transform_to(hpc_out)
 
-An example with two maps, named ``aia`` and ``stereo``::
+For example if you have two maps, named ``aia`` and ``stereo``:
 
-  >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)  # doctest: +SKIP
-  >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)  # doctest: +SKIP
+.. code-block:: python
+
+    >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)  # doctest: +SKIP
+    >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)  # doctest: +SKIP
