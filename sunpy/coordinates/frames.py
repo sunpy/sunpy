@@ -311,7 +311,7 @@ class HeliographicCarrington(BaseHeliographic):
 
     This system differs from Stonyhurst Heliographic (HGS) in its definition of longitude.  This
     longitude is an "apparent" longitude because it takes into account the time it takes for light
-    to travel from the Sun's surface to the observer (see :ref:`sunpy-coordinates-carrington`).
+    to travel from the Sun's surface to the observer (see :ref:`sunpy-topic-guide-coordinates-carrington`).
     Thus, the observer needs to be specified to be able to transform to any other coordinate frame.
 
     A new instance can be created using the following signatures
