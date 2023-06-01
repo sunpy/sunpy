@@ -1,4 +1,4 @@
-.. _acquiring_data:
+.. _sunpy-tutorial-acquiring-data-index:
 
 **************
 Acquiring Data
@@ -14,9 +14,8 @@ There are some data-provider specific tutorials that you might want to visit aft
     jsoc
     hek
 
-
 This guide outlines how to search for and download data using the `~sunpy.net.Fido` interface for search and download.
-`~sunpy.net.Fido` is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained.
+`~sunpy.net.Fido` is a unified interface for searching and fetching solar physics data irrespective of the underlying client or web service through which the data is obtained.
 It therefore supplies a single, easy, and consistent way to obtain most forms of solar physics data.
 
 The `~sunpy.net.Fido` object is in `sunpy.net`.
@@ -42,7 +41,7 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     cover multiple instruments and data products like the Virtual Solar
     Observatory and some are specific to a single source.
     <BLANKLINE>
-    For details of using `~sunpy.net.Fido` see :ref:`acquiring_data`.
+    For details of using `~sunpy.net.Fido` see :ref:`sunpy-tutorial-acquiring-data-index`.
     <BLANKLINE>
     <BLANKLINE>
           Client                                                    Description
@@ -85,7 +84,7 @@ Some search attributes need one or more values specifying, for example ``Time`` 
     <sunpy.net.attrs.Time(2012-03-04 00:00:00.000, 2012-03-06 00:00:00.000)>
 
 For attributes that can take a range of different values, printing the attribute lists the values sunpy knows about.
-These values are updated with every release of sunpy, so may not be quite up to date!
+These values are updated with every release of sunpy, so may not be always up to date!
 As an example:
 
 .. code-block:: python
@@ -118,7 +117,7 @@ To search for data use the ``Fido.search`` method:
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra, a.Level.two) # doctest: +REMOTE_DATA
 
 this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing all the search results that match the search attributes.
-This does not download the files; we'll learn how to do that later in :ref:`downloading_data`.
+This does not download the files; we'll learn how to do that later in :ref:`sunpy-tutorial-acquiring-data-downloading-data`.
 
 To see a summary of the results print the result variable that came back from the previous search:
 
@@ -144,6 +143,7 @@ As an example, specific passbands can be searched for by supplying an `~astropy.
 .. code-block:: python
 
     >>> import astropy.units as u
+
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh,
     ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -251,7 +251,6 @@ For example, the following code returns a response containing LYRA data from the
 
 .. code-block:: python
 
-    >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Level.two,
     ...                       a.Instrument.lyra | a.Instrument.eve)  # doctest: +REMOTE_DATA
     >>> results  # doctest: +REMOTE_DATA
@@ -478,10 +477,11 @@ To match the ``"Wavelength"`` column we need to account for the fact that VSO re
    While you can reduce the number of columns and rows in the results, the ``fetch()`` method that downloads data may need certain columns to be present to successfully download the files.
    It is therefore highly recommended that if you are planning on downloading data you do not slice out columns, but instead use ``.show()`` to only display the ones you are interested in.
 
-.. _downloading_data:
+.. _sunpy-tutorial-acquiring-data-downloading-data:
 
 Downloading data
 ****************
+
 Once you have located your files via a `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 Here we'll just download the first file in the result:
 
@@ -518,6 +518,7 @@ You can see the list of options that can be specified in path for all the files 
 
 Retrying Downloads
 ^^^^^^^^^^^^^^^^^^
+
 If any files failed to download, the progress bar will show an incomplete number of files (i.e. 100/150) and the `parfive.Results` object will contain a list of the URLs that failed to transfer and the error associated with them.
 This can be accessed with the ``.errors`` attribute or by printing the `~parfive.Results` object:
 
