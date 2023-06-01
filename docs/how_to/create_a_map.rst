@@ -1,4 +1,4 @@
-.. _how-to-create-a-map:
+.. _sunpy-how-to-create-a-map:
 
 How to create a sunpy Map
 =========================
@@ -15,9 +15,11 @@ This can be either a string or a `~pathlib.Path`.
 
 .. code-block:: python
 
+    >>> import pathlib
+
     >>> import sunpy.map
     >>> import sunpy.data.sample
-    >>> import pathlib
+
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> my_map = sunpy.map.Map('file.fits')  # doctest: +SKIP
     >>> my_map = sunpy.map.Map(pathlib.Path('file.fits'))  # doctest: +SKIP
@@ -25,7 +27,7 @@ This can be either a string or a `~pathlib.Path`.
     >>> my_map = sunpy.map.Map(sub_dir / 'another_file.fits')   # doctest: +SKIP
 
 Directory containing FITS files
----------------------------------
+-------------------------------
 
 If there is more than one FITS file in the directory, this will return a list of Map objects.
 
@@ -42,6 +44,7 @@ If needed, this way can be used to modify the header before passing it to `~sunp
 .. code-block:: python
 
     >>> import astropy.io.fits
+
     >>> with astropy.io.fits.open(sunpy.data.sample.AIA_171_IMAGE) as hdul:
     ...     data = hdul[1].data
     ...     header = hdul[1].header  # doctest: +REMOTE_DATA
@@ -61,6 +64,7 @@ This includes any base class of `~sunpy.util.metadata.MetaDict`, including `dict
 .. code-block:: python
 
     >>> import sunpy.util.metadata
+
     >>> meta = sunpy.util.metadata.MetaDict(header)  # doctest: +REMOTE_DATA
     >>> my_map = sunpy.map.Map(data, meta)   # doctest: +REMOTE_DATA
 
@@ -70,6 +74,7 @@ Data array and an `astropy.wcs.WCS` object
 .. code-block:: python
 
     >>> import astropy.wcs
+
     >>> wcs = astropy.wcs.WCS(header=header)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> my_map = sunpy.map.Map(data, wcs)  # doctest: +REMOTE_DATA
 

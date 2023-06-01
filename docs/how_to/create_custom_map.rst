@@ -1,9 +1,9 @@
-.. _how_to_custom_maps:
+.. _sunpy-how-to-custom-maps:
 
 Create Custom Maps by Hand
 ==========================
 
-It is possible to create Maps using custom data, e.g. from a simulation or an observation from a data source that is not explicitly supported by **sunpy**
+It is possible to create Maps using custom data, e.g., from a simulation or an observation from a data source that is not explicitly supported by ``sunpy``.
 To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate metadata.
 The metadata informs `sunpy.map.Map` of the correct coordinate information associated with the data array and should be provided to `sunpy.map.Map` in the form of a header as a `dict` or `~sunpy.util.MetaDict`.
 See this :ref:`sphx_glr_generated_gallery_map_map_from_numpy_array.py` for a brief demonstration of generating a Map from a data array.
@@ -59,7 +59,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
     rsun_obs: 965.3829548285768
 
 From this we can see now that the function returned a `sunpy.util.MetaDict` that populated the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`, and the data array.
-Since the ``reference_pixel`` and ``scale`` keywords were not passed in the example above, the values of the ``crpix`` and ``cdelts`` keys were set to the center of the data array and 1, respectively, by default.
+Since the ``reference_pixel`` and ``scale`` keywords were not passed in the example above, the values of the ``crpix`` and ``cdelt`` keys were set to the center of the data array and 1, respectively, by default.
 
 These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function:
@@ -99,7 +99,7 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     pc2_2: 1.0
     rsun_obs: 965.3829548285768
 
-As we can see, a list of WCS and observer meta information is contained within the generated headers, however we may want to include other meta information including the observatory name, the wavelength and waveunit of the observation.
+As we can see, a list of WCS and observer meta information is contained within the generated headers, however we may want to include other meta information including the observatory name, the wavelength and wavelength unit of the observation.
 Any of the keywords in the dictionary returned by :func:`~sunpy.map.header_helper.meta_keywords` can be passed to the :func:`~sunpy.map.header_helper.make_fitswcs_header` and will then populate the returned MetaDict header.
 Furthermore, the following observation keywords can be passed to the `~sunpy.map.header_helper.make_fitswcs_header` function: ``observatory``, ``instrument``, ``telescope``, ``wavelength``, ``exposure``.
 
@@ -150,6 +150,7 @@ From these header MetaDict's that are generated, we can now create a custom map:
 .. code-block:: python
 
     >>> import sunpy.map
+
     >>> my_map = sunpy.map.Map(data, header)
     >>> my_map
     <sunpy.map.mapbase.GenericMap object at ...>

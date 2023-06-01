@@ -1,4 +1,4 @@
-.. _how_to_parse_times_with_parse_time:
+.. _sunpy-how-to-parse-times-with-parse-time:
 
 Parse times with `sunpy.time.parse_time`
 ========================================
@@ -7,8 +7,10 @@ Parse times with `sunpy.time.parse_time`
 
     >>> import time
     >>> from datetime import date, datetime
+
     >>> import numpy as np
     >>> import pandas
+
     >>> from sunpy.time import parse_time
 
 The following examples show how to use `sunpy.time.parse_time` to parse various time formats, including both strings and objects, into an `astropy.time.Time` object.
@@ -59,7 +61,7 @@ tuples
 `pandas` time objects
 ---------------------
 
-e.g. `pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
+`pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
 
 .. code-block:: python
 
@@ -92,7 +94,7 @@ e.g. `pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
 Formats handled by `astropy.time.Time`
 --------------------------------------
 
-See this list of all allowed formats, see `this list <https://docs.astropy.org/en/stable/time/#time-format>`__
+`See this list of all the allowed formats. <https://docs.astropy.org/en/stable/time/#time-format>`__
 
 .. code-block:: python
 
