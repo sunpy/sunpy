@@ -1,6 +1,7 @@
 import cdflib
 import pandas as pd
 from cdflib.epochs import CDFepoch
+from packaging.version import Version
 
 import astropy.units as u
 
@@ -35,7 +36,10 @@ def read_cdf(fname):
     # Extract the time varying variables
     cdf_info = cdf.cdf_info()
     meta = cdf.globalattsget()
-    all_var_keys = cdf_info['rVariables'] + cdf_info['zVariables']
+    if hasattr(cdflib, "__version__") and Version(cdflib.__version__) >= Version("1.0.0"):
+        all_var_keys = cdf_info.rVariables + cdf_info.zVariables
+    else:
+        all_var_keys = cdf_info['rVariables'] + cdf_info['zVariables']
     var_attrs = {key: cdf.varattsget(key) for key in all_var_keys}
     # Get keys that depend on time
     var_keys = [var for var in var_attrs if 'DEPEND_0' in var_attrs[var]]
@@ -65,7 +69,11 @@ def read_cdf(fname):
                 continue
 
             # Get data
-            if cdf.varinq(var_key)['Last_Rec'] == -1:
+            if hasattr(cdflib, "__version__") and Version(cdflib.__version__) >= Version("1.0.0"):
+                var_last_rec = cdf.varinq(var_key).Last_Rec
+            else:
+                var_last_rec = cdf.varinq(var_key)['Last_Rec']
+            if var_last_rec == -1:
                 log.debug(f'Skipping {var_key} in {fname} as it has zero elements')
                 continue
 
