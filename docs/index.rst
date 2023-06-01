@@ -18,10 +18,11 @@ It includes an interface for searching and downloading data from multiple data p
 
         :material-outlined:`accessibility_new;8em;sd-text-secondary`
 
-        **New users start here!** Walkthrough on how to install sunpy and use the key features of the package.
+        **New users start here!**
+        Walkthrough on how to install sunpy and use the key features of the package.
 
     .. grid-item-card:: How-to Guides
-        :link: how_to_guide
+        :link: sunpy-how-to-index
         :link-type: ref
         :text-align: center
 
@@ -39,7 +40,7 @@ It includes an interface for searching and downloading data from multiple data p
         Examples including plots on accomplishing common tasks using sunpy.
 
     .. grid-item-card:: Topic Guides
-        :link: topic-guide-index
+        :link: sunpy-topic-guide-index
         :link-type: ref
         :text-align: center
 
