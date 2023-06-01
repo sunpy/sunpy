@@ -274,7 +274,7 @@ and as a check:
 
 Note that some of the fluxes are returned as "None".
 This is because some feature recognition methods for flares do not report the peak flux.
-However, because the location of ``event_coord1`` is greater than 50, the entry from the HEK for that flare detection is returned.
+However, because the location of "event_coord1" is greater than 50, the entry from the HEK for that flare detection is returned.
 
 Let's say we want all the flares west of 50 arcseconds AND have a peak flux over 1000:
 

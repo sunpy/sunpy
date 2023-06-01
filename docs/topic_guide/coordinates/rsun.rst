@@ -1,4 +1,4 @@
-.. _role-of-rsun-in-coordinate-transformations:
+.. _sunpy-topic-guide-coordinates-rsun-in-coordinate-transformations:
 
 The role of ``rsun`` in coordinate transformations
 ==================================================

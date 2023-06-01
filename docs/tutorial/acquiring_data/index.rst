@@ -144,20 +144,19 @@ As an example, specific passbands can be searched for by supplying an `~astropy.
 
     >>> import astropy.units as u
 
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh,
-    ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/4'), a.Instrument.aia,
+    ...             a.Wavelength(171*u.angstrom))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    3 Results from the NoRHClient:
-    Source: https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html
+    1 Results from the VSOClient:
+    Source: http://vso.stanford.edu/cgi-bin/search
+    Total estimated size: 67.789 Mbyte
     <BLANKLINE>
-           Start Time               End Time        ... Provider Wavelength
-                                                    ...             GHz
-    ----------------------- ----------------------- ... -------- ----------
-    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999 ...      NRO       17.0
-    2012-03-05 00:00:00.000 2012-03-05 23:59:59.999 ...      NRO       17.0
-    2012-03-06 00:00:00.000 2012-03-06 23:59:59.999 ...      NRO       17.0
+           Start Time               End Time        Source ... Extent Type   Size
+                                                           ...              Mibyte
+    ----------------------- ----------------------- ------ ... ----------- --------
+    2012-03-04 00:00:00.000 2012-03-04 00:00:01.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     <BLANKLINE>
 
@@ -166,43 +165,43 @@ Data of a given cadence can also be specified using the `a.Sample <sunpy.net.att
 .. code-block:: python
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.aia,
-    ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+    ...             a.Wavelength(171*u.angstrom), a.Sample(120*u.minute))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    289 Results from the VSOClient:
+    25 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
-    Total estimated size: 19.591 Gbyte
+    Total estimated size: 1.695 Gbyte
     <BLANKLINE>
-           Start Time       ...
-                            ...
-    ----------------------- ...
-    2012-03-04 00:00:00.000 ...
-    2012-03-04 00:10:00.000 ...
-    2012-03-04 00:20:00.000 ...
-    2012-03-04 00:30:00.000 ...
-    2012-03-04 00:40:00.000 ...
-    2012-03-04 00:50:00.000 ...
-    2012-03-04 01:00:00.000 ...
-    2012-03-04 01:10:00.000 ...
-    2012-03-04 01:20:00.000 ...
-    2012-03-04 01:30:00.000 ...
-                        ... ...
-    2012-03-05 22:30:00.000 ...
-    2012-03-05 22:40:00.000 ...
-    2012-03-05 22:50:00.000 ...
-    2012-03-05 23:00:00.000 ...
-    2012-03-05 23:10:00.000 ...
-    2012-03-05 23:20:00.000 ...
-    2012-03-05 23:30:00.000 ...
-    2012-03-05 23:40:00.000 ...
-    2012-03-05 23:50:00.000 ...
-    2012-03-06 00:00:00.000 ...
-    Length = 289 rows
+           Start Time               End Time        Source ... Extent Type   Size
+                                                           ...              Mibyte
+    ----------------------- ----------------------- ------ ... ----------- --------
+    2012-03-04 00:00:00.000 2012-03-04 00:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 02:00:00.000 2012-03-04 02:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 04:00:00.000 2012-03-04 04:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 06:00:00.000 2012-03-04 06:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 08:00:00.000 2012-03-04 08:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 10:00:00.000 2012-03-04 10:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 12:00:00.000 2012-03-04 12:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 14:00:00.000 2012-03-04 14:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 16:00:00.000 2012-03-04 16:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-04 18:00:00.000 2012-03-04 18:00:01.000    SDO ...    FULLDISK 64.64844
+                        ...                     ...    ... ...         ...      ...
+    2012-03-05 06:00:00.000 2012-03-05 06:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 08:00:00.000 2012-03-05 08:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 10:00:00.000 2012-03-05 10:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 12:00:00.000 2012-03-05 12:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 14:00:00.000 2012-03-05 14:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 16:00:00.000 2012-03-05 16:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 18:00:00.000 2012-03-05 18:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 20:00:00.000 2012-03-05 20:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-05 22:00:00.000 2012-03-05 22:00:01.000    SDO ...    FULLDISK 64.64844
+    2012-03-06 00:00:00.000 2012-03-06 00:00:01.000    SDO ...    FULLDISK 64.64844
+    Length = 25 rows
     <BLANKLINE>
     <BLANKLINE>
 
-To search for data from multiple instruments, wavelengths, times etc., use the pipe ``|`` operator which joins queries using a logical ``OR`` operator.
+To search for data from multiple instruments, wavelengths, times etc., use the pipe ``|`` operator which joins queries using a logical "OR" operator.
 In this example we'll search for LYRA or RHESSI data in a given time range:
 
 .. code-block:: python

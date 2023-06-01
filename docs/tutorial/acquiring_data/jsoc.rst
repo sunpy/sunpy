@@ -8,7 +8,7 @@ Joint Science Operations Center (JSOC) contains data products from the Solar Dyn
 These data are available from the JSOC database, which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`__.
 
 sunpy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
-It uses `drms module <https://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as the VSO Client.
+It uses `drms module <https://docs.sunpy.org/projects/drms>`__ as its backend.
 
 There are two ways of downloading JSOC data.
 One way is using sunpy's unified search interface, known as ``Fido``.
@@ -84,7 +84,7 @@ Constructing a Basic Query
 --------------------------
 
 Let's start with a very simple query.
-We could ask for all ``hmi.v_45s`` series data between January 1st 2014 from 00:00 to 01:00:
+We could ask for all "hmi.v_45s" series data between January 1st 2014 from 00:00 to 01:00:
 
 .. code-block:: python
 
@@ -496,7 +496,7 @@ Using Sample
 ------------
 
 In case you need to query for data, at some interval of time, say every 10 min, you can pass it using `~sunpy.net.attrs.Sample`.
-In other words, if you need to query for ``hmi.v_45s`` series data between January 1st 2014 from 00:00 to 01:00 at 10 minute intervals, you can do:
+In other words, if you need to query for "hmi.v_45s" series data between January 1st 2014 from 00:00 to 01:00 at 10 minute intervals, you can do:
 
 .. code-block:: python
 
@@ -525,7 +525,7 @@ Note that the argument passed in ``a.Sample()`` must be an Astropy quantity, con
 Constructing complex queries
 ----------------------------
 
-Complex queries can be built using ``OR`` operators.
+Complex queries can be built using "OR" operators.
 Let's look for 2 different series data at the same time:
 
 .. code-block:: python
@@ -594,10 +594,10 @@ Let's look for 2 different series data at the same time:
    <BLANKLINE>
 
 The two series names are joined together by the operator ``|``.
-This is the ``OR`` operator.
+This is the "OR" operator.
 Think of the above query as setting a set of conditions which get passed to the JSOC.
 
-Let's say you want all the ``hmi.v_45s`` data from two separate days:
+Let's say you want all the "hmi.v_45s" data from two separate days:
 
 .. code-block:: python
 

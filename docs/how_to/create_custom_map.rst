@@ -59,7 +59,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
     rsun_obs: 965.3829548285768
 
 From this we can see now that the function returned a `sunpy.util.MetaDict` that populated the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`, and the data array.
-Since the ``reference_pixel`` and ``scale`` keywords were not passed in the example above, the values of the ``crpix`` and ``cdelt`` keys were set to the center of the data array and 1, respectively, by default.
+Since the ``reference_pixel`` and ``scale`` keywords were not passed in the example above, the values of the "CRPIXn" and "CDELTn" keys were set to the center of the data array and 1, respectively, by default.
 
 These keywords can be passed to the function in the form of an `astropy.units.Quantity` with associated units.
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function:
