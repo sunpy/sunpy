@@ -44,7 +44,7 @@ def read_cdf(fname):
     # Extract the time varying variables
     cdf_info = cdf.cdf_info()
     meta = cdf.globalattsget()
-    if hasattr(cdflib, "__version__") and Version(cdflib.__version__) < Version("1.0.0"):
+    if hasattr(cdflib, "__version__") and Version(cdflib.__version__) >= Version("1.0.0"):
         all_var_keys = cdf_info.rVariables + cdf_info.zVariables
     else:
         all_var_keys = cdf_info['rVariables'] + cdf_info['zVariables']
@@ -75,7 +75,7 @@ def read_cdf(fname):
                 continue
 
             # Get data
-            if hasattr(cdflib, "__version__") and Version(cdflib.__version__) < Version("1.0.0"):
+            if hasattr(cdflib, "__version__") and Version(cdflib.__version__) >= Version("1.0.0"):
                 var_last_rec = cdf.varinq(var_key).Last_Rec
             else:
                 var_last_rec = cdf.varinq(var_key)['Last_Rec']
