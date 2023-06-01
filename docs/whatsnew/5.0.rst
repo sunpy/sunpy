@@ -81,6 +81,7 @@ The minimum required versions of these optional dependencies has also been updat
 - pandas 1.2.0
 - scikit-image 0.18.0
 - scipy 1.7.0
+- cdflib 0.3.20
 
 New documentation structure
 ===========================
