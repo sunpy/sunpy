@@ -1,4 +1,4 @@
-.. _timeseries_guide:
+.. _sunpy-tutorial-timeseries:
 
 **********
 Timeseries
@@ -15,12 +15,12 @@ Additionally, you will learn how to truncate a TimeSeries to a specific window i
 
 .. note::
 
-    In this section and in :ref:`map_guide`, we will use the sample data included with sunpy.
+    In this section and in :ref:`sunpy-tutorial-maps`, we will use the sample data included with sunpy.
     These data are primarily useful for demonstration purposes or simple debugging.
     These files have names like ``sunpy.data.sample.EVE_TIMESERIES`` and ``sunpy.data.sample.GOES_XRS_TIMESERIES`` and are automatically downloaded to your computer as you need them.
     Once downloaded, these sample data files will be paths to their location on your computer.
 
-.. _creating-timeseries:
+.. _sunpy-tutorial-timeseries-creating-timeseries:
 
 Creating a TimeSeries
 =====================
@@ -31,6 +31,7 @@ To create a `~sunpy.timeseries.TimeSeries` from some sample GOES XRS data:
 
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+
     >>> sunpy.data.sample.GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     PosixPath('.../go1520110607.fits')
     >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
@@ -41,7 +42,7 @@ In this case, we have a FITS file containing an X-ray light curve as observed by
 .. note::
 
     Time series data are stored in a variety of file types (e.g. FITS, csv, CDF), and so it is not always possible to detect the source.
-    **sunpy** ships with a number of known instrumental sources, and can also load CDF files that conform to the `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`__.
+    sunpy ships with a number of known instrumental sources, and can also load CDF files that conform to the `Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`__.
 
 To make sure this has all worked correctly, we can take a quick look at ``my_timeseries``,
 
@@ -92,7 +93,7 @@ Otherwise, you can use the :meth:`~sunpy.timeseries.GenericTimeSeries.quicklook`
     my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
     print(my_timeseries._repr_html_())
 
-.. _timeseries-data:
+.. _sunpy-tutorial-timeseries-timeseries-data:
 
 TimeSeries Data
 ===============
@@ -112,7 +113,7 @@ To pull out the just the data corresponding to this column, we can use the :meth
     >>> my_timeseries.quantity('xrsa') # doctest: +REMOTE_DATA
     <Quantity [1.e-09, 1.e-09, 1.e-09, ..., 1.e-09, 1.e-09, 1.e-09] W / m2>
 
-Notice that this is a `~astropy.units.Quantity` object which we discussed in :ref:`units-sunpy`.
+Notice that this is a `~astropy.units.Quantity` object which we discussed in :ref:`sunpy-tutorial-units`.
 Additionally, the timestamp associated with each point and the time range of the observation are accessible as attributes,
 
 .. code-block:: python
@@ -132,12 +133,12 @@ Additionally, the timestamp associated with each point and the time range of the
                86397.66999995698 seconds
     <BLANKLINE>
 
-Notice that these return a `astropy.time.Time` and `sunpy.time.TimeRange`, both of which we covered in :ref:`time-in-sunpy`.
+Notice that these return a `astropy.time.Time` and `sunpy.time.TimeRange`, both of which we covered in :ref:`sunpy-tutorial-times`.
 
-.. _inspecting-timeseries:
+.. _sunpy-tutorial-timeseries-inspecting-timeseries:
 
 Inspecting TimeSeries Metadata
-===============================
+==============================
 
 A TimeSeries object also includes metadata associated with that observation.
 Some of this metadata is exposed via attributes on the TimeSeries.
@@ -180,10 +181,9 @@ All of the metadata can also be accessed using the `~sunpy.timeseries.GenericTim
 .. warning::
 
     A word of caution: many data sources provide little to no meta data so this variable might be empty.
-    See :ref:`timeseries-metadata-explanation` for a more detailed explanation of how metadata on TimeSeries objects is handled.
+    See :ref:`sunpy-topic-guide-timeseries-metadata` for a more detailed explanation of how metadata on TimeSeries objects is handled.
 
-
-.. _plotting-timeseries:
+.. _sunpy-tutorial-timeseries-plotting-timeseries:
 
 Visualizing TimeSeries
 ======================
@@ -198,9 +198,10 @@ Visualizing TimeSeries
     # This snippet of code is not visible in the rendered documentation.
     import sunpy.timeseries
     import sunpy.data.sample
+
     my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
 
-The **sunpy** TimeSeries object has its own built-in plot methods so that it is easy to quickly view your time series.
+The sunpy TimeSeries object has its own built-in plot methods so that it is easy to quickly view your time series.
 To create a plot,
 
 .. plot::
@@ -245,6 +246,7 @@ For example, to trim our GOES data into a period of interest use:
 .. code-block:: python
 
     >>> from sunpy.time import TimeRange
+
     >>> tr = TimeRange('2012-06-01 05:00', '2012-06-01 06:30')
     >>> my_timeseries_trunc = my_timeseries.truncate(tr) # doctest: +REMOTE_DATA
 
@@ -268,16 +270,17 @@ This can be performed using the TimeSeries factory with the ``concatenate=True``
     >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source='XRS', concatenate=True)  # doctest: +SKIP
 
 Note, you can list any number of files, or a folder or use a glob to select the input files to be concatenated.
-It is possible to concatenate two TimeSeries after creating them with the factory using the `~sunpy.timeseries.GenericTimeSeries.concatenate` method.
+It is possible to concatenate two TimeSeries after creating them using the `~sunpy.timeseries.GenericTimeSeries.concatenate` method.
 For example:
 
 .. code-block:: python
 
     >>> concatenated_timeseries = goes_timeseries_1.concatenate(goes_timeseries_2) # doctest: +SKIP
 
-This will result in a TimeSeries identical to if you used the factory to create it in one step.
-A limitation of the TimeSeries class is that often it is not easy to determine the source observatory/instrument of a file, generally because the file formats used vary depending on the scientific working groups, thus some sources need to be explicitly stated (as a keyword argument) and so it is not possible to concatenate files from multiple sources with the factory.
-To do this you can still use the `~sunpy.timeseries.GenericTimeSeries.concatenate` method, which will create a new TimeSeries with all the rows and columns of the source and concatenated TimeSeries in one:
+This will result in a TimeSeries identical to if you had created them in one step.
+A limitation of the TimeSeries class is that it is not always possible to determine the source observatory or instrument of a given file.
+Thus some sources need to be explicitly stated (using the keyword argument) and so, it is not possible to concatenate files from multiple sources.
+To do this, you can still use the `~sunpy.timeseries.GenericTimeSeries.concatenate` method, which will create a new TimeSeries with all the rows and columns of the source and concatenated TimeSeries in one:
 
 .. code-block:: python
 

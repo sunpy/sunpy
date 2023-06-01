@@ -1,4 +1,4 @@
-.. _map_guide:
+.. _sunpy-tutorial-maps:
 
 ****
 Maps
@@ -7,7 +7,7 @@ Maps
 In this section of the tutorial, you will learn about the `Map <sunpy.map.GenericMap>` object.
 Map objects hold two-dimensional data along with the accompanying metadata.
 They can be used with any two-dimensional data array with two spatial axes and FITS-compliant metadata.
-As you will see in this tutorial, the primary advantage of using a Map object over just a bare NumPy array is the ability to perform coordinate aware operations on the underlying array, such as rotating the Map to remove the roll angle of an instrument or cropping a Map to a specific field of view.
+As you will see in this tutorial, the primary advantage of using a Map object over a bare NumPy array is the ability to perform coordinate aware operations on the underlying array, such as rotating the Map to remove the roll angle of an instrument or cropping a Map to a specific field of view.
 Additionally, because Map is capable of ingesting data from many different sources, it provides a common interface for any two-dimensional data product.
 
 By the end of this tutorial, you will learn how to create a Map, access the underlying data and metadata, convert between physical coordinates and pixel coordinates of a Map, and the basics of visualizing a Map.
@@ -15,28 +15,29 @@ Additionally, you will learn how to combine multiple Maps into a `~sunpy.map.Map
 
 .. note::
 
-    In this section and in :ref:`timeseries_guide`, we will use the sample data included with sunpy.
+    In this section and in :ref:`sunpy-tutorial-timeseries`, we will use the sample data included with sunpy.
     These data are primarily useful for demonstration purposes or simple debugging.
     These files have names like ``sunpy.data.sample.AIA_171_IMAGE`` and ``sunpy.data.sample.RHESSI_IMAGE`` and are automatically downloaded to your computer as you need them.
     Once downloaded, these sample data files will be paths to their location on your computer.
 
-.. _creating-maps:
+.. _sunpy-tutorial-map-creating-maps:
 
 Creating Maps
 =============
 
-To create a `~sunpy.map.Map` from a sample AIA image,
+To create a `~sunpy.map.Map` from a sample Atmospheric Imaging Assembly (AIA) image,
 
 .. code-block:: python
 
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+
     >>> sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
     PosixPath('.../AIA20110607_063302_0171_lowres.fits')
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
 In many cases sunpy automatically detects the type of file as well as the the instrument associated with it.
-In this case, we have a FITS file from the AIA instrument onboard SDO.
+In this case, we have a FITS file from the AIA instrument onboard the Solar Dynamics Observatory (SDO).
 To make sure this has all worked correctly, we can take a quick look at ``my_map``,
 
 .. code-block:: python
@@ -87,7 +88,7 @@ Otherwise, you can use the :meth:`~sunpy.map.GenericMap.quicklook` method to see
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     print(my_map._repr_html_())
 
-.. _inspecting-maps:
+.. _sunpy-tutorial-map-inspecting-maps:
 
 Inspecting Map Metadata
 =======================
@@ -101,7 +102,7 @@ For example, to access the date of the observation,
     >>> my_map.date  # doctest: +REMOTE_DATA
     <Time object: scale='utc' format='isot' value=2011-06-07T06:33:02.770>
 
-Notice that this is an `~astropy.time.Time` object which we discussed in the previous :ref:`time-in-sunpy` section of the tutorial.
+Notice that this is an `~astropy.time.Time` object which we discussed in the previous :ref:`sunpy-tutorial-times` section of the tutorial.
 Similarly, we can access the exposure time of the image,
 
 .. code-block:: python
@@ -109,11 +110,11 @@ Similarly, we can access the exposure time of the image,
     >>> my_map.exposure_time  # doctest: +REMOTE_DATA
     <Quantity 0.234256 s>
 
-Notice that this returns an `~astropy.units.Quantity` object which we discussed in the previous :ref:`units-sunpy` section of the tutorial.
+Notice that this returns an `~astropy.units.Quantity` object which we discussed in the previous :ref:`sunpy-tutorial-units` section of the tutorial.
 The full list of attributes can be found in the reference documentation for `~sunpy.map.GenericMap`.
 These metadata attributes are all derived from the underlying FITS metadata, but are represented as rich Python objects, rather than simple strings or numbers.
 
-.. _map-data:
+.. _sunpy-tutorial-map-data:
 
 Map Data
 ========
@@ -168,12 +169,12 @@ Additionally, there are several methods that provide basic summary statistics of
     >>> my_map.mean()  # doctest: +REMOTE_DATA
     427.02252
 
-.. _coordinates-wcs-maps:
+.. _sunpy-tutorial-map-coordinates-wcs:
 
-Maps, Coordinates, and the World Coordinate System
-==================================================
+Coordinates, and the World Coordinate System
+============================================
 
-In :ref:`coordinates-sunpy`, you learned how to define coordinates with `~astropy.coordinates.SkyCoord` using different solar coordinate frames.
+In :ref:`sunpy-tutorial-coordinates`, you learned how to define coordinates with `~astropy.coordinates.SkyCoord` using different solar coordinate frames.
 The coordinate frame of a Map is provided as an attribute,
 
 .. code-block:: python
@@ -259,7 +260,7 @@ As another example, if we transform the center of the lower-left pixel to a worl
 
 These two methods are extremely useful when trying to understand which pixels correspond to which physical coordinates or when trying to locate the same physical location in images taken by separate spacecraft.
 
-.. _plotting-maps:
+.. _sunpy-tutorial-map-plotting-maps:
 
 Visualizing Maps
 ================
@@ -278,7 +279,7 @@ Visualizing Maps
     import astropy.units as u
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-In the :ref:`creating-maps` section, you learned how to generate a quicklook summary of a Map.
+In the :ref:`sunpy-tutorial-map-creating-maps` section, you learned how to generate a quicklook summary of a Map.
 However, the Map object also has a :meth:`~sunpy.map.GenericMap.plot` method that allows for more fine-grained control over how the Map is visualized and is especially useful for generating publication-quality plots.
 In this section of the tutorial, you will learn how to build up an increasingly detailed visualization of a Map, including adjusting the colormap and normalization and and overlaying coordinates and contours.
 
@@ -292,6 +293,7 @@ First, let's create a basic plot of our Map, including a colorbar,
     :context: close-figs
 
     import matplotlib.pyplot as plt
+
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_map)
     my_map.plot(axes=ax)
@@ -301,9 +303,9 @@ First, let's create a basic plot of our Map, including a colorbar,
 .. note::
 
     We imported `matplotlib.pyplot` in order to create the figure and the axis we plotted on our map onto.
-    Under the hood, sunpy uses of `matplotlib` to visualize the image meaning that plots built with sunpy can be further customized using `matplotlib`.
+    Under the hood, sunpy uses `matplotlib` to visualize the image meaning that plots built with sunpy can be further customized using `matplotlib`.
     **However, for the purposes of this tutorial, you do not need to be familiar with Matplotlib.**
-    Fore a series of detailed examples showing how to heavily customize your Map plots, see the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` as well as the documentation for `astropy.visualization.wcsaxes`.
+    For a series of detailed examples showing how to customize your Map plots, see the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` as well as the documentation for `astropy.visualization.wcsaxes`.
 
 Note that the title and colormap have been set by sunpy based on the observing instrument and wavelength.
 Furthermore, the tick and axes labels have been automatically set based on the coordinate system of the Map.
@@ -315,16 +317,14 @@ To fix this, we can use the ``clip_interval`` keyword to automatically adjust th
     :include-source:
     :context: close-figs
 
-    import astropy.units as u
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_map)
     my_map.plot(axes=ax, clip_interval=(1, 99.5)*u.percent)
     plt.colorbar()
     plt.show()
 
-
 Changing the Colormap and Normalization
-----------------------------------------
+---------------------------------------
 
 Historically, particular colormaps are assigned to images based on what instrument they are from and what wavelength is being observed.
 By default, sunpy will select the colormap based on the available metadata.
@@ -336,7 +336,7 @@ This default colormap is available as an attribute,
     'SDO AIA 171.0 Angstrom'
 
 When visualizing a Map, you can change the colormap using the ``cmap`` keyword argument.
-For example, you can use the 'inferno' colormap from `matplotlib`.
+For example, you can use the 'inferno' colormap from `matplotlib`:
 
 .. plot::
     :include-source:
@@ -356,13 +356,14 @@ For example, you can use the 'inferno' colormap from `matplotlib`.
 The normalization, or the mapping between the data values and the colors in our colormap, is also determined based on the underlying metadata.
 Notice that in the plots we've made so far, the ticks on our colorbar are not linearly spaced.
 Just like in the case of the colormap, we can use a normalization other than the default by passing a keyword argument to the :meth:`~sunpy.map.GenericMap.plot` method.
-For example, we can use a logarithmic normalization instead.
+For example, we can use a logarithmic normalization instead:
 
 .. plot::
     :include-source:
     :context: close-figs
 
     import matplotlib.colors
+
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_map)
     my_map.plot(norm=matplotlib.colors.LogNorm())
@@ -374,8 +375,7 @@ For example, we can use a logarithmic normalization instead.
     You can also view or make changes to the default settings through the ``sunpy.map.GenericMap.plot_settings`` dictionary.
     See :ref:`sphx_glr_generated_gallery_plotting_map_editcolormap.py` for an example of of how to change the default plot settings.
 
-
-.. _wcsaxes-plotting:
+.. _sunpy-tutorial-map-wcsaxes-plotting:
 
 Overlaying Contours and Coordinates
 -----------------------------------
@@ -394,7 +394,7 @@ For example, we can draw contours around the brightest 0.5% percent of pixels in
     my_map.draw_contours([2, 5, 10, 50, 90] * u.percent, axes=ax)
     plt.show()
 
-Additionally, the solar limb, as determined by the location of the observing instrument at the time of the observation, can be easily overlaid on an image.
+Additionally, the solar limb, as determined by the location of the observing instrument at the time of the observation, can be easily overlaid on an image:
 
 .. plot::
     :include-source:
@@ -406,7 +406,7 @@ Additionally, the solar limb, as determined by the location of the observing ins
     my_map.draw_limb(axes=ax, color='C0')
     plt.show()
 
-We can also overlay a box denoting a particular a region of interest as expressed in world coordinates using the the coordinate frame of our image.
+We can also overlay a box denoting a particular a region of interest as expressed in world coordinates using the the coordinate frame of our image:
 
 .. plot::
     :include-source:
@@ -420,15 +420,16 @@ We can also overlay a box denoting a particular a region of interest as expresse
     my_map.draw_quadrangle(roi_bottom_left, top_right=roi_top_right, axes=ax, color='C0')
     plt.show()
 
-Because our visualization knows about the coordinate system of our Map, it can transform any coordinate to the coordinate frame of our Map and then use the underlying WCS that we discussed in the :ref:`coordinates-wcs-maps` section to translate this to a pixel position.
+Because our visualization knows about the coordinate system of our Map, it can transform any coordinate to the coordinate frame of our Map and then use the underlying WCS that we discussed in the :ref:`sunpy-tutorial-map-coordinates-wcs` section to translate this to a pixel position.
 This makes it simple to plot *any* coordinate on top of our Map using the :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord` method.
-The following example shows how to plot some points on our Map, including the center coordinate of our Map.
+The following example shows how to plot some points on our Map, including the center coordinate of our Map:
 
 .. plot::
     :include-source:
     :context: close-figs
 
     coords = SkyCoord(Tx=[100,1000] * u.arcsec, Ty=[100,1000] * u.arcsec, frame=my_map.coordinate_frame)
+
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_map)
     my_map.plot(axes=ax, clip_interval=(1,99.5)*u.percent)
@@ -441,33 +442,35 @@ The following example shows how to plot some points on our Map, including the ce
     Map visualizations can be heavily customized using both `matplotlib` and `astropy.visualization.wcsaxes`.
     See the :ref:`Plotting section of the Example Gallery <sphx_glr_generated_gallery_plotting>` for more detailed examples of how to customize Map visualizations.
 
-.. _cropping-maps:
+.. _sunpy-tutorial-map-cropping-maps:
 
 Cropping Maps and Combining Pixels
 ==================================
 
 In analyzing images of the Sun, we often want to choose a smaller portion of the full disk to look at more closely.
-Let's use the region of interest we defined above to crop out that portion of our image.
+Let's use the region of interest we defined above to crop out that portion of our image:
 
 .. plot::
     :include-source:
     :context: close-figs
 
     my_submap = my_map.submap(roi_bottom_left, top_right=roi_top_right)
+
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_submap)
     my_submap.plot(axes=ax)
     plt.show()
 
-Additionally, we also may want to combine multiple pixels into a single pixel (a so called "superpixel") to, for example, increase our signal-to-noise ratio.
+Additionally, we also may want to combine multiple pixels into a single pixel (a "superpixel") to, for example, increase our signal-to-noise ratio.
 We can accomplish this with the `~sunpy.map.GenericMap.superpixel` method by specifying how many pixels, in each dimension, we want our new superpixels to contain.
-For example, we can combine 4 pixels in each dimension such that our new superpixels contain 16 original pixels.
+For example, we can combine 4 pixels in each dimension such that our new superpixels contain 16 original pixels:
 
 .. plot::
     :include-source:
     :context: close-figs
 
     my_super_submap = my_submap.superpixel((5,5)*u.pixel)
+
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_super_submap)
     my_super_submap.plot(axes=ax)
@@ -478,7 +481,7 @@ For example, we can combine 4 pixels in each dimension such that our new superpi
     Map provides additional methods for manipulating the underlying image data.
     See the reference documentation for `~sunpy.map.GenericMap` for a complete list of available methods as well as the :ref:`Map section of the Example Gallery <sphx_glr_generated_gallery_map>` for more detailed examples.
 
-.. _map-sequences:
+.. _sunpy-tutorial-map-map-sequences:
 
 Map Sequences
 =============
@@ -493,7 +496,7 @@ A `~sunpy.map.MapSequence` can be created by supplying multiple existing maps:
     >>> map_seq = sunpy.map.Map([my_map, another_map], sequence=True)  # doctest: +REMOTE_DATA
 
 A map sequence can be indexed in the same manner as a list.
-For example, the following returns the same information as in :ref:`creating-maps`.
+For example, the following returns the same information as in :ref:`sunpy-tutorial-map-creating-maps`:
 
 .. code-block:: python
 
