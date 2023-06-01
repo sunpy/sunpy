@@ -47,8 +47,8 @@ class XRSClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument.xrs)  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.xrs)  # doctest: +REMOTE_DATA
+    >>> results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -220,8 +220,8 @@ class SUVIClient(GenericClient):
     >>> from sunpy.net import Fido, attrs as a
     >>> import astropy.units as u
     >>> results = Fido.search(a.Time("2020/7/10", "2020/7/10 00:10"), a.Instrument('suvi'),a.Level.two,
-    ...                       a.goes.SatelliteNumber(16), a.Wavelength(304*u.Angstrom))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA
+    ...                       a.goes.SatelliteNumber(16), a.Wavelength(304*u.Angstrom))  # doctest: +REMOTE_DATA
+    >>> results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
