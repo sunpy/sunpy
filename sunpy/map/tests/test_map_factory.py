@@ -326,20 +326,20 @@ def test_map_fits():
     assert isinstance(fits_map, sunpy.map.GenericMap)
     assert fits_map.data.base is not None
 
-def test_map_list_of_files():
+def test_map_list_of_files_with_one_broken():
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits')]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map(files, silence_errors=True)
+        amap = sunpy.map.Map(files, allow_errors=True)
         assert amap.data.shape == (128,128)
 
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits'), AIA_171_IMAGE]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map(files, silence_errors=True)
+        amap = sunpy.map.Map(files, allow_errors=True)
         assert len(amap) == 2
 
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map(files, silence_errors=True, sequence=True)
+        amap = sunpy.map.Map(files, allow_errors=True, sequence=True)
         assert len(amap) == 2
 
     with pytest.raises(OSError, match='Failed to read'):
-        sunpy.map.Map(files, silence_errors=False)
+        sunpy.map.Map(files, allow_errors=False)

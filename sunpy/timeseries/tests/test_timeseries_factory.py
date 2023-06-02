@@ -365,7 +365,7 @@ def test_passed_ts():
 def test_invalid_manual_data():
     meta = MetaDict({'key': 'value'})
     data = []
-    with pytest.raises(NoMatchError):
+    with pytest.raises(NoMatchError, match=""):
         sunpy.timeseries.TimeSeries(data, meta)
 
 @pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')

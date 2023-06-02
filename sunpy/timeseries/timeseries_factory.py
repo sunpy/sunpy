@@ -329,13 +329,16 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             try:
                 all_ts += self._parse_arg(arg, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError) as e:
+                msg = f"One of the files failed to validate with: {e}"
                 if self.silence_errors or self.allow_errors:
-                    warn_user(f"One of the files failed to validate with: {e}")
+                    warn_user(msg)
                     continue
                 else:
-                    raise
-            except Exception:
-                raise
+                    msg += "\nTo bypass these errors, set `allow_errors=True`."
+                    raise type(e)(msg) from e
+            except Exception as e:
+                msg = f"Something went wrong: {e}"
+                raise type(e)(msg) from e
         return all_ts
 
     @seconddispatch
@@ -408,7 +411,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    @deprecated_renamed_argument("silence_errors","allow_errors","5.0", warning_type=SunpyDeprecationWarning)
+    @deprecated_renamed_argument("silence_errors","allow_errors","5.1", warning_type=SunpyDeprecationWarning)
     def __call__(self, *args, silence_errors=False,allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
@@ -422,7 +425,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Parameters
         ----------
         silence_errors : `bool`, optional
-            Deprecated.
+            Deprecated, renamed to `allow_errors`.
 
             If set, ignore data-header pairs which cause an exception.
             Defaults to `False`.
