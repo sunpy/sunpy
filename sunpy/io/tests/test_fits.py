@@ -138,7 +138,8 @@ def test_fitsheader():
     """Test that all test data can be converted back to a FITS header."""
     extensions = ('.fts', '.fits')
     for ext in extensions:
-        test_files = [f for f in get_test_data_filenames() if f.suffix == ext]
+        bad_file = "not_actually_fits.fits"
+        test_files = [f for f in get_test_data_filenames() if f.suffix == ext and f.name != bad_file]
         for ffile in test_files:
             fits_file = fits.open(ffile)
             fits_file.verify("fix")
