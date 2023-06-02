@@ -189,18 +189,28 @@ def test_errors(tmpdir):
         sunpy.map.Map(files)
 
 
+@pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('silence', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
-                             (False, sunpy.map.mapbase.MapMetaValidationError,
-                              'Image coordinate units for axis 1 not present in metadata.')])
+                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                           'Image coordinate units for axis 1 not present in metadata.')])
 def test_silence_errors(silence, error, match):
     # Check that the correct errors are raised depending on silence_errors value
     data = np.arange(0, 100).reshape(10, 10)
-    header = {}
     with pytest.raises(error, match=match):
-        _ = sunpy.map.Map(data, header, silence_errors=silence)
+        sunpy.map.Map(data, {}, silence_errors=silence)
 
+@pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
+@pytest.mark.parametrize(('allow_errors', 'error', 'match'),
+                         [(True, RuntimeError, 'No maps loaded'),
+                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                           'Image coordinate units for axis 1 not present in metadata.')])
+def test_allow_errors(allow_errors, error, match):
+    # Check that the correct errors are raised depending on allow_errors value
+    data = np.arange(0, 100).reshape(10, 10)
+    with pytest.raises(error, match=match):
+        sunpy.map.Map(data, {}, allow_errors=allow_errors)
 
 def test_dask_array():
     dask_array = pytest.importorskip('dask.array')
@@ -316,20 +326,20 @@ def test_map_fits():
     assert isinstance(fits_map, sunpy.map.GenericMap)
     assert fits_map.data.base is not None
 
-def test_map_list_of_files():
+def test_map_list_of_files_with_one_broken():
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits')]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map(files, silence_errors=True)
+        amap = sunpy.map.Map(files, allow_errors=True)
         assert amap.data.shape == (128,128)
 
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits'), AIA_171_IMAGE]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map(files, silence_errors=True)
+        amap = sunpy.map.Map(files, allow_errors=True)
         assert len(amap) == 2
 
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map(files, silence_errors=True, sequence=True)
+        amap = sunpy.map.Map(files, allow_errors=True, sequence=True)
         assert len(amap) == 2
 
     with pytest.raises(OSError, match='Failed to read'):
-        sunpy.map.Map(files, silence_errors=False)
+        sunpy.map.Map(files, allow_errors=False)
