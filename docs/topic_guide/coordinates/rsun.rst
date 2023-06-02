@@ -1,7 +1,8 @@
 .. _sunpy-topic-guide-coordinates-rsun-in-coordinate-transformations:
 
-The role of ``rsun`` in coordinate transformations
-==================================================
+**********************************************
+The role of rsun in coordinate transformations
+**********************************************
 
 In the case of `~sunpy.coordinates.frames.HeliographicCarrington`, one can specify ``observer='self'`` to indicate that the coordinate itself should be used as the observer for defining the coordinate frame.
 

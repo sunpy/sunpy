@@ -1,7 +1,8 @@
 .. _sunpy-how-to-the-remote-data-manager:
 
+***************************
 Use the Remote Data Manager
-===========================
+***************************
 
 Often, data prep or analysis functions require files to be downloaded from a remote server.
 The remote data manager handles the usage of remote data files including file verification using hashes.

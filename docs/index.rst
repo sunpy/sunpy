@@ -12,7 +12,7 @@ It includes an interface for searching and downloading data from multiple data p
     :gutter: 2
 
     .. grid-item-card:: Tutorial
-        :link: tutorial
+        :link: sunpy-tutorial-index
         :link-type: ref
         :text-align: center
 

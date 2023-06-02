@@ -1,12 +1,13 @@
 .. _sunpy-how-to-access-coordinate-components:
 
+****************************
 Access coordinate components
-============================
+****************************
 
 Individual coordinates can be accessed via attributes on the `~astropy.coordinates.SkyCoord` object, but the names of the components of the coordinates can depend on the the frame and the chosen representation (e.g., Cartesian versus spherical).
 
 `~sunpy.coordinates.Helioprojective`
-------------------------------------
+====================================
 
 For the helioprojective frame, the theta_x and theta_y components are accessed  ``Tx`` and ``Ty``, respectively:
 
@@ -24,7 +25,7 @@ For the helioprojective frame, the theta_x and theta_y components are accessed  
     <Latitude 100. arcsec>
 
 `~sunpy.coordinates.Heliocentric`
----------------------------------
+=================================
 
 Heliocentric is typically used with Cartesian components:
 
@@ -39,7 +40,7 @@ Heliocentric is typically used with Cartesian components:
     <Quantity 589951.4 km>
 
 `~sunpy.coordinates.HeliographicStonyhurst` and `~sunpy.coordinates.HeliographicCarrington`
--------------------------------------------------------------------------------------------
+===========================================================================================
 
 Both of the heliographic frames have the components of latitude, longitude and radius:
 

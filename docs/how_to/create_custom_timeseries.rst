@@ -1,13 +1,14 @@
 .. _sunpy-how-to-custom-timeseries:
 
+************************
 Create Custom TimeSeries
-========================
+************************
 
 Sometimes you will have data that you want to transform into a TimeSeries.
 You can use the factory to create a `~sunpy.timeseries.GenericTimeSeries` from a variety of data sources currently including `pandas.DataFrame` and `astropy.table.Table`.
 
 Creating a TimeSeries from a Pandas DataFrame
----------------------------------------------
+=============================================
 
 A TimeSeries object must be supplied with some data when it is created.
 The data can either be in your current Python session, in a local file, or in a remote file.
@@ -51,7 +52,7 @@ This `~pandas.DataFrame` can then be used to construct a TimeSeries:
     >>> ts_custom = ts.TimeSeries(data, header, units)
 
 Creating Custom TimeSeries from an Astropy Table
-------------------------------------------------
+================================================
 
 A Pandas `~pandas.DataFrame` is the underlying object used to store the data within a TimeSeries, so the above example is the most lightweight to create a custom TimeSeries, but being scientific data it will often be more convenient to use an Astropy `~astropy.table.Table` to create a TimeSeries.
 An advantage of this method is it allows you to include metadata and Astropy `~astropy.units.quantity.Quantity` values, which are both supported in tables, without additional arguments.

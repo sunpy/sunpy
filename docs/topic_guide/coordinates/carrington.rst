@@ -1,5 +1,6 @@
 .. _sunpy-topic-guide-coordinates-carrington:
 
+********************************
 Calculating Carrington longitude
 ********************************
 

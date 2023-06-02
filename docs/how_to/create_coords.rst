@@ -1,7 +1,8 @@
 .. _sunpy-how-to-create-coordinate-objects:
 
+*************************
 Create Coordinate Objects
-=========================
+*************************
 
 The easiest interface to work with coordinates is through the `~astropy.coordinates.SkyCoord` class:
 

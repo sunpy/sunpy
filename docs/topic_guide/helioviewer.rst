@@ -1,8 +1,8 @@
 .. _sunpy-topic-guide-using-helioviewer:
 
-************************************************
-Switching from ``HelioviewerClient`` to ``hvpy``
-************************************************
+****************************************
+Switching from HelioviewerClient to hvpy
+****************************************
 
 In older versions of sunpy it was possible to query Helioviewer using the ``HelioviewerClient``.
 The Helioviewer Project now maintains a Python wrapper around their API that supersedes this.

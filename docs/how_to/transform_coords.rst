@@ -1,7 +1,8 @@
 .. _sunpy-how-to-transform-between-coordinate-frames:
 
+***********************************
 Transform between coordinate frames
-===================================
+***********************************
 
 Both `~astropy.coordinates.SkyCoord` and `~astropy.coordinates.BaseCoordinateFrame` instances have a `~astropy.coordinates.SkyCoord.transform_to` method.
 This can be used to transform the frame to any other frame, either implemented in sunpy or in Astropy (see also :ref:`astropy-coordinates-transforming`).

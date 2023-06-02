@@ -6,7 +6,7 @@ How-To Guides
 
 These how-to guides provide examples of how to perform specific tasks with sunpy.
 They are recipes that do not provide much in-depth explanation and assume you have some knowledge of what sunpy is and how it works.
-If you're starting fresh you might want to check out the :ref:`tutorial` first.
+If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-index` first.
 
 .. toctree::
    :maxdepth: 1

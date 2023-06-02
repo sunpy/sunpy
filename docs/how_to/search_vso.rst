@@ -1,7 +1,8 @@
 .. _sunpy-how-to-search-the-vso:
 
+******************************************
 Search the Virtual Solar Observatory (VSO)
-==========================================
+******************************************
 
 To search the Virtual Solar Observatory (VSO) for SDO AIA data in all channels over a given time range, use the timerange (`~sunpy.net.attrs.Time`) and the instrument (`~sunpy.net.attrs.Instrument`) attrs,
 
@@ -103,7 +104,7 @@ Additionally, multiple operators can be chained together to, for example, search
     <BLANKLINE>
     <BLANKLINE>
 
-The OR operator (|) can also be used to construct queries.
+The OR operator (``|``) can also be used to construct queries.
 For example, to search for AIA data in this same time range from both the 94 and 171 channels,
 
 .. code-block:: python
