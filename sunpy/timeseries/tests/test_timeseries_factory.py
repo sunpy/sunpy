@@ -386,11 +386,11 @@ def test_invalid_file():
     with pytest.raises(NoMatchError):
         sunpy.timeseries.TimeSeries(invalid_filepath)
     # Now with silence_errors kwarg set
-    with pytest.warns(SunpyUserWarning):
+    with pytest.warns(SunpyUserWarning, match="One of the files failed to validate with: Could not find any timeseries sources to parse"):
         ts = sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
     assert ts == []
     # Now with allow_errors kwarg set
-    with pytest.warns(SunpyUserWarning):
+    with pytest.warns(SunpyUserWarning, match="One of the files failed to validate with: Could not find any timeseries sources to parse"):
         ts = sunpy.timeseries.TimeSeries(invalid_filepath, allow_errors=True)
     assert ts == []
 
