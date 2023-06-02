@@ -44,8 +44,8 @@ class CDAWEBClient(BaseClient):
     wild2_helio1day_position                              CDAWEB ... Position in heliocentric coordinates from SPDF Helioweb - Natalia Papitashvil...
     >>>
     >>> res = Fido.search(a.Time('2021/07/01', '2021/07/08'),
-    ...                   a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')) #doctest: +REMOTE_DATA
-    >>> res #doctest: +REMOTE_DATA
+    ...                   a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')) # doctest: +REMOTE_DATA
+    >>> res # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>

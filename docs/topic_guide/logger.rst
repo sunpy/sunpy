@@ -50,7 +50,7 @@ or also by::
 
 The threshold level for messages can be set with::
 
-    >>> log.setLevel('DEBUG')  #doctest: +SKIP
+    >>> log.setLevel('DEBUG')  # doctest: +SKIP
 
 This will display DEBUG and all messages with that level and above. If you'd like to see the fewest
 relevant messages you'd set the logging level to WARNING or above.
@@ -64,7 +64,7 @@ If you'd like to
 capture messages as they are generated you can do that with a context manager::
 
     >>> from sunpy import log
-    >>> with log.log_to_list() as log_list:  #doctest: +SKIP
+    >>> with log.log_to_list() as log_list:  # doctest: +SKIP
     ...    # your code here  # doctest: +SKIP
 
 Once your code is executed, ``log_list`` will be a Python list containing all of the Sunpy
@@ -72,7 +72,7 @@ messages during execution. This does not divert the messages from going to a fil
 It is also possible to send the messages to a custom file with::
 
     >>> from sunpy import log
-    >>> with log.log_to_file('myfile.log'):  #doctest: +SKIP
-    ...     # your code here  #doctest: +SKIP
+    >>> with log.log_to_file('myfile.log'):  # doctest: +SKIP
+    ...     # your code here  # doctest: +SKIP
 
 which will save the messages to a local file called ``myfile.log``.
