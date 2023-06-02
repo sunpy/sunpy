@@ -249,7 +249,7 @@ class MapFactory(BasicRegistrationFactory):
             Indicates if collection of maps should be returned as a `sunpy.map.MapSequence`.
             Default is `False`.
         silence_errors : `bool`, optional
-            Deprecated.
+            Deprecated, renamed to `allow_errors`.
 
             If set, ignore data-header pairs which cause an exception.
             Default is ``False``.
