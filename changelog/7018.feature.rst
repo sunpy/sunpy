@@ -1,1 +1,1 @@
-Added the ability to skip over errors raised when passing invalid fits files to map using the existing keyword argument ``silence_errors``.
+Added the ability to skip over errors raised for invalid fits files when passing a list of files to map using the existing keyword argument ``silence_errors``.
