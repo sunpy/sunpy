@@ -467,19 +467,19 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-BLUE-L2-MISSIONLONG.fits',
             observation_time_start=datetime(1996, 1, 23, 0, 0),
-            observation_time_end=datetime(2021, 5, 15, 23, 59),
+            observation_time_end=datetime(2023, 4, 30, 23, 59),
             instrument='VIRGO', size=32652.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-GREEN-L2-MISSIONLONG.fits',
             observation_time_start=datetime(1996, 1, 23, 0, 0),
-            observation_time_end=datetime(2021, 5, 15, 23, 59),
+            observation_time_end=datetime(2023, 4, 30, 23, 59),
             instrument='VIRGO', size=32652.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-RED-L2-MISSIONLONG.fits',
             observation_time_start=datetime(1996, 1, 23, 0, 0),
-            observation_time_end=datetime(2021, 5, 15, 23, 59),
+            observation_time_end=datetime(2023, 4, 30, 23, 59),
             instrument='VIRGO', size=32652.0),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
@@ -527,9 +527,9 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
 
 
     for e in entries:
-        assert e in expected
+        assert e in expected, f"{e} not found in expected list"
     for e in expected:
-        assert e in entries
+        assert e in entries, f"{e} not found in remote response"
 
 
 def test_create_display_table_missing_entries():
