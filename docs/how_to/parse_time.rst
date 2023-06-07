@@ -1,20 +1,23 @@
-.. _how_to_parse_times_with_parse_time:
+.. _sunpy-how-to-parse-times-with-parse-time:
 
-Parse times with `sunpy.time.parse_time`
-========================================
+*****************************************
+Parse times with `~sunpy.time.parse_time`
+*****************************************
 
 .. code-block:: python
 
     >>> import time
     >>> from datetime import date, datetime
+
     >>> import numpy as np
     >>> import pandas
+
     >>> from sunpy.time import parse_time
 
 The following examples show how to use `sunpy.time.parse_time` to parse various time formats, including both strings and objects, into an `astropy.time.Time` object.
 
-strings
--------
+Strings
+=======
 
 .. code-block:: python
 
@@ -28,8 +31,8 @@ This also works with the ``scale=`` keyword argument (See `this list: <https://d
     >>> parse_time('2012:124:21:08:12', scale='tai')
     <Time object: scale='tai' format='isot' value=2012-05-03T21:08:12.000>
 
-tuples
-------
+Tuples
+======
 
 .. code-block:: python
 
@@ -39,7 +42,7 @@ tuples
     <Time object: scale='utc' format='isot' value=2001-01-01T12:12:12.009>
 
 `time.struct_time`
-------------------
+==================
 
 .. code-block:: python
 
@@ -47,7 +50,7 @@ tuples
     <Time object: scale='utc' format='isot' value=1970-01-01T00:00:00.000>
 
 `datetime.datetime` and `datetime.date`
-----------------------------------------
+=======================================
 
 .. code-block:: python
 
@@ -57,9 +60,9 @@ tuples
     <Time object: scale='utc' format='iso' value=2023-04-22 00:00:00.000>
 
 `pandas` time objects
----------------------
+=====================
 
-e.g. `pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
+`pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
 
 .. code-block:: python
 
@@ -79,7 +82,7 @@ e.g. `pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
                                                        datetime.datetime(2012, 1, 4, 0, 0)]>
 
 `numpy.datetime64`
-------------------
+==================
 
 .. code-block:: python
 
@@ -90,9 +93,9 @@ e.g. `pandas.Timestamp`, `pandas.Series` and `pandas.DatetimeIndex`
     <Time object: scale='utc' format='isot' value=['2014-02-07T16:47:51.008' '2014-02-07T18:47:51.008']>
 
 Formats handled by `astropy.time.Time`
---------------------------------------
+======================================
 
-See this list of all allowed formats, see `this list <https://docs.astropy.org/en/stable/time/#time-format>`__
+`See this list of all the allowed formats. <https://docs.astropy.org/en/stable/time/#time-format>`__
 
 .. code-block:: python
 
@@ -102,7 +105,7 @@ See this list of all allowed formats, see `this list <https://docs.astropy.org/e
     <Time object: scale='tt' format='byear_str' value=B1950.000>
 
 ``anytim`` output
-------------------
+=================
 
 Format output by the ``anytim`` routine in SolarSoft (see the documentation for `~sunpy.time.TimeUTime` for more information):
 
@@ -112,7 +115,7 @@ Format output by the ``anytim`` routine in SolarSoft (see the documentation for 
     <Time object: scale='utc' format='utime' value=662738003.0>
 
 ``anytim2tai`` output
----------------------
+=====================
 
 Format output by the ``anytim2tai`` routine in SolarSoft (see the documentation for `~sunpy.time.TimeTaiSeconds` for more information):
 

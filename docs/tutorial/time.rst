@@ -1,14 +1,14 @@
-.. _time-in-sunpy:
+.. _sunpy-tutorial-times:
 
 *****
 Times
 *****
 
-In this section of the tutorial,  you will learn how times are represented and manipulated in sunpy.
+In this section of the tutorial, you will learn how times are represented and manipulated in sunpy.
 sunpy makes extensive use of the `astropy.time` module for this task.
 By the end of this section of the tutorial, you will learn how to parse times from different formats as well as construct and inspect time ranges.
 
-.. _parse-time:
+.. _sunpy-tutorial-times-parse-time:
 
 Parsing Times
 =============
@@ -18,9 +18,12 @@ To handle all these formats, sunpy has :meth:`sunpy.time.parse_time` that accept
 You might have come across another way of storing time that's built into Python itself, `datetime.datetime`.
 `~datetime.datetime` does not provide support for common time formats used in solar physics or leap seconds, hence the use of `astropy.time.Time` throughout sunpy.
 
-Here's a few examples of using `~sunpy.time.parse_time` to create `~astropy.time.Time` objects::
+Here's a few examples of using `~sunpy.time.parse_time` to create `~astropy.time.Time` objects:
+
+.. code-block:: python
 
     >>> from sunpy.time import parse_time
+
     >>> parse_time('2007-05-04T21:08:12')
     <Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>
     >>> parse_time(894316092.00000000, format='utime')
@@ -33,19 +36,27 @@ Time Ranges
 
 Another standard task in data analysis is dealing with pairs of times or time ranges.
 To deal with time ranges sunpy provides the `sunpy.time.TimeRange` object.
-A `sunpy.time.TimeRange` object can be created by providing a start time and an end time::
+A `sunpy.time.TimeRange` object can be created by providing a start time and an end time:
+
+.. code-block:: python
 
     >>> from sunpy.time import TimeRange
+
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
 
 `~sunpy.time.TimeRange` makes use of :meth:`sunpy.time.parse_time` so it can accept a wide variety of time formats.
-Alternatively, you can specify a start time and a duration::
+Alternatively, you can specify a start time and a duration:
+
+.. code-block:: python
 
     >>> import astropy.units as u
+
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.second)
 
 The time range objects provides a number of useful functions.
-For example, you can easily get the time at the center of your interval or the length of the interval::
+For example, you can easily get the time at the center of your interval or the length of the interval:
+
+.. code-block:: python
 
     >>> time_range.center
     <Time object: scale='utc' format='isot' value=2010-03-04T00:13:20.000>
@@ -53,7 +64,9 @@ For example, you can easily get the time at the center of your interval or the l
     <Quantity 400. s>
 
 A time range can also be easily split into sub-intervals of equal length, for example to
-split a TimeRange object into two new TimeRange objects::
+split a TimeRange object into two new TimeRange objects:
+
+.. code-block:: python
 
     >>> time_range.split(2)
     [   <sunpy.time.timerange.TimeRange object ...>

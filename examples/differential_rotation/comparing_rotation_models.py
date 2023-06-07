@@ -7,7 +7,7 @@ How to compare differential-rotation models.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate
 metaframe in `sunpy.coordinates` to apply differential rotation to a coordinate.
-See :ref:`sunpy-coordinates-rotatedsunframe` for more details on using
+See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on using
 `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
 import matplotlib.pyplot as plt
