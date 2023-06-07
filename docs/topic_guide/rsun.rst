@@ -4,13 +4,18 @@
 The role of "rsun" in sunpy
 ***************************
 
-When dealing with many solar coordinate systems, "rsun", the height at which emission is presumed to originate, can be important.
-For example, when loading a fits file with `sunpy.map.Map` a ``map.wcs`` is constructed with a value for "rsun" collected for use in coordinate transformations.
+Unlike a solid ball, the Sun is not defined by a single surface, and as such, the position from which a photon is emitted should best be defined not just with a 2 dimensional coordinate but with the inclusion of a height.
+The Solar radius is a common choice for this height, and is defined by the IAU as the distance from the center of the Sun to a layer in the photosphere where the optical depth is 2/3.
+However, different wavelengths of light can be emitted from different heights in the solar atmosphere, and so the radius at which a photon is emitted is not always the same as the solar radius.
+It is therefore a useful convention to define "rsun" attribute for a map, which is the radius at which the emission is presumed to originate.
+This has limitations: data will invariably consist of a range of wavelengths of light and even a single wavelength, especially for coronal emission, comes from a variety of heights
+The value of "rsun" is intended as an estimate for this height.
 
-Data providers often include this information for end users via the fits keyword: "RSUN_REF", where this keyword is not available, ``sunpy`` assumes a standard value defined by `sunpy.sun.constants`.
-In theory, the radiation detected by a single filter, especially for coronal emission, comes from a variety of heights and "rsun" is only a loose approximation.
-In practice, the exact value of "rsun" is important when working with coordinates and transforms, it provides 3 dimensional information about the location of a map pixel.
-When manipulating these coordinates, idiosyncrasies and unexpected behavior can be encountered which can be preempted by an understanding of behaviors surrounding "rsun".
+Data providers often include this information for end users via the fits keyword: "RSUN_REF", where this keyword is not available, sunpy assumes the standard value of the Solar radius, as defined by `sunpy.sun.constants`.
+Whether "rsun" is set by the data provider or not, we emphasize that this is little more than an approximation.
+The exact value used for "rsun" has consequences for working in sunpy with coordinates and transforms, it provides 3 dimensional information about the location of a map pixel.
+For example, when loading a fits file with `sunpy.map.Map` a ``map.wcs`` is constructed with a value for "rsun" collected for use in coordinate transformations.
+When manipulating these coordinates, idiosyncrasies and unexpected behavior might be encountered, these can be preempted by an understanding of behaviors surrounding "rsun".
 
 Transforming between Helioprojective frames
 ===========================================
