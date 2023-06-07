@@ -1,10 +1,11 @@
-.. _topic-guide-new-sources-for-fido:
+.. _sunpy-topic-guide-new-source-for-fido:
 
 *******************************
 Adding new data sources to Fido
 *******************************
 
 sunpy's data search and retrieval tool (``Fido``) is designed to be extensible, so that new sources of data or metadata can be supported, either inside or outside the sunpy core package.
+
 There are two ways of defining a new client, depending on the complexity of the web service.
 A "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` which provides helper methods for downloading from a list of URLs.
 If the service you want to add has easily accessible HTTP or FTP URLs that have a well defined folder and filename structure, this is probably the best approach.
@@ -14,7 +15,7 @@ Before writing a new client, ensure you are familiar with how searches are speci
 When choosing a name for your new client it should have the form ``<name>Client`` as sunpy will split the name the name of the class to extract the name of your client.
 The main place this is done is when constructing a `~.UnifiedResponse` object, where the name part can be used to index the response object.
 
-.. _topic-guide-add-new-scraper-client:
+.. _sunpy-topic-guide-new-source-for-fido-add-new-scraper-client:
 
 Writing a new "scraper" client
 ==============================
@@ -26,7 +27,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 
 * A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
-  Each ``tuple`` contains the attr value and its description.
+  Each `tuple` contains the "attr" value and its description.
 * A class attribute ``baseurl``; this is a regular expression which is used to match the URLs supported by the client.
 * A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
   The extraction uses the `~sunpy.extern.parse.parse` format.
@@ -73,8 +74,8 @@ This is done addressed with the two following methods:
 
 A good example of the use of these two methods is the `sunpy.net.dataretriever.sources.norh.NoRHClient` in sunpy.
 
-It may also be possible that the ``baseurl`` property needs to be customised based on attrs other than Time.
-Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customised.
+It may also be possible that the ``baseurl`` property needs to be customized based on attrs other than Time.
+Since `~sunpy.net.scraper.Scraper` doesn't currently support generating directories that have non-time variables, the :meth:`~sunpy.net.dataretriever.client.GenericClient.search` needs to be customized.
 The search method should in this case, generate a ``baseurl`` dependent on the values of these attrs, and then call ``super().search`` or `~sunpy.net.scraper.Scraper` for each ``baseurl`` generated.
 For an example of a complex modification of the ``search()`` method see the implementation of `.SUVIClient.search`.
 
@@ -83,7 +84,7 @@ Customizing the Downloader
 
 There is no method for a client creator to override the `parfive.Downloader` that is used to fetch the files.
 This is because all downloads made by a single call to ``Fido.fetch`` share one instance of `parfive.Downloader`.
-However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to customise the requests to a remote server, such as setting custom HTTP headers.
+However, it is possible to pass keywords :meth:`parfive.Downloader.enqueue_file`, which is important if there is a need to customize the requests to a remote server, such as setting custom HTTP headers.
 This is done by setting the ``enqueue_file_kwargs`` attribute of the client class.
 One example from the `sunpy.net.dataretriever.sources.noaa.SRSClient` is:
 
@@ -132,7 +133,7 @@ So the desired key names for returned dictionary should be written in the ``patt
 
         return adict
 
-.. _topic-guide-add-new-full-client:
+.. _sunpy-topic-guide-new-source-for-fido-add-new-full-client:
 
 Writing a "full" client
 =======================
@@ -152,7 +153,7 @@ Search Attrs
 As described in `~sunpy.net.attr` the attr system allows the construction of complex queries by the user.
 To make these complex queries easily processable by the clients the ``AttrWalker`` converts these into a set of queries which can be processed separately.
 It does this by converting the input query to a set of queries which are ORed, but are complete queries.
-This means the list of queries is an **OR** of **ANDs** (technically called `disjuntive normal form <https://en.wikipedia.org/wiki/Disjunctive_normal_form>`__).
+This means the list of queries is an **OR** of **ANDs** (technically called `disjunctive normal form <https://en.wikipedia.org/wiki/Disjunctive_normal_form>`__).
 
 Each query in the list of ORs contains all the information about that query so for example if the user provided a query like
 
@@ -213,7 +214,7 @@ Let's imagine we have a web service which you can do a HTTP GET request to ``htt
 This GET request takes three query parameters ``startTime``, ``endTime`` and ``level``, so a request might look something like: ``https://sfsi.sunpy.org/search?startTime=2020-01-02T00:00:00&endTime=2020-01-02T00:00:00&level=1``.
 Which would search for level one data between 2020-01-01 and 2020-01-02.
 
-As `~sunpy.net.attrs` has `~sunpy.net.attrs.Time` and `~sunpy.net.attrs.Level` we don't need to define any of our own attrs for this client.
+As `~sunpy.net.attrs` has `~sunpy.net.attrs.Time` and `~sunpy.net.attrs.Level` we do not need to define any of our own attrs for this client.
 We do however want to write our own walker to convert them to the form out client's ``search()`` method wants to send them to the server.
 
 The first step is to setup the walker and define a creator method which will return a list of dicts, one for each independent search.
@@ -262,7 +263,7 @@ Adding "Attrs" to Registry
 ##########################
 
 Registering of "attrs" ensures discoverability of search attributes supported by the corresponding sunpy Client.
-For adding them to the Registry, we need to define a ``classmethod`` :meth:`~sunpy.net.base_client.BaseClient.register_values` that returns a dictionary of registered values.
+For adding them to the Registry, we need to define a class method :meth:`~sunpy.net.base_client.BaseClient.register_values` that returns a dictionary of registered values.
 This dictionary should have `~sunpy.net.attr.Attr` classes as keys and a list of tuples corresponding to that key representing the possible values the key "attr" can take.
 Each tuple comprises of two elements.
 The first one is a value and the second element contains a brief description of that value.
@@ -304,7 +305,8 @@ An example for this can be seen as implemented in the JSOC client:
     def _attrs_module(cls):
         return 'jsoc', 'sunpy.net.jsoc.attrs'
 
-This adds all attrs that exist within ``sunpy.net.jsoc.attrs``, such as ``Keyword``, to ``attrs.jsoc``. These can now be accessed via an import of the main attrs module, e. g. at ``a.jsoc.Keyword``.
+This adds all attrs that exist within ``sunpy.net.jsoc.attrs``, such as ``Keyword``, to ``attrs.jsoc``.
+These can now be accessed via an import of the main attrs module, e.g., at ``a.jsoc.Keyword``.
 
 Writing a Search Method
 -----------------------
@@ -314,13 +316,16 @@ The ``search()`` method has the job of taking a set of user queries and returnin
 The general flow of a ``search()`` method is:
 
 * Call your instance of an `.AttrWalker` to convert the input into a form expected by your API.
-* Make as many requests to your API as needed to fulfill the query. (Generally one per element of the outer `sunpy.net.attrs.AttrOr`).
+* Make as many requests to your API as needed to fulfill the query.
+  Generally one per element of the outer `sunpy.net.attrs.AttrOr`.
 * Process the response from your API into an instance of `.QueryResponseTable`.
 
-To process the query with the `.AttrWalker`, call the :meth:`.AttrWalker.create` method::
+To process the query with the `.AttrWalker`, call the :meth:`.AttrWalker.create` method:
 
-  def search(self, query):
-    queries = walker.create(query)
+.. code-block:: python
+
+    def search(self, query):
+        queries = walker.create(query)
 
 Assuming the walker is the one we defined above, queries would be a list of dicts with the attrs processed into query parameters for the API URL.
 
@@ -342,19 +347,19 @@ We also pretend that the response is a json object in the form of a Python dicti
 
 .. code-block:: python
 
-  def search(self, query):
-      queries = walker.create(query)
+    def search(self, query):
+        queries = walker.create(query)
 
-      results = []
-      for query_parameters in queries:
-          results.append(self._make_search(query_parameters))
+        results = []
+        for query_parameters in queries:
+            results.append(self._make_search(query_parameters))
 
-      return QueryResponseTable(results, client=self)
+        return QueryResponseTable(results, client=self)
 
-In reality, you probably want to post-process the results from your API before you put them in the table, they should be human readable first, with spaces and capitalisation as appropriate.
+In reality, you probably want to post-process the results from your API before you put them in the table, they should be human readable first, with spaces and capitalization as appropriate.
 
-Supporting filesize estimates
-#############################
+Supporting file size estimates
+##############################
 
 The base client has a method for automatically estimating the total size of files in a given query: :meth:`~sunpy.net.base_client.QueryResponseTable.total_size`.
 To enable to support for this, make sure the table returned by ``search`` has a column that contains filesizes as astropy quantities convertible to ``u.byte``, and set the ``size_column`` class attribute to the name of this column.
@@ -382,12 +387,15 @@ Writing a Fetch Method
 ----------------------
 
 The ``fetch()`` method of a Fido client is responsible for converting a set of search results (possibly sliced by the user) into a set of URLs to be downloaded.
-Due to the history of clients and how they were implemented in sunpy, some existing clients support use outside of the``Fido`` wrapper, this makes them appear more complex.
+Due to the history of clients and how they were implemented in sunpy, some existing clients support use outside of the ``Fido`` wrapper, this makes them appear more complex.
 In this example we are going to write a ``fetch()`` method which is designed only to be called from ``Fido``.
 
-The parameters for such a method should be::
+The parameters for such a method should be:
 
-  def fetch(self, query_results, *, path, downloader, **kwargs):
+.. code-block:: python
+
+    def fetch(self, query_results, *, path, downloader, **kwargs):
+    ...
 
 The parameters here are:
 
@@ -405,7 +413,6 @@ If you do not wish to handle a single row any differently to a table, you can pl
 The primary function of the ``fetch()`` method is for you to convert this results object into a set of URLs for Fido to download.
 This logic will be specific to your client.
 
-
 Formatting the ``path=`` Argument
 #################################
 
@@ -422,8 +429,7 @@ The simplest (but unlikely) scenario is that you know the filename for each file
         filename = self._calculate_filename(row)
         filepath = path.format(file=filename, **row.response_block_map)
 
-
-In the situation where you wish to be told the filename by the webserver you are downloading the file from, it is a little more complex, you need to pass a callback function to :meth:`parfive.Downloader.enqueue_file` which will calculate the full filename in the context of the download, where the headers can be inspected for the filename the webserver provides.
+In the situation where you wish to be told the filename by the web server you are downloading the file from, it is a little more complex, you need to pass a callback function to :meth:`parfive.Downloader.enqueue_file` which will calculate the full filename in the context of the download, where the headers can be inspected for the filename the web server provides.
 
 The filename callback passed to :meth:`parfive.Downloader.enqueue_file` accepts two arguments ``resp`` and ``url``.
 ``resp`` is an `aiohttp.ClientResponse` object which is returned when `parfive` requests the URL.
@@ -449,10 +455,12 @@ This function will be called by `parfive` with the ``resp`` and ``url`` argument
         return path.format(file=name, **row.response_block_map)
 
 To reduce this function down to the two arguments expected we pre-specify the first two of these with `~functools.partial` before passing the function to `~parfive.Downloader.enqueue_file` inside the ``fetch()`` method.
-Our simple example above now becomes::
+Our simple example above now becomes:
 
-  for row in query_results:
-      filepath = partial(make_filename, path, row)
+.. code-block:: python
+
+    for row in query_results:
+        filepath = partial(make_filename, path, row)
 
 Where the ``path`` variable is a `pathlib.Path` object provided as the ``path`` argument to ``fetch()``.
 
@@ -471,7 +479,6 @@ Combining this with the simple example above it may look something like
         url = self._calculate_url(row)
         downloader.enqueue_file(url, filename=filepath)
 
-
 If your filepath is a callback function, pass this to the ``filename=`` argument.
 
 Your fetch method does not need to return anything, as long as ``enqueue_file`` is called for every file you want ``Fido`` to download.
@@ -489,9 +496,7 @@ An example client class may look something like
     from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr
     from sunpy.base_client import QueryResponseTable
 
-
     walker = AttrWalker()
-
 
     @walker.add_creator(AttrOr)
     def create_or(wlk, tree):

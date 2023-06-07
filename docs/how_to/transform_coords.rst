@@ -1,36 +1,36 @@
-.. _how-to-transform-between-coordinate-frames:
+.. _sunpy-how-to-transform-between-coordinate-frames:
 
+***********************************
 Transform between coordinate frames
-===================================
+***********************************
 
-Both `~astropy.coordinates.SkyCoord` and
-`~astropy.coordinates.BaseCoordinateFrame` instances have a
-`~astropy.coordinates.SkyCoord.transform_to` method. This can be used to
-transform the frame to any other frame, either implemented in SunPy or in
-Astropy (see also :ref:`astropy-coordinates-transforming`).
-An example of transforming the center of the solar disk to Carrington
-coordinates is:
+Both `~astropy.coordinates.SkyCoord` and `~astropy.coordinates.BaseCoordinateFrame` instances have a `~astropy.coordinates.SkyCoord.transform_to` method.
+This can be used to transform the frame to any other frame, either implemented in sunpy or in Astropy (see also :ref:`astropy-coordinates-transforming`).
+An example of transforming the center of the solar disk to Carrington coordinates is:
 
 .. code-block:: python
 
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
+
     >>> from sunpy.coordinates import frames
 
-    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26",
+    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26",
     ...              observer="earth")
-    >>> c
+    >>> coord
     <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
-    >>> c.transform_to(frames.HeliographicCarrington)
+    >>> coord.transform_to(frames.HeliographicCarrington)
     <SkyCoord (HeliographicCarrington: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, AU)
         (283.95956776, 5.31701821, 0.00465047)>
 
-It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates:
+It is also possible to transform to any coordinate system implemented in Astropy.
+This can be used to find the position of the solar limb in AltAz equatorial coordinates:
 
 .. code-block:: python
 
     >>> from astropy.coordinates import EarthLocation, AltAz
+
     >>> time = '2017-07-11 15:00'
     >>> greenbelt = EarthLocation(lat=39.0044*u.deg, lon=-76.8758*u.deg)
     >>> greenbelt_frame = AltAz(obstime=time, location=greenbelt)

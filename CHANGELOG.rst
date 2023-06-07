@@ -163,7 +163,7 @@ Documentation
 - Updated gallery examples that use STEREO data to use sample data instead
   of searching for and downloading data via Fido. (`#6197 <https://github.com/sunpy/sunpy/pull/6197>`__)
 - Added the current bugfix release policy to the docs. (`#6336 <https://github.com/sunpy/sunpy/pull/6336>`__)
-- The :ref:`map_guide` and :ref:`timeseries_guide` have been reviewed and updated. (`#6345 <https://github.com/sunpy/sunpy/pull/6345>`__)
+- The :ref:`sunpy-tutorial-maps` and :ref:`sunpy-tutorial-timeseries` have been reviewed and updated. (`#6345 <https://github.com/sunpy/sunpy/pull/6345>`__)
 - Adds a pull request check list to the Developer's Guide. (`#6346 <https://github.com/sunpy/sunpy/pull/6346>`__)
 - Improved the plotting guide. (`#6430 <https://github.com/sunpy/sunpy/pull/6430>`__)
 - Slight improvements to the downloading data with Fido part of the guide. (`#6444 <https://github.com/sunpy/sunpy/pull/6444>`__)
@@ -1244,7 +1244,7 @@ Added/Improved Documentation
 - Added information about the :meth:`~sunpy.map.MapSequence.plot` return type. (`#4472 <https://github.com/sunpy/sunpy/pull/4472>`__)
 - Added a gallery example for saving and loading sunpy Maps using asdf. (`#4494 <https://github.com/sunpy/sunpy/pull/4494>`__)
 - Added description for a counter-intuitive section in the :ref:`sphx_glr_generated_gallery_differential_rotation_reprojected_map.py` example. (`#4548 <https://github.com/sunpy/sunpy/pull/4548>`__)
-- Added :ref:`sunpy-coordinates-velocities` to explain how to use velocity information in the coordinates framework. (`#4610 <https://github.com/sunpy/sunpy/pull/4610>`__)
+- Added :ref:`sunpy-topic-guide-coordinates-velocities` to explain how to use velocity information in the coordinates framework. (`#4610 <https://github.com/sunpy/sunpy/pull/4610>`__)
 - New gallery example of searching and downloading GOES XRS data (with GOES 15, 16 and 17). (`#4686 <https://github.com/sunpy/sunpy/pull/4686>`__)
 - Created the new gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_north_offset_frame.py` for `~sunpy.coordinates.NorthOffsetFrame`. (`#4709 <https://github.com/sunpy/sunpy/pull/4709>`__)
 - Added more information on which FITS keywords are used for various `sunpy.map.GenericMap`
@@ -1322,7 +1322,7 @@ Backwards Incompatible Changes
 - `~sunpy.coordinates.frames.HeliographicCarrington` is now an observer-based frame, where the observer location (specifically, the distance from the Sun) is used to account for light travel time when determining apparent Carrington longitudes.  Coordinate transformations using this frame now require an observer to be specified. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
 - To enable the precise co-alignment of solar images from different observatories, the calculation of Carrington coordinates now ignores the stellar-aberration correction due to observer motion.
   For an Earth observer, this change results in an increase in Carrington longitude of ~20 arcseconds.
-  See :ref:`sunpy-coordinates-carrington` for more information. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+  See :ref:`sunpy-topic-guide-coordinates-carrington` for more information. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
 - Fixed a bug where some of the coordinate transformations could raise `ValueError` instead of `~astropy.coordinates.ConvertError` when the transformation could not be performed. (`#3894 <https://github.com/sunpy/sunpy/pull/3894>`__)
 - Astropy 3.2 is now the minimum required version of that dependency. (`#3936 <https://github.com/sunpy/sunpy/pull/3936>`__)
 
@@ -1474,7 +1474,7 @@ Improved Documentation
   Also removed mentions of astropy_helpers in all files of the project. (`#3676 <https://github.com/sunpy/sunpy/pull/3676>`__)
 - Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters. (`#3680 <https://github.com/sunpy/sunpy/pull/3680>`__)
 - Added an example for `~sunpy.map.GenericMap.world_to_pixel` function in the Units & Coordinates guide. (`#3776 <https://github.com/sunpy/sunpy/pull/3776>`__)
-- Added a :ref:`page <sunpy-coordinates-carrington>` describing how SunPy calculates Carrington longitudes. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
+- Added a :ref:`page <sunpy-topic-guide-coordinates-carrington>` describing how SunPy calculates Carrington longitudes. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
 - Changed padding value of an example in the example gallery to fix the overlap of titles and x-label axes. (`#3835 <https://github.com/sunpy/sunpy/pull/3835>`__)
 - More information and links about how to create changelogs. (`#3856 <https://github.com/sunpy/sunpy/pull/3856>`__)
 - Clarified some inputs to `sunpy.map.GenericMap.plot`. (`#3866 <https://github.com/sunpy/sunpy/pull/3866>`__)
@@ -1485,7 +1485,7 @@ Improved Documentation
 - Improved the documentation of `sunpy.map.GenericMap.resample`. (`#4043 <https://github.com/sunpy/sunpy/pull/4043>`__)
 - Updated the STEREO starfield example to use all of the information in the star catalog. (`#4116 <https://github.com/sunpy/sunpy/pull/4116>`__)
 - Mini-galleries are now easier to create in the documentation thanks to a custom Sphinx directive (``minigallery``).
-  The page :ref:`sunpy-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom. (`#4124 <https://github.com/sunpy/sunpy/pull/4124>`__)
+  The page :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom. (`#4124 <https://github.com/sunpy/sunpy/pull/4124>`__)
 - Added `sunpy.visualization.colormaps.color_tables` to the docs. (`#4182 <https://github.com/sunpy/sunpy/pull/4182>`__)
 - Made minor improvements to the map histogramming example. (`#4205 <https://github.com/sunpy/sunpy/pull/4205>`__)
 - Add a warning to `sunpy.io` docs to recommend not using it for FITS (`#4208 <https://github.com/sunpy/sunpy/pull/4208>`__)
@@ -1693,7 +1693,7 @@ Improved Documentation
 - A new example gallery section "Using SunPy with Other Packages" has been added,
   which contains a set of new examples using the `reproject
   <https://reproject.readthedocs.io/>`__ with solar data. (`#3405 <https://github.com/sunpy/sunpy/pull/3405>`__)
-- Added a table of supported coordinate systems and other miscellaneous improvements to the :ref:`coordinates documentation <sunpy-coordinates>`. (`#3414 <https://github.com/sunpy/sunpy/pull/3414>`__)
+- Added a table of supported coordinate systems and other miscellaneous improvements to the :ref:`coordinates documentation <sunpy-topic-guide-coordinates-index>`. (`#3414 <https://github.com/sunpy/sunpy/pull/3414>`__)
 - Clarified the meaning of :attr:`sunpy.map.GenericMap.dsun`. (`#3430 <https://github.com/sunpy/sunpy/pull/3430>`__)
 - Fixed the plots with multiple subplots in the ``Map`` user guide to properly use `~astropy.visualization.wcsaxes` and to be appropriately sized. (`#3454 <https://github.com/sunpy/sunpy/pull/3454>`__)
 - Fixed various issues with the gallery example of saving/loading coordinates using ``asdf``. (`#3473 <https://github.com/sunpy/sunpy/pull/3473>`__)

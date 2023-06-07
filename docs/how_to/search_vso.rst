@@ -1,16 +1,18 @@
-.. _how_to_search_the_vso:
+.. _sunpy-how-to-search-the-vso:
 
+******************************************
 Search the Virtual Solar Observatory (VSO)
-==========================================
+******************************************
 
-To search the Virtual Solar Observatory (VSO) for SDO AIA data in all channels over a given time range,
-use the timerange (`~sunpy.net.attrs.Time`) and the instrument (`~sunpy.net.attrs.Instrument`) attrs,
+To search the Virtual Solar Observatory (VSO) for SDO AIA data in all channels over a given time range, use the timerange (`~sunpy.net.attrs.Time`) and the instrument (`~sunpy.net.attrs.Instrument`) attrs,
 
 .. code-block:: python
 
     >>> import astropy.units as u
+
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
+
     >>> time_range = a.Time('2020/03/04 00:00:15', '2020/03/04 00:00:30')
     >>> result = Fido.search(time_range, a.Instrument.aia)  # doctest: +REMOTE_DATA
     >>> result  # doctest: +REMOTE_DATA
@@ -35,8 +37,7 @@ use the timerange (`~sunpy.net.attrs.Time`) and the instrument (`~sunpy.net.attr
     <BLANKLINE>
 
 You can also search for specific physical observables using `~sunpy.net.attrs.Physobs`.
-For example, you can search for line-of-sight (LOS) magnetic field measurements from HMI in
-the same time range,
+For example, you can search for line-of-sight (LOS) magnetic field measurements from HMI in the same time range,
 
 .. code-block:: python
 
@@ -103,7 +104,7 @@ Additionally, multiple operators can be chained together to, for example, search
     <BLANKLINE>
     <BLANKLINE>
 
-The OR operator (|) can also be used to construct queries.
+The OR operator (``|``) can also be used to construct queries.
 For example, to search for AIA data in this same time range from both the 94 and 171 channels,
 
 .. code-block:: python
