@@ -1,5 +1,6 @@
-.. _sunpy-coordinates-carrington:
+.. _sunpy-topic-guide-coordinates-carrington:
 
+********************************
 Calculating Carrington longitude
 ********************************
 
@@ -9,10 +10,12 @@ When the observer is at Earth, the apparent sub-Earth [#subEarth]_ Carrington la
 
 Quick summary
 =============
-SunPy calculates the sub-observer Carrington longitude in a manner that enables co-alignment of images of the Sun's surface from different observatories at different locations/velocities in the solar system, but that results in a ~20-arcsecond discrepancy with |AA|.
+
+sunpy calculates the sub-observer Carrington longitude in a manner that enables co-alignment of images of the Sun's surface from different observatories at different locations/velocities in the solar system, but that results in a ~20 arcsecond discrepancy with |AA|.
 
 Observer effects
 ================
+
 An observer will perceive the locations and orientations of solar-system objects different from how they truly are.
 There are two primary effects for why the apparent sub-observer point is not the same as the "true" sub-observer point.
 
@@ -67,10 +70,10 @@ The prescription of |AA| included both the correction for light travel time and 
 When using this prescription, |AA| found that a |W0| value of 84.176 degrees minimized the differences between the modern approach and earlier approaches.
 However, for those purposes where one should use sub-observer Carrington longitudes without the stellar-aberration correction, there will be a discrepancy compared to |AA| and to calculations made using earlier approaches.
 
-The approach in SunPy
+The approach in sunpy
 =====================
 
-SunPy determines apparent sub-observer Carrington longitude by including the correction for the difference in light travel time, but **excluding** any correction for stellar aberration due to observer motion.
+sunpy determines apparent sub-observer Carrington longitude by including the correction for the difference in light travel time, but **excluding** any correction for stellar aberration due to observer motion.
 The exclusion of a stellar-aberration correction is appropriate for purposes such as image co-alignment, where Carrington longitudes must be consistently associated with features on the Sun's surface.
 
 Comparisons to other sources
@@ -80,9 +83,9 @@ Compared to |AA| and older methods of calculation
 -------------------------------------------------
 
 |AA| publishes the apparent sub-Earth Carrington longitude (|L0|), and these values include the stellar-aberration correction.
-Consequently, SunPy values will be consistently ~0.006 degrees (~20 arcseconds) greater than |AA| values, although these discrepancies are not always apparent at the printed precision (0.01 degrees).
+Consequently, sunpy values will be consistently ~0.006 degrees (~20 arcseconds) greater than |AA| values, although these discrepancies are not always apparent at the printed precision (0.01 degrees).
 
-Since |AA| specifically tuned the IAU parameters to minimize the discrepancies with older methods of calculation under their prescription that includes the stellar-aberration correction, SunPy values will also be ~20 arcseconds greater than values calculated using older methods.
+Since |AA| specifically tuned the IAU parameters to minimize the discrepancies with older methods of calculation under their prescription that includes the stellar-aberration correction, sunpy values will also be ~20 arcseconds greater than values calculated using older methods.
 Be aware that older methods of calculation may not have accounted for the variable light travel time between the Sun and the Earth, which can cause additional discrepancies of up to ~5 arcseconds.
 
 |AA| does not appear to account for the difference in light travel time between the sub-Earth point on the Sun's surface and the center of the Sun (~2.3 lightseconds), which results in a fixed discrepancy of ~1.4 arcseconds in |L0|.
@@ -97,22 +100,22 @@ In `SPICE <https://naif.jpl.nasa.gov/naif/>`_, the apparent sub-observer Carring
 * "LT", which is just the correction for light travel time
 * "LT+S", which is the correction for light travel time ("LT") plus the correction for observer motion ("S")
 
-SunPy calculates the apparent sub-observer Carrington longitude in a manner equivalent to specifying "LT" (as opposed to "LT+S").
-The discrepancy between SunPy values and SPICE values is no greater than 0.01 arcseconds.
+sunpy calculates the apparent sub-observer Carrington longitude in a manner equivalent to specifying "LT" (as opposed to "LT+S").
+The discrepancy between sunpy values and SPICE values is no greater than 0.01 arcseconds.
 
 Compared to JPL Horizons
 ------------------------
 
-In `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`_, one can request the "Obs sub-long & sub-lat".
+In `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`__, one can request the "Obs sub-long & sub-lat".
 JPL Horizons appears to start from the IAU parameters and to include the correction for light travel time but not the correction for observer motion (i.e., equivalent to specifying "LT" to `subpnt`_ in `SPICE`_).
-The discrepancy between SunPy values and JPL Horizons values is no greater than 0.01 arcseconds.
+The discrepancy between sunpy values and JPL Horizons values is no greater than 0.01 arcseconds.
 
 Compared to SunSPICE
 --------------------
 
-In `SunSPICE <https://stereo-ssc.nascom.nasa.gov/sunspice.shtml>`_, one can convert to and from the "Carrington" coordinate system using the function `convert_sunspice_coord <https://hesperia.gsfc.nasa.gov/ssw/packages/sunspice/idl/convert_sunspice_coord.pro>`_.
+In `SunSPICE <https://stereo-ssc.nascom.nasa.gov/sunspice.shtml>`__, one can convert to and from the "Carrington" coordinate system using the function `convert_sunspice_coord <https://hesperia.gsfc.nasa.gov/ssw/packages/sunspice/idl/convert_sunspice_coord.pro>`__.
 However, these Carrington longitudes are "true" rather than "apparent" because the observer is not specified, so there are no corrections for light travel time or for observer motion.
-For example, for an Earth observer, SunPy values will be consistently greater than SunSPICE's coordinate transformation by ~0.82 degrees.
+For example, for an Earth observer, sunpy values will be consistently greater than SunSPICE's coordinate transformation by ~0.82 degrees.
 
 Footnotes
 =========

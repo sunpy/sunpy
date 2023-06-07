@@ -1,4 +1,4 @@
-.. _how-to-search-for-multiple-wavelengths-with-fido:
+.. _sunpy-how-to-search-for-multiple-wavelengths-with-fido:
 
 *****************************************
 Search for multiple wavelengths with Fido
@@ -9,8 +9,10 @@ Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength:
 .. code-block:: python
 
     >>> from astropy import units as u
+
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
+
     >>> time_range = a.Time("2022-02-20 00:00:00", "2022-02-20 00:00:30")
     >>> aia_search = Fido.search(time_range,
     ...                          a.Instrument.aia,
@@ -30,7 +32,6 @@ Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength:
     2022-02-20 00:00:21.000 2022-02-20 00:00:22.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     <BLANKLINE>
-
 
 The "|" operator can be used to combine multiple wavelengths:
 

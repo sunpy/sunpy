@@ -7,7 +7,7 @@ How to overlay differentially rotated gridlines on a Map.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate
 metaframe in `sunpy.coordinates` to overlay differentially rotated gridlines on
-a Map. See :ref:`sunpy-coordinates-rotatedsunframe` for more details on using
+a Map. See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on using
 `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
 import matplotlib.pyplot as plt

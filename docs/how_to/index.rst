@@ -1,27 +1,26 @@
-.. _how_to_guide:
+.. _sunpy-how-to-index:
 
 *************
 How-To Guides
 *************
 
-These guides provide examples of how to perform specific tasks with sunpy.
-These are recipes that do not provide much in depth explanation and assume you have some knowledge of what ``sunpy`` is and how it works.
-If you're starting fresh you might want to check out the :ref:`tutorial` first.
+These how-to guides provide examples of how to perform specific tasks with sunpy.
+They are recipes that do not provide much in-depth explanation and assume you have some knowledge of what sunpy is and how it works.
+If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-index` first.
 
 .. toctree::
    :maxdepth: 1
 
-   search_vso
-   search_multiple_wavelengths
-   parse_time
-   create_coords
    coord_components
-   transform_coords
    create_a_map
-   remote_data_manager
-   create_custom_timeseries
+   create_coords
    create_custom_map
-
+   create_custom_timeseries
+   parse_time
+   remote_data_manager
+   search_multiple_wavelengths
+   search_vso
+   transform_coords
 
 **Quick Reference**
 

@@ -187,7 +187,7 @@ Here are examples of using this class:
 .. minigallery:: sunpy.coordinates.RotatedSunFrame
 
 
-A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`at the RotatedSunFrame documentation<sunpy-coordinates-rotatedsunframe>`.
+A detailed write-up of how to use `~sunpy.coordinates.metaframes.RotatedSunFrame` can be found :ref:`at the RotatedSunFrame documentation<sunpy-topic-guide-coordinates-rotatedsunframe>`.
 
 .. _whatsnew-2.0-carrington:
 
@@ -201,7 +201,7 @@ SunPy output now matches the calculations by `JPL Horizons <https://ssd.jpl.nasa
 There may be small differences compared to Carrington coordinates computed by groups that do not use modern parameter values or the same assumptions for the methodology.
 
 Importantly, the Carrington longitude that is now calculated (including using :func:`sunpy.coordinates.sun.L0`) will not match earlier versions of SunPy.
-A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`at carrington's functionality documentation<sunpy-coordinates-carrington>`.
+A detailed write-up of the calculation approach and comparisons to other resources can be found :ref:`at carrington's functionality documentation<sunpy-topic-guide-coordinates-carrington>`.
 
 .. _whatsnew-2.0-proxy:
 
