@@ -1,4 +1,4 @@
-.. _topic-guide-rsun:
+.. _sunpy-topic-guide-rsun:
 
 ***************************
 The role of "rsun" in sunpy
