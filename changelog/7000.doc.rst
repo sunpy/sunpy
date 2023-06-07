@@ -1,1 +1,1 @@
-Added a topic-guide to aid understanding the role ``rsun`` plays in ``sunpy`` coordinate transformations and `~reproject_to`.
+Added a topic-guide to aid understanding the role, "rsun" plays in sunpy coordinate transformations and :meth:`sunpy.map.GenericMap.reproject_to`.

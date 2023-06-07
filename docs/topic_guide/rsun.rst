@@ -28,8 +28,10 @@ The conversion can be performed as follows:
 
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
-    >>> from sunpy.coordinates import frames
+
     >>> import sunpy.coordinates
+    >>> from sunpy.coordinates import frames
+
     >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, observer="earth", obstime="2017-07-26", frame=frames.Helioprojective)
     >>> hpc_out = sunpy.coordinates.Helioprojective(observer="venus", obstime="2017-07-26")
     >>> hpc2 = hpc1.transform_to(hpc_out)
@@ -55,20 +57,25 @@ If we run the reprojection twice, once before fixing the discrepancy in the "rsu
 
 .. plot::
     :include-source:
+    :context: close-figs
 
-    >>> import sunpy.map
-    >>> from sunpy.map import Map
-    >>> from sunpy.data.sample import AIA_193_JUN2012, STEREO_A_195_JUN2012
-    >>> from matplotlib import pyplot as plt
-    >>> plt.rcParams['figure.figsize'] = (16, 8)
-    >>> map_aia = Map(AIA_193_JUN2012)
-    >>> map_euvi = Map(STEREO_A_195_JUN2012)
-    >>> outmap1 = map_euvi.reproject_to(map_aia.wcs)
-    >>> map_euvi.meta['rsun_ref'] = map_aia.meta['rsun_ref']
-    >>> outmap2 = map_euvi.reproject_to(map_aia.wcs)
-    >>> fig = plt.figure()
-    >>> ax1 = fig.add_subplot(121, projection=outmap1); outmap1.plot(axes=ax1); plt.title('Without rsun Fix')
-    >>> ax2 = fig.add_subplot(122, projection=outmap2); outmap2.plot(axes=ax2); plt.title('With rsun Fix')
-    >>> plt.show()
+    from matplotlib import pyplot as plt
+    from sunpy.map import Map
+    from sunpy.data.sample import AIA_193_JUN2012, STEREO_A_195_JUN2012
+
+    plt.rcParams['figure.figsize'] = (16, 8)
+
+    map_aia = Map(AIA_193_JUN2012)
+    map_euvi = Map(STEREO_A_195_JUN2012)
+
+    outmap1 = map_euvi.reproject_to(map_aia.wcs)
+    map_euvi.meta['rsun_ref'] = map_aia.meta['rsun_ref']
+    outmap2 = map_euvi.reproject_to(map_aia.wcs)
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(121, projection=outmap1); outmap1.plot(axes=ax1); plt.title('Without rsun Fix')
+    ax2 = fig.add_subplot(122, projection=outmap2); outmap2.plot(axes=ax2); plt.title('With rsun Fix')
+
+    plt.show()
 
 We can see the difference in the appearance of the reprojected maps near the limb.
