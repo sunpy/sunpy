@@ -1,0 +1,2 @@
+Updated all of the sphinx anchors to be more consistent.
+This means that any use of the old anchors (intersphinx links to sunpy doc pages) will need to be updated.
