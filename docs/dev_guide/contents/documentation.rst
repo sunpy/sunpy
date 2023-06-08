@@ -81,6 +81,19 @@ sunpy-Specific Rules
 
     docformatter -r -i  --pre-summary-newline --make-summary-multi-line
 
+* Heading style is the following for all RST files:
+
+.. code-block:: rst
+
+    * with overline, for titles
+    = for sections
+    - for subsections
+    ^ for subsubsections
+    " for paragraphs
+
+* Anchors for each page should follow this format: ``sunpy-<section>-<subsection>-<summary of title>``., e.g., ``sunpy-tutorial-acquiring-data-index``.
+* Use of ``.. code-block:`` is required for all code examples.
+
 .. _Docs Guidelines for Data Sources:
 
 Documenting Data Sources
