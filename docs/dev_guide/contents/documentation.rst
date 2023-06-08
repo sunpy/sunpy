@@ -92,7 +92,7 @@ sunpy-Specific Rules
     " for paragraphs
 
 * Anchors for each page should follow this format: ``sunpy-<section>-<subsection>-<summary of title>``., e.g., ``sunpy-tutorial-acquiring-data-index``.
-* Use of ``code-block:`` is required for all code examples.
+* Use of ``.. code-block:`` is required for all code examples.
 
 .. _Docs Guidelines for Data Sources:
 
