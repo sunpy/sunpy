@@ -1,1 +1,1 @@
-Cleaned up and simplified the :ref:`timeseries_guide` section of the tutorial.
+Cleaned up and simplified the :ref:`sunpy-tutorial-timeseries` section of the tutorial.

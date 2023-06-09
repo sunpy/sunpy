@@ -1,2 +1,2 @@
-Significantly revised and improved the :ref:`map_guide` part of the tutorial.
-This included moving the section on custom maps to the :ref:`how_to_guide` section.
+Significantly revised and improved the :ref:`sunpy-tutorial-maps` part of the tutorial.
+This included moving the section on custom maps to the :ref:`sunpy-how-to-index` section (see :ref:`sunpy-how-to-create-a-map`).
