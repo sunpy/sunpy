@@ -6,9 +6,12 @@ import codecs
 import urllib
 import inspect
 from itertools import chain
+import re
 
 import astropy.table
 from astropy.table import Row
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 import sunpy.net._attrs as core_attrs
 from sunpy import log
@@ -22,7 +25,9 @@ from sunpy.util.xml import xml_to_dict
 __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
+HEK_FILE_PATH = 'sunpy/net/hek/hek_properties.json'
 
+u.add_enabled_aliases({"Day": u.day, "steradian": u.sr, "Steradian": u.sr, "arcseconds": u.arcsec, "Arcsec": u.arcsec, "Arcseconds": u.arcsec, "Deg": u.deg, "degrees": u.deg, "Degrees": u.deg, "sec": u.s})
 
 def _freeze(obj):
     """ Create hashable representation of result dict. """
@@ -81,6 +86,7 @@ class HEKClient(BaseClient):
                 if len(results) > 0:
                     table = astropy.table.Table(dict_keys_same(results))
                     table = self._parse_times(table)
+                    table = self._parse_values_to_quantities(table)
                     return table
                 else:
                     return astropy.table.Table()
@@ -95,6 +101,76 @@ class HEKClient(BaseClient):
                 table[tkey] = parse_time(table[tkey])
                 table[tkey].format = 'iso'
         return table
+
+    @staticmethod
+    def _parse_unit(table, attribute):
+        unit_attr=""
+        if attribute["is_coord_prop"]:
+            unit_attr = "event_coordunit"
+        else:
+            unit_attr = attribute["unit_prop"]
+        for row in table:
+            if row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
+                table[attribute["name"]].unit = HEKClient._get_unit(attribute, row[unit_attr])
+                break
+        return table
+
+    @staticmethod
+    def _get_unit(attribute, str):
+        if attribute["is_coord_prop"]:
+            coord1_unit, coord2_unit, coord3_unit = None, None, None
+            coord_units = re.split(r'[, ]', str)
+            if len(coord_units) == 1: # deg
+               coord1_unit = coord2_unit = u.Unit(coord_units[0])
+            elif len(coord_units) == 2:
+                coord1_unit = u.Unit(coord_units[0])
+                coord2_unit = u.Unit(coord_units[1])
+            else:
+                coord1_unit = u.Unit(coord_units[0])
+                coord2_unit = u.Unit(coord_units[1])
+                coord3_unit = u.Unit(coord_units[2])
+            return locals()[attribute["unit_prop"]]
+        else:
+            return u.Unit(str)
+
+    @staticmethod
+    def _parse_chaincode(table, attribute):
+        pass
+
+    @staticmethod
+    def _parse_values_to_quantities(table):
+        with open(HEK_FILE_PATH, 'r') as hek_file:
+            hek_properties = json.load(hek_file)
+        hek_attributes = hek_properties["attributes"]
+
+        for attribute in hek_attributes:
+            if attribute["is_unit_prop"]:
+                pass
+            elif attribute["name"] in table.colnames and "unit_prop" in attribute:
+                table = HEKClient._parse_unit(table, attribute)
+                unit_attr = ""
+                if attribute["is_coord_prop"]:
+                    if attribute["is_chaincode"]:
+                        pass
+                    unit_attr = "event_coordunit"
+                else:
+                    unit_attr = attribute["unit_prop"]
+
+                new_column = []
+                for idx, value in enumerate(table[attribute["name"]]):
+                    if value in ["", None]:
+                        new_column.append(value)
+                    else:
+                        new_column.append(value * HEKClient._get_unit(attribute, table[unit_attr][idx]))
+                table[attribute["name"]] = new_column
+
+
+        for attribute in hek_attributes:
+            if attribute["is_unit_prop"] and attribute["name"] in table.colnames:
+                del table[attribute["name"]]
+        return table
+
+
 
     def search(self, *args, **kwargs):
         """
@@ -127,6 +203,9 @@ class HEKClient(BaseClient):
             new = self.default.copy()
             new.update(elem)
             ndata.append(new)
+
+        # ndata = self._parse_values_to_quantities(ndata)
+
         if len(ndata) == 1:
             return HEKTable(self._download(ndata[0]), client=self)
         else:
