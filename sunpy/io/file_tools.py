@@ -1,3 +1,10 @@
+
+try:
+    import pytest
+    pytestmark = pytest.skip()
+except ImportError:
+    pass
+
 from sunpy.util.exceptions import warn_deprecated
 from . import _file_tools
 from ._file_tools import *  # NOQA
