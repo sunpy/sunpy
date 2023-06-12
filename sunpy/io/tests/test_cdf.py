@@ -1,3 +1,5 @@
+import importlib
+
 import numpy as np
 
 import astropy.units as u
@@ -22,3 +24,8 @@ def test_read_cdf():
     assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
     # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
+
+
+def test_old_import():
+    lib = importlib.import_module("sunpy.io.cdf")
+    assert lib.read_cdf is read_cdf

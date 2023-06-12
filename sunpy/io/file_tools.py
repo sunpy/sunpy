@@ -1,7 +1,13 @@
-from _file_tools import *  # noqa: F403
+
+try:
+    import pytest
+    pytestmark = pytest.skip()
+except ImportError:
+    pass
 
 from sunpy.util.exceptions import warn_deprecated
 from . import _file_tools
+from ._file_tools import *  # NOQA
 
 __doc__ = _file_tools.__doc__
 __all__ = _file_tools.__all__
