@@ -2,13 +2,16 @@
 ``sunpy``
 *********
 
-|Latest Version| |DOI| |matrix| |codecov| |Binder| |Powered by NumFOCUS|
+|Latest Version| |DOI| |repostatus| |python|
+|ci| |codecov| |Docs|
+|matrix|  |Binder|
+|Powered by NumFOCUS|
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
    :target: https://pypi.python.org/pypi/sunpy/
 .. |DOI| image:: https://zenodo.org/badge/2165383.svg
    :target: https://zenodo.org/badge/latestdoi/2165383
-.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
+.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.org
    :target: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/sunpy/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
@@ -16,6 +19,16 @@
    :target: https://mybinder.org/v2/gh/sunpy/sunpy/main?filepath=examples
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
+.. |CI| image:: https://github.com/sunpy/sunpy/actions/workflows/ci.yml/badge.svg?branch=main
+   :target: https://github.com/sunpy/sunpy/actions/workflows/ci.yml
+.. |Docs| image:: https://readthedocs.org/projects/sunpy/badge/?version=stable
+   :target: https://docs.sunpy.org/en/stable/?badge=stable
+   :alt: Documentation Status
+.. |repostatus| image:: https://www.repostatus.org/badges/latest/active.svg
+   :alt: Project Status: Active – The project has reached a stable, usable state and is being actively developed.
+   :target: https://www.repostatus.org/#active
+.. |python| image:: https://img.shields.io/pypi/pyversions/sunpy
+   :alt: PyPI - Python Version
 
 ``sunpy`` is a Python software package that provides fundamental tools for accessing, loading and interacting with solar physics data in Python.
 It is the core library of the `SunPy Project <https://sunpy.org/>`__.
