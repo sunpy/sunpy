@@ -1,7 +1,13 @@
-from _jp2 import *  # noqa: F403
+
+try:
+    import pytest
+    pytestmark = pytest.skip()
+except ImportError:
+    pass
 
 from sunpy.util.exceptions import warn_deprecated
 from . import _jp2
+from ._jp2 import *  # NOQA
 
 __doc__ = _jp2.__doc__
 __all__ = _jp2.__all__

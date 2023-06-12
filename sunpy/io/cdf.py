@@ -1,7 +1,13 @@
-from _cdf import *  # NOQA
+
+try:
+    import pytest
+    pytestmark = pytest.skip()
+except ImportError:
+    pass
 
 from sunpy.util.exceptions import warn_deprecated
 from . import _cdf
+from ._cdf import *  # NOQA
 
 __doc__ = _cdf.__doc__
 __all__ = _cdf.__all__
