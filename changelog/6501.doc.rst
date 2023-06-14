@@ -1,1 +1,0 @@
-Added an example of how to search for multiple wavelengths attributes for AIA data using `sunpy.net.attrs.AttrOr`.

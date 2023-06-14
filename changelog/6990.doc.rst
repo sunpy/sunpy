@@ -1,1 +1,0 @@
-Cleaned up and simplified the :ref:`sunpy-tutorial-timeseries` section of the tutorial.

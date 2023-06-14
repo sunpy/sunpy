@@ -1,1 +1,0 @@
-Return code from ``self_test`` is now non-zero if it stops due to missing dependencies.

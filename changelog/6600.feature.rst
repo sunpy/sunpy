@@ -1,1 +1,0 @@
-Able to run the ``sunpy`` tests doing ``python -m sunpy.tests.self_test``.
