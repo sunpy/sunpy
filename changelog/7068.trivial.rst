@@ -1,0 +1,1 @@
+Add a Dependabot config file to auto-update GitHub action versions.
