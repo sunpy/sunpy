@@ -7,6 +7,8 @@ import urllib
 import inspect
 from itertools import chain
 import re
+from pathlib import Path
+import os
 
 import astropy.table
 from astropy.table import Row
@@ -21,13 +23,15 @@ from sunpy.net.hek import attrs
 from sunpy.time import parse_time
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
+from sunpy import __file__
 
 __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
-HEK_FILE_PATH = 'sunpy/net/hek/hek_properties.json'
+UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "net" / "hek"/ "unit_properties.json"
+COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "net" / "hek"/ "coord_properties.json"
 
-u.add_enabled_aliases({"Day": u.day, "steradian": u.sr, "Steradian": u.sr, "arcseconds": u.arcsec, "Arcsec": u.arcsec, "Arcseconds": u.arcsec, "Deg": u.deg, "degrees": u.deg, "Degrees": u.deg, "sec": u.s})
+u.add_enabled_aliases({"steradian": u.sr, "arcseconds": u.arcsec, "degrees": u.deg, "sec": u.s})
 
 def _freeze(obj):
     """ Create hashable representation of result dict. """
@@ -103,53 +107,61 @@ class HEKClient(BaseClient):
         return table
 
     @staticmethod
-    def _parse_unit(table, attribute):
+    def _parse_unit(table, attribute, is_coord_prop = False):
         unit_attr=""
-        if attribute["is_coord_prop"]:
+        if is_coord_prop:
             unit_attr = "event_coordunit"
         else:
             unit_attr = attribute["unit_prop"]
         for row in table:
-            if row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
-                table[attribute["name"]].unit = HEKClient._get_unit(attribute, row[unit_attr])
+            if unit_attr in table.colnames and row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
+                table[attribute["name"]].unit = HEKClient._get_unit(attribute, row[unit_attr], is_coord_prop= is_coord_prop)
                 break
         return table
 
     @staticmethod
-    def _get_unit(attribute, str):
-        if attribute["is_coord_prop"]:
+    def _parse_astropy_unit(str):
+        try:
+            unit = u.Unit(str)
+        except ValueError:
+            try:
+                unit = u.Unit(str.lower())
+            except ValueError:
+                unit = u.Unit(str.capitalize())
+
+        return unit
+
+    @staticmethod
+    def _get_unit(attribute, str, is_coord_prop = False):
+        if is_coord_prop:
             coord1_unit, coord2_unit, coord3_unit = None, None, None
             coord_units = re.split(r'[, ]', str)
             if len(coord_units) == 1: # deg
-               coord1_unit = coord2_unit = u.Unit(coord_units[0])
+               coord1_unit = coord2_unit = HEKClient._parse_astropy_unit(coord_units[0])
             elif len(coord_units) == 2:
-                coord1_unit = u.Unit(coord_units[0])
-                coord2_unit = u.Unit(coord_units[1])
+                coord1_unit = HEKClient._parse_astropy_unit(coord_units[0])
+                coord2_unit = HEKClient._parse_astropy_unit(coord_units[1])
             else:
-                coord1_unit = u.Unit(coord_units[0])
-                coord2_unit = u.Unit(coord_units[1])
-                coord3_unit = u.Unit(coord_units[2])
+                coord1_unit = HEKClient._parse_astropy_unit(coord_units[0])
+                coord2_unit = HEKClient._parse_astropy_unit(coord_units[1])
+                coord3_unit = HEKClient._parse_astropy_unit(coord_units[2])
             return locals()[attribute["unit_prop"]]
         else:
-            return u.Unit(str)
+            return HEKClient._parse_astropy_unit(str)
 
     @staticmethod
     def _parse_chaincode(table, attribute):
         pass
 
     @staticmethod
-    def _parse_values_to_quantities(table):
-        with open(HEK_FILE_PATH, 'r') as hek_file:
-            hek_properties = json.load(hek_file)
-        hek_attributes = hek_properties["attributes"]
-
-        for attribute in hek_attributes:
+    def _parse_colums_to_table(table, attributes, is_coord_prop = False):
+        for attribute in attributes:
             if attribute["is_unit_prop"]:
                 pass
             elif attribute["name"] in table.colnames and "unit_prop" in attribute:
-                table = HEKClient._parse_unit(table, attribute)
+                table = HEKClient._parse_unit(table, attribute, is_coord_prop)
                 unit_attr = ""
-                if attribute["is_coord_prop"]:
+                if is_coord_prop:
                     if attribute["is_chaincode"]:
                         pass
                     unit_attr = "event_coordunit"
@@ -161,13 +173,24 @@ class HEKClient(BaseClient):
                     if value in ["", None]:
                         new_column.append(value)
                     else:
-                        new_column.append(value * HEKClient._get_unit(attribute, table[unit_attr][idx]))
+                        new_column.append(value * HEKClient._get_unit(attribute, table[unit_attr][idx], is_coord_prop= is_coord_prop))
                 table[attribute["name"]] = new_column
-
-
-        for attribute in hek_attributes:
+        for attribute in attributes:
             if attribute["is_unit_prop"] and attribute["name"] in table.colnames:
                 del table[attribute["name"]]
+        return table
+
+    @staticmethod
+    def _parse_values_to_quantities(table):
+        with open(UNIT_FILE_PATH, 'r') as unit_file:
+            unit_properties = json.load(unit_file)
+        unit_attributes = unit_properties["attributes"]
+
+        with open(COORD_FILE_PATH, 'r') as coord_file:
+            coord_properties = json.load(coord_file)
+        coord_attributes = coord_properties["attributes"]
+        table = HEKClient._parse_colums_to_table(table, unit_attributes)
+        table = HEKClient._parse_colums_to_table(table, coord_attributes, is_coord_prop= True)
         return table
 
 
