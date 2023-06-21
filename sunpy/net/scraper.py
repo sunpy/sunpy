@@ -426,7 +426,7 @@ class Scraper:
             "%Y": "{year:4d}",
             "%y": "{year_short:2d}", # workaround to avoid key-collision for cases where both %y and %Y present, this okay?
             "%m": "{month:2d}",
-            "%d": "{day:0d}",
+            "%d": "{day:2d}",
             "%H": "{hour:2d}",
             "%I": "{hour:2d}",
             "%p": "{am_pm}",
@@ -441,7 +441,7 @@ class Scraper:
             "%%": "%%",
         }
 
-        parse_pattern = baseurl
+        parse_pattern = self.pattern
 
         for code in format_codes:
             if code in replacements:
@@ -469,9 +469,11 @@ class Scraper:
         """
         self.extractor = extractor
         urls = self.filelist(timerange)
+        print("url is", urls, "and extractor is", extractor)
         metalist = []
         for url in urls:
             metadict = parse(extractor, url)
+            print('metadict:', metadict)
             if metadict is not None:
                 append = True
                 metadict = metadict.named
