@@ -47,7 +47,6 @@ class LYRAClient(GenericClient):
     """
     baseurl = (r'http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                r'lyra_(\d){8}-000000_lev(\d){1}_std.fits')
-    pattern = '{}/bsd/{year:4d}/{month:2d}/{day:2d}/{}_lev{Level:1d}_std.fits'
 
     @property
     def info_url(self):

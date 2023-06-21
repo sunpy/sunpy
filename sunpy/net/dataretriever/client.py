@@ -11,6 +11,7 @@ from sunpy.net.base_client import BaseClient, QueryResponseRow, QueryResponseTab
 from sunpy.net.scraper import Scraper, get_timerange_from_exdict
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
+from sunpy.extern.parse import parse
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -58,10 +59,6 @@ class GenericClient(BaseClient):
     They help to translate the attrs for scraper before and after the search respectively.
     """
     baseurl = None
-    # A regex string that can match all urls supported by the client.
-    # A string which is used to extract the desired metadata from urls correctly,
-    # using ``sunpy.extern.parse.parse``.
-    pattern = None
     # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
     # Define keywords a client needs to pass to enqueue_file
@@ -120,7 +117,7 @@ class GenericClient(BaseClient):
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
-        return cls.baseurl, cls.pattern, matchdict
+        return cls.baseurl, matchdict
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -263,7 +260,7 @@ class GenericClient(BaseClient):
         -------
         A `QueryResponse` instance containing the query result.
         """
-        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        baseurl, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         pattern = scraper._generate_parse_pattern(baseurl)
