@@ -237,8 +237,6 @@ class GenericClient(BaseClient):
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        if not pattern:
-            pattern = scraper._generate_parse_pattern(baseurl)
         filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
                                                 matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])
