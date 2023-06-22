@@ -59,10 +59,6 @@ class GenericClient(BaseClient):
     They help to translate the attrs for scraper before and after the search respectively.
     """
     baseurl = None
-    # A regex string that can match all urls supported by the client.
-    # A string which is used to extract the desired metadata from urls correctly,
-    # using ``sunpy.extern.parse.parse``.
-    pattern = None
     # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
     # Define keywords a client needs to pass to enqueue_file
@@ -116,12 +112,12 @@ class GenericClient(BaseClient):
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         """
-        Helper function to return the baseurl and matchdict
+        Helper function to return the baseurl, pattern and matchdict
         for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
-        return cls.baseurl, pattern, matchdict
+        return cls.baseurl, matchdict
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -179,6 +175,36 @@ class GenericClient(BaseClient):
             if k not in ['year', 'month', 'day', 'hour', 'minute', 'second']:
                 rowdict[k] = exdict[k]
         return rowdict
+    
+    def _generate_parse_pattern(self, baseurl):
+        format_codes = ['%Y', '%y', '%m', '%d', '%H', '%I', '%p', '%M', '%S', '%f',
+                        '%z', '%Z', '%j', '%U', '%W', '%c', '%x', '%X', '%%']
+        replacements = {
+            "%Y": "{year:4d}",
+            "%y": "{year_short:2d}", # workaround to avoid key-collision for cases where both %y and %Y present, this okay?
+            "%m": "{month:2d}",
+            "%d": "{day:0d}",
+            "%H": "{hour:2d}",
+            "%I": "{hour:2d}",
+            "%p": "{am_pm}",
+            "%M": "{minute:2d}",
+            "%S": "{second:2d}",
+            "%f": "{microsecond:6d}",
+            "%z": "{timezone}",
+            "%Z": "{timezone}",
+            "%j": "{day_of_year:3d}",
+            "%U": "{week_number:2d}",
+            "%W": "{week_number:2d}",
+            "%%": "%%",
+        }
+
+        parse_pattern = baseurl
+
+        for code in format_codes:
+            if code in replacements:
+                parse_pattern = parse_pattern.replace(code, replacements[code])
+
+        return parse_pattern
 
     def _get_full_filenames(self, qres, filenames, path):
         """
@@ -234,9 +260,13 @@ class GenericClient(BaseClient):
         -------
         A `QueryResponse` instance containing the query result.
         """
-        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        baseurl, matchdict = self.pre_search_hook(*args, **kwargs)
         scraper = Scraper(baseurl, regex=True)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+<<<<<<< HEAD
+=======
+        pattern = scraper._generate_parse_pattern(baseurl)
+>>>>>>> parent of 537cc25b9 (fixes?)
         filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
                                                 matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])
