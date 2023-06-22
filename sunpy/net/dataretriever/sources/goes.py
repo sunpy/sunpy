@@ -72,12 +72,17 @@ class XRSClient(GenericClient):
     """
     # GOES XRS data from NASA servers up to GOES 7.
     baseurl_old = r'https://umbra.nascom.nasa.gov/goes/fits/%Y/go(\d){2}(\d){6,8}\.fits'
+    pattern_old = '{}/fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
     # The reprocessed 8-15 data should be taken from NOAA.
     baseurl_new = (r"https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/"
                    r"goes{SatelliteNumber:02d}/{filename_res}-l2-{resolution}_science/%Y/%m/sci_{filename_res}-l2-{resolution}_g{SatelliteNumber:02d}_d%Y%m%d_.*\.nc")
+    pattern_new = ("{}/goes{SatelliteNumber:02d}/{filename_res}-l2-{resolution}_science/{year:4d}/"
+                   "{month:2d}/sci_{filename_res}-l2-{resolution}_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
     # GOES-R Series 16-17 XRS data from NOAA.
     baseurl_r = (r"https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}"
                  r"/l2/data/xrsf-l2-{Resolution}_science/%Y/%m/sci_xrsf-l2-{Resolution}_g{SatelliteNumber}_d%Y%m%d_.*\.nc")
+    pattern_r = ("{}/goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-{Resolution}_science/{year:4d}/"
+                 "{month:2d}/sci_xrsf-l2-{Resolution}_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
 
     @property
     def info_url(self):
@@ -123,14 +128,13 @@ class XRSClient(GenericClient):
             metalist = self._get_metalist(matchdict)
         return QueryResponse(metalist, client=self)
 
-    def _get_metalist_fn(self, matchdict, baseurl):
+    def _get_metalist_fn(self, matchdict, baseurl, pattern):
         """
         Function to help get list of OrderedDicts.
         """
         metalist = []
         scraper = Scraper(baseurl, regex=True)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
-        pattern = scraper._generate_parse_pattern(baseurl)
         filemeta = scraper._extract_files_meta(tr, extractor=pattern,
                                                matcher=matchdict)
         for i in filemeta:

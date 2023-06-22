@@ -4,7 +4,6 @@ This module provides a web scraper.
 import os
 import re
 import calendar
-import parse
 from time import sleep
 from ftplib import FTP
 from datetime import datetime, timedelta
@@ -418,36 +417,6 @@ class Scraper:
                 return None
         except Exception:
             raise
-    
-    def _generate_parse_pattern(self, baseurl):
-        format_codes = ['%Y', '%y', '%m', '%d', '%H', '%I', '%p', '%M', '%S', '%f',
-                        '%z', '%Z', '%j', '%U', '%W', '%c', '%x', '%X', '%%']
-        replacements = {
-            "%Y": "{year:4d}",
-            "%y": "{year_short:2d}", # workaround to avoid key-collision for cases where both %y and %Y present, this okay?
-            "%m": "{month:2d}",
-            "%d": "{day:0d}",
-            "%H": "{hour:2d}",
-            "%I": "{hour:2d}",
-            "%p": "{am_pm}",
-            "%M": "{minute:2d}",
-            "%S": "{second:2d}",
-            "%f": "{microsecond:6d}",
-            "%z": "{timezone}",
-            "%Z": "{timezone}",
-            "%j": "{day_of_year:3d}",
-            "%U": "{week_number:2d}",
-            "%W": "{week_number:2d}",
-            "%%": "%%",
-        }
-
-        parse_pattern = baseurl
-
-        for code in format_codes:
-            if code in replacements:
-                parse_pattern = parse_pattern.replace(code, replacements[code])
-
-        return parse_pattern
 
     def _extract_files_meta(self, timerange, extractor, matcher=None):
         """

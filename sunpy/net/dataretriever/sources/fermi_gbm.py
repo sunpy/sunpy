@@ -49,6 +49,7 @@ class GBMClient(GenericClient):
 
     """
     baseurl = r'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/%Y/%m/%d/current/glg_(\w){5}_(\w){2}_%y%m%d_v00.pha'
+    pattern = '{}/daily/{year:4d}/{month:2d}/{day:2d}/current/glg_{Resolution:5}_{Detector:2}_{:6d}{}'
 
     @property
     def info_url(self):
