@@ -110,7 +110,7 @@ class Scraper:
             ))
 
     def matches(self, filepath, date):
-        return date.strftime(self.pattern) == filepath
+        return date.strftime(self.timepattern) == filepath
 
     def range(self, timerange):
         """
@@ -129,7 +129,7 @@ class Scraper:
         """
         # find directory structure - without file names
         if '/' in self.pattern:
-            directorypattern = '/'.join(self.pattern.split('/')[:-1]) + '/'
+            directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
@@ -183,10 +183,7 @@ class Scraper:
         """
         Check whether the url provided follows the pattern.
         """
-        pattern = self.pattern
-        for k, v in TIME_CONVERSIONS.items():
-            pattern = pattern.replace(k, v)
-        matches = re.match(pattern, url)
+        matches = re.match(self.pattern, url)
         if matches:
             return matches.end() == matches.endpos
         return False
