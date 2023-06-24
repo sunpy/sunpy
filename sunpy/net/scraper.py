@@ -31,6 +31,16 @@ TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
                     '%H': r'\d{2}', '%I': r'\d{2}',
                     '%M': r'\d{2}',
                     '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
+TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
+            "{month:2d}": "%m",
+            "{day:0d}": "%d",
+            "{hour:2d}": "%H",
+            "{minute:2d}": "%M",
+            "{second:2d}": "%S",
+            "{microsecond:6d}": "%f",
+            "{day_of_year:3d}": "%j",
+            "{week_number:2d}": "%W",
+        }
 TIME_QUANTITIES = {'day': timedelta(days=1),
                    'hour': timedelta(hours=1),
                    'minute': timedelta(minutes=1),
@@ -81,12 +91,11 @@ class Scraper:
     """
 
     def __init__(self, pattern, regex=False, **kwargs):
-        if regex:
-            self.pattern = pattern
-            if kwargs:
-                warn_user('regexp being used, the extra arguments passed are being ignored')
-        else:
-            self.pattern = pattern.format(**kwargs)
+        self.pattern = pattern.format(**kwargs)
+        timepattern = self.pattern
+        for k, v in TIME_CONVERSIONS.items():
+            timepattern = timepattern.replace(k, v)
+        self.timepattern = timepattern
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
@@ -417,6 +426,7 @@ class Scraper:
                 return None
         except Exception:
             raise
+
 
     def _extract_files_meta(self, timerange, extractor, matcher=None):
         """
