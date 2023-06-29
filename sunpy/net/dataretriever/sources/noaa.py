@@ -165,6 +165,25 @@ class SRSClient(GenericClient):
     # Server does not support the normal aioftp passive command.
     enqueue_file_kwargs = {"passive_commands": ["pasv"]}
 
+    def fetch(self, qres, path=None, overwrite=False,
+              progress=True, downloader=None, wait=True, **kwargs):
+        import parfive
+
+        # Monkey patch get_ftp_size which is triggering 550 error on the NOAA FTP sever
+        orig_get_ftp = parfive.downloader.get_ftp_size
+
+        async def dummy_get_ftp(*args, **kwargs):
+            return 0
+
+        parfive.downloader.get_ftp_size = dummy_get_ftp
+
+        dl = super().fetch(qres, path=None, overwrite=False,
+                           progress=True, downloader=None, wait=True, **kwargs)
+
+        parfive.downloader.get_ftp_size = orig_get_ftp
+        return dl
+
+
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
