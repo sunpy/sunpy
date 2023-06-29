@@ -1,0 +1,1 @@
+Remove extraneous warnings when downloading SRS data (`sunpy.net.attrs.Instrument.srs_table`).
