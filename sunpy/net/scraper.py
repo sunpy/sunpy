@@ -26,6 +26,8 @@ __all__ = ['Scraper']
 # added `%e` as for milliseconds `%f/1000`
 TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month:2d}": "%m",
+            "{month_name:s}": "%B",
+            "{month_name_abbr:s}": "%b",
             "{day:2d}": "%d",
             "{hour:2d}": "%H",
             "{minute:2d}": "%M",
@@ -87,9 +89,14 @@ class Scraper:
     def __init__(self, pattern, regex=False, **kwargs):
         pattern = pattern.format(**kwargs)
         timepattern = pattern
-        for k, v in TIME_CONVERSIONS.items():
-            while k in timepattern:
-                timepattern = timepattern.replace(k, v)
+        parse_placeholders = re.findall(r'{(.*?)}', pattern)
+        for placeholder in parse_placeholders:
+            s = "{"+placeholder+"}"
+            while placeholder in timepattern and s in TIME_CONVERSIONS:
+                timepattern = timepattern.replace(s, TIME_CONVERSIONS[s])
+            # Replace {:6d} with (\d){6}
+            timepattern = re.sub(r'{:(\d+)d}', r'(\\d){\1}', timepattern)
+            timepattern = re.sub(r'{:s}', r'(\\w+)', timepattern)
         self.timepattern = timepattern
         if "year:4d" in pattern and "year:2d" in pattern:
             while "year:2d" in pattern:
@@ -182,7 +189,8 @@ class Scraper:
         """
         Check whether the url provided follows the pattern.
         """
-        matches = re.match(self.pattern, url)
+        print(self.timepattern, url)
+        matches = re.match(self.timepattern, url)
         if matches:
             return matches.end() == matches.endpos
         return False
@@ -250,6 +258,7 @@ class Scraper:
                 try:
                     soup = BeautifulSoup(opn, "html.parser")
                     for link in soup.find_all("a"):
+                        print(link)
                         href = link.get("href")
                         if href is not None and href.endswith(self.pattern.split('.')[-1]):
                             if href[0] == '/':
@@ -257,8 +266,13 @@ class Scraper:
                             else:
                                 fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
+                                print("*+="*8)
+                                print("SOMEONE DOES")
                                 if self._check_timerange(fullpath, timerange):
+                                    print("OOOOOOOOOOOOOOOOOOOOH")
                                     filesurls.append(fullpath)
+                            else:
+                                print("No one follows path")
                 finally:
                     opn.close()
             except HTTPError as http_err:
