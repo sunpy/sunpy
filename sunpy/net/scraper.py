@@ -26,15 +26,14 @@ __all__ = ['Scraper']
 # added `%e` as for milliseconds `%f/1000`
 TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month:2d}": "%m",
-            "{month_name:s}": "%B",
-            "{month_name_abbr:s}": "%b",
-            "{day:2d}": "%d",
-            "{hour:2d}": "%H",
+            "{month_name:w}": "%B",
+            "{month_name_abbr:3w}": "%b",
+            "{day:2d}": "%d", "{day_of_year:3d}": "%j",
+            "{hour:2d}": "%H", "{hour_12:2d}": "%I",
             "{minute:2d}": "%M",
             "{second:2d}": "%S",
             "{microsecond:6d}": "%f",
             "{millisecond:3d}": "%e",
-            "{day_of_year:3d}": "%j",
             "{week_number:2d}": "%W",
         }
 TIME_QUANTITIES = {'day': timedelta(days=1),
@@ -197,11 +196,17 @@ class Scraper:
         url = url.replace("anonymous:data@sunpy.org@", "")
         datestr, formatstr = "", ""
         dateinfo = parse(self.pattern, url)
+        print(self.pattern)
         for datetimetype in TIME_CONVERSIONS:
             if datetimetype in self.pattern:
+                print(datetimetype)
                 formatstr = formatstr + TIME_CONVERSIONS[datetimetype]
-                datestr = datestr + str(dateinfo[datetimetype[1:-4]])
-
+                typedict = parse('{{{type_name}:{type_format}}}', datetimetype)
+                if len(typedict['type_format'])>1: # so that say a 1 for milliseconds:6d goes as 000001
+                    datestr = datestr + str(dateinfo[typedict["type_name"]]).zfill(int(typedict["type_format"][:-1]))
+                else:
+                    datestr = datestr + str(dateinfo[typedict["type_name"]])
+        print(datestr, formatstr)
         return Time.strptime(datestr, formatstr)
 
     def filelist(self, timerange):
@@ -259,8 +264,10 @@ class Scraper:
                             else:
                                 fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
+                                print(fullpath)
                                 if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
+                            print(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:
@@ -363,17 +370,17 @@ class Scraper:
         Obtain the smaller time step for the given pattern.
         """
         try:
-            if "%S" in directoryPattern:
+            if "{second:2d}" in directoryPattern:
                 return relativedelta(seconds=1)
-            elif "%M" in directoryPattern:
+            elif "{month:2d}" in directoryPattern:
                 return relativedelta(minutes=1)
-            elif any(hour in directoryPattern for hour in ["%H", "%I"]):
+            elif any(hour in directoryPattern for hour in ["{hour:2d}", "{hour_12:2d}"]):
                 return relativedelta(hours=1)
-            elif any(day in directoryPattern for day in ["%d", "%j"]):
+            elif any(day in directoryPattern for day in ["{day:2d}", "{day_of_year:3d}"]):
                 return relativedelta(days=1)
-            elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
+            elif any(month in directoryPattern for month in ["{month:2d}", "{month_name:w}", "{month_name_abbr:w}"]):
                 return relativedelta(months=1)
-            elif any(year in directoryPattern for year in ["%Y", "%y"]):
+            elif any(year in directoryPattern for year in ["{year:4d}", "{year:2d}"]):
                 return relativedelta(years=1)
             else:
                 return None
