@@ -14,8 +14,6 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from dateutil.relativedelta import relativedelta
 
-from astropy.time import Time
-
 from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.time import TimeRange
@@ -188,27 +186,6 @@ class Scraper:
         else:
             return False
 
-    def _extractDateURL(self, url):
-        """
-        Extracts the date from a particular url following the pattern.
-        """
-        # remove the user and passwd from files if there:
-        url = url.replace("anonymous:data@sunpy.org@", "")
-        datestr, formatstr = "", ""
-        dateinfo = parse(self.pattern, url)
-        print(self.pattern)
-        for datetimetype in TIME_CONVERSIONS:
-            if datetimetype in self.pattern:
-                print(datetimetype)
-                formatstr = formatstr + TIME_CONVERSIONS[datetimetype]
-                typedict = parse('{{{type_name}:{type_format}}}', datetimetype)
-                if len(typedict['type_format'])>1: # so that say a 1 for milliseconds:6d goes as 000001
-                    datestr = datestr + str(dateinfo[typedict["type_name"]]).zfill(int(typedict["type_format"][:-1]))
-                else:
-                    datestr = datestr + str(dateinfo[typedict["type_name"]])
-        print(datestr, formatstr)
-        return Time.strptime(datestr, formatstr)
-
     def filelist(self, timerange):
         """
         Returns the list of existent files in the archive for the given time
@@ -263,11 +240,10 @@ class Scraper:
                                 fullpath = self.domain + href[1:]
                             else:
                                 fullpath = directory + href
+                            print(fullpath)
                             if self._URL_followsPattern(fullpath):
-                                print(fullpath)
                                 if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
-                            print(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:
@@ -355,15 +331,11 @@ class Scraper:
         `bool`
             `True` if URL's valid time range overlaps the given timerange, else `False`.
         """
-        if hasattr(self, 'extractor'):
-            exdict = parse(self.pattern, url).named
-            tr = get_timerange_from_exdict(exdict)
-            return tr.intersects(timerange)
-        else:
-            datehref = self._extractDateURL(url).to_datetime()
-            smaller_pattern = self._smallerPattern(self.pattern)
-            file_timerange = TimeRange(datehref, datehref + smaller_pattern)
-            return file_timerange.intersects(timerange)
+        exdict = parse(self.pattern, url).named
+        if exdict['year'] < 100:
+            exdict['year'] = 2000 + exdict['year']
+        tr = get_timerange_from_exdict(exdict)
+        return tr.intersects(timerange)
 
     def _smallerPattern(self, directoryPattern):
         """
