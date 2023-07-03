@@ -437,5 +437,5 @@ def get_timerange_from_exdict(exdict):
         else:
             tdelta = 365*TIME_QUANTITIES['day']
 
-    endTime = startTime + tdelta - TIME_QUANTITIES['millisecond']
+    endTime = startTime + tdelta
     return TimeRange(startTime, endTime)
