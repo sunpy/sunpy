@@ -88,14 +88,13 @@ class Scraper:
         timepattern = pattern
         for k, v in TIME_CONVERSIONS.items():
             if k in timepattern:
-                timepattern.replace(k,v)
+                timepattern = timepattern.replace(k,v)
         self.timepattern = timepattern
         if "year:4d" in pattern and "year:2d" in pattern:
-            while "year:2d" in pattern:
-                pattern = pattern.replace("year:2d", ":2d")
+            pattern = pattern.replace("year:2d", ":2d")
         self.pattern = pattern
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
-        milliseconds = re.search(r'\%e', self.pattern)
+        milliseconds = re.search(r'\%e', self.timepattern)
         if not milliseconds:
             self.now = datetime.now().strftime(self.timepattern)
         else:
@@ -138,7 +137,6 @@ class Scraper:
             while cur < end:
                 directories.append(cur.strftime(directorypattern))
                 cur = cur + timestep
-
             return directories
 
     @staticmethod
@@ -240,7 +238,6 @@ class Scraper:
                                 fullpath = self.domain + href[1:]
                             else:
                                 fullpath = directory + href
-                            print(fullpath)
                             if self._URL_followsPattern(fullpath):
                                 if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
@@ -342,17 +339,17 @@ class Scraper:
         Obtain the smaller time step for the given pattern.
         """
         try:
-            if "{second:2d}" in directoryPattern:
+            if "%S" in directoryPattern:
                 return relativedelta(seconds=1)
-            elif "{month:2d}" in directoryPattern:
+            elif "%M" in directoryPattern:
                 return relativedelta(minutes=1)
-            elif any(hour in directoryPattern for hour in ["{hour:2d}", "{hour_12:2d}"]):
+            elif any(hour in directoryPattern for hour in ["%H", "%I"]):
                 return relativedelta(hours=1)
-            elif any(day in directoryPattern for day in ["{day:2d}", "{day_of_year:3d}"]):
+            elif any(day in directoryPattern for day in ["%d", "%j"]):
                 return relativedelta(days=1)
-            elif any(month in directoryPattern for month in ["{month:2d}", "{month_name:w}", "{month_name_abbr:w}"]):
+            elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
                 return relativedelta(months=1)
-            elif any(year in directoryPattern for year in ["{year:4d}", "{year:2d}"]):
+            elif any(year in directoryPattern for year in ["%Y", "%y"]):
                 return relativedelta(years=1)
             else:
                 return None
