@@ -179,12 +179,6 @@ class GenericClient(BaseClient):
                 rowdict[k] = exdict[k]
         return rowdict
 
-        for code in format_codes:
-            if code in replacements:
-                parse_pattern = parse_pattern.replace(code, replacements[code])
-
-        return parse_pattern
-
     def _get_full_filenames(self, qres, filenames, path):
         """
         Returns full pathnames for each file in the result.

@@ -83,7 +83,7 @@ class Scraper:
     pattern looks with the actual time.
     """
 
-    def __init__(self, pattern, regex=False, **kwargs):
+    def __init__(self, pattern, **kwargs):
         pattern = pattern.format(**kwargs)
         timepattern = pattern
         for k, v in TIME_CONVERSIONS.items():
