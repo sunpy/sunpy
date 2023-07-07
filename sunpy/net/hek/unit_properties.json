@@ -61,8 +61,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Probability or Confidence Level that event occured (bet. 0 and 1)",
-            "is_unit_prop": false
+            "desc": "Probability or Confidence Level that event occured (bet. 0 and 1)"
         },
         {
             "name": "event_importance",
@@ -95,8 +94,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Rating or importance of the event (between 0 and 1). Can be used by automated methods to denote a metric.",
-            "is_unit_prop": false
+            "desc": "Rating or importance of the event (between 0 and 1). Can be used by automated methods to denote a metric."
         },
         {
             "name": "event_type",
@@ -129,8 +127,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Event type (e.g. 'FL: Flare' or 'AR: ActiveRegion')",
-            "is_unit_prop": false
+            "desc": "Event type (e.g. 'FL: Flare' or 'AR: ActiveRegion')"
         },
         {
             "name": "kb_archivdate",
@@ -163,8 +160,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Date when VOEvent entry was imported into Knowledge Base",
-            "is_unit_prop": false
+            "desc": "Date when VOEvent entry was imported into Knowledge Base"
         },
         {
             "name": "kb_archivid",
@@ -197,8 +193,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Unique internal ID of VOEvent entry",
-            "is_unit_prop": false
+            "desc": "Unique internal ID of VOEvent entry"
         },
         {
             "name": "kb_archivist",
@@ -231,8 +226,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Name of Archivist (internal. user should leave blank)",
-            "is_unit_prop": false
+            "desc": "Name of Archivist (internal. user should leave blank)"
         },
         {
             "name": "kb_archivurl",
@@ -265,8 +259,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "URL of VOEvent entry (internal. user should leave blank)",
-            "is_unit_prop": false
+            "desc": "URL of VOEvent entry (internal. user should leave blank)"
         },
         {
             "name": "event_coordsys",
@@ -299,8 +292,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Coordinate system type (Choose between UTC-HGS-TOPO [Heliographics Stonyhurst UTC-HPR-TOPO [Helioprojective]; UTC-HGC-TOPO[Heliographic Carrington]; UTC-HCR-TOPO[Helio-centric radial])",
-            "is_unit_prop": false
+            "desc": "Coordinate system type (Choose between UTC-HGS-TOPO [Heliographics Stonyhurst UTC-HPR-TOPO [Helioprojective]; UTC-HGC-TOPO[Heliographic Carrington]; UTC-HCR-TOPO[Helio-centric radial])"
         },
         {
             "name": "event_endtime",
@@ -333,8 +325,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Time when event ends (e.g. 2004-02-14T02:00:01)",
-            "is_unit_prop": false
+            "desc": "Time when event ends (e.g. 2004-02-14T02:00:01)"
         },
         {
             "name": "event_starttime",
@@ -367,8 +358,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Time when event starts (e.g. 2004-02-14T02:00:01)",
-            "is_unit_prop": false
+            "desc": "Time when event starts (e.g. 2004-02-14T02:00:01)"
         },
         {
             "name": "event_expires",
@@ -401,8 +391,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Useful for reporting events before they are complete (e.g. 2004-02-14T02:00:01)",
-            "is_unit_prop": false
+            "desc": "Useful for reporting events before they are complete (e.g. 2004-02-14T02:00:01)"
         },
         {
             "name": "event_mapurl",
@@ -435,8 +424,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "URL to an image/intensity map",
-            "is_unit_prop": false
+            "desc": "URL to an image/intensity map"
         },
         {
             "name": "event_maskurl",
@@ -469,8 +457,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "URL to files which contain masks (e.g. binary masks) of region of interest.",
-            "is_unit_prop": false
+            "desc": "URL to files which contain masks (e.g. binary masks) of region of interest."
         },
         {
             "name": "event_peaktime",
@@ -498,8 +485,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Peak time of a flare (e.g. '2003-02-12T23:03:01')",
-            "is_unit_prop": false
+            "desc": "Peak time of a flare (e.g. '2003-02-12T23:03:01')"
         },
         {
             "name": "event_clippedspatial",
@@ -532,8 +518,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Whether the spatial extent of the event is wholly contained within the data set ('T' or 'F').",
-            "is_unit_prop": false
+            "desc": "Whether the spatial extent of the event is wholly contained within the data set ('T' or 'F')."
         },
         {
             "name": "event_clippedtemporal",
@@ -566,8 +551,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Whether the temporal duration of the event is wholly contained within the data set ('T' or 'F').",
-            "is_unit_prop": false
+            "desc": "Whether the temporal duration of the event is wholly contained within the data set ('T' or 'F')."
         },
         {
             "name": "event_testflag",
@@ -600,8 +584,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "A boolean flag to indicate that the event is for testing purposes ('T' or 'F')",
-            "is_unit_prop": false
+            "desc": "A boolean flag to indicate that the event is for testing purposes ('T' or 'F')"
         },
         {
             "name": "event_description",
@@ -634,8 +617,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Description of the event",
-            "is_unit_prop": false
+            "desc": "Description of the event"
         },
         {
             "name": "frm_contact",
@@ -668,8 +650,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Contact information of Feature Recognition Method (FRM)",
-            "is_unit_prop": false
+            "desc": "Contact information of Feature Recognition Method (FRM)"
         },
         {
             "name": "frm_daterun",
@@ -702,8 +683,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Date when Feature Recognition Method (FRM) was run (e.g. 2004-02-15T02:00:01)",
-            "is_unit_prop": false
+            "desc": "Date when Feature Recognition Method (FRM) was run (e.g. 2004-02-15T02:00:01)"
         },
         {
             "name": "frm_humanflag",
@@ -736,8 +716,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Whether a Human identified the event (\"T\" or \"F\")",
-            "is_unit_prop": false
+            "desc": "Whether a Human identified the event (\"T\" or \"F\")"
         },
         {
             "name": "frm_identifier",
@@ -770,8 +749,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Username for Knowledge Base",
-            "is_unit_prop": false
+            "desc": "Username for Knowledge Base"
         },
         {
             "name": "frm_institute",
@@ -804,8 +782,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Institute where the Feature Recognition Method (FRM) orginates",
-            "is_unit_prop": false
+            "desc": "Institute where the Feature Recognition Method (FRM) orginates"
         },
         {
             "name": "frm_name",
@@ -838,8 +815,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Name of Feature Recognition Method (e.g. \"Mark Cheung\" or CACTUS\")",
-            "is_unit_prop": false
+            "desc": "Name of Feature Recognition Method (e.g. \"Mark Cheung\" or CACTUS\")"
         },
         {
             "name": "frm_paramset",
@@ -872,8 +848,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Values of names (e.g. \"threshold=0.1\")",
-            "is_unit_prop": false
+            "desc": "Values of names (e.g. \"threshold=0.1\")"
         },
         {
             "name": "frm_versionnumber",
@@ -906,8 +881,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Version number of automated Feature Recognition Method (Put age if Human. Just kidding. In this case put 1.0)",
-            "is_unit_prop": false
+            "desc": "Version number of automated Feature Recognition Method (Put age if Human. Just kidding. In this case put 1.0)"
         },
         {
             "name": "frm_url",
@@ -940,8 +914,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "URL to webpage containing information about the Feature Recognition Method",
-            "is_unit_prop": false
+            "desc": "URL to webpage containing information about the Feature Recognition Method"
         },
         {
             "name": "frm_specificid",
@@ -974,8 +947,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "The specific ID of this event/feature assigned by the Feature Recognitio Method",
-            "is_unit_prop": false
+            "desc": "The specific ID of this event/feature assigned by the Feature Recognitio Method"
         },
         {
             "name": "obs_observatory",
@@ -1008,8 +980,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Name of Observatory (e.g. SOHO)",
-            "is_unit_prop": false
+            "desc": "Name of Observatory (e.g. SOHO)"
         },
         {
             "name": "obs_channelid",
@@ -1042,8 +1013,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Name of Channel of the instrument (e.g. \"G band\")",
-            "is_unit_prop": false
+            "desc": "Name of Channel of the instrument (e.g. \"G band\")"
         },
         {
             "name": "obs_instrument",
@@ -1076,8 +1046,7 @@
             "EE": "req",
             "PB": "req",
             "PT": "req",
-            "desc": "Name of Instrument (e.g. \"SOT\")",
-            "is_unit_prop": false
+            "desc": "Name of Instrument (e.g. \"SOT\")"
         },
         {
             "name": "obs_meanwavel",
@@ -1111,8 +1080,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Mean wavelength (preferably in Angstroms)",
-            "unit_prop": "obs_wavelunit",
-            "is_unit_prop": false
+            "unit_prop": "obs_wavelunit"
         },
         {
             "name": "obs_wavelunit",
@@ -1179,8 +1147,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Observational title",
-            "is_unit_prop": false
+            "desc": "Observational title"
         },
         {
             "name": "bound_ccnsteps",
@@ -1211,8 +1178,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Number of steps in bounding chain code (useful for coronal hole boundaries)",
-            "is_unit_prop": false
+            "desc": "Number of steps in bounding chain code (useful for coronal hole boundaries)"
         },
         {
             "name": "chaincodetype",
@@ -1244,8 +1210,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "type of chain code (Use \"ordered list\")",
-            "is_unit_prop": false
+            "desc": "type of chain code (Use \"ordered list\")"
         },
         {
             "name": "rasterscan",
@@ -1278,8 +1243,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Field for ascii string of raster scan",
-            "is_unit_prop": false
+            "desc": "Field for ascii string of raster scan"
         },
         {
             "name": "rasterscantype",
@@ -1312,8 +1276,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "type of raster scan (E.g. \"EGSO_SFC\" if you are using the EGSO Solar Feature Catalogue convection for the raster scan)",
-            "is_unit_prop": false
+            "desc": "type of raster scan (E.g. \"EGSO_SFC\" if you are using the EGSO Solar Feature Catalogue convection for the raster scan)"
         },
         {
             "name": "skel_curvature",
@@ -1333,8 +1296,7 @@
             "CC": "opt",
             "ER": "opt",
             "TO": "opt",
-            "desc": "Curvature of skeleton",
-            "is_unit_prop": false
+            "desc": "Curvature of skeleton"
         },
         {
             "name": "skel_nsteps",
@@ -1355,8 +1317,7 @@
             "CC": "opt",
             "ER": "opt",
             "TO": "opt",
-            "desc": "Number of steps in skeleton",
-            "is_unit_prop": false
+            "desc": "Number of steps in skeleton"
         },
         {
             "name": "ar_mcintoshcls",
@@ -1389,8 +1350,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Active Region McIntosh class",
-            "is_unit_prop": false
+            "desc": "Active Region McIntosh class"
         },
         {
             "name": "ar_mtwilsoncls",
@@ -1423,8 +1383,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Active Region Mt Wilson class",
-            "is_unit_prop": false
+            "desc": "Active Region Mt Wilson class"
         },
         {
             "name": "ar_zurichcls",
@@ -1457,8 +1416,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Active Region Zurich class",
-            "is_unit_prop": false
+            "desc": "Active Region Zurich class"
         },
         {
             "name": "ar_penumbracls",
@@ -1491,8 +1449,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Active Region Penumbra class",
-            "is_unit_prop": false
+            "desc": "Active Region Penumbra class"
         },
         {
             "name": "ar_compactnesscls",
@@ -1525,8 +1482,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Active Region Compactness class",
-            "is_unit_prop": false
+            "desc": "Active Region Compactness class"
         },
         {
             "name": "ar_noaaclass",
@@ -1559,8 +1515,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Active Regon NOAA class",
-            "is_unit_prop": false
+            "desc": "Active Regon NOAA class"
         },
         {
             "name": "ar_noaanum",
@@ -1593,8 +1548,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "NOAA designated Active Region Number (e.g. 10930)",
-            "is_unit_prop": false
+            "desc": "NOAA designated Active Region Number (e.g. 10930"
         },
         {
             "name": "ar_numspots",
@@ -1627,8 +1581,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Number of spots in Active region",
-            "is_unit_prop": false
+            "desc": "Number of spots in Active region"
         },
         {
             "name": "ar_polarity",
@@ -1661,24 +1614,21 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Polarity of Active region ('1' or '-1' for positive and negative respectively)",
-            "is_unit_prop": false
+            "desc": "Polarity of Active region ('1' or '-1' for positive and negative respectively)"
         },
         {
             "name": "ar_spotarearaw",
             "type": "float",
             "AR": "opt",
             "desc": "Area of spots in active region in plane of sky",
-            "unit_prop": "ar_spotarearawunit",
-            "is_unit_prop": false
+            "unit_prop": "ar_spotarearawunit"
         },
         {
             "name": "ar_spotarearawuncert",
             "type": "float",
             "AR": "opt",
             "desc": "Uncertainty of AR_SpotAreaRaw",
-            "unit_prop": "ar_spotarearawunit",
-            "is_unit_prop": false
+            "unit_prop": "ar_spotarearawunit"
         },
         {
             "name": "ar_spotarearawunit",
@@ -1692,7 +1642,6 @@
             "type": "float",
             "AR": "opt",
             "desc": "Reprojected area of spots in heliographic units",
-            "is_unit_prop": false,
             "unit_prop": "ar_spotareareprunit"
         },
         {
@@ -1700,8 +1649,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Uncertainty Reprojected area of spots in heliographic units",
-            "unit_prop": "ar_spotareareprunit",
-            "is_unit_prop": false
+            "unit_prop": "ar_spotareareprunit"
         },
         {
             "name": "ar_spotareareprunit",
@@ -1714,8 +1662,7 @@
             "name": "sharp_noaa_ars",
             "type": "string",
             "AR": "opt",
-            "desc": "Comma separated list of NOAA_ARS within lat/lon bounding box. Can include ones without NOAA# at time of event.",
-            "is_unit_prop": false
+            "desc": "Comma separated list of NOAA_ARS within lat/lon bounding box. Can include ones without NOAA# at time of event."
         },
         {
             "name": "intensmin",
@@ -1749,8 +1696,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Minimum intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intensmax",
@@ -1784,8 +1730,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Maximum intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intensmean",
@@ -1819,8 +1764,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Mean intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intensmedian",
@@ -1854,8 +1798,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Median intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intensvar",
@@ -1889,8 +1832,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Variance of intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intensskew",
@@ -1924,8 +1866,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Skewness of intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intenskurt",
@@ -1959,8 +1900,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Kurtosis of intensity of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intenstotal",
@@ -1994,8 +1934,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Sum of intensities of pixels",
-            "unit_prop": "intensunit",
-            "is_unit_prop": false
+            "unit_prop": "intensunit"
         },
         {
             "name": "intensunit",
@@ -2035,48 +1974,42 @@
             "name": "fl_goescls",
             "type": "string",
             "FL": "opt",
-            "desc": "GOES Flare class (e.g. 'X11')",
-            "is_unit_prop": false
+            "desc": "GOES Flare class (e.g. 'X11')"
         },
         {
             "name": "cme_radiallinvel",
             "type": "float",
             "CE": "req",
             "desc": "Radial Linear fit radial velocity of CME",
-            "unit_prop": "cme_radiallinvelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_radiallinvelunit"
         },
         {
             "name": "cme_radiallinveluncert",
             "type": "float",
             "CE": "req",
             "desc": "Uncertainty in CME_RadialLinVel",
-            "unit_prop": "cme_radiallinvelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_radiallinvelunit"
         },
         {
             "name": "cme_radiallinvelmin",
             "type": "float",
             "CE": "req",
             "desc": "Mininum linear radial velocity of CME",
-            "unit_prop": "cme_radiallinvelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_radiallinvelunit"
         },
         {
             "name": "cme_radiallinvelmax",
             "type": "float",
             "CE": "req",
             "desc": "Maximum linear radial velocity of CME",
-            "unit_prop": "cme_radiallinvelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_radiallinvelunit"
         },
         {
             "name": "cme_radiallinvelstddev",
             "type": "float",
             "CE": "req",
             "desc": "Standard Deviation of radial velocity of CME",
-            "unit_prop": "cme_radiallinvelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_radiallinvelunit"
         },
         {
             "name": "cme_radiallinvelunit",
@@ -2090,8 +2023,7 @@
             "type": "float",
             "CE": "req",
             "desc": "Angular width of CME",
-            "unit_prop": "cme_angularwidthunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_angularwidthunit"
         },
         {
             "name": "cme_angularwidthunit",
@@ -2105,16 +2037,14 @@
             "type": "float",
             "CE": "opt",
             "desc": "Acceleration of CME",
-            "unit_prop": "cme_accelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_accelunit"
         },
         {
             "name": "cme_acceluncert",
             "type": "float",
             "CE": "opt",
             "desc": "Uncertainty of CME acceleration",
-            "unit_prop": "cme_accelunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_accelunit"
         },
         {
             "name": "cme_accelunit",
@@ -2128,16 +2058,14 @@
             "type": "float",
             "CE": "opt",
             "desc": "Mass contained in CME (e.g. '1e17')",
-            "unit_prop": "cme_massunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_massunit"
         },
         {
             "name": "cme_massuncert",
             "type": "float",
             "CE": "opt",
             "desc": "Uncertainty in mass contained in cme",
-            "unit_prop": "cme_massunit",
-            "is_unit_prop": false
+            "unit_prop": "cme_massunit"
         },
         {
             "name": "cme_massunit",
@@ -2175,8 +2103,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Area of event at disk center",
-            "unit_prop": "area_unit",
-            "is_unit_prop": false
+            "unit_prop": "area_unit"
         },
         {
             "name": "area_atdiskcenteruncert",
@@ -2207,8 +2134,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Uncertainty of area at disk center",
-            "unit_prop": "area_unit",
-            "is_unit_prop": false
+            "unit_prop": "area_unit"
         },
         {
             "name": "area_raw",
@@ -2239,8 +2165,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Area of event in sky plane",
-            "unit_prop": "area_unit",
-            "is_unit_prop": false
+            "unit_prop": "area_unit"
         },
         {
             "name": "area_uncert",
@@ -2271,8 +2196,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Uncertainty of area in sky plane",
-            "unit_prop": "area_unit",
-            "is_unit_prop": false
+            "unit_prop": "area_unit"
         },
         {
             "name": "area_unit",
@@ -2335,8 +2259,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Number of pixels pertaining to event",
-            "unit_prop": "event_pixelunit",
-            "is_unit_prop": false
+            "unit_prop": "event_pixelunit"
         },
         {
             "name": "event_pixelunit",
@@ -2376,8 +2299,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Maximum of the frequency range of oscillation",
-            "unit_prop": "frequnit",
-            "is_unit_prop": false
+            "unit_prop": "frequnit"
         },
         {
             "name": "freqminrange",
@@ -2385,8 +2307,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Minimum of the frequency range of oscillation",
-            "unit_prop": "frequnit",
-            "is_unit_prop": false
+            "unit_prop": "frequnit"
         },
         {
             "name": "freqpeakpower",
@@ -2394,8 +2315,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Frequency at which power spectrum peaks",
-            "unit_prop": "frequnit",
-            "is_unit_prop": false
+            "unit_prop": "frequnit"
         },
         {
             "name": "frequnit",
@@ -2410,32 +2330,28 @@
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Maximum amplitude of oscillation in intensity signal",
-            "is_unit_prop": false
+            "desc": "Maximum amplitude of oscillation in intensity signal"
         },
         {
             "name": "intensminampl",
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Minimum amplitude of oscillation in intensity signal",
-            "is_unit_prop": false
+            "desc": "Minimum amplitude of oscillation in intensity signal"
         },
         {
             "name": "oscillnperiods",
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Number of periods detected in oscillation",
-            "is_unit_prop": false
+            "desc": "Number of periods detected in oscillation"
         },
         {
             "name": "oscillnperiodsuncert",
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Uncertainty of number of periods detected in oscillation",
-            "is_unit_prop": false
+            "desc": "Uncertainty of number of periods detected in oscillation"
         },
         {
             "name": "peakpower",
@@ -2443,8 +2359,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Peak power of oscillation",
-            "unit_prop": "peakpowerunit",
-            "is_unit_prop": false
+            "unit_prop": "peakpowerunit"
         },
         {
             "name": "peakpowerunit",
@@ -2459,24 +2374,21 @@
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Maximum amplitude of oscillation in velocity signal (e.g. doppler signal)",
-            "is_unit_prop": false
+            "desc": "Maximum amplitude of oscillation in velocity signal (e.g. doppler signal)"
         },
         {
             "name": "velocmaxpower",
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Maximum power of oscillation in velocity signal",
-            "is_unit_prop": false
+            "desc": "Maximum power of oscillation in velocity signal"
         },
         {
             "name": "velocmaxpoweruncert",
             "type": "float",
             "CW": "opt",
             "OS": "opt",
-            "desc": "Uncertainty in max power in velocity signal",
-            "is_unit_prop": false
+            "desc": "Uncertainty in max power in velocity signal"
         },
         {
             "name": "velocminampl",
@@ -2484,8 +2396,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Minimum amplitude in oscillating velocity signal",
-            "unit_prop": "velocunit",
-            "is_unit_prop": false
+            "unit_prop": "velocunit"
         },
         {
             "name": "velocunit",
@@ -2501,8 +2412,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Maximum amplitude of oscillation in displacement signal",
-            "unit_prop": "wavedisplunit",
-            "is_unit_prop": false
+            "unit_prop": "wavedisplunit"
         },
         {
             "name": "wavedisplminampl",
@@ -2510,8 +2420,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Minimum amplitude of oscillatoin in displacement signal",
-            "unit_prop": "wavedisplunit",
-            "is_unit_prop": false
+            "unit_prop": "wavedisplunit"
         },
         {
             "name": "wavedisplunit",
@@ -2527,8 +2436,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Wavelength at which spatial power spectrum peaks",
-            "unit_prop": "wavelunit",
-            "is_unit_prop": false
+            "unit_prop": "wavelunit"
         },
         {
             "name": "wavelmaxpoweruncert",
@@ -2536,8 +2444,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Uncertainty of WavelMaxPower",
-            "unit_prop": "wavelunit",
-            "is_unit_prop": false
+            "unit_prop": "wavelunit"
         },
         {
             "name": "wavelmaxrange",
@@ -2545,8 +2452,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Maximum wavelength of wavelength range for spatial oscillation",
-            "unit_prop": "wavelunit",
-            "is_unit_prop": false
+            "unit_prop": "wavelunit"
         },
         {
             "name": "wavelminrange",
@@ -2554,8 +2460,7 @@
             "CW": "opt",
             "OS": "opt",
             "desc": "Minimum wavelength of wavelength range for spatial oscillation",
-            "unit_prop": "wavelunit",
-            "is_unit_prop": false
+            "unit_prop": "wavelunit"
         },
         {
             "name": "wavelunit",
@@ -2570,16 +2475,14 @@
             "type": "float",
             "EF": "opt",
             "desc": "Emergence rate of positive polarity flux",
-            "unit_prop": "ef_onsetrateunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_onsetrateunit"
         },
         {
             "name": "ef_negpeakfluxonsetrate",
             "type": "float",
             "EF": "opt",
             "desc": "Emergence rate of negative polarity flux",
-            "unit_prop": "ef_onsetrateunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_onsetrateunit"
         },
         {
             "name": "ef_onsetrateunit",
@@ -2593,16 +2496,14 @@
             "type": "float",
             "EF": "opt",
             "desc": "Total positive signed flux at completion",
-            "unit_prop": "ef_fluxunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_fluxunit"
         },
         {
             "name": "ef_sumnegsignedflux",
             "type": "float",
             "EF": "opt",
             "desc": "Total negative signed flux at completion (negative number)",
-            "unit_prop": "ef_fluxunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_fluxunit"
         },
         {
             "name": "ef_fluxunit",
@@ -2616,8 +2517,7 @@
             "type": "float",
             "EF": "opt",
             "desc": "Axis orientation of emerging flux pair (CCW from parallels in Stonyhurst longitude",
-            "unit_prop": "ef_axisorientationunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_axisorientationunit"
         },
         {
             "name": "ef_axisorientationunit",
@@ -2631,24 +2531,21 @@
             "type": "float",
             "EF": "opt",
             "desc": "Axis length of emerging flux pair at completion",
-            "unit_prop": "ef_lengthunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_lengthunit"
         },
         {
             "name": "ef_posequivradius",
             "type": "float",
             "EF": "opt",
             "desc": "Equivalent radius (i.e. sqrt(area/pi) of positive polarity at completion",
-            "unit_prop": "ef_lengthunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_lengthunit"
         },
         {
             "name": "ef_negequivradius",
             "type": "float",
             "EF": "opt",
             "desc": "Equivalent radius (i.e. sqrt(area/pi) of negative polarity at completion",
-            "unit_prop": "ef_lengthunit",
-            "is_unit_prop": false
+            "unit_prop": "ef_lengthunit"
         },
         {
             "name": "ef_lengthunit",
@@ -2661,15 +2558,13 @@
             "name": "ef_aspectratio",
             "type": "float",
             "EF": "opt",
-            "desc": "(EF_PosEquivRadius+EF_NegEquivRadius)/(2*EF_AxisLength)",
-            "is_unit_prop": false
+            "desc": "(EF_PosEquivRadius+EF_NegEquivRadius)/(2*EF_AxisLength)"
         },
         {
             "name": "ef_proximityratio",
             "type": "float",
             "EF": "opt",
-            "desc": "(EF_PosEquivRadius-EF_NegEquivRadius)/(2*EF_AxisLength)",
-            "is_unit_prop": false
+            "desc": "(EF_PosEquivRadius-EF_NegEquivRadius)/(2*EF_AxisLength)"
         },
         {
             "name": "maxmagfieldstrength",
@@ -2679,8 +2574,7 @@
             "PG": "opt",
             "OT": "opt",
             "desc": "Maximum magnetic field strength",
-            "unit_prop": "maxmagfieldstrengthunit",
-            "is_unit_prop": false
+            "unit_prop": "maxmagfieldstrengthunit"
         },
         {
             "name": "maxmagfieldstrengthunit",
@@ -2701,8 +2595,7 @@
             "SP": "opt",
             "ER": "opt",
             "desc": "Length of outflow (can be for CoronalJet or SpraySurge)",
-            "unit_prop": "outflow_lengthunit",
-            "is_unit_prop": false
+            "unit_prop": "outflow_lengthunit"
         },
         {
             "name": "outflow_lengthunit",
@@ -2724,8 +2617,7 @@
             "SP": "opt",
             "ER": "opt",
             "desc": "Width of outflow",
-            "unit_prop": "outflow_widthunit",
-            "is_unit_prop": false
+            "unit_prop": "outflow_widthunit"
         },
         {
             "name": "outflow_widthunit",
@@ -2747,8 +2639,7 @@
             "SP": "opt",
             "ER": "opt",
             "desc": "Outflow speed of outflow",
-            "unit_prop": "outflow_speedunit",
-            "is_unit_prop": false
+            "unit_prop": "outflow_speedunit"
         },
         {
             "name": "outflow_transspeed",
@@ -2759,8 +2650,7 @@
             "SP": "opt",
             "ER": "opt",
             "desc": "Transverse speed relative to outflow direction",
-            "unit_prop": "outflow_speedunit",
-            "is_unit_prop": false
+            "unit_prop": "outflow_speedunit"
         },
         {
             "name": "outflow_speedunit",
@@ -2781,8 +2671,7 @@
             "CJ": "opt",
             "SP": "opt",
             "ER": "opt",
-            "desc": "Opening angle of outflow (in degrees)",
-            "is_unit_prop": false
+            "desc": "Opening angle of outflow (in degrees)"
         },
         {
             "name": "obs_dataprepurl",
@@ -2815,16 +2704,14 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "URL pointing to information about how data was reduced",
-            "is_unit_prop": false
+            "desc": "URL pointing to information about how data was reduced"
         },
         {
             "name": "fl_peakflux",
             "type": "float",
             "FL": "opt",
             "desc": "Flux at peak time",
-            "unit_prop": "fl_peakfluxunit",
-            "is_unit_prop": false
+            "unit_prop": "fl_peakfluxunit"
         },
         {
             "name": "fl_peakfluxunit",
@@ -2838,8 +2725,7 @@
             "type": "float",
             "FL": "opt",
             "desc": "Temperature at peak time",
-            "unit_prop": "fl_peaktempunit",
-            "is_unit_prop": false
+            "unit_prop": "fl_peaktempunit"
         },
         {
             "name": "fl_peaktempunit",
@@ -2853,8 +2739,7 @@
             "type": "float",
             "FL": "opt",
             "desc": "Emission measure at peak time",
-            "unit_prop": "fl_peakemunit",
-            "is_unit_prop": false
+            "unit_prop": "fl_peakemunit"
         },
         {
             "name": "fl_peakemunit",
@@ -2868,8 +2753,7 @@
             "type": "float",
             "FL": "opt",
             "desc": "Flare e-folding time",
-            "unit_prop": "fl_efoldtimeunit",
-            "is_unit_prop": false
+            "unit_prop": "fl_efoldtimeunit"
         },
         {
             "name": "fl_efoldtimeunit",
@@ -2883,8 +2767,7 @@
             "type": "float",
             "FL": "opt",
             "desc": "Fluence of flare",
-            "unit_prop": "fl_fluenceunit",
-            "is_unit_prop": false
+            "unit_prop": "fl_fluenceunit"
         },
         {
             "name": "fl_fluenceunit",
@@ -2897,24 +2780,21 @@
             "name": "fl_halphaclass",
             "type": "string",
             "FL": "opt",
-            "desc": "H Alpha classification (used on some Yohkoh HXT)",
-            "is_unit_prop": false
+            "desc": "H Alpha classification (used on some Yohkoh HXT)"
         },
         {
             "name": "cd_area",
             "type": "float",
             "CD": "opt",
             "desc": "Maximum area of dimming",
-            "unit_prop": "cd_areaunit",
-            "is_unit_prop": false
+            "unit_prop": "cd_areaunit"
         },
         {
             "name": "cd_areauncert",
             "type": "float",
             "CD": "opt",
             "desc": "Uncertainty of CD_Area",
-            "unit_prop": "cd_areaunit",
-            "is_unit_prop": false
+            "unit_prop": "cd_areaunit"
         },
         {
             "name": "cd_areaunit",
@@ -2928,16 +2808,14 @@
             "type": "float",
             "CD": "opt",
             "desc": "Volume of dimming region",
-            "unit_prop": "cd_volumeunit",
-            "is_unit_prop": false
+            "unit_prop": "cd_volumeunit"
         },
         {
             "name": "cd_volumeuncert",
             "type": "float",
             "CD": "opt",
             "desc": "Uncertainty of CD_Volume",
-            "unit_prop": "cd_volumeunit",
-            "is_unit_prop": false
+            "unit_prop": "cd_volumeunit"
         },
         {
             "name": "cd_volumeunit",
@@ -2951,16 +2829,14 @@
             "type": "float",
             "CD": "opt",
             "desc": "Mass estimate calculated for dimming event",
-            "unit_prop": "cd_massunit",
-            "is_unit_prop": false
+            "unit_prop": "cd_massunit"
         },
         {
             "name": "cd_massuncert",
             "type": "float",
             "CD": "opt",
             "desc": "Uncertainty for CD_Mass",
-            "unit_prop": "cd_massunit",
-            "is_unit_prop": false
+            "unit_prop": "cd_massunit"
         },
         {
             "name": "cd_massunit",
@@ -2974,8 +2850,7 @@
             "type": "float",
             "FI": "opt",
             "desc": "Length of Filament spine",
-            "unit_prop": "fi_lengthunit",
-            "is_unit_prop": false
+            "unit_prop": "fi_lengthunit"
         },
         {
             "name": "fi_lengthunit",
@@ -2988,106 +2863,91 @@
             "name": "fi_tilt",
             "type": "float",
             "FI": "opt",
-            "desc": "Mean tilt angle (in degrees) of the Filament spine (given as Skel_ChainCode) w.r. to solar equator",
-            "is_unit_prop": false
+            "desc": "Mean tilt angle (in degrees) of the Filament spine (given as Skel_ChainCode) w.r. to solar equator"
         },
         {
             "name": "fi_barbstot",
             "type": "integer",
             "FI": "opt",
-            "desc": "Total number of filament barbs",
-            "is_unit_prop": false
+            "desc": "Total number of filament barbs"
         },
         {
             "name": "fi_barbsr",
             "type": "integer",
             "FI": "opt",
-            "desc": "Total number of Right Bearing Barbs",
-            "is_unit_prop": false
+            "desc": "Total number of Right Bearing Barbs"
         },
         {
             "name": "fi_barbsl",
             "type": "integer",
             "FI": "opt",
-            "desc": "Total number of Left Bearing Barbs",
-            "is_unit_prop": false
+            "desc": "Total number of Left Bearing Barbs"
         },
         {
             "name": "fi_chirality",
             "type": "integer",
             "FI": "opt",
-            "desc": "Chirality for filament (-1 for sinistral; +1 for dextral; 0 for ambiguous/uncertain)",
-            "is_unit_prop": false
+            "desc": "Chirality for filament (-1 for sinistral; +1 for dextral; 0 for ambiguous/uncertain)"
         },
         {
             "name": "fi_barbsstartc1",
             "type": "string",
             "FI": "opt",
-            "desc": "List of Coord 1 of beginnings (closest to spine) of barbs (list delimited by commas for each numbered barb. e.g. 'x1, x2, x3')",
-            "is_unit_prop": false
+            "desc": "List of Coord 1 of beginnings (closest to spine) of barbs (list delimited by commas for each numbered barb. e.g. 'x1, x2, x3')"
         },
         {
             "name": "fi_barbsstartc2",
             "type": "string",
             "FI": "opt",
-            "desc": "List of Coord 2 of beginnings (closest to spine) of barbs (list delimited by commas for each numbered barb. e.g. 'y1, y2, y3')",
-            "is_unit_prop": false
+            "desc": "List of Coord 2 of beginnings (closest to spine) of barbs (list delimited by commas for each numbered barb. e.g. 'y1, y2, y3')"
         },
         {
             "name": "fi_barbsendc1",
             "type": "string",
             "FI": "opt",
-            "desc": "List of Coord 1 of ends of barbs (list delimited by commas for each numbered barb. e.g. 'x1, x2, x3')",
-            "is_unit_prop": false
+            "desc": "List of Coord 1 of ends of barbs (list delimited by commas for each numbered barb. e.g. 'x1, x2, x3')"
         },
         {
             "name": "fi_barbsendc2",
             "type": "string",
             "FI": "opt",
-            "desc": "List of Coord 2 of ends of barbs (list delimited by commas for each numbered barb. e.g. 'y1, y2, y3')",
-            "is_unit_prop": false
+            "desc": "List of Coord 2 of ends of barbs (list delimited by commas for each numbered barb. e.g. 'y1, y2, y3')"
         },
         {
             "name": "sg_shape",
             "type": "string",
             "SG": "opt",
-            "desc": "Shape of sigmoid",
-            "is_unit_prop": false
+            "desc": "Shape of sigmoid"
         },
         {
             "name": "sg_chirality",
             "type": "integer",
             "SG": "opt",
-            "desc": "Chirality of sigmoid (-1 for sinistral; +1 for dextral; 0 for ambiguous/uncertain)",
-            "is_unit_prop": false
+            "desc": "Chirality of sigmoid (-1 for sinistral; +1 for dextral; 0 for ambiguous/uncertain)"
         },
         {
             "name": "sg_orientation",
             "type": "float",
             "SG": "opt",
-            "desc": "Angular rotation (ccw in degrees) of the main axis of the sigmoid to the active region",
-            "is_unit_prop": false
+            "desc": "Angular rotation (ccw in degrees) of the main axis of the sigmoid to the active region"
         },
         {
             "name": "sg_aspectratio",
             "type": "float",
             "SG": "opt",
-            "desc": "TBD",
-            "is_unit_prop": false
+            "desc": "TBD"
         },
         {
             "name": "sg_peakcontrast",
             "type": "float",
             "SG": "opt",
-            "desc": "TBD",
-            "is_unit_prop": false
+            "desc": "TBD"
         },
         {
             "name": "sg_meancontrast",
             "type": "float",
             "SG": "opt",
-            "desc": "TBD",
-            "is_unit_prop": false
+            "desc": "TBD"
         },
         {
             "name": "obs_firstprocessingdate",
@@ -3120,8 +2980,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Earliest date of all images considered part of the event",
-            "is_unit_prop": false
+            "desc": "Earliest date of all images considered part of the event"
         },
         {
             "name": "obs_lastprocessingdate",
@@ -3154,8 +3013,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Latest date of all images considered part of the event",
-            "is_unit_prop": false
+            "desc": "Latest date of all images considered part of the event"
         },
         {
             "name": "obs_levelnum",
@@ -3188,8 +3046,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Level of Data (e.g. 1.5) = LVL_NUM",
-            "is_unit_prop": false
+            "desc": "Level of Data (e.g. 1.5) = LVL_NUM"
         },
         {
             "name": "obs_includesnrt",
@@ -3222,16 +3079,14 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "\"T\" if any image in the event has the NRT flag (bit 30 in QUALITY), \"F\" otherwise",
-            "is_unit_prop": false
+            "desc": "\"T\" if any image in the event has the NRT flag (bit 30 in QUALITY), \"F\" otherwise"
         },
         {
             "name": "ss_spinrate",
             "type": "float",
             "SS": "opt",
             "desc": "Spin/Rotation rate of sunspots",
-            "unit_prop": "ss_spinrateunit",
-            "is_unit_prop": false
+            "unit_prop": "ss_spinrateunit"
         },
         {
             "name": "ss_spinrateunit",
@@ -3245,16 +3100,14 @@
             "type": "float",
             "CC": "opt",
             "desc": "Length of major axis of elliptical fit to cavity",
-            "unit_prop": "cc_axisunit",
-            "is_unit_prop": false
+            "unit_prop": "cc_axisunit"
         },
         {
             "name": "cc_minoraxis",
             "type": "float",
             "CC": "opt",
             "desc": "Length of minor axis of elliptical fit to cavity",
-            "unit_prop": "cc_axisunit",
-            "is_unit_prop": false
+            "unit_prop": "cc_axisunit"
         },
         {
             "name": "cc_axisunit",
@@ -3268,8 +3121,7 @@
             "type": "float",
             "CC": "opt",
             "desc": "Angle between major axis and local disk-projected radial vector, measured clockwise from radial vector.",
-            "unit_prop": "cc_tiltangleunit",
-            "is_unit_prop": false
+            "unit_prop": "cc_tiltangleunit"
         },
         {
             "name": "cc_tiltangleunit",
@@ -3282,8 +3134,7 @@
             "name": "to_shape",
             "type": "string",
             "TO": "opt",
-            "desc": "Apparent shape of topological object. Example values can be X-point, cusp, dome, line.",
-            "is_unit_prop": false
+            "desc": "Apparent shape of topological object. Example values can be X-point, cusp, dome, line."
         },
         {
             "name": "unsignedflux",
@@ -3292,8 +3143,7 @@
             "SS": "opt",
             "EF": "opt",
             "desc": "Total unsigned flux in region",
-            "unit_prop": "magfluxunit",
-            "is_unit_prop": false
+            "unit_prop": "magfluxunit"
         },
         {
             "name": "magfluxunit",
@@ -3308,32 +3158,28 @@
             "name": "meaninclinationgamma",
             "type": "float",
             "AR": "opt",
-            "desc": "Mean inclination angle (gamma) (degrees)",
-            "is_unit_prop": false
+            "desc": "Mean inclination angle (gamma) (degrees)"
         },
         {
             "name": "meangradienttotal",
             "type": "float",
             "AR": "opt",
             "desc": "Mean value of the total field gradient",
-            "unit_prop": "gradientunit",
-            "is_unit_prop": false
+            "unit_prop": "gradientunit"
         },
         {
             "name": "meangradientvert",
             "type": "float",
             "AR": "opt",
             "desc": "Mean value of the vertical field gradient",
-            "unit_prop": "gradientunit",
-            "is_unit_prop": false
+            "unit_prop": "gradientunit"
         },
         {
             "name": "meangradienthorz",
             "type": "float",
             "AR": "opt",
             "desc": "Mean value of the horizontal field gradient",
-            "unit_prop": "gradientunit",
-            "is_unit_prop": false
+            "unit_prop": "gradientunit"
         },
         {
             "name": "gradientunit",
@@ -3347,8 +3193,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Mean vertical current density",
-            "unit_prop": "currentdensityunit",
-            "is_unit_prop": false
+            "unit_prop": "currentdensityunit"
         },
         {
             "name": "currentdensityunit",
@@ -3362,8 +3207,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Total unsigned vertical current",
-            "unit_prop": "currentunit",
-            "is_unit_prop": false
+            "unit_prop": "currentunit"
         },
         {
             "name": "currentunit",
@@ -3377,8 +3221,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Mean twist name (alpha)",
-            "unit_prop": "twistunit",
-            "is_unit_prop": false
+            "unit_prop": "twistunit"
         },
         {
             "name": "twistunit",
@@ -3392,24 +3235,21 @@
             "type": "float",
             "AR": "opt",
             "desc": "Mean current helicity",
-            "unit_prop": "currenthelicityunit",
-            "is_unit_prop": false
+            "unit_prop": "currenthelicityunit"
         },
         {
             "name": "unsignedcurrenthelicity",
             "type": "float",
             "AR": "opt",
             "desc": "Total unsigned current helicity",
-            "unit_prop": "currenthelicityunit",
-            "is_unit_prop": false
+            "unit_prop": "currenthelicityunit"
         },
         {
             "name": "absnetcurrenthelicity",
             "type": "float",
             "AR": "opt",
             "desc": "Absolute value of the net current helicity",
-            "unit_prop": "currenthelicityunit",
-            "is_unit_prop": false
+            "unit_prop": "currenthelicityunit"
         },
         {
             "name": "currenthelicityunit",
@@ -3422,16 +3262,14 @@
             "name": "savncpp",
             "type": "float",
             "AR": "opt",
-            "desc": "Sum of the Absolute Value of the Net Currents Per Polarity (SAVNCPP)",
-            "is_unit_prop": false
+            "desc": "Sum of the Absolute Value of the Net Currents Per Polarity (SAVNCPP)"
         },
         {
             "name": "meanphotoenergydensity",
             "type": "float",
             "AR": "opt",
             "desc": "Mean photospheric excess magnetic energy density",
-            "unit_prop": "meanenergydensityunit",
-            "is_unit_prop": false
+            "unit_prop": "meanenergydensityunit"
         },
         {
             "name": "meanenergydensityunit",
@@ -3445,8 +3283,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Total photospheric magnetic energy density (TOTPOT in SHARP)",
-            "unit_prop": "totalenergydensityunit",
-            "is_unit_prop": false
+            "unit_prop": "totalenergydensityunit"
         },
         {
             "name": "totalenergydensityunit",
@@ -3460,8 +3297,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Total photospheric magnetic energy (TOTPOT in SHARP times pixel width)",
-            "unit_prop": "totalphotoenergyunit",
-            "is_unit_prop": false
+            "unit_prop": "totalphotoenergyunit"
         },
         {
             "name": "totalphotoenergyunit",
@@ -3474,23 +3310,20 @@
             "name": "meanshearangle",
             "type": "float",
             "AR": "opt",
-            "desc": "Mean shear angle for B_total (degrees)",
-            "is_unit_prop": false
+            "desc": "Mean shear angle for B_total (degrees)"
         },
         {
             "name": "highshearareapercent",
             "type": "float",
             "AR": "opt",
-            "desc": "Area with shear angle greater than 45 as a percent of total area",
-            "is_unit_prop": false
+            "desc": "Area with shear angle greater than 45 as a percent of total area"
         },
         {
             "name": "highsheararea",
             "type": "float",
             "AR": "opt",
             "desc": "Area with shear angle greater than 45 as a percent of total area",
-            "unit_prop": "highshearareaunit",
-            "is_unit_prop": false
+            "unit_prop": "highshearareaunit"
         },
         {
             "name": "highshearareaunit",
@@ -3503,16 +3336,14 @@
             "name": "log_r_value",
             "type": "float",
             "AR": "opt",
-            "desc": "Log (Unsigned Flux R) (prelog value in Gauss*MDI-pixels - Schrijver 2007)",
-            "is_unit_prop": false
+            "desc": "Log (Unsigned Flux R) (prelog value in Gauss*MDI-pixels - Schrijver 2007)"
         },
         {
             "name": "gwill",
             "type": "float",
             "AR": "opt",
             "desc": "Gradient-weighted inversion-line length (Mason & Hoeksema 2010)",
-            "unit_prop": "gwillunit",
-            "is_unit_prop": false
+            "unit_prop": "gwillunit"
         },
         {
             "name": "gwillunit",
@@ -3526,8 +3357,7 @@
             "type": "float",
             "AR": "opt",
             "desc": "Axis length (bipole separation distance)",
-            "unit_prop": "ar_lengthunit",
-            "is_unit_prop": false
+            "unit_prop": "ar_lengthunit"
         },
         {
             "name": "ar_lengthunit",
@@ -3540,29 +3370,25 @@
             "name": "ar_sumpossignedflux",
             "type": "float",
             "AR": "opt",
-            "desc": "Total positive signed flux",
-            "is_unit_prop": false
+            "desc": "Total positive signed flux"
         },
         {
             "name": "ar_sumnegsignedflux",
             "type": "float",
             "AR": "opt",
-            "desc": "Total negative signed flux (negative number)",
-            "is_unit_prop": false
+            "desc": "Total negative signed flux (negative number)"
         },
         {
             "name": "ar_neutrallength",
             "type": "float",
             "AR": "opt",
-            "desc": "The total length of polarity separation line segments within the AR",
-            "is_unit_prop": false
+            "desc": "The total length of polarity separation line segments within the AR"
         },
         {
             "name": "ar_pilcurvature",
             "type": "float",
             "AR": "opt",
-            "desc": "Dimensionless curvature of main PIL (PIL length / direct distance between endpoints)",
-            "is_unit_prop": false
+            "desc": "Dimensionless curvature of main PIL (PIL length / direct distance between endpoints)"
         },
         {
             "name": "search_frm_name",
@@ -3595,8 +3421,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Condensed FRM Name list for searching",
-            "is_unit_prop": false
+            "desc": "Condensed FRM Name list for searching"
         },
         {
             "name": "search_observatory",
@@ -3629,8 +3454,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Condensed observatory list for searching",
-            "is_unit_prop": false
+            "desc": "Condensed observatory list for searching"
         },
         {
             "name": "search_channelid",
@@ -3663,8 +3487,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Condensed channel list for searching",
-            "is_unit_prop": false
+            "desc": "Condensed channel list for searching"
         },
         {
             "name": "search_instrument",
@@ -3697,8 +3520,7 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "Condensed instrument list for searching",
-            "is_unit_prop": false
+            "desc": "Condensed instrument list for searching"
         }
     ],
     "hek_to_astropy_unit_mapping": {
