@@ -27,7 +27,7 @@ from sunpy.util.xml import xml_to_dict
 from sunpy.coordinates import Heliocentric, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
-print(__file__)
+
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "unit_properties.json"
 COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "coord_properties.json"
