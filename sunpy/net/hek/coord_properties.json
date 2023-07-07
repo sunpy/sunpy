@@ -62,10 +62,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Coordinate 1 of mean location of event",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord1_unit",
-            "frame": "ircs"
+            "unit_prop": "coord1_unit"
         },
         {
             "name": "event_coord2",
@@ -99,10 +96,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Coordinate 2 of mean location of event",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord2_unit",
-            "frame": "ircs"
+            "unit_prop": "coord2_unit"
         },
         {
             "name": "event_coord3",
@@ -136,10 +130,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Coordinate 3 of mean location of event (optional. Suitable for use with STEREO SECCHI events)",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord3_unit",
-            "frame": "ircs"
+            "unit_prop": "coord3_unit"
         },
         {
             "name": "event_c1error",
@@ -173,10 +164,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Uncertainty in Coord1 of the mean location of the event.",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord1_unit",
-            "frame": "ircs"
+            "unit_prop": "coord1_unit"
         },
         {
             "name": "event_c2error",
@@ -210,10 +198,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Uncertainty in Coord2 of the mean location of the event.",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord2_unit",
-            "frame": "ircs"
+            "unit_prop": "coord2_unit"
         },
         {
             "name": "bound_ccstartc1",
@@ -245,10 +230,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Beginning Coord1 of chain code",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord1_unit",
-            "frame": "ircs"
+            "unit_prop": "coord1_unit"
         },
         {
             "name": "bound_ccstartc2",
@@ -280,10 +262,7 @@
             "PB": "opt",
             "PT": "opt",
             "desc": "Beginning Coord2 of chain code",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord2_unit",
-            "frame": "ircs"
+            "unit_prop": "coord2_unit"
         },
         {
             "name": "bound_chaincode",
@@ -314,11 +293,9 @@
             "EE": "opt",
             "PB": "opt",
             "PT": "opt",
-            "desc": "List of vertices for polygon (ordered list delimited by commas. e.g. 'x1, y1, x2, y2, x3, y3, x1, y1')",
-            "is_unit_prop": false,
             "is_chaincode": true,
             "frame": "ircs",
-            "eval_string": "SkyCoord({}, {}, frame='ircs')"
+            "desc": "List of vertices for polygon (ordered list delimited by commas. e.g. 'x1, y1, x2, y2, x3, y3, x1, y1')"
         },
         {
             "name": "boundbox_c1ll",
@@ -352,10 +329,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Coord1 of lower-left corner of bounding box",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord1_unit",
-            "frame": "ircs"
+            "unit_prop": "coord1_unit"
         },
         {
             "name": "boundbox_c2ll",
@@ -389,10 +363,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Coord2 of lower-left corner of bounding box",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord2_unit",
-            "frame": "ircs"
+            "unit_prop": "coord2_unit"
         },
         {
             "name": "boundbox_c1ur",
@@ -426,10 +397,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Coord1 of upper-right corner of bounding box",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord1_unit",
-            "frame": "ircs"
+            "unit_prop": "coord1_unit"
         },
         {
             "name": "boundbox_c2ur",
@@ -463,10 +431,7 @@
             "PB": "req",
             "PT": "req",
             "desc": "Coord2 of upper-right corner of bounding box",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord2_unit",
-            "frame": "ircs"
+            "unit_prop": "coord2_unit"
         },
         {
             "name": "skel_chaincode",
@@ -488,10 +453,8 @@
             "ER": "opt",
             "TO": "opt",
             "desc": "Skeleton code. A skeleton code is like a chain code except it isn't closed. (ordered list delimited by commas. e.g. 'x1, y1, x2, y2, x3, y3')",
-            "is_unit_prop": false,
             "is_chaincode": true,
-            "frame": "ircs",
-            "eval_string": "SkyCoord({}, {}, frame='ircs')"
+            "frame": "ircs"
         },
         {
             "name": "skel_startc1",
@@ -513,10 +476,7 @@
             "ER": "opt",
             "TO": "opt",
             "desc": "Beginning Coord 1 of skeleton",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord1_unit",
-            "frame": "ircs"
+            "unit_prop": "coord1_unit"
         },
         {
             "name": "skel_startc2",
@@ -538,50 +498,39 @@
             "ER": "opt",
             "TO": "opt",
             "desc": "Beginning Coord 2 of skeleton",
-            "is_unit_prop": false,
-            "is_chaincode": false,
-            "unit_prop": "coord2_unit",
-            "frame": "ircs"
+            "unit_prop": "coord2_unit"
         },
         {
             "name": "hgc_bbox",
             "type": "string",
             "desc": "TBD",
-            "is_unit_prop": false,
             "is_chaincode": true,
             "unit_prop": "event_coordunit",
-            "frame": "HeliographicCarrington",
-            "eval_string": "SkyCoord({},{}, frame='heliographic_carrington')"
-        },
-        {
-            "name": "hrc_bbox",
-            "type": "string",
-            "desc": "TBD",
-            "is_unit_prop": false,
-            "is_chaincode": true,
-            "unit_prop": "event_coordunit",
-            "frame": "Heliocentric",
-            "eval_string": "SkyCoord({}, {}, unit = ({},{}), frame='heliocentric', representation_type = 'cylindrical')"
+            "frame": "heliographic_carrington"
         },
         {
             "name": "hpc_bbox",
             "type": "string",
             "desc": "TBD",
-            "is_unit_prop": false,
             "is_chaincode": true,
             "unit_prop": "event_coordunit",
-            "frame": "Helioprojective",
-            "eval_string": "SkyCoord({}, {}, unit=({},{}), frame='helioprojective')"
+            "frame": "helioprojective"
         },
         {
             "name": "hgs_bbox",
             "type": "string",
             "desc": "TBD",
-            "is_unit_prop": false,
             "is_chaincode": true,
             "unit_prop": "event_coordunit",
-            "frame": "HeliographicStonyhurst",
-            "eval_string": "SkyCoord({}, {}, unit=({},{}), frame='heliographic_stonyhurst')"
+            "frame": "heliographic_stonyhurst"
+        },
+        {
+            "name": "hrc_bbox",
+            "type": "string",
+            "desc": "TBD",
+            "is_chaincode": true,
+            "unit_prop": "event_coordunit",
+            "frame": "heliocentric"
         },
         {
             "name": "event_coordunit",

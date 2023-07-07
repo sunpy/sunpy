@@ -13,7 +13,7 @@ import os
 import astropy.table
 from astropy.table import Row
 from astropy import units as u
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, CylindricalRepresentation
 from regions import PolygonSkyRegion
 
 import sunpy.net._attrs as core_attrs
@@ -33,8 +33,14 @@ DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "net" / "hek"/ "unit_properties.json"
 COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "net" / "hek"/ "coord_properties.json"
 
-u.add_enabled_aliases({"steradian": u.sr, "arcseconds": u.arcsec, "degrees": u.deg, "sec": u.s})
+u.add_enabled_aliases({"steradian": u.sr, "arcseconds": u.arcsec, "degrees": u.deg, "sec": u.s, "Emx": u.Mx, "Amperes": u.A, "ergs": u.erg})
 
+unit_mapping = {
+    "cubic centimeter": u.cm**3,
+    "square centimeter": u.cm**2,
+    "cubic meter": u.m**3,
+    "square meter": u.m**2
+}
 def _freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
@@ -131,7 +137,17 @@ class HEKClient(BaseClient):
             try:
                 unit = u.Unit(str.lower())
             except ValueError:
-                unit = u.Unit(str.capitalize())
+                try:
+                    unit = u.Unit(str.capitalize())
+                except ValueError:
+                    units = str.split(" per ")
+                    unit = None
+                    if len(units) >1:
+                        unit = HEKClient._parse_astropy_unit(units[0])
+                        for idx in range(1, len(units)):
+                            unit = unit/HEKClient._parse_astropy_unit(units[idx])
+                    else:
+                        unit = unit_mapping[str]
 
         return unit
 
@@ -155,23 +171,30 @@ class HEKClient(BaseClient):
 
     @staticmethod
     def _parse_chaincode(value, idx, attribute, unit_prop):
-        print(f"value of the chaincode is: {value} \t unit: {unit_prop}\n")
-        coord1_unit = HEKClient._get_unit("coord1_unit", unit_prop, is_coord_prop = True)
-        coord2_unit = HEKClient._get_unit("coord2_unit", unit_prop, is_coord_prop = True)
+        coord1_unit = u.deg
+        coord2_unit = u.deg
+        if attribute["frame"] == "helioprojective":
+            coord1_unit = u.arcsec
+            coord2_unit = u.arcsec
+        elif attribute["frame"] == "heliocentric":
+            coord1_unit = u.R_sun
+            coord2_unit = u.deg
+
         coordinates_str = value.split('((')[1].split('))')[0]
-        coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')]
-        coord2_list = [float(coord.split()[1]) for coord in coordinates_str.split(',')]
-        print([ f"{coord1}: {type(coord1)}\n" for coord1 in coord1_list])
-        print([ f"{coord2}: {type(coord2)}\n" for coord2 in coord2_list])
-        print(f"{coord1_list}: {type(coord1_list)}")
-        print(f"{coord2_list}: {type(coord2_list)}")
-        vertices = eval(attribute["eval_string"]).format(coord1_list, coord2_list, coord1_unit, coord2_unit)
+        coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')] * coord1_unit
+        coord2_list = [float(coord.split()[1]) for coord in coordinates_str.split(',')] * coord2_unit
+        vertices = {}
+        if attribute["frame"] == "heliocentric":
+           vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list)* u.AU, representation_type="cylindrical" , frame="heliocentric" )
+        else:
+            vertices = SkyCoord(coord1_list, coord2_list, frame=attribute["frame"])
+
         return PolygonSkyRegion(vertices = vertices)
 
     @staticmethod
     def _parse_columns_to_table(table, attributes, is_coord_prop = False):
         for attribute in attributes:
-            if attribute["is_unit_prop"]:
+            if attribute.get("is_unit_prop", False):
                 pass
             elif attribute["name"] in table.colnames and "unit_prop" in attribute:
                 table = HEKClient._parse_unit(table, attribute, is_coord_prop)
@@ -185,14 +208,13 @@ class HEKClient(BaseClient):
                 for idx, value in enumerate(table[attribute["name"]]):
                     if value in ["", None]:
                         new_column.append(value)
-                    elif "is_chaincode" in attribute and attribute["is_chaincode"]:
-                        print(f"{idx}: chaincode property: {attribute['name']}\t {value}")
+                    elif attribute.get("is_chaincode", False):
                         new_column.append(HEKClient._parse_chaincode(value, idx, attribute, table[attribute["unit_prop"]][idx]))
                     else:
                         new_column.append(value * HEKClient._get_unit(attribute["unit_prop"], table[unit_attr][idx], is_coord_prop= is_coord_prop))
                 table[attribute["name"]] = new_column
         for attribute in attributes:
-            if attribute["is_unit_prop"] and attribute["name"] in table.colnames:
+            if attribute.get("is_unit_prop", False) and attribute["name"] in table.colnames:
                 del table[attribute["name"]]
         return table
 
