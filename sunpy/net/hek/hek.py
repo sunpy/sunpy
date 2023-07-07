@@ -24,14 +24,13 @@ from sunpy.net.hek import attrs
 from sunpy.time import parse_time
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
-from sunpy import __file__
 from sunpy.coordinates import Heliocentric, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
-
+print(__file__)
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
-UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "net" / "hek"/ "unit_properties.json"
-COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "net" / "hek"/ "coord_properties.json"
+UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "unit_properties.json"
+COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "coord_properties.json"
 
 u.add_enabled_aliases({"steradian": u.sr, "arcseconds": u.arcsec, "degrees": u.deg, "sec": u.s, "Emx": u.Mx, "Amperes": u.A, "ergs": u.erg})
 
