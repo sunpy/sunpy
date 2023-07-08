@@ -115,7 +115,7 @@ class HEKClient(BaseClient):
 
     @staticmethod
     def _parse_unit(table, attribute, is_coord_prop = False):
-        if "is_chaincode" in attribute and attribute["is_chaincode"]:
+        if attribute.get("is_chaincode", False):
             return table
         unit_attr=""
         if is_coord_prop:
@@ -178,6 +178,9 @@ class HEKClient(BaseClient):
         elif attribute["frame"] == "heliocentric":
             coord1_unit = u.R_sun
             coord2_unit = u.deg
+        elif attribute["frame"] == "icrs":
+            coord1_unit = HEKClient._get_unit("coord1_unit", unit_prop, is_coord_prop = True)
+            coord2_unit = HEKClient._get_unit("coord2_unit", unit_prop, is_coord_prop = True)
 
         coordinates_str = value.split('((')[1].split('))')[0]
         coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')] * coord1_unit
@@ -195,7 +198,7 @@ class HEKClient(BaseClient):
         for attribute in attributes:
             if attribute.get("is_unit_prop", False):
                 pass
-            elif attribute["name"] in table.colnames and "unit_prop" in attribute:
+            elif attribute["name"] in table.colnames and ("unit_prop" in attribute or attribute.get("is_chaincode", False)):
                 table = HEKClient._parse_unit(table, attribute, is_coord_prop)
                 unit_attr = ""
                 if is_coord_prop:

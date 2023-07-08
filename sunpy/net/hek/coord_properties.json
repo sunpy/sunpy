@@ -294,7 +294,8 @@
             "PB": "opt",
             "PT": "opt",
             "is_chaincode": true,
-            "frame": "ircs",
+            "unit_prop": "event_coordunit",
+            "frame": "icrs",
             "desc": "List of vertices for polygon (ordered list delimited by commas. e.g. 'x1, y1, x2, y2, x3, y3, x1, y1')"
         },
         {
@@ -454,7 +455,8 @@
             "TO": "opt",
             "desc": "Skeleton code. A skeleton code is like a chain code except it isn't closed. (ordered list delimited by commas. e.g. 'x1, y1, x2, y2, x3, y3')",
             "is_chaincode": true,
-            "frame": "ircs"
+            "unit_prop": "event_coordunit",
+            "frame": "icrs"
         },
         {
             "name": "skel_startc1",
