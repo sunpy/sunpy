@@ -2,15 +2,40 @@ import copy
 
 import pytest
 
+import json
+
+from pathlib import Path
+
+import os
+
 from astropy.time import Time
+from astropy import units as u
 
 from sunpy.net import attr, attrs, hek
 
+from regions import PolygonSkyRegion
 
 @pytest.fixture
 def foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
 
+@pytest.fixture
+def read_unit_attributes():
+    UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "../unit_properties.json"
+
+    with open(UNIT_FILE_PATH, 'r') as unit_file:
+        unit_properties = json.load(unit_file)
+
+    yield unit_properties
+
+@pytest.fixture
+def read_coord_attributes():
+    COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "../coord_properties.json"
+
+    with open(COORD_FILE_PATH, 'r') as coord_file:
+        coord_properties = json.load(coord_file)
+
+    yield coord_properties
 
 class HEKResult:
     """
@@ -218,3 +243,38 @@ def test_query_multiple_operators():
                             attrs.hek.FL.GOESCls > "M1.0",
                             attrs.hek.OBS.Observatory == "GOES")
     assert len(results) == 7
+
+@pytest.mark.remote_data
+def test_astropy_unit_parsing(read_unit_attributes, read_coord_attributes):
+    print("Testing unit parsing")
+    client = hek.HEKClient()
+    tstart = '2014/10/24 20:50'
+    tend = '2014/10/25 00:14'
+    event_type = 'FL'
+    result = client.search(attrs.Time(tstart, tend), attrs.hek.EventType(event_type))
+    unit_properties = read_unit_attributes
+    coord_properties = read_coord_attributes
+    unit_attributes_with_unit = [ prop for prop in unit_properties["attributes"] if prop.get("unit_prop",None) is not None]
+    coord_attributes_with_unit = [prop for prop in coord_properties["attributes"] if not prop.get("is_chaincode", False) and not prop.get("is_unit_prop",False)]
+
+    for attribute in unit_attributes_with_unit + coord_attributes_with_unit:
+        if attribute["name"] in result.colnames:
+            assert all([value in ['', None] or isinstance(value, u.Quantity) for value in result[attribute['name']]])
+
+
+@pytest.mark.remote_data
+def test_chaincode_parsing(read_coord_attributes):
+    print("Testing chaincode parsing")
+    client = hek.HEKClient()
+    tstart = '2014/10/24 20:50'
+    tend = '2014/10/25 00:14'
+    event_type = 'FL'
+    result = client.search(attrs.Time(tstart, tend), attrs.hek.EventType(event_type))
+    coord_properties = read_coord_attributes
+    chaincode_properties = [prop for prop in coord_properties["attributes"] if prop.get("is_chaincode", False)]
+
+    for attribute in chaincode_properties:
+        if attribute["name"] in result.colnames:
+            assert all([value in ['', None] or isinstance(value, PolygonSkyRegion) for value in results[attribute['name']]])
+
+
