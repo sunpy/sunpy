@@ -264,8 +264,6 @@ class HEKClient(BaseClient):
             new.update(elem)
             ndata.append(new)
 
-        # ndata = self._parse_values_to_quantities(ndata)
-
         if len(ndata) == 1:
             return HEKTable(self._download(ndata[0]), client=self)
         else:
