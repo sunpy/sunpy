@@ -179,10 +179,7 @@ class Scraper:
         """
         Check whether the url provided follows the pattern.
         """
-        if parse(self.pattern, url):
-            return True
-        else:
-            return False
+        return parse(self.pattern, url)
 
     def filelist(self, timerange):
         """
