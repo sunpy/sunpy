@@ -246,7 +246,6 @@ def test_query_multiple_operators():
 
 @pytest.mark.remote_data
 def test_astropy_unit_parsing(read_unit_attributes, read_coord_attributes):
-    print("Testing unit parsing")
     client = hek.HEKClient()
     tstart = '2014/10/24 20:50'
     tend = '2014/10/25 00:14'
@@ -264,7 +263,6 @@ def test_astropy_unit_parsing(read_unit_attributes, read_coord_attributes):
 
 @pytest.mark.remote_data
 def test_chaincode_parsing(read_coord_attributes):
-    print("Testing chaincode parsing")
     client = hek.HEKClient()
     tstart = '2014/10/24 20:50'
     tend = '2014/10/25 00:14'
@@ -276,5 +274,3 @@ def test_chaincode_parsing(read_coord_attributes):
     for attribute in chaincode_properties:
         if attribute["name"] in result.colnames:
             assert all([value in ['', None] or isinstance(value, PolygonSkyRegion) for value in results[attribute['name']]])
-
-
