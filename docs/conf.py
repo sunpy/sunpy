@@ -120,6 +120,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinxcontrib.bibtex',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -347,6 +348,27 @@ html_context = {
     'is_development': not is_release,
 }
 
+# -- Generate citation bibtex file -----------------------------------------------
+bibtex_bibfiles = [
+    'sunpy-citations.bib',
+]
+bibtex_default_style = 'plain'
+if not os.path.exists(bibtex_bibfiles[0]):
+    bibcodes = [
+        "2020ApJ...890...68S",
+        "2015CS&D....8a4009S",
+        "2020JOSS....5.1832M",
+    ]
+    import ads
+    sunpy_papers = [list(ads.SearchQuery(bibcode=bc, fl=["citation"]))[0] for bc in bibcodes]
+    citation_bibcodes = []
+    for p in sunpy_papers:
+        citation_bibcodes += p.citation
+    citation_bibcodes = list(set(citation_bibcodes))  # remove duplicates
+    export = ads.ExportQuery(citation_bibcodes, format="bibtex")
+    bibtex_entries = export.execute()
+    with open(bibtex_bibfiles[0], mode="w") as f:
+        f.write(bibtex_entries)
 
 def rstjinja(app, docname, source):
     """

@@ -62,6 +62,17 @@ Please include the `Sunpy logo`_ on the title, conclusion slide, or about page.
 For websites please link the image to `sunpy.org`_.
 Other versions of the logo are available in the `sunpy-logo repository`_.
 
+Publications that Cite SunPy
+-----------------------
+
+The following publications use sunpy in their published work and have cited at least one of the papers listed above.
+This list is automatically generated based on citation information from `ADS <https://ui.adsabs.harvard.edu/>`__.
+If you do not see your publication on this list, but believe it should be included, please let us know by `creating an issue on GitHub <https://github.com/sunpy/sunpy/issues>`__.
+
+.. bibliography:: ../docs/sunpy-citations.bib
+   :all:
+   :list: enumerated
+
 .. _SunPy paper: https://doi.org/10.3847/1538-4357/ab4f7a
 .. _Sunpy logo: https://github.com/sunpy/sunpy-logo/blob/master/sunpy_logo.svg
 .. _sunpy.org: https://sunpy.org/
