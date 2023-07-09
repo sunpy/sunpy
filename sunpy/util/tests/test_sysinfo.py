@@ -39,7 +39,8 @@ def test_find_dependencies():
                                                      'cdflib',
                                                      'h5netcdf',
                                                      'h5py',
-                                                     'pandas'])
+                                                     'pandas',
+                                                     'regions'])
 
 
 def test_missing_dependencies_by_extra():
