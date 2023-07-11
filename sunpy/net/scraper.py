@@ -27,7 +27,7 @@ TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month_name:w}": "%B",
             "{month_name_abbr:3w}": "%b",
             "{day:2d}": "%d", "{day_of_year:3d}": "%j",
-            "{hour:2d}": "%H", "{hour_12:2d}": "%I",
+            "{hour:2d}": "%H",
             "{minute:2d}": "%M",
             "{second:2d}": "%S",
             "{microsecond:6d}": "%f",
@@ -345,7 +345,7 @@ class Scraper:
                 return relativedelta(seconds=1)
             elif "%M" in directoryPattern:
                 return relativedelta(minutes=1)
-            elif any(hour in directoryPattern for hour in ["%H", "%I"]):
+            elif any(hour in directoryPattern for hour in ["%H"]):
                 return relativedelta(hours=1)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
                 return relativedelta(days=1)
