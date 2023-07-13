@@ -16,7 +16,7 @@ from sunpy.util import expand_list, get_keywords, get_set_methods
 from sunpy.util.decorators import add_common_docstring
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
-MATPLOTLIB_LT_3_8 = not minversion(matplotlib, "3.8.dev")
+MATPLOTLIB_GT_3_8 = minversion(matplotlib, "3.8.dev")
 
 __all__ = ['CompositeMap']
 
@@ -470,10 +470,11 @@ class CompositeMap:
                 ret.append(m.draw_contours(m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
-                if MATPLOTLIB_LT_3_8:
-                    ret[-1].collections[0].set_label(m.name)
-                else:
+                # TODO: remove when we depend on matplotlib 3.8 or later
+                if MATPLOTLIB_GT_3_8:
                     ret[-1].set_label(m.name)
+                else:
+                    ret[-1].collections[0].set_label(m.name)
 
         if len(unused_kwargs) > 0:
             raise TypeError(f'plot() got unexpected keyword arguments {unused_kwargs}')
