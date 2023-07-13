@@ -2,17 +2,21 @@
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.collections import Collection, QuadMesh
 from matplotlib.contour import ContourSet, QuadContourSet
 from matplotlib.image import AxesImage, _ImageBase
 
 import astropy.units as u
+from astropy.utils.introspection import minversion
 
 from sunpy.map import GenericMap
 from sunpy.util import expand_list, get_keywords, get_set_methods
 from sunpy.util.decorators import add_common_docstring
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+
+MATPLOTLIB_LT_3_8 = not minversion(matplotlib, "3.8.dev")
 
 __all__ = ['CompositeMap']
 
@@ -466,7 +470,10 @@ class CompositeMap:
                 ret.append(m.draw_contours(m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
-                ret[-1].collections[0].set_label(m.name)
+                if MATPLOTLIB_LT_3_8:
+                    ret[-1].collections[0].set_label(m.name)
+                else:
+                    ret[-1].set_label(m.name)
 
         if len(unused_kwargs) > 0:
             raise TypeError(f'plot() got unexpected keyword arguments {unused_kwargs}')
