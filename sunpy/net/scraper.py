@@ -20,7 +20,7 @@ from sunpy.time import TimeRange
 
 __all__ = ['Scraper']
 
-# regular expressions to convert datetime format
+# parse expressions to convert into datetime format
 # added `%e` as for milliseconds `%f/1000`
 TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month:2d}": "%m",
@@ -52,12 +52,6 @@ class Scraper:
         and any other parameter as ``kwargs`` as a string format.
         This can also be a uri to a local file patterns.
 
-    regex : `bool`
-        Set to `True` if parts of the pattern uses regexp symbols.
-        This only works for the filename part of the pattern rather than the full url.
-        Be careful that periods ``.`` matches any character and therefore it's better to escape them.
-        If regexp is used, other ``kwargs`` are ignored and string replacement is
-        not possible. Default is `False`.
 
     Attributes
     ----------
@@ -69,11 +63,11 @@ class Scraper:
     Examples
     --------
     >>> from sunpy.net import Scraper
-    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/%Y/%m/%d/'
-    ...            '{instrument}_lv1_%Y%m%d_%H%M%S.fits')
+    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+    ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}{{second:2d}}.fits')
     >>> swap = Scraper(pattern, instrument='swap')
     >>> print(swap.pattern)
-    http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits
+    http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
 
@@ -199,8 +193,8 @@ class Scraper:
         Examples
         --------
         >>> from sunpy.net import Scraper
-        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/%Y/%m/%d/'
-        ...            '{instrument}_lv1_%Y%m%d_%H%M%S.fits')
+        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/%m/{{day:2d}}/'
+        ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
         >>> swap = Scraper(pattern, instrument='swap')
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-01T00:12:00')
