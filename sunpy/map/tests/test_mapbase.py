@@ -1711,13 +1711,19 @@ def aia171_test_dask_map(aia171_test_map):
     )
 
 
+# This is needed for the reproject_to function
+with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+    with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
+        aia_wcs = astropy.wcs.WCS(header=hdu[0].header)
+
+
 @pytest.mark.parametrize(("func", "args"), [
     ("max", {}),
     ("mean", {}),
     ("min", {}),
-    pytest.param("reproject_to", {"wcs": None}, marks=pytest.mark.xfail(reason="reproject is not dask aware")),
-    ("resample", {"dimensions": (100, 100)*u.pix}),
-    ("rotate", {}),
+    pytest.param("reproject_to", {"wcs": aia_wcs}, marks=pytest.mark.xfail(reason="reproject is not dask aware")),
+    pytest.param("resample", {"dimensions": (100, 100)*u.pix}, marks=pytest.mark.xfail()),
+    pytest.param("rotate", {}, marks=pytest.mark.xfail(reason="nanmedian is not implemented in Dask")),
     ("std", {}),
     ("superpixel", {"dimensions": (10, 10)*u.pix}),
     ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height":10*u.pixel}),
