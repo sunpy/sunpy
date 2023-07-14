@@ -2,6 +2,7 @@
 Test Generic Map
 """
 import re
+import copy
 import tempfile
 import contextlib
 
@@ -1699,3 +1700,37 @@ def test_plot_annotate_nonboolean(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     with pytest.raises(TypeError, match="non-boolean value"):
         aia171_test_map.plot(ax)
+
+
+@pytest.fixture
+def aia171_test_dask_map(aia171_test_map):
+    dask_array = pytest.importorskip('dask.array')
+    return aia171_test_map._new_instance(
+        dask_array.from_array(aia171_test_map.data),
+        copy.deepcopy(aia171_test_map.meta)
+    )
+
+
+@pytest.mark.parametrize(("func", "args"), [
+    ("max", {}),
+    ("mean", {}),
+    ("min", {}),
+    pytest.param("reproject_to", {"wcs": None}, marks=pytest.mark.xfail(reason="reproject is not dask aware")),
+    ("resample", {"dimensions": (100, 100)*u.pix}),
+    ("rotate", {}),
+    ("std", {}),
+    ("superpixel", {"dimensions": (10, 10)*u.pix}),
+    ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height":10*u.pixel}),
+])
+def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func, args):
+    dask_array = pytest.importorskip('dask.array')
+    # Check that result array is still a Dask array
+    res_dask = aia171_test_dask_map.__getattribute__(func)(**args)
+    res = aia171_test_map.__getattribute__(func)(**args)
+    result_is_map = isinstance(res, GenericMap)
+    if result_is_map:
+        assert isinstance(res_dask.data, dask_array.Array)
+        assert np.allclose(res_dask.data.compute(), res.data)
+    else:
+        assert isinstance(res_dask, dask_array.Array)
+        assert np.allclose(res_dask.compute(), res)
