@@ -24,8 +24,8 @@ __all__ = ['Scraper']
 # added `%e` as for milliseconds `%f/1000`
 TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month:2d}": "%m",
-            "{month_name:w}": "%B",
-            "{month_name_abbr:3w}": "%b",
+            "{month_name:l}": "%B",
+            "{month_name_abbr:l}": "%b",
             "{day:2d}": "%d", "{day_of_year:3d}": "%j",
             "{hour:2d}": "%H",
             "{minute:2d}": "%M",
@@ -78,6 +78,7 @@ class Scraper:
     """
 
     def __init__(self, pattern, **kwargs):
+        print(pattern, **kwargs)
         pattern = pattern.format(**kwargs)
         timepattern = pattern
         for k, v in TIME_CONVERSIONS.items():
@@ -193,7 +194,7 @@ class Scraper:
         Examples
         --------
         >>> from sunpy.net import Scraper
-        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/%m/{{day:2d}}/'
+        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
         >>> swap = Scraper(pattern, instrument='swap')
         >>> from sunpy.time import TimeRange

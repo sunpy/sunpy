@@ -57,9 +57,7 @@ class GenericClient(BaseClient):
     :meth:`~sunpy.net.dataretriever.GenericClient.post_search_hook`.
     They help to translate the attrs for scraper before and after the search respectively.
     """
-    baseurl = None
-    # A regex string that can match all urls supported by the client.
-    # A string which is used to extract the desired metadata from urls correctly,
+    # A string which is used to match all files and extract the desired metadata from urls correctly,
     # using ``sunpy.extern.parse.parse``.
     pattern = None
     # Set of required 'attrs' for client to handle the query.
@@ -115,12 +113,12 @@ class GenericClient(BaseClient):
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         """
-        Helper function to return the baseurl, pattern and matchdict
-        for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
+        Helper function to return the pattern and matchdict for the
+        client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
-        return cls.baseurl, cls.pattern, matchdict
+        return cls.pattern, matchdict
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -233,11 +231,10 @@ class GenericClient(BaseClient):
         -------
         A `QueryResponse` instance containing the query result.
         """
-        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        scraper = Scraper(baseurl, regex=True)
+        pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        scraper = Scraper(pattern)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
-                                                matcher=matchdict)
+        filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])
         metalist = []
         for i in filesmeta:

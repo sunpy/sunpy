@@ -62,7 +62,7 @@ def testDirectoryRangeFalse():
 
 
 def testNoDateDirectory():
-    s = Scraper('mySpacecraft/myInstrument/xMinutes/aaa{{year:4d}}{{month_name_abbr:w}}.ext')
+    s = Scraper('mySpacecraft/myInstrument/xMinutes/aaa{{year:4d}}{{month_name_abbr:l}}.ext')
     directory_list = ['mySpacecraft/myInstrument/xMinutes/']
     timerange = TimeRange('2009/11/20', '2010/01/03')
     assert s.range(timerange) == directory_list
@@ -144,7 +144,7 @@ def testFilesRange_sameDirectory_local():
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
     pattern = ('http://proba2.oma.be/{{instrument}}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
-               '{{instrument}}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
+               '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     s = Scraper(pattern, instrument='swap')
     startdate = parse_time((2014, 5, 14, 0, 0))
     enddate = parse_time((2014, 5, 14, 0, 5))
@@ -158,7 +158,7 @@ def testFilesRange_sameDirectory_remote():
 
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_months_remote():
-    pattern = ('http://www.srl.caltech.edu/{{spacecraft}}/DATA/{{instrument}}/'
+    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH{{year:4d}}{{month_name_abbr:w}}.1m')
     s = Scraper(pattern, spacecraft='STEREO', instrument='HET')
     startdate = parse_time((2007, 8, 1))
@@ -205,19 +205,19 @@ def test_filelist_relative_hrefs():
 
 
 @pytest.mark.parametrize(('pattern', 'check_file'), [
-    (r'MyFile_{{year:4d}}_{{month:2d}}_{{millisecond:6d}}.{{:w}}.fits', 'MyFile_2020_55_234.aa.fits'),
+    (r'MyFile_{{year:4d}}_{{month:2d}}_{{millisecond:6d}}.{{:l}}.fits', 'MyFile_2020_55_234.aa.fits'),
     (r'{{:5d}}_{{:2d}}.fts', '01122_25.fts'),
     (r'_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:6d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts')])
-def test_regex(pattern, check_file):
-    s = Scraper(pattern, regex=True)
+def test_parse_pattern(pattern, check_file):
+    s = Scraper(pattern)
     assert s._URL_followsPattern(check_file)
 
 
 @pytest.mark.remote_data
-def test_regex_data():
+def test_parse_pattern_data():
     prefix = r'https://gong2.nso.edu/oQR/zqs/'
-    pattern = prefix + r'{{year:4d}}{{month:2d}}/mrzqs{{year:4d}}{{month:2d}}{{day:2d}}/mrzqs{{year:4d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
-    s = Scraper(pattern, regex=True)
+    pattern = prefix + r'{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
+    s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
     assert len(s.filelist(timerange)) == 37
@@ -225,23 +225,20 @@ def test_regex_data():
 
 @pytest.mark.remote_data
 def test_extract_files_meta():
-    baseurl0 = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{:w}}{{year:4d}}{{month:2d}}{{day:2d}}'
-    extractpattern0 = '{{}}/tcx/{{year:4d}}/{{month:2d}}/{{wave}}{{:4d}}{{day:2d}}'
-    s0 = Scraper(baseurl0, regex=True)
+    pattern0 = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{wave}}{{year:4d}}{{month:2d}}{{day:2d}}'
+    s0 = Scraper(pattern0)
     timerange0 = TimeRange('2020/1/1 4:00', '2020/1/2')
     matchdict = {'wave': ['tca', 'tcz']}
-    metalist0 = s0._extract_files_meta(timerange0, extractpattern0, matcher=matchdict)
+    metalist0 = s0._extract_files_meta(timerange0, pattern0, matcher=matchdict)
     assert metalist0[0]['wave'] == 'tca'
     assert metalist0[3]['wave'] == 'tcz'
     assert metalist0[1]['day'] == 2
 
-    prefix = r'https://gong2.nso.edu/oQR/zqs/'
-    baseurl1 = prefix + r'{{year:4d}}{{month:2d}}/mrzqs{{year:4d}}{{month:2d}}{{day:2d}}/mrzqs{{year:4d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
-    extractpattern1 = ('{{}}/zqs/{{year:4d}}{{month:2d}}/mrzqs{{:4d}}{{day:2d}}/mrzqs{{:6d}}t'
-                       '{{hour:2d}}{{minute:2d}}c{{CAR_ROT:4d}}_{{:3d}}.fits.gz')
-    s1 = Scraper(baseurl1, regex=True)
+    pattern1 = ('https://gong2.nso.edu/oQR/zqs/{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}'
+                '/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{CAR_ROT:4d}}_{{:3d}}.fits.gz')
+    s1 = Scraper(pattern1)
     timerange1 = TimeRange('2020-01-05', '2020-01-05T16:00:00')
-    metalist1 = s1._extract_files_meta(timerange1, extractpattern1)
+    metalist1 = s1._extract_files_meta(timerange1, pattern1)
     urls = s1.filelist(timerange1)
     assert metalist1[3]['CAR_ROT'] == 2226
     assert metalist1[-1]['url'] == urls[-1]

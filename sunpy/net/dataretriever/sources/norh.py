@@ -42,8 +42,7 @@ class NoRHClient(GenericClient):
     <BLANKLINE>
 
     """
-    baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
-    pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
+    pattern = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{Wavelength:3l}}{{}:4d}}{{day:2d}}'
 
     @property
     def info_url(self):
