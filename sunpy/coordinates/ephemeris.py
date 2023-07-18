@@ -326,7 +326,8 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     log.debug(f"See the raw output from the JPL HORIZONS query at {query.uri}")
 
     if isinstance(time, dict):
-        obstime = parse_time(result['datetime_jd'], format='jd', scale='tdb')
+        obstime_tdb = parse_time(result['datetime_jd'], format='jd', scale='tdb')
+        obstime = obstime_tdb.utc
     else:
         # JPL HORIZONS results are sorted by observation time, so this sorting needs to be undone.
         # Calling argsort() on an array returns the sequence of indices of the unsorted list to put the
