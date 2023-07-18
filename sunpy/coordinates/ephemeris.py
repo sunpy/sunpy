@@ -303,7 +303,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         if set(time.keys()) != set(['start', 'stop', 'step']):
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
         epochs = time
-        jpl_fmt = '%Y-%m-%d %H:%M:%S'
+        jpl_fmt = '%Y-%m-%d %H:%M:%S.%f'
         epochs['start'] = parse_time(epochs['start']).tdb.strftime(jpl_fmt)
         epochs['stop'] = parse_time(epochs['stop']).tdb.strftime(jpl_fmt)
     else:
