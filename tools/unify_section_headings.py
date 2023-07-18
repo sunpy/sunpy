@@ -48,9 +48,7 @@ def replace_header_chars(filename):
                         # we're trying to create a new level,
                         # but we're not at the current deepest level
                         raise ValueError(
-                            "ERROR misorder {} at level {} from {} on line {}".format(
-                                char, level, header_chars, i
-                            )
+                            f"ERROR misorder {char} at level {level} from {header_chars} on line {i}"
                         )
                 outfile.write(line.replace(char, HEADER_CHAR_LEVELS[level]).encode())
             else:

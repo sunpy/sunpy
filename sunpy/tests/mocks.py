@@ -85,10 +85,7 @@ class MockObject(MutableMapping):
         return len(self._datastore)
 
     def __repr__(self):
-        return ("<{module}.{name} {contents} at {address}>".format(module=self.__module__,
-                                                                   name=self.__class__.__name__,
-                                                                   contents=self._datastore,
-                                                                   address=hex(id(self))))
+        return (f"<{self.__module__}.{self.__class__.__name__} {self._datastore} at {hex(id(self))}>")
 
 
 class MockHTTPResponse(MockObject):
