@@ -42,8 +42,7 @@ class EntryNotFoundError(Exception):
         self.entry_id = entry_id
 
     def __str__(self):
-        return 'an entry with the ID {:d} does not exist'.format(
-            self.entry_id)
+        return f'an entry with the ID {self.entry_id:d} does not exist'
 
 
 class EntryAlreadyAddedError(Exception):
@@ -102,8 +101,7 @@ class NoSuchTagError(Exception):
         self.tag_name = tag_name
 
     def __str__(self):
-        return 'the tag {!r} is not saved in the database'.format(
-            self.tag_name)
+        return f'the tag {self.tag_name!r} is not saved in the database'
 
 
 class TagAlreadyAssignedError(Exception):

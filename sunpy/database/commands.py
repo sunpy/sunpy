@@ -146,8 +146,7 @@ class AddEntry(DatabaseOperation):
             make_transient(self.database_entry)
 
     def __repr__(self):
-        return '<{}(session {!r}, entry id {})>'.format(
-            self.__class__.__name__, self.session, self.database_entry.id)
+        return f'<{self.__class__.__name__}(session {self.session!r}, entry id {self.database_entry.id})>'
 
 
 class RemoveEntry(DatabaseOperation):
@@ -175,8 +174,7 @@ class RemoveEntry(DatabaseOperation):
         self.session.add(self.entry)
 
     def __repr__(self):
-        return '<{}(session {!r}, entry {!r})>'.format(
-            self.__class__.__name__, self.session, self.entry)
+        return f'<{self.__class__.__name__}(session {self.session!r}, entry {self.entry!r})>'
 
 
 class EditEntry(DatabaseOperation):
@@ -207,8 +205,7 @@ class EditEntry(DatabaseOperation):
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
-        return '<EditEntry(kwargs {!r}, entry id {})>'.format(
-            self.kwargs, self.database_entry.id)
+        return f'<EditEntry(kwargs {self.kwargs!r}, entry id {self.database_entry.id})>'
 
 
 class AddTag(DatabaseOperation):
@@ -240,8 +237,7 @@ class AddTag(DatabaseOperation):
                 pass
 
     def __repr__(self):
-        return "<AddTag(tag '{}', session {!r}, entry id {})>".format(
-            self.tag, self.session, self.database_entry.id)
+        return f"<AddTag(tag '{self.tag}', session {self.session!r}, entry id {self.database_entry.id})>"
 
 
 class RemoveTag(DatabaseOperation):
@@ -291,8 +287,7 @@ class RemoveTag(DatabaseOperation):
                 self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
-        return "<RemoveTag(tag '{}', session {!r}, entry id {})>".format(
-            self.tag, self.session, self.database_entry.id)
+        return f"<RemoveTag(tag '{self.tag}', session {self.session!r}, entry id {self.database_entry.id})>"
 
 
 class CommandManager:
