@@ -156,10 +156,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        with open(filepath) as fp:
-            fp.seek(0)
-            data = pd.read_json(fp.read())
-
+        data = pd.read_json(filepath)
         rename = {'ssn': 'sunspot RI',
                   'smoothed_ssn': 'sunspot RI smooth',
                   'observed_swpc_ssn': 'sunspot SWO',
@@ -292,9 +289,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        with open(filepath) as fp:
-            fp.seek(0)
-            data = pd.read_json(fp.read())
+        data = pd.read_json(filepath)
         rename = {'predicted_ssn': 'sunspot',
                   'high_ssn': 'sunspot high',
                   'low_ssn': 'sunspot low',
