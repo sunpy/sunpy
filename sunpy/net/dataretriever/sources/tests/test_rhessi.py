@@ -1,5 +1,6 @@
 import socket
 from unittest import mock
+from http.client import RemoteDisconnected
 from urllib.error import URLError
 
 import pytest
@@ -69,6 +70,15 @@ def test_get_base_url_on_urlerror(mock_urlopen):
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlopen', side_effect=socket.timeout)
 def test_get_base_url_on_timeout(mock_urlopen):
+    """
+    If all tested data servers timeout, then raise an `IOError`
+    """
+    with pytest.raises(OSError):
+        rhessi.get_base_url()
+
+
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.urlopen', side_effect=RemoteDisconnected(''))
+def test_get_base_url_on_remote_disconnected(mock_urlopen):
     """
     If all tested data servers timeout, then raise an `IOError`
     """

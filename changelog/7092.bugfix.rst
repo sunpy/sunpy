@@ -1,0 +1,1 @@
+Fix RHESSI Client (`sunpy.net.dataretriever.sources.rhessi`) fallback server detection.
