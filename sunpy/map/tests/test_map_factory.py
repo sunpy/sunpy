@@ -92,7 +92,7 @@ def test_patterns(eit_fits_directory):
     path = pathlib.Path(AIA_171_IMAGE)
     aiamap = sunpy.map.Map(path)
 
-    maps = sunpy.map.Map(list(path.glob('*.fits')))
+    maps = sunpy.map.Map(path.glob('*.fits'))
     assert isinstance(maps, list)
 
     assert isinstance(aiamap, sunpy.map.GenericMap)

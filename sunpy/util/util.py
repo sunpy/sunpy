@@ -9,7 +9,6 @@ from io import BytesIO
 from base64 import b64encode
 from shutil import get_terminal_size
 from itertools import chain, count
-from collections import UserList
 from collections.abc import Iterable
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
@@ -98,7 +97,7 @@ def expand_list(inp):
 
 def expand_list_generator(inp):
     for item in inp:
-        if not isinstance(item, str) and isinstance(item, Iterable):
+        if not isinstance(item, (str, bytes)) and isinstance(item, Iterable):
             yield from expand_list_generator(item)
         else:
             yield item
