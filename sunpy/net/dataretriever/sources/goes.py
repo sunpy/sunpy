@@ -71,13 +71,13 @@ class XRSClient(GenericClient):
     <BLANKLINE>
     """
     # GOES XRS data from NASA servers up to GOES 7.
-    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{year:4d}/go{SatelliteNumber:02d}{}{month:2d}{day:2d}.fits'
+    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{{year:4d}}/go{satelliteNumber}{{}}{{month:2d}}{{day:2d}}.fits'
     # The reprocessed 8-15 data should be taken from NOAA.
-    pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{SatelliteNumber:02d}/{filename_res}-l2-{resolution}_science"
-                   "/{year:4d}/{month:2d}/sci_{filename_res}-l2-{resolution}_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+    pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{satelliteNumber}/{filename_res}-l2-{resolution}_science"
+                   "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{resolution}_g{satelliteNumber}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
     # GOES-R Series 16-17 XRS data from NOAA.
-    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{SatelliteNumber:02d}/l2/data/xrsf-l2-{Resolution}_science"
-                 "/{year:4d}/{month:2d}/sci_xrsf-l2-{Resolution}_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
+    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{satelliteNumber}/l2/data/xrsf-l2-{Resolution}_science"
+                 "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{satelliteNumber}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
 
     @property
     def info_url(self):
@@ -123,12 +123,12 @@ class XRSClient(GenericClient):
             metalist = self._get_metalist(matchdict)
         return QueryResponse(metalist, client=self)
 
-    def _get_metalist_fn(self, matchdict, baseurl, pattern):
+    def _get_metalist_fn(self, matchdict, pattern):
         """
         Function to help get list of OrderedDicts.
         """
         metalist = []
-        scraper = Scraper(baseurl, regex=True)
+        scraper = Scraper(pattern)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         filemeta = scraper._extract_files_meta(tr, matcher=matchdict)
         for i in filemeta:
@@ -144,7 +144,7 @@ class XRSClient(GenericClient):
         metalist = []
         # The data before the re-processed GOES 8-15 data.
         if (matchdict["End Time"] < "2001-03-01") or (matchdict["End Time"] >= "2001-03-01" and matchdict["Provider"] == ["sdac"]):
-            metalist += self._get_metalist_fn(matchdict, self.baseurl_old, self.pattern_old)
+            metalist += self._get_metalist_fn(matchdict, self.pattern_old)
         # New data from NOAA. It searches for both the high cadence and 1 minute average data.
         else:
             if matchdict["End Time"] >= "2017-02-07":
@@ -152,7 +152,7 @@ class XRSClient(GenericClient):
                     if int(sat) >= 16:  # here check for GOES 16 and 17
                         for res in matchdict["Resolution"]:
                             metalist += self._get_metalist_fn(matchdict,
-                                                              self.baseurl_r.format(SatelliteNumber=int(sat), Resolution=res), self.pattern_r)
+                                                              self.pattern_r.format(SatelliteNumber=int(sat), Resolution=res))
 
             if matchdict["End Time"] <= "2020-03-04":
                 for sat in matchdict["SatelliteNumber"]:
@@ -163,12 +163,12 @@ class XRSClient(GenericClient):
                                 filename_res = "xrsf"
                                 resolution = "avg1m"
                                 metalist += self._get_metalist_fn(matchdict,
-                                                                  self.baseurl_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution), self.pattern_new)
+                                                                  self.pattern_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution))
                             elif res == "flx1s":
                                 filename_res = "gxrs"
                                 resolution = "irrad"
                                 metalist += self._get_metalist_fn(matchdict,
-                                                                  self.baseurl_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution), self.pattern_new)
+                                                                  self.pattern_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution))
                             else:
                                 raise RuntimeError(f"{res}` is not an accepted resolution attrs for the XRSClient")
         return metalist
@@ -231,16 +231,16 @@ class SUVIClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    baseurl1b = (r'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes'
-                 r'{SatelliteNumber}/l1b/suvi-l1b-{elem:2}{wave:03}/%Y/%m/%d/OR_SUVI-L1b.*\.fits.gz')
-    pattern1b = ('{}/goes/goes{SatelliteNumber:2d}/l{Level:2w}/suvi-l1b-{}{Wavelength:03d}/'
-                 '{year:4d}/{month:2d}/{day:2d}/{}_s{:7d}{hour:2d}{minute:2d}{second:2d}'
-                 '{:1d}_e{:7d}{ehour:2d}{eminute:2d}{esecond:2d}{:1d}_{}')
-    baseurl2 = (r'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber}/'
-                r'l2/data/suvi-l2-ci{wave:03}/%Y/%m/%d/dr_suvi-l2-ci{wave:03}_g{SatelliteNumber}_s%Y%m%dT%H%M%SZ_.*\.fits')
-    pattern2 = ('{}/goes/goes{SatelliteNumber:2d}/{}/dr_suvi-l{Level}-ci{Wavelength:03d}_g{SatelliteNumber:2d}_s'
-                '{year:4d}{month:2d}{day:2d}T{hour:2d}{minute:2d}{second:2d}Z_e'
-                '{eyear:4d}{emonth:2d}{eday:2d}T{ehour:2d}{eminute:2d}{esecond:2d}Z_{}')
+
+    pattern1b = ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
+                 'goes{satelliteNumber}/l{{Level:2w}}/suvi-l1b-{{}}{{Wavelength:03d}}/'
+                 '{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_s{{:7d}}{{hour:2d}}{{minute:2d}}{{second:2d}}'
+                 '{{:1d}}_e{{:7d}}{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}{{:1d}}_{{}}')
+    pattern2 = ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/'
+                '/goes/goes{satelliteNumber}/l2/data/suvi-l2-ci{{wave:03}}/{{year:4d}}/'
+                '{{month:2d}}/{{day:2d}}/dr_suvi-l{{Level}}-ci{{Wavelength:03d}}_g{satelliteNumber}_s'
+                '{{year:4d}}{{month:2d}}{{day:2d}}T{{hour:2d}}{{minute:2d}}{{second:2d}}Z_e'
+                '{{eyear:4d}}{{emonth:2d}}{{eday:2d}}T{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}Z_{{}}')
 
     @property
     def info_url(self):
@@ -293,15 +293,13 @@ class SUVIClient(GenericClient):
                         formdict['elem'] = 'fe'
                         if wave == 304:
                             formdict['elem'] = 'he'
-                        baseurl = self.baseurl1b
                         pattern = self.pattern1b
                     elif str(level) == '2':
-                        baseurl = self.baseurl2
                         pattern = self.pattern2
                     else:
                         raise ValueError(f"Level {level} is not supported.")
-                    # formatting baseurl using Level, SatelliteNumber and Wavelength
-                    urlpattern = baseurl.format(**formdict)
+                    # formatting pattern using Level, SatelliteNumber and Wavelength
+                    urlpattern = pattern.format(**formdict)
 
                     scraper = Scraper(urlpattern)
                     tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])

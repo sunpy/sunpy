@@ -143,7 +143,7 @@ def testFilesRange_sameDirectory_local():
 
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
-    pattern = ('http://proba2.oma.be/{{instrument}}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+    pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
                '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     s = Scraper(pattern, instrument='swap')
     startdate = parse_time((2014, 5, 14, 0, 0))
@@ -216,7 +216,7 @@ def test_parse_pattern(pattern, check_file):
 @pytest.mark.remote_data
 def test_parse_pattern_data():
     prefix = r'https://gong2.nso.edu/oQR/zqs/'
-    pattern = prefix + r'{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
+    pattern = prefix + r'{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
     s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
@@ -225,11 +225,11 @@ def test_parse_pattern_data():
 
 @pytest.mark.remote_data
 def test_extract_files_meta():
-    pattern0 = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{wave}}{{year:4d}}{{month:2d}}{{day:2d}}'
+    pattern0 = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{wave}}{{year:2d}}{{month:2d}}{{day:2d}}'
     s0 = Scraper(pattern0)
     timerange0 = TimeRange('2020/1/1 4:00', '2020/1/2')
     matchdict = {'wave': ['tca', 'tcz']}
-    metalist0 = s0._extract_files_meta(timerange0, pattern0, matcher=matchdict)
+    metalist0 = s0._extract_files_meta(timerange0, matcher=matchdict)
     assert metalist0[0]['wave'] == 'tca'
     assert metalist0[3]['wave'] == 'tcz'
     assert metalist0[1]['day'] == 2

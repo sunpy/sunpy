@@ -78,7 +78,6 @@ class Scraper:
     """
 
     def __init__(self, pattern, **kwargs):
-        print(pattern, **kwargs)
         pattern = pattern.format(**kwargs)
         timepattern = pattern
         for k, v in TIME_CONVERSIONS.items():
@@ -87,6 +86,7 @@ class Scraper:
         self.timepattern = timepattern
         if "year:4d" in pattern and "year:2d" in pattern:
             pattern = pattern.replace("year:2d", ":2d")
+        self.pattern = pattern
         self.pattern = pattern
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.timepattern)
@@ -102,7 +102,7 @@ class Scraper:
             ))
 
     def matches(self, filepath, date):
-        return date.strftime(self.timepattern) == filepath
+        return parse(date.strftime(self.timepattern), filepath)
 
     def range(self, timerange):
         """
@@ -120,7 +120,7 @@ class Scraper:
             Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
-        if '/' in self.pattern:
+        if '/' in self.timepattern:
             directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
@@ -328,6 +328,11 @@ class Scraper:
         exdict = parse(self.pattern, url).named
         if exdict['year'] < 100:
             exdict['year'] = 2000 + exdict['year']
+        if 'month' not in exdict:
+                    if 'month_name' in exdict:
+                        exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
+                    elif 'month_name_abbr' in exdict:
+                        exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
         tr = get_timerange_from_exdict(exdict)
         return tr.intersects(timerange)
 
@@ -378,6 +383,11 @@ class Scraper:
                 append = True
                 metadict = metadict.named
                 metadict['url'] = url
+                if 'month' not in metadict:
+                    if 'month_name' in metadict:
+                        metadict['month'] = datetime.strptime(metadict['month_name'], '%B').month
+                    elif 'month_name_abbr' in metadict:
+                        metadict['month'] = datetime.strptime(metadict['month_name_abbr'], '%b').month
                 if matcher is not None:
                     for k in metadict:
                         if k in matcher and str(metadict[k]) not in matcher[k]:
@@ -412,7 +422,6 @@ def get_timerange_from_exdict(exdict):
     dtlist = [int(exdict.get(d, 1)) for d in datetypes]
     dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
     startTime = datetime(*dtlist)
-
     tdelta = TIME_QUANTITIES['millisecond']
     if "second" in exdict:
         tdelta = TIME_QUANTITIES['second']
@@ -430,6 +439,5 @@ def get_timerange_from_exdict(exdict):
             tdelta = 366*TIME_QUANTITIES['day']
         else:
             tdelta = 365*TIME_QUANTITIES['day']
-
     endTime = startTime + tdelta
     return TimeRange(startTime, endTime)
