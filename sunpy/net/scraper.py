@@ -87,7 +87,6 @@ class Scraper:
         if "year:4d" in pattern and "year:2d" in pattern:
             pattern = pattern.replace("year:2d", ":2d")
         self.pattern = pattern
-        self.pattern = pattern
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.timepattern)
         if not milliseconds:
