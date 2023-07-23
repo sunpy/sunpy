@@ -159,7 +159,7 @@ def testFilesRange_sameDirectory_remote():
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_months_remote():
     pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
-               'Ahead/1minute/AeH{{year:4d}}{{month_name_abbr:w}}.1m')
+               'Ahead/1minute/AeH{{year:2d}}{{month_name_abbr:w}}.1m')
     s = Scraper(pattern, spacecraft='STEREO', instrument='HET')
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
@@ -205,9 +205,9 @@ def test_filelist_relative_hrefs():
 
 
 @pytest.mark.parametrize(('pattern', 'check_file'), [
-    (r'MyFile_{{year:4d}}_{{month:2d}}_{{millisecond:6d}}.{{:l}}.fits', 'MyFile_2020_55_234.aa.fits'),
-    (r'{{:5d}}_{{:2d}}.fts', '01122_25.fts'),
-    (r'_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:6d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts')])
+    ('MyFile_{{year:4d}}_{{month:2d}}_{{millisecond:6d}}.{{:l}}.fits', 'MyFile_2020_55_234.aa.fits'),
+    ('{{:5d}}_{{:2d}}.fts', '01122_25.fts'),
+    ('_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:6d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts')])
 def test_parse_pattern(pattern, check_file):
     s = Scraper(pattern)
     assert s._URL_followsPattern(check_file)
@@ -215,8 +215,8 @@ def test_parse_pattern(pattern, check_file):
 
 @pytest.mark.remote_data
 def test_parse_pattern_data():
-    prefix = r'https://gong2.nso.edu/oQR/zqs/'
-    pattern = prefix + r'{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
+    prefix = 'https://gong2.nso.edu/oQR/zqs/'
+    pattern = prefix + '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
     s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')

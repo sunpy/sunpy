@@ -71,13 +71,13 @@ class XRSClient(GenericClient):
     <BLANKLINE>
     """
     # GOES XRS data from NASA servers up to GOES 7.
-    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{{year:4d}}/go{satelliteNumber}{{}}{{month:2d}}{{day:2d}}.fits'
+    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{{year:4d}}/go{{satelliteNumber:2d}}{{}}{{month:2d}}{{day:2d}}.fits'
     # The reprocessed 8-15 data should be taken from NOAA.
-    pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{satelliteNumber}/{filename_res}-l2-{resolution}_science"
-                   "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{resolution}_g{satelliteNumber}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
+    pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{{satelliteNumber:2d}}/{filename_res}-l2-{resolution}_science"
+                   "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{resolution}_g{{satelliteNumber:2d}}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
     # GOES-R Series 16-17 XRS data from NOAA.
-    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{satelliteNumber}/l2/data/xrsf-l2-{Resolution}_science"
-                 "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{satelliteNumber}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
+    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{{satelliteNumber:2d}}/l2/data/xrsf-l2-{Resolution}_science"
+                 "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{{satelliteNumber:2d}}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
 
     @property
     def info_url(self):
@@ -233,14 +233,14 @@ class SUVIClient(GenericClient):
     """
 
     pattern1b = ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-                 'goes{satelliteNumber}/l{{Level:2w}}/suvi-l1b-{{}}{{Wavelength:03d}}/'
+                 'goes{SatelliteNumber}/l{Level}/suvi-l1b-{{}}{{Wavelength:03d}}/'
                  '{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_s{{:7d}}{{hour:2d}}{{minute:2d}}{{second:2d}}'
-                 '{{:1d}}_e{{:7d}}{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}{{:1d}}_{{}}')
+                 '{{:1d}}_e{{:7d}}{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}{{:1d}}_{{}}.fits')
     pattern2 = ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/'
-                '/goes/goes{satelliteNumber}/l2/data/suvi-l2-ci{{wave:03}}/{{year:4d}}/'
-                '{{month:2d}}/{{day:2d}}/dr_suvi-l{{Level}}-ci{{Wavelength:03d}}_g{satelliteNumber}_s'
+                'goes/goes{SatelliteNumber}/l2/data/suvi-l2-ci{wave}/{{year:4d}}/'
+                '{{month:2d}}/{{day:2d}}/dr_suvi-l{{Level}}-ci{{Wavelength:03d}}_g{SatelliteNumber}_s'
                 '{{year:4d}}{{month:2d}}{{day:2d}}T{{hour:2d}}{{minute:2d}}{{second:2d}}Z_e'
-                '{{eyear:4d}}{{emonth:2d}}{{eday:2d}}T{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}Z_{{}}')
+                '{{eyear:4d}}{{emonth:2d}}{{eday:2d}}T{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}Z_{{}}.fits')
 
     @property
     def info_url(self):
@@ -260,7 +260,6 @@ class SUVIClient(GenericClient):
         rowdict['Physobs'] = matchdict['Physobs'][0]
         rowdict['Source'] = matchdict['Source'][0]
         rowdict['Provider'] = matchdict['Provider'][0]
-        rowdict['SatelliteNumber'] = i['SatelliteNumber']
         rowdict['Level'] = i['Level']
         rowdict['Wavelength'] = i['Wavelength']*u.Angstrom
         rowdict['url'] = i['url']
@@ -300,12 +299,13 @@ class SUVIClient(GenericClient):
                         raise ValueError(f"Level {level} is not supported.")
                     # formatting pattern using Level, SatelliteNumber and Wavelength
                     urlpattern = pattern.format(**formdict)
-
+                    urlpattern = urlpattern.replace('{', '{{').replace('}', '}}')
                     scraper = Scraper(urlpattern)
                     tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-                    filesmeta = scraper._extract_files_meta(tr, extractor=pattern)
+                    filesmeta = scraper._extract_files_meta(tr)
                     for i in filesmeta:
                         rowdict = self.post_search_hook(i, matchdict)
+                        rowdict['SatelliteNumber'] = satno
                         metalist.append(rowdict)
 
         return QueryResponse(metalist, client=self)

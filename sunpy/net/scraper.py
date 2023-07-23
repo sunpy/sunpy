@@ -283,8 +283,8 @@ class Scraper:
 
     def _localfilelist(self, timerange):
         pattern = self.pattern
-        timepattern = self.timepattern
         pattern_temp = pattern.replace('file://', '')
+        timepattern = self.timepattern
         timepattern_temp = timepattern.replace('file://', '')
         if os.name == 'nt':
             pattern_temp = pattern_temp.replace('\\', '/')
@@ -299,7 +299,6 @@ class Scraper:
             for file_i in os.listdir(directory):
                 fullpath = directory + file_i
                 if self._URL_followsPattern(fullpath):
-                    print(fullpath)
                     if self._check_timerange(fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
