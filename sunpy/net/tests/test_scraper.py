@@ -5,6 +5,7 @@ import pytest
 from dateutil.relativedelta import relativedelta
 
 from sunpy.data.test import rootdir
+from sunpy.extern import parse
 from sunpy.net.scraper import Scraper, get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time
 
@@ -107,17 +108,17 @@ def testNoDirectory():
     assert len(s.range(timerange)) == 1
 
 def testURL_pattern():
-    s = Scraper('fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fts')
-    assert s._URL_followsPattern('fd_20130410_231211.fts')
-    assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
-    assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+    pattern = 'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fts'
+    assert parse(pattern, 'fd_20130410_231211.fts')
+    assert not parse(pattern, 'fd_20130410_231211.fts.gz')
+    assert not parse(pattern, 'fd_20130410_ar_231211.fts.gz')
 
 
 def testURL_patternMillisecondsGeneric():
-    s = Scraper('fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:6d}}.fts')
-    assert s._URL_followsPattern('fd_20130410_231211_119.fts')
-    assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
-    assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+    pattern = 'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:6d}}.fts'
+    assert parse(pattern, 'fd_20130410_231211_119.fts')
+    assert not parse(pattern, 'fd_20130410_231211.fts.gz')
+    assert not parse(pattern, 'fd_20130410_ar_231211.fts.gz')
 
 
 def testURL_patternMillisecondsZeroPadded():
@@ -209,8 +210,7 @@ def test_filelist_relative_hrefs():
     ('{{:5d}}_{{:2d}}.fts', '01122_25.fts'),
     ('_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:6d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts')])
 def test_parse_pattern(pattern, check_file):
-    s = Scraper(pattern)
-    assert s._URL_followsPattern(check_file)
+    assert parse(pattern, check_file)
 
 
 @pytest.mark.remote_data
@@ -219,7 +219,7 @@ def test_parse_pattern_data():
     pattern = prefix + '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
     s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
-    assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
+    assert parse(pattern, prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
     assert len(s.filelist(timerange)) == 37
 
 

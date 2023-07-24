@@ -169,12 +169,6 @@ class Scraper:
 
         return datetime(*time_tup)
 
-    def _URL_followsPattern(self, url):
-        """
-        Check whether the url provided follows the pattern.
-        """
-        return parse(self.pattern, url)
-
     def filelist(self, timerange):
         """
         Returns the list of existent files in the archive for the given time
@@ -229,7 +223,7 @@ class Scraper:
                                 fullpath = self.domain + href[1:]
                             else:
                                 fullpath = directory + href
-                            if self._URL_followsPattern(fullpath):
+                            if parse(self.pattern, fullpath):
                                 if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
                 finally:
@@ -272,7 +266,7 @@ class Scraper:
                     continue
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
-                    if self._URL_followsPattern(fullpath):
+                    if parse(self.pattern, fullpath):
                         if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
@@ -298,7 +292,7 @@ class Scraper:
         for directory in directories:
             for file_i in os.listdir(directory):
                 fullpath = directory + file_i
-                if self._URL_followsPattern(fullpath):
+                if parse(self.pattern, fullpath):
                     if self._check_timerange(fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
@@ -437,5 +431,5 @@ def get_timerange_from_exdict(exdict):
             tdelta = 366*TIME_QUANTITIES['day']
         else:
             tdelta = 365*TIME_QUANTITIES['day']
-    endTime = startTime + tdelta
+    endTime = startTime + tdelta - TIME_QUANTITIES['millisecond']
     return TimeRange(startTime, endTime)
