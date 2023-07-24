@@ -71,12 +71,12 @@ class XRSClient(GenericClient):
     <BLANKLINE>
     """
     # GOES XRS data from NASA servers up to GOES 7.
-    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{{year:4d}}/go{{SatelliteNumber:2d}}{{}}{{month:2d}}{{day:2d}}.fits'
+    pattern_old = 'https://umbra.nascom.nasa.gov/goes/fits/{{year:4d}}/go{{SatelliteNumber:2d}}{{}}{{month:2d}}{{day:2d}}.fits'
     # The reprocessed 8-15 data should be taken from NOAA.
     pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{SatelliteNumber:02d}/{filename_res}-l2-{Resolution}_science"
                    "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{Resolution}_g{SatelliteNumber:2d}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
     # GOES-R Series 16-17 XRS data from NOAA.
-    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{SatelliteNumber:2d}/l2/data/xrsf-l2-{Resolution}_science"
+    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber:2d}/l2/data/xrsf-l2-{Resolution}_science"
                  "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{SatelliteNumber:2d}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
 
     @property
