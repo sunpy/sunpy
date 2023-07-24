@@ -71,13 +71,13 @@ class XRSClient(GenericClient):
     <BLANKLINE>
     """
     # GOES XRS data from NASA servers up to GOES 7.
-    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{{year:4d}}/go{{satelliteNumber:2d}}{{}}{{month:2d}}{{day:2d}}.fits'
+    pattern_old = 'https://umbra.nascom.nasa.gov/goes//fits/{{year:4d}}/go{{SatelliteNumber:2d}}{{}}{{month:2d}}{{day:2d}}.fits'
     # The reprocessed 8-15 data should be taken from NOAA.
-    pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{{satelliteNumber:2d}}/{filename_res}-l2-{resolution}_science"
-                   "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{resolution}_g{{satelliteNumber:2d}}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
+    pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{SatelliteNumber:02d}/{filename_res}-l2-{Resolution}_science"
+                   "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{Resolution}_g{SatelliteNumber:2d}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
     # GOES-R Series 16-17 XRS data from NOAA.
-    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{{satelliteNumber:2d}}/l2/data/xrsf-l2-{Resolution}_science"
-                 "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{{satelliteNumber:2d}}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
+    pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites//goes/goes{SatelliteNumber:2d}/l2/data/xrsf-l2-{Resolution}_science"
+                 "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{SatelliteNumber:2d}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
 
     @property
     def info_url(self):
@@ -93,7 +93,6 @@ class XRSClient(GenericClient):
         rowdict['End Time'] = tr.end
         rowdict['End Time'].format = 'iso'
         rowdict["Instrument"] = matchdict["Instrument"][0].upper()
-        rowdict["SatelliteNumber"] = i["SatelliteNumber"]
         rowdict["Physobs"] = matchdict["Physobs"][0]
         rowdict["url"] = i["url"]
         rowdict["Source"] = matchdict["Source"][0]
@@ -123,16 +122,20 @@ class XRSClient(GenericClient):
             metalist = self._get_metalist(matchdict)
         return QueryResponse(metalist, client=self)
 
-    def _get_metalist_fn(self, matchdict, pattern):
+    def _get_metalist_fn(self, matchdict, pattern, **kwargs):
         """
         Function to help get list of OrderedDicts.
         """
         metalist = []
-        scraper = Scraper(pattern)
+        # Prevent parse-format pattern variables from being interpreted as .format() placeholders.
+        if "{{" not in pattern:
+            pattern = pattern.replace('{', '{{').replace('}', '}}')
+        scraper = Scraper(pattern, **kwargs)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         filemeta = scraper._extract_files_meta(tr, matcher=matchdict)
         for i in filemeta:
             rowdict = self.post_search_hook(i, matchdict)
+            rowdict.update(kwargs)
             metalist.append(rowdict)
         return metalist
 
@@ -151,8 +154,7 @@ class XRSClient(GenericClient):
                 for sat in matchdict["SatelliteNumber"]:
                     if int(sat) >= 16:  # here check for GOES 16 and 17
                         for res in matchdict["Resolution"]:
-                            metalist += self._get_metalist_fn(matchdict,
-                                                              self.pattern_r.format(SatelliteNumber=int(sat), Resolution=res))
+                            metalist += self._get_metalist_fn(matchdict, self.pattern_r, SatelliteNumber=int(sat), Resolution=res)
 
             if matchdict["End Time"] <= "2020-03-04":
                 for sat in matchdict["SatelliteNumber"]:
@@ -162,13 +164,13 @@ class XRSClient(GenericClient):
                             if res == "avg1m":
                                 filename_res = "xrsf"
                                 resolution = "avg1m"
-                                metalist += self._get_metalist_fn(matchdict,
-                                                                  self.pattern_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution))
+                                metalist += self._get_metalist_fn(matchdict, self.pattern_new, SatelliteNumber=int(sat),
+                                                                  filename_res=filename_res, Resolution=resolution)
                             elif res == "flx1s":
                                 filename_res = "gxrs"
                                 resolution = "irrad"
-                                metalist += self._get_metalist_fn(matchdict,
-                                                                  self.pattern_new.format(SatelliteNumber=int(sat), filename_res=filename_res, resolution=resolution))
+                                metalist += self._get_metalist_fn(matchdict, self.pattern_new, SatelliteNumber=int(sat),
+                                                                  filename_res=filename_res, Resolution=resolution)
                             else:
                                 raise RuntimeError(f"{res}` is not an accepted resolution attrs for the XRSClient")
         return metalist
@@ -233,12 +235,12 @@ class SUVIClient(GenericClient):
     """
 
     pattern1b = ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
-                 'goes{SatelliteNumber}/l{Level}/suvi-l1b-{{}}{{Wavelength:03d}}/'
+                 'goes{SatelliteNumber}/l1b/suvi-l1b-{elem:02}{wave:03}/'
                  '{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_s{{:7d}}{{hour:2d}}{{minute:2d}}{{second:2d}}'
-                 '{{:1d}}_e{{:7d}}{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}{{:1d}}_{{}}.fits')
+                 '{{:1d}}_e{{:7d}}{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}{{:1d}}_{{}}.fits.gz')
     pattern2 = ('https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/'
-                'goes/goes{SatelliteNumber}/l2/data/suvi-l2-ci{wave}/{{year:4d}}/'
-                '{{month:2d}}/{{day:2d}}/dr_suvi-l{{Level}}-ci{{Wavelength:03d}}_g{SatelliteNumber}_s'
+                'goes/goes{SatelliteNumber}/l2/data/suvi-l2-ci{wave:03}/{{year:4d}}/'
+                '{{month:2d}}/{{day:2d}}/dr_suvi-l2-ci{{Wavelength:03d}}_g{SatelliteNumber}_s'
                 '{{year:4d}}{{month:2d}}{{day:2d}}T{{hour:2d}}{{minute:2d}}{{second:2d}}Z_e'
                 '{{eyear:4d}}{{emonth:2d}}{{eday:2d}}T{{ehour:2d}}{{eminute:2d}}{{esecond:2d}}Z_{{}}.fits')
 
@@ -260,8 +262,6 @@ class SUVIClient(GenericClient):
         rowdict['Physobs'] = matchdict['Physobs'][0]
         rowdict['Source'] = matchdict['Source'][0]
         rowdict['Provider'] = matchdict['Provider'][0]
-        rowdict['Level'] = i['Level']
-        rowdict['Wavelength'] = i['Wavelength']*u.Angstrom
         rowdict['url'] = i['url']
         return rowdict
 
@@ -306,6 +306,8 @@ class SUVIClient(GenericClient):
                     for i in filesmeta:
                         rowdict = self.post_search_hook(i, matchdict)
                         rowdict['SatelliteNumber'] = satno
+                        rowdict['Level'] = level
+                        rowdict['Wavelength'] = wave*u.Angstrom
                         metalist.append(rowdict)
 
         return QueryResponse(metalist, client=self)
