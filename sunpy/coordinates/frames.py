@@ -569,15 +569,19 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         with np.errstate(invalid='ignore'):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
-        if self._spherical_screen:
-            sphere_center = self._spherical_screen['center'].transform_to(self).cartesian
-            c = sphere_center.norm()**2 - self._spherical_screen['radius']**2
-            b = -2 * sphere_center.dot(rep)
-            # Ignore sqrt of NaNs
-            with np.errstate(invalid='ignore'):
-                dd = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
+        if self._assumed_screen:
+            if self._assumed_screen['type'] == 'spherical':
+                sphere_center = self._assumed_screen['center'].transform_to(self).cartesian
+                c = sphere_center.norm()**2 - self._assumed_screen['radius']**2
+                b = -2 * sphere_center.dot(rep)
+                # Ignore sqrt of NaNs
+                with np.errstate(invalid='ignore'):
+                    dd = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
 
-            d = np.fmin(d, dd) if self._spherical_screen['only_off_disk'] else dd
+            else:
+                raise ValueError(f"Unknown screen type: {self._assumed_screen['type']}")
+
+            d = np.fmin(d, dd) if self._assumed_screen['only_off_disk'] else dd
 
         # This warning can be triggered in specific draw calls when plt.show() is called
         # we can not easily prevent this, so we check the specific function is being called
@@ -674,7 +678,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         return is_behind_observer | is_beyond_limb | (is_on_near_side & is_above_surface)
 
-    _spherical_screen = None
+    _assumed_screen = None
 
     @classmethod
     @sunpycontextmanager
@@ -730,17 +734,18 @@ class Helioprojective(SunPyBaseCoordinateFrame):
              (1914., 0., 1.00125872)]>
         """
         try:
-            old_spherical_screen = cls._spherical_screen  # nominally None
+            old_assumed_screen = cls._assumed_screen  # nominally None
 
             center_hgs = center.transform_to(HeliographicStonyhurst(obstime=center.obstime))
-            cls._spherical_screen = {
+            cls._assumed_screen = {
+                'type': 'spherical',
                 'center': center,
                 'radius': center_hgs.radius,
                 'only_off_disk': only_off_disk
             }
             yield
         finally:
-            cls._spherical_screen = old_spherical_screen
+            cls._assumed_screen = old_assumed_screen
 
 
 @add_common_docstring(**_frame_parameters())
