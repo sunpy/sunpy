@@ -125,7 +125,6 @@ mars_header = sunpy.map.make_fitswcs_header(
     out_shape,
     mars_ref_coord,
     scale=u.Quantity(map_aia.scale),
-    rotation_matrix=map_aia.rotation_matrix,
     instrument="AIA",
     wavelength=map_aia.wavelength
 )
