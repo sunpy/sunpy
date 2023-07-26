@@ -578,6 +578,14 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                 with np.errstate(invalid='ignore'):
                     dd = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
 
+            elif self._assumed_screen['type'] == 'planar':
+                direction = self._assumed_screen['vantage_point'].transform_to(self).cartesian
+                direction = CartesianRepresentation(1, 0, 0) * self.observer.radius - direction
+                direction /= direction.norm()
+
+                d_from_plane = self.observer.radius * direction.x
+                dd = d_from_plane / rep.dot(direction)
+
             else:
                 raise ValueError(f"Unknown screen type: {self._assumed_screen['type']}")
 
@@ -741,6 +749,38 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                 'type': 'spherical',
                 'center': center,
                 'radius': center_hgs.radius,
+                'only_off_disk': only_off_disk
+            }
+            yield
+        finally:
+            cls._assumed_screen = old_assumed_screen
+
+    @classmethod
+    @contextmanager
+    def assume_planar_screen(cls, vantage_point, only_off_disk=False):
+        """
+        Context manager to interpret 2D coordinates as being on the inside of a planar screen.
+
+        The plane goes through Sun center and is perpendicular to the vector between the
+        specified vantage point and Sun center.
+
+        This replaces the default assumption where 2D coordinates are mapped onto the surface of the
+        Sun.
+
+        Parameters
+        ----------
+        vantage_point : `~astropy.coordinates.SkyCoord`
+            The vantage point that defines the orientation of the plane.
+        only_off_disk : `bool`, optional
+            If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
+            still mapped onto the surface of the Sun.  Defaults to `False`.
+        """
+        try:
+            old_assumed_screen = cls._assumed_screen  # nominally None
+
+            cls._assumed_screen = {
+                'type': 'planar',
+                'vantage_point': vantage_point,
                 'only_off_disk': only_off_disk
             }
             yield
