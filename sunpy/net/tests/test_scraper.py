@@ -269,24 +269,30 @@ def test_yearly_overlap():
 
 
 def test_check_timerange():
-    s = Scraper('{{year:4d}}.fits')
+    s0 = Scraper('{{year:4d}}.fits')
     # Valid time range for 2014.fits is the whole of 2014
     # Test different cases to make sure check_timerange is working as expected
 
     # Interval exactly on lower boundary
-    assert s._check_timerange('2014.fits', TimeRange("2013-06-01", "2014-01-01"))
+    assert s0._check_timerange('2014.fits', TimeRange("2013-06-01", "2014-01-01"))
     # Overlaps lower boundary
-    assert s._check_timerange('2014.fits', TimeRange("2013-06-01", "2014-01-02"))
+    assert s0._check_timerange('2014.fits', TimeRange("2013-06-01", "2014-01-02"))
     # Overlaps upper and lower boundary
-    assert s._check_timerange('2014.fits', TimeRange("2013-06-01", "2015-01-02"))
+    assert s0._check_timerange('2014.fits', TimeRange("2013-06-01", "2015-01-02"))
     # Entirely within both boundaries
-    assert s._check_timerange('2014.fits', TimeRange("2014-06-01", "2014-07-02"))
+    assert s0._check_timerange('2014.fits', TimeRange("2014-06-01", "2014-07-02"))
     # Overlaps upper boundary
-    assert s._check_timerange('2014.fits', TimeRange("2014-06-01", "2015-01-02"))
+    assert s0._check_timerange('2014.fits', TimeRange("2014-06-01", "2015-01-02"))
     # Interval exactly on upper boundary
-    assert s._check_timerange('2014.fits', TimeRange("2015-01-01", "2015-01-02"))
+    assert s0._check_timerange('2014.fits', TimeRange("2015-01-01", "2015-01-02"))
 
     # Interval below both boundaries
-    assert not s._check_timerange('2014.fits', TimeRange("2002-01-01", "2013-01-02"))
+    assert not s0._check_timerange('2014.fits', TimeRange("2002-01-01", "2013-01-02"))
     # Interval above both boundaries
-    assert not s._check_timerange('2014.fits', TimeRange("2022-01-01", "2025-01-02"))
+    assert not s0._check_timerange('2014.fits', TimeRange("2022-01-01", "2025-01-02"))
+
+    s1 = Scraper('{{year:4d}}-{{month_name:l}}.fits')
+    assert s1._check_timerange('2014-March.fits', TimeRange("2014-03-01", "2004-04-01"))
+
+    s2 = Scraper('{{year:4d}}-{{month_name_abbr:l}}-{{day:2d}}.fits')
+    assert s2._check_timerange('2004-Mar-06.fits', TimeRange("2004-03-06", "2004-03-07"))
