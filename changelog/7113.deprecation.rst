@@ -1,0 +1,1 @@
+The `sunpy.coordinates.transforms` module has been deprecated as it only contains internal functions used by the coordinate frames.
