@@ -28,9 +28,9 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 * A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
-* A class attribute ``baseurl``; this is a regular expression which is used to match the URLs supported by the client.
-* A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
-  The extraction uses the `~sunpy.extern.parse.parse` format.
+* A class attribute ``baseurl``; this is a string which is used to match the URLs supported by the client and extract metadata from matched URLs.
+  The time and other metadata attributes for extraction are written using the `~sunpy.extern.parse.parse` format, using double curly-brackets so to differentiate them from ``kwargs`` parameters which are written in single curly-brackets.
+  See the ``TIMECONVERSIONS`` table for supported representations of time parameters.
 
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 A version without documentation strings is reproduced below:
@@ -38,9 +38,8 @@ A version without documentation strings is reproduced below:
 .. code-block:: python
 
     class EVEClient(GenericClient):
-        baseurl = (r'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
-                    r'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
-        pattern = '{}/SpWx/{:4d}/{year:4d}{month:2d}{day:2d}_EVE_L{Level:1d}{}'
+        pattern = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+               '{{year:4d}}/{{year:4d}}{{month:2d}}{{day:2d}}_EVE_L{{Level:1d}}CS_DIODES_1m.txt')
 
         @classmethod
         def register_values(cls):
@@ -53,10 +52,10 @@ A version without documentation strings is reproduced below:
             return adict
 
 This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
-`~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``baseurl`` pattern specifies where in the pattern the time information is located, using `strptime <https://strftime.org/>`__ notation.
-The ``pattern`` attribute is used to populate the results table from the URLs matched with the ``baseurl``.
+`~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``pattern`` specifies where in the URL the time information is located, using `parse <https://github.com/r1chardj0n3s/parse/>`__ notation.
+The ``pattern`` attribute is first filled in with the calculated time-based values, and then used to populate the results table from the URLs matched with the ``pattern``.
 It includes some of the time definitions, as well as names of attrs (in this case "Level").
-The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'.
+The supported time keys are: '{year:4d}', '{year:2d}', '{month:2d}'. '{month_name:l}', '{month_name_abbr:l}', '{day:2d}', '{day_of_year:3d}', '{hour:2d}', '{minute:2d}', '{second:2d}', '{microsecond:6d}', '{millisecond:3d}' and '{week_number:2d}'.
 
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
 This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.

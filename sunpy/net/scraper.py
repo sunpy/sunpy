@@ -48,8 +48,11 @@ class Scraper:
     Parameters
     ----------
     pattern : `str`
-        A string containing the url with the date encoded as datetime formats,
-        and any other parameter as ``kwargs`` as a string format.
+        A string containing the url with the date and other information to be
+        extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
+        as a string format, the former represented using double curly-brackets
+        to differentiate from the latter.
+        The accepted parse representations for datetime values are as given in ``TIME_CONVERSIONS``.
         This can also be a uri to a local file patterns.
 
 
