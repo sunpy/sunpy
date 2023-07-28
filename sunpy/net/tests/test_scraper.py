@@ -284,7 +284,7 @@ def test_check_timerange():
     # Overlaps upper boundary
     assert s0._check_timerange('2014.fits', TimeRange("2014-06-01", "2015-01-02"))
     # Interval exactly on upper boundary
-    assert s0._check_timerange('2014.fits', TimeRange("2015-01-01", "2015-01-02"))
+    assert not s0._check_timerange('2014.fits', TimeRange("2015-01-01", "2015-01-02"))
 
     # Interval below both boundaries
     assert not s0._check_timerange('2014.fits', TimeRange("2002-01-01", "2013-01-02"))
