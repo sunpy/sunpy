@@ -1,7 +1,6 @@
-from _transforms import *  # NOQA
-
 from sunpy.util.exceptions import warn_deprecated
 from . import _transformations
+from ._transformations import *  # NOQA
 
 __doc__ = _transformations.__doc__
 __all__ = _transformations.__all__
