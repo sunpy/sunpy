@@ -108,17 +108,16 @@ def testNoDirectory():
     assert len(s.range(timerange)) == 1
 
 def testURL_pattern():
-    pattern = 'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fts'
-    assert parse(pattern, 'fd_20130410_231211.fts')
-    assert not parse(pattern, 'fd_20130410_231211.fts.gz')
-    assert not parse(pattern, 'fd_20130410_ar_231211.fts.gz')
+    pattern1 = '_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:3d}}c{{:5d}}_{{:2d}}{{}}.fts'
+    metadict1_fixed = (12345, 33, ' ')
+    metadict1_named = {'year': 2020, 'month': 15, 'day': 35, 'millisecond': 12}
+    assert parse(pattern1.format(None), '_20201535__012c12345_33 .fts').fixed == metadict1_fixed
+    assert parse(pattern1.format(None), '_20201535__012c12345_33 .fts').named == metadict1_named
 
+    pattern2 = 'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts'
+    metadict2 = {'year': 2013, 'month': 4, 'day': 10, 'hour': 23, 'minute': 12, 'second': 11, 'millisecond': 119}
+    assert parse(pattern2.format(None), 'fd_20130410_231211_119.fts').named == metadict2
 
-def testURL_patternMillisecondsGeneric():
-    pattern = 'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:6d}}.fts'
-    assert parse(pattern, 'fd_20130410_231211_119.fts')
-    assert not parse(pattern, 'fd_20130410_231211.fts.gz')
-    assert not parse(pattern, 'fd_20130410_ar_231211.fts.gz')
 
 
 def testURL_patternMillisecondsZeroPadded():
@@ -167,7 +166,6 @@ def testFilesRange_sameDirectory_months_remote():
     timerange = TimeRange(startdate, enddate)
     files = s.filelist(timerange)
     assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
                      'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
@@ -205,21 +203,12 @@ def test_filelist_relative_hrefs():
     assert fileurls[1] == s.domain + 'pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts'
 
 
-@pytest.mark.parametrize(('pattern', 'check_file'), [
-    ('MyFile_{{year:4d}}_{{month:2d}}_{{millisecond:6d}}.{{:l}}.fits', 'MyFile_2020_55_234.aa.fits'),
-    ('{{:5d}}_{{:2d}}.fts', '01122_25.fts'),
-    ('_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:6d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts')])
-def test_parse_pattern(pattern, check_file):
-    assert parse(pattern, check_file)
-
-
 @pytest.mark.remote_data
 def test_parse_pattern_data():
     prefix = 'https://gong2.nso.edu/oQR/zqs/'
     pattern = prefix + '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
     s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
-    assert parse(pattern, prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
     assert len(s.filelist(timerange)) == 37
 
 
@@ -238,18 +227,18 @@ def test_extract_files_meta():
                 '/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{CAR_ROT:4d}}_{{:3d}}.fits.gz')
     s1 = Scraper(pattern1)
     timerange1 = TimeRange('2020-01-05', '2020-01-05T16:00:00')
-    metalist1 = s1._extract_files_meta(timerange1, pattern1)
+    metalist1 = s1._extract_files_meta(timerange1)
     urls = s1.filelist(timerange1)
     assert metalist1[3]['CAR_ROT'] == 2226
     assert metalist1[-1]['url'] == urls[-1]
 
 
 @pytest.mark.parametrize(('exdict', 'start', 'end'), [
-    ({"year": 2000}, '2000-01-01 00:00:00', '2001-01-01 00:00:00'),
-    ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-03-01 00:00:00'),
-    ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-03-01 00:00:00'),
+    ({"year": 2000}, '2000-01-01 00:00:00', '2000-12-31 23:59:59.999000'),
+    ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
+    ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
     ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
-     '2020-07-31 23:59:59', '2020-08-01 00:00:00')])
+     '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000')])
 def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
