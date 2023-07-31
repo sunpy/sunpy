@@ -153,7 +153,7 @@ def test_query(mock_get_observing_summary_dbase_file,
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 3
     assert qr1.time_range().start.datetime == parse_time('2003/11/01').datetime
-    assert qr1.time_range().end.datetime == parse_time('2003/11/04T00:00:00').datetime
+    assert qr1.time_range().end.datetime == parse_time('2003/11/03T23:59:59.999').datetime
 
 
 @no_vso
