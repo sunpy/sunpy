@@ -244,7 +244,7 @@ hoverxref_role_types = {
 # a list of builtin themes.
 
 from sunpy_sphinx_theme.conf import *  # NOQA
-from sunpy_sphinx_theme.conf import png_icon  # NOQA
+#from sunpy_sphinx_theme.conf import png_icon  # NOQA
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -287,7 +287,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
-    "default_thumb_file": png_icon,
+    #"default_thumb_file": png_icon,
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
