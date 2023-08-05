@@ -3,10 +3,9 @@ This module provides a web scraper.
 """
 import os
 import re
-import calendar
 from time import sleep
 from ftplib import FTP
-from datetime import datetime, timedelta
+from datetime import datetime
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
@@ -17,7 +16,6 @@ from dateutil.relativedelta import relativedelta
 from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.net.scraper_utils import check_timerange, smallerPattern
-from sunpy.time import TimeRange
 
 __all__ = ['Scraper']
 
@@ -35,11 +33,6 @@ TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{millisecond:3d}": "%e",
             "{week_number:2d}": "%W",
         }
-TIME_QUANTITIES = {'day': timedelta(days=1),
-                   'hour': timedelta(hours=1),
-                   'minute': timedelta(minutes=1),
-                   'second': timedelta(seconds=1),
-                   'millisecond': timedelta(milliseconds=1)}
 
 
 class Scraper:
@@ -351,48 +344,3 @@ class Scraper:
                 if append:
                     metalist.append(metadict)
         return metalist
-
-
-def get_timerange_from_exdict(exdict):
-    """
-    Function to get URL's timerange using extracted metadata.
-    It computes start and end times first using the given
-    dictionary and then returns a timerange.
-
-    Parameters
-    ----------
-    exdict : `dict`
-        Metadata extracted from the file's url.
-
-    Returns
-    -------
-    `~sunpy.time.TimeRange`
-        The time range of the file.
-    """
-    # This function deliberately does NOT use astropy.time because it is not
-    # needed, and the performance overheads in dealing with astropy.time.Time
-    # objects are large
-    datetypes = ['year', 'month', 'day']
-    timetypes = ['hour', 'minute', 'second', 'millisecond']
-    dtlist = [int(exdict.get(d, 1)) for d in datetypes]
-    dtlist.extend([int(exdict.get(t, 0)) for t in timetypes])
-    startTime = datetime(*dtlist)
-    tdelta = TIME_QUANTITIES['millisecond']
-    if "second" in exdict:
-        tdelta = TIME_QUANTITIES['second']
-    elif "minute" in exdict:
-        tdelta = TIME_QUANTITIES['minute']
-    elif "hour" in exdict:
-        tdelta = TIME_QUANTITIES['hour']
-    elif "day" in exdict:
-        tdelta = TIME_QUANTITIES['day']
-    elif "month" in exdict:
-        days_in_month = calendar.monthrange(int(exdict['year']), int(exdict['month']))[1]
-        tdelta = days_in_month*TIME_QUANTITIES['day']
-    elif "year" in exdict:
-        if calendar.isleap(int(exdict['year'])):
-            tdelta = 366*TIME_QUANTITIES['day']
-        else:
-            tdelta = 365*TIME_QUANTITIES['day']
-    endTime = startTime + tdelta - TIME_QUANTITIES['millisecond']
-    return TimeRange(startTime, endTime)
