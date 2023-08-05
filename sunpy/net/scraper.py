@@ -16,6 +16,7 @@ from dateutil.relativedelta import relativedelta
 
 from sunpy import log
 from sunpy.extern.parse import parse
+from sunpy.net.scraper_utils import check_timerange, smallerPattern
 from sunpy.time import TimeRange
 
 __all__ = ['Scraper']
@@ -121,7 +122,7 @@ class Scraper:
         # find directory structure - without file names
         if '/' in self.timepattern:
             directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
-        timestep = self._smallerPattern(directorypattern)
+        timestep = smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:
@@ -236,7 +237,7 @@ class Scraper:
                             else:
                                 fullpath = directory + href
                             if parse(self.pattern, fullpath):
-                                if self._check_timerange(fullpath, timerange):
+                                if check_timerange(self.pattern, fullpath, timerange):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
@@ -279,7 +280,7 @@ class Scraper:
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if parse(self.pattern, fullpath):
-                        if self._check_timerange(fullpath, timerange):
+                        if check_timerange(self.pattern, fullpath, timerange):
                             filesurls.append(fullpath)
 
         filesurls = ['ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
@@ -305,62 +306,12 @@ class Scraper:
             for file_i in os.listdir(directory):
                 fullpath = directory + file_i
                 if parse(self.pattern, fullpath):
-                    if self._check_timerange(fullpath, timerange):
+                    if check_timerange(self.pattern, fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
         self.pattern = pattern
         self.timepattern = timepattern
         return filepaths
-
-    def _check_timerange(self, url, timerange):
-        """
-        Checks whether the time range represented in *url* intersects
-        with the given time range.
-
-        Parameters
-        ----------
-        url : `str`
-            URL of the file.
-        timerange : `~sunpy.time.TimeRange`
-            Time interval for which files were searched.
-
-        Returns
-        -------
-        `bool`
-            `True` if URL's valid time range overlaps the given timerange, else `False`.
-        """
-        exdict = parse(self.pattern, url).named
-        if exdict['year'] < 100:
-            exdict['year'] = 2000 + exdict['year']
-        if 'month' not in exdict:
-                    if 'month_name' in exdict:
-                        exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
-                    elif 'month_name_abbr' in exdict:
-                        exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
-        tr = get_timerange_from_exdict(exdict)
-        return tr.intersects(timerange)
-
-    def _smallerPattern(self, directoryPattern):
-        """
-        Obtain the smaller time step for the given pattern.
-        """
-        try:
-            if "%S" in directoryPattern:
-                return relativedelta(seconds=1)
-            elif "%M" in directoryPattern:
-                return relativedelta(minutes=1)
-            elif any(hour in directoryPattern for hour in ["%H"]):
-                return relativedelta(hours=1)
-            elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return relativedelta(days=1)
-            elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return relativedelta(months=1)
-            elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return relativedelta(years=1)
-            else:
-                return None
-        except Exception:
-            raise
 
 
     def _extract_files_meta(self, timerange, matcher=None):
