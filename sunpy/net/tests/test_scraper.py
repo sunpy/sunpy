@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
@@ -19,14 +20,14 @@ TIMEPATTERN_EXAMPLES = [
 
 def testDirectoryDatePattern():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
-    testpath = '2014/03/05/20140305_013000_59.fit.gz'
+    testpath = Path('2014/03/05/') / '20140305_013000_59.fit.gz'
     d = parse_time((2014, 3, 5, 1, 30))
     assert s.matches(testpath, d)
 
 
 def testDirectoryDatePatternFalse():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
-    testpath = '2013/03/05/20140305_013000_59.fit.gz'
+    testpath = Path('2013/03/05/') / '20140305_013000_59.fit.gz'
     d = parse_time((2014, 3, 5, 1, 30))
     assert not s.matches(testpath, d)
 
