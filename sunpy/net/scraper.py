@@ -103,6 +103,9 @@ class Scraper:
                 end=self.timepattern[milliseconds.end():]
             ))
 
+    def matches(self, filepath, date):
+        return parse(date.strftime(self.timepattern), filepath)
+
     def range(self, timerange):
         """
         Gets the directories for a certain range of time.
