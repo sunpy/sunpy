@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta
 
 from sunpy import log
 from sunpy.extern.parse import parse
-from sunpy.net.scraper_utils import check_timerange, smallerPattern
+from sunpy.net.scraper_utils import check_timerange, smaller_pattern
 
 __all__ = ['Scraper']
 
@@ -115,7 +115,7 @@ class Scraper:
         # find directory structure - without file names
         if '/' in self.timepattern:
             directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
-        timestep = smallerPattern(directorypattern)
+        timestep = smaller_pattern(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:

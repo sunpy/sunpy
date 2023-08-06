@@ -1,8 +1,7 @@
-
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from sunpy.net.scraper_utils import check_timerange, get_timerange_from_exdict, smallerPattern
+from sunpy.net.scraper_utils import check_timerange, get_timerange_from_exdict, smaller_pattern
 from sunpy.time import TimeRange
 
 TIMEPATTERN_EXAMPLES = [
@@ -13,8 +12,8 @@ TIMEPATTERN_EXAMPLES = [
 ]
 
 @pytest.mark.parametrize(('pattern', 'mintime'), TIMEPATTERN_EXAMPLES)
-def test_smallerPattern(pattern, mintime):
-    assert mintime == smallerPattern(pattern)
+def test_smaller_pattern(pattern, mintime):
+    assert mintime == smaller_pattern(pattern)
 
 
 def test_check_timerange():

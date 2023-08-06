@@ -40,7 +40,7 @@ def check_timerange(pattern, url, timerange):
     tr = get_timerange_from_exdict(exdict)
     return tr.intersects(timerange)
 
-def smallerPattern(directoryPattern):
+def smaller_pattern(directoryPattern):
     """
     Obtain the smaller time step for the given pattern.
     """
