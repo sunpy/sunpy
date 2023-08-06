@@ -62,6 +62,41 @@ def smaller_pattern(directoryPattern):
     except Exception:
         raise
 
+def date_floor(date, timestep):
+    """
+    Return the "floor" of the given date and time step.
+
+    Parameters
+    ----------
+    datetime : `datetime.datetime` or `astropy.time.Time`
+        The date to floor
+    timestep : `dateutil.relativedelta.relativedelta`
+        The smallest time step to floor
+    Returns
+    -------
+    `datetime.datetime`
+        The time floored at the given time step
+
+    """
+    date_parts = [int(p) for p in date.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
+    date_parts[-1] = date_parts[-1] % 60
+    date = datetime(*date_parts)
+    orig_time_tup = date.timetuple()
+    time_tup = [orig_time_tup.tm_year, orig_time_tup.tm_mon, orig_time_tup.tm_mday,
+                orig_time_tup.tm_hour, orig_time_tup.tm_min, orig_time_tup.tm_sec]
+    if timestep == relativedelta(minutes=1):
+        time_tup[-1] = 0
+    elif timestep == relativedelta(hours=1):
+        time_tup[-2:] = [0, 0]
+    elif timestep == relativedelta(days=1):
+        time_tup[-3:] = [0, 0, 0]
+    elif timestep == relativedelta(months=1):
+        time_tup[-4:] = [1, 0, 0, 0]
+    elif timestep == relativedelta(years=1):
+        time_tup[-5:] = [1, 1, 0, 0, 0]
+
+    return datetime(*time_tup)
+
 
 def get_timerange_from_exdict(exdict):
     """
