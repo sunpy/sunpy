@@ -104,7 +104,23 @@ class Scraper:
             ))
 
     def matches(self, filepath, date):
-        return parse(date.strftime(self.timepattern), filepath)
+        """
+        Checks if the given filepath is how the file path is expected
+        to look on given date based on the pattern.
+
+        Parameters
+        ----------
+        filepath : `str`
+            File path to check.
+        date : `datetime.datetime` or `astropy.time.Time`
+            The date for which to check.
+
+        Returns
+        -------
+        `bool`
+            `True` if the given filepath matches with the calculated one for given date, else `False`.
+        """
+        return parse(date.strftime(self.timepattern), filepath) is not None
 
     def range(self, timerange):
         """
@@ -143,7 +159,7 @@ class Scraper:
 
         Parameters
         ----------
-        datetime : `datetime.datetime` or `astropy.time.Time`
+        date : `datetime.datetime` or `astropy.time.Time`
             The date to floor
         timestep : `dateutil.relativedelta.relativedelta`
             The smallest time step to floor
