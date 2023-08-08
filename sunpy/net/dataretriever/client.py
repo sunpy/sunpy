@@ -8,7 +8,8 @@ from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.base_client import BaseClient, QueryResponseRow, QueryResponseTable
-from sunpy.net.scraper import Scraper, get_timerange_from_exdict
+from sunpy.net.scraper import Scraper
+from sunpy.net.scraper_utils import get_timerange_from_exdict
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
