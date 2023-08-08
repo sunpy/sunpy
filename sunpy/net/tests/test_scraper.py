@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
@@ -11,21 +12,21 @@ from sunpy.time import TimeRange, parse_time
 
 def testDirectoryDatePattern():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
-    testpath = '2014/03/05/20140305_013000_59.fit.gz'
+    testpath = str(Path('2014/03/05/') / '20140305_013000_59.fit.gz')
     d = parse_time((2014, 3, 5, 1, 30))
     assert s.matches(testpath, d)
 
 
 def testDirectoryDatePatternFalse():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
-    testpath = '2013/03/05/20140305_013000_59.fit.gz'
+    testpath = str(Path('2013/03/05/') / '20140305_013000_59.fit.gz')
     d = parse_time((2014, 3, 5, 1, 30))
     assert not s.matches(testpath, d)
 
 
 def testDirectoryObsPattern():
     s = Scraper('{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
-    testpath = '140305/SDO_20140305.fits'
+    testpath = str(Path('140305') / 'SDO_20140305.fits')
     d = parse_time((2014, 3, 5))
     assert s.matches(testpath, d)
 
@@ -93,18 +94,14 @@ def testNoDirectory():
     timerange = TimeRange(startdate, enddate)
     assert len(s.range(timerange)) == 1
 
-def testURL_pattern():
-    pattern1 = '_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:3d}}c{{:5d}}_{{:2d}}{{}}.fts'
-    metadict1_fixed = (12345, 33, ' ')
-    metadict1_named = {'year': 2020, 'month': 15, 'day': 35, 'millisecond': 12}
-    assert parse(pattern1.format(None), '_20201535__012c12345_33 .fts').fixed == metadict1_fixed
-    assert parse(pattern1.format(None), '_20201535__012c12345_33 .fts').named == metadict1_named
-
-    pattern2 = 'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts'
-    metadict2 = {'year': 2013, 'month': 4, 'day': 10, 'hour': 23, 'minute': 12, 'second': 11, 'millisecond': 119}
-    assert parse(pattern2.format(None), 'fd_20130410_231211_119.fts').named == metadict2
-
-
+@pytest.mark.parametrize(('pattern', 'filename', 'metadict'), [
+    ('_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:3d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts',
+     {'year': 2020, 'month': 15, 'day': 35, 'millisecond': 12}),
+    ('fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts', 'fd_20130410_231211_119.fts',
+     {'year': 2013, 'month': 4, 'day': 10, 'hour': 23, 'minute': 12, 'second': 11, 'millisecond': 119})
+])
+def testURL_pattern(pattern, filename, metadict):
+    assert parse(pattern.format(None), filename).named == metadict
 
 def testURL_patternMillisecondsZeroPadded():
     # Asserts solution to ticket #1954.
