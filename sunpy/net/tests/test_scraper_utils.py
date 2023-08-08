@@ -17,7 +17,8 @@ def test_smaller_pattern(pattern, mintime):
 
 
 def test_check_timerange():
-    pattern = '{{year:4d}}.fits'
+    pattern = '{{year:4d}}.fits'.format()
+    # To match with client format, with double curly braces.
     # Valid time range for 2014.fits is the whole of 2014
     # Test different cases to make sure check_timerange is working as expected
 
