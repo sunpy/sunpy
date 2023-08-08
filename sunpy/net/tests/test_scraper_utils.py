@@ -18,7 +18,6 @@ def test_smaller_pattern(pattern, mintime):
 
 def test_check_timerange():
     pattern = '{{year:4d}}.fits'.format()
-    # To match with client format, with double curly braces.
     # Valid time range for 2014.fits is the whole of 2014
     # Test different cases to make sure check_timerange is working as expected
 
@@ -40,10 +39,10 @@ def test_check_timerange():
     # Interval above both boundaries
     assert not check_timerange(pattern, '2014.fits', TimeRange("2022-01-01", "2025-01-02"))
 
-    pattern_month_name = '{{year:4d}}-{{month_name:l}}.fits'
+    pattern_month_name = '{{year:4d}}-{{month_name:l}}.fits'.format()
     assert check_timerange(pattern_month_name, '2014-March.fits', TimeRange("2014-03-01", "2014-04-01"))
 
-    pattern_month_name_abbr = '{{year:4d}}-{{month_name_abbr:l}}-{{day:2d}}.fits'
+    pattern_month_name_abbr = '{{year:4d}}-{{month_name_abbr:l}}-{{day:2d}}.fits'.format()
     assert check_timerange(pattern_month_name_abbr, '2004-Mar-06.fits', TimeRange("2004-03-06", "2004-03-07"))
 
 @pytest.mark.parametrize(('exdict', 'start', 'end'), [
