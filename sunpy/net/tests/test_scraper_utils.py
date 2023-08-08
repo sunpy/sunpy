@@ -41,7 +41,7 @@ def test_check_timerange():
     assert not check_timerange(pattern, '2014.fits', TimeRange("2022-01-01", "2025-01-02"))
 
     pattern_month_name = '{{year:4d}}-{{month_name:l}}.fits'
-    assert check_timerange(pattern_month_name, '2014-March.fits', TimeRange("2014-03-01", "2004-04-01"))
+    assert check_timerange(pattern_month_name, '2014-March.fits', TimeRange("2014-03-01", "2014-04-01"))
 
     pattern_month_name_abbr = '{{year:4d}}-{{month_name_abbr:l}}-{{day:2d}}.fits'
     assert check_timerange(pattern_month_name_abbr, '2004-Mar-06.fits', TimeRange("2004-03-06", "2004-03-07"))
