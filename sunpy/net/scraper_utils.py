@@ -73,7 +73,6 @@ def date_floor(date, timestep):
     -------
     `datetime.datetime`
         The time floored at the given time step
-
     """
     date_parts = [int(p) for p in date.strftime('%Y,%m,%d,%H,%M,%S').split(',')]
     date_parts[-1] = date_parts[-1] % 60
