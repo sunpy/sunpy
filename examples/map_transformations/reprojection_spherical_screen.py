@@ -54,7 +54,6 @@ out_header = sunpy.map.make_fitswcs_header(
     out_shape,
     out_ref_coord,
     scale=u.Quantity(aia_map.scale),
-    rotation_matrix=aia_map.rotation_matrix,
     instrument=aia_map.instrument,
     wavelength=aia_map.wavelength
 )

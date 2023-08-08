@@ -4,6 +4,7 @@
 import csv
 import socket
 from datetime import datetime
+from http.client import RemoteDisconnected
 from urllib.error import URLError
 from urllib.request import urlopen, urlretrieve
 
@@ -91,7 +92,7 @@ def get_base_url():
         try:
             urlopen(server, timeout=1)
             return server
-        except (URLError, socket.timeout):
+        except (RemoteDisconnected, URLError, socket.timeout):
             pass
     raise OSError(f'Unable to find an online HESSI server from {data_servers}')
 

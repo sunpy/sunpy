@@ -50,8 +50,7 @@ ax.axvline(aia_smap.data.mean(),
 one_sigma = np.array([aia_smap.data.mean() - aia_smap.data.std(),
                       aia_smap.data.mean() + aia_smap.data.std()])
 ax.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',
-           label='mean +/- std = [{:.2f}, {:.2f}]'.format(
-           one_sigma[0], one_sigma[1]))
+           label=f'mean +/- std = [{one_sigma[0]:.2f}, {one_sigma[1]:.2f}]')
 ax.axvline(one_sigma[0], color='green')
 ax.axvline(one_sigma[1], color='red')
 ax.set_yscale('log')

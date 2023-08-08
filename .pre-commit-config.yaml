@@ -1,7 +1,7 @@
 repos:
   # This should be before any formatting hooks like isort
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.272"
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: "v0.0.282"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -44,7 +44,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: codespell
         args: ['--config setup.cfg']

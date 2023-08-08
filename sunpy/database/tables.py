@@ -129,8 +129,7 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):
-        return '{}(id={}, key={!r}, value={!r})'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return f'{self.__class__.__name__}(id={self.id}, key={self.key!r}, value={self.value!r})'
 
 
 class FitsKeyComment(Base):
@@ -162,8 +161,7 @@ class FitsKeyComment(Base):
         return not (self == other)
 
     def __repr__(self):
-        return '{}(id={}, key={!r}, value={!r})>'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return f'{self.__class__.__name__}(id={self.id}, key={self.key!r}, value={self.value!r})>'
 
 
 class Tag(Base):
