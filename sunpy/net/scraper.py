@@ -18,8 +18,7 @@ from sunpy.net.scraper_utils import check_timerange, date_floor, smaller_pattern
 
 __all__ = ['Scraper']
 
-# parse expressions to convert into datetime format
-# added `%e` as for milliseconds `%f/1000`
+# `parse` expressions to convert into datetime format
 TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month:2d}": "%m",
             "{month_name:l}": "%B",
@@ -29,7 +28,7 @@ TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{minute:2d}": "%M",
             "{second:2d}": "%S",
             "{microsecond:6d}": "%f",
-            "{millisecond:3d}": "%e",
+            "{millisecond:3d}": "%e", # added `%e` as for milliseconds `%f/1000`
             "{week_number:2d}": "%W",
         }
 

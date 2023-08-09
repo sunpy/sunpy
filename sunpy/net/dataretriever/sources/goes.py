@@ -128,9 +128,6 @@ class XRSClient(GenericClient):
         Function to help get list of OrderedDicts.
         """
         metalist = []
-        # Prevent parse-format pattern variables from being interpreted as .format() placeholders.
-        if "{{" not in pattern:
-            pattern = pattern.replace('{', '{{').replace('}', '}}')
         scraper = Scraper(pattern, **kwargs)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         filemeta = scraper._extract_files_meta(tr, matcher=matchdict)
