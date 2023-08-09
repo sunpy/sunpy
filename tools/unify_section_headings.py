@@ -29,10 +29,8 @@ def replace_header_chars(filename):
                     if new_level > level + 1:
                         # doc tries to jump up too many levels
                         raise ValueError(
-                            "ERROR misorder new_level={} level={} "
-                            "char={} header_chars={} on line {}".format(
-                                new_level, level, char, header_chars, i
-                            )
+                            f"ERROR misorder new_level={new_level} level={level} "
+                            f"char={char} header_chars={header_chars} on line {i}"
                         )
                     else:
                         level = new_level

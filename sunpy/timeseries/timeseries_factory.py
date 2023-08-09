@@ -472,9 +472,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({})."
+            raise MultipleMatchError(f"Too many candidate types identified ({n_matches})."
                                      "Specify enough keywords to guarantee unique type "
-                                     "identification.".format(n_matches))
+                                     "identification.")
 
         # Only one suitable source class is found
         return candidate_widget_types[0]

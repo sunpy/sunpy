@@ -56,8 +56,8 @@ class EntryAlreadyAddedError(Exception):
 
     def __str__(self):
         return (
-            'the entry {!r} was already added '
-            'to the database'.format(self.database_entry))
+            f'the entry {self.database_entry!r} was already added '
+            'to the database')
 
 
 class EntryAlreadyStarredError(Exception):
@@ -72,8 +72,8 @@ class EntryAlreadyStarredError(Exception):
 
     def __str__(self):
         return (
-            'the entry {!r} is already marked '
-            'as starred'.format(self.database_entry))
+            f'the entry {self.database_entry!r} is already marked '
+            'as starred')
 
 
 class EntryAlreadyUnstarredError(Exception):
@@ -87,8 +87,8 @@ class EntryAlreadyUnstarredError(Exception):
 
     def __str__(self):
         return (
-            'the entry {!r} is already not marked '
-            'as starred'.format(self.database_entry))
+            f'the entry {self.database_entry!r} is already not marked '
+            'as starred')
 
 
 class NoSuchTagError(Exception):

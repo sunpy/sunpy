@@ -108,8 +108,8 @@ class GenericClient(BaseClient):
                 matchdict['Wavelength'] = elem
             else:
                 raise ValueError(
-                    "GenericClient can not add {} to the rowdict dictionary to"
-                    "pass to the Client.".format(elem.__class__.__name__))
+                    f"GenericClient can not add {elem.__class__.__name__} to the rowdict dictionary to"
+                    "pass to the Client.")
         return matchdict
 
     @classmethod
