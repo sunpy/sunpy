@@ -22,8 +22,8 @@ def client():
         client.sources = client.get_data_sources()
         return client
     except urllib.error.HTTPError as e:
-        pytest.skip("There was a HTTP error {} {} for "
-                    "HelioViewer.".format(e.code, e.args))
+        pytest.skip(f"There was a HTTP error {e.code} {e.args} for "
+                    "HelioViewer.")
 
 
 @pytest.mark.remote_data

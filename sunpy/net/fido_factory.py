@@ -168,8 +168,7 @@ class UnifiedResponse(Sequence):
         else:
             ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
-            ret += "{} Results from the {}:</br>".format(len(block),
-                                                         block.client.__class__.__name__)
+            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:</br>"
             ret += block._repr_html_()
             ret += '</br>'
 

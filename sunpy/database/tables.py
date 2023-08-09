@@ -79,8 +79,8 @@ class WaveunitNotConvertibleError(Exception):
 
     def __str__(self):
         return (
-            'the waveunit {!r} cannot be converted to an '
-            'astropy.units.Unit instance'.format(self.waveunit))
+            f'the waveunit {self.waveunit!r} cannot be converted to an '
+            'astropy.units.Unit instance')
 
 
 class JSONDump(Base):
@@ -129,8 +129,7 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):
-        return '{}(id={}, key={!r}, value={!r})'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return f'{self.__class__.__name__}(id={self.id}, key={self.key!r}, value={self.value!r})'
 
 
 class FitsKeyComment(Base):
@@ -162,8 +161,7 @@ class FitsKeyComment(Base):
         return not (self == other)
 
     def __repr__(self):
-        return '{}(id={}, key={!r}, value={!r})>'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return f'{self.__class__.__name__}(id={self.id}, key={self.key!r}, value={self.value!r})>'
 
 
 class Tag(Base):
