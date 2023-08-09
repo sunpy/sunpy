@@ -79,8 +79,8 @@ class WaveunitNotConvertibleError(Exception):
 
     def __str__(self):
         return (
-            'the waveunit {!r} cannot be converted to an '
-            'astropy.units.Unit instance'.format(self.waveunit))
+            f'the waveunit {self.waveunit!r} cannot be converted to an '
+            'astropy.units.Unit instance')
 
 
 class JSONDump(Base):

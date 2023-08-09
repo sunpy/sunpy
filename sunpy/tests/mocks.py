@@ -51,10 +51,8 @@ class MockObject(MutableMapping):
 
         for candidate in kwargs.keys():
             if candidate in self.prohibited_attrs:
-                raise ValueError("kwarg '{kwarg}' is already an attribute "
-                                 "of {datastore} or {obj}".format(kwarg=candidate,
-                                                                  datastore=type(self._datastore),
-                                                                  obj=type(self)))
+                raise ValueError(f"kwarg '{candidate}' is already an attribute "
+                                 f"of {type(self._datastore)} or {type(self)}")
         self.update(dict(*args, **kwargs))
 
     def __getattr__(self, name):
@@ -68,15 +66,13 @@ class MockObject(MutableMapping):
 
     def __setitem__(self, name, value):
         if name in self.prohibited_attrs:
-            raise ValueError("Name '{name}' is already an attribute "
-                             "of {datastore} or {obj}".format(name=name,
-                                                              datastore=type(self._datastore),
-                                                              obj=type(self)))
+            raise ValueError(f"Name '{name}' is already an attribute "
+                             f"of {type(self._datastore)} or {type(self)}")
         self._datastore[name] = value
 
     def __delitem__(self, name):
-        raise NotImplementedError("'del' operation for {} "
-                                  "not supported".format(self.__class__.__name__))
+        raise NotImplementedError(f"'del' operation for {self.__class__.__name__} "
+                                  "not supported")
 
     def __iter__(self):
         return iter(self._datastore)
@@ -217,7 +213,5 @@ class MockOpenTextFile(MockObject):
         self.data = ''
 
     def __repr__(self):
-        return ("<{module}.{name} file '{file}' mode '{mode}' "
-                "at {address}>".format(module=self.__module__, name=self.__class__.__name__,
-                                       file=self.file, mode=self.mode,
-                                       address=hex(id(self))))
+        return (f"<{self.__module__}.{self.__class__.__name__} file '{self.file}' mode '{self.mode}' "
+                f"at {hex(id(self))}>")
