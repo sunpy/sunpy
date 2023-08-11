@@ -60,9 +60,12 @@ def test_get_timerange_with_extractor(exdict, start, end):
     assert file_timerange == tr
 
 @pytest.mark.parametrize(('testdate', 'pattern', 'floor_val'), [
+    ((2004, 3, 6), '%y', datetime(2004, 1, 1, 0, 0)),
     ((2004, 3, 6), '%b%y', datetime(2004, 3, 1, 0, 0)),
-    ((2023, 3, 12), '%y%d', datetime(2023, 3, 12, 0, 0)),
-    ((2019, 1, 1), '%d%m', datetime(2019, 1, 1, 0, 0)),
+    ((2023, 3, 12), '%y%M', datetime(2023, 3, 12, 0, 0)),
+    ((2023, 2, 3), '%m%d', datetime(2023, 2, 3, 0, 0)),
+    ((2023, 2, 23), '%d%H', datetime(2023, 2, 23, 0, 0)),
+    ((2023, 12, 12), '%H%S', datetime(2023, 12, 12, 0, 0)),
 ])
 def test_date_floor(testdate, pattern, floor_val):
     date = parse_time(testdate)
