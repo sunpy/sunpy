@@ -1,8 +1,10 @@
+from datetime import datetime
+
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from sunpy.net.scraper_utils import check_timerange, get_timerange_from_exdict, smaller_pattern
-from sunpy.time import TimeRange
+from sunpy.net.scraper_utils import check_timerange, date_floor, get_timerange_from_exdict, smaller_pattern
+from sunpy.time import TimeRange, parse_time
 
 TIMEPATTERN_EXAMPLES = [
     ('%b%y', relativedelta(months=1)),
@@ -50,8 +52,19 @@ def test_check_timerange():
     ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
     ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
     ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
-     '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000')])
+     '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000'),
+     ])
 def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
     assert file_timerange == tr
+
+@pytest.mark.parametrize(('testdate', 'pattern', 'floor_val'), [
+    ((2004, 3, 6), '%b%y', datetime(2004, 3, 1, 0, 0)),
+    ((2023, 3, 12), '%y%d', datetime(2023, 3, 12, 0, 0)),
+    ((2019, 1, 1), '%d%m', datetime(2019, 1, 1, 0, 0)),
+])
+def test_date_floor(testdate, pattern, floor_val):
+    date = parse_time(testdate)
+    timestep = smaller_pattern(pattern)
+    assert date_floor(date, timestep) == floor_val
