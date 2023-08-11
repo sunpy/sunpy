@@ -4,6 +4,7 @@ Sun-specific coordinate calculations
 import numpy as np
 
 import astropy.units as u
+from astropy.constants import R_earth
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     ITRS,
@@ -30,7 +31,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from ._transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
-from .ephemeris import get_earth
+from .ephemeris import get_body_heliographic_stonyhurst, get_earth
 from .frames import HeliographicStonyhurst
 
 __author__ = "Albert Y. Shih"
@@ -43,7 +44,7 @@ __all__ = [
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
     "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
     "print_params",
-    "B0", "L0", "P", "earth_distance", "orientation"
+    "B0", "L0", "P", "earth_distance", "orientation", "eclipse_amount"
 ]
 
 
@@ -716,3 +717,89 @@ def _sun_north_angle_to_z(frame):
         angle = angle[0]
 
     return Angle(angle)
+
+
+def eclipse_amount(observer, *, minimum=False):
+    """
+    Return the percentage of the Sun that is eclipsed by the Moon.
+
+    The occultation of the solar disk by the Moon is calculated using the
+    simplifying assumption that the Moon has a constant radius.  Since the Moon has
+    an irregular profile of peaks and valleys, the output can be slightly inaccurate
+    for the start/end of partial solar eclipses (a.k.a. penumbral contacts) and the
+    start/end of total solar eclipses (a.k.a. umbral contacts).
+
+    Parameters
+    ----
+    observer : `~astropy.coordinates.SkyCoord`
+        The observer location and observation time
+    minimum : `bool`
+        Option to use a mean minimum radius for the Moon (R_moon / R_earth =
+        0.272281) rather than the IAU mean radius (R_moon / R_earth = 0.2725076).
+        Defaults to `False`.
+
+    Notes
+    -----
+    The apparent location of the Moon accounts for the effect of light travel time.
+
+    The location of the Moon is appreciably inaccurate with Astropy's built-in
+    ephemeris, so it is highly recommended to use a JPL ephemeris instead.  See
+    :ref:`astropy-coordinates-solarsystem`.
+
+    Using the mean minimum radius for the Moon (``minimum=True``) will result in
+    slightly more accurate estimates of the start/end of total solar eclipses, at
+    the expense of slightly more inaccurate estimates for the amount of partial
+    solar eclipses.  See
+    `this page <https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html>`__
+    for relevant discussion.
+    """
+    # TODO: Find somewhere more appropriate to define these constants
+    # The radius of the Moon to use (in units of Earth radii)
+    k = 0.272281 if minimum else 0.2725076
+    R_moon = k * R_earth
+
+    # Get the light-travel-time adjusted location of the Moon
+    moon = get_body_heliographic_stonyhurst('moon', observer.obstime, observer=observer, quiet=True)
+
+    # Get Cartesian vectors relative to the observer
+    observer = observer.transform_to(moon)
+    v_sun = -observer.cartesian
+    v_moon = moon.cartesian - observer.cartesian
+    d_moon = v_moon.norm()
+
+    # Sun's angular radius (s), Moon's angular radius (m), and angular separation (d)
+    s = np.arcsin(constants.radius / observer.radius).value
+    m = np.arcsin(R_moon / d_moon).value
+    d = np.arccos(v_sun.dot(v_moon) / (observer.radius * d_moon)).value
+
+    # Elevate scalars to arrays
+    s, m, d = np.atleast_1d(s), np.atleast_1d(m), np.atleast_1d(d)
+
+    # Pre-calculate cosines, sines, and areas of the Sun and Moon
+    cs, ss = np.cos(s), np.sin(s)
+    cm, sm = np.cos(m), np.sin(m)
+    cd, sd = np.cos(d), np.sin(d)
+    area_s = 2 * np.pi * (1 - cs)
+    area_m = 2 * np.pi * (1 - cm)
+
+    # Calculate the area of the intersection of two spherical caps
+    # Tovchigrechko & Vakser (2001), eq. 4, https://doi.org/10.1110/ps.8701
+    # See also https://math.stackexchange.com/a/4028073
+    with np.errstate(invalid='ignore'):
+        area_int = 2 * (np.pi
+                        - np.arccos((cd - cs * cm) / (ss * sm))
+                        - np.arccos((cm - cd * cs) / (sd * ss)) * cs
+                        - np.arccos((cs - cd * cm) / (sd * sm)) * cm)
+
+    # The above formula does not handle the edge cases
+    area_int[d >= s + m] = 0  # zero eclipse
+    area_int[m >= s + d] = area_s[m >= s + d]  # total eclipse
+    area_int[s >= m + d] = area_m[s >= m + d]  # annular eclipse
+
+    # Divide by the area of the Sun to get the eclipse fraction
+    fraction = area_int / area_s
+
+    # Clip the result to remove <0% and >100% due to numerical precision
+    fraction = np.clip(fraction, 0, 1)
+
+    return u.Quantity(fraction.reshape(observer.data.shape)).to(u.percent)
