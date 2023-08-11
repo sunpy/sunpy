@@ -53,7 +53,7 @@ def test_check_timerange():
     ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
     ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
      '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000'),
-     ])
+])
 def test_get_timerange_with_extractor(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
