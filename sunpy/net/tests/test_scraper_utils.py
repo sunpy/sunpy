@@ -51,10 +51,15 @@ def test_check_timerange():
     ({"year": 2000}, '2000-01-01 00:00:00', '2000-12-31 23:59:59.999000'),
     ({"year": 2016, "month": 2}, '2016-02-01 00:00:00', '2016-02-29 23:59:59.999000'),
     ({'year': 2019, 'month': 2, 'day': 28}, '2019-02-28 00:00:00', '2019-02-28 23:59:59.999000'),
+    ({'year': 2019, 'month': 2, 'day': 28, 'hour': 23}, '2019-02-28 23:00:00', '2019-02-28 23:59:59.999000'),
+    ({'year': 2019, 'month': 2, 'day': 28, 'hour': 23, 'minute': 59},
+     '2019-02-28 23:59:00', '2019-02-28 23:59:59.999000'),
     ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
      '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000'),
+     ({'year': 2020, 'month': 7, 'day': 31, 'hour': 23, 'minute': 59, 'second': 59},
+     '2020-07-31 23:59:59', '2020-07-31 23:59:59.999000'),
 ])
-def test_get_timerange_with_extractor(exdict, start, end):
+def test_get_timerange_from_exdict(exdict, start, end):
     tr = TimeRange(start, end)
     file_timerange = get_timerange_from_exdict(exdict)
     assert file_timerange == tr
