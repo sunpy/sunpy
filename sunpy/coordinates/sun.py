@@ -752,6 +752,10 @@ def eclipse_amount(observer, *, minimum=False):
     solar eclipses.  See
     `this page <https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html>`__
     for relevant discussion.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.coordinates.sun.eclipse_amount
     """
     # TODO: Find somewhere more appropriate to define these constants
     # The radius of the Moon to use (in units of Earth radii)
