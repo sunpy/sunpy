@@ -41,6 +41,9 @@ def test_check_timerange():
     # Interval above both boundaries
     assert not check_timerange(pattern, '2014.fits', TimeRange("2022-01-01", "2025-01-02"))
 
+    # Only 2-digit Year
+    assert check_timerange(pattern, '14.fits', TimeRange("2013-06-01", "2014-01-01"))
+
     pattern_month_name = '{{year:4d}}-{{month_name:l}}.fits'.format()
     assert check_timerange(pattern_month_name, '2014-March.fits', TimeRange("2014-03-01", "2014-04-01"))
 
