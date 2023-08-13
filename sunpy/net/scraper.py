@@ -263,17 +263,14 @@ class Scraper:
         return filesurls
 
     def _localfilelist(self, timerange):
-        pattern = self.pattern
-        pattern_temp = pattern.replace('file://', '')
-        timepattern = self.timepattern
-        timepattern_temp = timepattern.replace('file://', '')
+        pattern, timepattern = self.pattern, self.timepattern
+        pattern_temp, timepattern_temp = pattern.replace('file://', ''), timepattern.replace('file://', '')
         if os.name == 'nt':
             pattern_temp = pattern_temp.replace('\\', '/')
             prefix = 'file:///'
         else:
             prefix = 'file://'
-        self.pattern = pattern_temp
-        self.timepattern = timepattern_temp
+        self.pattern, self.timepattern = pattern_temp, timepattern_temp
         directories = self.range(timerange)
         filepaths = list()
         for directory in directories:
@@ -283,8 +280,7 @@ class Scraper:
                     if check_timerange(self.pattern, fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
-        self.pattern = pattern
-        self.timepattern = timepattern
+        self.pattern, self.timepattern = pattern, timepattern
         return filepaths
 
 
