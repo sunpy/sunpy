@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 
 from sunpy import log
 from sunpy.extern.parse import parse
-from sunpy.net.scraper_utils import check_timerange, date_floor, smaller_pattern
+from sunpy.net.scraper_utils import check_timerange, date_floor, extract_timestep
 
 __all__ = ['Scraper']
 
@@ -132,7 +132,7 @@ class Scraper:
         # find directory structure - without file names
         if '/' in self.timepattern:
             directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
-        timestep = smaller_pattern(directorypattern)
+        timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:

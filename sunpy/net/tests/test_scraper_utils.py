@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from sunpy.net.scraper_utils import check_timerange, date_floor, get_timerange_from_exdict, smaller_pattern
+from sunpy.net.scraper_utils import check_timerange, date_floor, extract_timestep, get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time
 
 TIMEPATTERN_EXAMPLES = [
@@ -14,8 +14,8 @@ TIMEPATTERN_EXAMPLES = [
 ]
 
 @pytest.mark.parametrize(('pattern', 'mintime'), TIMEPATTERN_EXAMPLES)
-def test_smaller_pattern(pattern, mintime):
-    assert mintime == smaller_pattern(pattern)
+def test_extract_timestep(pattern, mintime):
+    assert mintime == extract_timestep(pattern)
 
 
 def test_check_timerange():
@@ -77,5 +77,5 @@ def test_get_timerange_from_exdict(exdict, start, end):
 ])
 def test_date_floor(testdate, pattern, floor_val):
     date = parse_time(testdate)
-    timestep = smaller_pattern(pattern)
+    timestep = extract_timestep(pattern)
     assert date_floor(date, timestep) == floor_val
