@@ -43,6 +43,16 @@ def check_timerange(pattern, url, timerange):
 def smaller_pattern(directoryPattern):
     """
     Obtain the smaller time step for the given pattern.
+
+    Parameters
+    ----------
+    directoryPattern : `str`
+        The pattern containing the datetime-formats
+
+    Returns
+    -------
+    `dateutil.relativedelta.relativedelta`
+        The smallest timestep unit from the provided pattern.
     """
     if "%S" in directoryPattern:
         return relativedelta(seconds=1)
