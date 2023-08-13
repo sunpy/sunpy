@@ -270,6 +270,7 @@ class Scraper:
             prefix = 'file:///'
         else:
             prefix = 'file://'
+        # Change pattern variables class-wide
         self.pattern, self.timepattern = pattern_temp, timepattern_temp
         directories = self.range(timerange)
         filepaths = list()
@@ -280,6 +281,7 @@ class Scraper:
                     if check_timerange(self.pattern, fullpath, timerange):
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
+        # Set them back to their original values
         self.pattern, self.timepattern = pattern, timepattern
         return filepaths
 
