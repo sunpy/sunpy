@@ -365,10 +365,10 @@ def test_passed_ts():
 def test_invalid_manual_data():
     meta = MetaDict({'key': 'value'})
     data = []
-    with pytest.raises(NoMatchError):
+    with pytest.raises(NoMatchError, match=""):
         sunpy.timeseries.TimeSeries(data, meta)
 
-
+@pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 def test_invalid_filepath():
     invalid_filepath = os.path.join(rootdir, 'invalid_filepath_here')
     with pytest.raises(ValueError, match='Did not find any files'):
@@ -376,14 +376,22 @@ def test_invalid_filepath():
     # Now with silence_errors kwarg set
     with pytest.raises(ValueError, match='Did not find any files'):
         sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+    # Now with allow_errors kwarg set
+    with pytest.raises(ValueError, match='Did not find any files'):
+        sunpy.timeseries.TimeSeries(invalid_filepath, allow_errors=True)
 
-
+@pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 def test_invalid_file():
     invalid_filepath = os.path.join(rootdir, 'annotation_ppt.db')
     with pytest.raises(NoMatchError):
         sunpy.timeseries.TimeSeries(invalid_filepath)
     # Now with silence_errors kwarg set
-    ts = sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+    with pytest.warns(SunpyUserWarning, match="One of the files failed to validate with: Could not find any timeseries sources to parse"):
+        ts = sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
+    assert ts == []
+    # Now with allow_errors kwarg set
+    with pytest.warns(SunpyUserWarning, match="One of the files failed to validate with: Could not find any timeseries sources to parse"):
+        ts = sunpy.timeseries.TimeSeries(invalid_filepath, allow_errors=True)
     assert ts == []
 
 

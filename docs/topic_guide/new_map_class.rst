@@ -1,4 +1,4 @@
-.. _topic-guide-create-new-map-class:
+.. _sunpy-topic-guide-create-new-map-class:
 
 **********************************
 Writing a new instrument Map class
@@ -11,9 +11,9 @@ The instrument subclass implements the instrument-specific code to parse the met
 In practice, the instrument subclass is not directly accessed by users.
 The `~sunpy.map.Map` factory is the primary interface for creating Map objects.
 Any subclass of `~sunpy.map.GenericMap` which defines a method named ``is_datasource_for()`` will automatically be registered with the `~sunpy.map.Map` factory.
-The ``is_datasource_for`` method is used by the `~sunpy.map.Map` factory to check if a file should use a particular instrument Map class.
+The ``is_datasource_for()`` method is used by the `~sunpy.map.Map` factory to check if a file should use a particular instrument Map class.
 This function can run any test it needs to determine this.
-For example, it might check the value of the ``INSTRUMENT`` key in the metadata dictionary.
+For example, it might check the value of the "INSTRUMENT" key in the metadata dictionary.
 The following example shows how this works and includes a sample doc string that is compatible with the :ref:`Docs Guidelines for Data Sources`:
 
 .. code-block:: python
@@ -24,35 +24,38 @@ The following example shows how this works and includes a sample doc string that
       """
       NextGenerationTelescope Map.
 
-      The Next Generation Telescope is a type A telescope on board the XYZ mission.
-      It operates in low Earth orbit with an altitude of 600 kmn and an inclination of 28.5 degrees.
-      It is designed to observe the aliens on the Sun that are responsible for triggering the impulsive release of magnetic energy in the solar corona.
-      It observes in the following 3 different passband in visible light, wavelength A, wavelength B, wavelength C.
-      The primary emission processes in these passbands are process A and process B.
+      The Next Generation Telescope is a optical telescope on board the new space mission.
+      It operates in low Earth orbit with an altitude of 600 km and an inclination of 28.5 degrees.
+      It is designed to observe the mechanisms that are responsible for triggering the impulsive release of magnetic energy in the solar corona.
+      It observes in the following 3 different passbands, in visible light, wavelength A, wavelength B, wavelength C.
 
-      The focal plane consists of a MAGIC detector with 2 x 2 pixels.
-      The plate scale is 500 arcsec per pixel.
-      The field of view is the whole Sun (1000 x 1000 arsec).
-      It makes images in each passband every 10 minutes except for when it is in eclipse which occurs every approximately 30 minutes.
+      The focal plane consists of a detector with 4k x 4k pixels.
+      The plate scale is 0.1 arcsec per pixel.
+      The field of view is the whole Sun (1000 x 1000 arcsec).
+      It makes images in each passband every 1 second except for when it is in eclipse which occurs every approximately 80 minutes.
 
       It began operating on 2100 November 1.
 
       Notes
       -----
-      Due to rise of our new insect overlords, the telescope was not operational from 2200 Jan to 2300 Jan.
+      Due to failure of the filter wheel, 2 of the different passbands are no longer functional.
 
       References
       ----------
-      * List of all required references
+      * Mission Paper
+      * Instrument Paper(s)
+      * Data Archive
+      * Mission documents
       """
 
         def __init__(self, data, header, **kwargs):
 
             # Will process the header according to FITS common standards
-            super(FutureMap, self).__init__(data, header, **kwargs)
+            super().__init__(data, header, **kwargs)
 
             # Any NextGenerationTelescope Instrument-specific manipulation.
-            # This typically involves editing the `self.meta` attribute.
+            # Any metadata changes should be done by overloading
+            # the corresponding attributes/methods.
 
         # Used by the Map factory to determine if this subclass should be used
         @classmethod

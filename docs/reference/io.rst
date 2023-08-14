@@ -15,6 +15,10 @@ Special File Readers
 
 .. automodapi:: sunpy.io.special.genx
 
+``sunpy`` has a custom reader for NOAA SWPC Solar Region Summary (SRS) files:
+
+.. automodapi:: sunpy.io.special.srs
+
 asdf (Advanced Scientific Data Format)
 --------------------------------------
 

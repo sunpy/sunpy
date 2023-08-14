@@ -248,7 +248,7 @@ class JSOCClient(BaseClient):
 
         *Example 2*
 
-        Request keyword data of ``hmi.v_45s`` and show specific columns only::
+        Request keyword data of "hmi.v_45s" and show specific columns only::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc

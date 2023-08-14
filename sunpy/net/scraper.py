@@ -87,7 +87,7 @@ class Scraper:
                 warn_user('regexp being used, the extra arguments passed are being ignored')
         else:
             self.pattern = pattern.format(**kwargs)
-        self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
+        self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
         milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
             self.now = datetime.now().strftime(self.pattern)
@@ -343,7 +343,7 @@ class Scraper:
                         if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
-        filesurls = ['ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
+        filesurls = ['ftp://' + f"{urlsplit(url).netloc}{urlsplit(url).path}"
                      for url in filesurls]
 
         return filesurls

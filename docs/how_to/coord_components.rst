@@ -1,23 +1,23 @@
-.. _how-to-access-coordinate-components:
+.. _sunpy-how-to-access-coordinate-components:
 
+****************************
 Access coordinate components
-----------------------------
+****************************
 
-Individual coordinates can be accessed via attributes on the SkyCoord object,
-but the names of the components of the coordinates can depend on the the frame and the chosen
-representation (e.g., Cartesian versus spherical).
+Individual coordinates can be accessed via attributes on the `~astropy.coordinates.SkyCoord` object, but the names of the components of the coordinates can depend on the the frame and the chosen representation (e.g., Cartesian versus spherical).
 
 `~sunpy.coordinates.Helioprojective`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+====================================
 
-For the helioprojective frame, the theta_x and theta_y components are accessed as
-``Tx`` and ``Ty``, respectively:
+For the helioprojective frame, the theta_x and theta_y components are accessed  ``Tx`` and ``Ty``, respectively:
 
 .. code-block:: python
 
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
+
     >>> from sunpy.coordinates import frames
+
     >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
     >>> c.Tx
     <Longitude -500. arcsec>
@@ -25,7 +25,7 @@ For the helioprojective frame, the theta_x and theta_y components are accessed a
     <Latitude 100. arcsec>
 
 `~sunpy.coordinates.Heliocentric`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=================================
 
 Heliocentric is typically used with Cartesian components:
 
@@ -40,7 +40,7 @@ Heliocentric is typically used with Cartesian components:
     <Quantity 589951.4 km>
 
 `~sunpy.coordinates.HeliographicStonyhurst` and `~sunpy.coordinates.HeliographicCarrington`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+===========================================================================================
 
 Both of the heliographic frames have the components of latitude, longitude and radius:
 
@@ -54,9 +54,8 @@ Both of the heliographic frames have the components of latitude, longitude and r
     >>> c.radius
     <Distance 1. AU>
 
-Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric
-Earth Equatorial (HEEQ).  Here's an example of how to use
-`~sunpy.coordinates.frames.HeliographicStonyhurst` for HEEQ coordinates:
+Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric Earth Equatorial (HEEQ).
+Here's an example of how to use `~sunpy.coordinates.frames.HeliographicStonyhurst` for HEEQ coordinates:
 
 .. code-block:: python
 

@@ -469,16 +469,12 @@ def print_params(t='now'):
     print(f'Solar Ephemeris for {parse_time(t).utc} UTC\n')
     print(f'Distance = {earth_distance(t)}')
     print(f'Semidiameter = {angular_radius(t)}')
-    print('True (long, lat) = ({}, {})'.format(true_longitude(t).to_string(),
-                                               true_latitude(t).to_string()))
-    print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t).to_string(),
-                                                   apparent_latitude(t).to_string()))
-    print('True (RA, Dec) = ({}, {})'.format(true_rightascension(t).to_string(),
-                                             true_declination(t).to_string()))
+    print(f'True (long, lat) = ({true_longitude(t).to_string()}, {true_latitude(t).to_string()})')
+    print(f'Apparent (long, lat) = ({apparent_longitude(t).to_string()}, {apparent_latitude(t).to_string()})')
+    print(f'True (RA, Dec) = ({true_rightascension(t).to_string()}, {true_declination(t).to_string()})')
     print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t).to_string(),
                                                  apparent_declination(t).to_string()))
-    print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
-                                                                        B0(t).to_string()))
+    print(f'Heliographic long. and lat of disk center = ({L0(t).to_string()}, {B0(t).to_string()})')
     print(f'Position angle of north pole = {P(t)}')
     print(f'Carrington rotation number = {carrington_rotation_number(t)}')
 

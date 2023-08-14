@@ -106,7 +106,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     .. note::
 
-        See :ref:`sunpy-coordinates-rotatedsunframe` for how to use this class.
+        See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for how to use this class.
 
     In essence, the coordinate axes of the frame are distorted by differential solar rotation.
     This allows using a coordinate representation at one time (at the ``obstime`` of the base

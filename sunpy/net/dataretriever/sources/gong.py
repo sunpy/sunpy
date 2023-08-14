@@ -13,8 +13,8 @@ class GONGClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2019/12/31 22:00", "2020/1/1 02:00"),
-    ...                       a.Instrument('GONG'))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA
+    ...                       a.Instrument('GONG'))  # doctest: +REMOTE_DATA
+    >>> results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>

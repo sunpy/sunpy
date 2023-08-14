@@ -116,7 +116,7 @@ def header_to_xml(header):
 
         el = ET.SubElement(fits, key)
         data = header.get(key)
-        if type(data) == bool:
+        if isinstance(data, bool):
             data = "1" if data else "0"
         else:
             data = str(data)

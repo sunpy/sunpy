@@ -15,6 +15,7 @@ import astropy.io.fits
 import astropy.units as u
 from astropy.table import Table
 from astropy.time import Time
+from astropy.utils.decorators import deprecated_renamed_argument
 
 import sunpy
 from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
@@ -29,6 +30,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
+from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.io import HDPair, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
@@ -326,14 +328,17 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         for arg in args:
             try:
                 all_ts += self._parse_arg(arg, **kwargs)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
-                if self.silence_errors:
+            except (NoMatchError, MultipleMatchError, ValidationFunctionError) as e:
+                msg = f"One of the files failed to validate with: {e}"
+                if self.silence_errors or self.allow_errors:
+                    warn_user(msg)
                     continue
                 else:
-                    raise
-            except Exception:
-                raise
-
+                    msg += "\nTo bypass these errors, set `allow_errors=True`."
+                    raise type(e)(msg) from e
+            except Exception as e:
+                msg = f"Something went wrong: {e}"
+                raise type(e)(msg) from e
         return all_ts
 
     @seconddispatch
@@ -406,7 +411,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    def __call__(self, *args, silence_errors=False, **kwargs):
+    @deprecated_renamed_argument("silence_errors","allow_errors","5.1", warning_type=SunpyDeprecationWarning)
+    def __call__(self, *args, silence_errors=False,allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
         arguments and passes them to a sequence of pre-registered types to
@@ -419,7 +425,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Parameters
         ----------
         silence_errors : `bool`, optional
+            Deprecated, renamed to `allow_errors`.
+
             If set, ignore data-header pairs which cause an exception.
+            Defaults to `False`.
+        allow_errors : `bool`, optional
+            If set, bypass data-header pairs or files which cause an exception and warn instead.
             Defaults to `False`.
 
         Notes
@@ -427,6 +438,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
         self.silence_errors = silence_errors
+        self.allow_errors = allow_errors
         new_timeseries = self._parse_args(*args, **kwargs)
 
         # Concatenate the timeseries into one if specified.
@@ -460,9 +472,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({})."
+            raise MultipleMatchError(f"Too many candidate types identified ({n_matches})."
                                      "Specify enough keywords to guarantee unique type "
-                                     "identification.".format(n_matches))
+                                     "identification.")
 
         # Only one suitable source class is found
         return candidate_widget_types[0]

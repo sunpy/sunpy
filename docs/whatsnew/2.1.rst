@@ -170,7 +170,7 @@ By transforming this coordinate to `~sunpy.coordinates.frames.HeliocentricInerti
     >>> mars.heliocentricinertial.velocity.norm()
     <Quantity 49.68592218 km / s>
 
-See :ref:`sunpy-coordinates-velocities` for more information.
+See :ref:`sunpy-topic-guide-coordinates-velocities` for more information.
 
 .. _whatsnew-2.1-reprojecting:
 

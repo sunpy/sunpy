@@ -168,8 +168,7 @@ class UnifiedResponse(Sequence):
         else:
             ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
-            ret += "{} Results from the {}:</br>".format(len(block),
-                                                         block.client.__class__.__name__)
+            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:</br>"
             ret += block._repr_html_()
             ret += '</br>'
 
@@ -261,7 +260,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     cover multiple instruments and data products like the Virtual Solar
     Observatory and some are specific to a single source.
 
-    For details of using `~sunpy.net.Fido` see :ref:`acquiring_data`.
+    For details of using `~sunpy.net.Fido` see :ref:`sunpy-tutorial-acquiring-data-index`.
 
     """
 
