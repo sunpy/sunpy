@@ -287,3 +287,4 @@ def test_make_heliographic_header_invalid_inputs(aia171_test_map):
     header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=-1*u.deg)
     assert header_test_above['crval1'] == 1.0
     assert header_test_below['crval1'] == 359.0
+    
