@@ -272,3 +272,6 @@ def test_make_heliographic_header_invalid_inputs(aia171_test_map):
 
     with pytest.raises(ValueError, match='frame must be one of'):
         make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='blah')
+
+    with pytest.raises(u.UnitsError):
+        make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=0)
