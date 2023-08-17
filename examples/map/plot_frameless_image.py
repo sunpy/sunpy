@@ -27,7 +27,7 @@ ax = plt.axes([0, 0, 1, 1])
 ax.set_axis_off()
 
 # Plot the map.
-# Since we are not interested in the exact map coordinates, 
+# Since we are not interested in the exact map coordinates,
 # we can simply use :meth:`~matplotlib.Axes.imshow`.
 norm = smap.plot_settings['norm']
 norm.vmin, norm.vmax = np.percentile(smap.data, [1, 99.9])
@@ -39,7 +39,7 @@ ax.imshow(smap.data,
 # sphinx_gallery_defer_figures
 
 ##############################################################################
-# At this point you could save the figure with :meth:`~matplotlib.pyplot.savefig`
+# At this point you could save the figure with :func:`~matplotlib.pyplot.savefig`
 # or show it:
 
 plt.show()
