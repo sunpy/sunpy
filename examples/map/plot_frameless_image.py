@@ -3,7 +3,7 @@
 Plotting a Map without any Axes
 ===============================
 
-This examples shows you how to plot a Map without any annotations at all, i.e.
+This examples shows you how to plot a Map without any annotations at all, i.e.,
 to save as an image.
 """
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
-# Create a sunpy map from the sample data.
+# Create a sunpy Map from the sample data.
 
 smap = sunpy.map.Map(AIA_171_IMAGE)
 
@@ -26,8 +26,9 @@ ax = plt.axes([0, 0, 1, 1])
 # Disable the axis
 ax.set_axis_off()
 
-# Plot the map. Since are not interested in the exact map coordinates, we can
-# simply use :meth:`~matplotlib.Axes.imshow`.
+# Plot the map.
+# Since we are not interested in the exact map coordinates,
+# we can simply use :meth:`~matplotlib.Axes.imshow`.
 norm = smap.plot_settings['norm']
 norm.vmin, norm.vmax = np.percentile(smap.data, [1, 99.9])
 ax.imshow(smap.data,
@@ -38,6 +39,7 @@ ax.imshow(smap.data,
 # sphinx_gallery_defer_figures
 
 ##############################################################################
-# At this point you could save the figure with ``plt.savefig()`` or show it:
+# At this point you could save the figure with :func:`~matplotlib.pyplot.savefig`
+# or show it:
 
 plt.show()
