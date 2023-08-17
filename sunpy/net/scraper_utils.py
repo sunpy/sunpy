@@ -12,34 +12,6 @@ TIME_QUANTITIES = {'day': timedelta(days=1),
                    'second': timedelta(seconds=1),
                    'millisecond': timedelta(milliseconds=1)}
 
-def check_timerange(pattern, url, timerange):
-    """
-    Checks whether the time range represented in *url* intersects
-    with the given time range.
-
-    Parameters
-    ----------
-    url : `str`
-        URL of the file.
-    timerange : `~sunpy.time.TimeRange`
-        Time interval for which files were searched.
-
-    Returns
-    -------
-    `bool`
-        `True` if URL's valid time range overlaps the given timerange, else `False`.
-    """
-    exdict = parse(pattern, url).named
-    if exdict['year'] < 100:
-        exdict['year'] = 2000 + exdict['year']
-    if 'month' not in exdict:
-                if 'month_name' in exdict:
-                    exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
-                elif 'month_name_abbr' in exdict:
-                    exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
-    tr = get_timerange_from_exdict(exdict)
-    return tr.intersects(timerange)
-
 def extract_timestep(directoryPattern):
     """
     Obtain the smaller time step for the given pattern.
@@ -103,6 +75,33 @@ def date_floor(date, timestep):
 
     return datetime(*time_tup)
 
+def check_timerange(pattern, url, timerange):
+    """
+    Checks whether the time range represented in *url* intersects
+    with the given time range.
+
+    Parameters
+    ----------
+    url : `str`
+        URL of the file.
+    timerange : `~sunpy.time.TimeRange`
+        Time interval for which files were searched.
+
+    Returns
+    -------
+    `bool`
+        `True` if URL's valid time range overlaps the given timerange, else `False`.
+    """
+    exdict = parse(pattern, url).named
+    if exdict['year'] < 100:
+        exdict['year'] = 2000 + exdict['year']
+    if 'month' not in exdict:
+                if 'month_name' in exdict:
+                    exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
+                elif 'month_name_abbr' in exdict:
+                    exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
+    tr = get_timerange_from_exdict(exdict)
+    return tr.intersects(timerange)
 
 def get_timerange_from_exdict(exdict):
     """

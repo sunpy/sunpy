@@ -17,19 +17,29 @@ The main place this is done is when constructing a `~.UnifiedResponse` object, w
 
 .. _sunpy-topic-guide-new-source-for-fido-add-new-scraper-client:
 
-Writing a new "scraper" client
-==============================
+A brief explanation of how "scraper" clients work
+=================================================
 
 A "scraper" Fido client (also sometimes referred to as a "data retriever" client) is a Fido client which uses the URL `~sunpy.net.scraper.Scraper` to find files on remote servers.
-If the data provider you want to integrate does not provide a tree of files with predictable URLs then a "full" client is more likely to provide the functionality you need.
 
-A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these three components:
+A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these two components:
 
 * A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
 * A class attribute ``pattern``; this is a string which is used to match the URLs supported by the client and extract metadata from matched URLs.
   The time and other metadata attributes for extraction are written using the `~sunpy.extern.parse.parse` format, using double curly-brackets so to differentiate them from ``kwargs`` parameters which are written in single curly-brackets.
+
+Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
+1. It takes a generalised `pattern` of how one desired filepath looks like as input along with the desired timerange.
+2. The smallest unit of time / time-step for that directory pattern (the full path minus the filename at the end) is then detected by using `~sunpy.net.scraper.Scraper.extract_timestep`.
+3. After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in units of the timestep, the time is "floored" according to the pattern via the `~sunpy.net.scraper_utils.date_floor` method and then the directory pattern is filled with it.
+4. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a `file://` or an `ftp://` path.
+5. The name of each file is examined to determine if it matches the remaining portion of pattern using `~sunpy.extern.parse.parse`.
+6. Each such file is then checked for lying in the intended timerange using the `~sunpy.net.scraper_utils.check_timerange` method which in turn uses `~sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
+
+Writing a new "scraper" client
+==============================
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 A version without documentation strings is reproduced below:
 
