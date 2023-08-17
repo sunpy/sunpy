@@ -1,3 +1,5 @@
+exclude: "\\.asdf$"
+
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/charliermarsh/ruff-pre-commit
