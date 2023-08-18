@@ -30,13 +30,18 @@ aia = aia.submap(
 )
 
 ###############################################################################
-# Next we call the :meth:`~sunpy.map.GenericMap.reproject_to` to reproject the HMI Map
-# to have exactly the same grid as the AIA Map.
-# :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py` provides more reference.
+# Next we create the HMI map and crop it to the same field of view as the AIA image.
 
 hmi = sunpy.map.Map(HMI_LOS_IMAGE)
-hmi = hmi.reproject_to(aia.wcs)
-hmi.nickname = 'HMI magnetogram'
+hmi = hmi.submap(aia.bottom_left_coord, top_right=aia.top_right_coord)
+
+###############################################################################
+# We then call the :meth:`~sunpy.map.GenericMap.reproject_to` to reproject the AIA Map
+# to have exactly the same grid as the HMI Map.
+# :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py` provides more reference.
+
+aia = aia.reproject_to(hmi.wcs)
+aia.nickname = 'AIA'
 
 ###############################################################################
 # Now we will identify separate regions below a threshold in the AIA Map.
@@ -56,22 +61,23 @@ regions = sorted(regions, key=lambda r: r.area, reverse=True)
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia)
 aia.plot(axes=ax)
-aia.draw_contours(axes=ax, levels=200 * u.ct, colors="r")
+aia.draw_contours(axes=ax, levels=200, colors="r")
 for i in range(7):
     plt.text(*np.flip(regions[i].centroid), str(i), color="w", ha="center", va="center")
 
 ###############################################################################
-# Now let's plot those same regions on the reprojected HMI Map.
+# Now let's plot those same regions on the HMI Map.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=hmi)
 im = hmi.plot(axes=ax, cmap="hmimag", norm=Normalize(-1500, 1500))
-aia.draw_contours(axes=ax, levels=200 * u.ct, colors="r")
+aia.draw_contours(axes=ax, levels=200, colors="r")
 fig.colorbar(im)
 
 ###############################################################################
 # Now we have the regions, we need to create a new HMI map that masks out everything but the largest region.
 # To do so, we need to create the mask from the bounding box returned by `skimage`.
+# Note that we can do this from the thresholded region only because our AIA and HMI images are on the same pixel grid after reprojecting the AIA image.
 
 bbox = regions[0].bbox
 mask = np.ones_like(hmi.data, dtype=bool)
@@ -79,11 +85,19 @@ mask[bbox[0]: bbox[2], bbox[1]: bbox[3]] = ~regions[0].image
 hmi_masked = sunpy.map.Map((hmi.data, hmi.meta), mask=mask)
 
 ###############################################################################
-# Finally, plot the largest HMI region.
+# We can then plot the largest HMI region.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=hmi_masked)
 im = hmi_masked.plot(axes=ax, cmap="hmimag", norm=Normalize(-1500, 1500))
 fig.colorbar(im)
+
+###############################################################################
+# Finally, we can plot the distribution of HMI LOS flux for only the unmasked values in the largest region shown above.
+fig = plt.figure()
+ax = fig.add_subplot()
+ax.hist(hmi_masked.data[~hmi_masked.mask], bins='auto', histtype='step')
+ax.set_ylabel('Number of Pixels')
+ax.set_xlabel(f'LOS Flux [{hmi.unit.to_string(format="latex_inline")}]')
 
 plt.show()
