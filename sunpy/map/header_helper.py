@@ -385,7 +385,8 @@ _map_meta_keywords = {
 }
 
 @u.quantity_input
-def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR", map_center_longitude=0.0*u.deg):
+def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR",
+                             map_center_longitude: u.Quantity['angle'] = 0.0*u.deg):
     """
     Construct a FITS-WCS header for a full-Sun heliographic (Carrington or Stonyhurst) coordinate frame.
 
