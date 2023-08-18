@@ -406,8 +406,8 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
         Coordinate frame.
     projection_code : {'CAR', 'CEA'}
         Projection to use for the latitude coordinate.
-    map_center_longitude : `astropy.units.Quantity` (equivalent units to `u.deg`)
-        Heliographic longitude of the center pixel
+    map_center_longitude : `~astropy.units.Quantity`
+        Heliographic longitude of the map center
 
     Returns
     -------
