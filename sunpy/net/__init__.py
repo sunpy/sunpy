@@ -11,6 +11,11 @@ from sunpy.net import hek as _
 from sunpy.net import helio as _
 from sunpy.net import jsoc as _
 from sunpy.net import vso as _
+
+from sunpy.net.dataretriever.sources import adapt as _
+from sunpy.net.dataretriever.attrs import adapt as _
+from sunpy.net.dataretriever.sources.tests import test_adapt as _
+
 from sunpy.net.fido_factory import Fido
 from sunpy.net.scraper import Scraper
 
