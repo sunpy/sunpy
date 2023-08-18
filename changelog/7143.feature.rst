@@ -1,1 +1,1 @@
-Add map_center_longitude keyword to `sunpy.map.header_helper.make_heliographic_header`
+Add a keyword (``map_center_longitude``) to :func:`~sunpy.map.header_helper.make_heliographic_header` for centering the heliographic map at a longitude other than zero longitude.
