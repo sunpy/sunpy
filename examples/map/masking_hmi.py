@@ -94,6 +94,7 @@ fig.colorbar(im)
 
 ###############################################################################
 # Finally, we can plot the distribution of HMI LOS flux for only the unmasked values in the largest region shown above.
+
 fig = plt.figure()
 ax = fig.add_subplot()
 ax.hist(hmi_masked.data[~hmi_masked.mask], bins='auto', histtype='step')
