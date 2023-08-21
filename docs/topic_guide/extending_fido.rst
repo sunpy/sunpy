@@ -30,6 +30,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   Each `tuple` contains the "attr" value and its description.
 * A class attribute ``pattern``; this is a string which is used to match the URLs supported by the client and extract metadata from matched URLs.
   The time and other metadata attributes for extraction are written using the `~sunpy.extern.parse.parse` format, using double curly-brackets so to differentiate them from ``kwargs`` parameters which are written in single curly-brackets.
+
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 A version without documentation strings is reproduced below:
 

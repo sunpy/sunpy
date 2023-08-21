@@ -172,7 +172,7 @@ class Scraper:
          'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
          'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001157.fits']
 
-        While writing the pattern, we can also make use of parse-notation like `{{}}` in the filename:
+        While writing the pattern, we can also leverage parse capabilities, like using the {{}} notation to match parts of the filename that cannot be known beforehand:
         >>> from sunpy.net import Scraper
         >>> from sunpy.time import TimeRange
         >>> pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
