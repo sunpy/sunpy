@@ -192,11 +192,70 @@ class Scraper:
         on such end time.
         """
         directories = self.range(timerange)
-        filesurls = []
         if urlsplit(directories[0]).scheme == "ftp":
-            return self._ftpfileslist(timerange)
-        if urlsplit(directories[0]).scheme == "file":
+            return self._ftpfilelist(timerange)
+        elif urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
+        elif urlsplit(directories[0]).scheme == "http":
+            return self._httpfilelist(timerange)
+
+    def _ftpfilelist(self, timerange):
+        """
+        Goes over archives available over ftp to return list of files in the given timerange.
+        """
+        directories = self.range(timerange)
+        filesurls = list()
+        ftpurl = urlsplit(directories[0]).netloc
+        with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
+            for directory in directories:
+                try:
+                    ftp.cwd(urlsplit(directory).path)
+                except Exception as e:
+                    log.debug(f"FTP CWD: {e}")
+                    continue
+                for file_i in ftp.nlst():
+                    fullpath = directory + file_i
+                    if parse(self.pattern, fullpath):
+                        if check_timerange(self.pattern, fullpath, timerange):
+                            filesurls.append(fullpath)
+
+        filesurls = ['ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
+                     for url in filesurls]
+
+        return filesurls
+
+    def _localfilelist(self, timerange):
+        """
+        Goes over locally stored archives to return list of files in the given timerange.
+        """
+        pattern, timepattern = self.pattern, self.timepattern
+        pattern_temp, timepattern_temp = pattern.replace('file://', ''), timepattern.replace('file://', '')
+        if os.name == 'nt':
+            pattern_temp = pattern_temp.replace('\\', '/')
+            prefix = 'file:///'
+        else:
+            prefix = 'file://'
+        # Change pattern variables class-wide
+        self.pattern, self.timepattern = pattern_temp, timepattern_temp
+        directories = self.range(timerange)
+        filepaths = list()
+        for directory in directories:
+            for file_i in os.listdir(directory):
+                fullpath = directory + file_i
+                if parse(self.pattern, fullpath):
+                    if check_timerange(self.pattern, fullpath, timerange):
+                        filepaths.append(fullpath)
+        filepaths = [prefix + path for path in filepaths]
+        # Set them back to their original values
+        self.pattern, self.timepattern = pattern, timepattern
+        return filepaths
+
+    def _httpfilelist(self, timerange):
+        """
+        Goes over http archives hosted on the web, to return list of files in the given timerange.
+        """
+        directories = self.range(timerange)
+        filesurls = list()
         while directories:
             directory = directories.pop(0)
             try:
@@ -239,51 +298,6 @@ class Scraper:
             except Exception:
                 raise
         return filesurls
-
-    def _ftpfileslist(self, timerange):
-        directories = self.range(timerange)
-        filesurls = list()
-        ftpurl = urlsplit(directories[0]).netloc
-        with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
-            for directory in directories:
-                try:
-                    ftp.cwd(urlsplit(directory).path)
-                except Exception as e:
-                    log.debug(f"FTP CWD: {e}")
-                    continue
-                for file_i in ftp.nlst():
-                    fullpath = directory + file_i
-                    if parse(self.pattern, fullpath):
-                        if check_timerange(self.pattern, fullpath, timerange):
-                            filesurls.append(fullpath)
-
-        filesurls = ['ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
-                     for url in filesurls]
-
-        return filesurls
-
-    def _localfilelist(self, timerange):
-        pattern, timepattern = self.pattern, self.timepattern
-        pattern_temp, timepattern_temp = pattern.replace('file://', ''), timepattern.replace('file://', '')
-        if os.name == 'nt':
-            pattern_temp = pattern_temp.replace('\\', '/')
-            prefix = 'file:///'
-        else:
-            prefix = 'file://'
-        # Change pattern variables class-wide
-        self.pattern, self.timepattern = pattern_temp, timepattern_temp
-        directories = self.range(timerange)
-        filepaths = list()
-        for directory in directories:
-            for file_i in os.listdir(directory):
-                fullpath = directory + file_i
-                if parse(self.pattern, fullpath):
-                    if check_timerange(self.pattern, fullpath, timerange):
-                        filepaths.append(fullpath)
-        filepaths = [prefix + path for path in filepaths]
-        # Set them back to their original values
-        self.pattern, self.timepattern = pattern, timepattern
-        return filepaths
 
 
     def _extract_files_meta(self, timerange, matcher=None):
