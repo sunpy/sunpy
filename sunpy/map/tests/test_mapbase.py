@@ -1647,3 +1647,9 @@ def test_only_cd():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
+
+
+def test_plot_annotate_nonboolean(aia171_test_map):
+    ax = plt.subplot(projection=aia171_test_map)
+    with pytest.raises(TypeError, match="non-boolean value"):
+        aia171_test_map.plot(ax)
