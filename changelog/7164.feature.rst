@@ -1,0 +1,1 @@
+The minimum required version of ``Glymur`` (an optional dependency for reading JPEG2000 files) has been increase to 0.9.1.
