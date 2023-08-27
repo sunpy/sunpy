@@ -1,10 +1,19 @@
 Rewrote ``~sunpy.net.scraper.Scraper`` functions to use ``parse`` instead of regex and require only a single parse-formatted ``pattern`` variable while creating a Scraper object, instead of the two ``baseurl`` and ``pattern`` variables before.
+
 Removed the ``_extractDateURL()`` and ``_URL_followsPattern()`` methods.
+
 Moved code from ``filelist()`` to a new helper ``_httpfilelist`` function.
+
 Changed the ``~sunpy.net.scraper.TIME_CONVERSIONS`` internal dictionary to be used for parse-format to datetime-format conversions instead of the previous datetime-format to regex conversions.
+
 Created ``~sunpy.net.scraper_utils`` and moved the ``date_floor()``, ``extract_timestep()``, ``check_timerange()`` and ``get_timerange_from_exdict()`` functions from the main scraper class there for better organisation.
+
 Added documentation for writing ``pattern``'s that follow the new format.
+
 The :meth:``~sunpy.net.scraper.Scraper.extract_files_meta`` function no longer requires an extractor pattern.
+
 Added documentation explaining the internal Scraper algorithm to the topic guide on adding new data sources to Fido.
+
 Updated code, documentation and tests for all the clients within ``~sunpy.net.dataretriever`` to work with the new change in the input requirements to the scraper class.
+
 All the extracted timeranges have a millisecond subtracted from the end date, i.e. they end on 59:59:59 of the date just before, instead of the inconsistent issue where some also ended with 00:00:00 of the end date.
