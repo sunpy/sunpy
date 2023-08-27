@@ -62,7 +62,7 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
 
 
 .. code-block:: python
-        >>> s.filelist(timerange)
+        >>> s.filelist(timerange) # doctest: +REMOTE_DATA
         ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
         'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
         '...',
