@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_showcase_stereoscopic_3d.py`) for how to make an anaglyph 3D (i.e., red-cyan) image from a stereoscopic observation.
