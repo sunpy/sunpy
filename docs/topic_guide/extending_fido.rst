@@ -31,6 +31,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   The time and other metadata attributes for extraction are written using the `~sunpy.extern.parse.parse` format, using double curly-brackets so to differentiate them from ``kwargs`` parameters which are written in single curly-brackets.
 
 Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
+
 1. It takes as input a generalised ``pattern`` of how a desired filepath looks like, following the ``parse`` format. A version of the pattern following the datetime format is also generated, called the ``timepattern``.
 
 .. code-block:: python
@@ -74,7 +75,7 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
 
 Writing a new "scraper" client
 ==============================
-The `~sunpy.net.scraper` thus allows us to write Fido clients for a wide number of hosts. For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
+The `~sunpy.net.scraper` thus allows us to write Fido clients for a variety of sources. For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 
 A version without documentation strings is reproduced below:
 
