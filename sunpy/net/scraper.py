@@ -71,7 +71,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
-    
+
     def __init__(self, pattern, **kwargs):
         pattern = pattern.format(**kwargs)
         timepattern = pattern
@@ -198,6 +198,8 @@ class Scraper:
             return self._localfilelist(timerange)
         elif urlsplit(directories[0]).scheme == "http":
             return self._httpfilelist(timerange)
+        else:
+            return ValueError("The provided pattern should either be an FTP or a local file-path, or an HTTP address.")
 
     def _ftpfilelist(self, timerange):
         """
