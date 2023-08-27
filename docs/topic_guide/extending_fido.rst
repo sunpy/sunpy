@@ -37,7 +37,7 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
         >>> from sunpy.net import Scraper
         >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
-        >>> s = Scraper(pattern)
+        >>> s = Scraper(pattern, instrument='swap')
 
 2. The smallest unit of time / time-step for that directory pattern (the full timepattern minus the filename at the end) is then detected by using `~sunpy.net.scraper_utils.extract_timestep`.
 
