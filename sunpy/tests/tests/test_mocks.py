@@ -118,7 +118,7 @@ def test_read_only_mode_MockOpenTextFile():
     Reading from a read only file, writing should be prohibited.
     """
     new_line = '\n'
-    content = r'a{0}bc{0}nd{0}{0}'.format(new_line)
+    content = fr'a{new_line}bc{new_line}nd{new_line}{new_line}'
 
     read_only = MockOpenTextFile('rom.txt', data=content)
     assert read_only.readable() is True

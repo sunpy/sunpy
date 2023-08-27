@@ -71,7 +71,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
-
+    
     def __init__(self, pattern, **kwargs):
         pattern = pattern.format(**kwargs)
         timepattern = pattern
@@ -82,7 +82,7 @@ class Scraper:
         if "year:4d" in pattern and "year:2d" in pattern:
             pattern = pattern.replace("year:2d", ":2d")
         self.pattern = pattern
-        self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
+        self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
         milliseconds = re.search(r'\%e', self.timepattern)
         if not milliseconds:
             self.now = datetime.now().strftime(self.timepattern)
@@ -219,7 +219,7 @@ class Scraper:
                         if check_timerange(self.pattern, fullpath, timerange):
                             filesurls.append(fullpath)
 
-        filesurls = ['ftp://' + "{0.netloc}{0.path}".format(urlsplit(url))
+        filesurls = ['ftp://' + f"{urlsplit(url).netloc}{urlsplit(url).path}"
                      for url in filesurls]
 
         return filesurls
@@ -298,7 +298,6 @@ class Scraper:
             except Exception:
                 raise
         return filesurls
-
 
     def _extract_files_meta(self, timerange, matcher=None):
         """

@@ -384,8 +384,9 @@ _map_meta_keywords = {
     'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.'
 }
 
-
-def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR"):
+@u.quantity_input
+def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR",
+                             map_center_longitude: u.Quantity[u.deg] = 0.0*u.deg):
     """
     Construct a FITS-WCS header for a full-Sun heliographic (Carrington or Stonyhurst) coordinate frame.
 
@@ -405,6 +406,8 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
         Coordinate frame.
     projection_code : {'CAR', 'CEA'}
         Projection to use for the latitude coordinate.
+    map_center_longitude : `~astropy.units.Quantity`
+        Heliographic longitude of the map center
 
     Returns
     -------
@@ -436,7 +439,7 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
         raise ValueError(f"frame must be one of {valid_frames}")
 
     frame_out = SkyCoord(
-        0 * u.deg,
+        map_center_longitude,
         0 * u.deg,
         frame=f"heliographic_{frame}",
         obstime=date,

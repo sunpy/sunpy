@@ -30,8 +30,8 @@ class NoSuchEntryError(Exception):
 
     def __str__(self):
         return (
-            'the database entry {!r} cannot be removed because it '
-            'is not stored in the database'.format(self.database_entry))
+            f'the database entry {self.database_entry!r} cannot be removed because it '
+            'is not stored in the database')
 
 
 class NonRemovableTagError(Exception):
