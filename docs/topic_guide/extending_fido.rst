@@ -30,10 +30,11 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 * A class attribute ``pattern``; this is a string used to match the URLs supported by the client and extract metadata from the matched URLs.
   The time and other metadata attributes for extraction are written using the `~sunpy.extern.parse.parse` format, using double curly-brackets so to differentiate them from ``kwargs`` parameters which are written in single curly-brackets.
 
-Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the `~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
-1. It takes as input a generalised `pattern` of how a desired filepath looks like, following the `parse` format. A version of the pattern following the datetime format is also generated, called the `timepattern`.
+Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
+1. It takes as input a generalised ``pattern`` of how a desired filepath looks like, following the ``parse`` format. A version of the pattern following the datetime format is also generated, called the ``timepattern``.
 
 .. code-block:: python
+
         >>> from sunpy.net import Scraper
         >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
@@ -49,6 +50,7 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
 3. After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in units of the timestep, the time is "floored" according to the pattern via the `~sunpy.net.scraper_utils.date_floor` method and then the directory pattern is filled with it.
 
 .. code-block:: python
+
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-03T00:00:00')
         >>> s.range(timerange)
@@ -56,12 +58,13 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
         'http://proba2.oma.be/swap/data/bsd/2015/01/02/',
         'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
 
-4. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a `file://` or an `ftp://` path in the `~sunpy.net.scraper.Scraper.filelist` method.
-5. The name of each file present is then examined to determine if it matches the remaining portion of the pattern using `~sunpy.extern.parse.parse`.
-6. Each such file is then checked for lying in the intended timerange using the `~sunpy.net.scraper_utils.check_timerange` method which in turn uses `~sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
+4. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
+5. The name of each file present is then examined to determine if it matches the remaining portion of the pattern using :meth:`~sunpy.extern.parse.parse`.
+6. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper_utils.check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
 
 
 .. code-block:: python
+
         >>> s.filelist(timerange) # doctest: +REMOTE_DATA
         ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
         'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
