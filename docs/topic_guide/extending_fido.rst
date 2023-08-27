@@ -40,14 +40,15 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
         >>> s = Scraper(pattern, instrument='swap')
 
-2. The smallest unit of time / time-step for that directory pattern (the full timepattern minus the filename at the end) is then detected by using `~sunpy.net.scraper_utils.extract_timestep`.
+2. The smallest unit of time / time-step for that directory pattern (the full timepattern minus the filename at the end) is then detected by using :meth:`~sunpy.net.scraper_utils.extract_timestep`.
 
 .. code-block:: python
+
         >>> from sunpy.net.scraper_utils import extract_timestep
         >>> extract_timestep("http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits") # timepattern = 'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
         relativedelta(seconds=+1)
 
-3. After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in units of the timestep, the time is "floored" according to the pattern via the `~sunpy.net.scraper_utils.date_floor` method and then the directory pattern is filled with it.
+3. After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in units of the timestep, the time is "floored" according to the pattern via the :meth:`~sunpy.net.scraper_utils.date_floor` method and then the directory pattern is filled with it.
 
 .. code-block:: python
 
