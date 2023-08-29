@@ -127,6 +127,8 @@ def test_get_horizons_coord_dict_time():
     e = get_horizons_coord('Geocenter', time_dict)
     e_ref = get_horizons_coord('Geocenter', time_ref)
 
+    assert e.obstime.format == 'isot'
+    assert e.obstime.scale == 'utc'
     assert_array_equal(e_ref.obstime.utc.isot, e.obstime.utc.isot)
     assert_quantity_allclose(e.lon, e_ref.lon, atol=1e-9*u.deg)
     assert_quantity_allclose(e.lat, e_ref.lat)
