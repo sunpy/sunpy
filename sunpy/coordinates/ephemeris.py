@@ -18,6 +18,7 @@ from astropy.coordinates.representation import (
     CartesianRepresentation,
     SphericalRepresentation,
 )
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.time import parse_time
