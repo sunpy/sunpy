@@ -2,6 +2,9 @@
 Parker Solar Probe subclass definitions.
 """
 
+from astropy.visualization import AsinhStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
+
 from sunpy.map import GenericMap
 
 __all__ = ['WISPRMap']
@@ -20,6 +23,14 @@ class WISPRMap(GenericMap):
     * `WISPR Instrument Page <https://wispr.nrl.navy.mil//>`__
     * `Instrument Paper <https://doi.org/10.1007/s11214-014-0114-y>`__
     """
+
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=AsinhStretch(a=0.001), clip=True,
+            vmin=0)
+
     @property
     def processing_level(self):
         lvl = self.meta.get('level', None)
