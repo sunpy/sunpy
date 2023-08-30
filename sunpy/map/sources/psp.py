@@ -31,6 +31,17 @@ class WISPRMap(GenericMap):
     def name(self):
         return 'WISPR ' + super().name
 
+    @property
+    def detector(self):
+        detector = self.meta.get('detector', "")
+        if detector == 1:
+            return "Inner"
+        if detector == 2:
+            return "Outer"
+        # Official data products will only be 1 or 2, but we should fail safe
+        # if users customize this value themselves.
+        return detector
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an WISPR image"""
