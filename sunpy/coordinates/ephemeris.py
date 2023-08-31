@@ -18,6 +18,7 @@ from astropy.coordinates.representation import (
     CartesianRepresentation,
     SphericalRepresentation,
 )
+from astropy.time import Time
 
 from sunpy import log
 from sunpy.time import parse_time
@@ -303,7 +304,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         if set(time.keys()) != set(['start', 'stop', 'step']):
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
         epochs = time
-        jpl_fmt = '%Y-%m-%d %H:%M:%S'
+        jpl_fmt = '%Y-%m-%d %H:%M:%S.%f'
         epochs['start'] = parse_time(epochs['start']).tdb.strftime(jpl_fmt)
         epochs['stop'] = parse_time(epochs['stop']).tdb.strftime(jpl_fmt)
     else:
@@ -326,7 +327,8 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     log.debug(f"See the raw output from the JPL HORIZONS query at {query.uri}")
 
     if isinstance(time, dict):
-        obstime = parse_time(result['datetime_jd'], format='jd', scale='tdb')
+        obstime_tdb = parse_time(result['datetime_jd'], format='jd', scale='tdb')
+        obstime = Time(obstime_tdb, format='isot', scale='utc')
     else:
         # JPL HORIZONS results are sorted by observation time, so this sorting needs to be undone.
         # Calling argsort() on an array returns the sequence of indices of the unsorted list to put the

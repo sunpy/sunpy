@@ -1,0 +1,1 @@
+Fix bug in :func:`~sunpy.coordinates.get_horizons_coord` when specifying a time range via a dictionary that could cause the returned times to be slightly different from the supplied times.
