@@ -41,7 +41,7 @@ from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
 from sunpy_sphinx_theme import PNG_ICON  # NOQA
 
 # -- Project information -------------------------------------------------------
-project = 'SunPy'
+project = 'sunpy'
 author = 'The SunPy Community'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
