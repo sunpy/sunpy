@@ -133,6 +133,10 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         if not kwargs.pop('wrap_longitude', True):
             self._wrap_angle = None
 
+        # If obstime is not provided but observer has an obstime, use that as the obstime
+        if 'obstime' not in kwargs and 'observer' in kwargs and getattr(kwargs['observer'], 'obstime', None) is not None:
+            kwargs['obstime'] = kwargs['observer'].obstime
+
         super().__init__(*args, **kwargs)
 
         # If obstime is specified, treat the default observer (None) as explicitly set
