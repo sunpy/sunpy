@@ -38,9 +38,10 @@ from sunpy import __version__  # NOQA
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
 from matplotlib import MatplotlibDeprecationWarning  # NOQA
 from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
+from sunpy_sphinx_theme import PNG_ICON  # NOQA
 
 # -- Project information -------------------------------------------------------
-project = 'SunPy'
+project = 'sunpy'
 author = 'The SunPy Community'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
@@ -235,7 +236,7 @@ hoverxref_role_types = {
     # Roles within the std domain
     "confval": "tooltip",
     "hoverxref": "tooltip",
-    "ref": "tooltip", # Would be used by hoverxref_auto_ref if we set it to True
+    "ref": "tooltip",  # Would be used by hoverxref_auto_ref if we set it to True
     "term": "tooltip",
 }
 
@@ -243,8 +244,7 @@ hoverxref_role_types = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-from sunpy_sphinx_theme.conf import *  # NOQA
-from sunpy_sphinx_theme.conf import png_icon  # NOQA
+html_theme = "sunpy"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -287,7 +287,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
-    "default_thumb_file": png_icon,
+    "default_thumb_file": PNG_ICON,
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
