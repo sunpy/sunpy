@@ -129,6 +129,7 @@ def solar_wcs_frame_mapping(wcs):
                              attrs[1] * u.deg,
                              attrs[2] * u.m,
                              **kwargs)
+            break
 
     # Read the observer out of obsgeo for ground based observers
     if observer is None:
