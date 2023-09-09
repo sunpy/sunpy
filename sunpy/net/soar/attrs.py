@@ -10,7 +10,13 @@ __all__ = ['Product']
 class Product(SimpleAttr):
     """
     The data product identifier to search for.
+
+    Makes the value passed lower so that it is case insensitive as
+    all descriptors on the SOAR are now lowercase.
     """
+
+    def __init__(self, value):
+        self.value = value.lower()
 
 
 class Identifier(Product):
