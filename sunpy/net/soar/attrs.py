@@ -4,15 +4,15 @@ import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
-__all__ = ['Product']
+__all__ = ["Product", "Identifier", "SOOP"]
 
 
 class Product(SimpleAttr):
     """
     The data product identifier to search for.
 
-    Makes the value passed lower so that it is case insensitive as
-    all descriptors on the SOAR are now lowercase.
+    Makes the value passed lower so that it is case insensitive as all
+    descriptors on the SOAR are now lowercase.
     """
 
     def __init__(self, value):
@@ -27,7 +27,9 @@ class Identifier(Product):
     def __init__(self, *args, **kwargs):
         warnings.warn(
             "'a.soar.Identifier' is deprecated; use 'a.soar.Product' instead.",
-            SunpyDeprecationWarning)
+            SunpyDeprecationWarning,
+            stacklevel=2,
+        )
         super().__init__(*args, **kwargs)
 
 
@@ -43,8 +45,10 @@ walker = AttrWalker()
 @walker.add_creator(AttrOr)
 def create_or(wlk, tree):
     """
-    Creator for OR. Loops through the next level down in the tree and appends
-    the individual results to a list.
+    Creator for OR.
+
+    Loops through the next level down in the tree and appends the
+    individual results to a list.
     """
     results = []
     for sub in tree.attrs:
@@ -55,8 +59,9 @@ def create_or(wlk, tree):
 @walker.add_creator(AttrAnd, DataAttr)
 def create_and(wlk, tree):
     """
-    Creator for And and other simple attributes. No walking needs to be done,
-    so simply call the applier function.
+    Creator for And and other simple attributes.
+
+    No walking needs to be done, so simply call the applier function.
     """
     result = []
     wlk.apply(tree, result)
@@ -73,7 +78,7 @@ def apply_and(wlk, and_attr, params):
     wlk : AttrWalker
     and_attr : AttrAnd
         The AND attribute being applied. The individual attributes being
-        AND'ed together are accesible with ``and_attr.attrs``.
+        AND'ed together are accessible with ``and_attr.attrs``.
     params : list[str]
         List of search parameters.
     """
@@ -100,8 +105,8 @@ params : list[str]
 
 @walker.add_applier(a.Time)
 def _(wlk, attr, params):
-    start = attr.start.strftime('%Y-%m-%d+%H:%M:%S')
-    end = attr.end.strftime('%Y-%m-%d+%H:%M:%S')
+    start = attr.start.strftime("%Y-%m-%d+%H:%M:%S")
+    end = attr.end.strftime("%Y-%m-%d+%H:%M:%S")
     params.append(f"begin_time>='{start}'+AND+begin_time<='{end}'")
 
 
@@ -112,11 +117,12 @@ def _(wlk, attr, params):
         level = f"L{level}"
 
     level = level.upper()
-    allowed_levels = ('L0', 'L1', 'L2', 'L3', 'LL01', 'LL02', 'LL03')
+    allowed_levels = ("L0", "L1", "L2", "L3", "LL01", "LL02", "LL03")
     if level not in allowed_levels:
         warnings.warn(
-            f'level not in list of allowed levels for SOAR: {allowed_levels}',
-            SunpyUserWarning
+            f"level not in list of allowed levels for SOAR: {allowed_levels}",
+            SunpyUserWarning,
+            stacklevel=2,
         )
 
     params.append(f"level='{level}'")
