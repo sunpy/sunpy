@@ -95,7 +95,7 @@ class SOARClient(BaseClient):
             info["begin_time"] = parse_time(info["begin_time"]).iso
             info["end_time"] = parse_time(info["end_time"]).iso
 
-        return astropy.table.QTable(
+        result_table = astropy.table.QTable(
             {
                 "Instrument": info["instrument"],
                 "Data product": info["descriptor"],
@@ -108,6 +108,8 @@ class SOARClient(BaseClient):
                 "SOOP Name": info["soop_name"],
             },
         )
+        result_table.sort("Start time")
+        return result_table
 
     def fetch(self, query_results, *, path, downloader, **kwargs):
         """

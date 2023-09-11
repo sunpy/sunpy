@@ -19,7 +19,7 @@ def test_search():
     res = Fido.search(instrument, time, level, product)
     assert len(res) == 1
     assert len(res[0]) == 37
-    assert u.allclose(res[0, 0]["Filesize"], 3.47 * u.Mbyte)
+    assert u.allclose(res[0, 0]["Filesize"], 3.45 * u.Mbyte)
 
     # check passing upper case descriptor
     product = a.soar.Product("EUI-FSI174-IMAGE")
@@ -29,7 +29,9 @@ def test_search():
     files = Fido.fetch(res[0, 0])
     assert len(files) == 1
     fname = files[0]
+
     assert u.allclose(Path(fname).stat().st_size * u.byte, res[0, 0]["Filesize"], atol=1e-3 * u.Mbyte)
+
     # Smoke test that we can read this into a map
     sunpy.map.Map(fname)
 
