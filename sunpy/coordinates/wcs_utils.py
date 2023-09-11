@@ -100,6 +100,10 @@ def solar_wcs_frame_mapping(wcs):
     dateobs = wcs.wcs.dateavg or wcs.wcs.dateobs or None
 
     # Get observer coordinate from the WCS auxiliary information
+    # Note: the order of the entries is important, as it determines which set
+    # of header keys is given priority below. Stonyhurst should usually be
+    # prioritized, as it is defined more consistently across implementations,
+    # and so it should occur before Carrington here.
     required_attrs = {HeliographicStonyhurst: ['hgln_obs', 'hglt_obs', 'dsun_obs'],
                       HeliographicCarrington: ['crln_obs', 'hglt_obs', 'dsun_obs']}
 
