@@ -1,3 +1,28 @@
+5.0.1 (2023-09-12)
+==================
+
+Bug Fixes
+---------
+
+- Fix RHESSI (`~sunpy.net.dataretriever.RHESSIClient`) fallback server detection. (`#7092 <https://github.com/sunpy/sunpy/pull/7092>`__)
+- Fix bug in :func:`~sunpy.coordinates.get_horizons_coord` when specifying a time range via a dictionary that could cause the returned times to be slightly different from the supplied times. (`#7106 <https://github.com/sunpy/sunpy/pull/7106>`__)
+- Updated the url of the `~sunpy.net.dataretriever.GBMClient` to match on files other than those that end with version 0 (i.e., V0.pha). (`#7148 <https://github.com/sunpy/sunpy/pull/7148>`__)
+
+
+Documentation
+-------------
+
+- Removed the specification of a non-identity rotation matrix in two reprojection examples. (`#7114 <https://github.com/sunpy/sunpy/pull/7114>`__)
+- Added an example (:ref:`sphx_glr_generated_gallery_showcase_stereoscopic_3d.py`) for how to make an anaglyph 3D (i.e., red-cyan) image from a stereoscopic observation. (`#7123 <https://github.com/sunpy/sunpy/pull/7123>`__)
+
+
+Internal Changes
+----------------
+
+- Added missing support to find GOES-18 XRS data in `~sunpy.net.dataretriever.XRSClient`. (`#7108 <https://github.com/sunpy/sunpy/pull/7108>`__)
+- Raise an error with a helpful message when :meth:`sunpy.map.GenericMap.plot` is called with a non-boolean value for the ``annotate`` keyword, because the user is probably trying to specify the axes. (`#7163 <https://github.com/sunpy/sunpy/pull/7163>`__)
+
+
 5.0.0 (2023-06-14)
 ==================
 
