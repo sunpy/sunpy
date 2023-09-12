@@ -405,10 +405,9 @@ def test_observer_hgln_crln_priority():
     """
     When extracting the observer information from a FITS header, ensure
     Stonyhurst (HG) coordinates are preferred over Carrington (CR) if present.
-    Going through `Map` and `WCS` seem to follow (at least slightly) different
-    code paths, so test them both.
+    Note that `Map` creates a custom FITS header with a sanitized observer
+    location, so it is separately tested in the map module.
     """
-    data = np.ones([6, 6], dtype=np.float64)
     header = {'CRVAL1': 0,
               'CRVAL2': 0,
               'CRPIX1': 5,
@@ -433,17 +432,9 @@ def test_observer_hgln_crln_priority():
               'crln_obs': 2,
               'dsun_obs': 10,
               'rsun_ref': 690000000}
-    generic_map = sunpy.map.Map((data, header))
-
-    c = generic_map.pixel_to_world(0*u.pix, 0*u.pix)
+    wcs = WCS(header)
+    c = wcs.pixel_to_world(0, 0)
     assert c.observer.lon == 0 * u.deg
     # Note: don't test whether crlt or hglt is used---according to
     # _set_wcs_aux_obs_coord, those are expected to always be the same and so
     # the same one is always used
-
-    c = generic_map.wcs.pixel_to_world(0, 0)
-    assert c.observer.lon == 0 * u.deg
-
-    wcs = WCS(header)
-    c = wcs.pixel_to_world(0, 0)
-    assert c.observer.lon == 0 * u.deg
