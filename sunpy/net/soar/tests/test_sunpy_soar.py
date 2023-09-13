@@ -1,11 +1,9 @@
 from pathlib import Path
 
 import astropy.units as u
-import pytest
 import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 from sunpy.net.soar.client import SOARClient
 
@@ -49,25 +47,12 @@ def test_search_low_latency():
     assert len(files) == 1
 
 
-def test_deprecated_identifier():
-    instrument = a.Instrument("EUI")
-    time = a.Time("2021-02-11", "2021-02-12")
-    level = a.Level(1)
-    with pytest.warns(SunpyDeprecationWarning):
-        identifier = a.soar.Identifier("eui-fsi174-image")
-    product = a.soar.Product("eui-fsi174-image")
-    res1 = Fido.search(instrument, time, level, identifier)
-    res2 = Fido.search(instrument, time, level, product)
-
-    assert res1.__str__() == res2.__str__()
-
-
 def test_insitu_search():
     instrument = a.Instrument("MAG")
     time = a.Time("2020-04-16", "2020-04-17")
-    identifier = a.soar.Product("mag-rtn-normal-1-minute")
+    product = a.soar.Product("mag-rtn-normal-1-minute")
 
-    res = Fido.search(instrument, time, identifier)
+    res = Fido.search(instrument, time, product)
     assert len(res) == 1
     assert len(res[0]) == 2
 

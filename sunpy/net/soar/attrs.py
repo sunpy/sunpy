@@ -2,14 +2,14 @@ import warnings
 
 import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ["Product", "Identifier", "SOOP"]
+__all__ = ["Product", "SOOP"]
 
 
 class Product(SimpleAttr):
     """
-    The data product identifier to search for.
+    The data product descriptor to search for.
 
     Makes the value passed lower so that it is case insensitive as all
     descriptors on the SOAR are now lowercase.
@@ -17,20 +17,6 @@ class Product(SimpleAttr):
 
     def __init__(self, value):
         self.value = value.lower()
-
-
-class Identifier(Product):
-    """
-    The data product identifier to search for.
-    """
-
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "'a.soar.Identifier' is deprecated; use 'a.soar.Product' instead.",
-            SunpyDeprecationWarning,
-            stacklevel=2,
-        )
-        super().__init__(*args, **kwargs)
 
 
 class SOOP(SimpleAttr):
@@ -133,7 +119,7 @@ def _(wlk, attr, params):
     params.append(f"instrument='{attr.value}'")
 
 
-@walker.add_applier(Product, Identifier)
+@walker.add_applier(Product)
 def _(wlk, attr, params):
     params.append(f"descriptor='{attr.value}'")
 
