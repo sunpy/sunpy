@@ -63,6 +63,9 @@ def test_nickname(lasco_map):
     assert lasco_map.nickname == {'C2': 'LASCO-C2 Orange',
                                   'C3': 'LASCO-C3 Clear'}[lasco_map.detector]
 
+    with pytest.raises(AttributeError, match="Cannot manually set nickname for LASCOMap"):
+        lasco_map.nickname = 'new nickname'
+
 
 def test_observatory(lasco_map):
     """Tests the observatory property of the LASCOMap object."""
