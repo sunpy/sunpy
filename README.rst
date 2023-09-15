@@ -4,7 +4,7 @@
 
 |Latest Version| |DOI| |repostatus| |python|
 |ci| |codecov| |Docs|
-|matrix|  |Binder|
+|matrix|
 |Powered by NumFOCUS|
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
@@ -15,8 +15,6 @@
    :target: https://app.element.io/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/sunpy/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
-.. |Binder| image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/sunpy/sunpy/main?filepath=examples
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
 .. |CI| image:: https://github.com/sunpy/sunpy/actions/workflows/ci.yml/badge.svg?branch=main
