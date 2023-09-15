@@ -399,3 +399,42 @@ def test_obsgeo_invalid(obsgeo):
 
     with pytest.raises(ValueError):
         obsgeo_to_frame(obsgeo, None)
+
+
+def test_observer_hgln_crln_priority():
+    """
+    When extracting the observer information from a FITS header, ensure
+    Stonyhurst (HG) coordinates are preferred over Carrington (CR) if present.
+    Note that `Map` creates a custom FITS header with a sanitized observer
+    location, so it is separately tested in the map module.
+    """
+    header = {'CRVAL1': 0,
+              'CRVAL2': 0,
+              'CRPIX1': 5,
+              'CRPIX2': 5,
+              'CDELT1': 10,
+              'CDELT2': 10,
+              'CUNIT1': 'arcsec',
+              'CUNIT2': 'arcsec',
+              'PC1_1': 0,
+              'PC1_2': -1,
+              'PC2_1': 1,
+              'PC2_2': 0,
+              'NAXIS1': 6,
+              'NAXIS2': 6,
+              'CTYPE1': 'HPLN-TAN',
+              'CTYPE2': 'HPLT-TAN',
+              'date-obs': '1970-01-01T00:00:00',
+              'mjd-obs': 40587,
+              'hglt_obs': 0,
+              'hgln_obs': 0,
+              'crlt_obs': 2,
+              'crln_obs': 2,
+              'dsun_obs': 10,
+              'rsun_ref': 690000000}
+    wcs = WCS(header)
+    c = wcs.pixel_to_world(0, 0)
+    assert c.observer.lon == 0 * u.deg
+    # Note: don't test whether crlt or hglt is used---according to
+    # _set_wcs_aux_obs_coord, those are expected to always be the same and so
+    # the same one is always used

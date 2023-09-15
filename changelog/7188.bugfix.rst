@@ -1,0 +1,2 @@
+When directly instantiating a `~astropy.wcs.WCS` from a FITS header that contains both Stonyhurst and Carrington heliographic coordinates for the observer location, the Stonyhurst coordinates will now be prioritized.
+This behavior is now consistent with the `~sunpy.map.Map` class, which has always prioritized Stonyhurst coordinates over Carrington coordinates.
