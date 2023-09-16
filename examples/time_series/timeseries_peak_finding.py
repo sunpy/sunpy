@@ -100,6 +100,7 @@ def findpeaks(series, DELTA):
 # approximately the length of smallest peak that we wish to detect.
 
 series = my_timeseries.to_dataframe()['xrsa']
+print(series)
 minpeaks, maxpeaks = findpeaks(series, DELTA=1e-7)
 
 # Plotting the figure and extremum points
@@ -107,7 +108,7 @@ fig, ax = plt.subplots()
 ax.set_xlabel('Time')
 ax.set_ylabel("Flux (Wm$^{-2}$")
 ax.set_title('Peaks in TimeSeries')
-series.plot(axes=ax)
+series.plot(ax=ax)
 ax.scatter(*zip(*minpeaks), color='red', label='min')
 ax.scatter(*zip(*maxpeaks), color='green', label='max')
 ax.legend()
