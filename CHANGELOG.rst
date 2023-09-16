@@ -14,7 +14,7 @@ Deprecations
 
 - Using `sunpy.map.header_helper.meta_keywords` is deprecated.
   Please see :ref:`Meta Keywords Table` for the list of metadata keywords used by `~sunpy.map.Map`. (`#6743 <https://github.com/sunpy/sunpy/pull/6743>`__)
-- The utility function :func:`sunpy.map.extract_along_coord` is deprecated.
+- The utility function ``sunpy.map.extract_along_coord`` is deprecated.
   Use :func:`sunpy.map.pixelate_coord_path`, and then pass its output to :func:`sunpy.map.sample_at_coords`. (`#6840 <https://github.com/sunpy/sunpy/pull/6840>`__)
 - Parsing SDO/EVE level 0CS average files is deprecated, and will be removed in sunpy 6.0.
   Parsing this data is untested, and we cannot find a file to test it with.
@@ -202,7 +202,7 @@ New Features
 - Updated and expanded the HTML representation for `~sunpy.timeseries.TimeSeries`. (`#5951 <https://github.com/sunpy/sunpy/pull/5951>`__)
 - When reading CDF files, any columns with a floating point data type now have their masked values converted to NaN. (`#5956 <https://github.com/sunpy/sunpy/pull/5956>`__)
 - Add support for saving `~sunpy.map.GenericMap` as JPEG 2000 files. (`#6153 <https://github.com/sunpy/sunpy/pull/6153>`__)
-- Add a function `sunpy.map.extract_along_coord` that, for a given set of coordinates,
+- Add a function ``sunpy.map.extract_along_coord`` that, for a given set of coordinates,
   finds each array index that crosses the line traced by those coordinates and returns the value of the data
   array of a given map at those array indices. (`#6189 <https://github.com/sunpy/sunpy/pull/6189>`__)
 - Three new maps have been added to the sample data from STEREO A and STEREO B at
