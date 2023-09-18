@@ -2354,7 +2354,7 @@ class GenericMap(NDData):
                 transform_orig = contour_args["transform"]
                 contour_args.pop("transform")
             else:
-                transform_orig = self.wcs
+                transform_orig = axes.get_transform(self.wcs)
             transform = transform_orig - axes.transData  # pixel->pixel transform
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
