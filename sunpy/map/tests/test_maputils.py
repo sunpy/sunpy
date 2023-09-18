@@ -219,6 +219,12 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
     assert_quantity_allclose(data[-1], intensity_along_arc[-1])
 
 
+def test_sample_out_of_bounds(aia171_test_map):
+    point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
+    with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.'):
+        sample_at_coords(aia171_test_map, point)
+
+
 def test_contains_solar_center(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map, sub_smap):
     assert contains_solar_center(aia171_test_map)
     assert not contains_solar_center(all_off_disk_map)
