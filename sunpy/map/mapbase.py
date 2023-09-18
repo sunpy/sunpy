@@ -2350,7 +2350,12 @@ class GenericMap(NDData):
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
         if self.wcs is not axes.wcs:
-            transform = axes.get_transform(self.wcs) - axes.transData  # pixel->pixel transform
+            if "transform" in contour_args:
+                transform_orig = contour_args["transform"]
+                contour_args.pop("transform")
+            else:
+                transform_orig = self.wcs
+            transform = transform_orig - axes.transData  # pixel->pixel transform
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
 
