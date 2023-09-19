@@ -184,19 +184,19 @@ class SOARClient(BaseClient):
         with attrs_path.open() as attrs_file:
             all_datasets = json.load(attrs_file)
         # Convert from dict to list of tuples
-        all_datasets = [(data_id, desc) for data_id, desc in all_datasets.items()]
+        all_datasets = list(all_datasets.items())
 
         # Instrument attrs
         instr_path = pathlib.Path(__file__).parent / "data" / "instrument_attrs.json"
         with instr_path.open() as instr_attrs_file:
             all_instr = json.load(instr_attrs_file)
-        all_instr = [(data_id, desc) for data_id, desc in all_instr.items()]
+        all_instr = list(all_instr.items())
 
         soop_path = pathlib.Path(__file__).parent / "data" / "soop_attrs.json"
         with soop_path.open() as soop_path_file:
             all_soops = json.load(soop_path_file)
 
-        all_soops = [(data_id, desc) for data_id, desc in all_soops.items()]
+        all_soops = list(all_soops.items())
 
         return {
             Product: all_datasets,
