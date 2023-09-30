@@ -3,7 +3,7 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.sources.gong import GongSynopticMap
+from sunpy.map.sources.gong import GONGSynopticMap
 
 
 @pytest.fixture
@@ -13,7 +13,7 @@ def gong_synoptic():
 
 def test_fitstoGONGSynoptic(gong_synoptic):
     """Tests the creation of GongSynopticMap using FITS."""
-    assert isinstance(gong_synoptic, GongSynopticMap)
+    assert isinstance(gong_synoptic, GONGSynopticMap)
 
 
 def test_is_datasource_for(gong_synoptic):

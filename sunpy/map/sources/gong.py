@@ -8,10 +8,10 @@ import astropy.units as u
 from sunpy.map import GenericMap
 from sunpy.coordinates import get_earth, HeliographicStonyhurst
 
-__all__ = ['GongSynopticMap', 'ADAPTMap']
+__all__ = ['GONGSynopticMap', 'ADAPTMap']
 
 
-class GongSynopticMap(GenericMap):
+class GONGSynopticMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         # Fix coordinate system stuff
         if 'KEYCOMMENTS' in header:
