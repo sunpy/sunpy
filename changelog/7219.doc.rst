@@ -1,1 +1,0 @@
-Fixed the inappropriate x limits in "Flare times on a GOES XRS plot" example
