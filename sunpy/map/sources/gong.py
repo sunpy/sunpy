@@ -12,6 +12,32 @@ __all__ = ['GONGSynopticMap', 'ADAPTMap']
 
 
 class GONGSynopticMap(GenericMap):
+    """
+    GONG Synoptic Map.
+
+    The Global Oscillation Network Group (GONG) operates a six-station network of velocity
+    imagers located around the Earth that observe the Sun nearly continuously. GONG
+    produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line with an
+    array of 242×256 pixels covering the solar disk. These magnetograms are used to derive
+    synoptic maps which show a full-surface picture of the solar magnetic field.
+
+    Notes
+    -----
+    SunPy automatically fixes non-compliant FITS metadata in GONG maps. Namely, CDELT2 is
+    converted to degrees and CUNIT1 and CUNIT2 are set to 'deg'; DATE-OBS is converted to
+    ISO format; BUNIT is set to 'G'; and HGLT_OBS, HGLN_OBS, and DSUN_OBS are set to the
+    appropriate values for an observer on Earth.
+
+    References
+    ----------
+    * `GONG Page <https://gong.nso.edu/>`_
+    * `Magnetogram Synoptic Map Images Page <https://gong.nso.edu/data/magmap/>`_
+    * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`_
+    * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`_
+    * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`_
+
+
+    """
     def __init__(self, data, header, **kwargs):
         # Fix coordinate system stuff
         if 'KEYCOMMENTS' in header:
@@ -44,6 +70,20 @@ class GONGSynopticMap(GenericMap):
 
 
 class ADAPTMap(GenericMap):
+    """
+    ADAPT Map.
+
+    The Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model
+    evolves the solar magnetic flux when no observations are available and
+    updates the modeled flux with data assimilation. KPVT,SOLIS/VSM, and GONG
+    magnetograms are used.
+
+    References
+    ----------
+    * `ADAPT Model Page <https://nso.edu/data/nisp-data/adapt-maps/>`_
+    * `ADAPT Model Paper <https://doi.org/10.1063/1.3395870>`_
+    * `ADAPT Maps data access <https://gong.nso.edu/adapt/maps/>`_
+    """
     def __init__(self, data, header, **kwargs):
         if 'date-obs' not in header:
             header['date-obs'] = header['maptime']
