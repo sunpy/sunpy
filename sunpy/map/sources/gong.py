@@ -2,11 +2,12 @@
 GONG Map subclass definitions
 """
 import numpy as np
-from astropy.time import Time
-import astropy.units as u
 
+import astropy.units as u
+from astropy.time import Time
+
+from sunpy.coordinates import HeliographicStonyhurst, get_earth
 from sunpy.map import GenericMap
-from sunpy.coordinates import get_earth, HeliographicStonyhurst
 
 __all__ = ['GONGSynopticMap', 'ADAPTMap']
 
@@ -118,6 +119,6 @@ def _observer_coord_meta(observer_coord):
 
 def _earth_obs_coord_meta(obstime):
     """
-    Return metadata for an Earth obeserver coordinate.
+    Return metadata for an Earth observer coordinate.
     """
     return _observer_coord_meta(get_earth(obstime))
