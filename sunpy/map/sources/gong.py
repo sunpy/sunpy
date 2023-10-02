@@ -9,7 +9,7 @@ from astropy.time import Time
 from sunpy.coordinates import HeliographicStonyhurst, get_earth
 from sunpy.map import GenericMap
 
-__all__ = ['GONGSynopticMap', 'ADAPTMap']
+__all__ = ['GONGSynopticMap']
 
 
 class GONGSynopticMap(GenericMap):
@@ -68,38 +68,6 @@ class GONGSynopticMap(GenericMap):
         """Determines if header corresponds to an GONG map."""
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
                 str(header.get('CTYPE1', '').startswith('CRLN')))
-
-
-class ADAPTMap(GenericMap):
-    """
-    ADAPT Map.
-
-    The Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model
-    evolves the solar magnetic flux when no observations are available and
-    updates the modeled flux with data assimilation. KPVT,SOLIS/VSM, and GONG
-    magnetograms are used.
-
-    References
-    ----------
-    * `ADAPT Model Page <https://nso.edu/data/nisp-data/adapt-maps/>`_
-    * `ADAPT Model Paper <https://doi.org/10.1063/1.3395870>`_
-    * `ADAPT Maps data access <https://gong.nso.edu/adapt/maps/>`_
-    """
-    def __init__(self, data, header, **kwargs):
-        if 'date-obs' not in header:
-            header['date-obs'] = header['maptime']
-        # Fix CTYPE
-        if header['ctype1'] == 'Long':
-            header['ctype1'] = 'CRLN-CAR'
-        if header['ctype2'] == 'Lat':
-            header['ctype2'] = 'CRLT-CAR'
-
-        super().__init__(data, header, **kwargs)
-
-    @classmethod
-    def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an ADAPT map."""
-        return header.get('model') == 'ADAPT'
 
 
 def _observer_coord_meta(observer_coord):
