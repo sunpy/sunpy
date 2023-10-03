@@ -17,11 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sunpy repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: "0"
       - name: Checkout sunpy-benchmarks repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: sunpy/sunpy-benchmarks
           ref: main
