@@ -12,17 +12,6 @@ import sunpy.map
 from sunpy.data.test import get_test_filepath
 
 
-def test_dask_array(generic_map):
-    dask_array = pytest.importorskip('dask.array')
-    da = dask_array.from_array(generic_map.data, chunks=(1, 1))
-    pair_map = sunpy.map.Map(da, generic_map.meta)
-
-    # Check that _repr_html_ functions for a dask array
-    html_dask_repr = pair_map._repr_html_(compute_dask=False)
-    html_computed_repr = pair_map._repr_html_(compute_dask=True)
-    assert html_dask_repr != html_computed_repr
-
-
 @pytest.fixture
 def aia171_test_dask_map(aia171_test_map):
     dask_array = pytest.importorskip('dask.array')
@@ -30,6 +19,13 @@ def aia171_test_dask_map(aia171_test_map):
         dask_array.from_array(aia171_test_map.data),
         copy.deepcopy(aia171_test_map.meta)
     )
+
+
+def test_dask_array(aia171_test_dask_map):
+    # Check that _repr_html_ functions for a dask array
+    html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
+    html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
+    assert html_dask_repr != html_computed_repr
 
 
 # This is needed for the reproject_to function
@@ -54,14 +50,13 @@ def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func
     Check that map methods preserve dask arrays if they are given as input, instead of eagerly
     operating on them and bringing them into memory.
     """
-    dask_array = pytest.importorskip('dask.array')
     # Check that result array is still a Dask array
     res_dask = aia171_test_dask_map.__getattribute__(func)(**args)
     res = aia171_test_map.__getattribute__(func)(**args)
     result_is_map = isinstance(res, sunpy.map.GenericMap)
     if result_is_map:
-        assert isinstance(res_dask.data, dask_array.Array)
+        assert isinstance(res_dask.data, type(aia171_test_dask_map.data))
         assert np.allclose(res_dask.data.compute(), res.data, atol=0.0, rtol=0.0)
     else:
-        assert isinstance(res_dask, dask_array.Array)
+        assert isinstance(res_dask, type(aia171_test_dask_map.data))
         assert np.allclose(res_dask.compute(), res, atol=0.0, rtol=0.0)
