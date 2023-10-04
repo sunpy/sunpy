@@ -61,7 +61,7 @@ def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func
     result_is_map = isinstance(res, sunpy.map.GenericMap)
     if result_is_map:
         assert isinstance(res_dask.data, dask_array.Array)
-        assert np.all(res_dask.data.compute(), res.data)
+        assert np.allclose(res_dask.data.compute(), res.data, atol=0.0, rtol=0.0)
     else:
         assert isinstance(res_dask, dask_array.Array)
-        assert np.all(res_dask.compute(), res)
+        assert np.allclose(res_dask.compute(), res, atol=0.0, rtol=0.0)
