@@ -140,6 +140,8 @@ def sample_at_coords(smap, coordinates):
     Uses nearest-neighbor interpolation of coordinates in map, as
     it effectively uses array indexing.
 
+    An error is raised if any of the coordinates fall outside the map bounds.
+
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
@@ -156,6 +158,9 @@ def sample_at_coords(smap, coordinates):
     --------
     .. minigallery:: sunpy.map.sample_at_coords
     """
+    if not all(contains_coordinate(smap, coordinates)):
+        raise ValueError('At least one coordinate is not within the bounds of the map.')
+
     return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
 
 
@@ -580,6 +585,12 @@ def pixelate_coord_path(smap, coord_path, *, bresenham=False):
     -----
     If a pixel intersects the coordinate path at only its corner, it may not be
     returned due to the limitations of floating-point comparisons.
+
+    If part of the coordinate path lies outside of the bounds of the map, this
+    function will still return pixel coordinates that are consistent with the WCS of
+    the map, but attempting to obtain the map data at these pixel coordinates
+    (e.g., using :func:`~sunpy.map.sample_at_coords`) will raise an error, as these
+    pixels are not "real" and have no corresponding data.
 
     Returns
     -------
