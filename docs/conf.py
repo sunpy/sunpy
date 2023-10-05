@@ -193,6 +193,7 @@ intersphinx_mapping = {
     "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
+    "dask": ("https://docs.dask.org/en/stable/", None),
     "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
