@@ -2,12 +2,11 @@ exclude: "\\.asdf$"
 
 repos:
   # This should be before any formatting hooks like isort
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
+  - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.0.292"
     hooks:
       - id: ruff
         args: ["--fix"]
-
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
@@ -29,7 +28,6 @@ repos:
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
       - id: mixed-line-ending
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
-
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
@@ -44,7 +42,6 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:
