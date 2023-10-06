@@ -220,7 +220,7 @@ class GenericMap(NDData):
 
         # Setup some attributes
         self._nickname = None
-        # These are palceholders for default attributes, which are only set
+        # These are placeholders for default attributes, which are only set
         # once if their data isn't present in the map metadata.
         self._default_time = None
         self._default_dsun = None
