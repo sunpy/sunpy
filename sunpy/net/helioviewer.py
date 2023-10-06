@@ -303,7 +303,7 @@ class HelioviewerClient:
             downloading files.
         events : `str`, optional
             Defaults to an  empty string to indicate no feature/event annotations.
-            List feature/event types and FRMs to use to annoate the image.
+            List feature/event types and FRMs to use to annotate the image.
             Example could be "[AR,HMI_HARP;SPoCA,1]" or "[CH,all,1]"
         event_labels : `bool`, optional
             Defaults to False.
