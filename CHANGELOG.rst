@@ -653,7 +653,7 @@ New Features
 - Add support for parsing the observer location from a `~astropy.wcs.WCS` object
   when using the 'OBSGEO' formulation. This is the recommended way to define the
   observer location of a ground based observer. (`#5315 <https://github.com/sunpy/sunpy/pull/5315>`__)
-- Added a new function, :meth:`sunpy.visualization.draw_limb`, that draws
+- Added a new function, ``sunpy.visualization.draw_limb``, that draws
   the solar limb as seen from an arbitrary observer coordinate on a world
   coordinate system aware Axes. (`#5414 <https://github.com/sunpy/sunpy/pull/5414>`__)
 - `sunpy.map.GenericMap.rsun_meters` now uses `sunpy.map.GenericMap.rsun_obs`

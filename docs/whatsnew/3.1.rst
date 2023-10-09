@@ -51,7 +51,7 @@ Support for .cdf files
 New limb drawing function
 =========================
 The solar limb as seen from an arbitrary observer coordinate can now be drawn on a world coordinate system aware
-Axes using the :func:`sunpy.visualization.draw_limb` function.
+Axes using the ``sunpy.visualization.draw_limb`` function.
 
 .. minigallery:: sunpy.visualization.draw_limb
 
