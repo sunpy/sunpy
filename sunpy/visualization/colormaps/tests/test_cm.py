@@ -1,3 +1,4 @@
+import matplotlib
 import pytest
 
 import astropy.units as u
@@ -5,13 +6,12 @@ import astropy.units as u
 import sunpy.visualization.colormaps as cm
 import sunpy.visualization.colormaps.color_tables as ct
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 
 
 # Checks that colormaps are imported by MPL
 def test_get_cmap():
     for cmap in cm.cmlist.keys():
-        assert cm.cmlist[cmap] == _get_mpl_cmap(cmap)
+        assert cm.cmlist[cmap] == matplotlib.colormaps[cmap]
 
 
 def test_invalid_show_cmaps():
