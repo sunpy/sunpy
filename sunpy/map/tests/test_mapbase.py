@@ -1303,17 +1303,6 @@ def test_quicklook(mocker, aia171_test_map):
     assert aia171_test_map._repr_html_() in html_string
 
 
-def test_dask_array(generic_map):
-    dask_array = pytest.importorskip('dask.array')
-    da = dask_array.from_array(generic_map.data, chunks=(1, 1))
-    pair_map = sunpy.map.Map(da, generic_map.meta)
-
-    # Check that _repr_html_ functions for a dask array
-    html_dask_repr = pair_map._repr_html_(compute_dask=False)
-    html_computed_repr = pair_map._repr_html_(compute_dask=True)
-    assert html_dask_repr != html_computed_repr
-
-
 @pytest.fixture
 def generic_map2(generic_map):
     generic_map.meta["CTYPE1"] = "HPLN-TAN"

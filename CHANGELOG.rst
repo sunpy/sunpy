@@ -1663,7 +1663,7 @@ Trivial/Internal Changes
 - Re-factored the `sunpy.map.Map` factory to dispatch argument parsing based on type. (`#4037 <https://github.com/sunpy/sunpy/pull/4037>`__)
 - Improved the error message raised by the Map factory when a map matches multiple source map types. (`#4052 <https://github.com/sunpy/sunpy/pull/4052>`__)
 - Added log messages when the sample data fails to download. (`#4137 <https://github.com/sunpy/sunpy/pull/4137>`__)
-- Remove an Astropy 3.1 comptibility wrapper for ``Quantity.to_string``. (`#4172 <https://github.com/sunpy/sunpy/pull/4172>`__)
+- Remove an Astropy 3.1 compatibility wrapper for ``Quantity.to_string``. (`#4172 <https://github.com/sunpy/sunpy/pull/4172>`__)
 - Refactor the sphinx config to no longer depend on astropy-sphinx and more
   closely match the new sunpy package template (`#4188 <https://github.com/sunpy/sunpy/pull/4188>`__)
 

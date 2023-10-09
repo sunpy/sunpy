@@ -46,5 +46,6 @@ ax.axvspan(
 )
 ax.legend(loc=2)
 ax.set_yscale('log')
+ax.set_xlim(tr.start.to_datetime(), tr.end.to_datetime())
 
 plt.show()

@@ -83,7 +83,7 @@ def make_fitswcs_header(data,
     detector : `str`, optional
         Name of the detector of the observation.
     wavelength : `~astropy.units.Quantity`, optional
-        Wavelength of the observation as an astropy quanitity, e.g. 171*u.angstrom.
+        Wavelength of the observation as an astropy quantity, e.g. 171*u.angstrom.
         From this keyword, the meta keywords ``wavelnth`` and ``waveunit`` will be populated.
     exposure : `~astropy.units.Quantity`, optional
         Exposure time of the observation
