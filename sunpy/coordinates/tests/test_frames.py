@@ -231,6 +231,17 @@ def test_hpc_low_precision_float_warning():
         hpc.make_3d()
 
 
+def test_hpc_obstime_from_observer():
+    # Test that observer.obstime is used for obstime if obstime is not provided
+    observer = HeliographicStonyhurst(obstime='2023-09-08')
+    hpc = Helioprojective(observer=observer)
+    assert hpc.obstime == observer.obstime
+
+    # Test that obstime is None if observer does not have an obstime
+    hpc = Helioprojective(observer='earth')
+    assert hpc.obstime is None
+
+
 # ==============================================================================
 # ## Heliographic Tests
 # ==============================================================================
