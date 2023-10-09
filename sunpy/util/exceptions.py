@@ -60,6 +60,8 @@ class SunpyConnectionWarning(SunpyUserWarning):
     """
     A warning class to indicate a connection warning.
 
+    This warning should be issued when a recoverable error occurs during a connection to a remote server, such as falling back to a mirror etc.
+
     This will not fail the CI (via a pytest ignore) as it is not a critical warning.
     """
 
