@@ -38,7 +38,9 @@ hmi = hmi.submap(aia.bottom_left_coord, top_right=aia.top_right_coord)
 ###############################################################################
 # We then call the :meth:`~sunpy.map.GenericMap.reproject_to` to reproject the AIA Map
 # to have exactly the same grid as the HMI Map.
-# :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py` provides more reference.
+# We choose to reproject the AIA data to the HMI grid, rather than the reverse,
+# to avoid interpolating the LOS HMI magnetic field data.
+# This is because the range of the HMI data includes both positive and negative values and interpolation can destroy small scale variations in the LOS magnetic field which may be important in some scientific contexts.
 
 aia = aia.reproject_to(hmi.wcs)
 aia.nickname = 'AIA'
