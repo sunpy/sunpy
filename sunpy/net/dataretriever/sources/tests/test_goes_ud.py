@@ -27,7 +27,7 @@ def LCClient():
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
      (Time('2008/06/02 12:00', '2008/06/04'),
       'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2008/06/sci_gxrs-l2-irrad_g10_d20080602_v0-0-0.nc',
-      'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2008/06/sci_gxrs-l2-irrad_g10_d20080604_v0-0-0.nc'),
+      'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/xrsf-l2-avg1m_science/2008/06/sci_xrsf-l2-avg1m_g10_d20080604_v1-0-0.nc'),
      (Time('2020/08/02', '2020/08/04'),
       'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/'
       'goes16/l2/data/xrsf-l2-flx1s_science/2020/08/sci_xrsf-l2-flx1s_g16_d20200802_v2-2-0.nc',
@@ -62,7 +62,7 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
-    assert len(urls) == 8
+    assert len(urls) == 12
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
