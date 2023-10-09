@@ -99,6 +99,6 @@ fig = plt.figure()
 ax = fig.add_subplot()
 ax.hist(hmi_masked.data[~hmi_masked.mask], bins='auto', histtype='step')
 ax.set_ylabel('Number of Pixels')
-ax.set_xlabel(f'LOS Magnetic Field [{hmi.unit.to_string(format="latex_inline")}]')
+ax.set_xlabel(f'LOS Magnetic Field [{hmi.unit:latex_inline}]')
 
 plt.show()
