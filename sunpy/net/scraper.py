@@ -89,11 +89,7 @@ class Scraper:
         else:
             now = datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime('{start}{milli:03d}{end}'.format(
-                start=self.timepattern[0:milliseconds.start()],
-                milli=milliseconds_,
-                end=self.timepattern[milliseconds.end():]
-            ))
+            self.now = now.strftime(f'{self.timepattern[0:milliseconds.start()]}{milliseconds_:03d}{self.timepattern[milliseconds.end():]}')
 
     def matches(self, filepath, date):
         """
