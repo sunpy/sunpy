@@ -93,12 +93,12 @@ im = hmi_masked.plot(axes=ax, cmap="hmimag", norm=Normalize(-1500, 1500))
 fig.colorbar(im)
 
 ###############################################################################
-# Finally, we can plot the distribution of HMI LOS flux for only the unmasked values in the largest region shown above.
+# Finally, we can plot the distribution of HMI LOS magnetic field for only the unmasked values in the largest region shown above.
 
 fig = plt.figure()
 ax = fig.add_subplot()
 ax.hist(hmi_masked.data[~hmi_masked.mask], bins='auto', histtype='step')
 ax.set_ylabel('Number of Pixels')
-ax.set_xlabel(f'LOS Flux [{hmi.unit.to_string(format="latex_inline")}]')
+ax.set_xlabel(f'LOS Magnetic Field [{hmi.unit.to_string(format="latex_inline")}]')
 
 plt.show()
