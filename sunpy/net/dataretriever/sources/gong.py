@@ -31,9 +31,8 @@ class GONGClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    baseurl = (r'https://gong2.nso.edu/oQR/zqs/%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc'
-               r'(\d){4}_(\d){3}\.fits.gz')
-    pattern = '{}/zqs/{year:4d}{month:2d}/mrzqs{:4d}{day:2d}/mrzqs{:6d}t{hour:2d}{minute:2d}c{}'
+    pattern = ("https://gong2.nso.edu/oQR/zqs/{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}"
+               "/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{}}.fits.gz")
 
     @property
     def info_url(self):
