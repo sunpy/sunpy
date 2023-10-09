@@ -48,7 +48,7 @@ class GBMClient(GenericClient):
     <BLANKLINE>
 
     """
-    
+
     pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/{{year:4d}}/{{month:2d}}/{{day:2d}}/current/'
                 'glg_{{Resolution:5}}_{{Detector:2}}_{{year:2d}}{{month:2d}}{{day:2d}}_v00.pha')
 
