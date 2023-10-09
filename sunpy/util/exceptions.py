@@ -9,7 +9,7 @@ import warnings
 __all__ = ["NoMapsInFileError",
            "SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
            "SunpyPendingDeprecationWarning", "SunpyMetadataWarning",
-           "warn_user", "warn_deprecated", "warn_metadata"]
+           "warn_user", "warn_deprecated", "warn_metadata", "warn_connection"]
 
 
 class NoMapsInFileError(Exception):
@@ -44,7 +44,6 @@ class SunpyMetadataWarning(UserWarning, SunpyWarning):
     stacklevel=3 to show the user where the issue occurred in their code.
     """
 
-
 class SunpyDeprecationWarning(FutureWarning, SunpyWarning):
     """
     A warning class to indicate a deprecated feature.
@@ -54,6 +53,14 @@ class SunpyDeprecationWarning(FutureWarning, SunpyWarning):
 class SunpyPendingDeprecationWarning(PendingDeprecationWarning, SunpyWarning):
     """
     A warning class to indicate a soon-to-be deprecated feature.
+    """
+
+
+class SunpyConnectionWarning(SunpyUserWarning):
+    """
+    A warning class to indicate a connection warning.
+
+    This will not fail the CI (via a pytest ignore) as it is not a critical warning.
     """
 
 
@@ -88,6 +95,20 @@ def warn_user(msg, stacklevel=1):
     """
     warnings.warn(msg, SunpyUserWarning, stacklevel + 1)
 
+def warn_connection(msg, stacklevel=1):
+    """
+    Raise a `SunpyConnectionWarning`.
+
+    Parameters
+    ----------
+    msg : str
+        Warning message.
+    stacklevel : int
+        This is interpreted relative to the call to this function,
+        e.g. ``stacklevel=1`` (the default) sets the stack level in the
+        code that calls this function.
+    """
+    warnings.warn(msg, SunpyConnectionWarning, stacklevel + 1)
 
 def warn_deprecated(msg, stacklevel=1):
     """
