@@ -8,7 +8,7 @@ import warnings
 
 __all__ = ["NoMapsInFileError",
            "SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
-           "SunpyPendingDeprecationWarning", "SunpyMetadataWarning",
+           "SunpyPendingDeprecationWarning", "SunpyMetadataWarning", "SunpyConnectionWarning",
            "warn_user", "warn_deprecated", "warn_metadata", "warn_connection"]
 
 
