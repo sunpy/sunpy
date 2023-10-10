@@ -22,7 +22,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import warn_user
+from sunpy.util.exceptions import warn_connection, warn_user
 from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .exceptions import (
@@ -59,7 +59,7 @@ def check_connection(url):
     try:
         return urlopen(url, timeout=15).getcode() == 200
     except (OSError, HTTPError, URLError) as e:
-        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        warn_connection(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
 
 
@@ -74,10 +74,10 @@ def check_cgi_connection(url):
     except HTTPError as e:
         if e.code == 411:
             return True
-        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        warn_connection(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
     except (OSError, URLError) as e:
-        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        warn_connection(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
 
 

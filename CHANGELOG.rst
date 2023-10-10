@@ -160,7 +160,7 @@ Deprecations
 - Passing positional arguments to all ``timeseries`` ``peek()`` methods
   is now deprecated, and will raise an error in sunpy 5.1. Pass the arguments
   with keywords (e.g. ``title='my plot title'``) instead. (`#6310 <https://github.com/sunpy/sunpy/pull/6310>`__)
-- Using `sunpy.timeseries.GenericTimeSeries.index` is deprecated.
+- Using ``sunpy.timeseries.GenericTimeSeries.index``` is deprecated.
   Use `~sunpy.timeseries.GenericTimeSeries.time` to get an astropy Time object,
   or ``ts.to_dataframe().index`` to get the times as a pandas ``DataTimeIndex``. (`#6327 <https://github.com/sunpy/sunpy/pull/6327>`__)
 - Deprecated the ``sunpy.visualization.limb`` module.
@@ -653,7 +653,7 @@ New Features
 - Add support for parsing the observer location from a `~astropy.wcs.WCS` object
   when using the 'OBSGEO' formulation. This is the recommended way to define the
   observer location of a ground based observer. (`#5315 <https://github.com/sunpy/sunpy/pull/5315>`__)
-- Added a new function, :meth:`sunpy.visualization.draw_limb`, that draws
+- Added a new function, ``sunpy.visualization.draw_limb``, that draws
   the solar limb as seen from an arbitrary observer coordinate on a world
   coordinate system aware Axes. (`#5414 <https://github.com/sunpy/sunpy/pull/5414>`__)
 - `sunpy.map.GenericMap.rsun_meters` now uses `sunpy.map.GenericMap.rsun_obs`
