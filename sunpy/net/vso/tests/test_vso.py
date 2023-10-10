@@ -24,7 +24,7 @@ from sunpy.net.vso.vso import (
 )
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyConnectionWarning, SunpyUserWarning
 
 
 class MockQRRecord:
@@ -318,7 +318,7 @@ def test_fallback_if_cgi_offline(mocker):
     # Now patch out that URL so we can cause it to return an error
     mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=partial(fail_to_open_nso_cgi, cgi_url))
 
-    with pytest.warns(SunpyUserWarning,
+    with pytest.warns(SunpyConnectionWarning,
                       match=f"Connection to {cgi_url} failed with error .* Retrying with different url and port"):
         mirror = get_online_vso_url()
     assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
