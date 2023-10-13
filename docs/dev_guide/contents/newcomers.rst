@@ -162,7 +162,7 @@ This will make submitting changes easier in the long term for you:
 
     $ git clone https://github.com/<username>/sunpy.git sunpy-git
     $ cd sunpy-git
-    $ pip install -e .[dev]
+    $ pip install -e ."[dev]"
 
 .. note::
     If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
