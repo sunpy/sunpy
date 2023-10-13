@@ -173,7 +173,7 @@ def propagate_with_solar_surface(rotation_model='howard'):
     Notes
     -----
     This context manager also ignores the motion of the center of the Sun (see
-    :func:`~sunpy.coordinates.transformations.transform_with_sun_center`).
+    :func:`~sunpy.coordinates.transform_with_sun_center`).
 
     Due to the implementation approach, this context manager modifies
     transformations between only these five coordinate frames:
