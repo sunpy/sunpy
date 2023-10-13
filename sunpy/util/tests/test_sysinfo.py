@@ -12,7 +12,7 @@ from sunpy.util.sysinfo import (
 def test_find_dependencies():
     missing, installed = find_dependencies()
     assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive", "requests"])
+    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging"])
 
     missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
     assert missing == {}
@@ -48,6 +48,8 @@ def test_missing_dependencies_by_extra():
                                                    'asdf',
                                                    'required',
                                                    'dask',
+                                                   'data',
+                                                   'database',
                                                    'dev',
                                                    'docs',
                                                    'docs-gallery',
