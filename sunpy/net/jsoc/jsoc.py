@@ -7,6 +7,7 @@ from pathlib import Path
 
 import drms
 import numpy as np
+import pandas as pd
 import parfive
 from packaging.version import Version
 
@@ -745,11 +746,16 @@ class JSOCClient(BaseClient):
             key = keywords
         log.debug(f"Running following query: {ds}")
         log.debug(f"Requesting following keywords: {key}")
-        result = client.query(ds, key=key, rec_index=is_meta)
+        result = client.query(ds, key=key, seg=segments_passed, rec_index=is_meta)
         if result is None or result.empty:
             return astropy.table.Table()
+        if segments_passed :
+            # DRMS returns a tuple of length 2 if there is segment information
+            query_result, segment_result = result[0], result[1]
+            query_result = pd.concat([query_result, segment_result],axis=1)
         else:
-            return astropy.table.Table.from_pandas(result)
+            query_result = result
+        return astropy.table.Table.from_pandas(query_result)
 
     @classmethod
     def _can_handle_query(cls, *query):

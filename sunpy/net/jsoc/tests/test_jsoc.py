@@ -54,6 +54,8 @@ def test_return_query_args(client):
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
     # Because res.query_args is list that contains dict
     assert 'primekey' in res.query_args[0]
+    assert "magnetogram" in res.keys()
+    assert res["magnetogram"][0].startswith("/SUM")
 
 
 @pytest.mark.remote_data
