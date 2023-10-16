@@ -1,0 +1,1 @@
+Added the module `sunpy.coordinates.spice` to enable the use of the `~astropy.coordinates.SkyCoord` API to perform computations using `SPICE <https://naif.jpl.nasa.gov/naif/>`__ kernels.
