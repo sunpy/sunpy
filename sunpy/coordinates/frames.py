@@ -583,15 +583,27 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         with np.errstate(invalid='ignore'):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
-        if self._spherical_screen:
-            sphere_center = self._spherical_screen['center'].transform_to(self).cartesian
-            c = sphere_center.norm()**2 - self._spherical_screen['radius']**2
-            b = -2 * sphere_center.dot(rep)
-            # Ignore sqrt of NaNs
-            with np.errstate(invalid='ignore'):
-                dd = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
+        if self._assumed_screen:
+            if self._assumed_screen['type'] == 'spherical':
+                sphere_center = self._assumed_screen['center'].transform_to(self).cartesian
+                c = sphere_center.norm()**2 - self._assumed_screen['radius']**2
+                b = -2 * sphere_center.dot(rep)
+                # Ignore sqrt of NaNs
+                with np.errstate(invalid='ignore'):
+                    dd = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
 
-            d = np.fmin(d, dd) if self._spherical_screen['only_off_disk'] else dd
+            elif self._assumed_screen['type'] == 'planar':
+                direction = self._assumed_screen['vantage_point'].transform_to(self).cartesian
+                direction = CartesianRepresentation(1, 0, 0) * self.observer.radius - direction
+                direction /= direction.norm()
+
+                d_from_plane = self.observer.radius * direction.x
+                dd = d_from_plane / rep.dot(direction)
+
+            else:
+                raise ValueError(f"Unknown screen type: {self._assumed_screen['type']}")
+
+            d = np.fmin(d, dd) if self._assumed_screen['only_off_disk'] else dd
 
         # This warning can be triggered in specific draw calls when plt.show() is called
         # we can not easily prevent this, so we check the specific function is being called
@@ -609,7 +621,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                                                           lat=lat,
                                                           distance=d))
 
-    _spherical_screen = None
+    _assumed_screen = None
 
     @classmethod
     @contextmanager
@@ -665,17 +677,50 @@ class Helioprojective(SunPyBaseCoordinateFrame):
              (1914., 0., 1.00125872)]>
         """
         try:
-            old_spherical_screen = cls._spherical_screen  # nominally None
+            old_assumed_screen = cls._assumed_screen  # nominally None
 
             center_hgs = center.transform_to(HeliographicStonyhurst(obstime=center.obstime))
-            cls._spherical_screen = {
+            cls._assumed_screen = {
+                'type': 'spherical',
                 'center': center,
                 'radius': center_hgs.radius,
                 'only_off_disk': only_off_disk
             }
             yield
         finally:
-            cls._spherical_screen = old_spherical_screen
+            cls._assumed_screen = old_assumed_screen
+
+    @classmethod
+    @contextmanager
+    def assume_planar_screen(cls, vantage_point, only_off_disk=False):
+        """
+        Context manager to interpret 2D coordinates as being on the inside of a planar screen.
+
+        The plane goes through Sun center and is perpendicular to the vector between the
+        specified vantage point and Sun center.
+
+        This replaces the default assumption where 2D coordinates are mapped onto the surface of the
+        Sun.
+
+        Parameters
+        ----------
+        vantage_point : `~astropy.coordinates.SkyCoord`
+            The vantage point that defines the orientation of the plane.
+        only_off_disk : `bool`, optional
+            If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
+            still mapped onto the surface of the Sun.  Defaults to `False`.
+        """
+        try:
+            old_assumed_screen = cls._assumed_screen  # nominally None
+
+            cls._assumed_screen = {
+                'type': 'planar',
+                'vantage_point': vantage_point,
+                'only_off_disk': only_off_disk
+            }
+            yield
+        finally:
+            cls._assumed_screen = old_assumed_screen
 
 
 @add_common_docstring(**_frame_parameters())
