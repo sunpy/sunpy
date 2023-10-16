@@ -24,6 +24,7 @@ from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     HCRS,
     ICRS,
+    ITRS,
     BaseCoordinateFrame,
     ConvertError,
     HeliocentricMeanEcliptic,
@@ -49,27 +50,21 @@ from .frames import (
     _J2000,
     GeocentricEarthEquatorial,
     GeocentricSolarEcliptic,
+    GeocentricSolarMagnetospheric,
+    Geomagnetic,
     Heliocentric,
     HeliocentricEarthEcliptic,
     HeliocentricInertial,
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    SolarMagnetic,
 )
 
 RSUN_METERS = constants.get('radius').si.to(u.m)
 
 __all__ = ['transform_with_sun_center',
-           'propagate_with_solar_surface',
-           'hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
-           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
-           'hpc_to_hpc',
-           'hcrs_to_hgs', 'hgs_to_hcrs',
-           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc',
-           'hme_to_hee', 'hee_to_hme', 'hee_to_hee',
-           'hee_to_gse', 'gse_to_hee', 'gse_to_gse',
-           'hgs_to_hci', 'hci_to_hgs', 'hci_to_hci',
-           'hme_to_gei', 'gei_to_hme', 'gei_to_gei']
+           'propagate_with_solar_surface']
 
 
 # Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
@@ -1097,6 +1092,156 @@ def gei_to_gei(from_coo, to_frame):
         return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
 
 
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 ITRS, Geomagnetic)
+@_transformation_debug("GEO->MAG")
+def geo_to_mag(geocoord, magframe):
+    """
+    Convert from Geographic (GEO) to Geomagnetic (MAG)
+    """
+    if magframe.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # First transform the GEO coord to the MAG obstime
+    int_coord = _transform_obstime(geocoord, magframe.obstime)
+
+    lon, lat = magframe.dipole_lonlat
+
+    lat_matrix = rotation_matrix(90*u.deg - lat, 'y')
+    lon_matrix = rotation_matrix(lon, 'z')
+    rot_matrix = lat_matrix @ lon_matrix
+
+    newrepr = int_coord.cartesian.transform(rot_matrix)
+
+    return magframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 Geomagnetic, ITRS)
+@_transformation_debug("MAG->GEO")
+def mag_to_geo(magcoord, geoframe):
+    """
+    Convert from Geomagnetic (MAG) to Geographic (GEO)
+    """
+    if magcoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    lon, lat = magcoord.dipole_lonlat
+
+    lat_matrix = rotation_matrix(90*u.deg - lat, 'y')
+    lon_matrix = rotation_matrix(lon, 'z')
+    rot_matrix = lat_matrix @ lon_matrix
+
+    newrepr = magcoord.cartesian.transform(matrix_transpose(rot_matrix))
+    int_frame = geoframe.replicate_without_data(obstime=magcoord.obstime)
+    int_coord = int_frame.realize_frame(newrepr)
+
+    return int_coord.transform_to(geoframe)
+
+
+frame_transform_graph._add_merged_transform(Geomagnetic, ITRS, Geomagnetic)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 Geomagnetic, SolarMagnetic)
+@_transformation_debug("MAG->SM")
+def mag_to_sm(magcoord, smframe):
+    """
+    Convert from Geomagnetic (MAG) to Solar Magentic (SM)
+    """
+    if magcoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # First transform the MAG coord to the SM obstime
+    int_coord = _transform_obstime(magcoord, smframe.obstime)
+
+    sun = HCRS(0*u.deg, 0*u.deg, 0*u.AU, obstime=int_coord.obstime).transform_to(int_coord)
+
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun.cartesian)
+
+    newrepr = int_coord.cartesian.transform(rot_matrix)
+
+    return smframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 SolarMagnetic, Geomagnetic)
+@_transformation_debug("SM->MAG")
+def sm_to_mag(smcoord, magframe):
+    """
+    Convert from Solar Magnetic (SM) to Geomagnetic (MAG)
+    """
+    if smcoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    int_frame = magframe.replicate_without_data(obstime=smcoord.obstime)
+
+    sun = HCRS(0*u.deg, 0*u.deg, 0*u.AU, obstime=int_frame.obstime).transform_to(int_frame)
+
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun.cartesian)
+
+    newrepr = smcoord.cartesian.transform(matrix_transpose(rot_matrix))
+    int_coord = int_frame.realize_frame(newrepr)
+
+    return int_coord.transform_to(magframe)
+
+
+frame_transform_graph._add_merged_transform(SolarMagnetic, Geomagnetic, SolarMagnetic)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 SolarMagnetic, GeocentricSolarMagnetospheric)
+@_transformation_debug("SM->GSM")
+def sm_to_gsm(smcoord, gsmframe):
+    """
+    Convert from Solar Magentic (SM) to Geocentric Solar Magnetospheric (GSM)
+    """
+    if smcoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # First transform the SM coord to the GSM obstime
+    int_coord = _transform_obstime(smcoord, gsmframe.obstime)
+
+    sun = HCRS(0*u.deg, 0*u.deg, 0*u.AU, obstime=int_coord.obstime).transform_to(int_coord)
+
+    rot_matrix = rotation_matrix(-sun.spherical.lat, 'y')
+
+    newrepr = int_coord.cartesian.transform(rot_matrix)
+
+    return gsmframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricSolarMagnetospheric, SolarMagnetic)
+@_transformation_debug("GSM->SM")
+def gsm_to_sm(gsmcoord, smframe):
+    """
+    Convert from Geocentric Solar Magnetospheric (GSM) to Solar Magnetic (SM)
+    """
+    if gsmcoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    int_frame = smframe.replicate_without_data(obstime=gsmcoord.obstime)
+
+    sun = HCRS(0*u.deg, 0*u.deg, 0*u.AU, obstime=int_frame.obstime).transform_to(int_frame)
+
+    rot_matrix = rotation_matrix(-sun.spherical.lat, 'y')
+
+    newrepr = gsmcoord.cartesian.transform(matrix_transpose(rot_matrix))
+    int_coord = int_frame.realize_frame(newrepr)
+
+    return int_coord.transform_to(smframe)
+
+
+frame_transform_graph._add_merged_transform(GeocentricSolarMagnetospheric, SolarMagnetic, GeocentricSolarMagnetospheric)
+
+
 def _make_sunpy_graph():
     """
     Culls down the full transformation graph for SunPy purposes and returns the string version
@@ -1107,6 +1252,7 @@ def _make_sunpy_graph():
                  'heliocentric', 'helioprojective',
                  'heliocentricearthecliptic', 'geocentricsolarecliptic',
                  'heliocentricinertial', 'geocentricearthequatorial',
+                 'geomagnetic', 'solarmagnetic', 'geocentricsolarmagnetospheric',
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
                  'cirs', 'altaz', 'itrs']
 
@@ -1178,7 +1324,8 @@ def _tweak_graph(docstr):
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
                     'Heliocentric', 'Helioprojective',
                     'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
-                    'HeliocentricInertial', 'GeocentricEarthEquatorial']
+                    'HeliocentricInertial', 'GeocentricEarthEquatorial',
+                    'Geomagnetic', 'SolarMagnetic', 'GeocentricSolarMagnetospheric']
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 

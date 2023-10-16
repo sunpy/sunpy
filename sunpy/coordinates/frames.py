@@ -11,7 +11,8 @@ from contextlib import contextmanager
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import ConvertError, QuantityAttribute
+from astropy.constants import R_earth
+from astropy.coordinates import Attribute, ConvertError, Latitude, Longitude, QuantityAttribute
 from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
 from astropy.coordinates.representation import (
     CartesianDifferential,
@@ -22,6 +23,7 @@ from astropy.coordinates.representation import (
     UnitSphericalRepresentation,
 )
 from astropy.time import Time
+from astropy.utils.data import download_file
 
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
@@ -32,11 +34,12 @@ from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunP
 
 _J2000 = Time('J2000.0', scale='tt')
 
-__all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic',
+__all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic', 'BaseMagnetic',
            'HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
            'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
-           'HeliocentricInertial', 'GeocentricEarthEquatorial']
+           'HeliocentricInertial', 'GeocentricEarthEquatorial',
+           'Geomagnetic', 'SolarMagnetic', 'GeocentricSolarMagnetospheric']
 
 
 def _frame_parameters():
@@ -847,3 +850,99 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
     Aberration due to Earth motion is not included.
     """
     equinox = TimeFrameAttributeSunPy(default=_J2000)
+
+
+class BaseMagnetic(SunPyBaseCoordinateFrame):
+    """
+    Base class for frames that rely on the Earth's magnetic model (MAG, SM, and GSM).
+
+    This class is not intended to be used directly and has no transformations defined.
+    """
+    magnetic_model = Attribute(default='igrf13')
+
+    @property
+    def _lowest_igrf_coeffs(self):
+        if not self.magnetic_model.startswith("igrf"):
+            raise ValueError
+
+        igrf_file = download_file("https://www.ngdc.noaa.gov/IAGA/vmod/coeffs/"
+                                  f"{self.magnetic_model}coeffs.txt", cache=True)
+
+        with open(igrf_file) as f:
+            while not (line := f.readline()).startswith('g/h'):
+                pass
+
+            years = list(map(float, line.split()[3:-1]))
+            g10s = list(map(float, f.readline().split()[3:]))
+            g11s = list(map(float, f.readline().split()[3:]))
+            h11s = list(map(float, f.readline().split()[3:]))
+
+        decimalyear = self.obstime.utc.decimalyear
+        if decimalyear < 1900.0:
+            raise ValueError
+
+        if decimalyear <= years[-1]:
+            # Use piecewise linear interpolation before the last year
+            g10 = np.interp(decimalyear, years, g10s[:-1])
+            g11 = np.interp(decimalyear, years, g11s[:-1])
+            h11 = np.interp(decimalyear, years, h11s[:-1])
+        else:
+            # Use secular variation beyond the last year
+            g10 = g10s[-2] + (decimalyear - years[-1]) * g10s[-1]
+            g11 = g11s[-2] + (decimalyear - years[-1]) * g11s[-1]
+            h11 = h11s[-2] + (decimalyear - years[-1]) * h11s[-1]
+
+        return g10, g11, h11
+
+    @property
+    def dipole_lonlat(self):
+        """
+        The geographic longitude/latitude of the Earth's magnetic pole.
+
+        This position is calculated from the first three coefficients of the selected
+        IGRF model per Franz & Harper (2002).  The small offset between dipole center
+        and Earth center is ignored.
+
+        References
+        ----------
+        * `International Geomagnetic Reference Field (IGRF) <https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__
+        """
+        g10, g11, h11 = self._lowest_igrf_coeffs
+        # Intentionally use arctan() instead of arctan2() to get angles in specific quadrants
+        lon = (np.arctan(h11 / g11) << u.rad).to(u.deg)
+        lat = 90*u.deg - np.arctan((g11 * np.cos(lon) + h11 * np.sin(lon)) / g10)
+        return Longitude(lon, wrap_angle=180*u.deg), Latitude(lat)
+
+    @property
+    def dipole_moment(self):
+        """
+        The Earth's dipole moment.
+
+        The moment is calculated from the first three coefficients of the selected
+        IGRF model per Franz & Harper (2002).
+
+        References
+        ----------
+        * `International Geomagnetic Reference Field (IGRF) <https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__
+        """
+        g10, g11, h11 = self._lowest_igrf_coeffs
+        moment = np.sqrt(g10**2 + g11**2 + h11**2) * R_earth**3
+        return moment
+
+
+class Geomagnetic(BaseMagnetic):
+    """
+    A coordinate or frame in the Geomagnetic (MAG) system.
+    """
+
+
+class SolarMagnetic(BaseMagnetic):
+    """
+    A coordinate or frame in the Solar Magnetic (SM) system.
+    """
+
+
+class GeocentricSolarMagnetospheric(BaseMagnetic):
+    """
+    A coordinate or frame in the GeocentricSolarMagnetospheric (GSM) system.
+    """
