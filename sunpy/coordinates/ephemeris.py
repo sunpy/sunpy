@@ -34,7 +34,8 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include_velocity=False):
+def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include_velocity=False,
+                                     quiet=False):
     """
     Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
     solar-system body at a specified time.  The location can be corrected for light travel time
@@ -52,6 +53,9 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
         travel time to the specified observer)
     include_velocity : `bool`, optional
         If True, include the body's velocity in the output coordinate.  Defaults to False.
+    quiet : `bool`, optional
+        If True, the function will not emit logger output for light-travel-time corrections.
+        Defaults to False.
 
     Returns
     -------
@@ -115,11 +119,13 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
             light_travel_time = distance / speed_of_light
             emitted_time = obstime - light_travel_time
 
-        if light_travel_time.isscalar:
-            ltt_string = f"{light_travel_time.to_value('s'):.2f}"
-        else:
-            ltt_string = f"{light_travel_time.to_value('s')}"
-        log.info(f"Apparent body location accounts for {ltt_string} seconds of light travel time")
+        if not quiet:
+            if light_travel_time.isscalar:
+                ltt_string = f"{light_travel_time.to_value('s'):.2f}"
+            else:
+                ltt_string = f"{light_travel_time.to_value('s')}"
+            log.info(f"Apparent body location accounts for {ltt_string} "
+                     "seconds of light travel time")
 
     if include_velocity:
         pos, vel = get_body_barycentric_posvel(body, emitted_time)
