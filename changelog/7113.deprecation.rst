@@ -1,0 +1,2 @@
+The ``sunpy.coordinates.transformations`` module is now slated for removal from the public API as it consists of internal functions used by coordinate transformations.
+The context managers :func:`sunpy.coordinates.transform_with_sun_center` and :func:`sunpy.coordinates.propagate_with_solar_surface` should be accessed under `sunpy.coordinates`.

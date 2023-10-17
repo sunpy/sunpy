@@ -109,8 +109,6 @@ The parts of the following modules that are useful to a typical user are already
 
 .. automodapi:: sunpy.coordinates.metaframes
 
-.. automodapi:: sunpy.coordinates.transformations
-
 .. automodapi:: sunpy.coordinates.wcs_utils
 
 
