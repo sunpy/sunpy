@@ -1,10 +1,5 @@
 """
 This module provides a generic file reader for internal use.
-
-.. warning::
-
-    ``sunpy.io.file_tools`` is deprecated, and will be removed in sunpy 4.1. This is
-    because it was designed for internal use only.
 """
 import re
 import gzip

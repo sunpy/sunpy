@@ -139,8 +139,3 @@ def test_write_file_fits_bytes():
     assert np.all(np.equal(outpair[0], aiapair[0]))
     assert outpair[1] == aiapair[1]
     os.remove("aia_171_image_bytes.fits")
-
-
-def test_old_import():
-    lib = importlib.import_module("sunpy.io.file_tools")
-    assert lib.read_file is sunpy.io.read_file
