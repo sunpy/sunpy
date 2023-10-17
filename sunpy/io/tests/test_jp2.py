@@ -45,8 +45,3 @@ def test_simple_write(tmpdir):
     # Sanity check that reading back the jp2 returns coherent data
     jp2_readback = _jp2.read(outfile)
     assert header['DATE'] == jp2_readback[0].header['DATE']
-
-
-def test_old_import():
-    lib = importlib.import_module("sunpy.io.jp2")
-    assert lib.read is _jp2.read
