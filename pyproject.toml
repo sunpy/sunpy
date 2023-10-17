@@ -146,3 +146,25 @@ extend-ignore = [
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
+
+[tool.mypy]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["sunpy.map.*"]
+ignore_errors = false
+
+[[tool.mypy.overrides]]
+module = [
+  "astroquery.*",
+  "astropy.*",
+  "hypothesis.*",
+  "matplotlib.*",
+  "parfive.*",
+  "pandas.*",
+  "pytest.*",
+  "reproject.*",
+  "skimage.*",
+  "sunpy_sphinx_theme.*",
+]
+ignore_missing_imports = true

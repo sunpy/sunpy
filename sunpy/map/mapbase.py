@@ -9,6 +9,7 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
+from typing import Union, Callable
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
@@ -62,6 +63,8 @@ from sunpy.visualization.colormaps import cm as sunpy_cm
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
+
+_width_height_type = Union[u.pix, u.deg]
 
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
 
@@ -170,7 +173,7 @@ class GenericMap(NDData):
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
     """
-    _registry = dict()
+    _registry: dict[type["GenericMap"], Callable] = {}
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
     # Enabling the GenericMap reflected operators is a bit subtle.  The GenericMap
@@ -1777,7 +1780,7 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
+    def submap(self, bottom_left, *, top_right=None, width: _width_height_type = None, height: _width_height_type = None):
         """
         Returns a submap defined by a rectangle.
 
@@ -2214,7 +2217,7 @@ class GenericMap(NDData):
         )
 
     @u.quantity_input
-    def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
+    def draw_quadrangle(self, bottom_left, *, width: _width_height_type = None, height: _width_height_type = None,
                         axes=None, top_right=None, **kwargs):
         """
         Draw a quadrangle defined in world coordinates on the plot using Astropy's
@@ -2741,8 +2744,8 @@ class GenericMap(NDData):
             return outmap, footprint
         return outmap
 
-
-GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
+if GenericMap.__doc__ is not None:
+    GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
 
 
 class InvalidHeaderInformation(ValueError):

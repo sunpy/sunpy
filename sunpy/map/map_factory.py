@@ -29,12 +29,12 @@ from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
 
-SUPPORTED_ARRAY_TYPES = (np.ndarray,)
+SUPPORTED_ARRAY_TYPES: tuple[type, ...]
 try:
     import dask.array
-    SUPPORTED_ARRAY_TYPES += (dask.array.Array,)
+    SUPPORTED_ARRAY_TYPES = (np.ndarray, dask.array.Array,)
 except ImportError:
-    pass
+    SUPPORTED_ARRAY_TYPES = (np.ndarray, )
 
 __all__ = ['Map', 'MapFactory']
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 
 import astropy.units as u
@@ -33,7 +35,7 @@ def meta_keywords():
 def make_fitswcs_header(data,
                         coordinate,
                         reference_pixel: u.pix = None,
-                        scale: u.arcsec/u.pix = None,
+                        scale: u.arcsec/u.pix = None, # type: ignore[valid-type]
                         rotation_angle: u.deg = None,
                         rotation_matrix=None,
                         instrument=None,
@@ -248,7 +250,7 @@ def _get_wcs_meta(coordinate, projection_code):
 
 
 @u.quantity_input
-def get_observer_meta(observer, rsun: (u.Mm, None) = None):
+def get_observer_meta(observer, rsun: Optional[u.Mm] = None):
     """
     Function to get observer meta from coordinate frame.
 
