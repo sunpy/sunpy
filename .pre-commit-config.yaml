@@ -14,6 +14,7 @@ repos:
       - id: isort
         args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -30,6 +31,12 @@ repos:
       - id: mixed-line-ending
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+      - id: codespell
+        args: ['--config setup.cfg --write-changes']
+
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
@@ -45,10 +52,6 @@ repos:
         pass_filenames: false
         always_run: true
 
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
-    hooks:
-      - id: codespell
-        args: ['--config setup.cfg --write-changes']
+
 ci:
   autofix_prs: false
