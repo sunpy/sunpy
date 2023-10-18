@@ -10,9 +10,9 @@ from astropy.coordinates.transformations import FunctionTransform
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
+from ._transformations import _transformation_debug
 from .frames import HeliographicStonyhurst, SunPyBaseCoordinateFrame
 from .offset_frame import NorthOffsetFrame
-from .transformations import _transformation_debug
 
 __all__ = ['NorthOffsetFrame', 'RotatedSunFrame']
 

@@ -1,0 +1,1 @@
+Removed the deprecated ``sunpy.io.cdf`` submodule, which is not intended to be user facing.
