@@ -45,11 +45,11 @@ def test_unit(gong_synoptic):
 
 
 def test_coordinate_system(gong_synoptic):
-    assert gong_synoptic.meta['CUNIT1'] == 'deg'
-    assert gong_synoptic.meta['CUNIT2'] == 'deg'
+    assert gong_synoptic.spatial_units[0] == u.deg
+    assert gong_synoptic.spatial_units[1] == u.deg
 
 
 def test_observer(gong_synoptic):
-    assert gong_synoptic.meta['hglt_obs'] is not None
-    assert gong_synoptic.meta['hgln_obs'] is not None
-    assert gong_synoptic.meta['dsun_obs'] is not None
+    assert gong_synoptic.observer_coordinate['hglt_obs'] is not None
+    assert gong_synoptic.observer_coordinate['hgln_obs'] is not None
+    assert gong_synoptic.observer_coordinate['dsun_obs'] is not None
