@@ -29,8 +29,9 @@ Notes
   it is not possible to transform a 2D coordinate between frames because there
   is always an origin shift.
 * Transformations of velocities are not yet supported.
-* There is currently no support for time arrays.
 """
+
+import numpy as np
 
 try:
     import spiceypy
@@ -72,6 +73,7 @@ def _install_frame(frame_id):
     # TODO: Sanitize/escape the frame name of special characters
 
     frame_center, class_num, _ = spiceypy.frinfo(frame_id)
+    frame_center_name = spiceypy.bodc2n(frame_center)
     log.info(f"Installing {frame_name} {_CLASS_TYPES[class_num]} frame ({frame_id}) "
              f"as 'spice_{frame_name}'")
 
@@ -82,25 +84,26 @@ def _install_frame(frame_id):
     # TODO: Consider adding the alias of all lowercase
     spice_frame.name = spice_frame.__name__
 
-    # TODO: Figure out how to handle array time
-    # TODO: Does it matter what time is used for J2000 ET?
-
     @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ICRS, spice_frame)
     def icrs_to_spice(from_icrs_coord, to_spice_frame):
         et = _convert_to_et(to_spice_frame.obstime)
-        matrix = spiceypy.pxfrm2('J2000', frame_name, 0, et)
-        icrs_offset = spiceypy.spkezp(frame_center, et, 'J2000', 'none', 0)[0] << u.km
-        shifted_old_pos = from_icrs_coord.cartesian - CartesianRepresentation(icrs_offset)
+        # matrix needs to be contiguous (see https://github.com/astropy/astropy/issues/15503)
+        matrix = np.ascontiguousarray(spiceypy.sxform('J2000', frame_name, et)[..., :3, :3])
+        icrs_offset = spiceypy.spkpos(frame_center_name,
+                                      et, 'J2000', 'NONE', 'SSB')[0] << u.km
+        shifted_old_pos = from_icrs_coord.cartesian - CartesianRepresentation(icrs_offset.T)
         new_pos = shifted_old_pos.transform(matrix)
         return to_spice_frame.realize_frame(new_pos)
 
     @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, spice_frame, ICRS)
     def spice_to_icrs(from_spice_coord, to_icrs_frame):
         et = _convert_to_et(from_spice_coord.obstime)
-        matrix = spiceypy.pxfrm2(frame_name, 'J2000', et, 0)
+        # matrix needs to be contiguous (see https://github.com/astropy/astropy/issues/15503)
+        matrix = np.ascontiguousarray(spiceypy.sxform(frame_name, 'J2000', et)[..., :3, :3])
         shifted_new_pos = from_spice_coord.cartesian.transform(matrix)
-        icrs_offset = spiceypy.spkezp(frame_center, et, 'J2000', 'none', 0)[0] << u.km
-        new_pos = shifted_new_pos + CartesianRepresentation(icrs_offset)
+        icrs_offset = spiceypy.spkpos(frame_center_name,
+                                      et, 'J2000', 'NONE', 'SSB')[0] << u.km
+        new_pos = shifted_new_pos + CartesianRepresentation(icrs_offset.T)
         return to_icrs_frame.realize_frame(new_pos)
 
     frame_transform_graph._add_merged_transform(spice_frame, ICRS, spice_frame)
@@ -135,7 +138,6 @@ def initialize(kernels):
             _install_frame(frame_id)
 
 
-# TODO: Add support for array time
 # TODO: Add support for light travel time correction
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -157,17 +159,17 @@ def get_body(body, time, *, spice_frame_name='J2000'):
     -----
     No adjustment is made for light travel time to an observer.
     """
-    body_id = body if isinstance(body, int) else spiceypy.bodn2c(body)
+    body_name = spiceypy.bodc2n(body) if isinstance(body, int) else body
     obstime = parse_time(time)
 
     frame_center = spiceypy.frinfo(spiceypy.namfrm(spice_frame_name))[0]
 
-    pos = spiceypy.spkezp(body_id,
+    pos = spiceypy.spkpos(body_name,
                           _convert_to_et(obstime),
                           spice_frame_name,
-                          'none',
-                          frame_center)[0] << u.km
+                          'NONE',
+                          spiceypy.bodc2n(frame_center))[0] << u.km
 
     frame_name = 'icrs' if spice_frame_name == 'J2000' else f"spice_{spice_frame_name}"
 
-    return SkyCoord(CartesianRepresentation(pos), frame=frame_name, obstime=obstime)
+    return SkyCoord(CartesianRepresentation(pos.T), frame=frame_name, obstime=obstime)

@@ -7,6 +7,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.utils.data import download_file
 
 from sunpy.coordinates import spice
+from sunpy.time import parse_time
 
 
 @pytest.mark.remote_data
@@ -44,6 +45,20 @@ def test_transformation():
 
 
 @pytest.mark.remote_data
+def test_transformation_array_time():
+    coord = SkyCoord([1e7, 1e7]*u.km, [1e6, 1e6]*u.km, [1e5, 1e5]*u.km,
+                     representation_type='cartesian',
+                     frame='spice_GSE', obstime=['2023-10-17', '2023-10-18'])
+    new_coord = coord.spice_HEE
+    new_coord.representation_type ='cartesian'
+
+    assert len(new_coord) == 2
+    assert_quantity_allclose(new_coord.x, [1.49128669e8, 1.49085802e+08]*u.km - coord.x)
+    assert_quantity_allclose(new_coord.y, -coord.y)
+    assert_quantity_allclose(new_coord.z, coord.z)
+
+
+@pytest.mark.remote_data
 def test_get_body():
     # Regression test
     earth_by_id = spice.get_body(399, '2023-10-17')
@@ -55,6 +70,20 @@ def test_get_body():
     assert_quantity_allclose(earth_by_id.distance, 1.47846987e8*u.km)
 
     assert earth_by_name == earth_by_id
+
+
+@pytest.mark.remote_data
+def test_get_body_array_time():
+    # Regression test
+    obstime = parse_time(['2013-10-17', '2013-10-18'])
+    earth = spice.get_body(399, obstime, spice_frame_name='HCI')
+
+    assert len(earth) == 2
+    assert earth[0].obstime == obstime[0]
+    assert earth[1].obstime == obstime[1]
+    assert earth[0].lon != earth[1].lon
+    assert earth[0].lat != earth[1].lat
+    assert earth[0].distance != earth[1].distance
 
 
 @pytest.mark.remote_data
