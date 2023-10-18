@@ -1,0 +1,220 @@
+AUTHOR:
+  description: Who designed the observation
+  human_readable: Author
+  required: true
+  data_type: str
+BLANK:
+  description: Value marking undefined pixels before the application of BSCALE, BZERO
+  human_readable: Missing data indicator
+  required: true
+  data_type: 
+BTYPE:
+  description: Description of what the data array represents
+  human_readable: Data label
+  required: true
+  data_type: str
+BUNIT:
+  description: Units of data array
+  human_readable: Units
+  required: true
+  data_type: Unit
+CAMPAIGN:
+  description: Coordinated campaign name(s)
+  human_readable: Observation campaign
+  required: false
+  data_type: str
+CREATOR:
+  description: Name of software pipeline that produced the FITS file
+  human_readable: File Creator
+  required: true
+  data_type: str
+DATATAGS:
+  description: Additional information
+  human_readable: Data Tags
+  required: false
+  data_type: str
+DATE:
+  description: FITS file creation date in UTC
+  human_readable: File Creation Date
+  required: true
+  data_type: Date
+DETECTOR:
+  description: Name of detector
+  human_readable: detector
+  required: true
+  data_type: str
+DSUN_OBS:
+  description: Distance to Sun
+  human_readable: Distance to Sun
+  required: true
+  data_type: Quantity
+EXPTIME:
+  description: "[s] Exposure time [deprecated]"
+  human_readable: Exposure time
+  required: false
+  data_type: Quantity
+FILENAME:
+  description: FITS filename
+  human_readable: Filename
+  required: true
+  data_type: str
+GEOX_OBS:
+  description: "[m] Observer's non-fixed geographic X coordinate"
+  human_readable:
+  required: false
+  data_type: Quantity
+GEOY_OBS:
+  description: "[m] Observer's non-fixed geographic Y coordinate"
+  human_readable: 
+  required: false
+  data_type: Quantity
+GEOZ_OBS:
+  description: "[m] Observer's non-fixed geographic Y coordinate"
+  human_readable: 
+  required: false
+  data_type: Quantity
+HASH_SW:
+  description: Commit hash of software applied
+  human_readable: Software Hash
+  required: true
+  data_type: str
+INFO_URL:
+  description: Human-readable web page describing the data set
+  human_readable: Info url
+  required: true
+  data_type: url
+INSTRUME:
+  description: Instrument name
+  human_readable: Instrument
+  required: true
+  data_type: str
+LEVEL:
+  description: Data level of fits file
+  human_readable: Data level
+  required: true
+  data_type: float
+MISSION:
+  description: Mission name
+  human_readable: Mission
+  required: true
+  data_type: str
+OBS_DESC:
+  description: Description of observation
+  human_readable: Observation description
+  required: false
+  data_type: str
+OBS_LOG:
+  description: URL of observation
+  human_readable: Observation description
+  required: false
+  data_type: url
+OBS_MODE:
+  description: Name of predefined settings used during observation
+  human_readable: Observation mode
+  required: false
+  data_type: str
+OBSERVER:
+  description: Who acquired the data
+  human_readable: Observer
+  required: false
+  data_type: str
+OBSRVTRY:
+  description: Satellite name
+  human_readable: Observatory
+  required: true
+  data_type: str
+ORIGIN:
+  description: Location where FITS file has been created
+  human_readable: File originator
+  required: true
+  data_type: str
+PLANNER:
+  description: Observation planner
+  human_readable: Planner
+  required: false
+  data_type: str
+PROJECT:
+  description: Project name
+  human_readable: Project
+  required: true
+  data_type: str
+PRSTEP1:
+  description: First processing step
+  human_readable: Processing step
+  required: true
+  data_type: str
+RELEASE:
+  description: Public release date of data
+  human_readable: Release date
+  required: true
+  data_type: Date
+RELEASEC:
+  description: Email address of data release administrator
+  human_readable: 
+  required: true
+  data_type: email
+SETTINGS:
+  description: Additional instrument/acquisition settings
+  human_readable: Settings
+  required: false
+  data_type: str
+SOLARNET:
+  description: Fully SOLARNET-compliant=1.0, partially=0.5
+  human_readable: Solarnet compatibility
+  required: true
+  data_type: float
+TELCONFG:
+  description: Telescope configuration
+  human_readable: Telescope configuration
+  required: false
+  data_type: str
+TELESCOP:
+  description: Telescope/Sensor name
+  human_readable: Telescope
+  required: true
+  data_type: str
+TIMESYS:
+  description: Time scale of the time-related keywords.
+  human_readable: Time system
+  required: true
+  data_type: str
+VERS_CAL:
+  description: Version of calibration pack applied
+  human_readable: Calibration version
+  required: true
+  data_type: str
+VERS_SW:
+  description: Version of software applied
+  human_readable: Software version
+  required: true
+  data_type: str
+VERSION:
+  description: FITS file processing generation/versio
+  human_readable: Processor version
+  required: true
+  data_type: str
+WAVEMAX:
+  description: "[Angstrom] Maximum wavelength covered by filter"
+  human_readable: Maximum wavelength
+  required: true
+  data_type: Quantity
+WAVEMIN:
+  description: "[Angstrom] Minimum wavelength covered by filter"
+  human_readable: Minimum wavelength
+  required: true
+  data_type: Quantity
+WAVEREF:
+  description: Wavelength related kwds in vacuum
+  human_readable: Wavelength reference
+  required: true
+  data_type: 
+WAVEUNIT:
+  description: "Wavelength related kwds have unit: 10^(WAVEUNIT) m"
+  human_readable: Wavelength unit
+  required: true
+  data_type: str
+XPOSURE:
+  description: "[s] Total effective exposure time"
+  human_readable: Exposure time
+  required: true
+  data_type: Quantity
