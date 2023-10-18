@@ -10,7 +10,6 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import Helioprojective, sun
-from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -19,7 +18,7 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'contains_limb', 'coordinate_is_on_solar_disk',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
-           'extract_along_coord', 'pixelate_coord_path']
+           'pixelate_coord_path']
 
 
 def all_pixel_indices_from_map(smap):
@@ -459,68 +458,6 @@ def _bresenham(*, x1, y1, x2, y2):
             err = err + dx
             y += sy
     return np.array(res)
-
-
-@deprecated("5.0", message="The extract_along_coord function is deprecated and may be removed in "
-                           "version 5.1. Use pixelate_coord_path, and then pass its output to "
-                           "sample_at_coords. pixelate_coord_path uses a different line algorithm "
-                           "by default, but you can specify bresenham=True to use the same line "
-                           "algorithm as extract_along_coord.")
-def extract_along_coord(smap, coord):
-    """
-    Extract pixel values from a map along a path that approximates a coordinate path.
-
-    Each pair of consecutive coordinates in the provided coordinate array defines a
-    line segment in pixel space.  The approximate pixel path for each line segment is
-    determined by applying
-    `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`_.
-    The resulting pixel path does not necessarily include every pixel that is
-    intersected by each line segment.
-
-    Parameters
-    ----------
-    smap : `~sunpy.map.GenericMap`
-        The sunpy map.
-    coord : `~astropy.coordinates.SkyCoord`
-        The coordinate array that defines the path for extraction.
-
-    Returns
-    -------
-    pixel_values : `~astropy.units.Quantity`
-         The pixel values along a path that approximates the coordinate path.
-    pixel_coords : `~astropy.coordinates.SkyCoord`
-         The coordinates for the pixels from which the values were extracted.
-
-    Notes
-    -----
-    The provided coordinates are first rounded to the nearest corresponding pixel,
-    which means that the coordinates used for calculations may be shifted relative
-    to the provided coordinates by up to half a pixel.
-    """
-    if not len(coord.shape) or coord.shape[0] < 2:
-        raise ValueError('At least two points are required for extracting intensity along a '
-                         'line. To extract points at single coordinates, use '
-                         'sunpy.map.maputils.sample_at_coords.')
-    if not all(contains_coordinate(smap, coord)):
-        raise ValueError('At least one coordinate is not within the bounds of the map.'
-                         'To extract the intensity along a coordinate, all points must fall within '
-                         'the bounds of the map.')
-    # Find pixels between each loop segment
-    px, py = smap.wcs.world_to_array_index(coord)
-    pix = []
-    for i in range(len(px)-1):
-        b = _bresenham(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
-        # Pop the last one, unless this is the final entry because the first point
-        # of the next section will be the same
-        if i < (len(px) - 2):
-            b = b[:-1]
-        pix.append(b)
-    pix = np.vstack(pix)
-
-    pixel_values = u.Quantity(smap.data[pix[:, 0], pix[:, 1]], smap.unit)
-    pixel_coords = smap.wcs.pixel_to_world(pix[:, 1], pix[:, 0])
-
-    return pixel_values, pixel_coords
 
 
 def _intersected_pixels(*, x1, y1, x2, y2):

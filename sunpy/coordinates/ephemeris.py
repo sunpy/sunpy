@@ -95,18 +95,6 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
         (63.03105777, -5.20656151, 1.6251161)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
         (-0.02323686, 0.00073376, -1.4798387)>
-
-    Transform that same location and velocity of Mars to a different frame using
-    `~astropy.coordinates.SkyCoord`.
-
-    >>> from astropy.coordinates import SkyCoord
-    >>> from sunpy.coordinates import Helioprojective
-    >>> SkyCoord(mars).transform_to(Helioprojective(observer=earth))
-    <SkyCoord (Helioprojective: obstime=2001-02-03T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2012-06-06T04:07:29.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
-        (6.2686056e-15, -0.00766698, 1.01475668)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-        (-298654.73268523, -21726.6154073, 1.40134156)
-     (d_Tx, d_Ty, d_distance) in (arcsec / s, arcsec / s, km / s)
-        (-0.01663438, -0.00058027, -15.08908184)>
     """
     obstime = parse_time(time)
 

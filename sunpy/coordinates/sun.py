@@ -29,9 +29,9 @@ from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
+from ._transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
 from .ephemeris import get_earth
 from .frames import HeliographicStonyhurst
-from .transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"

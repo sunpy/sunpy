@@ -14,7 +14,7 @@ Deprecations
 
 - Using `sunpy.map.header_helper.meta_keywords` is deprecated.
   Please see :ref:`Meta Keywords Table` for the list of metadata keywords used by `~sunpy.map.Map`. (`#6743 <https://github.com/sunpy/sunpy/pull/6743>`__)
-- The utility function :func:`sunpy.map.extract_along_coord` is deprecated.
+- The utility function ``sunpy.map.extract_along_coord`` is deprecated.
   Use :func:`sunpy.map.pixelate_coord_path`, and then pass its output to :func:`sunpy.map.sample_at_coords`. (`#6840 <https://github.com/sunpy/sunpy/pull/6840>`__)
 - Parsing SDO/EVE level 0CS average files is deprecated, and will be removed in sunpy 6.0.
   Parsing this data is untested, and we cannot find a file to test it with.
@@ -160,7 +160,7 @@ Deprecations
 - Passing positional arguments to all ``timeseries`` ``peek()`` methods
   is now deprecated, and will raise an error in sunpy 5.1. Pass the arguments
   with keywords (e.g. ``title='my plot title'``) instead. (`#6310 <https://github.com/sunpy/sunpy/pull/6310>`__)
-- Using `sunpy.timeseries.GenericTimeSeries.index` is deprecated.
+- Using ``sunpy.timeseries.GenericTimeSeries.index``` is deprecated.
   Use `~sunpy.timeseries.GenericTimeSeries.time` to get an astropy Time object,
   or ``ts.to_dataframe().index`` to get the times as a pandas ``DataTimeIndex``. (`#6327 <https://github.com/sunpy/sunpy/pull/6327>`__)
 - Deprecated the ``sunpy.visualization.limb`` module.
@@ -202,7 +202,7 @@ New Features
 - Updated and expanded the HTML representation for `~sunpy.timeseries.TimeSeries`. (`#5951 <https://github.com/sunpy/sunpy/pull/5951>`__)
 - When reading CDF files, any columns with a floating point data type now have their masked values converted to NaN. (`#5956 <https://github.com/sunpy/sunpy/pull/5956>`__)
 - Add support for saving `~sunpy.map.GenericMap` as JPEG 2000 files. (`#6153 <https://github.com/sunpy/sunpy/pull/6153>`__)
-- Add a function `sunpy.map.extract_along_coord` that, for a given set of coordinates,
+- Add a function ``sunpy.map.extract_along_coord`` that, for a given set of coordinates,
   finds each array index that crosses the line traced by those coordinates and returns the value of the data
   array of a given map at those array indices. (`#6189 <https://github.com/sunpy/sunpy/pull/6189>`__)
 - Three new maps have been added to the sample data from STEREO A and STEREO B at
@@ -653,7 +653,7 @@ New Features
 - Add support for parsing the observer location from a `~astropy.wcs.WCS` object
   when using the 'OBSGEO' formulation. This is the recommended way to define the
   observer location of a ground based observer. (`#5315 <https://github.com/sunpy/sunpy/pull/5315>`__)
-- Added a new function, :meth:`sunpy.visualization.draw_limb`, that draws
+- Added a new function, ``sunpy.visualization.draw_limb``, that draws
   the solar limb as seen from an arbitrary observer coordinate on a world
   coordinate system aware Axes. (`#5414 <https://github.com/sunpy/sunpy/pull/5414>`__)
 - `sunpy.map.GenericMap.rsun_meters` now uses `sunpy.map.GenericMap.rsun_obs`
@@ -1570,7 +1570,7 @@ Bug Fixes
   a line with a masked array with the whole of the initial line masked out the
   axes limits for the x axis were not correctly set. (`#4001 <https://github.com/sunpy/sunpy/pull/4001>`__)
 - Fixed passing in a list of URLs into `sunpy.map.GenericMap`, before it caused an error due to the wrong type being returned. (`#4007 <https://github.com/sunpy/sunpy/pull/4007>`__)
-- Fixed a bug with :func:`~sunpy.coordinates.transformations.transform_with_sun_center` where the global variable was sometimes restored incorrectly.
+- Fixed a bug with :func:`~sunpy.coordinates.transform_with_sun_center` where the global variable was sometimes restored incorrectly.
   This bug was most likely encountered if there was a nested use of this context manager. (`#4015 <https://github.com/sunpy/sunpy/pull/4015>`__)
 - Fixes a bug in fido_factory to allow  path="./" in fido.fetch(). (`#4058 <https://github.com/sunpy/sunpy/pull/4058>`__)
 - Prevented ``sunpy.io.fits.header_to_fits`` modifying the passed header in-place. (`#4067 <https://github.com/sunpy/sunpy/pull/4067>`__)

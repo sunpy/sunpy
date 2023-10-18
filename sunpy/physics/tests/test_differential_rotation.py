@@ -8,10 +8,9 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
 import sunpy.map
-from sunpy.coordinates import frames
+from sunpy.coordinates import frames, transform_with_sun_center
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.coordinates.metaframes import RotatedSunFrame
-from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map.maputils import map_edges
 from sunpy.physics.differential_rotation import (
     _get_bounding_coordinates,

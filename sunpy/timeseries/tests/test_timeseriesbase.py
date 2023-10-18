@@ -493,9 +493,8 @@ def test_equality_different_ts_types(generic_ts, eve_test_ts):
     assert not (generic_ts == eve_test_ts)
 
 
-def test_ts_index(generic_ts):
-    with pytest.warns(SunpyDeprecationWarning, match='.index is deprecatd'):
-        assert (generic_ts.index == generic_ts.to_dataframe().index).all()
+def test_ts_times(generic_ts):
+    assert (generic_ts.time == generic_ts.to_dataframe().index).all()
 
 
 def test_ts_time(generic_ts):

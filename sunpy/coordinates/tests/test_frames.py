@@ -231,6 +231,40 @@ def test_hpc_low_precision_float_warning():
         hpc.make_3d()
 
 
+def test_hpc_obstime_from_observer():
+    # Test that observer.obstime is used for obstime if obstime is not provided
+    observer = HeliographicStonyhurst(obstime='2023-09-08')
+    hpc = Helioprojective(observer=observer)
+    assert hpc.obstime == observer.obstime
+
+    # Test that obstime is None if observer does not have an obstime
+    hpc = Helioprojective(observer='earth')
+    assert hpc.obstime is None
+
+
+def test_hpc_is_visible_2d():
+    hpc = Helioprojective(2000*u.arcsec, 2000*u.arcsec,
+                          observer='earth', obstime='2023-08-03')
+    assert hpc.is_visible()
+
+
+def test_hpc_is_visible():
+    hpc = Helioprojective([0]*2*u.arcsec, [0]*2*u.arcsec, [0.5, 1.5]*u.AU,
+                          observer='earth', obstime='2023-08-03')
+    assert (hpc.is_visible() == [True, False]).all()
+
+
+def test_hpc_is_visible_tolerance():
+    hpc = Helioprojective(200*u.arcsec, 0*u.arcsec,
+                          observer='earth', obstime='2023-08-03').make_3d()
+
+    # Due to the limitations of numerical precision, the coordinate will be computed to be slightly
+    # below the solar surface, and thus invisible when the tolerance is set to zero
+    assert not hpc.is_visible(tolerance=0*u.m)
+
+    assert hpc.is_visible(tolerance=1*u.m)
+
+
 # ==============================================================================
 # ## Heliographic Tests
 # ==============================================================================
