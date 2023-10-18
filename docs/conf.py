@@ -63,7 +63,6 @@ warnings.filterwarnings("ignore", message='The sunpy.database module is no longe
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
-warnings.filterwarnings("ignore", message="The `sunpy.io.jp2` module is deprecated",category=SunpyDeprecationWarning)
 warnings.filterwarnings("ignore", message="The `sunpy.io.file_tools` module is deprecated",category=SunpyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
