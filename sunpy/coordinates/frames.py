@@ -4,6 +4,7 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+import os
 import re
 import traceback
 from contextlib import contextmanager
@@ -861,14 +862,23 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
     magnetic_model = Attribute(default='igrf13')
 
     @property
-    def _lowest_igrf_coeffs(self):
+    def _igrf_file(self):
         if not self.magnetic_model.startswith("igrf"):
             raise ValueError
 
-        igrf_file = download_file("https://www.ngdc.noaa.gov/IAGA/vmod/coeffs/"
-                                  f"{self.magnetic_model}coeffs.txt", cache=True)
+        # First look if the file is bundled in package
+        local_file = os.path.join(os.path.dirname(__file__), "data",
+                                  f"{self.magnetic_model}coeffs.txt")
+        if os.path.exists(local_file):
+            return local_file
 
-        with open(igrf_file) as f:
+        # Otherwise download the file and cache it
+        return download_file("https://www.ngdc.noaa.gov/IAGA/vmod/coeffs/"
+                             f"{self.magnetic_model}coeffs.txt", cache=True)
+
+    @property
+    def _lowest_igrf_coeffs(self):
+        with open(self._igrf_file) as f:
             while not (line := f.readline()).startswith('g/h'):
                 pass
 
