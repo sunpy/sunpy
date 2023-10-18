@@ -60,10 +60,11 @@ class GONGSynopticMap(GenericMap):
     @property
     def unit(self):
         unit_str = self.meta.get('bunit', None)
-        if unit_str == 'Gauss':
-            return 'G'
-        else:
+        if unit_str is None:
             return
+        elif unit_str == 'Gauss':
+            return u.G
+        return u.Unit(unit_str)
 
     @property
     def spatial_units(self):
