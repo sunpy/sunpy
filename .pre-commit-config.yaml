@@ -49,6 +49,6 @@ repos:
     rev: v2.2.6
     hooks:
       - id: codespell
-        args: ['--config setup.cfg']
+        args: ['--config setup.cfg --write-changes']
 ci:
   autofix_prs: false
