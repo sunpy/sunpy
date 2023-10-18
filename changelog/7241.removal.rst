@@ -1,1 +1,1 @@
-Removed the deperecated ``sunpy.io.jp2``, which is not intended to be user facing.
+Removed the deprecated ``sunpy.io.jp2``, which is not intended to be user facing.
