@@ -26,7 +26,7 @@ from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.decorators import deprecate_positional_args_since
-from sunpy.util.exceptions import warn_deprecated, warn_user
+from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import _figure_to_base64
 from sunpy.visualization import peek_show
@@ -167,15 +167,6 @@ class GenericTimeSeries:
         A list of all the names of the columns in the data.
         """
         return list(self._data.columns.values)
-
-    @property
-    def index(self):
-        """
-        The time index of the data.
-        """
-        warn_deprecated('.index is deprecatd. Use .time instead to get an astropy.time.Time object, '
-                        'or ts.to_dataframe().index to get a pandas DateTimeIndex.')
-        return self.to_dataframe().index
 
     @property
     def time(self):

@@ -1,0 +1,1 @@
+When creating a coordinate or coordinate frame without specifying ``obstime``, the ``obstime`` value from the ``observer`` frame attribute will be used if present.

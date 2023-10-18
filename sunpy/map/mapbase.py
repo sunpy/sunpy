@@ -12,6 +12,7 @@ import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
@@ -356,7 +357,7 @@ class GenericMap(NDData):
         # Use a grayscale colormap with histogram equalization (and red for bad values)
         # Make a copy of the colormap to avoid modifying the matplotlib instance when
         # doing set_bad() (copy not needed when min mpl is 3.5, as already a copy)
-        cmap = copy.copy(sunpy_cm._get_mpl_cmap('gray'))
+        cmap = copy.copy(matplotlib.colormaps['gray'])
         cmap.set_bad(color='red')
         norm = ImageNormalize(stretch=HistEqStretch(finite_data))
 

@@ -29,11 +29,12 @@ from sunpy.coordinates import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    propagate_with_solar_surface,
     sun,
+    transform_with_sun_center,
 )
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth
 from sunpy.coordinates.frames import _J2000
-from sunpy.coordinates.transformations import propagate_with_solar_surface, transform_with_sun_center
 from sunpy.physics.differential_rotation import diff_rot
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.sun.constants import sidereal_rotation_rate

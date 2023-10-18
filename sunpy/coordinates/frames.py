@@ -133,6 +133,10 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         if not kwargs.pop('wrap_longitude', True):
             self._wrap_angle = None
 
+        # If obstime is not provided but observer has an obstime, use that as the obstime
+        if 'obstime' not in kwargs and 'observer' in kwargs and getattr(kwargs['observer'], 'obstime', None) is not None:
+            kwargs['obstime'] = kwargs['observer'].obstime
+
         super().__init__(*args, **kwargs)
 
         # If obstime is specified, treat the default observer (None) as explicitly set
@@ -604,6 +608,85 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
                                                           distance=d))
+
+    @u.quantity_input
+    def is_visible(self, *, tolerance: u.m = 1*u.m):
+        """
+        Returns whether the coordinate is on the visible side of the Sun.
+
+        A coordinate is visible if it can been seen from the observer (the ``observer``
+        frame attribute) assuming that the Sun is an opaque sphere with a fixed radius
+        (the ``rsun`` frame attribute).  The visible side of the Sun is always smaller
+        than a full hemisphere.
+
+        Parameters
+        ----------
+        tolerance : `~astropy.units.Quantity`
+            The depth below the surface of the Sun that should be treated as
+            transparent.
+
+        Notes
+        -----
+        If the coordinate is 2D, it is automatically deemed visible.  A 2D coordinate
+        describes a look direction from the observer, who would simply see whatever is
+        in "front", and thus cannot correspond to a point hidden from the observer.
+
+        The ``tolerance`` parameter accommodates situations where the limitations of
+        numerical precision would falsely conclude that a coordinate is not visible.
+        For example, a coordinate that is expressly created to be on the solar surface
+        may be calculated to be slightly below the surface, and hence not visible if
+        there is no tolerance.  However, a consequence of the ``tolerance`` parameter
+        is that a coordinate that is formally on the far side of the Sun but is
+        extremely close to the solar limb can be evaluated as visible.  With the
+        default ``tolerance`` value of 1 meter, a coordinate on the surface of the Sun
+        can be up to 11 arcseconds of heliographic longitude past the solar limb and
+        still be evaluated as visible.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> import astropy.units as u
+        >>> from astropy.coordinates import SkyCoord
+        >>> from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
+
+        >>> hpc_frame = Helioprojective(observer='earth', obstime='2023-08-03')
+
+        >>> in_front = SkyCoord(0*u.arcsec, 0*u.arcsec, 0.5*u.AU, frame=hpc_frame)
+        >>> print(in_front.is_visible())
+        True
+
+        >>> behind = SkyCoord(0*u.arcsec, 0*u.arcsec, 1.5*u.AU, frame=hpc_frame)
+        >>> print(behind.is_visible())
+        False
+
+        >>> hgs_array = SkyCoord(np.arange(-180, 180, 60)*u.deg, [0]*6*u.deg,
+        ...                      frame='heliographic_stonyhurst', obstime='2023-08-03')
+        >>> print(hgs_array)
+        <SkyCoord (HeliographicStonyhurst: obstime=2023-08-03T00:00:00.000, rsun=695700.0 km): (lon, lat) in deg
+            [(-180., 0.), (-120., 0.), ( -60., 0.), (   0., 0.), (  60., 0.),
+             ( 120., 0.)]>
+        >>> print(hgs_array.transform_to(hpc_frame).is_visible())
+        [False False  True  True  True False]
+        """
+        # If the coordinate is 2D, it must be visible
+        if self._is_2d:
+            return np.ones_like(self.data, dtype=bool)
+
+        # Use a slightly smaller solar radius to accommodate numerical precision
+        solar_radius = self.rsun - tolerance
+
+        data = self.cartesian
+        data_to_sun = self.observer.radius * CartesianRepresentation(1, 0, 0) - data
+
+        # When representing the helioprojective point as true Cartesian, the X value is the
+        # distance from the observer to the point in the sunward direction
+        is_behind_observer = data.x < 0
+        # When comparing heliocentric angles, we compare the sine values and hence avoid calling arcsin()
+        is_beyond_limb = np.sqrt(data.y **2 + data.z **2) / data.norm() > solar_radius / self.observer.radius
+        is_above_surface = data_to_sun.norm() >= solar_radius
+        is_on_near_side = data.dot(data_to_sun) >= 0
+
+        return is_behind_observer | is_beyond_limb | (is_on_near_side & is_above_surface)
 
     _spherical_screen = None
 

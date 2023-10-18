@@ -1,10 +1,5 @@
 """
 This module provides a CDF file reader for internal use.
-
-.. warning::
-
-    ``sunpy.io.cdf`` is deprecated, and will be removed in sunpy 5.1. This is
-    because it was designed for internal use only.
 """
 import cdflib
 import numpy as np
