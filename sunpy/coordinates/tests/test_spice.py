@@ -81,6 +81,17 @@ def test_get_body(spice_test):
     assert earth_by_name == earth_by_id
 
 
+def test_get_body_observer(spice_test):
+    # Regression test
+    earth = spice.get_body('earth', '2023-10-17')
+    venus = spice.get_body('venus', '2023-10-17')
+    venus_earth = spice.get_body('venus', '2023-10-17', observer=earth)
+    venus_earth_hci = spice.get_body('venus', '2023-10-17', observer=earth, spice_frame_name='HCI')
+
+    assert_quantity_allclose(venus_earth.separation_3d(venus), 11237.0641158*u.km)
+    assert_quantity_allclose(venus_earth_hci.separation_3d(venus), 11237.0641158*u.km)
+
+
 def test_get_body_array_time(spice_test):
     # Regression test
     obstime = parse_time(['2013-10-17', '2013-10-18'])
