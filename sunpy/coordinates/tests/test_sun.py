@@ -548,7 +548,7 @@ def test_eclipse_amount_minimum(use_DE440s):
     location = EarthLocation.from_geodetic(-98.5*u.deg, 29.6*u.deg)
 
     # We use the mean minimum lunar radius for umbral contacts
-    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:33:43')), minimum=True) < 1
-    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:33:45')), minimum=True) == 1
-    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:35:31')), minimum=True) == 1
-    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:35:35')), minimum=True) < 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:33:43')), moon_radius="minimum") < 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:33:45')), moon_radius="minimum") == 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:35:31')), moon_radius="minimum") == 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:35:35')), moon_radius="minimum") < 1
