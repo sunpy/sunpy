@@ -59,6 +59,10 @@ _ET_REF_EPOCH = Time('J2000', scale='tdb')
 _CLASS_TYPES = {2: 'PCK', 3: 'CK', 4: 'TK', 5: 'dynamic', 6: 'switch'}
 
 
+# Registry of the generated frame classes
+spice_frame_classes = []
+
+
 # Defined for future use
 class _SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
     pass
@@ -68,7 +72,7 @@ def _convert_to_et(time):
     return (time - _ET_REF_EPOCH).to_value('s')
 
 
-def _install_frame(frame_id):
+def _install_frame_by_id(frame_id):
     frame_name = spiceypy.frmnam(frame_id)
     # TODO: Sanitize/escape the frame name of special characters
 
@@ -108,16 +112,19 @@ def _install_frame(frame_id):
 
     frame_transform_graph._add_merged_transform(spice_frame, ICRS, spice_frame)
 
+    spice_frame_classes.append(spice_frame)
 
-# TODO: Support multiple calls to initialize()
+
+def _uninstall_frame_by_class(spice_frame_class):
+    frame_transform_graph.remove_transform(ICRS, spice_frame_class, None)
+    frame_transform_graph.remove_transform(spice_frame_class, ICRS, None)
+    frame_transform_graph.remove_transform(spice_frame_class, spice_frame_class, None)
+    del spice_frame_class
+
 
 def initialize(kernels):
     """
     Load one more more SPICE kernels and create corresponding frame classes.
-
-    .. warning::
-        As currently implemented, do not run this more than once per Python
-        session.
 
     Parameters
     ----------
@@ -129,13 +136,25 @@ def initialize(kernels):
     If a kernel file is a meta-kernel, make sure that the relative paths therein
     are correct for the current working directory, which may not be the same as the
     location of the meta-kernel file.
+
+    This function has simple support for being called multiple times in a session in
+    order to load multiple sets of kernels.  However, there may be unexpected
+    behavior if this function is called after the frame classes start being used.
     """
     spiceypy.furnsh(kernels)
 
+    # Remove all existing SPICE frame classes
+    if spice_frame_classes:
+        log.info(f"Removing {len(spice_frame_classes)} existing SPICE frame classes")
+        for spice_frame_class in spice_frame_classes:
+            _uninstall_frame_by_class(spice_frame_class)
+        spice_frame_classes.clear()
+
+    # Generate all SPICE frame classes
     for class_num in _CLASS_TYPES.keys():
         frames = spiceypy.kplfrm(class_num)
         for frame_id in frames:
-            _install_frame(frame_id)
+            _install_frame_by_id(frame_id)
 
 
 # TODO: Add support for light travel time correction

@@ -36,6 +36,14 @@ def test_frame_creation(spice_test):
     assert expected.issubset(frame_transform_graph.get_names())
 
 
+def test_double_initialize(spice_test):
+    # Smoke test for an issue with calling initialize() more than once a session
+    spice.initialize([])
+
+    expected = {"spice_ECLIPDATE", "spice_GSE", "spice_HCI", "spice_HEE", "spice_HEEQ", "spice_GEORTN"}
+    assert expected.issubset(frame_transform_graph.get_names())
+
+
 def test_transformation(spice_test):
     coord = SkyCoord(1e7*u.km, 1e6*u.km, 1e5*u.km, representation_type='cartesian',
                      frame='spice_GSE', obstime='2023-10-17')
