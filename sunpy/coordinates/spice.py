@@ -145,7 +145,10 @@ def initialize(kernels):
     order to load multiple sets of kernels.  However, there may be unexpected
     behavior if this function is called after the frame classes start being used.
     """
-    spiceypy.furnsh(kernels)
+    if not isinstance(kernels, list):
+        kernels = [kernels]
+    # furnsh() needs path strings
+    spiceypy.furnsh([str(kernel) for kernel in kernels])
 
     # Remove all existing SPICE frame classes
     if spice_frame_classes:
