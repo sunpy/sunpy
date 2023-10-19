@@ -48,8 +48,7 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def date(self):
-        return Time(self.meta.get('date-obs') + ' '
-                    + self.meta.get('time-obs'))
+        return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
 
     @property
     def scale(self):
