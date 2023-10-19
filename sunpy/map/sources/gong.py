@@ -56,18 +56,4 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def observer_coordinate(self):
-        observer_coord = get_earth(self.date)
-        new_obs_frame = HeliographicStonyhurst(obstime=self.date)
-        observer_coord = observer_coord.transform_to(new_obs_frame)
-
-        sc = SkyCoord(
-            obstime=self.date,
-            lon=observer_coord.lon.to_value(u.deg),
-            lat=observer_coord.lat.to_value(u.deg),
-            radius=observer_coord.radius.to_value(u.m),
-            unit=(u.deg, u.deg, u.m),
-            frame="heliographic_stonyhurst"
-        )
-        sc = sc.heliographic_stonyhurst
-
-        return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
+        return get_earth(self.date)
