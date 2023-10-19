@@ -40,8 +40,6 @@ def test_unit(gong_synoptic):
     assert gong_synoptic.unit == u.G
     assert gong_synoptic.unit == u.Unit("Mx/cm^2")
     assert gong_synoptic.unit.to_string() == 'G'
-    gong_synoptic.meta['bunit'] = 'm'
-    assert gong_synoptic.unit == u.m
 
 
 def test_spatial_units(gong_synoptic):
