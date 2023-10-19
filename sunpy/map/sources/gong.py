@@ -4,6 +4,7 @@ GONG Map subclass definitions
 import numpy as np
 
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
 from sunpy.coordinates import HeliographicStonyhurst, get_earth
@@ -48,7 +49,7 @@ class GONGSynopticMap(GenericMap):
     @property
     def date(self):
         return Time(self.meta.get('date-obs') + ' '
-                    + self.meta.get('time-obs')).isot
+                    + self.meta.get('time-obs'))
 
     @property
     def scale(self):
@@ -72,26 +73,18 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def observer_coordinate(self):
-        return _earth_obs_coord_meta(self.meta['date-obs'])
+        observer_coord = get_earth(self.date)
+        new_obs_frame = HeliographicStonyhurst(obstime=self.date)
+        observer_coord = observer_coord.transform_to(new_obs_frame)
 
+        sc = SkyCoord(
+            obstime=self.date,
+            lon=observer_coord.lon.to_value(u.deg),
+            lat=observer_coord.lat.to_value(u.deg),
+            radius=observer_coord.radius.to_value(u.m),
+            unit=(u.deg, u.deg, u.m),
+            frame="heliographic_stonyhurst"
+        )
+        sc = sc.heliographic_stonyhurst
 
-def _observer_coord_meta(observer_coord):
-    """
-    Convert an observer coordinate into FITS metadata.
-    """
-    new_obs_frame = HeliographicStonyhurst(
-        obstime=observer_coord.obstime)
-    observer_coord = observer_coord.transform_to(new_obs_frame)
-
-    return {
-        'hglt_obs': observer_coord.lat.to_value(u.deg),
-        'hgln_obs': observer_coord.lon.to_value(u.deg),
-        'dsun_obs': observer_coord.radius.to_value(u.m)
-    }
-
-
-def _earth_obs_coord_meta(obstime):
-    """
-    Return metadata for an Earth observer coordinate.
-    """
-    return _observer_coord_meta(get_earth(obstime))
+        return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))

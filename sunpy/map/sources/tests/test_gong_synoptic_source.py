@@ -44,12 +44,11 @@ def test_unit(gong_synoptic):
     assert gong_synoptic.unit == u.m
 
 
-def test_coordinate_system(gong_synoptic):
+def test_spatial_units(gong_synoptic):
     assert gong_synoptic.spatial_units[0] == u.deg
     assert gong_synoptic.spatial_units[1] == u.deg
 
 
-def test_observer(gong_synoptic):
-    assert gong_synoptic.observer_coordinate['hglt_obs'] is not None
-    assert gong_synoptic.observer_coordinate['hgln_obs'] is not None
-    assert gong_synoptic.observer_coordinate['dsun_obs'] is not None
+def test_wcs(gong_synoptic):
+    # Smoke test that WCS is valid and can transform from pixels to world coordinates
+    gong_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
