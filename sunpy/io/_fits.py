@@ -353,10 +353,14 @@ def extract_waveunit(header):
     elif wavelnth_comment is not None:
         # supported formats (where $UNIT is the unit like "nm" or "Angstrom"):
         #   "Observed wavelength ($UNIT)"
+        #   "Wavelength of obs ($UNIT)"
         #   "[$UNIT] ..."
-        parentheses_pattern = r'Observed wavelength \((\w+?)\)$'
-        brackets_pattern = r'^\[(\w+?)\]'
-        for pattern in [parentheses_pattern, brackets_pattern]:
+        patterns = [
+            r'Observed wavelength \((\w+?)\)$',
+            r'Wavelength of obs \((\w+?)\)$',
+            r'^\[(\w+?)\]',
+        ]
+        for pattern in patterns:
             m = re.search(pattern, wavelnth_comment)
             if m is not None:
                 waveunit = m.group(1)
