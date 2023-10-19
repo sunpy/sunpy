@@ -25,13 +25,6 @@ class GONGSynopticMap(GenericMap):
     array of 242×256 pixels covering the solar disk. These magnetograms are used to derive
     synoptic maps which show a full-surface picture of the solar magnetic field.
 
-    Notes
-    -----
-    SunPy automatically fixes non-compliant FITS metadata in GONG maps. Namely, CDELT2 is
-    converted to degrees and CUNIT1 and CUNIT2 are set to 'deg'; DATE-OBS is converted to
-    ISO format; BUNIT is set to 'G'; and HGLT_OBS, HGLN_OBS, and DSUN_OBS are set to the
-    appropriate values for an observer on Earth.
-
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`_
@@ -56,7 +49,6 @@ class GONGSynopticMap(GenericMap):
         # that value (see Thompson 2005)
         return SpatialPair(self.meta['cdelt1'] * self.spatial_units[0] / u.pixel,
                            self.meta['cdelt2'] * 180 / np.pi * self.spatial_units[0] / u.pixel)
-
 
     @property
     def spatial_units(self):
