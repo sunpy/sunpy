@@ -45,7 +45,7 @@ def plot_eclipse_timeseries(location, time):
     # Calculate the eclipse amounts using a JPL ephemeris
     with solar_system_ephemeris.set('de440s'):
         amount = sun.eclipse_amount(observer)
-        amount_minimum = sun.eclipse_amount(observer, minimum=True)
+        amount_minimum = sun.eclipse_amount(observer, moon_radius='minimum')
 
     # Calculate the start/end points of partial/total solar eclipse
     partial = np.flatnonzero(amount > 0)

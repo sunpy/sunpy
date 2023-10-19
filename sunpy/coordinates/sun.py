@@ -1,6 +1,8 @@
 """
 Sun-specific coordinate calculations
 """
+from typing import Literal
+
 import numpy as np
 
 import astropy.units as u
@@ -719,7 +721,7 @@ def _sun_north_angle_to_z(frame):
     return Angle(angle)
 
 
-def eclipse_amount(observer, *, minimum=False):
+def eclipse_amount(observer, *, moon_radius: Literal['IAU', 'minimum'] = 'IAU'):
     """
     Return the percentage of the Sun that is eclipsed by the Moon.
 
@@ -730,13 +732,15 @@ def eclipse_amount(observer, *, minimum=False):
     start/end of total solar eclipses (a.k.a. umbral contacts).
 
     Parameters
-    ----
+    ----------
     observer : `~astropy.coordinates.SkyCoord`
-        The observer location and observation time
-    minimum : `bool`
-        Option to use a mean minimum radius for the Moon (R_moon / R_earth =
-        0.272281) rather than the IAU mean radius (R_moon / R_earth = 0.2725076).
-        Defaults to `False`.
+        The observer location and observation time.
+    moon_radius : `str`
+        The choice of which radius to use for the Moon.
+        The default option (``'IAU'``) is the IAU mean radius (R_moon / R_earth =
+        0.2725076).
+        The alternative option (``'minimum'``) is the mean minimum radius (R_moon /
+        R_earth = 0.272281).
 
     Notes
     -----
@@ -746,10 +750,9 @@ def eclipse_amount(observer, *, minimum=False):
     ephemeris, so it is highly recommended to use a JPL ephemeris instead.  See
     :ref:`astropy-coordinates-solarsystem`.
 
-    Using the mean minimum radius for the Moon (``minimum=True``) will result in
-    slightly more accurate estimates of the start/end of total solar eclipses, at
-    the expense of slightly more inaccurate estimates for the amount of partial
-    solar eclipses.  See
+    Using the mean minimum radius for the Moon will result in slightly more accurate
+    estimates of the start/end of total solar eclipses, at the expense of slightly
+    more inaccurate estimates for the amount of partial solar eclipses.  See
     `this page <https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html>`__
     for relevant discussion.
 
@@ -759,7 +762,13 @@ def eclipse_amount(observer, *, minimum=False):
     """
     # TODO: Find somewhere more appropriate to define these constants
     # The radius of the Moon to use (in units of Earth radii)
-    k = 0.272281 if minimum else 0.2725076
+    # See https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html
+    if moon_radius == 'IAU':
+        k = 0.2725076
+    elif moon_radius == 'minimum':
+        k = 0.272281
+    else:
+        raise ValueError("The supported values for `moon_radius` are 'IAU' and 'minimum'.")
     R_moon = k * R_earth
 
     # Get the light-travel-time adjusted location of the Moon
@@ -767,14 +776,14 @@ def eclipse_amount(observer, *, minimum=False):
 
     # Get Cartesian vectors relative to the observer
     observer = observer.transform_to(moon)
-    v_sun = -observer.cartesian
-    v_moon = moon.cartesian - observer.cartesian
-    d_moon = v_moon.norm()
+    vec_sun = -observer.cartesian
+    vec_moon = moon.cartesian - observer.cartesian
+    dist_moon = vec_moon.norm()
 
     # Sun's angular radius (s), Moon's angular radius (m), and angular separation (d)
     s = np.arcsin(constants.radius / observer.radius).value
-    m = np.arcsin(R_moon / d_moon).value
-    d = np.arccos(v_sun.dot(v_moon) / (observer.radius * d_moon)).value
+    m = np.arcsin(R_moon / dist_moon).value
+    d = np.arccos(vec_sun.dot(vec_moon) / (observer.radius * dist_moon)).value
 
     # Elevate scalars to arrays
     s, m, d = np.atleast_1d(s), np.atleast_1d(m), np.atleast_1d(d)
