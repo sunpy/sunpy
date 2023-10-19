@@ -29,6 +29,8 @@ Notes
   it is not possible to transform a 2D coordinate between frames because there
   is always an origin shift.
 * Transformations of velocities are not yet supported.
+* SPICE frame names are rendered as uppercase, except for plus/minus characters,
+  which are replaced with lowercase ``'p'``/``'n'`` characters.
 """
 
 import numpy as np
@@ -72,20 +74,22 @@ def _convert_to_et(time):
     return (time - _ET_REF_EPOCH).to_value('s')
 
 
+def _make_astropy_name(spice_frame_name):
+    # Replace plus/minus characters in the SPICE frame name with lowercase 'p'/'n'
+    return f"spice_{spice_frame_name.translate(str.maketrans('+-', 'pn'))}"
+
+
 def _install_frame_by_id(frame_id):
     frame_name = spiceypy.frmnam(frame_id)
-    # TODO: Sanitize/escape the frame name of special characters
+    astropy_frame_name = _make_astropy_name(frame_name)
 
     frame_center, class_num, _ = spiceypy.frinfo(frame_id)
     frame_center_name = spiceypy.bodc2n(frame_center)
     log.info(f"Installing {frame_name} {_CLASS_TYPES[class_num]} frame ({frame_id}) "
-             f"as 'spice_{frame_name}'")
+             f"as '{astropy_frame_name}'")
 
-    spice_frame = type(f"spice_{frame_name}",
-                       (_SpiceBaseCoordinateFrame,),
-                       {})
-    # Force the capitalization
-    # TODO: Consider adding the alias of all lowercase
+    spice_frame = type(astropy_frame_name, (_SpiceBaseCoordinateFrame,), {})
+    # Force the capitalization pattern of lowercase "spice_" followed by uppercase SPICE frame name
     spice_frame.name = spice_frame.__name__
 
     @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ICRS, spice_frame)
@@ -213,6 +217,6 @@ def get_body(body, time, *, spice_frame_name='J2000', observer=None):
             obspos = matrix @ obspos
         pos += obspos << u.km
 
-    frame_name = 'icrs' if spice_frame_name == 'J2000' else f"spice_{spice_frame_name}"
+    frame_name = 'icrs' if spice_frame_name == 'J2000' else _make_astropy_name(spice_frame_name)
 
     return SkyCoord(CartesianRepresentation(pos.T), frame=frame_name, obstime=obstime)
