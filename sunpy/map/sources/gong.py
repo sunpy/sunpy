@@ -58,14 +58,6 @@ class GONGSynopticMap(GenericMap):
         return SpatialPair(self.meta['cdelt1'] * self.spatial_units[0] / u.pixel,
                            self.meta['cdelt2'] * 180 / np.pi * self.spatial_units[0] / u.pixel)
 
-    @property
-    def unit(self):
-        unit_str = self.meta.get('bunit', None)
-        if unit_str is None:
-            return
-        elif unit_str == 'Gauss':
-            return u.G
-        return u.Unit(unit_str)
 
     @property
     def spatial_units(self):
