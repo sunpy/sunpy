@@ -4,10 +4,9 @@ GONG Map subclass definitions
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
-from sunpy.coordinates import HeliographicStonyhurst, get_earth
+from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
 
 __all__ = ['GONGSynopticMap']
