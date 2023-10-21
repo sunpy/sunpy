@@ -17,6 +17,9 @@ When loading a set of kernels, a frame class and corresponding transformations
 are created for each SPICE frame.  One can also query the location of a body
 as computed via SPICE.
 
+See :ref:`sphx_glr_generated_gallery_units_and_coordinates_spice.py` for an
+example of how to use this module.
+
 .. note::
     This module requires the optional dependency `~spiceypy.spiceypy` to be
     installed.
