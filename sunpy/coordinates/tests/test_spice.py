@@ -2,7 +2,7 @@ import pytest
 import spiceypy
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord, frame_transform_graph
+from astropy.coordinates import ConvertError, SkyCoord, UnitSphericalRepresentation, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.utils.data import download_file
 
@@ -66,6 +66,23 @@ def test_transformation_array_time(spice_test):
     assert_quantity_allclose(new_coord.x, [1.49128669e8, 1.49085802e+08]*u.km - coord.x)
     assert_quantity_allclose(new_coord.y, -coord.y)
     assert_quantity_allclose(new_coord.z, coord.z)
+
+
+def test_transformation_2d_okay(spice_test):
+    coord = SkyCoord(30*u.deg, 45*u.deg, frame='spice_HCI', obstime='2023-10-17')
+    new_coord = coord.spice_HEE
+
+    assert isinstance(new_coord.data, UnitSphericalRepresentation)
+
+
+def test_transformation_2d_not_okay(spice_test):
+    coord = SkyCoord(30*u.deg, 45*u.deg, frame='spice_HCI', obstime='2023-10-17')
+    with pytest.raises(ConvertError, match="due to a shift in origin"):
+        assert coord.icrs
+
+    coord = SkyCoord(30*u.deg, 45*u.deg, frame='icrs', obstime='2023-10-17')
+    with pytest.raises(ConvertError, match="due to a shift in origin"):
+        assert coord.spice_HCI
 
 
 def test_get_body(spice_test):

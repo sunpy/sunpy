@@ -23,11 +23,8 @@ as computed via SPICE.
 
 Notes
 -----
-* All transformations from one SPICE frame to another SPICE frame go through
-  `~astropy.coordinates.ICRS` as the intermediate frame, even if the origin
-  shift to/from the solar-system barycenter is unnatural.  This also means that
-  it is not possible to transform a 2D coordinate between frames because there
-  is always an origin shift.
+* 2D coordinates can be transformed only if the to/from frames have the same
+  SPICE body ID as their centers.
 * Transformations of velocities are not yet supported.
 * SPICE frame names are rendered as uppercase, except for plus/minus characters,
   which are replaced with lowercase ``'p'``/``'n'`` characters.
@@ -41,7 +38,7 @@ except ImportError:
     raise ImportError("This module requires the optional dependency `spiceypy`.")
 
 import astropy.units as u
-from astropy.coordinates import ICRS, SkyCoord, frame_transform_graph
+from astropy.coordinates import ICRS, ConvertError, SkyCoord, frame_transform_graph
 from astropy.coordinates.representation import CartesianRepresentation
 from astropy.coordinates.transformations import FunctionTransformWithFiniteDifference
 from astropy.time import Time
@@ -61,8 +58,9 @@ _ET_REF_EPOCH = Time('J2000', scale='tdb')
 _CLASS_TYPES = {2: 'PCK', 3: 'CK', 4: 'TK', 5: 'dynamic', 6: 'switch'}
 
 
-# Registry of the generated frame classes
-spice_frame_classes = []
+# Registry of the generated frame classes and center classes
+_frame_registry = {}
+_center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}
 
 
 # Defined for future use
@@ -74,56 +72,97 @@ def _convert_to_et(time):
     return (time - _ET_REF_EPOCH).to_value('s')
 
 
-def _make_astropy_name(spice_frame_name):
+def _astropy_frame_name(spice_frame_name):
     # Replace plus/minus characters in the SPICE frame name with lowercase 'p'/'n'
     return f"spice_{spice_frame_name.translate(str.maketrans('+-', 'pn'))}"
 
 
+def _astropy_center_name(spice_center_id):
+    # Use the center ID directly, changing a negative sign to 'n'
+    return f"_spice_center_{str(spice_center_id).replace('-', 'n')}"
+
+
+def _is_2d(data):
+    return data.norm().unit is u.one and u.allclose(data.norm(), 1*u.one)
+
+
+def _install_center_by_id(center_id):
+    center_name = spiceypy.bodc2n(center_id)
+    if center_name in _center_registry.keys():
+        return
+
+    log.info(f"Creating ICRF frame with {center_name} ({center_id}) origin")
+    astropy_center_name = _astropy_center_name(center_id)
+    center_cls = type(astropy_center_name, (_SpiceBaseCoordinateFrame,), {})
+
+    @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ICRS, center_cls)
+    def icrs_to_shifted(from_icrs_coord, to_shifted_frame):
+        if _is_2d(from_icrs_coord.data):
+            raise ConvertError("Cannot transform a 2D coordinate due to a shift in origin.")
+        icrs_offset = spiceypy.spkpos(center_name,
+                                      _convert_to_et(to_shifted_frame.obstime),
+                                      'J2000', 'NONE', 'SSB')[0] << u.km
+        shifted_pos = from_icrs_coord.cartesian - CartesianRepresentation(icrs_offset.T)
+        return to_shifted_frame.realize_frame(shifted_pos)
+
+    @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, center_cls, ICRS)
+    def shifted_to_icrs(from_shifted_coord, to_icrs_frame):
+        if _is_2d(from_shifted_coord.data):
+            raise ConvertError("Cannot transform a 2D coordinate due to a shift in origin.")
+        icrs_offset = spiceypy.spkpos(center_name,
+                                      _convert_to_et(from_shifted_coord.obstime),
+                                      'J2000', 'NONE', 'SSB')[0] << u.km
+        icrs_pos = from_shifted_coord.cartesian + CartesianRepresentation(icrs_offset.T)
+        return to_icrs_frame.realize_frame(icrs_pos)
+
+    frame_transform_graph._add_merged_transform(center_cls, ICRS, center_cls)
+
+    _center_registry[center_name] = center_cls
+
+
 def _install_frame_by_id(frame_id):
     frame_name = spiceypy.frmnam(frame_id)
-    astropy_frame_name = _make_astropy_name(frame_name)
+    astropy_frame_name = _astropy_frame_name(frame_name)
 
-    frame_center, class_num, _ = spiceypy.frinfo(frame_id)
-    frame_center_name = spiceypy.bodc2n(frame_center)
+    center_id, class_num, _ = spiceypy.frinfo(frame_id)
+    center_name = spiceypy.bodc2n(center_id)
     log.info(f"Installing {frame_name} {_CLASS_TYPES[class_num]} frame ({frame_id}) "
              f"as '{astropy_frame_name}'")
 
-    spice_frame = type(astropy_frame_name, (_SpiceBaseCoordinateFrame,), {})
-    # Force the capitalization pattern of lowercase "spice_" followed by uppercase SPICE frame name
-    spice_frame.name = spice_frame.__name__
+    # Create a center class (if needed)
+    _install_center_by_id(center_id)
+    center_cls = _center_registry[center_name]
 
-    @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ICRS, spice_frame)
-    def icrs_to_spice(from_icrs_coord, to_spice_frame):
+    frame_cls = type(astropy_frame_name, (_SpiceBaseCoordinateFrame,), {})
+    # Force the capitalization pattern of lowercase "spice_" followed by uppercase SPICE frame name
+    frame_cls.name = frame_cls.__name__
+
+    @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, center_cls, frame_cls)
+    def rotate_from_icrf(from_shifted_coord, to_spice_frame):
         et = _convert_to_et(to_spice_frame.obstime)
         # matrix needs to be contiguous (see https://github.com/astropy/astropy/issues/15503)
         matrix = np.ascontiguousarray(spiceypy.sxform('J2000', frame_name, et)[..., :3, :3])
-        icrs_offset = spiceypy.spkpos(frame_center_name,
-                                      et, 'J2000', 'NONE', 'SSB')[0] << u.km
-        shifted_old_pos = from_icrs_coord.cartesian - CartesianRepresentation(icrs_offset.T)
-        new_pos = shifted_old_pos.transform(matrix)
+        new_pos = from_shifted_coord.data.transform(matrix)
         return to_spice_frame.realize_frame(new_pos)
 
-    @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, spice_frame, ICRS)
-    def spice_to_icrs(from_spice_coord, to_icrs_frame):
+    @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, frame_cls, center_cls)
+    def rotate_to_icrf(from_spice_coord, to_shifted_frame):
         et = _convert_to_et(from_spice_coord.obstime)
         # matrix needs to be contiguous (see https://github.com/astropy/astropy/issues/15503)
         matrix = np.ascontiguousarray(spiceypy.sxform(frame_name, 'J2000', et)[..., :3, :3])
-        shifted_new_pos = from_spice_coord.cartesian.transform(matrix)
-        icrs_offset = spiceypy.spkpos(frame_center_name,
-                                      et, 'J2000', 'NONE', 'SSB')[0] << u.km
-        new_pos = shifted_new_pos + CartesianRepresentation(icrs_offset.T)
-        return to_icrs_frame.realize_frame(new_pos)
+        shifted_pos = from_spice_coord.data.transform(matrix)
+        return to_shifted_frame.realize_frame(shifted_pos)
 
-    frame_transform_graph._add_merged_transform(spice_frame, ICRS, spice_frame)
+    frame_transform_graph._add_merged_transform(frame_cls, center_cls, frame_cls)
 
-    spice_frame_classes.append(spice_frame)
+    _frame_registry[frame_name] = (frame_cls, center_cls)
 
 
-def _uninstall_frame_by_class(spice_frame_class):
-    frame_transform_graph.remove_transform(ICRS, spice_frame_class, None)
-    frame_transform_graph.remove_transform(spice_frame_class, ICRS, None)
-    frame_transform_graph.remove_transform(spice_frame_class, spice_frame_class, None)
-    del spice_frame_class
+def _uninstall_frame_by_class(target_class, from_class):
+    frame_transform_graph.remove_transform(target_class, target_class, None)
+    frame_transform_graph.remove_transform(from_class, target_class, None)
+    frame_transform_graph.remove_transform(target_class, from_class, None)
+    del target_class
 
 
 def initialize(kernels):
@@ -151,11 +190,22 @@ def initialize(kernels):
     spiceypy.furnsh([str(kernel) for kernel in kernels])
 
     # Remove all existing SPICE frame classes
-    if spice_frame_classes:
-        log.info(f"Removing {len(spice_frame_classes)} existing SPICE frame classes")
-        for spice_frame_class in spice_frame_classes:
-            _uninstall_frame_by_class(spice_frame_class)
-        spice_frame_classes.clear()
+    global _frame_registry
+    if _frame_registry:
+        log.info(f"Removing {len(_frame_registry)} existing SPICE frame classes")
+        for spice_frame_name in _frame_registry.keys():
+            frame_cls, center_cls = _frame_registry[spice_frame_name]
+            _uninstall_frame_by_class(frame_cls, center_cls)
+        _frame_registry.clear()
+
+    # Remove all non-default SPICE center classes
+    global _center_registry
+    if len(_center_registry) > 1:
+        log.info(f"Removing {len(_center_registry) - 1} existing SPICE origin classes")
+        for spice_center_name, center_cls in _center_registry.items():
+            if center_cls != ICRS:
+                _uninstall_frame_by_class(center_cls, ICRS)
+        _center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}
 
     # Generate all SPICE frame classes
     for class_num in _CLASS_TYPES.keys():
@@ -220,6 +270,6 @@ def get_body(body, time, *, spice_frame_name='J2000', observer=None):
             obspos = matrix @ obspos
         pos += obspos << u.km
 
-    frame_name = 'icrs' if spice_frame_name == 'J2000' else _make_astropy_name(spice_frame_name)
+    frame_name = 'icrs' if spice_frame_name == 'J2000' else _astropy_frame_name(spice_frame_name)
 
     return SkyCoord(CartesianRepresentation(pos.T), frame=frame_name, obstime=obstime)
