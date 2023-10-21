@@ -215,7 +215,7 @@ def initialize(kernels):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_body(body, time, *, spice_frame_name='J2000', observer=None):
+def get_body(body, time, *, spice_frame='J2000', observer=None):
     """
     Get the location of a body via SPICE.
 
@@ -225,9 +225,9 @@ def get_body(body, time, *, spice_frame_name='J2000', observer=None):
         The NAIF body ID, or a string that is resolvable to a body ID
     time : {parse_time_types}
         Time to use in a parse_time-compatible format.
-    spice_frame_name : `str`
-        The SPICE frame to use for the returned coordinate.  Defaults to ``'J2000'``,
-        which is equivalent to Astropy's `~astropy.coordinates.ICRS`.
+    spice_frame : `str`
+        The SPICE frame name to use for the returned coordinate.  Defaults to
+        ``'J2000'``, which is equivalent to Astropy's `~astropy.coordinates.ICRS`.
     observer : `~astropy.coordinates.SkyCoord`
         If `None`, the returned coordinate is the instantaneous or “true” location.
         If not `None`, the returned coordinate is the astrometric location (i.e.,
@@ -237,19 +237,19 @@ def get_body(body, time, *, spice_frame_name='J2000', observer=None):
     obstime = parse_time(time)
     et = _convert_to_et(obstime)
 
-    frame_center = spiceypy.frinfo(spiceypy.namfrm(spice_frame_name))[0]
+    frame_center = spiceypy.frinfo(spiceypy.namfrm(spice_frame))[0]
 
     if observer is None:
         pos = spiceypy.spkpos(body_name,
                               et,
-                              spice_frame_name,
+                              spice_frame,
                               'NONE',
                               spiceypy.bodc2n(frame_center))[0] << u.km
     else:
         obspos = observer.icrs.cartesian.xyz.to_value('km')
         pos, lt = spiceypy.spkcpo(body_name,
                                   et,
-                                  spice_frame_name,
+                                  spice_frame,
                                   'OBSERVER',
                                   'CN',
                                   obspos,
@@ -258,7 +258,7 @@ def get_body(body, time, *, spice_frame_name='J2000', observer=None):
         log.info(f"Apparent body location accounts for {lt:.2f} seconds of light travel time")
 
         pos = pos[:3] << u.km
-        if spice_frame_name != 'J2000':
+        if spice_frame != 'J2000':
             shift = spiceypy.spkpos(spiceypy.bodc2n(frame_center),
                                     et,
                                     'J2000',
@@ -266,10 +266,10 @@ def get_body(body, time, *, spice_frame_name='J2000', observer=None):
                                     'SSB')[0]
             obspos -= shift
 
-            matrix = spiceypy.pxform('J2000', spice_frame_name, _convert_to_et(obstime))
+            matrix = spiceypy.pxform('J2000', spice_frame, _convert_to_et(obstime))
             obspos = matrix @ obspos
         pos += obspos << u.km
 
-    frame_name = 'icrs' if spice_frame_name == 'J2000' else _astropy_frame_name(spice_frame_name)
+    frame_name = 'icrs' if spice_frame == 'J2000' else _astropy_frame_name(spice_frame)
 
     return SkyCoord(CartesianRepresentation(pos.T), frame=frame_name, obstime=obstime)

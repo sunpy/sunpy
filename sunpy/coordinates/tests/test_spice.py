@@ -103,7 +103,7 @@ def test_get_body_observer(spice_test):
     earth = spice.get_body('earth', '2023-10-17')
     venus = spice.get_body('venus', '2023-10-17')
     venus_earth = spice.get_body('venus', '2023-10-17', observer=earth)
-    venus_earth_hci = spice.get_body('venus', '2023-10-17', observer=earth, spice_frame_name='HCI')
+    venus_earth_hci = spice.get_body('venus', '2023-10-17', observer=earth, spice_frame='HCI')
 
     assert_quantity_allclose(venus_earth.separation_3d(venus), 11237.0641158*u.km)
     assert_quantity_allclose(venus_earth_hci.separation_3d(venus), 11237.0641158*u.km)
@@ -112,7 +112,7 @@ def test_get_body_observer(spice_test):
 def test_get_body_array_time(spice_test):
     # Regression test
     obstime = parse_time(['2013-10-17', '2013-10-18'])
-    earth = spice.get_body(399, obstime, spice_frame_name='HCI')
+    earth = spice.get_body(399, obstime, spice_frame='HCI')
 
     assert len(earth) == 2
     assert earth[0].obstime == obstime[0]
@@ -124,9 +124,9 @@ def test_get_body_array_time(spice_test):
 
 def test_get_body_spice_frame(spice_test):
     # Regression test
-    moon_gse = spice.get_body('moon', '2023-10-17', spice_frame_name='GSE')
+    moon_gse = spice.get_body('moon', '2023-10-17', spice_frame='GSE')
     moon_gse.representation_type = 'cartesian'
-    moon_hee = spice.get_body('moon', '2023-10-17', spice_frame_name='HEE')
+    moon_hee = spice.get_body('moon', '2023-10-17', spice_frame='HEE')
     moon_hee.representation_type = 'cartesian'
 
     assert moon_gse.name == 'spice_GSE'
