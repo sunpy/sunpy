@@ -1,8 +1,9 @@
 """
-Experimental module to use the SkyCoord API for SPICE computations
+Bridge module to use the SkyCoord API for SPICE computations
 
-.. warning::
-    This module is under development, so may be subject to significant change.
+.. note::
+    This module requires the optional dependency `~spiceypy.spiceypy` to be
+    installed.
 
 The `SPICE <https://naif.jpl.nasa.gov/naif/>`__ observation geometry information
 system is being increasingly used by space missions to describe the locations of
@@ -19,10 +20,6 @@ as computed via SPICE.
 
 See :ref:`sphx_glr_generated_gallery_units_and_coordinates_spice.py` for an
 example of how to use this module.
-
-.. note::
-    This module requires the optional dependency `~spiceypy.spiceypy` to be
-    installed.
 
 Notes
 -----
