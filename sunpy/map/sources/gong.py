@@ -44,8 +44,9 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def scale(self):
-        # Instead of the spacing in sin(lat), this should be 180/pi times
-        # that value (see Thompson 2005)
+        # Since, this map uses the cylindrical equal-area (CEA) projection,
+        # the spacing should be modified to 180/pi times the original value
+        # Reference: Section 5.5, Thompson 2006
         return SpatialPair(self.meta['cdelt1'] * self.spatial_units[0] / u.pixel,
                            self.meta['cdelt2'] * 180 / np.pi * self.spatial_units[0] / u.pixel)
 
