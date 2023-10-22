@@ -1,0 +1,78 @@
+SIMPLE  =                    T / Written by IDL:  Sat Sep 30 07:44:13 2023
+BITPIX  =                  -32 / Bits per pixel
+NAXIS   =                    2 / Number of axes
+NAXIS1  =                  360 / Axis length
+NAXIS2  =                  180 / Axis length
+EXTEND  =                    F / File may contain extensions
+ORIGIN  = 'National Solar Observatory -- GONG' / FITS file originator
+OBS-SITE= 'NSO/GONG NETWORK'   / Instrument site location
+TELESCOP= 'NSO-GONG'           / NSO/GONG Network
+OBS-URL = 'http://gong.nso.edu' / The GONG website
+DATE    = '2023-09-30T06:44:00'
+DATE-OBS= '2023-09-30'
+TIME-OBS= '06:44   '
+DATATYPE= 'REAL*4  '           / Type of data
+WAVELNTH=                676.8 / Wavelength of obs (nm)
+CAM_TYPE= 'SMD     '           / Camera manufacture type
+SN_CAMS = '1014 1016 1027 1029 1017' / Camera serial numbers
+CAR_ROT =                 2276 / Carr-rot. number of position 0.0
+WCSNAME = 'Carrington Cylin-equal-area'
+CTYPE1  = 'CRLN-CEA'           / Carrington longitude
+CTYPE2  = 'CRLT-CEA'           / Carrington sine latitude
+CRPIX1  =              180.500 / 180 degrees from initial longitude
+CRPIX2  =              90.5000 / Equator of map
+CRVAL1  =                  130 / Carrington longitude of map cntr (deg)
+CRVAL2  =              0.00000 / Sine-lat of Equator
+PV2_1   =              1.00000 / Lambda for latitude coordinate
+CDELT1  =              1.00000 / Carrington long. step (deg)
+CDELT2  =            0.0111111 / Sine-lat step
+WCSNAMEA= 'Carrington-rotation Cylin-equal-area'
+CTYPE1A = 'CRN-CEA '           / Carrington rotation number
+CTYPE2A = 'CRLT-CEA'           / Carrington sine latitude
+CRPIX1A =              180.500 / Half rotation from initial pixel
+CRPIX2A =              90.5000 / Equator of map
+CRVAL1A =          2275.638889 / Carr-rot of map cntr
+CRVAL2A =              0.00000 / Sine-lat of Equator
+PV2_1A  =              1.00000 / Lambda for latitude coordinate
+CDELT1A =    -0.00277777777778 / Carrington step (rotation)
+CDELT2A =            0.0111111 / Sine-lat step
+IMTYPE  = 'MAGNETIC'
+NFILETOT=                 4281 / Total number of files included
+LONG0   =                  310 / Init. Carr-long. of synoptic map
+IMGMN01 =            -0.082834 / Image mean
+IMGRMS01=            23.409344 / Image RMS (Standard Deviation)
+IMGSKW01=             4.185349 / Image skewness
+IMGMIN01=          -509.079071 / Image Min
+IMGMAX01=           846.215271 / Image Max
+IMGADV01=             7.367440 / Image Average Deviation
+IMGVAR01=           547.997375 / Image Variance
+IMGKUR01=           189.706238 / Image Kurtosis
+MMREL   = 'v2.3    '
+CARROT  =                 2276
+BUNIT   = 'Gauss   '
+LONGMC  =                 72.0
+LONGIMC =                   72
+LONGADJ =           -0.3273368
+MAPCOUNT=                 4281
+MAPL0   =                   10
+MAPEDGE =                  310
+CREDGE  =          2276.138889 / Carr-rot of map left edge
+CRNOW   =         2275.9731315 / Carr-rot of Now
+CR60    =         2275.9722222 / Carr-rot of 60 degrees in
+CRCENTER=         2275.6388889 / Carr-rot of map cntr
+MAPNAME = '2276_310'
+MAPDATE = '2023-09-30'         / UT Date of this map (i.e. of last contributor)
+MAPTIME = '06:44   '           / UT Time of this map (i.e. of last contributor)
+FILELIST= 'mrbql230930t0644c2276_310'
+COMMENT
+COMMENT Please note:
+COMMENT This is an hourly GONG product with UT date MAPDATE and UT time MAPTIME
+COMMENT which is between 59.5 and 60.5 degrees from the left edge in the
+COMMENT Carrington frame.
+COMMENT
+COMMENT This GONG product is produced from the QRII data stream.
+COMMENT
+COMMENT See http://gong.nso.edu for more information about GONG.
+COMMENT
+PLATFORM= 'Linux ncs-gong-proc1-lx redhat NOAO/IRAF V2.13-BETA'
+FITSWASH= '$RCSfile: mag_hourly.kw,v $ $Revision: 2.4 $ $Date: 2021/11/05 23:35'
