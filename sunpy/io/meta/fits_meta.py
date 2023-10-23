@@ -1,4 +1,5 @@
 import yaml
+import re
 
 import numpy as np
 
@@ -6,6 +7,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
+from astropy.io.fits import Header, Card
 
 from sunpy import log
 from sunpy.coordinates import frames, sun
@@ -13,9 +15,6 @@ from sunpy.util import MetaDict
 from sunpy.util.decorators import deprecated
 
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
-
-with open("fits_solarnet_schema.yaml", "r") as f:
-    fits_schema = yaml.safe_load(f)
 
 
 @deprecated(since="5.0", message="Unused and will be removed in 6.0")
@@ -468,12 +467,53 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
     return header
 
 
-def validate_meta(meta_dict):
-    """Analyze a FITS metadata dictionary against the Solarnet recommendations.
-    
-    Parameters
-    ----------
-    """
+class SolarNetHeader(Header):
+    def __init__(self):
+        # load the schema for validation
+        with open("fits_solarnet_schema.yaml", "r") as f:
+            fits_schema = yaml.safe_load(f)
+        self._schema = _schema_to_table(fits_schema)
+        # fill the header with the required keywords
+        required = self._schema[self._schema['required']]
+        cards = []
+        for this_item in required:
+            allowed_values = this_item['allowed_values']
+            if allowed_values is not None and len(allowed_values) == 1:
+                cards.append(Card(keyword=this_item['keyword'], comment=this_item['description'], value=allowed_values[0]))
+            else:
+                cards.append(Card(keyword=this_item['keyword'], comment=this_item['description'], value=""))
+        super().__init__(cards=cards)
+
+    def validate(self):
+        """
+        Validate the set of header values with the solarnet recommendations.
+        The following checks are performed.
+          * Check that all required keywords are present
+          * Check that keywords that have limited allowed values are consistent with those.
+          * Check that keyword values are consistent with the defined data types
+          * Check that keywords that are quantities define the unit properly in the comment.
+          * Check that an observer position is provided.
+          * Check that the comment are standard.
+          * Check that all keywords have values.
+        """
+        
+        for this_card in self.cards:
+            this_keyword = this_card['keyword']
+            if this_card.value == '':  #  check that all keywords have values.
+                print(f'{this_card} has no value.')
+            if this_keyword.upper() in self._schema['keyword']:
+                schema_params = self._schema[this_keyword]
+                if schema_params['description'] != this_card.comment:
+                    print(f'{this_card.comment} does not match {schema_params["description"]}')
+                if schema_params['data_type'] == 'Quantity':
+                    #  get the unit from the comment
+                    unit_str = re.findall(r'\[[].*?]\]', this_card.comment)
+                    if len(unit_str) == 0:
+                        print(f"No unit found in {this_card.comment}")
+                        try:
+
+
+
 
 def _schema_to_table(yaml_data):
     """
@@ -485,11 +525,22 @@ def _schema_to_table(yaml_data):
         Output of _load_schema_data
 
     """
-    colnames = ['keyword'] + list(list(yaml_data.items())[0][1].keys())
-    result = Table(names=colnames, dtype=('str', 'str', 'str', bool, 'str'))
+    colnames = ['keyword', 'description', 'human_readable', 'required', 'data_type', 'allowed_values']
+    result = Table(names=colnames, dtype=('str', 'str', 'str', bool, 'str', list))
     for this_datum in yaml_data.items():
-        result.add_row(this_datum[0], )
-
+        keyword = this_datum[0]
+        items = this_datum[1]
+        if 'allowed_values' not in items.keys():
+            items.update({'allowed_values': None})
+        result.add_row([keyword,
+                        items['description'],
+                        items['human_readable'],
+                        items['required'],
+                        items['data_type'],
+                        items['allowed_values']])
+ 
+    result.add_index('keyword')
+    return result
 
 
 def _load_schema_data(yaml_file_path):
