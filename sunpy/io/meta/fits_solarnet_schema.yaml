@@ -7,7 +7,7 @@ BLANK:
   description: Value marking undefined pixels before the application of BSCALE, BZERO
   human_readable: Missing data indicator
   required: true
-  data_type: 
+  data_type: str
 BTYPE:
   description: Description of what the data array represents
   human_readable: Data label
@@ -60,17 +60,17 @@ FILENAME:
   data_type: str
 GEOX_OBS:
   description: "[m] Observer's non-fixed geographic X coordinate"
-  human_readable:
+  human_readable: Observer X Position
   required: false
   data_type: Quantity
 GEOY_OBS:
   description: "[m] Observer's non-fixed geographic Y coordinate"
-  human_readable: 
+  human_readable: Observer Y Position
   required: false
   data_type: Quantity
 GEOZ_OBS:
-  description: "[m] Observer's non-fixed geographic Y coordinate"
-  human_readable: 
+  description: "[m] Observer's non-fixed geographic Z coordinate"
+  human_readable: Observer Z Position
   required: false
   data_type: Quantity
 HASH_SW:
@@ -150,7 +150,7 @@ RELEASE:
   data_type: Date
 RELEASEC:
   description: Email address of data release administrator
-  human_readable: 
+  human_readable: Release administrator
   required: true
   data_type: email
 SETTINGS:
@@ -163,6 +163,7 @@ SOLARNET:
   human_readable: Solarnet compatibility
   required: true
   data_type: float
+  allowed_values: [1.0, 0.5, 0]
 TELCONFG:
   description: Telescope configuration
   human_readable: Telescope configuration
@@ -178,6 +179,7 @@ TIMESYS:
   human_readable: Time system
   required: true
   data_type: str
+  allowed_values: ["UTC"]
 VERS_CAL:
   description: Version of calibration pack applied
   human_readable: Calibration version
@@ -207,7 +209,7 @@ WAVEREF:
   description: Wavelength related kwds in vacuum
   human_readable: Wavelength reference
   required: true
-  data_type: 
+  data_type: str
 WAVEUNIT:
   description: "Wavelength related kwds have unit: 10^(WAVEUNIT) m"
   human_readable: Wavelength unit
