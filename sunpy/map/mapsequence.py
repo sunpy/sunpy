@@ -11,6 +11,7 @@ import numpy as np
 import numpy.ma as ma
 
 import astropy.units as u
+from astropy.visualization import AsymmetricPercentileInterval
 
 from sunpy.map import GenericMap
 from sunpy.util import expand_list
@@ -250,7 +251,7 @@ class MapSequence:
         raise NotImplementedError("This functionality has not yet been implemented.")
 
     def plot(self, axes=None, resample=None, annotate=True,
-             interval=200, plot_function=None, **kwargs):
+             interval=200, plot_function=None, clip_interval=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapSequence
@@ -271,12 +272,16 @@ class MapSequence:
         plot_function : function
             A function to be called as each map is plotted.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
+        clip_interval : two-element `~astropy.units.Quantity`, optional
+            If provided, the data will be clipped to the percentile interval bounded by the two
+            numbers.
         norm : `matplotlib.colors.Normalize` or `str`
             Normalization used in scaling the plot.
             This will override the predefined value in ``plot_settings['norm']``.
         cmap : `matplotlib.colors.Colormap` or `str`
             Color map to be used in coloring the plot.
             This will override the predefined value in ``plot_settings['cmap']``.
+
 
         Returns
         -------
@@ -360,6 +365,29 @@ class MapSequence:
             im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
 
             norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
+
+            if clip_interval is not None:
+                if len(clip_interval) == 2:
+                    clip_percentages = clip_interval.to('%').value
+                    vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(ani_data[i].data)
+                else:
+                    raise ValueError("Clip percentile interval must be specified as two numbers.")
+
+                norm.vmin=vmin
+                norm.vmax=vmax
+
+            msg = ('Cannot manually specify {0}, as the norm '
+                   'already has {0} set. To prevent this error set {0} on '
+                   '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
+            if 'vmin' in kwargs:
+                if norm.vmin is not None:
+                    raise ValueError(msg.format('vmin'))
+                norm.vmin = kwargs.get('vmin')
+            if 'vmax' in kwargs:
+                if norm.vmax is not None:
+                    raise ValueError(msg.format('vmax'))
+                norm.vmax = kwargs.get('vmax')
+
             # The following explicit call is for bugged versions of Astropy's
             # ImageNormalize
             norm.autoscale_None(ani_data[i].data)
