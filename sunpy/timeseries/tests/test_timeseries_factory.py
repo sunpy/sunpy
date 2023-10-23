@@ -124,7 +124,7 @@ def test_read_cdf_empty_variable():
                                    a.cdaweb.Dataset('AC_H6_SWI'))
     filename = Fido.fetch(result[0, 0])
 
-    # Temporarily reset sunpy.io.cdf registry of known unit conversions
+    # Temporarily reset sunpy.io._cdf registry of known unit conversions
     import sunpy.io._cdf as sunpy_cdf
     known_units = sunpy_cdf._known_units
     sunpy_cdf._known_units = {}
