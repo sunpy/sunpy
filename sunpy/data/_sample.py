@@ -4,7 +4,6 @@ from urllib.parse import urljoin
 
 from sunpy import log
 from sunpy.util.config import _is_writable_dir, get_and_create_sample_dir
-from sunpy.util.decorators import deprecated
 from sunpy.util.parfive_helpers import Downloader
 
 _BASE_URLS = (
@@ -133,46 +132,6 @@ def _get_sampledata_dir():
         # Creating the directory for sample files to be downloaded
         sampledata_dir = Path(get_and_create_sample_dir())
     return sampledata_dir
-
-
-@deprecated('4.1', alternative='`sunpy.data.sample.download_all`')
-def download_sample_data(overwrite=False):
-    """
-    Download all sample data at once. This will overwrite any existing files.
-
-    Parameters
-    ----------
-    overwrite : `bool`
-        Overwrite existing sample data.
-    """
-    sampledata_dir = _get_sampledata_dir()
-
-    already_downloaded = []
-    to_download = []
-    for url_file_name in _SAMPLE_FILES.keys():
-        fname = sampledata_dir/url_file_name
-        # We want to avoid calling download if we already have all the files.
-        if fname.exists() and not overwrite:
-            already_downloaded.append(fname)
-        else:
-            # URL and Filename pairs
-            to_download.append((url_file_name, fname))
-
-    if to_download:
-        results = _download_sample_data(_BASE_URLS[0], to_download, overwrite=overwrite)
-    else:
-        return already_downloaded
-
-    # Something went wrong.
-    if results.errors:
-        for next_url in _BASE_URLS[1:]:
-            results = _retry_sample_data(results, next_url)
-            if not results.errors:
-                break
-        else:
-            _handle_final_errors(results)
-
-    return results + already_downloaded
 
 
 def _get_sample_files(filename_list, no_download=False, force_download=False):
