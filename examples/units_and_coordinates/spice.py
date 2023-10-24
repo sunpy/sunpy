@@ -4,7 +4,7 @@ Coordinates computations using SPICE kernels
 ============================================
 
 How to use SPICE kernels provided by space missions to perform coordinates
-computations
+computations.
 
 The `SPICE <https://naif.jpl.nasa.gov/naif/>`__ observation geometry information
 system is being increasingly used by space missions to describe the locations of
@@ -15,7 +15,7 @@ examples of mission SPICE kernels:
 * `Parker Solar Probe <https://sppgway.jhuapl.edu/ancil_products>`__
 
 The `sunpy.coordinates.spice` module enables the use of the
-`~astropy.coordinates.SkyCoord` to API to perform SPICE computations such as the
+`~astropy.coordinates.SkyCoord` API to perform SPICE computations such as the
 location of bodies or the transformation of a vector from one coordinate frame
 to another coordinate frame.  Although SPICE kernels can define coordinate
 frames that are very similar to the frames that `sunpy.coordinates` already
@@ -92,7 +92,7 @@ ax.set_title('Solar Orbiter distance from Sun center')
 # specifying the frame for `~astropy.coordinates.SkyCoord`, SPICE frame names
 # should be prepended with ``'spice_'``.  Here, we transform it to 'SOLO_GAE'.
 
-spacecraft_gae = spacecraft.spice_SOLO_GAE
+spacecraft_gae = spacecraft.transform_to("spice_SOLO_GAE")
 print(spacecraft_gae[:4])
 
 ###############################################################################
@@ -122,7 +122,7 @@ print(stix_ils[:4])
 # and longitude values of the resulting coordinate are the pitch and yaw
 # offsets from disk center, respectively.
 
-stix_ils_rtn = stix_ils.spice_SOLO_SUN_RTN
+stix_ils_rtn = stix_ils.transform_to("spice_SOLO_SUN_RTN")
 print(stix_ils_rtn[:4])
 
 ###############################################################################

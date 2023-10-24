@@ -1,5 +1,5 @@
 """
-Bridge module to use the SkyCoord API for SPICE computations
+Bridge module to use the SkyCoord API for SPICE computations.
 
 .. note::
     This module requires the optional dependency `~spiceypy.spiceypy` to be
