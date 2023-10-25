@@ -1153,6 +1153,12 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
 
 
+def test_plot_with_norm_none(aia171_test_map):
+    # Confirm that norm == None does not raise an error, see https://github.com/sunpy/sunpy/pull/7261
+    ax = plt.subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax, norm=None, vmin=0, vmax=0)
+
+
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
     with pytest.warns(SunpyMetadataWarning) as w:

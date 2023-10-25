@@ -2526,7 +2526,7 @@ class GenericMap(NDData):
         msg = ('Cannot manually specify {0}, as the norm '
                'already has {0} set. To prevent this error set {0} on '
                '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-        if 'norm' in imshow_args:
+        if imshow_args.get('norm', None) is not None:
             norm = imshow_args['norm']
             if 'vmin' in imshow_args:
                 if norm.vmin is not None:
