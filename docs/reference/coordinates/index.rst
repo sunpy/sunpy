@@ -79,6 +79,18 @@ Supported Coordinate Systems
      - GSE
      - `~sunpy.coordinates.frames.GeocentricSolarEcliptic`
      -
+   * - Geomagnetic
+     - MAG
+     - `~sunpy.coordinates.frames.Geomagnetic`
+     -
+   * - Solar Magnetic
+     - SM
+     - `~sunpy.coordinates.frames.SolarMagnetic`
+     -
+   * - GeocentricSolarMagnetospheric
+     - GSM
+     - `~sunpy.coordinates.frames.GeocentricSolarMagnetospheric`
+     -
 
 
 For a description of these coordinate systems,
