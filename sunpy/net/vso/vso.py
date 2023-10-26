@@ -680,10 +680,9 @@ class VSOClient(BaseClient):
         # Construct and format the request
         keyword_info = {}
         url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
         for keyword in keywords:
-            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
-            req = Request(url=url, data=data, headers=headers)
+            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')})
+            req = Request(url=url + f"?{data}")
             response = urlopen(req)
             keyword_info[keyword.replace("+", "")] = json.loads(response.read())
 
