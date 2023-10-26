@@ -52,6 +52,7 @@ kernel_urls = [
     "ck/solo_ANC_soc-flown-att_20221011T142135-20221012T141817_V01.bc",
     "fk/solo_ANC_soc-sc-fk_V09.tf",
     "fk/solo_ANC_soc-sci-fk_V08.tf",
+    "ik/solo_ANC_soc-stix-ik_V02.ti",
     "lsk/naif0012.tls",
     "pck/pck00010.tpc",
     "sclk/solo_ANC_soc-sclk_20231015_V01.tsc",
@@ -107,9 +108,11 @@ ax.set_ylabel('Radial distance (AU)')
 ax.set_title('Solar Orbiter distance from Earth center')
 
 ###############################################################################
-# Finally, we can leverage the Solar Orbiter SPICE kernels to look at
-# instrument pointing.  Let's define a coordinate that points directly along
-# the line of sight of the STIX instrument.
+# We can also leverage the Solar Orbiter SPICE kernels to look at instrument
+# pointing.  Let's define a coordinate that points directly along the line of
+# sight of the STIX instrument.  To be precise, in this frame, 0 degrees
+# longitude is in the anti-Sun direction, so this coordinate is actually
+# anti-parallel to the instrument line of sight.
 
 stix_ils = SkyCoord(np.repeat(0*u.deg, len(obstime)),
                     np.repeat(0*u.deg, len(obstime)),
@@ -117,10 +120,20 @@ stix_ils = SkyCoord(np.repeat(0*u.deg, len(obstime)),
 print(stix_ils[:4])
 
 ###############################################################################
+# We can query the instrument field of view (FOV) via SPICE, which will be in
+# this same frame.  This call returns the corners of the rectangular FOV of the
+# STIX instrument, and you can see they are centered around 180 degrees
+# longitude, which is the direction of the Sun in this frame.
+
+print(spice.get_fov('SOLO_STIX', obstime[0]))
+
+###############################################################################
 # We can transform that line of sight to the SPICE frame 'SOLO_SUN_RTN', which
-# is helioprojective coordinates as observed from Solar Orbiter.  The latitude
-# and longitude values of the resulting coordinate are the pitch and yaw
-# offsets from disk center, respectively.
+# is similar to helioprojective coordinates as observed from Solar Orbiter,
+# except that the disk center is at 180 degrees longitude instead of 0 degrees
+# longitude.  Given how the line-of-sight coordinate is defined above, the
+# latitude and longitude values of the resulting coordinate are the pitch and
+# yaw offsets from disk center, respectively.
 
 stix_ils_rtn = stix_ils.transform_to("spice_SOLO_SUN_RTN")
 print(stix_ils_rtn[:4])

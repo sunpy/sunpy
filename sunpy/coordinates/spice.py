@@ -16,7 +16,7 @@ This module "wraps" `~spiceypy.spiceypy` functionality so that relevant SPICE
 computations can be accessed using the `~astropy.coordinates.SkyCoord` API.
 When loading a set of kernels, a frame class and corresponding transformations
 are created for each SPICE frame.  One can also query the location of a body
-as computed via SPICE.
+as computed via SPICE or retrieve the field of view (FOV) of an instrument.
 
 See :ref:`sphx_glr_generated_gallery_units_and_coordinates_spice.py` for an
 example of how to use this module.
@@ -49,7 +49,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['get_body', 'initialize']
+__all__ = ['get_body', 'get_fov', 'initialize']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -273,3 +273,49 @@ def get_body(body, time, *, spice_frame='J2000', observer=None):
     frame_name = 'icrs' if spice_frame == 'J2000' else _astropy_frame_name(spice_frame)
 
     return SkyCoord(CartesianRepresentation(pos.T), frame=frame_name, obstime=obstime)
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def get_fov(instrument, time, *, resolution=100):
+    """
+    Get the field of view (FOV) for an instrument via SPICE.
+
+    Rectangular and polygonal FOVs are represented by their vertices.  Circular FOVs
+    are approximated by a series of points.  This function does not yet support
+    elliptical FOVs.
+
+    Parameters
+    ----------
+    instrument : `int`, `str`
+        The NAIF ID for the instrument, or a string that is resolvable to an
+        instrument ID
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format.
+    resolution : `int`
+        Number of points to use for a circular FOV.  Defaults to 100.
+    """
+    instrument_name = spiceypy.bodc2n(instrument) if isinstance(instrument, int) else instrument
+    obstime = parse_time(time)
+
+    fov_shape, spice_frame, boresight, num_vectors, vectors = spiceypy.getfvn(instrument_name, 1000)
+
+    if fov_shape == "ELLIPSE":
+        raise ValueError("Elliptical FOVs are not yet supported.")
+
+    # If circular FOV, we have only one vector, so we have to rotate for the rest of the points
+    if fov_shape == "CIRCLE":
+        angles = np.arange(0, 1, 1/resolution) * 360*u.deg
+        matrix = rotation_matrix(angles, axis=boresight)
+        vectors = matrix @ vectors[0]
+        num_vectors = resolution
+
+    # The FOV vectors need to be replicated if obstime is a time array
+    if not obstime.isscalar:
+        vectors = np.broadcast_to(vectors[:, np.newaxis, :], (num_vectors, *obstime.shape, 3))
+        obstime = Time(np.tile(obstime, num_vectors)).reshape((num_vectors, *obstime.shape)).T
+
+    fov = SkyCoord(CartesianRepresentation(vectors.T),
+                   frame=_frame_registry[spice_frame][0],
+                   obstime=obstime,
+                   representation_type='unitspherical')
+    return fov

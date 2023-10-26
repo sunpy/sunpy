@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import spiceypy
 
@@ -16,6 +17,9 @@ def spice_test():
     spk = download_file("https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440s.bsp",
                         cache=True)
 
+    # Implicitly test adding a single kernel, but no kernel frames are installed here
+    spice.initialize(spk)
+
     # Leapseconds (LSK) and physical constants (PCK)
     lsk = download_file("https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls")
     pck = download_file("https://naif.jpl.nasa.gov/pub/naif/generic_kernels/pck/pck00011_n0066.tpc")
@@ -23,7 +27,12 @@ def spice_test():
     # Use frames (FK) from SunSPICE
     fk = download_file("https://soho.nascom.nasa.gov/solarsoft/packages/sunspice/data/heliospheric.tf")
 
-    spice.initialize([spk, lsk, pck, fk])
+    # Use more frames (FK and IK) from Solar Orbiter
+    solo_sc_fk = download_file("http://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/fk/solo_ANC_soc-sc-fk_V09.tf")
+    solo_spd_ik = download_file("http://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/ik/solo_ANC_soc-epd-ik_V03.ti")
+
+    # Implicitly test adding a kernel list
+    spice.initialize([lsk, pck, fk, solo_sc_fk, solo_spd_ik])
 
     yield
 
@@ -138,3 +147,25 @@ def test_get_body_spice_frame(spice_test):
     assert_quantity_allclose(moon_hee.x, 1.487789e+08*u.km)
     assert_quantity_allclose(moon_hee.y, -171312.08978202*u.km)
     assert_quantity_allclose(moon_hee.z, -14990.88338588*u.km)
+
+
+def test_get_fov_rectangle(spice_test):
+    fov = spice.get_fov('SOLO_EPD_STEP', '2023-10-17')
+    width = 27*u.deg
+    height = 13*u.deg
+    # Because SPICE defines the rectangular FOV on a plane,
+    # the height in spherical latitude is shorter at the corners
+    adjusted_height = np.arctan(np.tan(height) * np.cos(width))
+    assert_quantity_allclose(fov.lon, [1, -1, -1, 1] * width)
+    assert_quantity_allclose(fov.lat, [1, 1, -1, -1] * adjusted_height)
+
+
+def test_get_fov_circle(spice_test):
+    obstime = parse_time(['2023-10-17', '2023-10-18'])
+    fov = spice.get_fov('SOLO_EPD_SIS_ASW', obstime)
+    angle = 11*u.deg
+    assert fov.shape == (2, 100)
+    assert (fov.obstime[:, 0] == obstime).all()
+    assert_quantity_allclose(fov[0].cartesian.xyz, fov[1].cartesian.xyz)
+    assert_quantity_allclose(fov[0, [0, 25, 50, 75]].lon, [1, 0, -1, 0] * angle, atol=1e-10*u.deg)
+    assert_quantity_allclose(fov[0, [0, 25, 50, 75]].lat, [0, -1, 0, 1] * angle, atol=1e-10*u.deg)
