@@ -1,5 +1,6 @@
 import yaml
 import re
+import os.path
 
 import numpy as np
 
@@ -13,6 +14,8 @@ from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 from sunpy.util.decorators import deprecated
+from sunpy.util.exceptions import warn_user
+from sunpy.time import parse_time
 
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
 
@@ -467,12 +470,13 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
     return header
 
 
-class SolarNetHeader(Header):
-    def __init__(self):
+class SolarnetHeader(Header):
+    def __init__(self, schema_file=None):
         # load the schema for validation
-        with open("fits_solarnet_schema.yaml", "r") as f:
+        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        with open(os.path.join(__location__, "fits_solarnet_schema.yaml"), "r") as f:
             fits_schema = yaml.safe_load(f)
-        self._schema = _schema_to_table(fits_schema)
+        self._schema_solarnet = _schema_to_table(fits_schema)
         # fill the header with the required keywords
         required = self._schema[self._schema['required']]
         cards = []
@@ -486,7 +490,9 @@ class SolarNetHeader(Header):
 
     def validate(self):
         """
-        Validate the set of header values with the solarnet recommendations.
+        Validate the keywords against the solarnet recommendations and a custom 
+        schema if provided.
+
         The following checks are performed.
           * Check that all required keywords are present
           * Check that keywords that have limited allowed values are consistent with those.
@@ -496,23 +502,85 @@ class SolarNetHeader(Header):
           * Check that the comment are standard.
           * Check that all keywords have values.
         """
+        if self._schema is not None:
+            self._validate_against_schema(self._schema)
+        # always validate against solarnet schema
+        self._validate_against_schema(self._schema_solarnet)
+
+        # some special solarnet validations that cannot be included in the schema.
+        for this_keyword in ['WAVEUNIT', 'BUNIT']:
+            self._check_unit(self.cards[this_keyword])
         
+        # TODO: check that an observer position is provided.
+
+    def _validate_against_schema(self, schema):
+        """Validate a set of header keywords against a schema.
+        
+        The following checks are performed.
+          * Check that all required keywords are present.
+          * Check that keywords that have limited allowed values are consistent with those.
+          * Check that keyword values are consistent with the defined data types.
+          * Check that keywords that are quantities define the unit properly in the comment.
+          * Check that the comment are standard.
+          * Check that all keywords have values.
+        """
+        # check if any keywords are missing
+        required_keywords = self._schema[self._schema['required']]['keyword']
+        these_keywords = list(self)
+        missing_keywords = set(required_keywords).difference(set(these_keywords))
+        if len(missing_keywords) > 0:
+            warn_user(f"These required keywords {missing_keywords} are missing.")
+
         for this_card in self.cards:
-            this_keyword = this_card['keyword']
-            if this_card.value == '':  #  check that all keywords have values.
-                print(f'{this_card} has no value.')
-            if this_keyword.upper() in self._schema['keyword']:
-                schema_params = self._schema[this_keyword]
+            if this_card.value == '':  # check that all keywords have values.
+                warn_user(f'{this_card} has no value.')
+            if this_card.keyword.upper() in self._schema['keyword']:
+                schema_params = self._schema.loc[this_card.keyword]
+                # check that the required description is present
                 if schema_params['description'] != this_card.comment:
-                    print(f'{this_card.comment} does not match {schema_params["description"]}')
-                if schema_params['data_type'] == 'Quantity':
-                    #  get the unit from the comment
-                    unit_str = re.findall(r'\[[].*?]\]', this_card.comment)
-                    if len(unit_str) == 0:
-                        print(f"No unit found in {this_card.comment}")
+                    warn_user(f'{this_card.comment} does not match {schema_params["description"]}')
+
+                match schema_params['data_type']:
+                    case "quantity":
+                        #  get the unit from the comment which should be between []
+                        # TODO: update this expression to remove the brackets
+                        unit_list = re.findall(r'\[.*?\]', this_card.comment)
+                        if len(unit_list) == 0:
+                            warn_user(f"No unit found in {this_card.comment}")
+                        if len(unit_list) > 1:
+                            warn_user(f"Too many units found in {this_card}")
+                        if len(unit_list) == 1:
+                            # test that the unit is readable
+                            # TODO: if brackets are remove above then fix the line below
+                            unit_str = unit_list[0][1:-1]  # strip the brackets
+                            try:
+                                u.Unit(unit_str)
+                            except ValueError:
+                                warn_user(f"{unit_str} is not a recognized unit.")
+                    case 'date':
                         try:
+                            parse_time(this_card.value)
+                        except ValueError:
+                            warn_user(f"Date in {this_card.value} is not recognized.")
+                    case 'float':
+                        try:
+                            float(this_card.value)
+                        except ValueError:
+                            warn_user(f'The value in {this_card} cannot be interpreted as a float')
 
+    def add_observer_keywords(observer_coordinate):
+        pass
 
+    def add_wcs_keywords():
+        pass
+
+    def _check_unit(card):
+        """Given a card, check that its value is recognized by astropy units 
+        or generate a warning."""
+        try:
+            u.Unit(card.value)
+        except ValueError:
+            warn_user(f'Value in {card.keyword} is not a recognized unit.')
 
 
 def _schema_to_table(yaml_data):
@@ -538,7 +606,7 @@ def _schema_to_table(yaml_data):
                         items['required'],
                         items['data_type'],
                         items['allowed_values']])
- 
+
     result.add_index('keyword')
     return result
 

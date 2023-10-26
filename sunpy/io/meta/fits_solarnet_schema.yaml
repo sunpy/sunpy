@@ -17,7 +17,7 @@ BUNIT:
   description: Units of data array
   human_readable: Units
   required: true
-  data_type: Unit
+  data_type: str
 CAMPAIGN:
   description: Coordinated campaign name(s)
   human_readable: Observation campaign
@@ -37,7 +37,7 @@ DATE:
   description: FITS file creation date in UTC
   human_readable: File Creation Date
   required: true
-  data_type: Date
+  data_type: date
 DETECTOR:
   description: Name of detector
   human_readable: detector
@@ -47,12 +47,12 @@ DSUN_OBS:
   description: Distance to Sun
   human_readable: Distance to Sun
   required: true
-  data_type: Quantity
+  data_type: quantity
 EXPTIME:
   description: "[s] Exposure time [deprecated]"
   human_readable: Exposure time
   required: false
-  data_type: Quantity
+  data_type: quantity
 FILENAME:
   description: FITS filename
   human_readable: Filename
@@ -62,17 +62,17 @@ GEOX_OBS:
   description: "[m] Observer's non-fixed geographic X coordinate"
   human_readable: Observer X Position
   required: false
-  data_type: Quantity
+  data_type: quantity
 GEOY_OBS:
   description: "[m] Observer's non-fixed geographic Y coordinate"
   human_readable: Observer Y Position
   required: false
-  data_type: Quantity
+  data_type: quantity
 GEOZ_OBS:
   description: "[m] Observer's non-fixed geographic Z coordinate"
   human_readable: Observer Z Position
   required: false
-  data_type: Quantity
+  data_type: quantity
 HASH_SW:
   description: Commit hash of software applied
   human_readable: Software Hash
@@ -147,7 +147,7 @@ RELEASE:
   description: Public release date of data
   human_readable: Release date
   required: true
-  data_type: Date
+  data_type: date
 RELEASEC:
   description: Email address of data release administrator
   human_readable: Release administrator
@@ -199,12 +199,12 @@ WAVEMAX:
   description: "[Angstrom] Maximum wavelength covered by filter"
   human_readable: Maximum wavelength
   required: true
-  data_type: Quantity
+  data_type: quantity
 WAVEMIN:
   description: "[Angstrom] Minimum wavelength covered by filter"
   human_readable: Minimum wavelength
   required: true
-  data_type: Quantity
+  data_type: quantity
 WAVEREF:
   description: Wavelength related kwds in vacuum
   human_readable: Wavelength reference
@@ -219,4 +219,4 @@ XPOSURE:
   description: "[s] Total effective exposure time"
   human_readable: Exposure time
   required: true
-  data_type: Quantity
+  data_type: quantity
