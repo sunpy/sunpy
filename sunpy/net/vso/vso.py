@@ -699,7 +699,7 @@ class VSOClient(BaseClient):
 
         # Sort values within each attribute
         for attr in attrs:
-            attrs[attr] = sorted(attrs[attr], key=lambda l: l[0])
+            attrs[attr] = sorted(attrs[attr], key=lambda _list: _list[0])
 
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
             json.dump(dict(sorted(attrs.items())), attrs_file, indent=2)
