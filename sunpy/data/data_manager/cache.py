@@ -93,7 +93,7 @@ class Cache:
              })
             return file_path
         except Exception as e:
-                warn_user(f"{e} \n Due to the above error, you might now have a stale version of the canche file.")
+                warn_user(f"{e} \n Due to the above error, you might now be working with a stale version of the file in cache.")
 
     def _has_expired(self, details):
         """
