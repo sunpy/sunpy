@@ -87,11 +87,6 @@ DSUN_OBS:
   human_readable: Distance to Sun
   required: true
   data_type: quantity
-EXPTIME:
-  description: "[s] Exposure time [deprecated]"
-  human_readable: Exposure time
-  required: false
-  data_type: quantity
 EXTNAME:
   description: Extension name
   human_readable: Extension name

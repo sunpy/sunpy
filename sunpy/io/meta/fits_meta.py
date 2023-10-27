@@ -1,16 +1,16 @@
 import yaml
 import re
-import os.path
+from pathlib import Path
 
 import numpy as np
 
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import SkyCoord
-from astropy.table import Table
+from astropy.table import Table, vstack
 from astropy.io.fits import Header, Card
 
-from sunpy import log
+import sunpy
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
 from sunpy.util.decorators import deprecated
@@ -19,6 +19,7 @@ from sunpy.time import parse_time
 
 __all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
 
+solarnet_schema_file = Path(sunpy.__file__).parent / 'data' / 'fits_solarnet_schema.yaml'
 
 @deprecated(since="5.0", message="Unused and will be removed in 6.0")
 def meta_keywords():
@@ -472,15 +473,28 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
 
 class SolarnetHeader(Header):
     def __init__(self, schema_file=None):
+        """Generate a Solarnet compliant FITS header for an Obs-HDU.
+        
+        Parameters
+        ----------
+        schema_file: Path
+            An optional schema file to add requirements to the existing solarnet
+            requirements.
+        """
         # load the schema for validation
-        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        with open(os.path.join(__location__, "fits_solarnet_schema.yaml"), "r") as f:
-            fits_schema = yaml.safe_load(f)
-        self._schema_solarnet = _schema_to_table(fits_schema)
+        self.schema_solarnet = read_schema_file(solarnet_schema_file)
+        required_keywords = self.schema_solarnet[self.schema_solarnet['required']]
+
+        if schema_file:
+            self.schema = read_schema_file(schema_file)
+            these_required_keywords = self.schema[self.schema['required']]
+            required_keywords = vstack([required_keywords, these_required_keywords])
+        else:
+            self.schema = None
+
         # fill the header with the required keywords
-        required = self._schema[self._schema['required']]
         cards = []
-        for this_item in required:
+        for this_item in required_keywords:
             allowed_values = this_item['allowed_values']
             if allowed_values is not None and len(allowed_values) == 1:
                 cards.append(Card(keyword=this_item['keyword'], comment=this_item['description'], value=allowed_values[0]))
@@ -501,16 +515,29 @@ class SolarnetHeader(Header):
           * Check that an observer position is provided.
           * Check that the comment are standard.
           * Check that all keywords have values.
+        
+          Returns
+          -------
+          result: bool
+            True if no issues were found.
         """
-        if self._schema is not None:
-            self._validate_against_schema(self._schema)
-        # always validate against solarnet schema
-        self._validate_against_schema(self._schema_solarnet)
+        if self.schema is not None:
+            self._validate_against_schema(self.schema)
+        # validate against solarnet schema
+        self._validate_against_schema(self.schema_solarnet)
 
         # some special solarnet validations that cannot be included in the schema.
+        # the value of the keyword is a unit
         for this_keyword in ['WAVEUNIT', 'BUNIT']:
             self._check_unit(self.cards[this_keyword])
         
+        # EXTNAME must not start with a space
+        if ['EXTNAME'] in self:
+            if not re.match(r'\w', self['EXTNAME']):
+                warn_user('EXTNAME must not start with a space.')
+
+        self.check_for_deprecated_keywords()
+
         # TODO: check that an observer position is provided.
 
     def _validate_against_schema(self, schema):
@@ -525,7 +552,7 @@ class SolarnetHeader(Header):
           * Check that all keywords have values.
         """
         # check if any keywords are missing
-        required_keywords = self._schema[self._schema['required']]['keyword']
+        required_keywords = schema[schema['required']]['keyword']
         these_keywords = list(self)
         missing_keywords = set(required_keywords).difference(set(these_keywords))
         if len(missing_keywords) > 0:
@@ -534,8 +561,8 @@ class SolarnetHeader(Header):
         for this_card in self.cards:
             if this_card.value == '':  # check that all keywords have values.
                 warn_user(f'{this_card} has no value.')
-            if this_card.keyword.upper() in self._schema['keyword']:
-                schema_params = self._schema.loc[this_card.keyword]
+            if this_card.keyword.upper() in schema['keyword']:
+                schema_params = schema.loc[this_card.keyword]
                 # check that the required description is present
                 if schema_params['description'] != this_card.comment:
                     warn_user(f'{this_card.comment} does not match {schema_params["description"]}')
@@ -582,17 +609,35 @@ class SolarnetHeader(Header):
         except ValueError:
             warn_user(f'Value in {card.keyword} is not a recognized unit.')
 
+    def check_for_deprecated_keywords(self):
+        """Check if any keywords are deprecated."""
+        result = False
+        deprecated_keywords = ['DATE-OBS', 'EXPTIME']
+        replacement_keywords = ['DATE-BEG', 'XPOSURE']
+        for this_deprecated_keyword, this_replacement in zip(deprecated_keywords, replacement_keywords):
+            if deprecated_keywords in self:
+                result = True
+                warn_user(f'Found deprecated keyword {this_deprecated_keyword}. Replace with {this_replacement}.')
+        return result
 
-def _schema_to_table(yaml_data):
+
+def read_schema_file(schema_file_path):
     """
-    Function to conver the schema yaml data into an Astropy Table.
+    Read a schema file into an Astropy Table.
 
     Parameters
     ----------
     yaml_data: `dict`
         Output of _load_schema_data
-
+    
+    Returns
+    -------
+    schema: `astropy.Table`
     """
+    yaml_data = {}
+    with open(schema_file_path, "r") as f:
+        yaml_data = yaml.safe_load(f)
+
     colnames = ['keyword', 'description', 'human_readable', 'required', 'data_type', 'allowed_values']
     result = Table(names=colnames, dtype=('str', 'str', 'str', bool, 'str', list))
     for this_datum in yaml_data.items():
@@ -606,23 +651,5 @@ def _schema_to_table(yaml_data):
                         items['required'],
                         items['data_type'],
                         items['allowed_values']])
-
     result.add_index('keyword')
     return result
-
-
-def _load_schema_data(yaml_file_path):
-    """
-    Function to load data from a yaml file.
-    
-    Parameters
-    ----------
-    yaml_file_path: `str`
-        Path to the yaml file to load/
-
-    """
-    yaml_data = {}
-    with open(yaml_file_path, "r") as f:
-        yaml_data = yaml.safe_load(f)
-
-    return yaml_data

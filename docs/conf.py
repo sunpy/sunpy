@@ -171,6 +171,16 @@ for line in open('nitpick-exceptions'):
     target = target.strip()
     nitpick_ignore.append((dtype, target))
 
+# -- Generate CSV Files for Docs ---------------------------------------------
+if not os.path.exists("generated"):
+    os.mkdir("generated")  # generate the directory before putting things in it
+
+from sunpy.io.meta import fits_meta
+
+solarnet_schema = fits_meta.read_schema_file(fits_meta.solarnet_schema_file)
+# remove allowed_values column which contains list which cannot be written to csv
+solarnet_schema.remove_column('allowed_values')
+solarnet_schema.write("./generated/fits_schema.csv", overwrite=True)
 
 # -- Options for intersphinx extension -----------------------------------------
 # Example configuration for intersphinx: refer to the Python standard library.
