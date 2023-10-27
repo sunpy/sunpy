@@ -2,7 +2,6 @@ import astropy.units as u
 
 import sunpy
 from sunpy import config
-from sunpy.data._sample import download_sample_data
 from sunpy.data.data_manager.cache import Cache
 from sunpy.data.data_manager.downloader import ParfiveDownloader
 from sunpy.data.data_manager.manager import DataManager
@@ -26,4 +25,4 @@ cache = Cache(
     expiry=int(config.get('downloads', 'cache_expiry')) * u.day
 )
 
-__all__ = ["download_sample_data", "manager", "cache"]
+__all__ = ["manager", "cache"]

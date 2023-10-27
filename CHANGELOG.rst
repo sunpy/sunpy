@@ -170,7 +170,7 @@ Deprecations
   The Helioviewer Project now maintains a replacement Python library called `hvpy <https://hvpy.readthedocs.io/en/latest/>`__.
   As such, in consultation with the Helioviewer Project, we have decided to deprecate the ``HelioviewerClient`` class. (`#6404 <https://github.com/sunpy/sunpy/pull/6404>`__)
 - Passing the ``algorithm``, ``return_footprint`` arguments as positional arguments is deprecated. Pass them as keyword arguments (e.g. ``..., return_footprint=True, ...``) instead. (`#6406 <https://github.com/sunpy/sunpy/pull/6406>`__)
-- :func:`sunpy.data.download_sample_data` is now deprecated.
+- ``sunpy.data.download_sample_data()`` is now deprecated.
   Use :func:`sunpy.data.sample.download_all` instead. (`#6426 <https://github.com/sunpy/sunpy/pull/6426>`__)
 - The sunpy.database module is no longer actively maintained and has a number of outstanding issues.
   It is anticiapted that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.

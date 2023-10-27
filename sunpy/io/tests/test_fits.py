@@ -16,6 +16,7 @@ TEST_RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 TEST_EIT_HEADER = get_test_filepath('EIT_header/efz20040301.000010_s.header')
 TEST_SWAP_HEADER = get_test_filepath('SWAP/resampled1_swap.header')
+TEST_GONG_HEADER = get_test_filepath('gong_synoptic.header')
 # Some of the tests images contain an invalid BLANK keyword
 # ignore the warning raised by this
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
@@ -42,7 +43,8 @@ def test_read_hdus(fname, hdus, length):
      (MQ_IMAGE, 'angstrom'),
      (NA_IMAGE, 'm'),
      (TEST_SWAP_HEADER, 'angstrom'),
-     (SVSM_IMAGE, 'nm')]
+     (SVSM_IMAGE, 'nm'),
+     (TEST_GONG_HEADER, 'nm'),]
 )
 def test_extract_waveunit(fname, waveunit):
     if Path(fname).suffix == '.header':

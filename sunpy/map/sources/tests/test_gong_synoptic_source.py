@@ -28,7 +28,7 @@ def test_observatory(gong_synoptic):
 
 def test_measurement(gong_synoptic):
     """Tests the measurement property of the GongSynopticMap object."""
-    assert gong_synoptic.measurement == 676.8
+    assert gong_synoptic.measurement == 676.8 * u.nm
 
 
 def test_date(gong_synoptic):

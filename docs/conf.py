@@ -29,7 +29,7 @@ if missing_requirements:
     sys.exit(1)
 
 # -- Non stdlib imports --------------------------------------------------------
-import ruamel.yaml as yaml  # NOQA
+from ruamel.yaml import YAML  # NOQA
 from sphinx_gallery.sorting import ExplicitOrder  # NOQA
 from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
 
@@ -338,7 +338,8 @@ copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
 with open('./reference/sunpy_stability.yaml') as estability:
-    sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
+    yaml = YAML(typ='rt')
+    sunpy_modules = yaml.load(estability.read())
 
 html_context = {
     'sunpy_modules': sunpy_modules,
