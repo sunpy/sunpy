@@ -56,14 +56,14 @@
             "affiliation": "European Space Agency (ESA), European Space Research and Technology Centre (ESTEC), Keplerlaan 1, NL-2201 AZ Noordwijk, the Netherlands"
         },
         {
-            "name": "David Pérez-Suárez",
-            "orcid": "0000-0003-0784-6909",
-            "affiliation": "University College London, Gower Street, London, UK"
-        },
-        {
             "name": "Will Barnes",
             "orcid": "0000-0001-9642-6089",
             "affiliation": "Department of Physics, American University, Washington, DC 20016, USA / NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
+        },
+        {
+            "name": "David Pérez-Suárez",
+            "orcid": "0000-0003-0784-6909",
+            "affiliation": "University College London, Gower Street, London, UK"
         },
         {
             "name": "Vishnunarayan K I."
@@ -162,6 +162,11 @@
             "name": "Rajul Srivastava"
         },
         {
+            "name": "Shane Maloney",
+            "orcid": "0000-0002-4715-1805",
+            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Yash Jain",
             "orcid": "0000-0001-5347-4734",
             "affiliation": "Indian Institute of Technology, Kharagpur, 721302, India"
@@ -174,6 +179,11 @@
             "name": "Samuel Bennett"
         },
         {
+            "name": "Alasdair Wilson",
+            "orcid": "0000-0003-0820-8159",
+            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Ankit Baruah"
         },
         {
@@ -182,12 +192,10 @@
             "orcid": "0000-0003-0260-453X"
         },
         {
-            "name": "Michael Charlton"
+            "name": "Trestan Simon"
         },
         {
-            "name": "Shane Maloney",
-            "orcid": "0000-0002-4715-1805",
-            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+            "name": "Michael Charlton"
         },
         {
             "name": "Sashank Mishra",
@@ -200,11 +208,6 @@
         },
         {
             "name": "Akash Verma"
-        },
-        {
-            "name": "Alasdair Wilson",
-            "orcid": "0000-0003-0820-8159",
-            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
         },
         {
             "name": "Nicky Chorley",
@@ -337,6 +340,9 @@
             "name": "Dumindu Buddhika"
         },
         {
+            "name": "Hannah Collier"
+        },
+        {
             "name": "Himanshu Pathak",
             "orcid": "0000-0001-9387-4492",
             "affiliation": "Shri Siddhi Vinayak Institute of Technology, Bareilly"
@@ -459,6 +465,9 @@
         },
         {
             "name": "Ankit"
+        },
+        {
+            "name": "Brett"
         },
         {
             "name": "Chloé Guennou"
@@ -693,6 +702,9 @@
             "name": "Koustav Ghosh"
         },
         {
+            "name": "Kurt McKee"
+        },
+        {
             "name": "MOULOUDI Mohamed Lyes"
         },
         {
@@ -728,6 +740,9 @@
             "name": "OussCHE"
         },
         {
+            "name": "Paul Wright"
+        },
+        {
             "name": "Rajasekhar Reddy Mekala"
         },
         {
@@ -740,6 +755,12 @@
         },
         {
             "name": "Rohan Sharma"
+        },
+        {
+            "name": "Sam Van Kooten"
+        },
+        {
+            "name": "Samuel Badman"
         },
         {
             "name": "Shashank Srikanth",
