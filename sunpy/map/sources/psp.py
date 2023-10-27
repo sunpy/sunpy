@@ -36,7 +36,14 @@ class WISPRMap(GenericMap):
         lvl = self.meta.get('level', None)
         if lvl is None:
             return
-        return int(lvl[1])
+        # Chop off the leading 'L'
+        lvl = lvl[1:]
+        try:
+            return int(lvl)
+        except ValueError:
+            # The int conversion will fail for L2b files, and we should fail
+            # safe if the user chooses to customize this with other values.
+            return lvl
 
     @property
     def name(self):
