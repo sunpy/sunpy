@@ -143,6 +143,8 @@ Next we will want to setup the conda environment and we will need to add the `co
 .. code:: bash
 
     $ conda config --add channels conda-forge
+    # Note you might need to add python=<version> if a new release of Python has come out very recently.
+    # Typically it will take around 3 months before we can support the latest version of Python.
     $ conda create -n sunpy-dev pip
     $ conda activate sunpy-dev
 

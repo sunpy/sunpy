@@ -51,6 +51,7 @@ def test_missing_dependencies_by_extra():
                                                    'database',
                                                    'dev',
                                                    'docs',
+                                                   'docs-gallery',
                                                    'image',
                                                    'jpeg2000',
                                                    'map',
@@ -60,8 +61,8 @@ def test_missing_dependencies_by_extra():
                                                    'visualization'])
     missing = missing_dependencies_by_extra(exclude_extras=["all"])
     assert sorted(list(missing.keys())) == sorted(['asdf', 'required', 'dask', 'database', 'dev', 'docs',
-                                                   'image', 'jpeg2000', 'map', 'net', 'tests', 'timeseries',
-                                                   'visualization'])
+                                                   'docs-gallery', 'image', 'jpeg2000', 'map', 'net',
+                                                   'tests', 'timeseries', 'visualization'])
 
 
 def test_resolve_requirement_versions():
