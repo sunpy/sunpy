@@ -7,7 +7,7 @@ from astropy.coordinates import ConvertError, SkyCoord, UnitSphericalRepresentat
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.utils.data import download_file
 
-from sunpy.coordinates import spice
+from sunpy.coordinates import Helioprojective, get_earth, spice
 from sunpy.time import parse_time
 
 
@@ -169,3 +169,28 @@ def test_get_fov_circle(spice_test):
     assert_quantity_allclose(fov[0].cartesian.xyz, fov[1].cartesian.xyz)
     assert_quantity_allclose(fov[0, [0, 25, 50, 75]].lon, [1, 0, -1, 0] * angle, atol=1e-10*u.deg)
     assert_quantity_allclose(fov[0, [0, 25, 50, 75]].lat, [0, -1, 0, 1] * angle, atol=1e-10*u.deg)
+
+
+def test_to_helioprojective(spice_test):
+    # Define a coordinate in SunSPICE's GSE frame
+    spice_coord = SkyCoord(UnitSphericalRepresentation(0.1*u.deg, 0.2*u.deg),
+                           frame='spice_GSE', obstime='2023-10-17')
+    hpc = spice_coord.to_helioprojective()
+
+    assert isinstance(hpc.frame, Helioprojective)
+
+    # The origin of spice_GSE (the Earth) should be used as the Helioprojective observer
+    # We loosen tolerances because the planetary ephemeris is different
+    earth = get_earth(hpc.obstime)
+    assert_quantity_allclose(hpc.observer.lon, earth.lon, atol=1e-5*u.deg)
+    assert_quantity_allclose(hpc.observer.lat, earth.lat, rtol=1e-6)
+    assert_quantity_allclose(hpc.observer.radius, earth.radius, rtol=1e-6)
+
+    # The angular offset from disk center should exactly match
+    assert_quantity_allclose(np.arccos(hpc.cartesian.x), 0.22360671*u.deg)
+
+    # We test the correctness of the HPC coordinate by transforming back to *our* GSE frame
+    # and comparing against the original values in the SunSPICE GSE frame
+    sunpy_coord = hpc.geocentricsolarecliptic
+    assert_quantity_allclose(sunpy_coord.lon, spice_coord.lon, rtol=1e-6)
+    assert_quantity_allclose(sunpy_coord.lat, spice_coord.lat, rtol=1e-6)

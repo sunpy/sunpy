@@ -18,6 +18,12 @@ When loading a set of kernels, a frame class and corresponding transformations
 are created for each SPICE frame.  One can also query the location of a body
 as computed via SPICE or retrieve the field of view (FOV) of an instrument.
 
+To facilitate the conversion of a SPICE-based coordinate to the built-in frames
+in `sunpy.coordinates`, every SPICE-based coordinate has the method
+:meth:`~sunpy.coordinates.spice.SpiceBaseCoordinateFrame.to_helioprojective()`.
+This method returns a coordinate in the `~sunpy.coordinates.Helioprojective`
+frame with the ``observer`` frame attribute appropriately set.
+
 See :ref:`sphx_glr_generated_gallery_units_and_coordinates_spice.py` for an
 example of how to use this module.
 
@@ -39,7 +45,8 @@ except ImportError:
 
 import astropy.units as u
 from astropy.coordinates import ICRS, ConvertError, SkyCoord, frame_transform_graph
-from astropy.coordinates.representation import CartesianRepresentation
+from astropy.coordinates.matrix_utilities import rotation_matrix
+from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy.coordinates.transformations import FunctionTransformWithFiniteDifference
 from astropy.time import Time
 
@@ -49,7 +56,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['get_body', 'get_fov', 'initialize']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -63,9 +70,71 @@ _frame_registry = {}
 _center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}
 
 
-# Defined for future use
-class _SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
-    pass
+@add_common_docstring(**_variables_for_parse_time_docstring())
+class SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
+    """
+    Base class for all frames generated to represent SPICE frames.
+
+    This class is not intended to be used directly and has no transformations
+    defined.
+
+    Parameters
+    ----------
+    obstime : {parse_time_types}
+        The time of the observation.  This is used to determine the
+        position of solar-system bodies (e.g., the Sun and the Earth) as
+        needed to define the origin and orientation of the frame.
+    """
+    def __init_subclass__(cls, **kwargs):
+        cls._frame_name = kwargs.pop('frame_name', None)
+        cls._center_name = kwargs.pop('center_name', None)
+
+        super().__init_subclass__(**kwargs)
+
+        cls.__doc__ = (f"Coordinate frame for the SPICE frame '{cls._frame_name}'\n\n"
+                       f"Origin: '{cls._center_name}'\n\n"
+                       "Parameters\n----------\n"
+                       f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
+                        "    The time of the observation.  This is used to determine the\n"
+                        "    position of solar-system bodies (e.g., the Sun and the Earth) as\n"
+                        "    needed to define the origin and orientation of the frame.\n")
+
+
+    def to_helioprojective(self):
+        """
+        Convert this coordinate to the Helioprojective frame.
+
+        The center of the frame center is used as the ``observer`` of the
+        `~sunpy.coordinates.Helioprojective` frame.
+        """
+        et = _convert_to_et(self.obstime)
+
+        # Get the matrix to rotate from the SPICE frame to heliographic coordinates
+        # matrix needs to be contiguous (see https://github.com/astropy/astropy/issues/15503)
+        frame_to_iau = np.ascontiguousarray(spiceypy.sxform(self._frame_name, 'IAU_SUN', et)[..., :3, :3])
+
+        # Get the observer location in heliographic coordinates
+        obs_iau = spiceypy.spkpos(self._center_name, et, 'IAU_SUN', 'NONE', 'SUN')[0] << u.km
+        obs_iau = CartesianRepresentation(obs_iau.T).represent_as(SphericalRepresentation)
+
+        # Construct the matrix to rotate from heliographic coordinates to HPC-like coordinates
+        iau_to_hpc = rotation_matrix(-obs_iau.lat, axis='y') @ rotation_matrix(obs_iau.lon, axis='z')
+
+        # To get to actual HPC coordinates, need to flip the X axis
+        flip_x = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+        # Transform the data by all of the sequence of these matrices to get the HPC vector
+        hpc_repr = self.cartesian.transform(flip_x @ iau_to_hpc @ frame_to_iau)
+
+        # Get the observer location in ICRS, with obstime define to be able to transform to HGS
+        obs_icrs = spiceypy.spkpos(self._center_name, et, 'J2000', 'NONE', 'SSB')[0] << u.km
+        obs_sc = SkyCoord(CartesianRepresentation(obs_icrs.T), frame='icrs', obstime=self.obstime)
+
+        # Construct the HPC coordinate from the vector and the observer
+        out_sc = SkyCoord(hpc_repr, frame='helioprojective', obstime=self.obstime, observer=obs_sc)
+        if _is_2d(hpc_repr):
+            out_sc.representation_type = 'unitspherical'
+        return out_sc
 
 
 def _convert_to_et(time):
@@ -93,7 +162,8 @@ def _install_center_by_id(center_id):
 
     log.info(f"Creating ICRF frame with {center_name} ({center_id}) origin")
     astropy_center_name = _astropy_center_name(center_id)
-    center_cls = type(astropy_center_name, (_SpiceBaseCoordinateFrame,), {})
+    center_cls = type(astropy_center_name, (SpiceBaseCoordinateFrame,), {},
+                      frame_name=None, center_name=center_name)
 
     @frame_transform_graph.transform(FunctionTransformWithFiniteDifference, ICRS, center_cls)
     def icrs_to_shifted(from_icrs_coord, to_shifted_frame):
@@ -133,7 +203,8 @@ def _install_frame_by_id(frame_id):
     _install_center_by_id(center_id)
     center_cls = _center_registry[center_name]
 
-    frame_cls = type(astropy_frame_name, (_SpiceBaseCoordinateFrame,), {})
+    frame_cls = type(astropy_frame_name, (SpiceBaseCoordinateFrame,), {},
+                     frame_name=frame_name, center_name=center_name)
     # Force the capitalization pattern of lowercase "spice_" followed by uppercase SPICE frame name
     frame_cls.name = frame_cls.__name__
 

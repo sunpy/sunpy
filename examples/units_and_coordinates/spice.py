@@ -110,22 +110,14 @@ ax.set_title('Solar Orbiter distance from Earth center')
 ###############################################################################
 # We can also leverage the Solar Orbiter SPICE kernels to look at instrument
 # pointing.  Let's define a coordinate that points directly along the line of
-# sight of the STIX instrument.  To be precise, in this frame, 0 degrees
-# longitude is in the anti-Sun direction, so this coordinate is actually
-# anti-parallel to the instrument line of sight.
+# sight of the STIX instrument.  For the 'SOLO_STIX_ILS' frame, 0 degrees
+# longitude is in the anti-Sun direction, while 180 degrees longitude is in the
+# Sun direction.
 
 stix_ils = SkyCoord(np.repeat(0*u.deg, len(obstime)),
                     np.repeat(0*u.deg, len(obstime)),
                     frame='spice_SOLO_STIX_ILS', obstime=obstime)
 print(stix_ils[:4])
-
-###############################################################################
-# We can query the instrument field of view (FOV) via SPICE, which will be in
-# this same frame.  This call returns the corners of the rectangular FOV of the
-# STIX instrument, and you can see they are centered around 180 degrees
-# longitude, which is the direction of the Sun in this frame.
-
-print(spice.get_fov('SOLO_STIX', obstime[0]))
 
 ###############################################################################
 # We can transform that line of sight to the SPICE frame 'SOLO_SUN_RTN', which
@@ -153,5 +145,24 @@ ax[1].set_ylabel('Yaw offset (arcsec)')
 ax[0].set_title('Pointing offset of STIX from disk center')
 
 plt.show()
+
+###############################################################################
+# Finally, we can query the instrument field of view (FOV) via SPICE, which
+# will be in the 'SOLO_STIX_ILS' frame.  This call returns the corners of the
+# rectangular FOV of the STIX instrument, and you can see they are centered
+# around 180 degrees longitude, which is the direction of the Sun in this
+# frame.
+
+stix_fov = spice.get_fov('SOLO_STIX', obstime[0])
+print(stix_fov)
+
+###############################################################################
+# More usefully, every coordinate in a SPICE frame has a
+# ``to_helioprojective()`` method that converts the coordinate to
+# `~sunpy.coordinates.Helioprojective` with the ``observer`` at the center of
+# the SPICE frame.  For the 'SOLO_STIX_ILS' frame, the center is Solar Orbiter,
+# which is exactly what we want.
+
+print(stix_fov.to_helioprojective())
 
 # sphinx_gallery_thumbnail_number = 3
