@@ -27,4 +27,5 @@ python:
        extra_requirements:
         - all
         - docs
+        - docs-gallery
        path: .
