@@ -35,6 +35,20 @@ Notes
 * SPICE frame names are rendered as uppercase, except for plus/minus characters,
   which are replaced with lowercase ``'p'``/``'n'`` characters.
 """
+# Developer notes:
+# * We create a public SkyCoord frame for each SPICE frame that is defined in
+#   the kernels, but this does not include built-in SPICE frames (e.g., inertial
+#   frames or IAU_* frames).
+# * We also create a private SkyCoord frame for each unique SPICE frame center.
+#   Each SPICE frame defines its center, and typically many frames share the
+#   same center.  By creating these private frames for frame centers, we can
+#   transform 2D coordinates between frames that share the same center because
+#   the origin does not change.
+# * Any transformation that involves a change in frame center (including even
+#   a change in the body ID that still maps to the same location) will be
+#   treated as a change in origin, and the transformation is routed through
+#   ICRS.  ICRS is a safe frame to use because the SPICE built-in inertial
+#   frame 'J2000' is ICRS, despite its name.
 
 import numpy as np
 
