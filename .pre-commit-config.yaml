@@ -3,7 +3,7 @@ exclude: "\\.asdf$"
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.1.1"
+    rev: "v0.1.3"
     hooks:
       - id: ruff
         args: ["--fix"]
