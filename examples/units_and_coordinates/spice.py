@@ -71,6 +71,14 @@ kernel_files = [cache.download(url) for url in kernel_urls]
 spice.initialize(kernel_files)
 
 ###############################################################################
+# The above call automatically installs all SPICE frames defined in the
+# kernels, but you may also want to use one of the built-in SPICE frames (e.g.,
+# inertial frames or body-fixed frames).  Here, we manually install the
+# 'IAU_SUN' built-in SPICE frame for potential later use.
+
+spice.install_frame('IAU_SUN')
+
+###############################################################################
 # We can request the location of the spacecraft in any SPICE frame.  Here, we
 # request it in 'SOLO_HEEQ', which is Stonyhurst heliographic coordinates.
 

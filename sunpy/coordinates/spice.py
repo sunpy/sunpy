@@ -38,7 +38,9 @@ Notes
 # Developer notes:
 # * We create a public SkyCoord frame for each SPICE frame that is defined in
 #   the kernels, but this does not include built-in SPICE frames (e.g., inertial
-#   frames or IAU_* frames).
+#   frames or IAU_* frames).  The user needs to manually install each built-in
+#   SPICE frame that they want to use because otherwise there are simply too
+#   many.
 # * We also create a private SkyCoord frame for each unique SPICE frame center.
 #   Each SPICE frame defines its center, and typically many frames share the
 #   same center.  By creating these private frames for frame centers, we can
@@ -70,13 +72,13 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
 _ET_REF_EPOCH = Time('J2000', scale='tdb')
 
-_CLASS_TYPES = {2: 'PCK', 3: 'CK', 4: 'TK', 5: 'dynamic', 6: 'switch'}
+_CLASS_TYPES = {1: 'inertial', 2: 'PCK', 3: 'CK', 4: 'TK', 5: 'dynamic', 6: 'switch'}
 
 
 # Registry of the generated frame classes and center classes
@@ -296,7 +298,39 @@ def initialize(kernels):
     for class_num in _CLASS_TYPES.keys():
         frames = spiceypy.kplfrm(class_num)
         for frame_id in frames:
-            _install_frame_by_id(frame_id)
+            install_frame(frame_id)
+
+
+def install_frame(spice_frame):
+    """
+    Install a specified SPICE frame.
+
+    Installing a SPICE frame creates a corresponding frame class.  All frames
+    defined in the kernel pool are already automatically installed in the call
+    to :func:`~sunpy.coordinates.spice.initialize`, so this function is used to
+    manually install built-in frames, namely inertial or body-fixed (PCK) frames.
+    Some common built-in frames include 'IAU_SUN', 'IAU_EARTH', and 'ITRF93'.
+
+    Parameters
+    ----------
+    spice_frame : `str`, `int`
+        The SPICE frame name or frame ID to be installed.
+    """
+    if isinstance(spice_frame, str):
+        frame_name = spice_frame.upper()
+        frame_id = spiceypy.namfrm(frame_name)
+        if frame_id == 0:
+            raise ValueError(f"{frame_name} is not a valid SPICE frame name.")
+    else:
+        frame_id = spice_frame
+        frame_name = spiceypy.frmnam(frame_id)
+        if frame_name == '':
+            raise ValueError(f"{frame_id} is not a valid SPICE frame ID.")
+
+    if frame_name in _frame_registry:
+        log.info(f"{frame_name} (frame_id) has already been installed.")
+    else:
+        _install_frame_by_id(frame_id)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())

@@ -53,6 +53,28 @@ def test_double_initialize(spice_test):
     assert expected.issubset(frame_transform_graph.get_names())
 
 
+def test_install_frame(spice_test):
+    # Installing by ID is already tested through a successful initialize()
+
+    assert "spice_IAU_SUN" not in frame_transform_graph.get_names()
+    spice.install_frame('IAU_SUN')
+    assert "spice_IAU_SUN" in frame_transform_graph.get_names()
+
+    assert "spice_IAU_EARTH" not in frame_transform_graph.get_names()
+    spice.install_frame('iau_earth')
+    assert "spice_IAU_EARTH" in frame_transform_graph.get_names()
+
+
+def test_install_frame_bad_id(spice_test):
+    with pytest.raises(ValueError, match="not a valid SPICE frame ID"):
+        spice.install_frame(999999)
+
+
+def test_install_frame_bad_name(spice_test):
+    with pytest.raises(ValueError, match="not a valid SPICE frame name"):
+        spice.install_frame('NOT_A_FRAME_NAME')
+
+
 def test_transformation(spice_test):
     coord = SkyCoord(1e7*u.km, 1e6*u.km, 1e5*u.km, representation_type='cartesian',
                      frame='spice_GSE', obstime='2023-10-17')
