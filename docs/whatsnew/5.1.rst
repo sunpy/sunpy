@@ -1,0 +1,29 @@
+.. _whatsnew-5.1:
+
+************************
+What's New in sunpy 5.1?
+************************
+
+The SunPy Project is pleased to announce the 5.1 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 5.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+This release of sunpy contains X commits in Y merged pull requests closing Z issues from A people, B of which are first-time contributors.
+
+* 0 commits have been added since 5.0
+* 0 issues have been closed since 5.0
+* 0 pull requests have been merged since 5.0
+* 0 people have contributed since 5.0
+* 0 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  No one who matters  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
