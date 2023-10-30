@@ -6,6 +6,7 @@ from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     HCRS,
     ICRS,
+    ITRS,
     Angle,
     CartesianDifferential,
     CartesianRepresentation,
@@ -14,6 +15,7 @@ from astropy.coordinates import (
     Longitude,
     SkyCoord,
     SphericalDifferential,
+    SphericalRepresentation,
     get_body_barycentric,
     get_body_barycentric_posvel,
 )
@@ -23,12 +25,15 @@ from astropy.time import Time
 from sunpy.coordinates import (
     GeocentricEarthEquatorial,
     GeocentricSolarEcliptic,
+    GeocentricSolarMagnetospheric,
+    Geomagnetic,
     Heliocentric,
     HeliocentricEarthEcliptic,
     HeliocentricInertial,
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    SolarMagnetic,
     propagate_with_solar_surface,
     sun,
     transform_with_sun_center,
@@ -812,6 +817,63 @@ def test_gei_gei():
     new = old.transform_to(GeocentricEarthEquatorial(equinox=t, obstime=t)).cartesian
 
     assert_quantity_allclose(new.xyz, gei_d.xyz)
+
+
+# Coordinate transformations from the example in the 2017 revision to Franz & Harper 2002
+_franz_harper_example_data = [
+    (ITRS, [6.9027400, -1.6362400, 1.9166900]),
+    (Geomagnetic, [3.3344557, 6.0215108, 2.5732497]),
+    (SolarMagnetic, [3.3601371, 6.0071917, 2.5733108]),
+    (GeocentricSolarMagnetospheric, [4.0378470, 6.0071917, 1.2681645]),
+]
+
+
+@pytest.mark.parametrize(("start_class", "start_vector"), _franz_harper_example_data)
+@pytest.mark.parametrize(("end_class", "end_vector"), _franz_harper_example_data)
+def test_magnetic_franz_harper(start_class, start_vector, end_class, end_vector):
+    # Test all magnetic-model frames (MAG, SM, GSM) using the 2017 revision to Franz & Harper 2002
+    t = Time('1996-08-28 16:46:00', scale='tt')
+    start_repr = CartesianRepresentation(start_vector * (6378.14*u.km))
+    end_repr = CartesianRepresentation(end_vector * (6378.14*u.km))
+
+    start = SkyCoord(start_repr, frame=start_class(obstime=t))
+    if end_class == start_class:
+        start = start.itrs
+    end = start.transform_to(end_class)
+
+    assert_quantity_allclose(end.cartesian.xyz, end_repr.xyz, rtol=2e-2)
+
+
+# Coordinate transformations from SunSPICE for the date 2023-10-30
+#
+# Example for MAG, substitute SM and GSM as appropriate:
+# IDL> coord = [0.7d, -20.d, 10.d]
+# IDL> convert_sunspice_lonlat, '2017-10-30', coord, 'GEO', 'MAG', /itrf93, /au, /degrees
+# IDL> print, coord
+_sunspice_data = [
+    (ITRS, (-20*u.deg, 10*u.deg, 0.7*u.AU)),
+    (Geomagnetic, (54.400820*u.deg, 15.674828*u.deg, 0.7*u.AU)),
+    (SolarMagnetic, (163.35062*u.deg, 15.674828*u.deg, 0.7*u.AU)),
+    (GeocentricSolarMagnetospheric, (163.98552*u.deg, -0.71263503*u.deg, 0.7*u.AU)),
+]
+
+
+@pytest.mark.parametrize(("start_class", "start_vector"), _sunspice_data)
+@pytest.mark.parametrize(("end_class", "end_vector"), _sunspice_data)
+def test_magnetic_sunspice(start_class, start_vector, end_class, end_vector):
+    # Test all magnetic-model frames (MAG, SM, GSM) using the SunSPICE results
+    t = Time('2017-10-30')
+    start_repr = SphericalRepresentation(*start_vector)
+    end_repr = SphericalRepresentation(*end_vector)
+
+    start = SkyCoord(start_repr, frame=start_class(obstime=t))
+    if end_class == start_class:
+        start = start.itrs
+    end = start.transform_to(end_class)
+
+    assert_quantity_allclose(end.spherical.lon, end_repr.lon, atol=1e-2*u.deg)
+    assert_quantity_allclose(end.spherical.lat, end_repr.lat, atol=2e-3*u.deg)
+    assert_quantity_allclose(end.spherical.distance, end_repr.distance)
 
 
 def test_no_observer():
