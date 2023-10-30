@@ -122,6 +122,10 @@ class SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
 
         The center of the frame center is used as the ``observer`` of the
         `~sunpy.coordinates.Helioprojective` frame.
+
+        Examples
+        --------
+        .. minigallery:: sunpy.coordinates.spice.SpiceBaseCoordinate.to_helioprojective
         """
         et = _convert_to_et(self.obstime)
 
@@ -270,6 +274,10 @@ def initialize(kernels):
     This function has simple support for being called multiple times in a session in
     order to load multiple sets of kernels.  However, there may be unexpected
     behavior if this function is called after the frame classes start being used.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.coordinates.spice.initialize
     """
     if not isinstance(kernels, list):
         kernels = [kernels]
@@ -315,6 +323,10 @@ def install_frame(spice_frame):
     ----------
     spice_frame : `str`, `int`
         The SPICE frame name or frame ID to be installed.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.coordinates.spice.install_frame
     """
     if isinstance(spice_frame, str):
         frame_name = spice_frame.upper()
@@ -351,6 +363,10 @@ def get_body(body, time, *, spice_frame='J2000', observer=None):
         If `None`, the returned coordinate is the instantaneous or “true” location.
         If not `None`, the returned coordinate is the astrometric location (i.e.,
         accounts for light travel time to the specified observer).
+
+    Examples
+    --------
+    .. minigallery:: sunpy.coordinates.spice.get_body
     """
     body_name = spiceypy.bodc2n(body) if isinstance(body, int) else body
     obstime = parse_time(time)
@@ -412,6 +428,10 @@ def get_fov(instrument, time, *, resolution=100):
         Time to use in a parse_time-compatible format.
     resolution : `int`
         Number of points to use for a circular FOV.  Defaults to 100.
+
+    Examples
+    --------
+    .. minigallery:: sunpy.coordinates.spice.get_fov
     """
     instrument_name = spiceypy.bodc2n(instrument) if isinstance(instrument, int) else instrument
     obstime = parse_time(time)
