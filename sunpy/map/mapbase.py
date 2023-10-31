@@ -2316,7 +2316,7 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
-    def draw_contours(self, levels, axes=None, **contour_args):
+    def draw_contours(self, levels, axes=None, fill=False, **contour_args):
         """
         Draw contours of the data.
 
@@ -2329,6 +2329,10 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
             axes.
+        fill : `bool` or `str`, optional
+            Determines the style of the contours:
+            - If `False` (default), contours are drawn as lines using `~matplotlib.axes.Axes.contour`.
+            - If `True`, contours are drawn as filled regions using `~matplotlib.axes.Axes.contourf`.
 
         Returns
         -------
@@ -2362,7 +2366,24 @@ class GenericMap(NDData):
             # Mask out the data array anywhere the coordinate arrays are not finite
             data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
 
-        cs = axes.contour(x, y, data, levels, **contour_args)
+        if fill:
+            # Ensure we have more than one level if fill is True
+            if len(levels) == 1:
+                max_val = np.nanmax(self.data)
+
+                # Ensure the existing level is less than max_val
+                if (isinstance(levels, list) and levels[0] < max_val) or (
+                    isinstance(levels, np.ndarray) and levels[0] < max_val):
+                    if isinstance(levels, list):
+                        levels.append(max_val)
+                    elif isinstance(levels, np.ndarray):
+                        levels = np.append(levels, max_val)
+                else:
+                    raise ValueError(
+                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). Contour levels must be increasing.")
+            cs = axes.contourf(x, y, data, levels, **contour_args)
+        else:
+            cs = axes.contour(x, y, data, levels, **contour_args)
         return cs
 
     @peek_show
