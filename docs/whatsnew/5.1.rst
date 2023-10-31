@@ -55,6 +55,12 @@ These magnetograms are used to derive synoptic maps which show a full-surface pi
 A new map source, `~sunpy.map.sources.GONGSynopticMap`, has been added to support these synoptic data products.
 This means that GONG synoptic data products can now be loaded directly into `~sunpy.map.Map` objects.
 
+Coordinate frames related to the Earth's magnetic dipole
+========================================================
+Three new coordinate frames are available: `~sunpy.coordinates.Geomagnetic` (MAG), `~sunpy.coordinates.SolarMagnetic` (SM), and `~sunpy.coordinates.GeocentricSolarMagnetospheric` (GSM).
+These frames depend on the orientation of the Earth's magnetic dipole, as defined by the `International Geomagnetic Reference Field (IGRF) <https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__ model.
+The latest model at the time of this release (IGRF-13) is used by default, but an older model can be selected if desired via the ``magnetic_model`` frame attribute.
+
 New Method for Determining Visibility of Helioprojective Coordinates
 ====================================================================
 A new method has been added to the `~sunpy.coordinates.Helioprojective` frame to determine whether a coordinate is visible or not.
