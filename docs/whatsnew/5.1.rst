@@ -34,3 +34,15 @@ In anticipation of the upcoming `"Great North American Eclipse" <https://en.wiki
 The output can be used to determine the start/end times of partial eclipse and of totality.
 
 .. minigallery:: sunpy.coordinates.sun.eclipse_amount
+
+Computations using SPICE kernels
+================================
+The `SPICE <https://naif.jpl.nasa.gov/naif/>`__ observation geometry information system is being increasingly used by space missions to describe the locations of spacecraft and the time-varying orientations of reference frames.
+The new `sunpy.coordinates.spice` module enables the use of the `~astropy.coordinates.SkyCoord` API to perform SPICE computations such as the location of bodies or the transformation of a vector from one coordinate frame to another coordinate frame.
+Although SPICE kernels can define coordinate frames that are very similar to the frames that `sunpy.coordinates` already provides, there will very likely be slight differences.
+Using `sunpy.coordinates.spice` will ensure that the definitions are exactly what the mission specifies and that the results are identical to other implementations of SPICE (e.g., CSPICE or Icy).
+
+.. note::
+    `sunpy.coordinates.spice` requires the optional dependency `~spiceypy.spiceypy` to be installed.
+
+.. minigallery:: sunpy.coordinates.spice.initialize
