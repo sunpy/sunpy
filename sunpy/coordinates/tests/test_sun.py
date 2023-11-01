@@ -519,3 +519,36 @@ def test_carrington_rotation_str():
     # Check that by default a human parseable string is returned
     t = sun.carrington_rotation_time(2210)
     assert str(t) == '2018-10-26 20:48:16.137'
+
+
+# For 2024 Apr 8, at 29.6 deg N, 98.5 deg W, one eclipse calculator has:
+#   Partial eclipse begins: 17:14:49 UTC
+#   Totality begins: 18:33:44 UTC
+#   Maximum eclipse: 18:34:38 UTC
+#   Totality ends: 18:35:32 UTC
+#   Partial eclipse ends: 19:56:00 UTC
+# https://www.timeanddate.com/eclipse/in/@29.6,-98.5?iso=20240408
+
+@pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore:Tried to get polar motions for times after IERS data is valid.")
+@pytest.mark.filterwarnings("ignore:.*times are outside of range covered by IERS table.")
+def test_eclipse_amount(use_DE440s):
+    location = EarthLocation.from_geodetic(-98.5*u.deg, 29.6*u.deg)
+
+    # We use the mean lunar radius (the default) for penumbral contacts
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 17:14:48'))) == 0
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 17:14:53'))) > 0
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 19:55:58'))) > 0
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 19:56:01'))) == 0
+
+@pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore:Tried to get polar motions for times after IERS data is valid.")
+@pytest.mark.filterwarnings("ignore:.*times are outside of range covered by IERS table.")
+def test_eclipse_amount_minimum(use_DE440s):
+    location = EarthLocation.from_geodetic(-98.5*u.deg, 29.6*u.deg)
+
+    # We use the mean minimum lunar radius for umbral contacts
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:33:43')), moon_radius="minimum") < 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:33:45')), moon_radius="minimum") == 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:35:31')), moon_radius="minimum") == 1
+    assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 18:35:35')), moon_radius="minimum") < 1

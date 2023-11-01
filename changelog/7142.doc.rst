@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_showcase_eclipse_amount.py`) to show how to obtain information about a solar eclipse using :func:`sunpy.coordinates.sun.eclipse_amount`.

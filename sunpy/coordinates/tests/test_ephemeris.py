@@ -135,27 +135,14 @@ def test_get_horizons_coord_dict_time():
     assert_quantity_allclose(e.radius, e_ref.radius)
 
 
-@pytest.fixture
-def use_DE440s():
-    # This class is for test functions that need the Astropy ephemeris to be set to DE432s
-    pytest.importorskip("astroquery")
-
-    old_ephemeris = solar_system_ephemeris.get()
-    try:
-        solar_system_ephemeris.set('de440s')
-    except ValueError:
-        pytest.skip("The installed version of Astropy cannot set the ephemeris to DE440s")
-
-    yield
-
-    solar_system_ephemeris.set(old_ephemeris)
-
-
 @pytest.mark.remote_data
 @given(obstime=times(n=50))
 @settings(deadline=5000, max_examples=1,
           suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_consistency_with_horizons(use_DE440s, obstime):
+    # get_horizons_coord() depends on astroquery
+    pytest.importorskip("astroquery")
+
     # Check that the high-accuracy Astropy ephemeris has been set
     assert solar_system_ephemeris.get() == 'de440s'
 

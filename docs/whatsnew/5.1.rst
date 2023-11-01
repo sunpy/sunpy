@@ -27,3 +27,10 @@ The people who have contributed to the code for this release are:
 -  No one who matters  *
 
 Where a * indicates that this release contains their first contribution to sunpy.
+
+Calculating the amount of solar eclipse
+=======================================
+In anticipation of the upcoming `"Great North American Eclipse" <https://en.wikipedia.org/wiki/Solar_eclipse_of_April_8,_2024>`__ on April 8, 2024, there is a new function :func:`sunpy.coordinates.sun.eclipse_amount` that returns how much of the Sun is occulted by the Moon at the specified observer location and time.
+The output can be used to determine the start/end times of partial eclipse and of totality.
+
+.. minigallery:: sunpy.coordinates.sun.eclipse_amount
