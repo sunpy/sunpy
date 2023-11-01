@@ -525,12 +525,20 @@
       "Spaceweather HMI Active Region Patch (SHARP): CCD coordinates"
     ],
     [
+      "hmi.sharp_720s_dcons",
+      "Spaceweather HMI Active Region Patch (SHARP): CCD coordinates: scattered light corrected"
+    ],
+    [
       "hmi.sharp_720s_nrt",
       "nrt Spaceweather HMI Active Region Patch (SHARP): CCD coordinates"
     ],
     [
       "hmi.sharp_cea_720s",
       "Spaceweather HMI Active Region Patch (SHARP): CEA coordinates"
+    ],
+    [
+      "hmi.sharp_cea_720s_dcons",
+      "Spaceweather HMI Active Region Patch (SHARP): CEA coordinates: scattered light corrected"
     ],
     [
       "hmi.sharp_cea_720s_nrt",

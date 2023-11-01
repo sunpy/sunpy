@@ -680,10 +680,9 @@ class VSOClient(BaseClient):
         # Construct and format the request
         keyword_info = {}
         url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
         for keyword in keywords:
-            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
-            req = Request(url=url, data=data, headers=headers)
+            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')})
+            req = Request(url=url + f"?{data}")
             response = urlopen(req)
             keyword_info[keyword.replace("+", "")] = json.loads(response.read())
 
@@ -697,6 +696,10 @@ class VSOClient(BaseClient):
                         attrs[key].append((str(item[key]), str(item[key])))
                     else:
                         attrs[key].append((str(item[key]), str(item[key+"_long"])))
+
+        # Sort values within each attribute
+        for attr in attrs:
+            attrs[attr] = sorted(attrs[attr], key=lambda _list: _list[0])
 
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
             json.dump(dict(sorted(attrs.items())), attrs_file, indent=2)
