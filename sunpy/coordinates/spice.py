@@ -24,8 +24,9 @@ in `sunpy.coordinates`, every SPICE-based coordinate has the method
 This method returns a coordinate in the `~sunpy.coordinates.Helioprojective`
 frame with the ``observer`` frame attribute appropriately set.
 
-See :ref:`sphx_glr_generated_gallery_units_and_coordinates_spice.py` for an
-example of how to use this module.
+Be aware that when converting a SPICE-based coordinate to/from a built-in frame,
+there can be small inconsistencies due to differing planetary ephemerides and
+models for various orientations.
 
 Notes
 -----
@@ -34,6 +35,10 @@ Notes
 * Transformations of velocities are not yet supported.
 * SPICE frame names are rendered as uppercase, except for plus/minus characters,
   which are replaced with lowercase ``'p'``/``'n'`` characters.
+
+Examples
+--------
+.. minigallery:: sunpy.coordinates.spice.initialize
 """
 # Developer notes:
 # * We create a public SkyCoord frame for each SPICE frame that is defined in
@@ -418,6 +423,11 @@ def get_fov(instrument, time, *, resolution=100):
     Rectangular and polygonal FOVs are represented by their vertices.  Circular FOVs
     are approximated by a series of points.  This function does not yet support
     elliptical FOVs.
+
+    .. note::
+        The FOV determined from SPICE kernels may not be as accurate as the FOV
+        obtained from other sources of information, particularly if the instrument
+        is an imager.
 
     Parameters
     ----------
