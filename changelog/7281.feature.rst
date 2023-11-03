@@ -1,0 +1,1 @@
+Add support for the ``fill`` keyword in :func:`~sunpy.map.GenericMap.draw_contours` to allow for filled contours.
