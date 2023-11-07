@@ -17,6 +17,12 @@ class WISPRMap(GenericMap):
     The The Wide-field Imager for Parker Solar Probe (WISPR) is a white light
     telescope onboard the Parker Solar Probe (PSP) spacecraft.
 
+    Notes
+    -----
+    By default, plotting of this map will set the lower bound to zero
+    (i.e., clip out negative values for pixels).  You can change this bound
+    by modifying ``.plot_settings['norm'].vmin``.
+
     References
     ----------
     * `PSP science gateway <https://sppgway.jhuapl.edu//>`__
@@ -28,22 +34,23 @@ class WISPRMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=AsinhStretch(a=0.001), clip=True,
-            vmin=0)
+            stretch=AsinhStretch(a=0.001), vmin=0)
 
     @property
     def processing_level(self):
         lvl = self.meta.get('level', None)
         if lvl is None:
             return
-        # Chop off the leading 'L'
-        lvl = lvl[1:]
+        # Chop off the leading 'L' if present
+        if lvl[0] == 'L':
+            lvl = lvl[1:]
         try:
-            return int(lvl)
+            lvl = int(lvl)
         except ValueError:
             # The int conversion will fail for L2b files, and we should fail
             # safe if the user chooses to customize this with other values.
-            return lvl
+            pass
+        return lvl
 
     @property
     def name(self):

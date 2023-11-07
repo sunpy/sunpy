@@ -303,8 +303,8 @@ def test_unit(wispr_map):
 
 
 def test_norm_clip(wispr_map):
-    # Tests that the default normalizer has clipping enabled
-    assert wispr_map.plot_settings['norm'].clip
+    # Tests that the default normalizer has clipping disabled
+    assert not wispr_map.plot_settings['norm'].clip
 
 
 def test_name(wispr_map):
