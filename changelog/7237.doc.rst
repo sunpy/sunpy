@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_units_and_coordinates_spice.py`) for how to perform `SPICE <https://naif.jpl.nasa.gov/naif/>`__ computations using the `~astropy.coordinates.SkyCoord` API.

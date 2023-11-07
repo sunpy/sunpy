@@ -200,6 +200,7 @@ intersphinx_mapping = {
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
+    "spiceypy": ("https://spiceypy.readthedocs.io/en/stable/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
     "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
