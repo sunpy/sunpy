@@ -50,7 +50,7 @@ Using `sunpy.coordinates.spice` will ensure that the definitions are exactly wha
 
 Support for GONG Synoptic Data
 ==============================
-The Global Oscillation Network Group (GONG), a network of observatories located around the Earth, that observe produces hourly photospheric magnetograms.
+The Global Oscillation Network Group (GONG) are a network of observatories located around the Earth that produce photospheric magnetograms every hour.
 These magnetograms are used to derive synoptic maps which show a full-surface picture of the solar magnetic field.
 A new map source, `~sunpy.map.sources.GONGSynopticMap`, has been added to support these synoptic data products.
 This means that GONG synoptic data products can now be loaded directly into `~sunpy.map.Map` objects.
