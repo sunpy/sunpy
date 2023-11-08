@@ -24,7 +24,8 @@ This release of sunpy contains X commits in Y merged pull requests closing Z iss
 
 The people who have contributed to the code for this release are:
 
--  No one who matters  *
+- Old contributor
+- New contributor  *
 
 Where a * indicates that this release contains their first contribution to sunpy.
 
@@ -46,3 +47,21 @@ Using `sunpy.coordinates.spice` will ensure that the definitions are exactly wha
     `sunpy.coordinates.spice` requires the optional dependency `~spiceypy.spiceypy` to be installed.
 
 .. minigallery:: sunpy.coordinates.spice.initialize
+
+Support for GONG Synoptic Data
+==============================
+The Global Oscillation Network Group (GONG), a network of observatories located around the Earth, that observe produces hourly photospheric magnetograms.
+These magnetograms are used to derive synoptic maps which show a full-surface picture of the solar magnetic field.
+A new map source, `~sunpy.map.sources.GONGSynopticMap`, has been added to support these synoptic data products.
+This means that GONG synoptic data products can now be loaded directly into `~sunpy.map.Map` objects.
+
+New Method for Determining Visibility of Helioprojective Coordinates
+====================================================================
+A new method has been added to the `~sunpy.coordinates.Helioprojective` frame to determine whether a coordinate is visible or not.
+Visibility is determined as whether or not the coordinate is behind the limb relative to the observer that defines the helioprojective frame.
+See the documentation for :meth:`~sunpy.coordinates.Helioprojective.is_visible` for more information.
+
+Improved Support for WISPR Data
+===============================
+The default colorbar limits and stretching for `~sunpy.map.sources.WISPRMap` have been improved to better emphasize the coronal structures present in many images.
+Metadata handling has also been improved, including handling non-integer processing levels (e.g. "L2b") and adding more intuitive labels for the different detectors (e.g. "inner" and "outer" versus "1" and "2").
