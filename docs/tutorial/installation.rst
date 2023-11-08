@@ -76,7 +76,7 @@ Installing sunpy
 ----------------
 
 To install ``sunpy``, start by launching a terminal (under a UNIX-like system) or the miniforge Prompt (under Windows).
-Now we will create and activate new virtual environment to install ``sunpy`` into:
+Now we will create and activate a new virtual environment to install ``sunpy`` into:
 
 .. code-block:: bash
 
