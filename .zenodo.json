@@ -56,14 +56,14 @@
             "affiliation": "European Space Agency (ESA), European Space Research and Technology Centre (ESTEC), Keplerlaan 1, NL-2201 AZ Noordwijk, the Netherlands"
         },
         {
-            "name": "David Pérez-Suárez",
-            "orcid": "0000-0003-0784-6909",
-            "affiliation": "University College London, Gower Street, London, UK"
-        },
-        {
             "name": "Will Barnes",
             "orcid": "0000-0001-9642-6089",
             "affiliation": "Department of Physics, American University, Washington, DC 20016, USA / NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
+        },
+        {
+            "name": "David Pérez-Suárez",
+            "orcid": "0000-0003-0784-6909",
+            "affiliation": "University College London, Gower Street, London, UK"
         },
         {
             "name": "Vishnunarayan K I."
@@ -112,7 +112,7 @@
         {
             "name": "Abhijeet Manhas",
             "orcid": "0000-0002-0757-2883",
-            "affiliation": " School of Computing and Electrical Engineering, Indian Institute of Technology Mandi"
+            "affiliation": "School of Computing and Electrical Engineering, Indian Institute of Technology Mandi"
         },
         {
             "name": "Asish Panda"
@@ -162,6 +162,11 @@
             "name": "Rajul Srivastava"
         },
         {
+            "name": "Shane Maloney",
+            "orcid": "0000-0002-4715-1805",
+            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Yash Jain",
             "orcid": "0000-0001-5347-4734",
             "affiliation": "Indian Institute of Technology, Kharagpur, 721302, India"
@@ -174,6 +179,11 @@
             "name": "Samuel Bennett"
         },
         {
+            "name": "Alasdair Wilson",
+            "orcid": "0000-0003-0820-8159",
+            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Ankit Baruah"
         },
         {
@@ -182,12 +192,11 @@
             "orcid": "0000-0003-0260-453X"
         },
         {
-            "name": "Michael Charlton"
+            "name": "Trestan F. Simon",
+            "orcid": "0009-0000-3029-8619"
         },
         {
-            "name": "Shane Maloney",
-            "orcid": "0000-0002-4715-1805",
-            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
+            "name": "Michael Charlton"
         },
         {
             "name": "Sashank Mishra",
@@ -200,11 +209,6 @@
         },
         {
             "name": "Akash Verma"
-        },
-        {
-            "name": "Alasdair Wilson",
-            "orcid": "0000-0003-0820-8159",
-            "affiliation": "Trinity College Dublin / Dublin Institute for Advanced Studies"
         },
         {
             "name": "Nicky Chorley",
@@ -279,7 +283,7 @@
         {
             "name": "Kris Akira Stern",
             "orcid": "0000-0003-1613-8947",
-            "affiliation": " University of Hong Kong (Hong Kong SAR), University of London (Great Britain)"
+            "affiliation": "University of Hong Kong (Hong Kong SAR), University of London (Great Britain)"
         },
         {
             "name": "Aryan Shukla",
@@ -335,6 +339,11 @@
         },
         {
             "name": "Dumindu Buddhika"
+        },
+        {
+            "name": "Hannah Collier",
+            "orcid": "0000-0001-5592-8023",
+            "affiliation": "Fachhochschule Nordwestschweiz and ETH Zürich"
         },
         {
             "name": "Himanshu Pathak",
@@ -459,6 +468,11 @@
         },
         {
             "name": "Ankit"
+        },
+        {
+            "name": "Brett J Graham",
+            "orcid": "0000-0001-6315-4507",
+            "affiliation": "Space Telescope Science Institute"
         },
         {
             "name": "Chloé Guennou"
@@ -693,6 +707,11 @@
             "name": "Koustav Ghosh"
         },
         {
+            "name": "Kurt McKee",
+            "orcid": "0000-0002-8547-8489",
+            "affiliation": "University of Chicago"
+        },
+        {
             "name": "MOULOUDI Mohamed Lyes"
         },
         {
@@ -728,6 +747,11 @@
             "name": "OussCHE"
         },
         {
+            "name": "Paul J. Wright",
+            "orcid": "0000-0001-9021-611X",
+            "affiliation": "Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Rajasekhar Reddy Mekala"
         },
         {
@@ -740,6 +764,16 @@
         },
         {
             "name": "Rohan Sharma"
+        },
+        {
+            "name": "Samuel T. Badman",
+            "orcid": "0000-0002-6145-436X",
+            "affiliation": "Center for Astrophysics | Harvard & Smithsonian"
+        },
+        {
+            "name": "Samuel J. Van Kooten",
+            "orcid": "0000-0002-4472-8517",
+            "affiliation": "Southwest Research Institute"
         },
         {
             "name": "Shashank Srikanth",
