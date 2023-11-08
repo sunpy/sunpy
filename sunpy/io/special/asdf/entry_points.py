@@ -44,5 +44,11 @@ def get_extensions():
                                    # Register that this is a replacement for
                                    # the old extension so old files still work.
                                    # without throwing a warning.
+                                   legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"]),
+        ManifestExtension.from_uri("asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",
+                                   converters=sunpy_converters,
+                                   # Register that this is a replacement for
+                                   # the old extension so old files still work.
+                                   # without throwing a warning.
                                    legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"])
     ]
