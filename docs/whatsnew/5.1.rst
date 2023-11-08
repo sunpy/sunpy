@@ -64,4 +64,4 @@ See the documentation for :meth:`~sunpy.coordinates.Helioprojective.is_visible` 
 Improved Support for WISPR Data
 ===============================
 The default colorbar limits and stretching for `~sunpy.map.sources.WISPRMap` have been improved to better emphasize the coronal structures present in many images.
-Metadata handling has also been improved, including handling non-integer processing levels (e.g. "L2b") and adding more intuitive labels for the different detectors (e.g. "inner" and "outer" versus "1" and "2").
+Metadata handling has also been improved, including handling non-integer processing levels (e.g. "L2b") and adding more intuitive labels for the different detectors (e.g. "inner" and "outer" instead of "1" and "2").
