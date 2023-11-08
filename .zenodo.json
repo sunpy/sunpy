@@ -192,7 +192,8 @@
             "orcid": "0000-0003-0260-453X"
         },
         {
-            "name": "Trestan Simon"
+            "name": "Trestan F. Simon",
+            "orcid": "0009-0000-3029-8619"
         },
         {
             "name": "Michael Charlton"
@@ -340,7 +341,9 @@
             "name": "Dumindu Buddhika"
         },
         {
-            "name": "Hannah Collier"
+            "name": "Hannah Collier",
+            "orcid": "0000-0001-5592-8023",
+            "affiliation": "Fachhochschule Nordwestschweiz and ETH Zürich"
         },
         {
             "name": "Himanshu Pathak",
@@ -467,7 +470,9 @@
             "name": "Ankit"
         },
         {
-            "name": "Brett"
+            "name": "Brett J Graham",
+            "orcid": "0000-0001-6315-4507",
+            "affiliation": "Space Telescope Science Institute"
         },
         {
             "name": "Chloé Guennou"
@@ -702,7 +707,9 @@
             "name": "Koustav Ghosh"
         },
         {
-            "name": "Kurt McKee"
+            "name": "Kurt McKee",
+            "orcid": "0000-0002-8547-8489",
+            "affiliation": "University of Chicago"
         },
         {
             "name": "MOULOUDI Mohamed Lyes"
@@ -740,7 +747,9 @@
             "name": "OussCHE"
         },
         {
-            "name": "Paul Wright"
+            "name": "Paul J. Wright",
+            "orcid": "0000-0001-9021-611X",
+            "affiliation": " Dublin Institute for Advanced Studies"
         },
         {
             "name": "Rajasekhar Reddy Mekala"
@@ -757,10 +766,14 @@
             "name": "Rohan Sharma"
         },
         {
-            "name": "Sam Van Kooten"
+            "name": "Samuel T. Badman",
+            "orcid": "0000-0002-6145-436X",
+            "affiliation": "Center for Astrophysics | Harvard & Smithsonian"
         },
         {
-            "name": "Samuel Badman"
+            "name": "Samuel J. Van Kooten",
+            "orcid": "0000-0002-4472-8517",
+            "affiliation": "Southwest Research Institute"
         },
         {
             "name": "Shashank Srikanth",
