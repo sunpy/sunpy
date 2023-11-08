@@ -58,7 +58,7 @@ This means that GONG synoptic data products can now be loaded directly into `~su
 New Method for Determining Visibility of Helioprojective Coordinates
 ====================================================================
 A new method has been added to the `~sunpy.coordinates.Helioprojective` frame to determine whether a coordinate is visible or not.
-Visibility is determined as whether or not the coordinate is behind the limb relative to the observer that defines the helioprojective frame.
+Visibility is determined as whether or not the coordinate is behind the limb relative to the observer coordinate.
 See the documentation for :meth:`~sunpy.coordinates.Helioprojective.is_visible` for more information.
 
 Improved Support for WISPR Data
