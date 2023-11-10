@@ -6,6 +6,7 @@ import os
 import sys
 import datetime
 import warnings
+
 from packaging.version import Version
 
 # -- Read the Docs Specific Configuration --------------------------------------
@@ -19,7 +20,8 @@ if on_rtd:
     os.environ['PARFIVE_HIDE_PROGRESS'] = 'True'
 
 # -- Check for dependencies ----------------------------------------------------
-from sunpy.util import missing_dependencies_by_extra  # NOQA
+from sunpy.util import missing_dependencies_by_extra  # NOQA: E402
+
 missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
 if missing_requirements:
     print(
@@ -28,26 +30,25 @@ if missing_requirements:
     )
     sys.exit(1)
 
-# -- Non stdlib imports --------------------------------------------------------
-from ruamel.yaml import YAML  # NOQA
-from sphinx_gallery.sorting import ExplicitOrder  # NOQA
-from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
+from matplotlib import MatplotlibDeprecationWarning  # NOQA: E402
+from ruamel.yaml import YAML  # NOQA: E402
+from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder  # NOQA: E402
+from sunpy_sphinx_theme import PNG_ICON  # NOQA: E402
 
-import sunpy  # NOQA
-from sunpy import __version__  # NOQA
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
-from matplotlib import MatplotlibDeprecationWarning  # NOQA
-from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
-from sunpy_sphinx_theme import PNG_ICON  # NOQA
+from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA: E402
+
+import sunpy  # NOQA: E402
+from sunpy import __version__  # NOQA: E402
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA: E402
 
 # -- Project information -------------------------------------------------------
 project = 'sunpy'
 author = 'The SunPy Community'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
-
 # Register remote data option with doctest
-import doctest  # NOQA
+import doctest  # NOQA: E402
+
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
 # The full version, including alpha/beta/rc tags
@@ -70,7 +71,9 @@ warnings.filterwarnings("ignore", message="The `sunpy.io.file_tools` module is d
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
-import sunpy.data.sample  # NOQA
+
+import sunpy.data.sample  # NOQA: E402
+
 sunpy.data.sample.download_all()
 sunpy.log.setLevel(ori_level)
 
@@ -312,8 +315,7 @@ try:
     cv_namespace = stable_docs.find("a", string="cv").attrs['href']
 
     # Find the relative URL for warpAffine/filter2D in the `cv` namespace
-    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text,
-                           'html.parser')
+    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text, 'html.parser')
     warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
     filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
 
