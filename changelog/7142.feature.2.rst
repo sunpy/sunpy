@@ -1,1 +1,0 @@
-Added the function :func:`sunpy.coordinates.sun.eclipse_amount` to calculate the solar-eclipse amount for an observer.
