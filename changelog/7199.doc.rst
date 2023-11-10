@@ -1,2 +1,0 @@
-Fixed the timeseries peak finding example.
-Previously there was a bug when plotting the data with pandas.
