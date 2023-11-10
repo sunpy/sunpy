@@ -14,20 +14,35 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 5.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-This release of sunpy contains X commits in Y merged pull requests closing Z issues from A people, B of which are first-time contributors.
+This release of ``sunpy`` contains 361 commits in 102 merged pull requests closing 27 issues from 19 people, 7 of which are first-time contributors to ``sunpy``.
 
-* 0 commits have been added since 5.0
-* 0 issues have been closed since 5.0
-* 0 pull requests have been merged since 5.0
-* 0 people have contributed since 5.0
-* 0 of which are new contributors
+* 361 commits have been added since 5.0
+* 27 issues have been closed since 5.0
+* 102 pull requests have been merged since 5.0
+* 19 people have contributed since 5.0
+* 7 of which are new contributors
 
 The people who have contributed to the code for this release are:
 
-- Old contributor
-- New contributor  *
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Brett J Graham  *
+-  David Stansby
+-  Hannah Collier  *
+-  Jan Gieseler
+-  Kurt McKee  *
+-  Laura Hayes
+-  Nabil Freij
+-  Paul Wright  *
+-  Samuel Badman  *
+-  Samuel J. Van Kooten  *
+-  Shane Maloney
+-  Steven Christe
+-  Stuart Mumford
+-  Trestan Simon  *
+-  Will Barnes
 
-Where a * indicates that this release contains their first contribution to sunpy.
+Where a * indicates that this release contains their first contribution to ``sunpy``.
 
 Calculating the amount of solar eclipse
 =======================================
