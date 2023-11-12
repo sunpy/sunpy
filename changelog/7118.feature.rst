@@ -1,1 +1,0 @@
-Added a :meth:`sunpy.coordinates.Helioprojective.is_visible` method to return whether the coordinate is visible (i.e., not obscured from the observer assuming that the Sun is an opaque sphere).

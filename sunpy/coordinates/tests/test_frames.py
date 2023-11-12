@@ -15,6 +15,7 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy import sun
 from sunpy.coordinates.frames import (
+    Geomagnetic,
     Heliocentric,
     HeliographicCarrington,
     HeliographicStonyhurst,
@@ -422,6 +423,31 @@ def test_heliocentric_radial_psi(x, y, psi):
     hcc = Heliocentric(CartesianRepresentation(x, y, 0*u.km), representation_type='cylindrical')
 
     assert_quantity_allclose(hcc.psi, psi)
+
+
+# ==============================================================================
+# Magnetic-model coordinate frame tests
+# ==============================================================================
+
+
+def test_magnetic_model_default():
+    # Also tests that no downloading happens because this test is not marked as remote
+    obstime = '2012-07-01'
+    frame_default = Geomagnetic(obstime=obstime)
+    frame_igrf13 = Geomagnetic(obstime=obstime, magnetic_model='igrf13')
+
+    assert_quantity_allclose(frame_igrf13.dipole_lonlat, [-72.408328, 80.16423]*u.deg)
+    assert_quantity_allclose(frame_default.dipole_lonlat, frame_igrf13.dipole_lonlat)
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize(('magnetic_model', 'obstime', 'dipole_lonlat'),
+                         [('igrf12', '2012-07-01', [-72.414318, 80.16354]*u.deg),
+                          ('igrf11', '2006-01-01', [-71.886023, 79.801523]*u.deg),
+                          ('igrf10', '2006-01-01', [-71.822653, 79.785185]*u.deg)])
+def test_magnetic_model_with(magnetic_model, obstime, dipole_lonlat):
+    frame = Geomagnetic(magnetic_model=magnetic_model, obstime=obstime)
+    assert_quantity_allclose(frame.dipole_lonlat, dipole_lonlat)
 
 
 # ==============================================================================

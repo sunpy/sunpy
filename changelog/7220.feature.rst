@@ -1,1 +1,0 @@
-Added a GONG synoptic map class which fixes non-compliant FITS metadata

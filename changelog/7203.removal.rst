@@ -1,2 +1,0 @@
-Removed ``GenericTimeSeries.index``.
-Use ``GenericTimeseries.time`` instead as a direct replacement.

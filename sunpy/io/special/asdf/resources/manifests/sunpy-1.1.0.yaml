@@ -1,7 +1,7 @@
 %YAML 1.1
 ---
-id: asdf://sunpy.org/manifests/sunpy-1.0.0
-extension_uri: asdf://sunpy.org/extensions/sunpy-1.0.0
+id: asdf://sunpy.org/manifests/sunpy-1.1.0
+extension_uri: asdf://sunpy.org/extensions/sunpy-1.1.0
 title: SunPy ASDF Manifest
 description: ASDF schemas and tags for SunPy classes.
 
@@ -44,3 +44,12 @@ tags:
 
   - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-1.0.0"
     schema_uri: "asdf://sunpy.org/sunpy/schemas/geocentricearthequatorial-1.0.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geomagnetic-1.0.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/geomagnetic-1.0.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/solarmagnetic-1.0.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/solarmagnetic-1.0.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarmagnetospheric-1.0.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/geocentricsolarmagnetospheric-1.0.0"

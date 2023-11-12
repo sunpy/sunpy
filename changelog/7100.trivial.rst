@@ -1,1 +1,0 @@
-Add tests to check whether various `~sunpy.map.Map` methods preserve laziness when operating on Maps backed by a `dask.array.Array`.

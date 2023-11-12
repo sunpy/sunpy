@@ -1,2 +1,0 @@
-Changed the :ref:`sphx_glr_generated_gallery_map_masking_hmi.py` to reproject AIA to HMI instead of the other way around.
-This is to avoid interpolating the HMI LOS magnetic field data.

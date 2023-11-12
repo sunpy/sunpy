@@ -275,12 +275,27 @@ def test_exposure_time(wispr_map):
     assert wispr_map.exposure_time == u.Quantity(700, 's')
 
 
-def test_level_number(wispr_map):
+def test_processing_level(wispr_map):
     assert wispr_map.processing_level == 1
+
+    for value, expected in [
+            ('L1', 1),
+            ('L2', 2),
+            ('L2b', '2b'),
+            ('L3', 3),
+            ('LW', 'W')]:
+        wispr_map.meta['level'] = value
+        assert wispr_map.processing_level == expected
 
 
 def test_detector(wispr_map):
-    assert wispr_map.detector == 2
+    assert wispr_map.detector == 'Outer'
+
+    wispr_map.meta['DETECTOR'] = 1
+    assert wispr_map.detector == 'Inner'
+
+    wispr_map.meta['DETECTOR'] = 'other_val'
+    assert wispr_map.detector == 'other_val'
 
 
 def test_unit(wispr_map):
@@ -293,7 +308,7 @@ def test_norm_clip(wispr_map):
 
 
 def test_name(wispr_map):
-    assert wispr_map.name == 'WISPR 2 2020-01-25 00:02:29'
+    assert wispr_map.name == 'WISPR Outer 2020-01-25 00:02:29'
 
 
 def test_wcs(wispr_map):
