@@ -13,7 +13,9 @@ examples:
         !<tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarmagnetospheric-1.0.0>
           frame_attributes:
             magnetic_model: igrf13
-
+  -
+    - A Geocentric Solar Magnetospheric frame with an obstime
+    - |
         !<tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarmagnetospheric-1.0.0>
           frame_attributes:
             magnetic_model: igrf13
