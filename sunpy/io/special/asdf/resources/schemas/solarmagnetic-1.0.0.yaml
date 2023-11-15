@@ -14,7 +14,7 @@ examples:
           frame_attributes:
             magnetic_model: igrf13
   -
-    - A Solar Magnetic frame with and obstime
+    - A Solar Magnetic frame with an obstime
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/solarmagnetic-1.0.0>
           frame_attributes:
