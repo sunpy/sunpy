@@ -18,25 +18,17 @@ from matplotlib.colors import Normalize
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
+import sunpy.data.sample
 import sunpy.map
 from sunpy.coordinates import Helioprojective
-from sunpy.net import Fido
-from sunpy.net import attrs as a
 
 ##############################################################################
 # Download co-temporal SDO/AIA image STEREO/EUVI images.  The EUVI map does
 # not explicitly define their reference radius of the Sun, so we set it to be
 # the same as for the AIA map to silence some informational messages.
 
-obstime = a.Time('2023/07/06 00:05:30', '2023/07/06 00:05:35')
-
-result = Fido.search(obstime, a.Instrument.aia, a.Wavelength(171*u.angstrom))
-aia_file = Fido.fetch(result)
-aia_map = sunpy.map.Map(aia_file)
-
-result = Fido.search(obstime, a.Detector.euvi, a.Wavelength(171*u.angstrom))
-euvi_file = Fido.fetch(result)
-euvi_map = sunpy.map.Map(euvi_file)
+aia_map = sunpy.map.Map(sunpy.data.sample.AIA_STEREOSCOPIC_IMAGE)
+euvi_map = sunpy.map.Map(sunpy.data.sample.EUVI_STEREOSCOPIC_IMAGE)
 euvi_map.meta['rsun_ref'] = aia_map.meta['rsun_ref']
 
 
