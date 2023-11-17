@@ -1,4 +1,3 @@
-# ruff: noqa: PT012
 import os
 import pathlib
 import tempfile

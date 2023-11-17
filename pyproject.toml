@@ -119,7 +119,6 @@ extend-ignore = [
     "PT007",  # Parametrize should be lists of tuples  # TODO! fix
     "PT011",  # Too broad exception assert             # TODO! fix
     "PT023",  # Always use () on pytest decorators
-    #"PT012",  # `pytest.raises()` block should contain a single simple statement
 ]
 
 [tool.ruff.flake8-tidy-imports]
@@ -144,6 +143,8 @@ extend-ignore = [
 "sunpy/util/decorators.py" = ["TID251"]
 # Notebook config for binder uses undefined variable
 ".jupyter/jupyter_notebook_config.py" = ["F821"]
+# Assert statement for map factory test has to be inside pytest raises block
+"sunpy/map/tests/test_map_factory.py" = ["PT012"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
