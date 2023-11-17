@@ -69,6 +69,7 @@ The Global Oscillation Network Group (GONG) are a network of observatories locat
 These magnetograms are used to derive synoptic maps which show a full-surface picture of the solar magnetic field.
 A new map source, `~sunpy.map.sources.GONGSynopticMap`, has been added to support these synoptic data products.
 This means that GONG synoptic data products can now be loaded directly into `~sunpy.map.Map` objects.
+If you have ``pfsspy`` installed, this new map source will be used instead of the one built into ``pfsspy``.
 
 Coordinate frames related to the Earth's magnetic dipole
 ========================================================
