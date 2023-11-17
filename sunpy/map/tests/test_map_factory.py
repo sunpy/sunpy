@@ -1,3 +1,4 @@
+# ruff: noqa: PT012
 import os
 import pathlib
 import tempfile
@@ -13,6 +14,7 @@ import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
 a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
@@ -212,6 +214,7 @@ def test_allow_errors(allow_errors, error, match):
     with pytest.raises(error, match=match):
         sunpy.map.Map(data, {}, allow_errors=allow_errors)
 
+
 def test_dask_array():
     dask_array = pytest.importorskip('dask.array')
     amap = sunpy.map.Map(AIA_171_IMAGE)
@@ -326,11 +329,12 @@ def test_map_fits():
     assert isinstance(fits_map, sunpy.map.GenericMap)
     assert fits_map.data.base is not None
 
+
 def test_map_list_of_files_with_one_broken():
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits')]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map(files, allow_errors=True)
-        assert amap.data.shape == (128,128)
+        assert amap.data.shape == (128, 128)
 
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits'), AIA_171_IMAGE]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
@@ -343,3 +347,18 @@ def test_map_list_of_files_with_one_broken():
 
     with pytest.raises(OSError, match='Failed to read'):
         sunpy.map.Map(files, allow_errors=False)
+
+
+def test_map_factory_higher_priority():
+    class CustomAIAMap(sunpy.map.sources.AIAMap):
+        _priority = 101
+    with pytest.raises(SunpyUserWarning, match='Multiple matching sources found.'):
+        m = sunpy.map.Map(AIA_171_IMAGE)
+        assert isinstance(m, CustomAIAMap)
+
+
+def test_map_factory_equal_priority():
+    class CustomAIAMap(sunpy.map.sources.AIAMap):
+        ...
+    with pytest.raises(MultipleMatchError, match='Too many candidate types identified'):
+        sunpy.map.Map(AIA_171_IMAGE)

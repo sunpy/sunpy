@@ -318,10 +318,24 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified "
-                                     f"({candidate_widget_types}). "
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.")
+            # Check if any sources have equal priority
+            # Group by equal priority and raise an error if any of the candidates have equal priority
+            priorities = [w._priority for w in candidate_widget_types]
+            equal_priority_widgets = {up: [w for w in candidate_widget_types if w._priority == up]
+                                      for up in set(priorities)}
+            for priority, widgets in equal_priority_widgets.items():
+                if len(widgets) > 1:
+                    raise MultipleMatchError("Too many candidate types identified "
+                                             f"with equal priority {priority} "
+                                             f"({widgets}). "
+                                             "Increase the priority of one source to guarantee unique type "
+                                             "identification by changing the _priority attribute.")
+            # Reverse sort by priority
+            candidate_widget_types = sorted(candidate_widget_types, key=lambda x: x._priority, reverse=True)
+            # Raise a warning to tell a user multiple sources have been identified and we're using one over
+            # the other
+            warn_user("Multiple matching sources found. "
+                      f"Using {candidate_widget_types[0]} which has highest priority.")
 
         # Only one is found
         WidgetType = candidate_widget_types[0]

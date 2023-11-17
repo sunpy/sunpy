@@ -32,6 +32,12 @@ class GONGSynopticMap(GenericMap):
     * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`_
     * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`_
     """
+    # Priority is increased above the default priority (100) such this source is chosen over the GONG
+    # map source in pfsspy. Otherwise, a MultipleMatchError is raised for synoptic GONG data if pfsspy
+    # is imported. See https://github.com/sunpy/sunpy/issues/7294 for more information.
+    # This could potentially be removed once a package that implements similar functionality to
+    # pfsspy is released.
+    _priority = 101
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

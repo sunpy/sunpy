@@ -181,6 +181,9 @@ class GenericMap(NDData):
     # in an error.  We explicitly set __array_ufunc__ = None so that the NumPy
     # call, and consequently the Quantity operator, will return NotImplemented.
     __array_ufunc__ = None
+    # This attribute is used for resolving which map source should be used if multiple
+    # source classes are identified for a given file. A higher number beats a lower number.
+    _priority = 100
 
     def __init_subclass__(cls, **kwargs):
         """

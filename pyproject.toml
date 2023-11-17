@@ -119,6 +119,7 @@ extend-ignore = [
     "PT007",  # Parametrize should be lists of tuples  # TODO! fix
     "PT011",  # Too broad exception assert             # TODO! fix
     "PT023",  # Always use () on pytest decorators
+    "PT012",  # `pytest.raises()` block should contain a single simple statement
 ]
 
 [tool.ruff.flake8-tidy-imports]
