@@ -198,7 +198,8 @@ class GenericMap(NDData):
         cls.__doc__ += textwrap.indent(_notes_doc, "    ")
 
         if hasattr(cls, 'is_datasource_for'):
-            cls._registry[cls] = cls.is_datasource_for
+            if str(cls) != "<class 'pfsspy.map.GongSynopticMap'>":
+                cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
