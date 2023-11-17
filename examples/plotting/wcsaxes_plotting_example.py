@@ -40,11 +40,11 @@ my_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
 
 # sphinx_gallery_defer_figures
 
-xx = np.arange(0, 500)
+xx = np.arange(0, 500) * u.arcsec
 yy = xx
 
 # Note that the coordinates need to be in degrees rather than arcseconds.
-ax.plot(xx*u.arcsec.to(u.deg), yy*u.arcsec.to(u.deg),
+ax.plot(xx.to(u.deg), yy.to(u.deg),
         color='r',
         transform=ax.get_transform("world"),
         label=f'WCS coordinate [{0*u.arcsec}, {500*u.arcsec}]')
