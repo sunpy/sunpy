@@ -1,0 +1,2 @@
+Added a `_priority` attribute to `~sunpy.map.GenericMap` to provide a way to decide when more than one
+source is found for a given map input.
