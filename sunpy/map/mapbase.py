@@ -198,6 +198,9 @@ class GenericMap(NDData):
         cls.__doc__ += textwrap.indent(_notes_doc, "    ")
 
         if hasattr(cls, 'is_datasource_for'):
+            # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
+            # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
+            # See https://github.com/sunpy/sunpy/issues/7294 for more information.
             if str(cls) != "<class 'pfsspy.map.GongSynopticMap'>":
                 cls._registry[cls] = cls.is_datasource_for
 
