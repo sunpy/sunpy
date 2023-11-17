@@ -326,8 +326,7 @@ class MapFactory(BasicRegistrationFactory):
             for priority, widgets in equal_priority_widgets.items():
                 if len(widgets) > 1:
                     raise MultipleMatchError("Too many candidate types identified "
-                                             f"with equal priority {priority} "
-                                             f"({widgets}). "
+                                             f"with equal priority {priority} ({widgets}). "
                                              "Increase the priority of one source to guarantee unique type "
                                              "identification by changing the _priority attribute.")
             # Reverse sort by priority
