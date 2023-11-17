@@ -24,6 +24,10 @@ class GONGSynopticMap(GenericMap):
     array of 242×256 pixels covering the solar disk. These magnetograms are used to derive
     synoptic maps which show a full-surface picture of the solar magnetic field.
 
+    Notes
+    -----
+    If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
+
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`_
