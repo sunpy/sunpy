@@ -10,19 +10,19 @@ from sunpy.net.soar.client import SOARClient
 
 def test_search():
     instrument = a.Instrument("EUI")
-    time = a.Time("2021-02-11", "2021-02-12")
+    time = a.Time("2022-02-11", "2022-02-12")
     level = a.Level(1)
     product = a.soar.Product("eui-fsi174-image")
 
     res = Fido.search(instrument, time, level, product)
     assert len(res) == 1
-    assert len(res[0]) == 37
-    assert u.allclose(res[0, 0]["Filesize"], 3.45 * u.Mbyte)
+    assert len(res[0]) == 660
+    assert u.allclose(res[0, 0]["Filesize"], 2.439 * u.Mbyte)
 
     # check passing upper case descriptor
     product = a.soar.Product("EUI-FSI174-IMAGE")
     res = Fido.search(time, level, product)
-    assert res.file_num == 37
+    assert res.file_num == 660
 
     files = Fido.fetch(res[0, 0])
     assert len(files) == 1
