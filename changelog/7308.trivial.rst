@@ -1,0 +1,1 @@
+Pinned the ``drms`` requirement to ``< 0.7`` to avoid breaking changes in ``drms`` version 0.7.
