@@ -438,10 +438,7 @@ class JSOCClient(BaseClient):
         time.sleep(sleep/2.)
 
         for response in responses:
-            if Version(drms.__version__) >= Version('0.7.0'):
-                response.wait()
-            else:
-                response.wait(verbose=progress)
+            response.wait()
 
         return self.get_request(responses, path=path, overwrite=overwrite,
                                 progress=progress, downloader=downloader,
