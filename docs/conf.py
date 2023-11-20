@@ -195,7 +195,7 @@ intersphinx_mapping = {
     "astropy": ("https://docs.astropy.org/en/stable/", None),
     "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
     "dask": ("https://docs.dask.org/en/stable/", None),
-    "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "drms": ("https://docs.sunpy.org/projects/drms/en/v0.6.4.post1/", None),
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
