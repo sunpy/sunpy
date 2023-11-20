@@ -1,1 +1,0 @@
-Added a keyword option (``quiet``) for :func:`~sunpy.coordinates.get_body_heliographic_stonyhurst` to silence the normal reporting of the light-travel-time correction when ``observer`` is specified.

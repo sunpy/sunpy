@@ -1,1 +1,0 @@
-Added new default colormap scalings for WISPR Maps. Plots are now clipped at zero, and `~astropy.visualization.AsinhStretch` is used for the scaling to ensure coronal details are visible despite the much-brighter stars. Parsing of the ``detector`` and ``level`` fields of the FITS headers is also improved.

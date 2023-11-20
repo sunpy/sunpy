@@ -1,1 +1,0 @@
-Fix example formatting in a few asdf schemas.

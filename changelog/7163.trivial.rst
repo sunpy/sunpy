@@ -1,1 +1,0 @@
-Raise an error with a helpful message when :meth:`sunpy.map.GenericMap.plot` is called with a non-boolean value for the ``annotate`` keyword, because the user is probably trying to specify the axes.
