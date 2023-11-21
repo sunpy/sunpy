@@ -1,3 +1,34 @@
+5.0.2 (2023-11-21)
+==================
+
+Bug Fixes
+---------
+
+- When directly instantiating a `~astropy.wcs.WCS` from a FITS header that contains both Stonyhurst and Carrington heliographic coordinates for the observer location, the Stonyhurst coordinates will now be prioritized.
+  This behavior is now consistent with the `~sunpy.map.Map` class, which has always prioritized Stonyhurst coordinates over Carrington coordinates. (`#7188 <https://github.com/sunpy/sunpy/pull/7188>`__)
+- Fixed a bug with :func:`~sunpy.map.sample_at_coords()` where sampling outside the bounds of the map would sometimes not error and instead return strange pixel values. (`#7206 <https://github.com/sunpy/sunpy/pull/7206>`__)
+- Improved code when loading CDF files to improve performance and avoid raising of pandas performance warnings. (`#7247 <https://github.com/sunpy/sunpy/pull/7247>`__)
+- Fixed a bug with :meth:`sunpy.map.GenericMap.plot` where setting ``norm`` to ``None`` would result in an error. (`#7261 <https://github.com/sunpy/sunpy/pull/7261>`__)
+
+
+Documentation
+-------------
+
+- Changed the :ref:`sphx_glr_generated_gallery_map_masking_hmi.py` to reproject AIA to HMI instead of the other way around.
+  This is to avoid interpolating the HMI LOS magnetic field data. (`#7160 <https://github.com/sunpy/sunpy/pull/7160>`__)
+- Fixed the timeseries peak finding example.
+  Previously there was a bug when plotting the data with pandas. (`#7199 <https://github.com/sunpy/sunpy/pull/7199>`__)
+
+
+Internal Changes
+----------------
+
+- Removed the Binder configuration and link in README.
+  This is because the configuration was untested, and does not currently work. (`#7062 <https://github.com/sunpy/sunpy/pull/7062>`__)
+- Fixed our ASDF manifest having the incorrect ID. (`#7282 <https://github.com/sunpy/sunpy/pull/7282>`__)
+- Pinned the ``drms`` requirement to ``< 0.7`` to avoid breaking changes in ``drms`` version 0.7. (`#7308 <https://github.com/sunpy/sunpy/pull/7308>`__)
+
+
 5.0.1 (2023-09-12)
 ==================
 

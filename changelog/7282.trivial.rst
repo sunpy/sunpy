@@ -1,1 +1,0 @@
-Fixed our ASDF manifest having the incorrect ID.

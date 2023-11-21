@@ -1,1 +1,0 @@
-Fixed a bug with :meth:`sunpy.map.GenericMap.plot` where setting ``norm`` to ``None`` would result in an error.
