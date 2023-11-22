@@ -9,8 +9,6 @@ and plot it relative to other bodies in the solar system.
 JPL `Horizons <https://ssd.jpl.nasa.gov/horizons/>`__ can return the locations of
 planets and minor bodies (e.g., asteroids) in the solar system, and it can also
 return the location of a variety of major spacecraft.
-
-You will need `astroquery <https://astroquery.readthedocs.io/>`__ installed.
 """
 
 import matplotlib.pyplot as plt
