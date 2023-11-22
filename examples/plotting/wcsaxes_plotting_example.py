@@ -44,7 +44,7 @@ xx = np.arange(0, 500) * u.arcsec
 yy = xx
 
 # Note that the coordinates need to be in degrees rather than arcseconds.
-ax.plot(xx.to(u.deg), yy.to(u.deg),
+ax.plot((xx).to(u.deg), (yy).to(u.deg),
         color='r',
         transform=ax.get_transform("world"),
         label=f'WCS coordinate [{0*u.arcsec}, {500*u.arcsec}]')
