@@ -1,8 +1,11 @@
 """
 Ephemeris calculations using SunPy coordinate frames
 """
+import re
+import tempfile
+
 import numpy as np
-from packaging import version
+import requests
 
 import astropy.units as u
 from astropy.constants import c as speed_of_light
@@ -18,6 +21,7 @@ from astropy.coordinates.representation import (
     CartesianRepresentation,
     SphericalRepresentation,
 )
+from astropy.io import ascii
 from astropy.time import Time
 
 from sunpy import log
@@ -198,18 +202,19 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     solar-system body at a specified time.  This location is the instantaneous or "true" location,
     and is not corrected for light travel time or observer motion.
 
-    .. note::
-        This function requires the Astroquery package to be installed and
-        requires an Internet connection.
-
     Parameters
     ----------
     body : `str`
         The solar-system body for which to calculate positions.  One can also use the search form
         linked below to find valid names or ID numbers.
     id_type : `None`, `str`
-        See the astroquery documentation for information on id_types: `astroquery.jplhorizons`.
-        If the installed astroquery version is less than 0.4.4, defaults to ``'majorbody'``.
+        Defaults to `None`, which searches major bodies first, and then searches
+        small bodies (comets and asteroids) if no major body is found.  If
+        ``'smallbody'``, the search is limited to only small bodies.  If
+        ``'designation'``, the search is limited to only small-body designations.
+        If ``'name'``, the search is limited to only small-body names.  If
+        ``'asteroid_name'`` or ``'comet_name'``, the search is limited to only
+        asteroid names or only comet names, respectively.
     time : {parse_time_types}, `dict`
         Time to use in a parse_time-compatible format.
 
@@ -219,8 +224,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         ``start_time`` and ``stop_time`` must be in a parse_time-compatible format,
         and are interpreted as UTC time. ``step`` must be a string with either a
         number and interval length (e.g. for every 10 seconds, ``'10s'``), or a
-        plain number for a number of evenly spaced intervals. For more information
-        see the docstring of `astroquery.jplhorizons.HorizonsClass`.
+        plain number for a number of evenly spaced intervals.
 
     include_velocity : `bool`, optional
         If True, include the body's velocity in the output coordinate.  Defaults to False.
@@ -240,11 +244,12 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     ----------
     * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
     * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`_
-    * `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_
 
     Examples
     --------
-    >>> from sunpy.coordinates.ephemeris import get_horizons_coord
+    .. minigallery:: sunpy.coordinates.get_horizons_coord
+
+    >>> from sunpy.coordinates import get_horizons_coord
 
     Query the location of Venus
 
@@ -256,7 +261,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     Query the location of the SDO spacecraft
 
     >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spac [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spacecraft) (-136395) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.01019118, 3.29640728, 0.99011042)>
 
@@ -282,46 +287,97 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     ...                    time={{'start': '2020-12-01',
     ...                           'stop': '2020-12-02',
     ...                           'step': '12'}})  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for Solar Orbiter (spacecraft) (-144 [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL HORIZONS location for Solar Orbiter (spacecraft) (-144) [sunpy.coordinates.ephemeris]
     ...
     """
-    # Import here so that astroquery is not a module-level dependency
-    import astroquery
-    from astroquery.jplhorizons import Horizons
+    args = {
+        'EPHEM_TYPE': 'VECTORS',
+        'OUT_UNITS': 'AU-D',
+        'CENTER': '500@10',
+        'CSV_FORMAT': 'YES',
+    }
 
-    if id_type is None and version.parse(astroquery.__version__) < version.parse('0.4.4'):
-        # For older versions of astroquery retain default behaviour of this function
-        # if id_type isn't manually specified.
-        id_type = 'majorbody'
+    if id_type in [None, 'smallbody', 'designation', 'name', 'asteroid_name', 'comet_name']:
+        prepend = {
+            None: "",
+            'smallbody': "",
+            'designation': "DES=",
+            'name': "NAME=",
+            'asteroid_name': "ASTNAM=",
+            'comet_name': "COMNAM=",
+        }
+        if id_type == 'smallbody' and body[-1] != ';':
+            body += ';'
+        args['COMMAND'] = f"'{prepend[id_type]}{body}'"
+    else:
+        raise ValueError("Invalid id_type")
 
     if isinstance(time, dict):
         if set(time.keys()) != set(['start', 'stop', 'step']):
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
-        epochs = time
-        jpl_fmt = '%Y-%m-%d %H:%M:%S.%f'
-        epochs['start'] = parse_time(epochs['start']).tdb.strftime(jpl_fmt)
-        epochs['stop'] = parse_time(epochs['stop']).tdb.strftime(jpl_fmt)
+        jpl_fmt = "'%Y-%m-%d %H:%M:%S.%f'"
+        args['START_TIME'] = parse_time(time['start']).tdb.strftime(jpl_fmt)
+        args['STOP_TIME'] = parse_time(time['stop']).tdb.strftime(jpl_fmt)
+        args['STEP_SIZE'] = time['step']
     else:
         obstime = parse_time(time)
+        if obstime.size >= 10000:
+            raise ValueError("For more than 10,000 time values, use dictionary input.")
         array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
         epochs = array_time.tdb.jd.tolist()  # Time must be provided in JD TDB
+        args['TLIST'] = '\n'.join(str(epoch) for epoch in epochs)
+        args['TLIST_TYPE'] = 'JD'
 
-    query = Horizons(id=body, id_type=id_type,
-                     location='500@10',      # Heliocentric (mean ecliptic)
-                     epochs=epochs)
-    try:
-        result = query.vectors()
-    except Exception as e:  # Catch and re-raise all exceptions, and also provide query URL if generated
-        if query.uri is not None:
-            log.error(f"See the raw output from the JPL HORIZONS query at {query.uri}")
-        raise e
-    finally:
-        query._session.close()
-    log.info(f"Obtained JPL HORIZONS location for {result[0]['targetname']}")
-    log.debug(f"See the raw output from the JPL HORIZONS query at {query.uri}")
+    with tempfile.TemporaryFile('w+t') as query:
+        contents = "!$$SOF\n" + '\n'.join(f"{k}={v}" for k, v in args.items())
+        log.debug(f"File-based JPL HORIZONS query:\n{contents}")
+
+        query.write(contents)
+        query.seek(0)
+
+        output = requests.post('https://ssd.jpl.nasa.gov/api/horizons_file.api',
+                               data={'format': 'text'}, files={'input': query})
+
+    lines = output.text.splitlines()
+    start_index, stop_index = 0, len(lines)
+    success = False
+    error_message = ''
+    for index, line in enumerate(lines):
+        if line.startswith("Target body name:"):
+            target_name = re.search(r': (.*) {', line).group(1)
+            log.info(f"Obtained JPL HORIZONS location for {target_name}")
+
+        if "Multiple major-bodies match string" in line:
+            error_message = '\n'.join(lines[index:-1])
+            break
+
+        if "Matching small-bodies:" in line:
+            # Prepare the error message assuming there are multiple matches
+            error_message = '\n'.join(lines[index:-1])
+
+            # Change the error message if there are actually zero matches
+            if "No matches found." in error_message:
+                error_message = "No matches found."
+
+            break
+
+        if line.startswith("$$SOE"):
+            start_index = index + 1
+        if line.startswith("$$EOE"):
+            stop_index = index
+            success = True
+
+    if not success:
+        if error_message:
+            raise ValueError(error_message)
+        else:
+            raise RuntimeError(f"Unknown JPL HORIZONS error:\n{output.text}")
+
+    column_names = [name.strip() for name in lines[start_index - 3].split(',')]
+    result = ascii.read(lines[start_index:stop_index], names=column_names)
 
     if isinstance(time, dict):
-        obstime_tdb = parse_time(result['datetime_jd'], format='jd', scale='tdb')
+        obstime_tdb = parse_time(result['JDTDB'], format='jd', scale='tdb')
         obstime = Time(obstime_tdb, format='isot', scale='utc')
     else:
         # JPL HORIZONS results are sorted by observation time, so this sorting needs to be undone.
@@ -332,9 +388,9 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         unsorted_indices = obstime.argsort().argsort()
         result = result[unsorted_indices]
 
-    vector = CartesianRepresentation(result['x'], result['y'], result['z'])
+    vector = CartesianRepresentation(result['X'], result['Y'], result['Z']) * u.AU
     if include_velocity:
-        velocity = CartesianDifferential(result['vx'], result['vy'], result['vz'])
+        velocity = CartesianDifferential(result['VX'], result['VY'], result['VZ']) * u.AU / u.day
         vector = vector.with_differentials(velocity)
     coord = SkyCoord(vector, frame=HeliocentricEclipticIAU76, obstime=obstime)
 
