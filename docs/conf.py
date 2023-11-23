@@ -60,7 +60,6 @@ is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 if is_release:
     warnings.simplefilter("ignore")
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
-warnings.filterwarnings("ignore", message='The sunpy.database module is no longer actively maintained', category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
@@ -204,7 +203,6 @@ intersphinx_mapping = {
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
     "spiceypy": ("https://spiceypy.readthedocs.io/en/stable/", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
     "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),

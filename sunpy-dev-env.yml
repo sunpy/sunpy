@@ -23,7 +23,6 @@ dependencies:
   - scikit-image
   - scipy
   - setuptools
-  - sqlalchemy
   - tqdm
   - zeep
 

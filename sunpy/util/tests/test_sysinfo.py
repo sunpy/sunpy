@@ -23,7 +23,6 @@ def test_find_dependencies():
                                                      'parfive',
                                                      'packaging',
                                                      'dask',
-                                                     'sqlalchemy',
                                                      'scikit-image',
                                                      'scipy',
                                                      'glymur',
@@ -48,7 +47,6 @@ def test_missing_dependencies_by_extra():
                                                    'asdf',
                                                    'required',
                                                    'dask',
-                                                   'database',
                                                    'dev',
                                                    'docs',
                                                    'docs-gallery',
@@ -61,7 +59,7 @@ def test_missing_dependencies_by_extra():
                                                    'timeseries',
                                                    'visualization'])
     missing = missing_dependencies_by_extra(exclude_extras=["all"])
-    assert sorted(list(missing.keys())) == sorted(['asdf', 'required', 'dask', 'database', 'dev', 'docs',
+    assert sorted(list(missing.keys())) == sorted(['asdf', 'required', 'dask', 'dev', 'docs',
                                                    'docs-gallery', 'image', 'jpeg2000', 'map', 'net',
                                                    'spice', 'tests', 'timeseries', 'visualization'])
 
