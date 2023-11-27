@@ -1,0 +1,23 @@
+.. _whatsnew-6.0:
+
+************************
+What's New in sunpy 6.0?
+************************
+
+The SunPy Project is pleased to announce the 6.0 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 6.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+PUT STATS HERE
+
+Removal of ``sunpy.database``
+-----------------------------
+The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
+It has been deprecated since sunpy 4.1, and since there have been no major objections from the communityu since then we have completely removed ``sunpy.database`` in sunpy 6.0.
+If you are interested in seeing a replacement for ``sunpy.database``, either inside ``sunpy`` or as a third-party package, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
