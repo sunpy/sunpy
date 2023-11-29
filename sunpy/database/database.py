@@ -452,7 +452,7 @@ class Database:
                 entry.wavemin = qr_entry.wavemin
                 entry.wavemax = qr_entry.wavemax
                 entry.path = path
-                entry.download_time = datetime.utcnow()
+                entry.download_time = datetime.now(datetime.UTC)
                 yield entry
 
     def fetch(self, *query, **kwargs):
