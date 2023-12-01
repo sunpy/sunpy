@@ -137,7 +137,7 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
