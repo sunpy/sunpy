@@ -2,7 +2,6 @@
 Ephemeris calculations using SunPy coordinate frames
 """
 import re
-import tempfile
 
 import numpy as np
 import requests
@@ -290,10 +289,12 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     INFO: Obtained JPL HORIZONS location for Solar Orbiter (spacecraft) (-144) [sunpy.coordinates.ephemeris]
     ...
     """
+    # Reference plane defaults to the ecliptic (IAU 1976 definition)
     args = {
         'EPHEM_TYPE': 'VECTORS',
-        'OUT_UNITS': 'AU-D',
-        'CENTER': '500@10',
+        'OUT_UNITS': 'AU-D',  # units of AU and days
+        'CENTER': '500@10',  # origin is body center (500) of the Sun (10)
+        'VEC_TABLE': '2',  # output the 6-element state vector
         'CSV_FORMAT': 'YES',
     }
 
@@ -326,17 +327,13 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
         epochs = array_time.tdb.jd.tolist()  # Time must be provided in JD TDB
         args['TLIST'] = '\n'.join(str(epoch) for epoch in epochs)
-        args['TLIST_TYPE'] = 'JD'
+        args['TLIST_TYPE'] = 'JD'  # needs to be explicitly set to avoid potential MJD confusion
 
-    with tempfile.TemporaryFile('w+t') as query:
-        contents = "!$$SOF\n" + '\n'.join(f"{k}={v}" for k, v in args.items())
-        log.debug(f"File-based JPL HORIZONS query:\n{contents}")
+    contents = "!$$SOF\n" + '\n'.join(f"{k}={v}" for k, v in args.items())
+    log.debug(f"JPL HORIZONS query via POST request:\n{contents}")
 
-        query.write(contents)
-        query.seek(0)
-
-        output = requests.post('https://ssd.jpl.nasa.gov/api/horizons_file.api',
-                               data={'format': 'text'}, files={'input': query})
+    output = requests.post('https://ssd.jpl.nasa.gov/api/horizons_file.api',
+                           data={'format': 'text'}, files={'input': contents})
 
     lines = output.text.splitlines()
     start_index, stop_index = 0, len(lines)
