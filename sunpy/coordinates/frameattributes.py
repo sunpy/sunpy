@@ -1,12 +1,15 @@
 import datetime
+from contextlib import contextmanager
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, CoordinateAttribute, SkyCoord, TimeAttribute
+from astropy.coordinates import BaseCoordinateFrame, CoordinateAttribute, QuantityAttribute, SkyCoord, TimeAttribute
 from astropy.time import Time
 
+from sunpy.sun.constants import radius
 from sunpy.time import parse_time
 
-__all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
+__all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute',
+           'SolarRadiusAttribute', 'impose_solar_radius']
 
 
 class TimeFrameAttributeSunPy(TimeAttribute):
@@ -154,4 +157,33 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                 else:
                     return observer
 
+        return super().__get__(instance, frame_cls=frame_cls)
+
+
+_imposed_solar_radius = None
+
+
+@contextmanager
+@u.quantity_input
+def impose_solar_radius(rsun: u.km = radius.to(u.km)):
+    try:
+        global _imposed_solar_radius
+        old_imposed_solar_radius = _imposed_solar_radius
+        _imposed_solar_radius = rsun
+        yield
+    finally:
+        _imposed_solar_radius = old_imposed_solar_radius
+
+
+class SolarRadiusAttribute(QuantityAttribute):
+    """
+    """
+    def __init__(self, *args, **kwargs):
+        new_kwargs = {'default': radius, 'unit': u.km}
+        new_kwargs.update(kwargs)
+        super().__init__(*args, **new_kwargs)
+
+    def __get__(self, instance, frame_cls=None):
+        if _imposed_solar_radius is not None:
+            return _imposed_solar_radius
         return super().__get__(instance, frame_cls=frame_cls)

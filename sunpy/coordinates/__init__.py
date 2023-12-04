@@ -21,6 +21,7 @@ below (see `astropy.coordinates.builtin_frames`).
 from . import sun
 from ._transformations import _make_sunpy_graph, propagate_with_solar_surface, transform_with_sun_center
 from .ephemeris import *
+from .frameattributes import impose_solar_radius
 from .frames import *
 from .metaframes import *
 from .wcs_utils import *

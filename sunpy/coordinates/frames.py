@@ -27,11 +27,10 @@ from astropy.time import Time
 from astropy.utils.data import download_file
 
 from sunpy import log
-from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from sunpy.util.exceptions import warn_user
-from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
+from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy, SolarRadiusAttribute
 
 _J2000 = Time('J2000.0', scale='tt')
 
@@ -218,7 +217,7 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
                                 RepresentationMapping('d_distance', 'd_radius', u.km/u.s)],
     }
 
-    rsun = QuantityAttribute(default=_RSUN, unit=u.km)
+    rsun = SolarRadiusAttribute()
 
     def make_3d(self):
         """
@@ -531,7 +530,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                                       RepresentationMapping('lat', 'Ty', u.arcsec)],
     }
 
-    rsun = QuantityAttribute(default=_RSUN, unit=u.km)
+    rsun = SolarRadiusAttribute()
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
     @property
