@@ -106,8 +106,7 @@ If this is the case, you will see the following when you run the test suite::
     You do not have all the required dependencies installed to run the sunpy test suite.
     If you want to run the sunpy tests install the 'tests' extra with `pip install "sunpy[tests]"`
 
-This does not mean sunpy is broken, but you will need to install the extra packages to ensure a "complete" installation of sunpy and run the entire test suite.
-It is quite likely that you will run into not having the tests dependencies installed.
+This does not mean sunpy is broken, but you need a "complete" installation of sunpy to run the entire test suite.
 
 Remote data
 -----------

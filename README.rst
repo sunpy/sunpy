@@ -54,8 +54,8 @@ This will walk you through installing ``sunpy`` and all of its dependencies with
 Usage
 =====
 
-The best place to learn how to use ``sunpy`` is to read the `tutorial <https://docs.sunpy.org/en/stable/tutorial/index.html>`__.
-There is a collection of examples that show how to use ``sunpy`` in the `gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__.
+The best place to begin learning how to use ``sunpy`` is to read the `tutorial <https://docs.sunpy.org/en/stable/tutorial/index.html>`__.
+There is also a collection of shorter examples that demonstrate the use of ``sunpy`` in the `gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__.
 
 Changes
 =======

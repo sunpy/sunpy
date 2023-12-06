@@ -5,7 +5,7 @@ Installation
 ************
 
 This is the first chapter in the sunpy tutorial, and by the end of it you should have a working installation of Python and ``sunpy``.
-For information on how to install ``sunpy`` beyond the recommended way below, see :ref:`sunpy-topic-guide-installing`.
+For further information and alternative methods for installing ``sunpy`` beyond the recommended approach outlined below, refer to :ref:`sunpy-topic-guide-installing`.
 
 Installing Python
 =================
@@ -14,7 +14,7 @@ There are many ways to install Python, but even if you have Python installed som
 That's because we will create a new Python environment.
 As well as containing a Python installation, this environment provides an isolated place to install Python packages (like ``sunpy``) without affecting any other current Python installation.
 If you already have Python and ``conda`` working you can skip the next section.
-However, if your working conda is an installation of Anaconda, we recommend you install miniforge as described below.
+However, if you are using Anaconda, we recommend you still install miniforge as described below.
 
 Installing miniforge
 --------------------
