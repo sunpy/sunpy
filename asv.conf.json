@@ -1,23 +1,21 @@
 {
-    "version": 1,
-    "project": "sunpy-benchmarks",
-    "project_url": "https://sunpy.org/",
-    "repo": "./",
-    "branches": [
-        "main"
-    ],
-    "dvcs": "git",
-    "environment_type": "virtualenv",
-    "show_commit_url": "https://github.com/sunpy/sunpy/commit/",
-    "benchmark_dir": "benchmarks",
-    "results_dir": "asv_results/results",
-    "env_dir": "asv_env",
-    "install_command": [
-        "in-dir={env_dir} python -mpip install {wheel_file}[all]"
-    ],
-    "build_command": [
-        "python -mpip install -U build",
-        "python -m build",
-        "PIP_NO_BUILD_ISOLATION=false python -mpip wheel --no-deps --no-index -w {build_cache_dir} {build_dir}"
-    ]
+  "version": 1,
+  "project": "sunpy-benchmarks",
+  "project_url": "https://sunpy.org/",
+  "repo": "./",
+  "branches": ["main"],
+  "dvcs": "git",
+  "environment_type": "virtualenv",
+  "show_commit_url": "https://github.com/sunpy/sunpy/commit/",
+  "benchmark_dir": "benchmarks",
+  "results_dir": "asv_results/results",
+  "env_dir": "asv_env",
+  "install_command": [
+    "in-dir={env_dir} python -mpip install {wheel_file}[all]"
+  ],
+  "build_command": [
+    "python -mpip install -U build",
+    "python -m build",
+    "PIP_NO_BUILD_ISOLATION=false python -mpip wheel --no-deps --no-index -w {build_cache_dir} {build_dir}"
+  ]
 }

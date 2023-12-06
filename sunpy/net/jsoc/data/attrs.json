@@ -1,33 +1,12 @@
 {
   "series_store": [
-    [
-      "aia.flatfield",
-      "AIA flatfield"
-    ],
-    [
-      "aia.lev1",
-      "AIA Level 1"
-    ],
-    [
-      "aia.lev1_euv_12s",
-      "AIA Level 1, 12 second cadence"
-    ],
-    [
-      "aia.lev1_uv_24s",
-      "AIA Level 1, 24 second cadence"
-    ],
-    [
-      "aia.lev1_vis_1h",
-      "AIA Level 1, 3600 second cadence"
-    ],
-    [
-      "aia.master_pointing3h",
-      "Master Pointing Parameters"
-    ],
-    [
-      "aia.response",
-      "AIA instrument response table"
-    ],
+    ["aia.flatfield", "AIA flatfield"],
+    ["aia.lev1", "AIA Level 1"],
+    ["aia.lev1_euv_12s", "AIA Level 1, 12 second cadence"],
+    ["aia.lev1_uv_24s", "AIA Level 1, 24 second cadence"],
+    ["aia.lev1_vis_1h", "AIA Level 1, 3600 second cadence"],
+    ["aia.master_pointing3h", "Master Pointing Parameters"],
+    ["aia.response", "AIA instrument response table"],
     [
       "aia.temperature_summary_300s",
       "Temperature Statistics from AIA Housekeeping - Thermal Packet"
@@ -56,10 +35,7 @@
       "hmi.b_720s_e15w1332_cea",
       "Cylindrical equal area projected HMI vector patch"
     ],
-    [
-      "hmi.b_720s_e15w1332_cutout",
-      "HMI vector patch cutout"
-    ],
+    ["hmi.b_720s_e15w1332_cutout", "HMI vector patch cutout"],
     [
       "hmi.b_90s",
       "Full-disk Milne-Eddington inversion with the azimuth disambiguation information contained in DISAMBIG to be applied to AZIMUTH"
@@ -72,14 +48,8 @@
       "hmi.b_synoptic_small",
       "HMI synoptic chart of vector B field (small size). Disambiguation for weak field pixels uses random method."
     ],
-    [
-      "hmi.bharp_720s",
-      "Disambiguated HARP for Milne-Eddington inversion"
-    ],
-    [
-      "hmi.bharp_720s_nrt",
-      "Disambiguated HARP for Milne-Eddigton inversion"
-    ],
+    ["hmi.bharp_720s", "Disambiguated HARP for Milne-Eddington inversion"],
+    ["hmi.bharp_720s_nrt", "Disambiguated HARP for Milne-Eddigton inversion"],
     [
       "hmi.bmap_lowres_latlon_720s",
       "HMI vector B Magnetograms remapped to grid in longitude, latitude"
@@ -92,46 +62,22 @@
       "hmi.coefficients",
       "This series contains the 4 polynomial coefficients for the 3rd-order polynomial Doppler velocity correction with the MDI-like algorithm"
     ],
-    [
-      "hmi.eigenfunctions",
-      "eigenfuctions for performing inversions"
-    ],
-    [
-      "hmi.flatfield",
-      "HMI flat field"
-    ],
-    [
-      "hmi.fsi_phase_lon_lat",
-      "Farside lon/lat phase maps"
-    ],
-    [
-      "hmi.fsi_phase_lon_lat_5d",
-      "5 day cumulative farside lon/lat phase maps"
-    ],
+    ["hmi.eigenfunctions", "eigenfuctions for performing inversions"],
+    ["hmi.flatfield", "HMI flat field"],
+    ["hmi.fsi_phase_lon_lat", "Farside lon/lat phase maps"],
+    ["hmi.fsi_phase_lon_lat_5d", "5 day cumulative farside lon/lat phase maps"],
     [
       "hmi.fsvbinned_nrt",
       "Binned HMI NRT Dopplergrams for GONG far-side processing"
     ],
-    [
-      "hmi.gcvbinned_nrt",
-      "Binned HMI Dopplergrams for GONG copipe processing"
-    ],
-    [
-      "hmi.hskernels",
-      "mode kernels for helioseismic inversions"
-    ],
-    [
-      "hmi.ic_45s",
-      "continuum intensities with a cadence of 45 seconds."
-    ],
+    ["hmi.gcvbinned_nrt", "Binned HMI Dopplergrams for GONG copipe processing"],
+    ["hmi.hskernels", "mode kernels for helioseismic inversions"],
+    ["hmi.ic_45s", "continuum intensities with a cadence of 45 seconds."],
     [
       "hmi.ic_45s_dcon",
       "continuum intensities with a cadence of 45 seconds, constructed with hmi.lev1_dcon"
     ],
-    [
-      "hmi.ic_720s",
-      "continuum intensities with a cadence of 720 seconds."
-    ],
+    ["hmi.ic_720s", "continuum intensities with a cadence of 720 seconds."],
     [
       "hmi.ic_720s_dcon",
       "continuum intensities with a cadence of 720 seconds, constructed with hmi.lev1_dcon."
@@ -148,18 +94,12 @@
       "hmi.ic_nolimbdark_720s_nrt",
       "Continuum intensities with limb darkening removed"
     ],
-    [
-      "hmi.ld_45s",
-      "linedepths with a cadence of 45 seconds."
-    ],
+    ["hmi.ld_45s", "linedepths with a cadence of 45 seconds."],
     [
       "hmi.ld_45s_dcon",
       "linedepths with a cadence of 45 seconds, constructed with hmi.lev1_dcon"
     ],
-    [
-      "hmi.ld_720s",
-      "linedepths with a cadence of 720 seconds."
-    ],
+    ["hmi.ld_720s", "linedepths with a cadence of 720 seconds."],
     [
       "hmi.ld_720s_dcon",
       "linedepths with a cadence of 720 seconds, constructed with hmi.lev1_dcon."
@@ -168,30 +108,12 @@
       "hmi.ld_720s_dcons",
       "linedepths with a cadence of 720 seconds, scattered light corrected."
     ],
-    [
-      "hmi.leakage",
-      "leakage matrices"
-    ],
-    [
-      "hmi.lev1_cal",
-      "HMI Level 1 Calibration Series"
-    ],
-    [
-      "hmi.lev1_dcon",
-      "HMI Level 1"
-    ],
-    [
-      "hmi.location_45s",
-      "WCS HMI location parameters for 45s products"
-    ],
-    [
-      "hmi.location_720s",
-      "HMI observer location parameters for 720s products"
-    ],
-    [
-      "hmi.lookup_chebycoef_bnoise",
-      "Btotal noise mask"
-    ],
+    ["hmi.leakage", "leakage matrices"],
+    ["hmi.lev1_cal", "HMI Level 1 Calibration Series"],
+    ["hmi.lev1_dcon", "HMI Level 1"],
+    ["hmi.location_45s", "WCS HMI location parameters for 45s products"],
+    ["hmi.location_720s", "HMI observer location parameters for 720s products"],
+    ["hmi.lookup_chebycoef_bnoise", "Btotal noise mask"],
     [
       "hmi.lookup_corrected_expanded",
       "This series contains lookup tables for MDI-like algorithm."
@@ -200,18 +122,12 @@
       "hmi.lookup_expanded",
       "This series contains lookup tables for MDI-like algorithm."
     ],
-    [
-      "hmi.lw_45s",
-      "linewidths with a cadence of 45 seconds."
-    ],
+    ["hmi.lw_45s", "linewidths with a cadence of 45 seconds."],
     [
       "hmi.lw_45s_dcon",
       "linewidths with a cadence of 45 seconds, constructed with hmi.lev1_dcon"
     ],
-    [
-      "hmi.lw_720s",
-      "linewidths with a cadence of 720 seconds."
-    ],
+    ["hmi.lw_720s", "linewidths with a cadence of 720 seconds."],
     [
       "hmi.lw_720s_dcon",
       "linewidths with a cadence of 720 seconds, constructed with hmi.lev1_dcon."
@@ -220,18 +136,12 @@
       "hmi.lw_720s_dcons",
       "linewidths with a cadence of 720 seconds, scattered light corrected."
     ],
-    [
-      "hmi.m_45s",
-      "magnetograms with a cadence of 45 seconds."
-    ],
+    ["hmi.m_45s", "magnetograms with a cadence of 45 seconds."],
     [
       "hmi.m_45s_dcon",
       "magnetograms with a cadence of 45 seconds, constructed with hmi.lev1_dcon"
     ],
-    [
-      "hmi.m_720s",
-      "magnetograms with a cadence of 720 seconds."
-    ],
+    ["hmi.m_720s", "magnetograms with a cadence of 720 seconds."],
     [
       "hmi.m_720s_dcon",
       "magnetograms with a cadence of 720 seconds, constructed with hmi.lev1_dcon."
@@ -240,42 +150,21 @@
       "hmi.m_720s_dcons",
       "magnetograms with a cadence of 720 seconds, scatter light corrected."
     ],
-    [
-      "hmi.m_720s_mod",
-      "magnetograms with a cadence of 720 seconds."
-    ],
+    ["hmi.m_720s_mod", "magnetograms with a cadence of 720 seconds."],
     [
       "hmi.m_720s_nrt",
       "Quick-look magnetograms with a cadence of 720 seconds."
     ],
-    [
-      "hmi.marmask_720s",
-      "Full disk active region mask (char)"
-    ],
-    [
-      "hmi.marmask_720s_nrt",
-      "Full disk active region mask (char)"
-    ],
-    [
-      "hmi.me_135s",
-      "Milne-Eddigton inversion"
-    ],
-    [
-      "hmi.me_5760s",
-      "96-minute Milne-Eddigton inversion"
-    ],
-    [
-      "hmi.me_720s_e15w1332",
-      "Full-disk Milne-Eddigton inversion"
-    ],
+    ["hmi.marmask_720s", "Full disk active region mask (char)"],
+    ["hmi.marmask_720s_nrt", "Full disk active region mask (char)"],
+    ["hmi.me_135s", "Milne-Eddigton inversion"],
+    ["hmi.me_5760s", "96-minute Milne-Eddigton inversion"],
+    ["hmi.me_720s_e15w1332", "Full-disk Milne-Eddigton inversion"],
     [
       "hmi.me_720s_e15w1332_harp",
       "Milne-Eddigton inversion for selected region(s)"
     ],
-    [
-      "hmi.me_720s_fd10",
-      "Milne-Eddigton inversion"
-    ],
+    ["hmi.me_720s_fd10", "Milne-Eddigton inversion"],
     [
       "hmi.me_720s_fd10_dcon",
       "Milne-Eddigton inversion, constructed with hmi.S_720s_dcon"
@@ -288,34 +177,16 @@
       "hmi.me_720s_fd10_harp_nrt",
       "Near Real Time Milne-Eddigton inversion for selected region(s)"
     ],
-    [
-      "hmi.me_720s_fd10_nrt",
-      "Milne-Eddigton inversion (Near Real Time)"
-    ],
-    [
-      "hmi.me_90s",
-      "Milne-Eddigton inversion"
-    ],
+    ["hmi.me_720s_fd10_nrt", "Milne-Eddigton inversion (Near Real Time)"],
+    ["hmi.me_90s", "Milne-Eddigton inversion"],
     [
       "hmi.meanpf_720s",
       "Mean polar field and AR field with a cadence of 720 seconds."
     ],
-    [
-      "hmi.meharp_720s",
-      "HARP for Milne-Eddington inversion"
-    ],
-    [
-      "hmi.meharp_720s_nrt",
-      "HARP for Milne-Eddigton inversion"
-    ],
-    [
-      "hmi.mharp_720s",
-      "HARP = HMI Active Region Patch"
-    ],
-    [
-      "hmi.mharp_720s_nrt",
-      "Quicklook HARP = HMI Active Region Patch"
-    ],
+    ["hmi.meharp_720s", "HARP for Milne-Eddington inversion"],
+    ["hmi.meharp_720s_nrt", "HARP for Milne-Eddigton inversion"],
+    ["hmi.mharp_720s", "HARP = HMI Active Region Patch"],
+    ["hmi.mharp_720s_nrt", "Quicklook HARP = HMI Active Region Patch"],
     [
       "hmi.mhdcorona",
       "Three-dimensional MHD simulation data with definitive HMI magnetic field map"
@@ -384,10 +255,7 @@
       "hmi.mrsynop_small_720s",
       "HMI synoptic chart of Mr field - small size map"
     ],
-    [
-      "hmi.offpoint_flatfield",
-      "HMI flat field"
-    ],
+    ["hmi.offpoint_flatfield", "HMI flat field"],
     [
       "hmi.pfss_synframe",
       "PFSS cubes from daily updated synchronic frames for Q-map computation, higher resolution Br computed at radius of Q-maps, and smoothed Br used as input"
@@ -400,10 +268,7 @@
       "hmi.phasemaps_extended",
       "This series contains Phase Maps of Tunable Elements for the extended mission."
     ],
-    [
-      "hmi.polar_db",
-      "HMI polar field database"
-    ],
+    ["hmi.polar_db", "HMI polar field database"],
     [
       "hmi.q_synframe",
       "Qmap computed from PFSS model using daily updated synchronic frame"
@@ -412,18 +277,9 @@
       "hmi.q_synop",
       "Qmap computed from PFSS model using full CR synoptic maps"
     ],
-    [
-      "hmi.rdmai_fd05",
-      "Magnetic Activity Index series for 5-deg tiles"
-    ],
-    [
-      "hmi.rdmai_fd15",
-      "Magnetic Activity Index series for 15-deg tiles"
-    ],
-    [
-      "hmi.rdmai_fd30",
-      "Magnetic Activity Index series for 30-deg tiles"
-    ],
+    ["hmi.rdmai_fd05", "Magnetic Activity Index series for 5-deg tiles"],
+    ["hmi.rdmai_fd15", "Magnetic Activity Index series for 15-deg tiles"],
+    ["hmi.rdmai_fd30", "Magnetic Activity Index series for 30-deg tiles"],
     [
       "hmi.rdvavgpspec_fd15",
       "Averages of power spectra of 15-deg cubes on ring-diagram synoptic grid over full CR"
@@ -496,18 +352,9 @@
       "hmi.rdvtrack_fd30",
       "30-deg Doppler cubes on ring-diagram synoptic grid tracked for 1/12 CR"
     ],
-    [
-      "hmi.s_135s",
-      "level 1p IQUV data averaged at a cadence of 135 seconds"
-    ],
-    [
-      "hmi.s_5760s",
-      "level 1p IQUV data averaged at a cadence of 96 minutes"
-    ],
-    [
-      "hmi.s_720s",
-      "level 1p IQUV data averaged at a cadence of 12 minutes"
-    ],
+    ["hmi.s_135s", "level 1p IQUV data averaged at a cadence of 135 seconds"],
+    ["hmi.s_5760s", "level 1p IQUV data averaged at a cadence of 96 minutes"],
+    ["hmi.s_720s", "level 1p IQUV data averaged at a cadence of 12 minutes"],
     [
       "hmi.s_720s_dcon",
       "level 1p IQUV data averaged at a cadence of 12 minutes, constructed with hmi.lev1_dcon"
@@ -516,10 +363,7 @@
       "hmi.s_720s_dcons",
       "level 1p IQUV data averaged at a cadence of 12 minutes, scattered light corrected"
     ],
-    [
-      "hmi.s_90s",
-      "level 1p IQUV data averaged at a cadence of 90 seconds"
-    ],
+    ["hmi.s_90s", "level 1p IQUV data averaged at a cadence of 90 seconds"],
     [
       "hmi.sharp_720s",
       "Spaceweather HMI Active Region Patch (SHARP): CCD coordinates"
@@ -572,26 +416,14 @@
       "hmi.synoptic_mr_small_720s_nrt",
       "HMI NRT synoptic chart of Mr field - small size map"
     ],
-    [
-      "hmi.td_fsi_12h",
-      "Time-Distance Far Side delta time maps, 12hr cadence"
-    ],
-    [
-      "hmi.tdkernels",
-      "time-distance inversion kernels"
-    ],
-    [
-      "hmi.tdpixlist",
-      "Target pixel lists for time-distance calculations"
-    ],
+    ["hmi.td_fsi_12h", "Time-Distance Far Side delta time maps, 12hr cadence"],
+    ["hmi.tdkernels", "time-distance inversion kernels"],
+    ["hmi.tdpixlist", "Target pixel lists for time-distance calculations"],
     [
       "hmi.tdvinvrt_synophc",
       "velocity and sound-speed inferred from time-distance helioseismology"
     ],
-    [
-      "hmi.tdvtimes_synophc",
-      "time-distance helioseismology travel times"
-    ],
+    ["hmi.tdvtimes_synophc", "time-distance helioseismology travel times"],
     [
       "hmi.tdvtrack_synophc",
       "Tracked mapped Doppler cubes at synoptic locations"
@@ -600,18 +432,12 @@
       "hmi.temperature_summary_300s",
       "Temperature Statistics from HMI Housekeeping - Thermal/PS voltage packet"
     ],
-    [
-      "hmi.v_45s",
-      "Dopplergrams with a cadence of 45 seconds"
-    ],
+    ["hmi.v_45s", "Dopplergrams with a cadence of 45 seconds"],
     [
       "hmi.v_45s_dcon",
       "Dopplergrams with a cadence of 45 seconds, constructed with hmi.lev1_dcon"
     ],
-    [
-      "hmi.v_720s",
-      "Dopplergrams with a cadence of 720 seconds"
-    ],
+    ["hmi.v_720s", "Dopplergrams with a cadence of 720 seconds"],
     [
       "hmi.v_720s_dcon",
       "Dopplergrams with a cadence of 720 seconds, constructed with hmi.lev1_dcon."
@@ -620,210 +446,75 @@
       "hmi.v_720s_dcons",
       "Dopplergrams with a cadence of 720 seconds, scattered light corrected."
     ],
-    [
-      "hmi.v_avg120",
-      "Temporal averages of HMI Vgrams over 1/3 CR"
-    ],
-    [
-      "hmi.v_sht_2drls",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "hmi.v_sht_2drls_asym",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "hmi.v_sht_72d",
-      "raw spherical harmonic timeseries"
-    ],
-    [
-      "hmi.v_sht_gaps_72d",
-      "window functions for raw timeseries"
-    ],
+    ["hmi.v_avg120", "Temporal averages of HMI Vgrams over 1/3 CR"],
+    ["hmi.v_sht_2drls", "2d rls inversions for rotation"],
+    ["hmi.v_sht_2drls_asym", "2d rls inversions for rotation"],
+    ["hmi.v_sht_72d", "raw spherical harmonic timeseries"],
+    ["hmi.v_sht_gaps_72d", "window functions for raw timeseries"],
     [
       "hmi.v_sht_gf_72d",
       "detrended and gapfilled spherical harmonic timeseries"
     ],
-    [
-      "hmi.v_sht_gf_gaps_72d",
-      "window functions for gapfilled timeseries"
-    ],
-    [
-      "hmi.v_sht_gf_gaps_retile",
-      "window functions for gapfilled timeseries"
-    ],
+    ["hmi.v_sht_gf_gaps_72d", "window functions for gapfilled timeseries"],
+    ["hmi.v_sht_gf_gaps_retile", "window functions for gapfilled timeseries"],
     [
       "hmi.v_sht_gf_retile",
       "retiled detrended and gapfilled spherical harmonic timeseries"
     ],
-    [
-      "hmi.v_sht_modes",
-      "mode parameters from jpkbgn"
-    ],
-    [
-      "hmi.v_sht_modes_archive",
-      "full results from jpkbgn"
-    ],
-    [
-      "hmi.v_sht_modes_asym",
-      "mode parameters from jpkbgn"
-    ],
-    [
-      "hmi.v_sht_modes_asym_archive",
-      "full results from jpkbgn"
-    ],
-    [
-      "hmi.v_sht_pow",
-      "power spectra computed after gapfilling"
-    ],
-    [
-      "hmi.v_sht_secs_72d",
-      "sections of data, discontinuities in between"
-    ],
+    ["hmi.v_sht_modes", "mode parameters from jpkbgn"],
+    ["hmi.v_sht_modes_archive", "full results from jpkbgn"],
+    ["hmi.v_sht_modes_asym", "mode parameters from jpkbgn"],
+    ["hmi.v_sht_modes_asym_archive", "full results from jpkbgn"],
+    ["hmi.v_sht_pow", "power spectra computed after gapfilling"],
+    ["hmi.v_sht_secs_72d", "sections of data, discontinuities in between"],
     [
       "hmi.vw_v_45s",
       "vw_V proxy (binned by a factor of 4, convolved with a gaussian with sigma=2.83, subsampled by a factor of 5)"
     ],
-    [
-      "hmi.vw_v_sht_2drls",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "hmi.vw_v_sht_72d",
-      "raw spherical harmonic timeseries"
-    ],
-    [
-      "hmi.vw_v_sht_gaps_72d",
-      "window functions for raw timeseries"
-    ],
+    ["hmi.vw_v_sht_2drls", "2d rls inversions for rotation"],
+    ["hmi.vw_v_sht_72d", "raw spherical harmonic timeseries"],
+    ["hmi.vw_v_sht_gaps_72d", "window functions for raw timeseries"],
     [
       "hmi.vw_v_sht_gf_72d",
       "detrended and gapfilled spherical harmonic timeseries"
     ],
-    [
-      "hmi.vw_v_sht_gf_gaps_72d",
-      "window functions for gapfilled timeseries"
-    ],
-    [
-      "hmi.vw_v_sht_modes",
-      "mode parameters from jpkbgn"
-    ],
-    [
-      "hmi.vw_v_sht_modes_archive",
-      "full results from jpkbgn"
-    ],
-    [
-      "hmi.vw_v_sht_pow",
-      "power spectra computed after gapfilling"
-    ],
-    [
-      "mdi.caltables_doppler",
-      "MDI calibration tables for dopplergrams"
-    ],
+    ["hmi.vw_v_sht_gf_gaps_72d", "window functions for gapfilled timeseries"],
+    ["hmi.vw_v_sht_modes", "mode parameters from jpkbgn"],
+    ["hmi.vw_v_sht_modes_archive", "full results from jpkbgn"],
+    ["hmi.vw_v_sht_pow", "power spectra computed after gapfilling"],
+    ["mdi.caltables_doppler", "MDI calibration tables for dopplergrams"],
     [
       "mdi.caltables_doppler_orig",
       "MDI calibration tables for [orig] dopplergrams"
     ],
-    [
-      "mdi.caltables_intensity",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "mdi.detune",
-      "MDI Calibration data"
-    ],
-    [
-      "mdi.eigenfunctions",
-      "eigenfuctions for performing inversions"
-    ],
-    [
-      "mdi.fd_i0",
-      "MDI Full Disk Continuum Filtergram"
-    ],
-    [
-      "mdi.fd_i0_extract",
-      "MDI High Resolution Continuum Filtergram Extract"
-    ],
-    [
-      "mdi.fd_ic",
-      "MDI Full Disk Intensity Continuum"
-    ],
-    [
-      "mdi.fd_ic_06h",
-      "MDI Full Disk Intensity Continuum, 6-hour cadence"
-    ],
-    [
-      "mdi.fd_ic_interp",
-      "MDI Full Disk 96m Interpolated Ic (flat)"
-    ],
-    [
-      "mdi.fd_ld",
-      "MDI Full Disk Line Depth"
-    ],
-    [
-      "mdi.fd_m_96m_lev182",
-      "MDI Full Disk 96m Magnetogram"
-    ],
-    [
-      "mdi.fd_m_extract",
-      "MDI Extracts of Full Disk Magnetograms"
-    ],
-    [
-      "mdi.fd_m_lev182",
-      "MDI Full Disk 01-m Magnetogram"
-    ],
-    [
-      "mdi.fd_marmask",
-      "MDI Full Disk 96m Activity Mask"
-    ],
-    [
-      "mdi.fd_spotmask",
-      "MDI Full Disk 96m Activity Mask"
-    ],
-    [
-      "mdi.fd_v",
-      "MDI Full Disk Dopplergram"
-    ],
-    [
-      "mdi.fd_v_bin2x2",
-      "MDI Full Disk 2x2 binned Dopplergram"
-    ],
-    [
-      "mdi.fd_v_extract",
-      "Extracts of MDI Full Disk Dopplergram"
-    ],
-    [
-      "mdi.fd_v_sht",
-      "raw spherical harmonic timeseries"
-    ],
-    [
-      "mdi.fd_v_sht_2drls",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "mdi.fd_v_sht_2drls_asym",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "mdi.fd_v_sht_gaps",
-      "window functions for raw timeseries"
-    ],
+    ["mdi.caltables_intensity", "MDI calibration tables for intensitygrams"],
+    ["mdi.detune", "MDI Calibration data"],
+    ["mdi.eigenfunctions", "eigenfuctions for performing inversions"],
+    ["mdi.fd_i0", "MDI Full Disk Continuum Filtergram"],
+    ["mdi.fd_i0_extract", "MDI High Resolution Continuum Filtergram Extract"],
+    ["mdi.fd_ic", "MDI Full Disk Intensity Continuum"],
+    ["mdi.fd_ic_06h", "MDI Full Disk Intensity Continuum, 6-hour cadence"],
+    ["mdi.fd_ic_interp", "MDI Full Disk 96m Interpolated Ic (flat)"],
+    ["mdi.fd_ld", "MDI Full Disk Line Depth"],
+    ["mdi.fd_m_96m_lev182", "MDI Full Disk 96m Magnetogram"],
+    ["mdi.fd_m_extract", "MDI Extracts of Full Disk Magnetograms"],
+    ["mdi.fd_m_lev182", "MDI Full Disk 01-m Magnetogram"],
+    ["mdi.fd_marmask", "MDI Full Disk 96m Activity Mask"],
+    ["mdi.fd_spotmask", "MDI Full Disk 96m Activity Mask"],
+    ["mdi.fd_v", "MDI Full Disk Dopplergram"],
+    ["mdi.fd_v_bin2x2", "MDI Full Disk 2x2 binned Dopplergram"],
+    ["mdi.fd_v_extract", "Extracts of MDI Full Disk Dopplergram"],
+    ["mdi.fd_v_sht", "raw spherical harmonic timeseries"],
+    ["mdi.fd_v_sht_2drls", "2d rls inversions for rotation"],
+    ["mdi.fd_v_sht_2drls_asym", "2d rls inversions for rotation"],
+    ["mdi.fd_v_sht_gaps", "window functions for raw timeseries"],
     [
       "mdi.fd_v_sht_gf",
       "detrended and gapfilled spherical harmonic timeseries"
     ],
-    [
-      "mdi.fd_v_sht_gf_gaps",
-      "window functions for gapfilled timeseries"
-    ],
-    [
-      "mdi.fd_v_sht_modes",
-      "mode parameters from jpkbgn"
-    ],
-    [
-      "mdi.fd_v_sht_modes_archive",
-      "full results from jpkbgn"
-    ],
+    ["mdi.fd_v_sht_gf_gaps", "window functions for gapfilled timeseries"],
+    ["mdi.fd_v_sht_modes", "mode parameters from jpkbgn"],
+    ["mdi.fd_v_sht_modes_archive", "full results from jpkbgn"],
     [
       "mdi.fd_v_sht_modes_asym",
       "mode parameters from jpkbgn with asymmetric fits"
@@ -832,90 +523,33 @@
       "mdi.fd_v_sht_modes_asym_archive",
       "full results from jpkbgn with asymmetric fits"
     ],
-    [
-      "mdi.fd_v_sht_pow",
-      "power spectra computed after gapfilling"
-    ],
-    [
-      "mdi.fd_v_sht_secs",
-      "sections of data, discontinuities in between"
-    ],
-    [
-      "mdi.fdv_avg120",
-      "Temporal averages of MDI full-disc Vgrams over 1/3 CR"
-    ],
-    [
-      "mdi.focus",
-      "MDI Calibration data: Focus sweeps"
-    ],
-    [
-      "mdi.hr_i0",
-      "MDI High Resolution Continuum Filtergram"
-    ],
-    [
-      "mdi.hr_ic",
-      "MDI High Resolution Intensity Continuum"
-    ],
-    [
-      "mdi.hr_ld",
-      "MDI High Resolution Line Depth"
-    ],
-    [
-      "mdi.hr_ld_bin2x2",
-      "MDI High Resolution Line Depth Binned 2x2"
-    ],
-    [
-      "mdi.hr_m",
-      "MDI High Resolution Magnetogram"
-    ],
-    [
-      "mdi.hr_m_bin2x2",
-      "MDI High Resolution Binned Magnetogram"
-    ],
-    [
-      "mdi.hr_v",
-      "MDI High Resolution Dopplergram"
-    ],
-    [
-      "mdi.hr_v_12s",
-      "MDI High Resolution High Cadence Dopplergram"
-    ],
-    [
-      "mdi.hr_v_bin2x2",
-      "MDI High Resolution 2x2 binned Dopplergram"
-    ],
-    [
-      "mdi.ice",
-      "MDI Calibration data: CCD quality"
-    ],
-    [
-      "mdi.leakage",
-      "leakage matrices"
-    ],
-    [
-      "mdi.limb_figure",
-      "MDI limb figure"
-    ],
-    [
-      "mdi.lostarp_96m",
-      "TARP for MDI data"
-    ],
+    ["mdi.fd_v_sht_pow", "power spectra computed after gapfilling"],
+    ["mdi.fd_v_sht_secs", "sections of data, discontinuities in between"],
+    ["mdi.fdv_avg120", "Temporal averages of MDI full-disc Vgrams over 1/3 CR"],
+    ["mdi.focus", "MDI Calibration data: Focus sweeps"],
+    ["mdi.hr_i0", "MDI High Resolution Continuum Filtergram"],
+    ["mdi.hr_ic", "MDI High Resolution Intensity Continuum"],
+    ["mdi.hr_ld", "MDI High Resolution Line Depth"],
+    ["mdi.hr_ld_bin2x2", "MDI High Resolution Line Depth Binned 2x2"],
+    ["mdi.hr_m", "MDI High Resolution Magnetogram"],
+    ["mdi.hr_m_bin2x2", "MDI High Resolution Binned Magnetogram"],
+    ["mdi.hr_v", "MDI High Resolution Dopplergram"],
+    ["mdi.hr_v_12s", "MDI High Resolution High Cadence Dopplergram"],
+    ["mdi.hr_v_bin2x2", "MDI High Resolution 2x2 binned Dopplergram"],
+    ["mdi.ice", "MDI Calibration data: CCD quality"],
+    ["mdi.leakage", "leakage matrices"],
+    ["mdi.limb_figure", "MDI limb figure"],
+    ["mdi.lostarp_96m", "TARP for MDI data"],
     [
       "mdi.meanpf_96m",
       "Mean polar field and AR field with a cadence of 96 minutes."
     ],
-    [
-      "mdi.mtarp",
-      "TARP = MDI Tracked Active Region Patch"
-    ],
+    ["mdi.mtarp", "TARP = MDI Tracked Active Region Patch"],
     [
       "mdi.pfss_synop",
       "PFSS cubes from full CR synoptic maps for Q-map computation, higher resolution Br computed at radius of Q-maps, and smoothed Br used as input"
     ],
-    [
-      "mdi.polar_db",
-      "MDI polar field database"
-    ],
+    ["mdi.polar_db", "MDI polar field database"],
     [
       "mdi.q_synop",
       "Qmap computed from PFSS model using full CR synoptic maps"
@@ -940,26 +574,11 @@
       "mdi.rdvtrack_dp",
       "16-deg Doppler cubes on dense-pack grid at MDI fd-res tracked for 1664 min at the Snodgrass rate"
     ],
-    [
-      "mdi.roll_table",
-      "MDI Roll Table"
-    ],
-    [
-      "mdi.rwbin_ic",
-      "MDI Binned 8x8 Full Disk Intensity Continuum"
-    ],
-    [
-      "mdi.rwbin_ld",
-      "MDI Binned 8x8 Full Disk Line Depth"
-    ],
-    [
-      "mdi.scale_corrections",
-      "MDI Scale Corrections Table"
-    ],
-    [
-      "mdi.sinrho_table",
-      "MDI sinrho fits file"
-    ],
+    ["mdi.roll_table", "MDI Roll Table"],
+    ["mdi.rwbin_ic", "MDI Binned 8x8 Full Disk Intensity Continuum"],
+    ["mdi.rwbin_ld", "MDI Binned 8x8 Full Disk Line Depth"],
+    ["mdi.scale_corrections", "MDI Scale Corrections Table"],
+    ["mdi.sinrho_table", "MDI sinrho fits file"],
     [
       "mdi.smarp_96m",
       "Spaceweather MDI Active Region Patch (SMARP) in CCD coordinates"
@@ -968,10 +587,7 @@
       "mdi.smarp_cea_96m",
       "Spaceweather MDI Active Region Patch (SMARP) in CEA coordinates"
     ],
-    [
-      "mdi.synoptic_ml_96m",
-      "MDI synoptic chart of Mlos field."
-    ],
+    ["mdi.synoptic_ml_96m", "MDI synoptic chart of Mlos field."],
     [
       "mdi.synoptic_ml_small_96m",
       "Small-size MDI synoptic chart of Mlos field."
@@ -988,34 +604,16 @@
       "mdi.synoptic_mr_small_96m",
       "Small size MDI synoptic chart of Mr field. Mr is converted from Mlos."
     ],
-    [
-      "mdi.vw_v",
-      "MDI Vector-Weighted Dopplergram"
-    ],
-    [
-      "mdi.vw_v_sht_2drls",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "mdi.vw_v_sht_2drls_asym",
-      "2d rls inversions for rotation"
-    ],
-    [
-      "mdi.vw_v_sht_72d",
-      "raw spherical harmonic timeseries"
-    ],
-    [
-      "mdi.vw_v_sht_gaps_72d",
-      "window functions for raw timeseries"
-    ],
+    ["mdi.vw_v", "MDI Vector-Weighted Dopplergram"],
+    ["mdi.vw_v_sht_2drls", "2d rls inversions for rotation"],
+    ["mdi.vw_v_sht_2drls_asym", "2d rls inversions for rotation"],
+    ["mdi.vw_v_sht_72d", "raw spherical harmonic timeseries"],
+    ["mdi.vw_v_sht_gaps_72d", "window functions for raw timeseries"],
     [
       "mdi.vw_v_sht_gf_72d",
       "detrended and gapfilled spherical harmonic timeseries"
     ],
-    [
-      "mdi.vw_v_sht_gf_gaps_72d",
-      "window functions for gapfilled timeseries"
-    ],
+    ["mdi.vw_v_sht_gf_gaps_72d", "window functions for gapfilled timeseries"],
     [
       "mdi.vw_v_sht_gf_gaps_retile",
       "window functions for gapfilled timeseries concatenated from mdi.vw_V_sht_gf_gaps_72d"
@@ -1024,14 +622,8 @@
       "mdi.vw_v_sht_gf_retile",
       "detrended and gapfilled spherical harmonic timeseries retiled from mdi.vw_V_sht_gf_72d"
     ],
-    [
-      "mdi.vw_v_sht_modes",
-      "mode parameters from jpkbgn"
-    ],
-    [
-      "mdi.vw_v_sht_modes_archive",
-      "full results from jpkbgn"
-    ],
+    ["mdi.vw_v_sht_modes", "mode parameters from jpkbgn"],
+    ["mdi.vw_v_sht_modes_archive", "full results from jpkbgn"],
     [
       "mdi.vw_v_sht_modes_asym",
       "mode parameters from jpkbgn with asymmetric fits"
@@ -1040,1067 +632,284 @@
       "mdi.vw_v_sht_modes_asym_archive",
       "full results from jpkbgn with asymmetric fits"
     ],
-    [
-      "mdi.vw_v_sht_pow",
-      "power spectra computed after gapfilling"
-    ],
-    [
-      "mdi.vw_v_sht_secs_72d",
-      "sections of data, discontinuities in between"
-    ]
+    ["mdi.vw_v_sht_pow", "power spectra computed after gapfilling"],
+    ["mdi.vw_v_sht_secs_72d", "sections of data, discontinuities in between"]
   ],
   "segments": [
-    [
-      "BAD_PIXEL",
-      "AIA permanently bad pixel list"
-    ],
-    [
-      "BAD_PIXEL",
-      "bad pixel array"
-    ],
-    [
-      "B_error",
-      "Error of B Strength"
-    ],
-    [
-      "Bp",
-      "0.0"
-    ],
-    [
-      "Bp",
-      "B_phi, positive westward"
-    ],
-    [
-      "Bp",
-      "PFSS cube for B_phi"
-    ],
-    [
-      "Bp",
-      "Remapped Bp component"
-    ],
-    [
-      "Bp_err",
-      "Standard deviation of B_phi"
-    ],
-    [
-      "Br",
-      "0.0"
-    ],
-    [
-      "Br",
-      "B_r, positive up"
-    ],
-    [
-      "Br",
-      "PFSS cube for B_r"
-    ],
-    [
-      "Br",
-      "Remapped Br component"
-    ],
-    [
-      "Br0",
-      "Input smoothed Br map at photosphere"
-    ],
-    [
-      "Br_err",
-      "Standard deviation of B_r"
-    ],
-    [
-      "Br_polfil",
-      "Br synoptic map with polar field correction"
-    ],
-    [
-      "Brq",
-      "PFSS cube at Q-map heights for B_r"
-    ],
-    [
-      "Bt",
-      "0.0"
-    ],
-    [
-      "Bt",
-      "B_theta, positive southward"
-    ],
-    [
-      "Bt",
-      "PFSS cube for B_theta"
-    ],
-    [
-      "Bt",
-      "Remapped Bt component"
-    ],
-    [
-      "Bt_err",
-      "Standard deviation of B_theta"
-    ],
-    [
-      "DARK",
-      "AIA dark frame image"
-    ],
-    [
-      "DARK",
-      "bias /dark"
-    ],
-    [
-      "Dopplergram",
-      "Dopplergram"
-    ],
-    [
-      "Dopplergram",
-      "Dopplergram in CEA projection"
-    ],
-    [
-      "GB",
-      "Gizon-Birch travel times"
-    ],
-    [
-      "I0",
-      "level 1p data; Stokes I @ WL 0"
-    ],
-    [
-      "I1",
-      "level 1p data; Stokes I @ WL 1"
-    ],
-    [
-      "I2",
-      "level 1p data; Stokes I @ WL 2"
-    ],
-    [
-      "I3",
-      "level 1p data; Stokes I @ WL 3"
-    ],
-    [
-      "I4",
-      "level 1p data; Stokes I @ WL 4"
-    ],
-    [
-      "I5",
-      "level 1p data; Stokes I @ WL 5"
-    ],
-    [
-      "Log",
-      "Tracking log"
-    ],
-    [
-      "Log",
-      "run log"
-    ],
-    [
-      "Mr_polfil",
-      "Mr synoptic map with polar field correction"
-    ],
-    [
-      "N",
-      "0.0"
-    ],
-    [
-      "OFFPOINT_FLAT",
-      "offpoint flatfield"
-    ],
-    [
-      "Q0",
-      "level 1p data; Stokes Q @ WL 0"
-    ],
-    [
-      "Q1",
-      "level 1p data; Stokes Q @ WL 1"
-    ],
-    [
-      "Q2",
-      "level 1p data; Stokes Q @ WL 2"
-    ],
-    [
-      "Q3",
-      "level 1p data; Stokes Q @ WL 3"
-    ],
-    [
-      "Q4",
-      "level 1p data; Stokes Q @ WL 4"
-    ],
-    [
-      "Q5",
-      "level 1p data; Stokes Q @ WL 5"
-    ],
-    [
-      "T",
-      "0.0"
-    ],
-    [
-      "U0",
-      "level 1p data; Stokes U @ WL 0"
-    ],
-    [
-      "U1",
-      "level 1p data; Stokes U @ WL 1"
-    ],
-    [
-      "U2",
-      "level 1p data; Stokes U @ WL 2"
-    ],
-    [
-      "U3",
-      "level 1p data; Stokes U @ WL 3"
-    ],
-    [
-      "U4",
-      "level 1p data; Stokes U @ WL 4"
-    ],
-    [
-      "U5",
-      "level 1p data; Stokes U @ WL 5"
-    ],
-    [
-      "Ux",
-      "Zonal velocity inversions"
-    ],
-    [
-      "Uy",
-      "Meridional velocity inversions"
-    ],
-    [
-      "V",
-      "Binned HMI Dopplergram"
-    ],
-    [
-      "V",
-      "Tracked Data Cube"
-    ],
-    [
-      "V",
-      "Tracked data cube"
-    ],
-    [
-      "V0",
-      "level 1p data; Stokes V @ WL 0"
-    ],
-    [
-      "V1",
-      "level 1p data; Stokes V @ WL 1"
-    ],
-    [
-      "V2",
-      "level 1p data; Stokes V @ WL 2"
-    ],
-    [
-      "V3",
-      "level 1p data; Stokes V @ WL 3"
-    ],
-    [
-      "V4",
-      "level 1p data; Stokes V @ WL 4"
-    ],
-    [
-      "V5",
-      "level 1p data; Stokes V @ WL 5"
-    ],
-    [
-      "Vp",
-      "0.0"
-    ],
-    [
-      "Vr",
-      "0.0"
-    ],
-    [
-      "Vt",
-      "0.0"
-    ],
-    [
-      "alpha_err",
-      " Alpha_Err"
-    ],
-    [
-      "alpha_err",
-      "std of Alpha_Err"
-    ],
-    [
-      "alpha_mag",
-      "Filling Factor with Field"
-    ],
-    [
-      "archive",
-      "tar file containing the full results from all iterations"
-    ],
-    [
-      "azimuth",
-      "Azimuth"
-    ],
-    [
-      "azimuth",
-      "Azimuth before disambiguation"
-    ],
-    [
-      "azimuth",
-      "Azimuth, 0 to 360, 0 up in image, increasing CCW"
-    ],
-    [
-      "azimuth_alpha_err",
-      "Azimuth_Alpha_Err"
-    ],
-    [
-      "azimuth_alpha_err",
-      "cor.coef of Azimuth_Alpha_Err"
-    ],
-    [
-      "azimuth_err",
-      "Azimuth_Err"
-    ],
-    [
-      "azimuth_err",
-      "Standard deviation of azimuth"
-    ],
-    [
-      "azimuth_err",
-      "std of Azimuth_Err"
-    ],
-    [
-      "bad_pixel",
-      "bad pixel list"
-    ],
-    [
-      "bad_pixel_list",
-      "HMI permanently bad pixel list"
-    ],
-    [
-      "bitmap",
-      "Bitmap for the patch"
-    ],
-    [
-      "bitmap",
-      "Mask for the patch"
-    ],
-    [
-      "bitmap",
-      "Mask for the patch in CCD coordinates"
-    ],
-    [
-      "bitmap",
-      "Mask for the patch in CEA coordinates"
-    ],
-    [
-      "chisq",
-      "Chi square"
-    ],
-    [
-      "chisq",
-      "Chisq"
-    ],
-    [
-      "chmap",
-      "Coronal hole map at lowest layer"
-    ],
-    [
-      "conf_disambig",
-      "Confidence index for disambiguation result"
-    ],
-    [
-      "conf_disambig",
-      "Confidence of disambiguation result"
-    ],
-    [
-      "conf_disambig",
-      "confidence of disambiguation result"
-    ],
-    [
-      "confid_map",
-      "Confidence index"
-    ],
-    [
-      "confid_map",
-      "Updated confidence index"
-    ],
-    [
-      "confid_map",
-      "confidence index"
-    ],
-    [
-      "confid_map",
-      "updated confidence index"
-    ],
-    [
-      "continuum",
-      "Intensitygram in CEA projection"
-    ],
-    [
-      "continuum",
-      "MDI Intensitygram"
-    ],
-    [
-      "continuum",
-      "MDI Intensitygram in CCD projection"
-    ],
-    [
-      "continuum",
-      "MDI Intensitygram in CEA projection"
-    ],
-    [
-      "continuum",
-      "Original continuum intensity"
-    ],
-    [
-      "continuum",
-      "Original intensity"
-    ],
-    [
-      "continuum",
-      "continuum intensity"
-    ],
-    [
-      "continuum1",
-      "Continuum intensity (prior)"
-    ],
-    [
-      "continuum2",
-      "Continuum intensity (later)"
-    ],
-    [
-      "conv_flag",
-      "Convergence flag and index"
-    ],
-    [
-      "conv_flag",
-      "convergence flag and index"
-    ],
-    [
-      "conv_flag",
-      "flag and index of ME-inversion convergence process"
-    ],
-    [
-      "cs",
-      "0.0"
-    ],
-    [
-      "cs",
-      "sound speed"
-    ],
-    [
-      "damping",
-      "Damping"
-    ],
-    [
-      "data",
-      "0"
-    ],
-    [
-      "data",
-      "0.0"
-    ],
-    [
-      "data",
-      "0.000000"
-    ],
-    [
-      "data",
-      "Camera value"
-    ],
-    [
-      "data",
-      "Extracts of Full Disk MDI Dopplergram "
-    ],
-    [
-      "data",
-      "MDI Binned 8x8 Full Disk Intensity Continuum"
-    ],
-    [
-      "data",
-      "MDI Binned 8x8 Full Disk Line Depth"
-    ],
-    [
-      "data",
-      "MDI Dopplergram"
-    ],
-    [
-      "data",
-      "MDI Extracts of Full Disk Magnetograms"
-    ],
-    [
-      "data",
-      "MDI Full Disk 2x2 binned Dopplergram"
-    ],
-    [
-      "data",
-      "MDI Full Disk Continuum Filtergram"
-    ],
-    [
-      "data",
-      "MDI Full Disk Intensity Continuum"
-    ],
-    [
-      "data",
-      "MDI Full Disk Line Depth"
-    ],
-    [
-      "data",
-      "MDI High Resolution 2x2 binned Dopplergram"
-    ],
-    [
-      "data",
-      "MDI High Resolution Binned Magnetogram"
-    ],
-    [
-      "data",
-      "MDI High Resolution Continuum Filtergram"
-    ],
-    [
-      "data",
-      "MDI High Resolution Continuum Filtergram Extract"
-    ],
-    [
-      "data",
-      "MDI High Resolution Dopplergram"
-    ],
-    [
-      "data",
-      "MDI High Resolution High Cadence Dopplergram"
-    ],
-    [
-      "data",
-      "MDI High Resolution Intensity Continuum"
-    ],
-    [
-      "data",
-      "MDI High Resolution Line Depth"
-    ],
-    [
-      "data",
-      "MDI High Resolution Line Depth Binned 2x2"
-    ],
-    [
-      "data",
-      "MDI High Resolution Magnetogram"
-    ],
-    [
-      "data",
-      "MDI Magnetogram"
-    ],
-    [
-      "data",
-      "MDI Roll Table"
-    ],
-    [
-      "data",
-      "MDI Scale Corrections Table"
-    ],
-    [
-      "data",
-      "MDI limb figure"
-    ],
-    [
-      "data",
-      "MDI sinrho fits file"
-    ],
-    [
-      "data",
-      "Remapped Mr converted from Mlos"
-    ],
-    [
-      "data",
-      "Smoothed synoptic map of polar region"
-    ],
-    [
-      "data",
-      "Time-Distance travel time residual"
-    ],
-    [
-      "data",
-      "spherical harmonic timeseries"
-    ],
-    [
-      "data0",
-      "MDI calibration tables for [orig] dopplergrams"
-    ],
-    [
-      "data0",
-      "MDI calibration tables for dopplergrams"
-    ],
-    [
-      "data0",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "data1",
-      "MDI calibration tables for [orig] dopplergrams"
-    ],
-    [
-      "data1",
-      "MDI calibration tables for dopplergrams"
-    ],
-    [
-      "data1",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "data2",
-      "MDI calibration tables for [orig] dopplergrams"
-    ],
-    [
-      "data2",
-      "MDI calibration tables for dopplergrams"
-    ],
-    [
-      "data2",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "data3",
-      "MDI calibration tables for [orig] dopplergrams"
-    ],
-    [
-      "data3",
-      "MDI calibration tables for dopplergrams"
-    ],
-    [
-      "data3",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "data4",
-      "MDI calibration tables for [orig] dopplergrams"
-    ],
-    [
-      "data4",
-      "MDI calibration tables for dopplergrams"
-    ],
-    [
-      "data4",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "data5",
-      "MDI calibration tables for [orig] dopplergrams"
-    ],
-    [
-      "data5",
-      "MDI calibration tables for dopplergrams"
-    ],
-    [
-      "data5",
-      "MDI calibration tables for intensitygrams"
-    ],
-    [
-      "data_raw",
-      "Original synoptic map of polar region"
-    ],
+    ["BAD_PIXEL", "AIA permanently bad pixel list"],
+    ["BAD_PIXEL", "bad pixel array"],
+    ["B_error", "Error of B Strength"],
+    ["Bp", "0.0"],
+    ["Bp", "B_phi, positive westward"],
+    ["Bp", "PFSS cube for B_phi"],
+    ["Bp", "Remapped Bp component"],
+    ["Bp_err", "Standard deviation of B_phi"],
+    ["Br", "0.0"],
+    ["Br", "B_r, positive up"],
+    ["Br", "PFSS cube for B_r"],
+    ["Br", "Remapped Br component"],
+    ["Br0", "Input smoothed Br map at photosphere"],
+    ["Br_err", "Standard deviation of B_r"],
+    ["Br_polfil", "Br synoptic map with polar field correction"],
+    ["Brq", "PFSS cube at Q-map heights for B_r"],
+    ["Bt", "0.0"],
+    ["Bt", "B_theta, positive southward"],
+    ["Bt", "PFSS cube for B_theta"],
+    ["Bt", "Remapped Bt component"],
+    ["Bt_err", "Standard deviation of B_theta"],
+    ["DARK", "AIA dark frame image"],
+    ["DARK", "bias /dark"],
+    ["Dopplergram", "Dopplergram"],
+    ["Dopplergram", "Dopplergram in CEA projection"],
+    ["GB", "Gizon-Birch travel times"],
+    ["I0", "level 1p data; Stokes I @ WL 0"],
+    ["I1", "level 1p data; Stokes I @ WL 1"],
+    ["I2", "level 1p data; Stokes I @ WL 2"],
+    ["I3", "level 1p data; Stokes I @ WL 3"],
+    ["I4", "level 1p data; Stokes I @ WL 4"],
+    ["I5", "level 1p data; Stokes I @ WL 5"],
+    ["Log", "Tracking log"],
+    ["Log", "run log"],
+    ["Mr_polfil", "Mr synoptic map with polar field correction"],
+    ["N", "0.0"],
+    ["OFFPOINT_FLAT", "offpoint flatfield"],
+    ["Q0", "level 1p data; Stokes Q @ WL 0"],
+    ["Q1", "level 1p data; Stokes Q @ WL 1"],
+    ["Q2", "level 1p data; Stokes Q @ WL 2"],
+    ["Q3", "level 1p data; Stokes Q @ WL 3"],
+    ["Q4", "level 1p data; Stokes Q @ WL 4"],
+    ["Q5", "level 1p data; Stokes Q @ WL 5"],
+    ["T", "0.0"],
+    ["U0", "level 1p data; Stokes U @ WL 0"],
+    ["U1", "level 1p data; Stokes U @ WL 1"],
+    ["U2", "level 1p data; Stokes U @ WL 2"],
+    ["U3", "level 1p data; Stokes U @ WL 3"],
+    ["U4", "level 1p data; Stokes U @ WL 4"],
+    ["U5", "level 1p data; Stokes U @ WL 5"],
+    ["Ux", "Zonal velocity inversions"],
+    ["Uy", "Meridional velocity inversions"],
+    ["V", "Binned HMI Dopplergram"],
+    ["V", "Tracked Data Cube"],
+    ["V", "Tracked data cube"],
+    ["V0", "level 1p data; Stokes V @ WL 0"],
+    ["V1", "level 1p data; Stokes V @ WL 1"],
+    ["V2", "level 1p data; Stokes V @ WL 2"],
+    ["V3", "level 1p data; Stokes V @ WL 3"],
+    ["V4", "level 1p data; Stokes V @ WL 4"],
+    ["V5", "level 1p data; Stokes V @ WL 5"],
+    ["Vp", "0.0"],
+    ["Vr", "0.0"],
+    ["Vt", "0.0"],
+    ["alpha_err", " Alpha_Err"],
+    ["alpha_err", "std of Alpha_Err"],
+    ["alpha_mag", "Filling Factor with Field"],
+    ["archive", "tar file containing the full results from all iterations"],
+    ["azimuth", "Azimuth"],
+    ["azimuth", "Azimuth before disambiguation"],
+    ["azimuth", "Azimuth, 0 to 360, 0 up in image, increasing CCW"],
+    ["azimuth_alpha_err", "Azimuth_Alpha_Err"],
+    ["azimuth_alpha_err", "cor.coef of Azimuth_Alpha_Err"],
+    ["azimuth_err", "Azimuth_Err"],
+    ["azimuth_err", "Standard deviation of azimuth"],
+    ["azimuth_err", "std of Azimuth_Err"],
+    ["bad_pixel", "bad pixel list"],
+    ["bad_pixel_list", "HMI permanently bad pixel list"],
+    ["bitmap", "Bitmap for the patch"],
+    ["bitmap", "Mask for the patch"],
+    ["bitmap", "Mask for the patch in CCD coordinates"],
+    ["bitmap", "Mask for the patch in CEA coordinates"],
+    ["chisq", "Chi square"],
+    ["chisq", "Chisq"],
+    ["chmap", "Coronal hole map at lowest layer"],
+    ["conf_disambig", "Confidence index for disambiguation result"],
+    ["conf_disambig", "Confidence of disambiguation result"],
+    ["conf_disambig", "confidence of disambiguation result"],
+    ["confid_map", "Confidence index"],
+    ["confid_map", "Updated confidence index"],
+    ["confid_map", "confidence index"],
+    ["confid_map", "updated confidence index"],
+    ["continuum", "Intensitygram in CEA projection"],
+    ["continuum", "MDI Intensitygram"],
+    ["continuum", "MDI Intensitygram in CCD projection"],
+    ["continuum", "MDI Intensitygram in CEA projection"],
+    ["continuum", "Original continuum intensity"],
+    ["continuum", "Original intensity"],
+    ["continuum", "continuum intensity"],
+    ["continuum1", "Continuum intensity (prior)"],
+    ["continuum2", "Continuum intensity (later)"],
+    ["conv_flag", "Convergence flag and index"],
+    ["conv_flag", "convergence flag and index"],
+    ["conv_flag", "flag and index of ME-inversion convergence process"],
+    ["cs", "0.0"],
+    ["cs", "sound speed"],
+    ["damping", "Damping"],
+    ["data", "0"],
+    ["data", "0.0"],
+    ["data", "0.000000"],
+    ["data", "Camera value"],
+    ["data", "Extracts of Full Disk MDI Dopplergram "],
+    ["data", "MDI Binned 8x8 Full Disk Intensity Continuum"],
+    ["data", "MDI Binned 8x8 Full Disk Line Depth"],
+    ["data", "MDI Dopplergram"],
+    ["data", "MDI Extracts of Full Disk Magnetograms"],
+    ["data", "MDI Full Disk 2x2 binned Dopplergram"],
+    ["data", "MDI Full Disk Continuum Filtergram"],
+    ["data", "MDI Full Disk Intensity Continuum"],
+    ["data", "MDI Full Disk Line Depth"],
+    ["data", "MDI High Resolution 2x2 binned Dopplergram"],
+    ["data", "MDI High Resolution Binned Magnetogram"],
+    ["data", "MDI High Resolution Continuum Filtergram"],
+    ["data", "MDI High Resolution Continuum Filtergram Extract"],
+    ["data", "MDI High Resolution Dopplergram"],
+    ["data", "MDI High Resolution High Cadence Dopplergram"],
+    ["data", "MDI High Resolution Intensity Continuum"],
+    ["data", "MDI High Resolution Line Depth"],
+    ["data", "MDI High Resolution Line Depth Binned 2x2"],
+    ["data", "MDI High Resolution Magnetogram"],
+    ["data", "MDI Magnetogram"],
+    ["data", "MDI Roll Table"],
+    ["data", "MDI Scale Corrections Table"],
+    ["data", "MDI limb figure"],
+    ["data", "MDI sinrho fits file"],
+    ["data", "Remapped Mr converted from Mlos"],
+    ["data", "Smoothed synoptic map of polar region"],
+    ["data", "Time-Distance travel time residual"],
+    ["data", "spherical harmonic timeseries"],
+    ["data0", "MDI calibration tables for [orig] dopplergrams"],
+    ["data0", "MDI calibration tables for dopplergrams"],
+    ["data0", "MDI calibration tables for intensitygrams"],
+    ["data1", "MDI calibration tables for [orig] dopplergrams"],
+    ["data1", "MDI calibration tables for dopplergrams"],
+    ["data1", "MDI calibration tables for intensitygrams"],
+    ["data2", "MDI calibration tables for [orig] dopplergrams"],
+    ["data2", "MDI calibration tables for dopplergrams"],
+    ["data2", "MDI calibration tables for intensitygrams"],
+    ["data3", "MDI calibration tables for [orig] dopplergrams"],
+    ["data3", "MDI calibration tables for dopplergrams"],
+    ["data3", "MDI calibration tables for intensitygrams"],
+    ["data4", "MDI calibration tables for [orig] dopplergrams"],
+    ["data4", "MDI calibration tables for dopplergrams"],
+    ["data4", "MDI calibration tables for intensitygrams"],
+    ["data5", "MDI calibration tables for [orig] dopplergrams"],
+    ["data5", "MDI calibration tables for dopplergrams"],
+    ["data5", "MDI calibration tables for intensitygrams"],
+    ["data_raw", "Original synoptic map of polar region"],
     [
       "dir",
       "directory containing 4 fits files: leakhi1.fits  leakhr1.fits  leakri1.fits  leakrr1.fits"
     ],
-    [
-      "disambig",
-      "Flag for 180 degree change in azimuth"
-    ],
-    [
-      "dop_width",
-      "Doppler Width"
-    ],
-    [
-      "dopplergram",
-      "vector-weighted dopplergram"
-    ],
-    [
-      "efunc",
-      " "
-    ],
-    [
-      "epts",
-      "0.0"
-    ],
-    [
-      "err",
-      "errors"
-    ],
-    [
-      "eta_0",
-      "Eta_0"
-    ],
-    [
-      "field",
-      "Field Strength"
-    ],
-    [
-      "field",
-      "Total field strength"
-    ],
-    [
-      "field_alpha_err",
-      "Field_Alpha_Err"
-    ],
-    [
-      "field_alpha_err",
-      "cor.coef of Field_Alpha_Err"
-    ],
-    [
-      "field_az_err",
-      "Correlation coefficient between field and azimuth"
-    ],
-    [
-      "field_az_err",
-      "Field_azimuth_Err"
-    ],
-    [
-      "field_az_err",
-      "cor.coef of Field_azimuth_Err"
-    ],
-    [
-      "field_err",
-      "Field_Err"
-    ],
-    [
-      "field_err",
-      "Standard deviation of total field strength"
-    ],
-    [
-      "field_err",
-      "std of Field_Err"
-    ],
+    ["disambig", "Flag for 180 degree change in azimuth"],
+    ["dop_width", "Doppler Width"],
+    ["dopplergram", "vector-weighted dopplergram"],
+    ["efunc", " "],
+    ["epts", "0.0"],
+    ["err", "errors"],
+    ["eta_0", "Eta_0"],
+    ["field", "Field Strength"],
+    ["field", "Total field strength"],
+    ["field_alpha_err", "Field_Alpha_Err"],
+    ["field_alpha_err", "cor.coef of Field_Alpha_Err"],
+    ["field_az_err", "Correlation coefficient between field and azimuth"],
+    ["field_az_err", "Field_azimuth_Err"],
+    ["field_az_err", "cor.coef of Field_azimuth_Err"],
+    ["field_err", "Field_Err"],
+    ["field_err", "Standard deviation of total field strength"],
+    ["field_err", "std of Field_Err"],
     [
       "field_inclination_err",
       "Correlation coefficient between field and inclination"
     ],
-    [
-      "field_inclination_err",
-      "Field_Inclination_Err"
-    ],
-    [
-      "field_inclination_err",
-      "cor.coef of Field_Inclination_Err"
-    ],
-    [
-      "fit.out",
-      "fit parameters"
-    ],
-    [
-      "flatfield",
-      "0.000000"
-    ],
-    [
-      "flatfield",
-      "AIA flatfield correction image"
-    ],
-    [
-      "gabor",
-      "Gabor wavelet travel times"
-    ],
-    [
-      "gaps",
-      "zero for bad data, nonzero for good"
-    ],
+    ["field_inclination_err", "Field_Inclination_Err"],
+    ["field_inclination_err", "cor.coef of Field_Inclination_Err"],
+    ["fit.out", "fit parameters"],
+    ["flatfield", "0.000000"],
+    ["flatfield", "AIA flatfield correction image"],
+    ["gabor", "Gabor wavelet travel times"],
+    ["gaps", "zero for bad data, nonzero for good"],
     [
       "gh",
       "Coefficients for spherical harmonics, see http://wso.stanford.edu/words/pfss.pdf"
     ],
-    [
-      "image",
-      "AIA level 1 image"
-    ],
-    [
-      "image",
-      "Stereographic view of smoothed polar data"
-    ],
-    [
-      "image_lev1",
-      "lev1 image fits file"
-    ],
-    [
-      "image_raw",
-      "Stereographic view of original polar data"
-    ],
+    ["image", "AIA level 1 image"],
+    ["image", "Stereographic view of smoothed polar data"],
+    ["image_lev1", "lev1 image fits file"],
+    ["image_raw", "Stereographic view of original polar data"],
     [
       "inclin_azimuth_err",
       "Correlation coefficient between inclination and azimuth"
     ],
-    [
-      "inclin_azimuth_err",
-      "Inclination_Azimuth_Err"
-    ],
-    [
-      "inclin_azimuth_err",
-      "cor.coef of Inclination_Azimuth_Err"
-    ],
-    [
-      "inclination",
-      "Inclination"
-    ],
-    [
-      "inclination",
-      "Inclination angle, 0 to 180, 0 out from plane of sky"
-    ],
-    [
-      "inclination_alpha_err",
-      "Inclination_Alpha_Err"
-    ],
-    [
-      "inclination_alpha_err",
-      "cor.coef of Inclination_Alpha_Err"
-    ],
-    [
-      "inclination_err",
-      "Inclination_Err"
-    ],
-    [
-      "inclination_err",
-      "Standard deviation of inclination"
-    ],
-    [
-      "inclination_err",
-      "std of Inclination_Err"
-    ],
-    [
-      "info_map",
-      "Quality map"
-    ],
-    [
-      "info_map",
-      "Updated quality map"
-    ],
-    [
-      "info_map",
-      "updated quality map"
-    ],
-    [
-      "kernel",
-      "inversion kernel file"
-    ],
-    [
-      "lat",
-      "Carrington latitude"
-    ],
-    [
-      "linedepth",
-      "linedepth"
-    ],
-    [
-      "linewidth",
-      "linewidth"
-    ],
-    [
-      "log",
-      "standard output"
-    ],
-    [
-      "logP",
-      "Mean power spectral density"
-    ],
-    [
-      "logP",
-      "Power spectral density"
-    ],
-    [
-      "lon",
-      "Carrington longitude"
-    ],
-    [
-      "lookup",
-      "0"
-    ],
-    [
-      "m18",
-      "18 a-coeffient fits"
-    ],
-    [
-      "m36",
-      "36 a-coeffient fits"
-    ],
-    [
-      "m6",
-      "6 a-coeffient fits"
-    ],
-    [
-      "magnetogram",
-      "Line-of-sight magnetogram in CCD projection"
-    ],
-    [
-      "magnetogram",
-      "Line-of-sight magnetogram in CEA projection"
-    ],
-    [
-      "magnetogram",
-      "Original magnetogram"
-    ],
-    [
-      "magnetogram",
-      "Reference magnetogram"
-    ],
-    [
-      "magnetogram",
-      "magnetogram"
-    ],
-    [
-      "mask",
-      "Activity mask"
-    ],
-    [
-      "mask",
-      "Full disk AR mask"
-    ],
-    [
-      "mask",
-      "Full disk magnetic activity mask"
-    ],
-    [
-      "mask",
-      "MDI Activity Mask"
-    ],
-    [
-      "mean",
-      "Continuum intensity mean"
-    ],
-    [
-      "mean",
-      "Doppler mean"
-    ],
-    [
-      "mesh",
-      "radial grid points"
-    ],
-    [
-      "mf_bl",
-      "Mean Bl in 1 deg latitude bins, numerical average"
-    ],
-    [
-      "mf_br",
-      "Mean Br in 1 deg latitude bins, weighted average (1/mu)"
-    ],
-    [
-      "noconvergence",
-      "quality flag: 0=convergence, 1=no convergence"
-    ],
-    [
-      "num",
-      "Total pixel number in 1 deg latitude bins"
-    ],
-    [
-      "offpoint_flatfield",
-      "0"
-    ],
-    [
-      "parms",
-      "input parameters"
-    ],
-    [
-      "phase",
-      "0"
-    ],
-    [
-      "phases",
-      "0"
-    ],
-    [
-      "power",
-      "Continuum intensity power"
-    ],
-    [
-      "power",
-      "Doppler power"
-    ],
-    [
-      "pxloc.ascii",
-      "point-to-point pixel pairs (ASCII)"
-    ],
-    [
-      "pxloc.binary",
-      "point-to-point pixel pairs (binary)"
-    ],
-    [
-      "pxloc.fortran",
-      "point-to-point pixel pairs (FORTRAN unformatted)"
-    ],
-    [
-      "qual_map",
-      "quality map"
-    ],
-    [
-      "rot",
-      "rotation profile"
-    ],
-    [
-      "slogQ",
-      "Signed log of Q at different heights"
-    ],
-    [
-      "spikes",
-      "Cosmic ray information"
-    ],
-    [
-      "spikes",
-      "spiked pixel list"
-    ],
-    [
-      "split",
-      "calculated splittings"
-    ],
-    [
-      "spot",
-      "Full disk sunspot mask"
-    ],
-    [
-      "src_continuum",
-      "Continuum"
-    ],
-    [
-      "src_grad",
-      "Gradient"
-    ],
-    [
-      "synopMl",
-      "0.0"
-    ],
-    [
-      "synopMr",
-      "0.0"
-    ],
-    [
-      "targets",
-      "target locations"
-    ],
-    [
-      "times",
-      "sub-annulus travel times"
-    ],
-    [
-      "valid",
-      "valid pixel count"
-    ],
-    [
-      "vlos_err",
-      "VLos_Err"
-    ],
-    [
-      "vlos_err",
-      "std of VLos_Err"
-    ],
-    [
-      "vlos_mag",
-      "LOS Velocity with Field"
-    ],
-    [
-      "vx",
-      "0.0"
-    ],
-    [
-      "vx",
-      "zonal velocity component"
-    ],
-    [
-      "vy",
-      "0.0"
-    ],
-    [
-      "vy",
-      "meridional velocity component"
-    ],
-    [
-      "vz",
-      "0.0"
-    ],
-    [
-      "vz",
-      "radial velocity component"
-    ],
-    [
-      "w",
-      "Total of 1/mu in 1 deg latitude bins"
-    ]
+    ["inclin_azimuth_err", "Inclination_Azimuth_Err"],
+    ["inclin_azimuth_err", "cor.coef of Inclination_Azimuth_Err"],
+    ["inclination", "Inclination"],
+    ["inclination", "Inclination angle, 0 to 180, 0 out from plane of sky"],
+    ["inclination_alpha_err", "Inclination_Alpha_Err"],
+    ["inclination_alpha_err", "cor.coef of Inclination_Alpha_Err"],
+    ["inclination_err", "Inclination_Err"],
+    ["inclination_err", "Standard deviation of inclination"],
+    ["inclination_err", "std of Inclination_Err"],
+    ["info_map", "Quality map"],
+    ["info_map", "Updated quality map"],
+    ["info_map", "updated quality map"],
+    ["kernel", "inversion kernel file"],
+    ["lat", "Carrington latitude"],
+    ["linedepth", "linedepth"],
+    ["linewidth", "linewidth"],
+    ["log", "standard output"],
+    ["logP", "Mean power spectral density"],
+    ["logP", "Power spectral density"],
+    ["lon", "Carrington longitude"],
+    ["lookup", "0"],
+    ["m18", "18 a-coeffient fits"],
+    ["m36", "36 a-coeffient fits"],
+    ["m6", "6 a-coeffient fits"],
+    ["magnetogram", "Line-of-sight magnetogram in CCD projection"],
+    ["magnetogram", "Line-of-sight magnetogram in CEA projection"],
+    ["magnetogram", "Original magnetogram"],
+    ["magnetogram", "Reference magnetogram"],
+    ["magnetogram", "magnetogram"],
+    ["mask", "Activity mask"],
+    ["mask", "Full disk AR mask"],
+    ["mask", "Full disk magnetic activity mask"],
+    ["mask", "MDI Activity Mask"],
+    ["mean", "Continuum intensity mean"],
+    ["mean", "Doppler mean"],
+    ["mesh", "radial grid points"],
+    ["mf_bl", "Mean Bl in 1 deg latitude bins, numerical average"],
+    ["mf_br", "Mean Br in 1 deg latitude bins, weighted average (1/mu)"],
+    ["noconvergence", "quality flag: 0=convergence, 1=no convergence"],
+    ["num", "Total pixel number in 1 deg latitude bins"],
+    ["offpoint_flatfield", "0"],
+    ["parms", "input parameters"],
+    ["phase", "0"],
+    ["phases", "0"],
+    ["power", "Continuum intensity power"],
+    ["power", "Doppler power"],
+    ["pxloc.ascii", "point-to-point pixel pairs (ASCII)"],
+    ["pxloc.binary", "point-to-point pixel pairs (binary)"],
+    ["pxloc.fortran", "point-to-point pixel pairs (FORTRAN unformatted)"],
+    ["qual_map", "quality map"],
+    ["rot", "rotation profile"],
+    ["slogQ", "Signed log of Q at different heights"],
+    ["spikes", "Cosmic ray information"],
+    ["spikes", "spiked pixel list"],
+    ["split", "calculated splittings"],
+    ["spot", "Full disk sunspot mask"],
+    ["src_continuum", "Continuum"],
+    ["src_grad", "Gradient"],
+    ["synopMl", "0.0"],
+    ["synopMr", "0.0"],
+    ["targets", "target locations"],
+    ["times", "sub-annulus travel times"],
+    ["valid", "valid pixel count"],
+    ["vlos_err", "VLos_Err"],
+    ["vlos_err", "std of VLos_Err"],
+    ["vlos_mag", "LOS Velocity with Field"],
+    ["vx", "0.0"],
+    ["vx", "zonal velocity component"],
+    ["vy", "0.0"],
+    ["vy", "meridional velocity component"],
+    ["vz", "0.0"],
+    ["vz", "radial velocity component"],
+    ["w", "Total of 1/mu in 1 deg latitude bins"]
   ]
 }

@@ -3,14 +3,14 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
-      - '*.*'
-      - '!*backport*'
+      - "main"
+      - "*.*"
+      - "!*backport*"
     tags:
-      - 'v*'
-      - '!*dev*'
-      - '!*pre*'
-      - '!*post*'
+      - "v*"
+      - "!*dev*"
+      - "!*pre*"
+      - "!*post*"
   pull_request:
   # Allow manual runs through the web UI
   workflow_dispatch:
@@ -57,7 +57,7 @@ jobs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: "3.9"
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
@@ -78,7 +78,7 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: "3.9"
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -111,7 +111,7 @@ jobs:
       )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: "3.9"
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -174,7 +174,7 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
       sdist: false
-      test_extras: 'all,tests'
+      test_extras: "all,tests"
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
@@ -189,7 +189,7 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
     with:
       python-version: "3.10"
-      test_extras: 'all,tests'
+      test_extras: "all,tests"
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       env: |
@@ -207,6 +207,6 @@ jobs:
           matrix_token: ${{ secrets.matrix_access_token }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.matrix_homeserver }}
-          roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
-          ignore_pattern: '.*Load.*'
+          roomid: "!JYqfIVJjWANcHnfktY:cadair.com"
+          ignore_pattern: ".*Load.*"
           summarise_success: true

@@ -33,8 +33,7 @@ jobs:
         type: string
     docker:
       - image: cimg/python:3.10
-    environment:
-      TOXENV=<< parameters.jobname >>
+    environment: TOXENV=<< parameters.jobname >>
     steps:
       - run: *no-backports
       - checkout

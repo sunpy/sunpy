@@ -76,7 +76,7 @@ dependencies:
   - pycairo
 
   - pip:
-    - mplcairo
-    - sphinx-bootstrap-theme
-    - sphinx-changelog
-    - sunpy-sphinx-theme
+      - mplcairo
+      - sphinx-bootstrap-theme
+      - sphinx-changelog
+      - sunpy-sphinx-theme
