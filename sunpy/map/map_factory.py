@@ -27,7 +27,6 @@ from sunpy.util.exceptions import NoMapsInFileError, SunpyDeprecationWarning, wa
 from sunpy.util.functools import seconddispatch
 from sunpy.util.io import is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
-from sunpy.util.types import DatabaseEntryType
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -211,10 +210,6 @@ class MapFactory(BasicRegistrationFactory):
         if self._validate_meta(header):
             pair = (data, OrderedDict(header))
         return [pair]
-
-    @_parse_arg.register(DatabaseEntryType)
-    def _parse_dbase(self, arg, **kwargs):
-        return self._read_file(arg.path, **kwargs)
 
     @_parse_arg.register(GenericMap)
     def _parse_map(self, arg, **kwargs):

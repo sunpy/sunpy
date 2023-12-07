@@ -220,16 +220,6 @@ def test_dask_array():
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
 
-def test_databaseentry():
-    pytest.importorskip('sqlalchemy')
-    sunpy_database = pytest.importorskip('sunpy.database')
-    db = sunpy_database.Database(url='sqlite://', default_waveunit='angstrom')
-    db.add_from_file(AIA_171_IMAGE)
-    res = db.get_entry_by_id(1)
-    db_map = sunpy.map.Map(res)
-    assert isinstance(db_map, sunpy.map.GenericMap)
-
-
 @pytest.mark.remote_data
 def test_url_pattern():
     # A URL

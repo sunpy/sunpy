@@ -14,12 +14,7 @@ Database
 Google Summer of Code (2013)
 ----------------------------
 
-database/attrs.py
-database/test_tables.py
-database/test_database.py
-database/test_commands.py
-database/test_caching.py
-database/test_attrs.py
+Parts of the now removed ``sunpy.database`` module.
 
 Net
 ---

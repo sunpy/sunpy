@@ -103,7 +103,7 @@ Deprecations
 - Parsing SDO/EVE level 0CS average files is deprecated, and will be removed in sunpy 6.0.
   Parsing this data is untested, and we cannot find a file to test it with.
   If you know where level 0CS 'averages' files can be found, please get in touch at https://community.openastronomy.org/c/sunpy/5. (`#6857 <https://github.com/sunpy/sunpy/pull/6857>`__)
-- Fully deprecated `sunpy.database`, with an expected removal version of sunpy 6.0. (`#6869 <https://github.com/sunpy/sunpy/pull/6869>`__)
+- Fully deprecated ``sunpy.database``, with an expected removal version of sunpy 6.0. (`#6869 <https://github.com/sunpy/sunpy/pull/6869>`__)
 - ``sunpy.io.cdf``, ``sunpy.io.file_tools`` and ``sunpy.io.jp2`` sub-modules have been deprecated, and will be removed in version 5.1.
   This because they are designed for internal use only, and removing it from the public API gives the developers more flexibility to modify it without impacting users. (`#6895 <https://github.com/sunpy/sunpy/pull/6895>`__)
 
@@ -171,7 +171,7 @@ Bug Fixes
   Now it will raise any errors from ``parfive``. (`#6711 <https://github.com/sunpy/sunpy/pull/6711>`__)
 - `~sunpy.map.sources.XRTMap` will now set the unit for XRT files if the ``BUNIT`` key is missing. (`#6725 <https://github.com/sunpy/sunpy/pull/6725>`__)
 - `~sunpy.net.dataretriever.XRSClient` update use the new url for which the GOES-XRS 8-15 data is provided by NOAA. (`#6737 <https://github.com/sunpy/sunpy/pull/6737>`__)
-- Updated `~sunpy.database` to be compatible with ``SQLAlchemy`` versions >=2.0 (`#6749 <https://github.com/sunpy/sunpy/pull/6749>`__)
+- Updated ``sunpy.database`` to be compatible with ``SQLAlchemy`` versions >=2.0 (`#6749 <https://github.com/sunpy/sunpy/pull/6749>`__)
 - When using ``autoalign=True`` when plotting maps, the result was misaligned by half a pixel. (`#6796 <https://github.com/sunpy/sunpy/pull/6796>`__)
 - :meth:`sunpy.map.GenericMap.submap` can now handle a `~astropy.coordinates.BaseCoordinateFrame` as input. (`#6820 <https://github.com/sunpy/sunpy/pull/6820>`__)
 - Multi-line ``HISTORY`` and ``COMMENT`` keys metadata dictionaries are now correctly split into
@@ -558,7 +558,7 @@ Bug Fixes
   was not a multiple of the identity matrix. When the PCi_j or CDi_j formalisms
   are used in the metadata these are now correctly modified, and the CDELT values
   are left unchanged. (`#5786 <https://github.com/sunpy/sunpy/pull/5786>`__)
-- The ``__repr__`` of several `sunpy.database` classes have been updated to remove angular
+- The ``__repr__`` of several ``sunpy.database`` classes have been updated to remove angular
   brackets and add equals signs. As an example, ``'<DatabaseEntry(id 3)>'`` has changed to
   ``'DatabaseEntry(id=3)'`` (`#5790 <https://github.com/sunpy/sunpy/pull/5790>`__)
 - Fixed a bug when rotating a map by a matrix that is not purely a rotation.
@@ -566,7 +566,7 @@ Bug Fixes
 - Fixed a bug where rotating a map while simultaneously scaling it could result in some of the map data being cropped out. (`#5803 <https://github.com/sunpy/sunpy/pull/5803>`__)
 - Symmetric colorbar limits are no longer set on intensity images from MDI. (`#5825 <https://github.com/sunpy/sunpy/pull/5825>`__)
 - Fixed plotting and peeking NORH timeseries data with ``pandas`` 1.4.0. (`#5830 <https://github.com/sunpy/sunpy/pull/5830>`__)
-- In the case where `sunpy.database.Database.fetch()` successfully downloads only some of the search results, a `~sunpy.database.PartialFetchError` is raised. This fixes a bug where the successful downloads would have been added to the database, but sometimes with incorrect metadata. (`#5835 <https://github.com/sunpy/sunpy/pull/5835>`__)
+- In the case where ``sunpy.database.Database.fetch()`` successfully downloads only some of the search results, a ``sunpy.database.PartialFetchError`` is raised. This fixes a bug where the successful downloads would have been added to the database, but sometimes with incorrect metadata. (`#5835 <https://github.com/sunpy/sunpy/pull/5835>`__)
 - When getting IRIS files from the VSO, Fido was incorrectly labelling them as XML files. (`#5868 <https://github.com/sunpy/sunpy/pull/5868>`__)
 - `~sunpy.map.sources.HMIMap` now looks for ``'INSTRUME'`` instead of ``'TELESCOP'`` in order to support Helioviewer JPEG2000 versions of HMI data which do not preserve the ``'TELESCOP'`` keyword as expected in the JSOC standard. (`#5886 <https://github.com/sunpy/sunpy/pull/5886>`__)
 - Fixes a bug where the ``cmap`` and ``norm`` keyword arguments were ignored when calling
@@ -1931,7 +1931,7 @@ Improved Documentation
 - Added an example showing how to display two maps and fade between them. (`#3488 <https://github.com/sunpy/sunpy/pull/3488>`__)
 - Clarified the meaning of some `~sunpy.map.GenericMap` observer properties. (`#3585 <https://github.com/sunpy/sunpy/pull/3585>`__)
 - Added inherited members of `sunpy.map` classes to the docs. (`#3587 <https://github.com/sunpy/sunpy/pull/3587>`__)
-- Fixed documentation of `sunpy.database.Database.search` by adding ``Returns`` docstring. (`#3593 <https://github.com/sunpy/sunpy/pull/3593>`__)
+- Fixed documentation of ``sunpy.database.Database.search`` by adding ``Returns`` docstring. (`#3593 <https://github.com/sunpy/sunpy/pull/3593>`__)
 - Updated the docstring for the parameter ``sortby`` in `~sunpy.map.MapSequence` with the default value, valid value and how to disable sorting. (`#3601 <https://github.com/sunpy/sunpy/pull/3601>`__)
 - Updated the tour guide to reflect that the time series is not random data. (`#3603 <https://github.com/sunpy/sunpy/pull/3603>`__)
 - Fixes bold type and extra line breaks of remote data manager example. (`#3615 <https://github.com/sunpy/sunpy/pull/3615>`__)
@@ -2012,11 +2012,11 @@ Deprecations and Removals
 - Removed ``sunearth_distance`` in favour of ``get_sunearth_distance`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``remove_lytaf_events_from_lightcurve`` in favour of ``sunpy.instr.lyra.remove_lytaf_events_from_timeseries`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``sunpy.cm.get_cmap`` in favour of ``plt.get_cmap`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``database.query`` in favour of `sunpy.database.Database.search` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``database.query`` in favour of ``sunpy.database.Database.search`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``sunpy.net.vso.InteractiveVSOClient`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``MapCube`` in favour of `~sunpy.map.MapSequence` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``solar_north`` in favour of ``get_sun_P`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``database.download`` in favour of `sunpy.database.Database.fetch` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``database.download`` in favour of ``sunpy.database.Database.fetch`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of `sunpy.map.GenericMap.pixel_to_world` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``GenericClient.get`` in favour of `sunpy.net.dataretriever.GenericClient.fetch`. This changes applies to the other clients as well. (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``Map.xrange`` and ``Map.yrange`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)

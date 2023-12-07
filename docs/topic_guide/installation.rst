@@ -55,7 +55,7 @@ It is possible to select which "extra" dependencies you want to install, if you 
 
     $ pip install "sunpy[map,timeseries]"
 
-The available options are: ``[asdf]``, ``[dask]``, ``[database]``, ``[image]``, ``[jpeg2000]``, ``[map]``, ``[net]``, ``[timeseries]``, ``[visualization]``.
+The available options are: ``[asdf]``, ``[dask]``, ``[image]``, ``[jpeg2000]``, ``[map]``, ``[net]``, ``[timeseries]``, ``[visualization]``.
 
 .. note::
 
