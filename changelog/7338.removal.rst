@@ -1,0 +1,1 @@
+``sunpy.net.helioviewer.HelioviewerClient`` has been removed.
