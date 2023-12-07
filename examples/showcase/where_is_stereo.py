@@ -12,8 +12,6 @@ capabilities:
 
 * :ref:`sphx_glr_generated_gallery_units_and_coordinates_planet_locations.py`
 * :ref:`sphx_glr_generated_gallery_units_and_coordinates_ParkerSolarProbe_trajectory.py`
-
-`astroquery <https://astroquery.readthedocs.io/>`__ needs to be installed.
 """
 import matplotlib as mpl
 import matplotlib.pyplot as plt

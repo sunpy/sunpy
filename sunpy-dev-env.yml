@@ -20,6 +20,7 @@ dependencies:
   - python_abi
   - python-dateutil
   - reproject
+  - requests
   - scikit-image
   - scipy
   - setuptools
@@ -28,7 +29,6 @@ dependencies:
   - zeep
 
   # Optional
-  - astroquery
   - dask
   - glymur
   - jplephem
@@ -53,6 +53,7 @@ dependencies:
   - tox-conda
 
   # Documentation
+  - astroquery
   - graphviz
   - ruamel.yaml
   - sphinx

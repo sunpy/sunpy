@@ -1,4 +1,5 @@
 
+import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from numpy.testing import assert_array_equal
@@ -75,9 +76,6 @@ def test_get_earth():
 
 @pytest.mark.remote_data
 def test_get_horizons_coord():
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
     assert_quantity_allclose(e1.lon, 0*u.deg, atol=5e-6*u.deg)
@@ -92,9 +90,6 @@ def test_get_horizons_coord():
 
 @pytest.mark.remote_data
 def test_get_horizons_coord_array_time():
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     # Validate against published values from the Astronomical Almanac (2013, C8-C13)
     array_time = Time(['2013-05-01', '2013-06-01', '2013-04-01', '2013-03-01'])
     e = get_horizons_coord('Geocenter', array_time)
@@ -116,11 +111,14 @@ def test_get_horizons_coord_array_time():
     assert_quantity_allclose(e[3].radius, 0.9908173*u.AU, atol=5e-7*u.AU)
 
 
+def test_get_horizons_coord_array_time_too_large():
+    array_time = Time('2001-02-03') + np.arange(10001) * u.s
+    with pytest.raises(ValueError, match="For more than 10,000 time values"):
+        get_horizons_coord('Does not matter', array_time)
+
+
 @pytest.mark.remote_data
 def test_get_horizons_coord_dict_time():
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     time_dict = {'start': '2013-03-01', 'stop': '2013-03-03', 'step': '1d'}
     time_ref = Time(['2013-03-01', '2013-03-02', '2013-03-03'])
 
@@ -135,14 +133,34 @@ def test_get_horizons_coord_dict_time():
     assert_quantity_allclose(e.radius, e_ref.radius)
 
 
+def test_get_horizons_coord_bad_id_type():
+    with pytest.raises(ValueError, match="Invalid id_type"):
+        get_horizons_coord('Garbage', '2001-02-03', id_type="unknown")
+
+
+@pytest.mark.remote_data
+def test_get_horizons_coord_multiple_major_matches():
+    with pytest.raises(ValueError, match="Multiple major-bodies match string"):
+        get_horizons_coord('Neptune', '2001-02-03')
+
+
+@pytest.mark.remote_data
+def test_get_horizons_coord_multiple_minor_matches():
+    with pytest.raises(ValueError, match="Matching small-bodies:"):
+        get_horizons_coord('Halley', '2001-02-03')
+
+
+@pytest.mark.remote_data
+def test_get_horizons_coord_zero_matches():
+    with pytest.raises(ValueError, match="No matches found."):
+        get_horizons_coord('This will not match', '2001-02-03')
+
+
 @pytest.mark.remote_data
 @given(obstime=times(n=50))
 @settings(deadline=5000, max_examples=1,
           suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_consistency_with_horizons(use_DE440s, obstime):
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     # Check that the high-accuracy Astropy ephemeris has been set
     assert solar_system_ephemeris.get() == 'de440s'
 
