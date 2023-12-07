@@ -34,7 +34,6 @@ from .exceptions import (
     UnknownStatus,
     UnknownVersion,
 )
-from .legacy_response import QueryResponse
 from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
@@ -180,18 +179,10 @@ class VSOClient(BaseClient):
         obj = self.api.get_type(f"VSO:{atype}")
         return obj(**kwargs)
 
-    def search(self, *query, response_format=None):
+    def search(self, *query):
         """
         Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
-
-        Parameters
-        ----------
-        response_format : {``"legacy"``, ``"table"``}, optional
-            The response format from the search, this can be either
-            ``"legacy"`` to return a list-like object of the zeep responses, or
-            ``"table"`` to return the responses in a subclass of
-            `~astropy.table.QTable`.
 
         Examples
         --------
@@ -203,8 +194,7 @@ class VSOClient(BaseClient):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    a.Instrument.eit | a.Instrument.aia,
-        ...    response_format="table")   # doctest:  +REMOTE_DATA
+        ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
         <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
             Start Time               End Time        Source ... Extent Type   Size
                                                             ...              Mibyte
@@ -221,8 +211,6 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :meth:`VSOClient.search`.
         """
-        if response_format is None:
-            response_format = "table"
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
@@ -243,10 +231,7 @@ class VSOClient(BaseClient):
                 exceptions.append(ex)
 
         responses = self.merge(responses)
-        if response_format == "legacy":
-            response = QueryResponse.create(responses)
-        else:
-            response = VSOQueryResponseTable.from_zeep_response(responses, client=self)
+        response = VSOQueryResponseTable.from_zeep_response(responses, client=self)
 
         for ex in exceptions:
             response.add_error(ex)
@@ -410,10 +395,6 @@ class VSOClient(BaseClient):
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
-        if isinstance(query_response, (QueryResponse, list)):
-            query_response = VSOQueryResponseTable.from_zeep_response(query_response,
-                                                                      client=self,
-                                                                      _sort=False)
         if isinstance(query_response, QueryResponseRow):
             query_response = query_response.as_table()
 

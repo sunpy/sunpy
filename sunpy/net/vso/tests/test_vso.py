@@ -12,7 +12,6 @@ from sunpy.net import _attrs as core_attrs
 from sunpy.net import attr
 from sunpy.net import attrs as a
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.legacy_response import QueryResponse
 from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
 from sunpy.net.vso.vso import (
     DEFAULT_URL_PORT,
@@ -124,8 +123,7 @@ def test_path(client, tmpdir):
     """
     qr = client.search(
         core_attrs.Time('2020-06-07 06:33', '2020-06-07 06:33:13'),
-        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
-        response_format="table")
+        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA))
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir)
 
@@ -156,7 +154,7 @@ def test_no_download(client):
     stereo = (core_attrs.Detector('STEREO_B') &
               core_attrs.Instrument('EUVI') &
               core_attrs.Time('1900-01-01', '1900-01-01T00:10:00'))
-    qr = client.search(stereo, response_format="table")
+    qr = client.search(stereo)
     downloader = MockDownloader()
     res = client.fetch(qr, wait=False, downloader=downloader)
     assert downloader.download_called is False
@@ -251,7 +249,7 @@ def test_vso_hmi(client, tmpdir):
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
     res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
-                        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'), response_format="table")
+                        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'))
 
     dr = client.make_getdatarequest(res)
 
@@ -356,7 +354,7 @@ def test_build_client_params():
 def test_incorrect_content_disposition(client):
     results = client.search(
         core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
-        core_attrs.Instrument('mdi'), response_format="table")
+        core_attrs.Instrument('mdi'))
     files = client.fetch(results[0:1])
 
     assert len(files) == 1
@@ -404,19 +402,16 @@ def test_vso_repr(client):
 def test_response_block_properties(client):
     res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
                         a.Wavelength(171 * u.angstrom),
-                        a.Sample(10 * u.minute),
-                        response_format="legacy")
+                        a.Sample(10 * u.minute))
     properties = res.response_block_properties()
     assert len(properties) == 0
 
 
 def test_response_block_properties_table(mocker, mock_response):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
-    legacy_response = QueryResponse.create(mock_response)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
 
-    print(legacy_response)
-    print(table_response)
+    assert str(table_response)
 
 
 def test_row_to_table(mocker, mock_build_client, client, mock_table_response):
