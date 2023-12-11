@@ -2,7 +2,8 @@
 ``sunpy``
 *********
 
-|Latest Version|
+|Latest PyPi Version|
+|Latest Conda Version|
 |DOI|
 |repostatus|
 |python|
@@ -12,9 +13,12 @@
 |matrix|
 |Powered by NumFOCUS|
 
-.. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
+.. |Latest PyPi Version| image:: https://img.shields.io/pypi/v/sunpy.svg
     :target: https://pypi.python.org/pypi/sunpy/
-    :alt: Latest Version
+    :alt: Latest Pypi Version
+.. |Latest Conda Version| image:: https://anaconda.org/conda-forge/sunpy/badges/version.svg
+    :target: https://anaconda.org/conda-forge/sunpy
+    :alt: Latest Conda Version
 .. |DOI| image:: https://zenodo.org/badge/2165383.svg
     :target: https://zenodo.org/badge/latestdoi/2165383
     :alt: Zenodo - Latest DOI
