@@ -1706,11 +1706,17 @@ class GenericMap(NDData):
         if version.parse(np.__version__) < version.parse("1.20.0") and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             warn_user("The specified `missing` value is not an integer, but the data "
                       "array is of integer type, so the output may be strange.")
-        # Pad the image array
-        new_data = np.pad(self.data,
-                          ((pad_y, pad_y), (pad_x, pad_x)),
-                          mode='constant',
-                          constant_values=(missing, missing))
+        try:
+            # Pad the image array 
+            new_data = np.pad(self.data, 
+                      ((pad_y, pad_y), (pad_x, pad_x)), 
+                      mode='constant', 
+                      constant_values=(missing, missing))
+
+        except ValueError :
+            # Handle the exception and provide a useful error message
+            error_message = f"Error occurred during padding as constant values are not numbers"
+            print(error_message)
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
