@@ -1712,7 +1712,7 @@ class GenericMap(NDData):
                       mode='constant', 
                       constant_values=(missing, missing))
         except ValueError :
-            error_message = f"Error occurred during padding as constant values are NaN(not a number)"
+            error_message = f"Error occurred during padding as the missing is set to NaN by default kindly change the missing to an integer to resolve this error and add padding to the array"
             warn_user(error_message)
 
         # All of the following pixel calculations use a pixel origin of 0
