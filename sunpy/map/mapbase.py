@@ -1713,7 +1713,6 @@ class GenericMap(NDData):
                       constant_values=(missing, missing))
 
         except ValueError :
-            # Handle the exception and provide a useful error message
             error_message = f"Error occurred during padding as constant values are not numbers"
             print(error_message)
 
