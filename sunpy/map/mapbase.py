@@ -1707,7 +1707,6 @@ class GenericMap(NDData):
             warn_user("The specified `missing` value is not an integer, but the data "
                       "array is of integer type, so the output may be strange.")
         try:
-            # Pad the image array 
             new_data = np.pad(self.data, 
                       ((pad_y, pad_y), (pad_x, pad_x)), 
                       mode='constant', 
