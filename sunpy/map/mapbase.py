@@ -1713,8 +1713,8 @@ class GenericMap(NDData):
                       constant_values=(missing, missing))
 
         except ValueError :
-            error_message = f"Error occurred during padding as constant values are not numbers"
-            print(error_message)
+            error_message = f"Error occurred during padding as constant values are NaN(not a number)"
+            warn_user(error_message)
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
