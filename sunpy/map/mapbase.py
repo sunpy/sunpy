@@ -1711,7 +1711,6 @@ class GenericMap(NDData):
                       ((pad_y, pad_y), (pad_x, pad_x)), 
                       mode='constant', 
                       constant_values=(missing, missing))
-
         except ValueError :
             error_message = f"Error occurred during padding as constant values are NaN(not a number)"
             warn_user(error_message)
