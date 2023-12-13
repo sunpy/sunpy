@@ -1042,6 +1042,16 @@ def test_rotate_with_incompatible_missing_dtype_warning():
                             "array is of integer type, so the output may be strange."):
         test_map.rotate(order=3, missing=np.nan)
 
+@pytest.mark.skipif(version.parse(np.__version__) <= version.parse("1.20.0"),
+                    reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
+def test_rotate_with_incompatible_missing_dtype_error():
+    data = np.arange(0, 100).reshape(10, 10)
+    coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
+                     observer='earth', frame=sunpy.coordinates.Helioprojective)
+    header = sunpy.map.make_fitswcs_header(data, coord)
+    test_map = sunpy.map.Map(data, header)
+    with pytest.raises(ValueError, match="Error occurred during padding as constant values are NaN(not a number)"):
+        test_map.rotate(order=3, missing=np.nan)
 
 
 def test_rotate_crpix_zero_degrees(generic_map):
