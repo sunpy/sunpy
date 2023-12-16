@@ -1050,9 +1050,8 @@ def test_rotate_with_incompatible_missing_dtype_error():
                      observer='earth', frame=sunpy.coordinates.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
-    with pytest.raises(ValueError, match="Error occurred during padding as constant values are NaN(not a number)"):
+    with pytest.raises(SunpyUserWarning, match="Error occurred during padding as the missing is set to NaN by default kindly change the missing to an integer to resolve this error and add padding to the array"):
         test_map.rotate(order=3, missing=np.nan)
-
 
 def test_rotate_crpix_zero_degrees(generic_map):
     # Rotating a map by zero degrees should not change the location of the reference pixel at all
