@@ -1714,6 +1714,7 @@ class GenericMap(NDData):
         except ValueError :
             error_message = "Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. Change the `missing` keyword to a different value."
             warn_user(error_message)
+            new_data=self.data
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
