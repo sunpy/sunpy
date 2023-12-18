@@ -1028,28 +1028,24 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
-@pytest.mark.xfail(version.parse(np.__version__) >= version.parse("1.20.0"),
-                   reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
-def test_rotate_with_incompatible_missing_dtype_warning():
+def test_rotate_with_incompatible_missing_dtype():
     data = np.arange(0, 100).reshape(10, 10)
     coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
                      observer='earth', frame=sunpy.coordinates.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
-    
-    with pytest.warns(SunpyUserWarning,
-                      match="The specified `missing` value is not an integer, but the data "
-                            "array is of integer type, so the output may be strange."):
-        test_map.rotate(order=3, missing=np.nan)
 
-def test_rotate_with_incompatible_missing_dtype_error():
-    data = np.arange(0, 100).reshape(10, 10)
-    coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
-                     observer='earth', frame=sunpy.coordinates.Helioprojective)
-    header = sunpy.map.make_fitswcs_header(data, coord)
-    test_map = sunpy.map.Map(data, header)
-    with pytest.raises(SunpyUserWarning, match="Error occurred during padding as the missing is set to NaN by default kindly change the missing to an integer to resolve this error and add padding to the array"):
-        test_map.rotate(order=3, missing=np.nan)
+    if version.parse(np.__version__) >= version.parse("1.20.0"):
+        #error expected
+        with pytest.warns(SunpyUserWarning, match="Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. " 
+                                                  "Change the `missing` keyword to a different value."):
+            test_map.rotate(order=3, missing=np.nan)
+    else:
+        #warning expected 
+        with pytest.warns(SunpyUserWarning,
+                          match="The specified `missing` value is not an integer, but the data "
+                                "array is of integer type, so the output may be strange."):
+            test_map.rotate(order=3, missing=np.nan)
 
 def test_rotate_crpix_zero_degrees(generic_map):
     # Rotating a map by zero degrees should not change the location of the reference pixel at all
