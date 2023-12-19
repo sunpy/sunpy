@@ -11,7 +11,6 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
-from packaging import version
 
 import astropy.units as u
 import astropy.wcs
