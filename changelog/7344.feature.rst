@@ -1,0 +1,1 @@
+Added a new error giving user more context of padding error when running rotate function and removing the numpy version conditions.
