@@ -1026,26 +1026,16 @@ def test_rotate(aia171_test_map):
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
     assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
-
-
-def test_rotate_with_incompatible_missing_dtype():
+    
+def test_rotate_with_incompatible_missing_dtype_error():
     data = np.arange(0, 100).reshape(10, 10)
     coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
                      observer='earth', frame=sunpy.coordinates.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
-
-    if version.parse(np.__version__) >= version.parse("1.20.0"):
-        #error expected
-        with pytest.warns(SunpyUserWarning, match="Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. " 
-                                                  "Change the `missing` keyword to a different value."):
-            test_map.rotate(order=3, missing=np.nan)
-    else:
-        #warning expected 
-        with pytest.warns(SunpyUserWarning,
-                          match="The specified `missing` value is not an integer, but the data "
-                                "array is of integer type, so the output may be strange."):
-            test_map.rotate(order=3, missing=np.nan)
+    with pytest.raises(ValueError, match="Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. "
+                                         "Change the `missing` keyword to a different value."):
+        test_map.rotate(order=3, missing=np.nan)
 
 def test_rotate_crpix_zero_degrees(generic_map):
     # Rotating a map by zero degrees should not change the location of the reference pixel at all
