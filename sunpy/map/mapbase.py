@@ -1702,11 +1702,11 @@ class GenericMap(NDData):
         # Numpy 1.20+ prevents np.pad from padding with NaNs in integer arrays
         # Before it would be cast to 0, but now it raises an error.
         try:
-            new_data = np.pad(self.data, 
-                      ((pad_y, pad_y), (pad_x, pad_x)), 
-                      mode='constant', 
-                      constant_values=(missing, missing))
-        except ValueError :
+            new_data = np.pad(self.data,
+                              ((pad_y, pad_y), (pad_x, pad_x)),
+                              mode='constant',
+                              constant_values=(missing, missing))
+        except ValueError:
             error_message = "Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. "
             "Change the `missing` keyword to a different value."
             raise ValueError(error_message)
