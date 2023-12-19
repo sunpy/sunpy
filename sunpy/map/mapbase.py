@@ -5,7 +5,6 @@ import re
 import copy
 import html
 import inspect
-import numbers
 import textwrap
 import itertools
 import webbrowser
@@ -17,7 +16,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from packaging import version
 
 try:
     from dask.array import Array as DaskArray
