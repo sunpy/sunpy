@@ -1034,7 +1034,7 @@ def test_rotate_with_incompatible_missing_dtype_error():
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
     with pytest.raises(ValueError, match="Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. "
-                                         "Change the `missing` keyword to a different value."):
+    "Change the `missing` keyword to a different value."):
         test_map.rotate(order=3, missing=np.nan)
 
 
