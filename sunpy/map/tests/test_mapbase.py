@@ -1033,8 +1033,8 @@ def test_rotate_with_incompatible_missing_dtype_error():
                      observer='earth', frame=sunpy.coordinates.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
-    with pytest.raises(ValueError, match="Unable to pad the array most likely due to the default `missing` keyword as it is set to NaN. "
-    "Change the `missing` keyword to a different value."):
+    with pytest.raises(ValueError, match="The underlying data is integers, but the fill value for "
+                                         "missing pixels cannot be cast to an integer"):
         test_map.rotate(order=3, missing=np.nan)
 
 
