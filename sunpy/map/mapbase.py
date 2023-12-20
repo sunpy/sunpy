@@ -5,6 +5,7 @@ import re
 import copy
 import html
 import inspect
+import numbers
 import textwrap
 import itertools
 import webbrowser
@@ -1700,12 +1701,12 @@ class GenericMap(NDData):
         unpad_y = -np.min((diff[1], 0))
 
         # Raise an informative error message if trying to pad an integer array with NaNs
-    if (pad_x > 0 or pad_y > 0) and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
+        if (pad_x > 0 or pad_y > 0 or missing % 1 != 0) and issubclass(self.data.dtype.type, numbers.Integral):
             raise ValueError("The underlying data is integers, but the fill value for missing "
                              "pixels cannot be cast to an integer, which is the case for the "
                              "default fill value of NaN.  Set the `missing` keyword to an "
                              "appropriate integer value for the data set.")
-
+      
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
