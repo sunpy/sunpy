@@ -1,1 +1,1 @@
-Added a new error giving user more context of padding error when running rotate function and removing the numpy version conditions.
+When calling :meth:`sunpy.map.GenericMap.rotate` on an integer data array, with ``missing`` set to NaN (the default value), the method will now itself raise an informative error message instead deferring to NumPy to raise the error.
