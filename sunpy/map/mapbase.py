@@ -1706,11 +1706,11 @@ class GenericMap(NDData):
                              "pixels cannot be cast to an integer, which is the case for the "
                              "default fill value of NaN.  Set the `missing` keyword to an "
                              "appropriate integer value for the data set.")
-      
+
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
-                          constant_values=(missing, missing))         
+                          constant_values=(missing, missing))
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
