@@ -1701,17 +1701,16 @@ class GenericMap(NDData):
 
         # Numpy 1.20+ prevents np.pad from padding with NaNs in integer arrays
         # Before it would be cast to 0, but now it raises an error.
-        try:
-            new_data = np.pad(self.data,
-                              ((pad_y, pad_y), (pad_x, pad_x)),
-                              mode='constant',
-                              constant_values=(missing, missing))
-        except ValueError:
-            error_message = (
-                "Unable to pad the array most likely due to the default `missing` keyword "
-                "as it is set to NaN. Change the `missing` keyword to a different value."
-            )
-            raise ValueError(error_message)
+    if (pad_x > 0 or pad_y > 0) and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
+            raise ValueError("The underlying data is integers, but the fill value for missing "
+                             "pixels cannot be cast to an integer, which is the case for the "
+                             "default fill value of NaN.  Set the `missing` keyword to an "
+                             "appropriate integer value for the data set.")
+
+        new_data = np.pad(self.data,
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))         
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
