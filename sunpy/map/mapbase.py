@@ -1701,16 +1701,16 @@ class GenericMap(NDData):
         unpad_y = -np.min((diff[1], 0))
 
         # Raise an informative error message if trying to pad an integer array with NaNs
-        if (pad_x > 0 or pad_y > 0 or missing % 1 != 0) and issubclass(self.data.dtype.type, numbers.Integral):
+        if (pad_x > 0 or pad_y > 0) and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             raise ValueError("The underlying data is integers, but the fill value for missing "
                              "pixels cannot be cast to an integer, which is the case for the "
                              "default fill value of NaN.  Set the `missing` keyword to an "
                              "appropriate integer value for the data set.")
 
         new_data = np.pad(self.data,
-                          ((pad_y, pad_y), (pad_x, pad_x)),
-                          mode='constant',
-                          constant_values=(missing, missing))
+                      ((pad_y, pad_y), (pad_x, pad_x)),
+                      mode='constant',
+                      constant_values=(missing, missing))
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
