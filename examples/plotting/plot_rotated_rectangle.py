@@ -19,6 +19,8 @@ import sunpy.map
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
+# sphinx_gallery_defer_figures
+
 fig = plt.figure(figsize=(5, 5))
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
@@ -26,6 +28,9 @@ aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
 ################################################################################
 # Define the rotation angle and center coordinate of the rectangle
 # Width and height of the rectangle
+
+# sphinx_gallery_defer_figures
+
 rotation_angle = 90 * u.deg
 center_coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia_map.coordinate_frame)
 width = 400 * u.arcsec
