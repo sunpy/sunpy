@@ -14,7 +14,8 @@ from sunpy.net.attr import AttrAnd, AttrOr
                           (attrs.Notify('email@somemail.com'),
                            attrs.Notify('someemail@somemail.com'))])
 def test_and(attr1, attr2):
-    pytest.raises(TypeError, lambda: attr1 & attr2)
+    with pytest.raises(TypeError, match=r"unsupported operand type\(s\) for \&"):
+        attr1 & attr2
 
 
 def test_basicquery():
@@ -70,3 +71,13 @@ def test_random():
     w1 = attrs.Wavelength(193*u.AA)
     w2 = attrs.Series('spam')
     assert jsoc.jsoc.and_(w1 | w2) == AttrOr([w1, w2])
+
+
+def test_empty_notify():
+    with pytest.raises(ValueError, match="Notify attribute must contain an email address"):
+        attrs.Notify("")
+
+
+def test_not_email_notify():
+    with pytest.raises(ValueError, match="Notify attribute must contain an '@' symbol to be a valid email address"):
+        attrs.Notify("someemailthatisntone")
