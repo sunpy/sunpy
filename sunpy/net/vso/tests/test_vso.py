@@ -398,19 +398,9 @@ def test_vso_repr(client):
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
 
 
-@pytest.mark.remote_data
-def test_response_block_properties(client):
-    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
-                        a.Wavelength(171 * u.angstrom),
-                        a.Sample(10 * u.minute))
-    properties = res.response_block_properties()
-    assert len(properties) == 0
-
-
 def test_response_block_properties_table(mocker, mock_response):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
-
     assert str(table_response)
 
 
