@@ -140,8 +140,10 @@ class H2VClient:
         Examples
         --------
         >>> from sunpy.net import attrs as a, hek, hek2vso
-        >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
-        >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
+        >>> hek2vso_client = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
+        >>> query = hek2vso_client.full_query((a.Time('2011/08/09 07:00:00', '2011/08/09 07:15:00'), a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
+        >>> len(query)  # doctest: +REMOTE_DATA
+        7
         """
         self._quick_clean()
         if progress:
@@ -150,7 +152,7 @@ class H2VClient:
         self.hek_results = self.hek_client.search(*client_query)
         self._quick_clean()
         return self.translate_and_query(self.hek_results,
-                                        limit=limit, progress=progress)
+                                        limit=limit)
 
     def translate_and_query(self, hek_results, limit=None):
         """

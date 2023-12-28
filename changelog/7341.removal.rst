@@ -1,0 +1,2 @@
+Removed of the ``response_format`` keyword from :meth:`sunpy.net.vso.vso.VSOClient.search`.
+This was used internally and not for public API use.
