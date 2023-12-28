@@ -1,1 +1,1 @@
-Added an example of plotting a rectangle on a map with a rotation angle relative to the axes using :meth:`~sunpy.map.GenericMap.draw_quadrangle` using ``SkyOffsetFrame``
+Add an example of plotting a rectangle on a map with a rotation angle relative to the axes.
