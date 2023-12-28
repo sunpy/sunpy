@@ -2346,7 +2346,6 @@ class GenericMap(NDData):
         `~matplotlib.axes.Axes.contour` function.
         """
         axes = self._check_axes(axes)
-
         levels = self._process_levels_arg(levels)
 
         # Pixel indices
@@ -2370,17 +2369,13 @@ class GenericMap(NDData):
             # Ensure we have more than one level if fill is True
             if len(levels) == 1:
                 max_val = np.nanmax(self.data)
-
                 # Ensure the existing level is less than max_val
-                if (isinstance(levels, list) and levels[0] < max_val) or (
-                    isinstance(levels, np.ndarray) and levels[0] < max_val):
-                    if isinstance(levels, list):
-                        levels.append(max_val)
-                    elif isinstance(levels, np.ndarray):
-                        levels = np.append(levels, max_val)
+                if levels[0] < max_val:
+                    levels = np.append(levels, max_val)
                 else:
                     raise ValueError(
-                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). Contour levels must be increasing.")
+                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). "
+                        "Contour level must be smaller than the maximum data value to use `fill=True`.")
             cs = axes.contourf(x, y, data, levels, **contour_args)
         else:
             cs = axes.contour(x, y, data, levels, **contour_args)
