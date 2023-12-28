@@ -547,8 +547,8 @@ class JSOCClient(BaseClient):
 
         if urls:
             if progress:
-                print_message = "{0} URLs found for download. Full request totalling {1}MB"
-                print(print_message.format(len(urls), request._d['size']))
+                log_message = "{0} URLs found for download. Full request totalling {1}MB"
+                log.info(log_message.format(len(urls), request._d['size']))
             for aurl, fname in zip(urls, paths):
                 downloader.enqueue_file(aurl, filename=fname, max_splits=max_splits)
 
