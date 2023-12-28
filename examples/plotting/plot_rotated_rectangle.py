@@ -37,8 +37,8 @@ width = 400 * u.arcsec
 height = 300 * u.arcsec
 
 ################################################################################
-# To specify the rotation and center, we will use `SkyOffsetFrame`.
-# Define the corner coordinates in the SkyCoord frame
+# To specify the rotation and center, we will use `~astropy.coordinates.SkyOffsetFrame`.
+# Define the corner coordinates in the `~astropy.coordinates.SkyCoord` frame
 # Transform corner coordinates to the original map's coordinate frame
 
 # sphinx_gallery_defer_figures
@@ -61,6 +61,5 @@ aia_map.draw_quadrangle(
     linewidth=2,
     label='Rotated Rectangle'
 )
-ax.legend()
 
 plt.show()
