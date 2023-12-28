@@ -3,7 +3,7 @@
 Drawing a rotated rectangle on a map
 ====================================
 
-This example will demonstrate how to draw a rectangle that can be rotated relative
+This example will demonstrate how to draw a rectangle that is rotated relative
 to the axes on a map using :meth:`~sunpy.map.GenericMap.draw_quadrangle`.
 """
 import matplotlib.pyplot as plt
@@ -32,14 +32,14 @@ aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
 # sphinx_gallery_defer_figures
 
 rotation_angle = 90 * u.deg
-center_coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia_map.coordinate_frame)
+center_coord = SkyCoord(-300 * u.arcsec, -300 * u.arcsec, frame=aia_map.coordinate_frame)
 width = 400 * u.arcsec
 height = 300 * u.arcsec
 
 ################################################################################
-# To specify the rotation and center, we will use `~astropy.coordinates.SkyOffsetFrame`.
-# Define the corner coordinates in the `~astropy.coordinates.SkyCoord` frame
-# Transform corner coordinates to the original map's coordinate frame
+# Now to specify the rotation and center for the rectangle, we will use `~astropy.coordinates.SkyOffsetFrame`.
+# First we will define the bottom left and top right within the rotated frame
+# and then transform these into the AIA 171 coordinate frame.
 
 # sphinx_gallery_defer_figures
 
@@ -59,7 +59,6 @@ aia_map.draw_quadrangle(
     edgecolor="purple",
     linestyle="--",
     linewidth=2,
-    label='Rotated Rectangle'
 )
 
 plt.show()
