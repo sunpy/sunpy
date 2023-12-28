@@ -21,7 +21,7 @@ import sunpy.map
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-fig = plt.figure(figsize=(5, 5))
+fig = plt.figure()
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
 
