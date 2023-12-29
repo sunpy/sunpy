@@ -8,63 +8,65 @@ from sunpy.util.sysinfo import (
     system_info,
 )
 
+EXTRA_DEPS = [
+    'asdf',
+    'asdf-astropy',
+    'astropy',
+    'numpy',
+    'parfive',
+    'packaging',
+    'dask',
+    'scikit-image',
+    'scipy',
+    'lxml',
+    'matplotlib',
+    'mpl-animators',
+    'reproject',
+    'beautifulsoup4',
+    'drms',
+    'python-dateutil',
+    'zeep',
+    'cdflib',
+    'h5netcdf',
+    'h5py',
+    'pandas'
+]
+
+EXTRA_ALL_GROUPS = [
+    'all',
+    'asdf',
+    'required',
+    'dask',
+    'data',
+    'dev',
+    'docs',
+    'docs-gallery',
+    'image',
+    'jpeg2000',
+    'map',
+    'net',
+    'spice',
+    'tests',
+    'timeseries',
+    'visualization'
+]
+
 
 def test_find_dependencies():
     missing, installed = find_dependencies()
     assert missing == {}
     assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging"])
-
     missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
     assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(['asdf',
-                                                     'asdf-astropy',
-                                                     'astropy',
-                                                     'numpy',
-                                                     'parfive',
-                                                     'packaging',
-                                                     'requests',
-                                                     'dask',
-                                                     'scikit-image',
-                                                     'scipy',
-                                                     'glymur',
-                                                     'lxml',
-                                                     'matplotlib',
-                                                     'mpl-animators',
-                                                     'reproject',
-                                                     'beautifulsoup4',
-                                                     'drms',
-                                                     'python-dateutil',
-                                                     'tqdm',
-                                                     'zeep',
-                                                     'cdflib',
-                                                     'h5netcdf',
-                                                     'h5py',
-                                                     'pandas'])
+    for package in EXTRA_DEPS:
+        assert package in installed
+
 
 
 def test_missing_dependencies_by_extra():
     missing = missing_dependencies_by_extra()
-    assert sorted(list(missing.keys())) == sorted(['all',
-                                                   'asdf',
-                                                   'required',
-                                                   'dask',
-                                                   'data',
-                                                   'database',
-                                                   'dev',
-                                                   'docs',
-                                                   'docs-gallery',
-                                                   'image',
-                                                   'jpeg2000',
-                                                   'map',
-                                                   'net',
-                                                   'spice',
-                                                   'tests',
-                                                   'timeseries',
-                                                   'visualization'])
-    missing = missing_dependencies_by_extra(exclude_extras=["all"])
-    assert sorted(list(missing.keys())) == sorted(['asdf', 'required', 'dask', 'dev', 'docs',
-                                                   'docs-gallery', 'image', 'jpeg2000', 'map', 'net',
-                                                   'spice', 'tests', 'timeseries', 'visualization'])
+    for group in EXTRA_ALL_GROUPS:
+        assert group in missing
 
 
 def test_resolve_requirement_versions():

@@ -1,5 +1,7 @@
 
-def print_missing_dependencies_report(missing, package="sunpy"):
+__all__ = ['self_test', '_test_base_deps']
+
+def _print_missing_dependencies_report(missing, package="sunpy"):
     printed = False
     required_missing = missing.pop("required")
     if required_missing:
@@ -49,7 +51,7 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     print("Checking for packages needed to run sunpy:")
     missing = missing_dependencies_by_extra(exclude_extras=["asdf", "dask", "dev", "all", "docs"])
     test_missing = missing.pop("tests")
-    printed = print_missing_dependencies_report(missing)
+    printed = _print_missing_dependencies_report(missing)
     if not printed:
         print("All required and optional sunpy dependencies are installed.")
     if test_missing:
@@ -70,6 +72,13 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     if verbose:
         print(f"Running pytest with arguments: {test_args}")
 
+    return pytest.main(test_args)
+
+def _test_base_deps():
+    import pytest
+
+    module_names = ["coordinates", "data", "io", "physics", "sun", "time", "util"]
+    test_args = ["-c", "/dev/null", "--pyargs"] + [f"sunpy.{name}" for name in module_names]
     return pytest.main(test_args)
 
 
