@@ -1,6 +1,7 @@
 """
 Provide a set of Hypothesis Strategies for various Fido related tests.
 """
+import sys
 import datetime
 
 import hypothesis.strategies as st
@@ -14,6 +15,11 @@ from astropy.time import Time
 
 from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
+
+if sys.version_info >= (3, 12):
+    now_year = datetime.datetime.now(datetime.UTC).year
+else:
+    now_year = datetime.datetime.now().year
 
 TimesLeapsecond = sampled_from((Time('2015-06-30T23:59:60'),
                                 Time('2012-06-30T23:59:60')))
@@ -74,7 +80,7 @@ def online_instruments():
 
 @st.composite
 def time_attr(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
+              max_value=datetime.datetime(now_year, 1, 1, 0, 0),
               min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
@@ -90,7 +96,7 @@ def time_attr(draw, time=Times(
 
 @st.composite
 def goes_time(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
+              max_value=datetime.datetime(now_year, 1, 1, 0, 0),
               min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """

@@ -47,9 +47,8 @@ jobs:
         brew:
           - openjpeg
       envs: |
-        - linux: py311
-        - windows: py310
-        - macos: py39
+        - windows: py311
+        - macos: py310
         - linux: py39-oldestdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
