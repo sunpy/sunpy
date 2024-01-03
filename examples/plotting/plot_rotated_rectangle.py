@@ -31,32 +31,31 @@ aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
 
 # sphinx_gallery_defer_figures
 
-rotation_angle = 90 * u.deg
-center_coord = SkyCoord(-300 * u.arcsec, -300 * u.arcsec, frame=aia_map.coordinate_frame)
-width = 400 * u.arcsec
+rotation_angle = 30 * u.deg
+center_coord = SkyCoord(-100 * u.arcsec, -300 * u.arcsec, frame=aia_map.coordinate_frame)
+width = 1000 * u.arcsec
 height = 300 * u.arcsec
 
 ################################################################################
-# Now to specify the rotation and center for the rectangle, we will use `~astropy.coordinates.SkyOffsetFrame`.
-# First we will define the bottom left and top right within the rotated frame
-# and then transform these into the AIA 171 coordinate frame.
+# We define a custom coordinate frame for the rotated rectangle by providing
+# the center in the AIA 171 coordinate frame and rotation angle to
+# `~astropy.coordinates.SkyOffsetFrame`.  We then define a 2-element
+# `~astropy.coordinates.SkyCoord` in that custom coordinate frame for the
+# bottom-left and top-right corners of the rectangle.
 
 # sphinx_gallery_defer_figures
 
 offset_frame = SkyOffsetFrame(origin=center_coord, rotation=rotation_angle)
-corner_bottom_left = SkyCoord(lon=-width / 2, lat=-height / 2, frame=offset_frame)
-corner_top_right = SkyCoord(lon=width / 2, lat=height / 2, frame=offset_frame)
-corner_bottom_left = corner_bottom_left.transform_to(aia_map.coordinate_frame)
-corner_top_right = corner_top_right.transform_to(aia_map.coordinate_frame)
+rectangle = SkyCoord(lon=[-1/2, 1/2] * width, lat=[-1/2, 1/2] * height, frame=offset_frame)
 
 ################################################################################
-# Finally, we will draw the rotated rectangle.
+# Finally, we will draw the rotated rectangle and its center.
 
+ax.plot_coord(center_coord, "o", color="red")
 aia_map.draw_quadrangle(
-    bottom_left=corner_bottom_left,
-    top_right=corner_top_right,
+    rectangle,
     axes=ax,
-    edgecolor="purple",
+    edgecolor="red",
     linestyle="--",
     linewidth=2,
 )
