@@ -17,19 +17,11 @@ import sunpy.map
 ################################################################################
 # Let's start with a sample image of AIA 171.
 
-# sphinx_gallery_defer_figures
-
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-fig = plt.figure()
-ax = fig.add_subplot(projection=aia_map)
-aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
 
 ################################################################################
 # Define the rotation angle and center coordinate of the rectangle,
 # as well as the width and height in physical units.
-
-# sphinx_gallery_defer_figures
 
 rotation_angle = 30 * u.deg
 center_coord = SkyCoord(-100 * u.arcsec, -300 * u.arcsec, frame=aia_map.coordinate_frame)
@@ -43,15 +35,17 @@ height = 300 * u.arcsec
 # `~astropy.coordinates.SkyCoord` in that custom coordinate frame for the
 # bottom-left and top-right corners of the rectangle.
 
-# sphinx_gallery_defer_figures
-
 offset_frame = SkyOffsetFrame(origin=center_coord, rotation=rotation_angle)
 rectangle = SkyCoord(lon=[-1/2, 1/2] * width, lat=[-1/2, 1/2] * height, frame=offset_frame)
 
 ################################################################################
 # Finally, we will draw the rotated rectangle and its center.
 
+fig = plt.figure()
+ax = fig.add_subplot(projection=aia_map)
+aia_map.plot(axes=ax, clip_interval=(1, 99.99) * u.percent)
 ax.plot_coord(center_coord, "o", color="red")
+
 aia_map.draw_quadrangle(
     rectangle,
     axes=ax,
