@@ -16,7 +16,10 @@ sunpy Map objects are constructed using the special factory class:
 sunpy.map Package
 =================
 
+Map objects are constructed using the special factory class: `~sunpy.map.Map`.
 All sunpy Maps are derived from `sunpy.map.GenericMap`, all the methods and attributes are documented in that class.
+
+The result of a call to `~sunpy.map.Map` will be either a `~sunpy.map.mapbase.GenericMap` object if no instrument matches, or a subclass of `~sunpy.map.mapbase.GenericMap` which deals with a specific source of data, e.g., `~sunpy.map.sources.sdo.AIAMap` or `~sunpy.map.sources.soho.LASCOMap`(see :ref:`map-classes` to see a list of all of them).
 
 .. automodapi:: sunpy.map
     :no-main-docstr:
