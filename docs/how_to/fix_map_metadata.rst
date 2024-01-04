@@ -5,11 +5,10 @@ Fixing incorrect metadata
 *************************
 
 There will be times where you will come across a FITS files with either incorrect, missing or unparsable metadata and reading these files into `~sunpy.map.Map` will cause an error.
-Therefore, to load these files into a `~sunpy.map.Map`, you will need to correct the metadata before hand.
+Therefore, to load these files into a `~sunpy.map.Map`, you will need to correct the metadata beforehand.
 
-This will heavily depend on what metadata requires changing, unforutanlly it is near impossible to have a guide for every possible keyword.
-Below we have an example where the units in the FITS header are incorrect, this is controlled by the ``cunit1`` and ``cunit2`` keywords in a FITS header.
-So we will change those values and then load the file into a `~sunpy.map.Map`.
+In the example below, the units in the FITS header,  as controlled by the ``CUNIT1`` and ``CUNIT2`` keywords, are incorrect.
+Before loading the file into a `~sunpy.map.Map`, we will correct these keywords to have the correct units.
 
 .. code-block:: python
 
@@ -25,4 +24,4 @@ So we will change those values and then load the file into a `~sunpy.map.Map`.
     >>> header['cunit2'] = 'arcsec'  # doctest: +REMOTE_DATA
     >>> updated_map = Map(data, header)  # doctest: +REMOTE_DATA
 
-This applies for any FITS standard keyword, which you can find in the `FITS standard <https://fits.gsfc.nasa.gov/fits_standard.html>`__.
+This applies for any keyword in the `FITS standard <https://fits.gsfc.nasa.gov/fits_standard.html>`__.
