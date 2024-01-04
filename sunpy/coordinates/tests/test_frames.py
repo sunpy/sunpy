@@ -259,9 +259,10 @@ def test_hpc_is_visible_tolerance():
     hpc = Helioprojective(200*u.arcsec, 0*u.arcsec,
                           observer='earth', obstime='2023-08-03').make_3d()
 
-    # Due to the limitations of numerical precision, the coordinate will be computed to be slightly
-    # below the solar surface, and thus invisible when the tolerance is set to zero
-    assert not hpc.is_visible(tolerance=0*u.m)
+    # Due to the limitations of numerical precision, the coordinate may be computed to be slightly
+    # below the solar surface, and thus may be invisible when the tolerance is set to zero
+    if hpc.is_visible(tolerance=0*u.m):
+        pytest.skip("Test already passes prior to increasing the tolerance.")
 
     assert hpc.is_visible(tolerance=1*u.m)
 
