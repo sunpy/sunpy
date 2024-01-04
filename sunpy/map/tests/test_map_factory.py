@@ -201,6 +201,7 @@ def test_silence_errors(silence, error, match):
     with pytest.raises(error, match=match):
         sunpy.map.Map(data, {}, silence_errors=silence)
 
+
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('allow_errors', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
@@ -211,6 +212,7 @@ def test_allow_errors(allow_errors, error, match):
     data = np.arange(0, 100).reshape(10, 10)
     with pytest.raises(error, match=match):
         sunpy.map.Map(data, {}, allow_errors=allow_errors)
+
 
 def test_dask_array():
     dask_array = pytest.importorskip('dask.array')
@@ -316,11 +318,12 @@ def test_map_fits():
     assert isinstance(fits_map, sunpy.map.GenericMap)
     assert fits_map.data.base is not None
 
+
 def test_map_list_of_files_with_one_broken():
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits')]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map(files, allow_errors=True)
-        assert amap.data.shape == (128,128)
+        assert amap.data.shape == (128, 128)
 
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits'), AIA_171_IMAGE]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):

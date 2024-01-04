@@ -217,8 +217,7 @@ class HECClient(BaseClient):
         >>> hc.select_table()  # doctest: +SKIP
         """
         tables = self.get_table_names()
-        table_list = [t[0] for t in tables if len(t[0]) > 0]
-        table_list.sort()
+        table_list = sorted([t[0] for t in tables if len(t[0]) > 0])
         for index, table in enumerate(table_list):
             print(f'{index + 1} - {table}')
         while True:
