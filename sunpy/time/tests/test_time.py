@@ -1,5 +1,4 @@
-import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 import numpy as np
 import pandas
@@ -353,12 +352,7 @@ def test_parse_time_list_3():
 
 
 def test_is_time():
-    if sys.version_info >= (3, 12):
-        from datetime import UTC
-
-        assert time.is_time(datetime.now(UTC)) is True
-    else:
-        assert time.is_time(datetime.utcnow()) is True
+    time.is_time(datetime.now(timezone.utc)) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
     assert time.is_time(Time.now()) is True
 
