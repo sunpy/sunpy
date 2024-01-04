@@ -1,7 +1,7 @@
 """
 Provide a set of Hypothesis Strategies for various Fido related tests.
 """
-from datetime import datetime, timezone
+import datetime
 
 import hypothesis.strategies as st
 import numpy as np
@@ -74,8 +74,8 @@ def online_instruments():
 
 @st.composite
 def time_attr(draw, time=Times(
-              max_value=datetime(datetime.now(timezone.utc).year, 1, 1, 0, 0),
-              min_value=datetime(1981, 1, 1, 0, 0)),
+              max_value=datetime.datetime(datetime.datetime.now(datetime.timezone.utc).year, 1, 1, 0, 0),
+              min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
     Create an a.Time where it's always positive.
@@ -90,8 +90,8 @@ def time_attr(draw, time=Times(
 
 @st.composite
 def goes_time(draw, time=Times(
-              max_value=datetime(datetime.now(timezone.utc).year, 1, 1, 0, 0),
-              min_value=datetime(1981, 1, 1, 0, 0)),
+              max_value=datetime.datetime(datetime.datetime.now(datetime.timezone.utc).year, 1, 1, 0, 0),
+              min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
     Create an a.Time where it's always positive.
@@ -116,7 +116,7 @@ def goes_time(draw, time=Times(
 
 @st.composite
 def srs_time(draw, time=Times(
-             max_value=datetime.datetime.now(),
+             max_value=datetime.datetime.now(datetime.timezone.utc),
              min_value=datetime.datetime(1996, 1, 1)),
              delta=TimeDelta()):
     t1 = draw(time)
