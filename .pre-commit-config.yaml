@@ -1,37 +1,34 @@
-exclude: "\\.asdf$"
+exclude: ".asdf|.fits|.fts|.fit|.header|.txt|.*tca|sunpy/extern"
 repos:
-  # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.1.9"
+    rev: "v0.1.5"
     hooks:
       - id: ruff
         args: ["--fix"]
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 5.12.0
     hooks:
       - id: isort
         args: ["--sp", "setup.cfg"]
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|sunpy/extern)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
       - id: trailing-whitespace
-        exclude: ".*(.fits|.fts|.fit|.header|.txt)$"
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
-        args: ['--enforce-all','--maxkb=1054']
+        args: ["--enforce-all", "--maxkb=1024"]
+        exclude: ""
       - id: end-of-file-fixer
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
+        exclude: "^CITATION.rst$"
       - id: mixed-line-ending
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:
       - id: codespell
-        args: ['--config setup.cfg --write-changes']
+        args: ["--config setup.cfg --write-changes"]
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
