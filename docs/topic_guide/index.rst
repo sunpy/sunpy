@@ -18,7 +18,6 @@ Although there are code snippets in various parts of each topic guide, these are
    coordinates/index
    custom_map_rotate
    extending_fido
-   helioviewer
    history_comments
    installation
    logger
