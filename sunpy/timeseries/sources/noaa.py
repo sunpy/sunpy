@@ -10,7 +10,6 @@ import pandas as pd
 import astropy.units as u
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -109,7 +108,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    @deprecate_positional_args_since("4.1")
     def peek(self, *, title="Solar Cycle Progression", plot_type='sunspot SWO', columns=None, **kwargs):
         """
         Displays the NOAA Indices as a function of time by calling
