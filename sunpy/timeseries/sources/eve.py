@@ -322,8 +322,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         month = int(date_parts[2])
         day = int(date_parts[3])
 
-        data = read_csv(filepath, delim_whitespace=True, names=fields, comment=';',
-                        dtype={'HHMM': int})
+        data = read_csv(filepath, sep=r'\s+', names=fields, comment=';', dtype={'HHMM': int})
         # First line is YYYY DOY MM DD
         data = data.iloc[1:, :]
         data['Hour'] = data['HHMM'] // 100
