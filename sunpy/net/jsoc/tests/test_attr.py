@@ -75,7 +75,7 @@ def test_random():
 
 def test_empty_notify():
     with pytest.raises(ValueError, match="Notify attribute must contain an email address"):
-        attrs.Notify("")
+        attrs.Notify(None)
 
 
 def test_not_email_notify():
