@@ -321,6 +321,5 @@ def read_genx(filename):
                                                          ('OS', os),
                                                          ('RELEASE', release)])
     skeleton['HEADER']['TEXT'] = text
-    # TODO: for python >= 3.2; so we can keep the original order as how it's stored in the file
-    # skeleton.move_to_end('HEADER', last=False)
+    skeleton.move_to_end('HEADER', last=False)
     return skeleton

@@ -251,14 +251,14 @@ def rectangle_args():
 
 
 def test_rectangle_incomplete_input(rectangle_args):
-    bottom_left, top_right, width, height = rectangle_args
+    bottom_left, _, _, height = rectangle_args
 
     with pytest.raises(ValueError):
         get_rectangle_coordinates(bottom_left, height=height)
 
 
 def test_rectangle_invalid_input(rectangle_args):
-    bottom_left, top_right, width, height = rectangle_args
+    _, _, width, height = rectangle_args
 
     with pytest.raises(TypeError):
         get_rectangle_coordinates(width, height=height)
@@ -272,16 +272,16 @@ def test_rectangle_all_parameters_passed(rectangle_args):
 
 
 def test_rectangle_width_height(rectangle_args):
-    bottom_left, top_right, width, height = rectangle_args
+    bottom_left, _, width, height = rectangle_args
 
-    bottom_left_1, top_right_1 = get_rectangle_coordinates(bottom_left, width=width, height=height)
+    _, top_right_1 = get_rectangle_coordinates(bottom_left, width=width, height=height)
 
     assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
     assert bottom_left.spherical.lat + height == top_right_1.spherical.lat
 
 
 def test_rectangle_mismatching_frames_missing_parameters(rectangle_args):
-    bottom_left, top_right, width, height = rectangle_args
+    bottom_left, top_right, _, _ = rectangle_args
     top_right = SkyCoord(10 * u.arcsec, 10 * u.arcsec, frame='heliographic_carrington')
 
     with pytest.raises(ConvertError):
@@ -289,7 +289,7 @@ def test_rectangle_mismatching_frames_missing_parameters(rectangle_args):
 
 
 def test_rectangle_top_right(rectangle_args):
-    bottom_left, top_right, width, height = rectangle_args
+    bottom_left, top_right, _, _ = rectangle_args
 
     bottom_left_1, top_right_1 = get_rectangle_coordinates(bottom_left, top_right=top_right)
 
@@ -300,20 +300,20 @@ def test_rectangle_top_right(rectangle_args):
 
 
 def test_rectangle_bottom_left_different_types(rectangle_args):
-    bottom_left, top_right, width, height = rectangle_args
+    bottom_left, _, width, height = rectangle_args
 
     bottom_left_1, top_right_1 = get_rectangle_coordinates(
         bottom_left.frame, width=width, height=height)
 
     assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
     assert bottom_left.spherical.lat + height == top_right_1.spherical.lat
-    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)  # noqa: E721
+    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)  # NOQA: E721
 
     bottom_left_2, top_right_2 = get_rectangle_coordinates(bottom_left, width=width, height=height)
 
     assert bottom_left.spherical.lon + width == top_right_2.spherical.lon
     assert bottom_left.spherical.lat + height == top_right_2.spherical.lat
-    assert type(bottom_left_2) == type(top_right_2) == type(bottom_left)
+    assert type(bottom_left_2) == type(top_right_2) == type(bottom_left)   # NOQA: E721
 
 
 def test_rectangle_bottom_left_vector():

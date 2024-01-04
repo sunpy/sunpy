@@ -1265,15 +1265,16 @@ class LinuxDistribution:
             match = _DISTRO_RELEASE_BASENAME_PATTERN.match(basename)
         else:
             try:
-                basenames = sorted([
+                basenames = [
                     basename
                     for basename in os.listdir(self.etc_dir)
                     if basename not in _DISTRO_RELEASE_IGNORE_BASENAMES
                     and os.path.isfile(os.path.join(self.etc_dir, basename))
-                ])
+                ]
                 # We sort for repeatability in cases where there are multiple
                 # distro specific files; e.g. CentOS, Oracle, Enterprise all
                 # containing `redhat-release` on top of their own.
+                basenames.sort()
             except OSError:
                 # This may occur when /etc is not readable but we can't be
                 # sure about the *-release files. Check common entries of

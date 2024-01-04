@@ -43,21 +43,23 @@ print(euvi_map.observer_coordinate.separation(aia_map.observer_coordinate))
 # same direction, but at a distance of 1 AU, and then reproject both maps. The
 # purpose is to make the Sun exactly the same size in pixels in both maps.
 
+
 def reproject_to_1au(in_map):
     header = sunpy.map.make_fitswcs_header(
-                 (1000, 1000),
-                 SkyCoord(
-                     0*u.arcsec, 0*u.arcsec,
-                     frame='helioprojective',
-                     obstime=in_map.date,
-                     observer=in_map.observer_coordinate.realize_frame(
-                         in_map.observer_coordinate.represent_as('unitspherical') * u.AU
-                     )
-                 ),
-                 scale=(2.2, 2.2)*u.arcsec/u.pixel
-             )
+        (1000, 1000),
+        SkyCoord(
+            0*u.arcsec, 0*u.arcsec,
+            frame='helioprojective',
+            obstime=in_map.date,
+            observer=in_map.observer_coordinate.realize_frame(
+                in_map.observer_coordinate.represent_as('unitspherical') * u.AU
+            )
+        ),
+        scale=(2.2, 2.2)*u.arcsec/u.pixel
+    )
     with Helioprojective.assume_spherical_screen(in_map.observer_coordinate):
         return in_map.reproject_to(header)
+
 
 euvi_map = reproject_to_1au(euvi_map)
 aia_map = reproject_to_1au(aia_map)

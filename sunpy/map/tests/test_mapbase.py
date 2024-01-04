@@ -1636,7 +1636,7 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # noqa: PT012
+    with pytest.raises(TypeError):  # NOQA: PT012
         # A runtime warning is thrown when dividing by zero in the case of
         # the map test
         with warn_context:
