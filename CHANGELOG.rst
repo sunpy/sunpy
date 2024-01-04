@@ -96,7 +96,7 @@ Breaking Changes
 Deprecations
 ------------
 
-- Using `sunpy.map.header_helper.meta_keywords` is deprecated.
+- Using ``sunpy.map.header_helper.meta_keywords`` is deprecated.
   Please see :ref:`Meta Keywords Table` for the list of metadata keywords used by `~sunpy.map.Map`. (`#6743 <https://github.com/sunpy/sunpy/pull/6743>`__)
 - The utility function ``sunpy.map.extract_along_coord`` is deprecated.
   Use :func:`sunpy.map.pixelate_coord_path`, and then pass its output to :func:`sunpy.map.sample_at_coords`. (`#6840 <https://github.com/sunpy/sunpy/pull/6840>`__)

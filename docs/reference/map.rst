@@ -70,7 +70,6 @@ All sunpy Maps are derived from `sunpy.map.GenericMap`, all the methods and attr
     :inherited-members:
     :include-all-objects:
     :skip: make_fitswcs_header
-    :skip: meta_keywords
     :skip: get_observer_meta
     :skip: make_heliographic_header
 

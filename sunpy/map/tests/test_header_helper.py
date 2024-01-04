@@ -9,7 +9,6 @@ import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 
@@ -60,12 +59,6 @@ def hgs_header(map_data, hgs_coord):
 @pytest.fixture
 def hpc_coord_notime():
     return SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
-
-
-def test_metakeywords():
-    with pytest.warns(SunpyDeprecationWarning):
-        meta = sunpy.map.meta_keywords()
-        assert isinstance(meta, dict)
 
 
 def test_scale_conversion(map_data, hpc_coord):
