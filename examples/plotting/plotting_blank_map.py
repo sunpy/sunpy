@@ -54,34 +54,17 @@ xc = [0, 50, 400] * u.arcsec
 yc = [0, 100, 400] * u.arcsec
 
 ################################################################################
-# Note that the blue dot corresponding to (0, 0) in helioprojective coordinates is
-# not at the intersection of the heliographic equator and the heliographic prime
-# meridian. (0, 0) in helioprojective coordinates *is* at the center of the solar
-# disk, and at the center of the overall image. The reason that the intersection of
-# the two heliographic grid lines is not also at disk center is because the observer
-# (specified as Earth in this example) is at non-zero heliographic latitude (because
-# the Sun's equatorial plane is tilted relative to the ecliptic plane that contains
-# Earth's orbit). Disk center as seen by an observer has the same heliographic
-# latitude as the heliographic latitude of the observer, and this value is known as
-# the B0 angle, and varies over the year.
-#
-# To have no no offset (i.e., the heliographic equator is a horizontal line), you
-# can specify an observer on the Sun's equatorial plane instead of using Earth as
-# the observer.
-
-# sphinx_gallery_defer_figures
-
-observer_sun = SkyCoord(0*u.deg, 0*u.deg, 1*u.AU, obstime='2013-10-28',
-                    frame=frames.HeliographicStonyhurst)
-skycoord_sun = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28',
-                    observer=observer_sun, frame=frames.Helioprojective)
-
-################################################################################
-# Place and mark coordinates on the plot.
+# Plot the blank map with the specified coordinates.  Note that the marker for
+# (0, 0) in helioprojective coordinates is at the center of the solar disk, yet
+# the heliographic equator (zero degrees latitude) does not go through the disk
+# center and instead curves below it.  The reason for that is the observer,
+# specified as Earth in this example, is almost always at non-zero heliographic
+# latitude, and disk center as seen by such an observer will have that same
+# heliographic latitude.  The :func:`~sunpy.coordinates.sun.B0` function returns
+# Earth's heliographic latitude at a specified time.
 
 coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
 ax.plot_coord(coords, 'o')
-ax.plot_coord(skycoord_sun, 'o')
 ax.set_title('Plotting fixed points on a blank map')
 
 plt.show()
