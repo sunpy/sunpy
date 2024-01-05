@@ -2316,7 +2316,7 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
-    def draw_contours(self, levels, axes=None, fill=False, **contour_args):
+    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
 
@@ -2329,10 +2329,10 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
             axes.
-        fill : `bool` or `str`, optional
+        fill : `bool`, optional
             Determines the style of the contours:
-            - If `False` (default), contours are drawn as lines using `~matplotlib.axes.Axes.contour`.
-            - If `True`, contours are drawn as filled regions using `~matplotlib.axes.Axes.contourf`.
+            - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
+            - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
 
         Returns
         -------
@@ -2343,7 +2343,7 @@ class GenericMap(NDData):
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~matplotlib.axes.Axes.contour` function.
+        corresponding matplotlib method.
         """
         axes = self._check_axes(axes)
         levels = self._process_levels_arg(levels)
