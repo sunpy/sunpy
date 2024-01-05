@@ -1,8 +1,13 @@
 .. _sunpy-topic-guide-installing:
 
-************
-Installation
-************
+*********************
+Advanced Installation
+*********************
+
+.. warning::
+
+    This page has advanced instructions for installing ``sunpy``.
+    If you are new to Python or ``sunpy``, please read the :ref:`installation instructions <sunpy-tutorial-installing>` first.
 
 The SunPy Project `maintains a range of affiliated packages <https://sunpy.org/project/affiliated>`__ that leverage the wider ecosystem of scientific Python packages for solar physics.
 This page focuses on how to install the ``sunpy`` core package, but these instructions should apply to most of the affiliated packages as well.
@@ -36,12 +41,17 @@ Once the environment active, to acquire a full ``sunpy`` installation:
 
     $ pip install "sunpy[all]"
 
-.. note::
 
-    We strive to provide binary wheels for all of our packages.
-    If you are using a Python version or operating system that is missing a binary wheel.
-    ``pip`` will try to compile the package from source and this is likely to fail without a C compiler (e.g., ``gcc`` or ``clang``).
-    Getting the compiler either from your system package manager or XCode should address this.
+.. warning::
+
+    If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
+    Do **not** install ``sunpy`` or other Python packages using ``sudo``.
+    This error implies you have an incorrectly configured virtual environment or it is not activated.
+
+We strive to provide binary wheels for all of our packages.
+If you are using a Python version or operating system that is missing a binary wheel,
+``pip`` will try to compile the package from source and this is likely to fail without a C compiler (e.g., ``gcc`` or ``clang``).
+Getting the compiler either from your system package manager or XCode (if you are using macOS) should address this.
 
 If you have a reason to want a more minimal installation, you can install sunpy with no optional dependencies, however this means a lot of submodules will not import:
 
@@ -56,12 +66,6 @@ It is possible to select which "extra" dependencies you want to install, if you 
     $ pip install "sunpy[map,timeseries]"
 
 The available options are: ``[asdf]``, ``[dask]``, ``[database]``, ``[image]``, ``[jpeg2000]``, ``[map]``, ``[net]``, ``[timeseries]``, ``[visualization]``.
-
-.. note::
-
-    If you get a ``PermissionError`` this means that you do not have the required administrative access to install new packages to your Python installation.
-    Do **not** install ``sunpy`` or other Python packages using ``sudo``.
-    This error implies you have an incorrectly configured virtual environment or it is not activated.
 
 Updating a pip package
 ----------------------
