@@ -337,7 +337,7 @@ You can also go one step further back, passing in a list of HEK attribute object
 
 .. code-block:: python
 
-   >>> q = h2v.full_query((a.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), a.hek.EventType('FL')))  # doctest: +SKIP
+   >>> vso_query = h2v.full_query((a.Time('2011/08/09 07:00:00', '2011/08/09 07:15:00'), a.hek.EventType('FL')))  # doctest: +REMOTE_DATA
 
 The full capabilities of the HEK query module can be used in this function (see above).
 
