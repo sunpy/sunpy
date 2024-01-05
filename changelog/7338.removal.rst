@@ -1,0 +1,1 @@
+``sunpy.net.helioviewer.HelioviewerClient`` has been removed. Use the `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ package instead.

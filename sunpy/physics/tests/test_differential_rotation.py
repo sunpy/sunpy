@@ -147,7 +147,7 @@ def test_solar_rotate_coordinate():
         d = solar_rotate_coordinate(c, observer='earth')
 
     # Test that the code properly filters the time keyword
-    with pytest.raises(ValueError):  # NOQA: PT012
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional"):
         with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
             d = solar_rotate_coordinate(c, time='noon')
 

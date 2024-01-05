@@ -64,7 +64,7 @@ class Time(Range):
         # Use exact type checking here, because otherwise it collides with all
         # subclasses of itself which can have completely different search
         # meanings.
-        return isinstance(other, type(self))
+        return type(other) is type(self)  # NOQA: E721
 
     def __xor__(self, other):
         if not isinstance(other, self.__class__):

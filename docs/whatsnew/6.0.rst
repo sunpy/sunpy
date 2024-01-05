@@ -18,6 +18,7 @@ PUT STATS HERE
 
 Removal of ``sunpy.database``
 -----------------------------
+
 The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
 It has been deprecated since sunpy 4.1, and since there have been no major objections from the communityu since then we have completely removed ``sunpy.database`` in sunpy 6.0.
 If you are interested in seeing a replacement for ``sunpy.database``, either inside ``sunpy`` or as a third-party package, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
@@ -28,3 +29,18 @@ Arguments for :meth:`~sunpy.map.GenericMap.reproject_to`
 
 Arguments for this method have been changed to be keyword only after the target WCS argument.
 This was raising a warning since sunpy 4.1.
+
+Removal of ``sunpy.net.helioviewer.HelioViewerClient``
+------------------------------------------------------
+
+``sunpy.net.helioviewer`` has been deprecated since sunpy v4.1 and has now been removed.
+Users should instead use the `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ package.
+This package provides a Python wrapper around the Helioviewer API and is maintained by the Helioviewer Project.
+The ``hvpy`` package supersedes the ``sunpy.net.helioviewer`` module.
+
+Arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` are now keywords only
+-----------------------------------------------------------------------------------
+
+The arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` have been changed to be keyword only.
+This means that you must now specify the arguments by name, rather than by position and has been done to make the API more consistent.
+This has been raising a warning since sunpy 4.1 and is now an error.
