@@ -125,22 +125,16 @@ class Unpacker:
     unpack_bytes = unpack_string
 
     def unpack_list(self, unpack_item):
-        list = []
-        while True:
-            x = self.unpack_uint()
-            if x == 0:
-                break
+        alist = []
+        while (x := self.unpack_uint()) != 0:
             if x != 1:
                 raise ConversionError(f'0 or 1 expected, got {x!r}')
             item = unpack_item()
-            list.append(item)
-        return list
+            alist.append(item)
+        return alist
 
     def unpack_farray(self, n, unpack_item):
-        list = []
-        for i in range(n):
-            list.append(unpack_item())
-        return list
+        return [unpack_item() for _ in range(n)]
 
     def unpack_array(self, unpack_item):
         n = self.unpack_uint()
