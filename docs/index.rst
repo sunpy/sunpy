@@ -92,7 +92,7 @@ It includes an interface for searching and downloading data from multiple data p
     topic_guide/index
     reference/index
     whatsnew/index
-    about
+    citation
     reference/known_issues
     reference/stability
     dev_guide/index
