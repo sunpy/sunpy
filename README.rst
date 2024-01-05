@@ -52,19 +52,19 @@ This is the mission statement of the SunPy project.
 Installation
 ============
 
-We recommended that anyone who wants to install ``sunpy`` follow the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` docs.
-This will walk you through installing ``sunpy`` and all of its dependencies within a virtual environment.
+We recommended following the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` documentation.
+This will walk you through installing ``sunpy`` and all of its dependencies.
 
 Usage
 =====
 
-The best place to begin learning how to use ``sunpy`` is to read the `tutorial <https://docs.sunpy.org/en/stable/tutorial/index.html>`__.
-There is also a collection of shorter examples that demonstrate the use of ``sunpy`` in the `gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__.
+If you are new to ``sunpy``, the best place to start is the `tutorial <https://docs.sunpy.org/en/stable/tutorial/index.html>`__.
+the `example gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__ also includes a collection of shorter and more specific examples of using ``sunpy``.
 
 Changes
 =======
 
-To see the latest changes in ``sunpy`` see our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__.
+See our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__. for the latest changes in ``sunpy``.
 
 Getting Help
 ============
@@ -86,10 +86,10 @@ The continued growth and development of ``sunpy`` is dependent on the community 
 Contributing
 ============
 
-The SunPy Project is a community-driven open source project that welcomes any and all contributions.
-Whether you are a developer, student, or user, you can help by contributing to code, documentation, or community support.
+The SunPy Project is a community-driven open-source project that welcomes any and all contributions.
+Whether you are a developer, student, or user, you can help by contributing code, documentation, or community support.
 
-If you would like to get involved, we have a `Newcomers Guide`_ guide that shows how to get setup with a development workflow but it also covers non-coding contributions.
+If you would like to get involved, the `Newcomers Guide`_ guide explains the many different ways to contribute to the SunPy Project and also shows how to get set up with a development workflow.
 
 Help is always welcome, so come and say hello by joining the `SunPy Chat`_ and look over the `Good First Issues list`_ for the ideal places to start.
 

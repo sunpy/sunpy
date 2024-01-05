@@ -44,9 +44,9 @@ Once the environment active, to acquire a full ``sunpy`` installation:
     This error implies you have an incorrectly configured virtual environment or it is not activated.
 
 We strive to provide binary wheels for all of our packages.
-If you are using a Python version or operating system that is missing a binary wheel.
+If you are using a Python version or operating system that is missing a binary wheel,
 ``pip`` will try to compile the package from source and this is likely to fail without a C compiler (e.g., ``gcc`` or ``clang``).
-Getting the compiler either from your system package manager or XCode should address this.
+Getting the compiler either from your system package manager or XCode (if you are using macOS) should address this.
 
 If you have a reason to want a more minimal installation, you can install sunpy with no optional dependencies, however this means a lot of submodules will not import:
 

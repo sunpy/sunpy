@@ -84,7 +84,7 @@ Now we will create and activate a new virtual environment to install ``sunpy`` i
     $ conda create --name sunpy
     # Only run the following two lines
     # if you have NOT installed miniforge or added conda-forge to your channels
-    # Please do not add these lines if you are using Anaconda
+    # Do not run these lines if you are using Anaconda
     $ conda config --add channels conda-forge
     $ conda config --set channel_priority strict
     $ conda activate sunpy
