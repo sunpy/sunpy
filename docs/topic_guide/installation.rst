@@ -4,6 +4,11 @@
 Advanced Installation
 *********************
 
+.. warning::
+
+    This page has advanced instructions for installing ``sunpy``.
+    If you are new to Python or ``sunpy``, please read the :ref:`installation instructions <sunpy-tutorial-installing>` first.
+
 The SunPy Project `maintains a range of affiliated packages <https://sunpy.org/project/affiliated>`__ that leverage the wider ecosystem of scientific Python packages for solar physics.
 This page focuses on how to install the ``sunpy`` core package, but these instructions should apply to most of the affiliated packages as well.
 
