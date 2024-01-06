@@ -2,7 +2,6 @@
 This module provides functions to retrieve system information.
 """
 import platform
-import warnings
 from collections import defaultdict
 from importlib.metadata import PackageNotFoundError, version, requires, distribution
 
@@ -10,6 +9,7 @@ from packaging.markers import Marker
 from packaging.requirements import Requirement
 
 import sunpy.extern.distro as distro
+from sunpy.util import warn_user
 
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 
@@ -102,17 +102,16 @@ def find_dependencies(package="sunpy", extras=None):
 
 
 def warn_missing_deps(extras):
-    # let one ImportWarning through the default filterwarnings
-    warnings.filterwarnings("once", category=ImportWarning)
-    # check if the map extras are installed
+    """
+    Warn a user if they are missing dependencies defined in a given extras.
+    """
     if (deps := find_dependencies(package="sunpy", extras=extras)):
         missing_deps = [deps[0][key].split(";")[0].strip("Missing ") for key in deps[0].keys()]
         if missing_deps:
-            warnings.warn(f"Importing sunpy.{extras} without its extra dependencies may result in errors.\n"
-                        f"The following packages are not installed:\n{missing_deps}\n"
-                        f"To install sunpy with these dependencies use `install sunpy[{extras}]`"
-                        f"or `install sunpy[all]` for all extras.",
-                        ImportWarning)
+            warn_user(f"Importing sunpy.{extras} without its extra dependencies may result in errors.\n"
+                      f"The following packages are not installed:\n{missing_deps}\n"
+                      f"To install sunpy with these dependencies use `install sunpy[{extras}]`"
+                      f"or `install sunpy[all]` for all extras.")
 
 
 def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):

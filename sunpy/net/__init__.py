@@ -1,10 +1,11 @@
 
 # Import and register the clients but we do not want them in the namespace, we import them as _
-# check if user has installed the net extras
-from sunpy.util.sysinfo import warn_missing_deps
+# Check if user has installed the net extras
+from sunpy.util.sysinfo import warn_missing_deps as _warn_missing_deps
+_warn_missing_deps('net')
 
-warn_missing_deps('net')
-
+# Import and register the clients but we do not want them in the namespace, we import them as _
+from sunpy.net import base_client as _
 from sunpy.net import base_client as _
 from sunpy.net import cdaweb as _
 from sunpy.net import dataretriever as _
