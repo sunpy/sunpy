@@ -3,6 +3,10 @@ SunPy Map
 
 isort:skip_file
 """
+# check if user has installed the map extras
+from sunpy.util.sysinfo import warn_missing_deps
+warn_missing_deps('map')
+
 from ._units import maxwell
 from sunpy.map.mapbase import *
 

@@ -1,3 +1,7 @@
+# check if user has installed the timeseries extras
+from sunpy.util.sysinfo import warn_missing_deps
+warn_missing_deps('timeseries')
+
 from sunpy.timeseries.metadata import TimeSeriesMetaData
 from sunpy.timeseries.sources import *
 from sunpy.timeseries.timeseries_factory import TimeSeries

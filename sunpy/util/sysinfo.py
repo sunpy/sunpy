@@ -2,6 +2,7 @@
 This module provides functions to retrieve system information.
 """
 import platform
+import warnings
 from collections import defaultdict
 from importlib.metadata import PackageNotFoundError, version, requires, distribution
 
@@ -98,6 +99,20 @@ def find_dependencies(package="sunpy", extras=None):
         missing_requirements[package] = format_requirement_string(
             resolve_requirement_versions(package_versions))
     return missing_requirements, installed_requirements
+
+
+def warn_missing_deps(extras):
+    # let one ImportWarning through the default filterwarnings
+    warnings.filterwarnings("once", category=ImportWarning)
+    # check if the map extras are installed
+    if (deps := find_dependencies(package="sunpy", extras=extras)):
+        missing_deps = [deps[0][key].split(";")[0].strip("Missing ") for key in deps[0].keys()]
+        if missing_deps:
+            warnings.warn(f"Importing sunpy.{extras} without its extra dependencies may result in errors.\n"
+                        f"The following packages are not installed:\n{missing_deps}\n"
+                        f"To install sunpy with these dependencies use `install sunpy[{extras}]`"
+                        f"or `install sunpy[all]` for all extras.",
+                        ImportWarning)
 
 
 def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):
