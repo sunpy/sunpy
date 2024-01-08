@@ -235,10 +235,7 @@ class GenericMap(NDData):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
-        if self.dtype == np.uint8:
-            norm = None
-        else:
-            # Put import here to reduce sunpy.map import time
+        if self.dtype != np.uint8:
             from matplotlib import colors
             norm = colors.Normalize()
 
