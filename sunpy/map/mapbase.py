@@ -193,7 +193,20 @@ class GenericMap(NDData):
         if cls.__doc__ is None:
             # Set an empty string, to prevent an error adding None to str in the next line
             cls.__doc__ = ''
-        cls.__doc__ += textwrap.indent(_notes_doc, "    ")
+        existing_notes_pos = cls.__doc__.find('Notes\n    -----')
+        other_patterns = ''
+        if existing_notes_pos != -1:
+            start_index = existing_notes_pos + len('Notes\n    -----')
+            references_pattern = "References\n    ----------"
+            examples_pattern = "Examples\n   -------"
+            references_pos = cls.__doc__.find(references_pattern, start_index)
+            examples_pos = cls.__doc__.find(examples_pattern, start_index)
+            if references_pos != -1 or examples_pos != -1:
+                next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
+                other_patterns = cls.__doc__[:next_pattern_pos]
+            existing_notes_pos2 = _notes_doc.find('Notes\n-----')
+            existing_notes_data = textwrap.indent(_notes_doc[existing_notes_pos2 + len('Notes\n-----'):].strip(), "    ")
+            cls.__doc__=(other_patterns+existing_notes_data.lstrip()+'\n    '+cls.__doc__[references_pos:])
 
         if hasattr(cls, 'is_datasource_for'):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
