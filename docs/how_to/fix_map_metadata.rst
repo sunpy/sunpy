@@ -7,7 +7,7 @@ Fixing incorrect metadata
 There will be times where you will come across a FITS files with either incorrect, missing or unparsable metadata and reading these files into `~sunpy.map.Map` will cause an error.
 Therefore, to load these files into a `~sunpy.map.Map`, you will need to correct the metadata beforehand.
 
-In the example below, the units in the FITS header,  as controlled by the ``CUNIT1`` and ``CUNIT2`` keywords, are incorrect.
+In the example below, the units in the FITS header, as controlled by the ``CUNIT1`` and ``CUNIT2`` keywords, are incorrect.
 Before loading the file into a `~sunpy.map.Map`, we will correct these keywords to have the correct units.
 
 .. code-block:: python
