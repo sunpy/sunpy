@@ -72,7 +72,7 @@ class TimeSeriesMetaData:
     >>> md.find(parse_time('2012-06-01T21:08:12')).values()
     ['eve_val', 'goes_val']
     >>> md.find(parse_time('2012-06-01T21:08:12')).metas
-    [MetaDict([('goes_key', 'goes_val')]), MetaDict([('eve_key', 'eve_val')])]
+    [MetaDict([('goes_key': 'goes_val')]), MetaDict([('eve_key': 'eve_val')])]
     >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
