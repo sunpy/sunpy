@@ -282,11 +282,11 @@ def test_make_heliographic_header_invalid_inputs(aia171_test_map):
     # Test new keyword propagates correctly to header reference pixel coordinate
     # hgc/hgs = heliographic carrington/stonyhurst
     header_test_hgs = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington')
-    header_test_hgc = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=180*u.deg)
+    header_test_hgc = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=180*u.deg)
     assert header_test_hgs['crval1'] == 0.0
     assert header_test_hgc['crval1'] == 180.0
     # Test keyword wraps correctly to range [0,360]
-    header_test_above = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=361*u.deg)
-    header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=-1*u.deg)
+    header_test_above = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=361*u.deg)
+    header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=-1*u.deg)
     assert header_test_above['crval1'] == 1.0
     assert header_test_below['crval1'] == 359.0

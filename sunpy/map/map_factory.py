@@ -183,7 +183,7 @@ class MapFactory(BasicRegistrationFactory):
         data_header_pairs = []
         for arg in args:
             try:
-                data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors,**kwargs)
+                data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
             except NoMapsInFileError as e:
                 if not (silence_errors or allow_errors):
                     raise
@@ -231,7 +231,7 @@ class MapFactory(BasicRegistrationFactory):
     def _parse_path(self, arg, **kwargs):
         return parse_path(arg, self._read_file, **kwargs)
 
-    @deprecated_renamed_argument("silence_errors","allow_errors","5.1", warning_type=SunpyDeprecationWarning)
+    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types

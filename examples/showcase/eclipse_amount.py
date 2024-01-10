@@ -33,6 +33,7 @@ max2024 = Time('2024-04-08 18:35')
 # Define a function to calculate start/end eclipse times and plot the eclipse
 # timeseries within +/- 2 hours of the time of interest.
 
+
 def plot_eclipse_timeseries(location, time):
     # Define an array of observation times centered around the time of interest
     times = time + np.concatenate([np.arange(-120, -5) * u.min,

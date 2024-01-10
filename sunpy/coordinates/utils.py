@@ -337,8 +337,8 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
             "Invalid input, bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
 
     if (top_right is not None and not (hasattr(top_right, 'transform_to') and
-                                        hasattr(top_right, 'shape') and
-                                        hasattr(top_right, 'spherical'))):
+                                       hasattr(top_right, 'shape') and
+                                       hasattr(top_right, 'spherical'))):
         raise TypeError("Invalid input, top_right must be of type SkyCoord or BaseCoordinateFrame.")
 
     if bottom_left.shape == (2,) and any(x is not None for x in (width, height, top_right)):

@@ -61,7 +61,7 @@ def compare_results(expect, result, allclose=True):
 
 
 @pytest.mark.parametrize(('angle', 'k'), [(90.0, 1), (-90.0, -1), (-270.0, 1),
-                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+                                          (-90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_rotation(original, angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
@@ -83,7 +83,7 @@ def test_rotation(original, angle, k):
 
 
 @pytest.mark.parametrize(('angle', 'k'), [(90.0, 1), (-90.0, -1), (-270.0, 1),
-                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+                                          (-90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_skimage_rotation(original, angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
@@ -156,8 +156,8 @@ def test_scale(original, scale_factor):
 
 
 @pytest.mark.parametrize(('angle', 'dx', 'dy', 'scale_factor'), [(90, -100, 40, 0.25),
-                                                         (-90, 40, -80, 0.75),
-                                                         (180, 20, 50, 1.5)])
+                                                                 (-90, 40, -80, 0.75),
+                                                                 (180, 20, 50, 1.5)])
 def test_all(original, angle, dx, dy, scale_factor):
     """
     Tests to make sure that combinations of scaling, shifting and rotation

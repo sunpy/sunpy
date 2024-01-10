@@ -415,8 +415,8 @@ def test_hcc_default_observer():
 
 
 @pytest.mark.parametrize(('x', 'y', 'psi'), [(0*u.km, -1*u.km, 270*u.deg),
-                                       (0*u.km, 1*u.km, 90*u.deg),
-                                       (-1*u.km, 0*u.km, 180*u.deg)])
+                                             (0*u.km, 1*u.km, 90*u.deg),
+                                             (-1*u.km, 0*u.km, 180*u.deg)])
 def test_heliocentric_radial_psi(x, y, psi):
     # The cylindrical representation of HCC is Heliocentric Radial
     # Test that the `psi` component is represented as desired

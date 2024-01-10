@@ -145,8 +145,6 @@ extend-ignore = [
 "sunpy/util/exceptions.py" = ["TID251"]
 "sunpy/util/tests/test_logger.py" = ["TID251"]
 "sunpy/util/decorators.py" = ["TID251"]
-# Notebook config for binder uses undefined variable
-".jupyter/jupyter_notebook_config.py" = ["F821"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

@@ -411,8 +411,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    @deprecated_renamed_argument("silence_errors","allow_errors","5.1", warning_type=SunpyDeprecationWarning)
-    def __call__(self, *args, silence_errors=False,allow_errors=False, **kwargs):
+    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
+    def __call__(self, *args, silence_errors=False, allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
         arguments and passes them to a sequence of pre-registered types to

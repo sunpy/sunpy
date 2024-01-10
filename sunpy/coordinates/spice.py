@@ -116,10 +116,9 @@ class SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
                        f"Origin: '{cls._center_name}'\n\n"
                        "Parameters\n----------\n"
                        f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                        "    The time of the observation.  This is used to determine the\n"
-                        "    position of solar-system bodies (e.g., the Sun and the Earth) as\n"
-                        "    needed to define the origin and orientation of the frame.\n")
-
+                       "    The time of the observation.  This is used to determine the\n"
+                       "    position of solar-system bodies (e.g., the Sun and the Earth) as\n"
+                       "    needed to define the origin and orientation of the frame.\n")
 
     def to_helioprojective(self):
         """
