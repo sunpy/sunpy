@@ -459,8 +459,7 @@ class TimeSeriesMetaData:
         all_cols = set()
         for metatuple in self.metadata:
             all_cols.update(metatuple[1])
-        all_cols = list(all_cols)
-        all_cols.sort()
+        all_cols = sorted(all_cols)
         return all_cols
 
     @property
@@ -494,8 +493,7 @@ class TimeSeriesMetaData:
         for metatuple in self.metadata:
             for key, value in metatuple[2].items():
                 all_vals.add(str(value))
-        all_vals = list(all_vals)
-        all_vals.sort()
+        all_vals = sorted(all_vals)
         return all_vals
 
     @property

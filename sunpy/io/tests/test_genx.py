@@ -40,27 +40,27 @@ def test_array_elements_values():
 
 
 @pytest.mark.parametrize(('slice', 'value'), [((0, 0, 0, 0), 0),
-                                          ((4, 0, 0, 0), 96),
-                                          ((0, 2, 2, 0), 16),
-                                          ((0, 3, 2, 0), 22),
-                                          ((4, 3, 2, 0), 118)])
+                                              ((4, 0, 0, 0), 96),
+                                              ((0, 2, 2, 0), 16),
+                                              ((0, 3, 2, 0), 22),
+                                              ((4, 3, 2, 0), 118)])
 def test_value_slice(slice, value):
     assert TESTING['MYNUMBER_ARRAY_DIMENSION'][slice] == value
 
 
 @pytest.mark.parametrize(('myarray', 'dtype'), [(TESTING['MYNUMBER_ARRAY'], np.int16),
-                                            (TESTING['MYNUMBER_ARRAY_DIMENSION'], np.int16),
-                                            (TESTING['MYSTRUCTURE']['MYFARRAY'], np.float32),
-                                            (TESTING['MYSTRUCTURE']['MYFARRAYD'], np.float32),
-                                            (TESTING['MYSTRUCTURE']['MYDARRAY'], np.float64),
-                                            (TESTING['MYSTRUCTURE']['MYDARRAYD'], np.float64),
-                                            (TESTING['MYSTRUCTURE']['NESTEDSTRUCT']
-                                             ['MYLARRAY'], np.int32),
-                                            (TESTING['MYSTRUCTURE']['NESTEDSTRUCT']
-                                             ['MYLARRAYD'], np.int32),
-                                            (TESTING['MYSTRUCTURE']['RANDOMNUMBERS'], np.int16),
-                                            (TESTING['MYSTRUCTURE']['MYCARRAY'], complex),
-                                            (TESTING['MYSTRUCTURE']['MYDCARRAY'], np.complex64)])
+                                                (TESTING['MYNUMBER_ARRAY_DIMENSION'], np.int16),
+                                                (TESTING['MYSTRUCTURE']['MYFARRAY'], np.float32),
+                                                (TESTING['MYSTRUCTURE']['MYFARRAYD'], np.float32),
+                                                (TESTING['MYSTRUCTURE']['MYDARRAY'], np.float64),
+                                                (TESTING['MYSTRUCTURE']['MYDARRAYD'], np.float64),
+                                                (TESTING['MYSTRUCTURE']['NESTEDSTRUCT']
+                                                 ['MYLARRAY'], np.int32),
+                                                (TESTING['MYSTRUCTURE']['NESTEDSTRUCT']
+                                                 ['MYLARRAYD'], np.int32),
+                                                (TESTING['MYSTRUCTURE']['RANDOMNUMBERS'], np.int16),
+                                                (TESTING['MYSTRUCTURE']['MYCARRAY'], complex),
+                                                (TESTING['MYSTRUCTURE']['MYDCARRAY'], np.complex64)])
 def test_type(myarray, dtype):
     assert myarray.dtype == dtype
 

@@ -366,6 +366,7 @@ _map_meta_keywords = {
     'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.'
 }
 
+
 @u.quantity_input
 def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR",
                              map_center_longitude: u.Quantity[u.deg] = 0.0*u.deg):
