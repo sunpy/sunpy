@@ -15,14 +15,14 @@ from astropy.time import Time
 from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
 
-TimesLeapsecond = sampled_from((Time('2015-06-30T23:59:60'),
+TIME_LEAP_SECONDS = sampled_from((Time('2015-06-30T23:59:60'),
                                 Time('2012-06-30T23:59:60')))
 
 
 @st.composite
 def Times(draw, max_value, min_value):
     time = one_of(datetimes(max_value=max_value, min_value=min_value),
-                  TimesLeapsecond)
+                  TIME_LEAP_SECONDS)
 
     time = Time(draw(time))
 
@@ -74,7 +74,7 @@ def online_instruments():
 
 @st.composite
 def time_attr(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+              max_value=datetime.datetime(datetime.datetime.now(datetime.timezone.utc).year, 1, 1, 0, 0),
               min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
@@ -90,7 +90,7 @@ def time_attr(draw, time=Times(
 
 @st.composite
 def goes_time(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+              max_value=datetime.datetime(datetime.datetime.now(datetime.timezone.utc).year, 1, 1, 0, 0),
               min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
@@ -116,7 +116,7 @@ def goes_time(draw, time=Times(
 
 @st.composite
 def srs_time(draw, time=Times(
-             max_value=datetime.datetime.now(),
+             max_value=datetime.datetime.now(datetime.timezone.utc),
              min_value=datetime.datetime(1996, 1, 1)),
              delta=TimeDelta()):
     t1 = draw(time)

@@ -31,7 +31,7 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py311
+        - linux: py312
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -47,8 +47,9 @@ jobs:
         brew:
           - openjpeg
       envs: |
-        - windows: py310
-        - macos: py39
+        - windows: py311
+        - macos: py310
+        - linux: py39
         - linux: py39-oldestdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -178,9 +179,9 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
-        - cp3{9,10,11}-manylinux*_x86_64
-        - cp3{9,10,11}-macosx_x86_64
-        - cp3{9,10,11}-macosx_arm64
+        - cp3{9,10,11,12}-manylinux*_x86_64
+        - cp3{9,10,11,12}-macosx_x86_64
+        - cp3{9,10,11,12}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
 
