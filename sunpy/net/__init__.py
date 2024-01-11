@@ -1,5 +1,4 @@
 
-# Import and register the clients but we do not want them in the namespace, we import them as _
 # Check if user has installed the net extras
 from sunpy.util.sysinfo import _warn_missing_deps
 
