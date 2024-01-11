@@ -728,7 +728,8 @@ class GenericMap(NDData):
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
                         'dn': 'ct',
-                        'dn/s': 'ct/s'}
+                        'dn/s': 'ct/s',
+                        'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
@@ -736,7 +737,7 @@ class GenericMap(NDData):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                           f'See {_META_FIX_URL} for how to fix metadata before loading it '
                           'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                           'the FITS unit standards.')
             unit = None
         return unit
