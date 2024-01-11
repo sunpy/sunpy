@@ -101,7 +101,7 @@ def find_dependencies(package="sunpy", extras=None):
     return missing_requirements, installed_requirements
 
 
-def warn_missing_deps(extras):
+def _warn_missing_deps(extras):
     """
     Warn a user if they are missing dependencies defined in a given extras.
     """
