@@ -265,8 +265,8 @@ def test_L0_astronomical_almanac():
                  '2013-04-01': 221.44,
                  '2013-05-01': 185.30,
                  '2013-06-01': 135.30,
-                 '2013-07-01':  98.22,  # NOQA
-                 '2013-08-01':  48.03,  # NOQA
+                 '2013-07-01': 98.22,
+                 '2013-08-01': 48.03,
                  '2013-09-01': 358.28,
                  '2013-10-01': 322.22,
                  '2013-11-01': 273.31,
@@ -288,8 +288,8 @@ def test_L0_jpl_horizons():
                   '2013-04-01': 221.440599,
                   '2013-05-01': 185.306476,
                   '2013-06-01': 135.303097,
-                  '2013-07-01':  98.221806,  # NOQA
-                  '2013-08-01':  48.035951,  # NOQA
+                  '2013-07-01': 98.221806,
+                  '2013-08-01': 48.035951,
                   '2013-09-01': 358.289921,
                   '2013-10-01': 322.226009,
                   '2013-11-01': 273.315206,
@@ -488,7 +488,7 @@ def test_carrington_rotation_time_longitude(crot, longitude, crot_fractional):
                                  [180, 90]), np.array([2000.5, 2000.75])),
                              (2000, np.array([180, 90]), np.array([2000.5, 2000.75])),
                              (np.array([2000, 2000]), 180, np.array([2000.5, 2000.5]))
-                         ])
+])
 def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fractional):
     assert all(sun.carrington_rotation_time(crot*u.one, longitude*u.deg) ==
                sun.carrington_rotation_time(crot_fractional*u.one))
@@ -500,7 +500,7 @@ def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fraction
                              (2000, -10),
                              (2000, 400),
                              (2000.5, 180),
-                         ])
+])
 def test_carrington_rotation_time_longitude_err(crot, longitude):
     with pytest.raises(ValueError):
         sun.carrington_rotation_time(crot*u.one, longitude*u.deg)
@@ -540,6 +540,7 @@ def test_eclipse_amount(use_DE440s):
     assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 17:14:53'))) > 0
     assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 19:55:58'))) > 0
     assert sun.eclipse_amount(location.get_itrs(Time('2024-04-08 19:56:01'))) == 0
+
 
 @pytest.mark.remote_data
 @pytest.mark.filterwarnings("ignore:Tried to get polar motions for times after IERS data is valid.")

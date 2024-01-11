@@ -1728,9 +1728,9 @@ class GenericMap(NDData):
                              "appropriate integer value for the data set.")
 
         new_data = np.pad(self.data,
-                      ((pad_y, pad_y), (pad_x, pad_x)),
-                      mode='constant',
-                      constant_values=(missing, missing))
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0

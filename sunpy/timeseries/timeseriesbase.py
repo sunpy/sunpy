@@ -236,7 +236,7 @@ class GenericTimeSeries:
         channels = "<br>".join(channels)
 
         uni = list(set(self.units.values()))
-        uni = [x.unit if type(x) == u.quantity.Quantity else x for x in uni]
+        uni = [x.unit if isinstance(x, u.quantity.Quantity) else x for x in uni]
         uni = ["dimensionless" if x == u.dimensionless_unscaled else x for x in uni]
         uni = "<br>".join(str(x) for x in uni)
 

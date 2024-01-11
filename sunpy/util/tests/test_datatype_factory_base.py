@@ -74,11 +74,11 @@ def test_default_factory():
     DefaultFactory.register(ExternallyValidatedWidget,
                             validation_function=external_validation_function)
 
-    assert type(DefaultFactory()) is DefaultWidget
-    assert type(DefaultFactory(style='standard')) is StandardWidget
-    assert type(DefaultFactory(style='fancy')) is DefaultWidget
-    assert type(DefaultFactory(style='fancy', feature="present")) is FancyWidget
-    assert type(DefaultFactory(style='external')) is ExternallyValidatedWidget
+    assert isinstance(DefaultFactory(), DefaultWidget)
+    assert isinstance(DefaultFactory(style='standard'), StandardWidget)
+    assert isinstance(DefaultFactory(style='fancy'), DefaultWidget)
+    assert isinstance(DefaultFactory(style='fancy', feature="present"), FancyWidget)
+    assert isinstance(DefaultFactory(style='external'), ExternallyValidatedWidget)
 
     with pytest.raises(ValidationFunctionError):
         DefaultFactory.register(UnvalidatedWidget)
@@ -87,7 +87,7 @@ def test_default_factory():
         DefaultFactory.register(MissingClassMethodWidget)
 
     DefaultFactory.unregister(StandardWidget)
-    assert type(DefaultFactory(style='standard')) is not StandardWidget
+    assert not isinstance(DefaultFactory(style='standard'), StandardWidget)
 
 
 def test_validation_fun_not_callable():
@@ -110,8 +110,8 @@ def test_no_default_factory():
     with pytest.raises(NoMatchError):
         NoDefaultFactory(style='fancy')
 
-    assert type(NoDefaultFactory(style='standard')) is StandardWidget
-    assert type(NoDefaultFactory(style='fancy', feature='present')) is FancyWidget
+    assert isinstance(NoDefaultFactory(style='standard'), StandardWidget)
+    assert isinstance(NoDefaultFactory(style='fancy', feature='present'), FancyWidget)
 
 
 def test_with_external_registry():
@@ -121,7 +121,7 @@ def test_with_external_registry():
     assert len(external_registry) == 0
 
     FactoryWithExternalRegistry.register(StandardWidget)
-    assert type(FactoryWithExternalRegistry(style='standard')) is StandardWidget
+    assert isinstance(FactoryWithExternalRegistry(style='standard'), StandardWidget)
 
     # Ensure the 'external_registry' is being populated see #1988
     assert len(external_registry) == 1
@@ -140,7 +140,7 @@ def test_extra_validation_factory():
     ExtraValidationFactory = BasicRegistrationFactory(
         additional_validation_functions=['different_validation_function'])
     ExtraValidationFactory.register(DifferentValidationWidget)
-    assert type(ExtraValidationFactory(style='different')) is DifferentValidationWidget
+    assert isinstance(ExtraValidationFactory(style='different'), DifferentValidationWidget)
 
     with pytest.raises(ValidationFunctionError):
         ExtraValidationFactory.register(MissingClassMethodDifferentValidationWidget)

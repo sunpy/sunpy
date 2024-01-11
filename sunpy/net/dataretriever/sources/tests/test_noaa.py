@@ -129,8 +129,10 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
-    assert mock_enqueue.called_once_with(("https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json",
-                                          path / "observed-solar-cycle-indices.json"))
+    mock_enqueue.assert_called_once_with(
+        Time("2012-10-04 00:00:00.000", "2012-10-06 00:00:00.000"),
+        Instrument("noaa-indices")
+    )
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
@@ -151,8 +153,10 @@ def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, indices_client):
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
-    assert mock_enqueue.called_once_with(("https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json",
-                                          path / "observed-solar-cycle-indices.json"))
+    mock_enqueue.assert_called_once_with(
+        Time('2012-10-04 00:00:00.000', '2012-10-06 00:00:00.000'),
+        Instrument("noaa-indices")
+    )
 
 
 @no_vso
