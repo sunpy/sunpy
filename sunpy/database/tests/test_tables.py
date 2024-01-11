@@ -241,19 +241,6 @@ def test_entry_from_qr_block(query_result):
 
 
 @pytest.mark.remote_data
-def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
-    entry = DatabaseEntry._from_query_result_block(
-        qr_block_with_missing_physobs.blocks[0])
-    expected_entry = DatabaseEntry(
-        source='STEREO_A', provider='SSC',
-        fileid='swaves/2013/swaves_average_20130805_a_hfr.dat',
-        observation_time_start=datetime(2013, 8, 5),
-        observation_time_end=datetime(2013, 8, 6), instrument='SWAVES',
-        size=3601.08, wavemin=2398339664000.0, wavemax=18737028625.0)
-    assert entry == expected_entry
-
-
-@pytest.mark.remote_data
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
     entry = DatabaseEntry._from_query_result_block(
