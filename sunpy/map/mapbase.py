@@ -724,7 +724,7 @@ class GenericMap(NDData):
         replacements = {'gauss': 'G',
                         'dn': 'ct',
                         'dn/s': 'ct/s',
-                        'counts / pixel': 'ct/pix',}
+                        'counts / pixel': 'ct/pix', }
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
@@ -1704,9 +1704,9 @@ class GenericMap(NDData):
                              "appropriate integer value for the data set.")
 
         new_data = np.pad(self.data,
-                      ((pad_y, pad_y), (pad_x, pad_x)),
-                      mode='constant',
-                      constant_values=(missing, missing))
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0

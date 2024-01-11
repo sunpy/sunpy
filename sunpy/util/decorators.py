@@ -217,7 +217,7 @@ def _deprecated(since, message='', name='', alternative='', pending=False, remov
         else:
             return deprecate_function(obj, message, warning_type)
 
-    if type(message) is type(deprecate):
+    if isinstance(message, type(deprecate)):
         return deprecate(message)
 
     return deprecate

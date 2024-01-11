@@ -2960,7 +2960,7 @@ class engine:
         transformed = transform(parts[pivot - 1]) or parts[pivot - 1]
         return " ".join(
             parts[: pivot - 1] + [sep.join([transformed, parts[pivot], ''])]
-        ) + " ".join(parts[(pivot + 1) :])
+        ) + " ".join(parts[(pivot + 1):])
 
     @staticmethod
     def _find_pivot(words, candidates):
