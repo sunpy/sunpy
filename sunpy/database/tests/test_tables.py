@@ -525,7 +525,6 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             instrument='VIRGO', size=332814.0),
     ]
 
-
     for e in entries:
         assert e in expected, f"{e} not found in expected list"
     for e in expected:

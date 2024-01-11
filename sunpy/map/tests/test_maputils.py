@@ -125,7 +125,7 @@ def test_all_corner_coordinates_from_map(sub_smap):
 
 def test_map_edges(all_off_disk_map):
     edges = map_edges(all_off_disk_map)
-    assert type(edges) is tuple
+    assert isinstance(edges, tuple)
     assert len(edges[2]) == 12
     assert np.all(edges[2][0] == [0, 0] * u.pix)
     assert np.all(edges[2][11] == [0, 11] * u.pix)

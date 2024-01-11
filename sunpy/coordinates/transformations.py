@@ -301,9 +301,9 @@ def _observers_are_equal(obs_1, obs_2):
                            "source observer is different.")
 
     return np.atleast_1d(u.allclose(obs_1.lat, obs_2.lat) and
-                          u.allclose(obs_1.lon, obs_2.lon) and
-                          u.allclose(obs_1.radius, obs_2.radius) and
-                          _times_are_equal(obs_1.obstime, obs_2.obstime)).all()
+                         u.allclose(obs_1.lon, obs_2.lon) and
+                         u.allclose(obs_1.radius, obs_2.radius) and
+                         _times_are_equal(obs_1.obstime, obs_2.obstime)).all()
 
 
 def _check_observer_defined(frame):

@@ -519,9 +519,9 @@ def test_vso_query_block_caching_with_overwrite_true_flag(database,
     # Only downloading for the first query response block with caching disabled
 
     num_entries_from_vso_query(database, download_qr[:1],
-                                                       path=str(tmpdir.join('{file}.type1')),
-                                                       file_pattern=str(tmpdir.join('*.type1')),
-                                                       overwrite=True)
+                               path=str(tmpdir.join('{file}.type1')),
+                               file_pattern=str(tmpdir.join('*.type1')),
+                               overwrite=True)
 
     # The files for the first query response block should be downloaded again
     # Old entries should be deleted, so len(database) should not change

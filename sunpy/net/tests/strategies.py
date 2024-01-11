@@ -16,7 +16,7 @@ from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
 
 TIME_LEAP_SECONDS = sampled_from((Time('2015-06-30T23:59:60'),
-                                Time('2012-06-30T23:59:60')))
+                                  Time('2012-06-30T23:59:60')))
 
 
 @st.composite

@@ -117,7 +117,7 @@ def test_err_dummyattr_apply():
 
 @pytest.mark.remote_data
 def test_hek_client(hek_result):
-    assert type(hek_result) == hek.hek.HEKTable
+    assert isinstance(hek_result, hek.hek.HEKTable)
 
 
 @pytest.mark.remote_data
@@ -131,7 +131,7 @@ def test_hek_empty_search_result():
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
-    assert type(hek_query) == hek.hek.HEKTable
+    assert isinstance(hek_query, hek.hek.HEKTable)
     assert len(hek_query) == 0
 
 
@@ -155,13 +155,13 @@ def test_hek_time_col(hek_result):
 @pytest.mark.remote_data
 def test_vso_time(hek_result):
     ve = hek_result[0].vso_time
-    assert type(ve) == attrs.Time
+    assert isinstance(ve, attrs.Time)
 
 
 @pytest.mark.remote_data
 def test_vso_instrument(hek_result):
     vc = hek_result[1].vso_instrument
-    assert type(vc) == attrs.Instrument
+    assert isinstance(vc, attrs.Instrument)
 
 
 @pytest.mark.remote_data
