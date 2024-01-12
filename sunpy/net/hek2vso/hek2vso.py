@@ -8,10 +8,12 @@ import sys
 from tqdm import tqdm
 
 from astropy import units
+from astropy.utils.decorators import deprecated_renamed_argument
 
 from sunpy.net import attrs as a
 from sunpy.net import hek, vso
 from sunpy.net.hek import HEKTable
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
@@ -147,7 +149,9 @@ class H2VClient:
         return self.translate_and_query(self.hek_results,
                                         limit=limit)
 
-    def translate_and_query(self, hek_results, limit=None):
+    @deprecated_renamed_argument("vso_response_format", None,"6.0", warning_type=SunpyDeprecationWarning)
+    @deprecated_renamed_argument("progress", None,"6.0", warning_type=SunpyDeprecationWarning)
+    def translate_and_query(self, hek_results, limit=None, progress=False, vso_response_format="table"):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -163,6 +167,7 @@ class H2VClient:
             An approximate limit to the desired number of VSO results.
         progress : bool
             A flag to turn off the progress bar, defaults to "off"
+            Was never used and is now deprecated, will be removed in sunpy 7.0
 
         Examples
         --------
@@ -178,7 +183,7 @@ class H2VClient:
         vso_query = translate_results_to_query(hek_results)
 
         for query in tqdm(vso_query, unit="records"):
-            temp = self.vso_client.search(*query)
+            temp = self.vso_client.search(*query, response_format=vso_response_format)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:
