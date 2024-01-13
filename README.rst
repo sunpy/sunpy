@@ -2,107 +2,56 @@
 ``sunpy``
 *********
 
-.. raw:: html
+|SunPy Logo|
 
-    <img
-    src="https://raw.githubusercontent.com/sunpy/sunpy-logo/master/sunpy_logo_landscape.svg"
-    alt="SunPy Logo"
-    align="center"
-    width="200px" />
-    <table>
-    <thead>
-        <tr>
-        <th> Release </th>
-        <th> Development </th>
-        <th> Community </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-        <td>
-            <a href="https://pypi.python.org/pypi/sunpy/"
-            ><img src="https://img.shields.io/pypi/v/sunpy.svg" alt="Latest PyPi Version"
-            /></a>
-        </td>
-        <td>
-            <a href="https://pypi.python.org/pypi/sunpy/"
-            ><img src="https://img.shields.io/pypi/pyversions/sunpy" alt="Python Versions"
-            /></a>
-        </td>
-        <td>
-            <a href="https://app.element.io/#/room/#sunpy:openastronomy.org"
-            ><img
-                src="https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.org"
-                alt="Matrix Chat Room"
-            /></a>
-        </td>
-        </tr>
-        <tr>
-        <td>
-            <a href="https://anaconda.org/conda-forge/sunpy"
-            ><img src="https://anaconda.org/conda-forge/sunpy/badges/version.svg" alt="Latest Conda Version"
-            /></a>
-        </td>
-        <td>
-            <a href="https://www.repostatus.org/#active"
-            ><img
-                src="https://www.repostatus.org/badges/latest/active.svg"
-                alt="Project Status: Active - The project has reached a stable, usable state and is being actively developed."
-            /></a>
-        </td>
-        <td>
-            <a href="https://community.openastronomy.org/"
-            ><img
-                src="https://cdck-file-uploads-global.s3.dualstack.us-west-2.amazonaws.com/try2/original/1X/5e1e3b3cada2d7fbae4734d4bc53999933d71c95.svg"
-                height="20px"
-                alt="OpenAstronomy Discourse community"
-            /></a>
-        </td>
-        </tr>
-        <tr>
-        <td>
-            <a href="https://zenodo.org/badge/latestdoi/2165383"
-            ><img src="https://zenodo.org/badge/2165383.svg" alt="Zenodo - Latest DOI"
-            /></a>
-        </td>
-        <td>
-            <a href="https://github.com/sunpy/sunpy/actions/workflows/ci.yml"
-            ><img
-                src="https://github.com/sunpy/sunpy/actions/workflows/ci.yml/badge.svg?branch=main"
-                alt="Continuous Integration Status"
-            /></a>
-        </td>
-        <td>
-            <a href="https://groups.google.com/g/sunpy"
-            ><img
-                src="https://fonts.gstatic.com/s/i/productlogos/groups/v9/web-48dp/logo_groups_color_1x_web_48dp.png"
-                height="20px"
-                alt="Google Groups Mailing List"
-            /></a>
-        </td>
-        </tr>
-        <tr>
-        <td>
-            <a href="https://docs.sunpy.org/"
-            ><img src="https://readthedocs.org/projects/sunpy/badge/?version=stable" alt="sunpy Stable Documentation"
-            /></a>
-        </td>
-        <td>
-            <a href="https://codecov.io/gh/sunpy/sunpy"
-            ><img src="https://codecov.io/gh/sunpy/sunpy/branch/main/graph/badge.svg" alt="CodeCov Code Coverage"
-            /></a>
-        </td>
-        <td>
-            <a href="https://numfocus.org"
-            ><img
-                src="https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A"
-                alt="Powered by NumFOCUS"
-            /></a>
-        </td>
-        </tr>
-    </tbody>
-    </table>
-    <br />
++----------------------+----------------------+----------------------+
+| Release              | Development          | Community            |
++======================+======================+======================+
+| |Latest PyPi         | |Python Versions|    | |Matrix Chat Room|   |
+| Version|             |                      |                      |
++----------------------+----------------------+----------------------+
+| |Latest Conda        | |Project Status:     | |OpenAstronomy       |
+| Version|             | Active - The project | Discourse community| |
+|                      | has reached a        |                      |
+|                      | stable, usable state |                      |
+|                      | and is being         |                      |
+|                      | actively developed.| |                      |
++----------------------+----------------------+----------------------+
+| |Zenodo - Latest     | |Continuous          | |Google Groups       |
+| DOI|                 | Integration Status|  | Mailing List|        |
++----------------------+----------------------+----------------------+
+| |sunpy Stable        | |CodeCov Code        | |Powered by          |
+| Documentation|       | Coverage|            | NumFOCUS|            |
++----------------------+----------------------+----------------------+
+
+.. |SunPy Logo| image:: https://raw.githubusercontent.com/sunpy/sunpy-logo/master/sunpy_logo_landscape.svg
+   :width: 200px
+.. |Latest PyPi Version| image:: https://img.shields.io/pypi/v/sunpy.svg
+   :target: https://pypi.python.org/pypi/sunpy/
+.. |Python Versions| image:: https://img.shields.io/pypi/pyversions/sunpy
+   :target: https://pypi.python.org/pypi/sunpy/
+.. |Matrix Chat Room| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.org
+   :target: https://app.element.io/#/room/#sunpy:openastronomy.org
+.. |Latest Conda Version| image:: https://anaconda.org/conda-forge/sunpy/badges/version.svg
+   :target: https://anaconda.org/conda-forge/sunpy
+.. |Project Status: Active - The project has reached a stable, usable state and is being actively developed.| image:: https://www.repostatus.org/badges/latest/active.svg
+   :target: https://www.repostatus.org/#active
+.. |OpenAstronomy Discourse community| image:: https://cdck-file-uploads-global.s3.dualstack.us-west-2.amazonaws.com/try2/original/1X/5e1e3b3cada2d7fbae4734d4bc53999933d71c95.svg
+   :height: 20px
+   :target: https://community.openastronomy.org/
+.. |Zenodo - Latest DOI| image:: https://zenodo.org/badge/2165383.svg
+   :target: https://zenodo.org/badge/latestdoi/2165383
+.. |Continuous Integration Status| image:: https://github.com/sunpy/sunpy/actions/workflows/ci.yml/badge.svg?branch=main
+   :target: https://github.com/sunpy/sunpy/actions/workflows/ci.yml
+.. |Google Groups Mailing List| image:: https://fonts.gstatic.com/s/i/productlogos/groups/v9/web-48dp/logo_groups_color_1x_web_48dp.png
+   :height: 20px
+   :target: https://groups.google.com/g/sunpy
+.. |sunpy Stable Documentation| image:: https://readthedocs.org/projects/sunpy/badge/?version=stable
+   :target: https://docs.sunpy.org/
+.. |CodeCov Code Coverage| image:: https://codecov.io/gh/sunpy/sunpy/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/sunpy/sunpy
+.. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
+   :target: https://numfocus.org
 
 ``sunpy`` is a Python software package that provides fundamental tools for accessing, loading and interacting with solar physics data in Python.
 It includes an interface for searching and downloading data from multiple data providers, data containers for image and time series data, commonly used solar coordinate frames and associated transformations, as well as other functionality needed for solar data analysis.
