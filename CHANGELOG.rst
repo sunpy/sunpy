@@ -1,3 +1,34 @@
+5.0.3 (2024-01-12)
+==================
+
+New Features
+------------
+
+- Add an example of plotting a rectangle on a map with a rotation angle relative to the axes (:ref:`sphx_glr_generated_gallery_plotting_plot_rotated_rectangle.py`). (`#7348 <https://github.com/sunpy/sunpy/pull/7348>`__)
+- Added testing and explicit support for Python 3.12. (`#7351 <https://github.com/sunpy/sunpy/pull/7351>`__)
+
+
+Bug Fixes
+---------
+
+- When calling :meth:`sunpy.map.GenericMap.rotate` on an integer data array, with ``missing`` set to NaN (the default value), the method will now itself raise an informative error message instead deferring to NumPy to raise the error. (`#7344 <https://github.com/sunpy/sunpy/pull/7344>`__)
+
+
+Documentation
+-------------
+
+- Fixed the usage of :meth:`~sunpy.map.GenericMap.superpixel` in :ref:`sphx_glr_generated_gallery_map_map_resampling_and_superpixels.py`. (`#7316 <https://github.com/sunpy/sunpy/pull/7316>`__)
+- Added Clarification on setting JSOC Email. (`#7329 <https://github.com/sunpy/sunpy/pull/7329>`__)
+- Added explanation text to :ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py` about the offset between "(0, 0)" in helioprojective coordinates and the heliographic equator. (`#7352 <https://github.com/sunpy/sunpy/pull/7352>`__)
+
+
+Internal Changes
+----------------
+
+- The ``delim_whitespace`` keyword in `pandas.read_csv` is deprecated and was updated with ``sep='\s+'``.
+  This should have no affect on the output of the code. (`#7350 <https://github.com/sunpy/sunpy/pull/7350>`__)
+
+
 5.0.2 (2023-11-21)
 ==================
 
