@@ -14,16 +14,14 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 6.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-PUT STATS HERE
+**PUT STATS HERE**
 
 Updates to minimum dependencies
 ===============================
+
 The minimum required versions of core dependencies have been updated:
 
 - astropy >= 5.3.0
-
-We are aware the change in the ``parfive`` minimum version is a release earlier than our dependency policy allows for.
-However, due to significant issues that ``parfive`` v2.0.0 solves and changes to remote servers, we have decided to increase it to improve the user experience when downloading files.
 
 The minimum required versions of these optional dependencies has also been updated:
 
@@ -42,6 +40,7 @@ The minimum required versions of these optional dependencies has also been updat
 - h5netcdf > =1.0.0
 - h5py >= 3.7.0
 - pandas >= 1.4.0
+- opencv-python >= 4.6.0.66
 
 Removal of ``sunpy.database``
 =============================
