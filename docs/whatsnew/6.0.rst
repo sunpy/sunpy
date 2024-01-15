@@ -16,8 +16,35 @@ On this page, you can read about some of the big changes in this release.
 
 PUT STATS HERE
 
+Updates to minimum dependencies
+===============================
+The minimum required versions of core dependencies have been updated:
+
+- astropy >= 5.3.0
+
+We are aware the change in the ``parfive`` minimum version is a release earlier than our dependency policy allows for.
+However, due to significant issues that ``parfive`` v2.0.0 solves and changes to remote servers, we have decided to increase it to improve the user experience when downloading files.
+
+The minimum required versions of these optional dependencies has also been updated:
+
+- asdf-astropy >= 0.2.0
+- asdf >= 2.11.0
+- dask >= 2022.5.2
+- scikit-image >= 0.19.0
+- scipy >= 1.8.0
+- lxml >= 4.9.0
+- reproject>=0.9.0
+- beautifulsoup4 >= 4.11.0
+- tqdm >= 4.64.0
+- zeep>=4.1.0
+- spiceypy>=5.0.0
+- cdflib >= 0.4.4
+- h5netcdf > =1.0.0
+- h5py >= 3.7.0
+- pandas >= 1.4.0
+
 Removal of ``sunpy.database``
------------------------------
+=============================
 
 The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
 It has been deprecated since sunpy 4.1, and since there have been no major objections from the communityu since then we have completely removed ``sunpy.database`` in sunpy 6.0.
@@ -25,13 +52,13 @@ If you are interested in seeing a replacement for ``sunpy.database``, either ins
 
 
 Arguments for :meth:`~sunpy.map.GenericMap.reproject_to`
---------------------------------------------------------
+========================================================
 
 Arguments for this method have been changed to be keyword only after the target WCS argument.
 This was raising a warning since sunpy 4.1.
 
 Removal of ``sunpy.net.helioviewer.HelioViewerClient``
-------------------------------------------------------
+======================================================
 
 ``sunpy.net.helioviewer`` has been deprecated since sunpy v4.1 and has now been removed.
 Users should instead use the `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ package.
@@ -39,7 +66,7 @@ This package provides a Python wrapper around the Helioviewer API and is maintai
 The ``hvpy`` package supersedes the ``sunpy.net.helioviewer`` module.
 
 Arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` are now keywords only
------------------------------------------------------------------------------------
+===================================================================================
 
 The arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` have been changed to be keyword only.
 This means that you must now specify the arguments by name, rather than by position and has been done to make the API more consistent.
