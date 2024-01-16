@@ -21,7 +21,7 @@ Updates to minimum dependencies
 
 The minimum required versions of core dependencies have been updated:
 
-- astropy >= 5.3.0
+- astropy >= 5.2.0
 
 The minimum required versions of these optional dependencies has also been updated:
 
