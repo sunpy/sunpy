@@ -20,11 +20,13 @@
 | |Zenodo - Latest     | |Continuous          | |Google Groups       |
 | DOI|                 | Integration Status|  | Mailing List|        |
 +----------------------+----------------------+----------------------+
-| |sunpy Stable        | |CodeCov Code        | |Powered by          |
-| Documentation|       | Coverage|            | NumFOCUS|            |
+| |sunpy stable        | |CodeCov Code        | |Powered by          |
+| documentation|       | Coverage|            | NumFOCUS|            |
++----------------------+----------------------+----------------------+
+|                      |                      | |pyOpenSci|          |
 +----------------------+----------------------+----------------------+
 
-.. |SunPy Logo| image:: https://raw.githubusercontent.com/sunpy/sunpy-logo/master/sunpy_logo_landscape.svg
+.. |SunPy Logo| image:: https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_landscape.png
    :width: 200px
 .. |Latest PyPi Version| image:: https://img.shields.io/pypi/v/sunpy.svg
    :target: https://pypi.python.org/pypi/sunpy/
@@ -46,12 +48,14 @@
 .. |Google Groups Mailing List| image:: https://fonts.gstatic.com/s/i/productlogos/groups/v9/web-48dp/logo_groups_color_1x_web_48dp.png
    :height: 20px
    :target: https://groups.google.com/g/sunpy
-.. |sunpy Stable Documentation| image:: https://readthedocs.org/projects/sunpy/badge/?version=stable
+.. |sunpy stable documentation| image:: https://readthedocs.org/projects/sunpy/badge/?version=stable
    :target: https://docs.sunpy.org/
 .. |CodeCov Code Coverage| image:: https://codecov.io/gh/sunpy/sunpy/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
+.. |pyOpenSci| image:: https://tinyurl.com/y22nb8up
+   :target: https://github.com/pyOpenSci/software-submission/issues/147
 
 ``sunpy`` is a Python software package that provides fundamental tools for accessing, loading and interacting with solar physics data in Python.
 It includes an interface for searching and downloading data from multiple data providers, data containers for image and time series data, commonly used solar coordinate frames and associated transformations, as well as other functionality needed for solar data analysis.
