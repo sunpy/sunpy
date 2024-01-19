@@ -205,16 +205,16 @@ class GenericMap(NDData):
             if references_pos != -1 or examples_pos != -1:
                 next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
                 other_patterns = cls.__doc__[:next_pattern_pos]
-                cls.__doc__=(other_patterns+existing_notes_data.lstrip()+'\n    '+cls.__doc__[next_pattern_pos:])
+                cls.__doc__ = (other_patterns + existing_notes_data.lstrip() + '\n    ' + cls.__doc__[next_pattern_pos:])
             else:
                 cls.__doc__ += existing_notes_data
         else:
             if references_pos != -1 or examples_pos != -1:
                 next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
                 other_patterns = cls.__doc__[:next_pattern_pos]
-                cls.__doc__=(other_patterns+'Notes\n    -----'+'\n'+existing_notes_data+'\n    '+cls.__doc__[next_pattern_pos:])
+                cls.__doc__ = (other_patterns + 'Notes\n    -----\n' + existing_notes_data + '\n    ' + cls.__doc__[next_pattern_pos:])
             else:
-                cls.__doc__ += textwrap.indent(_notes_doc,"    ")
+                cls.__doc__ += textwrap.indent(_notes_doc, "    ")
 
         if hasattr(cls, 'is_datasource_for'):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
