@@ -47,7 +47,7 @@ have non-blank values, that deprecrated keywords are not used, and that the valu
 can be interpreted as the correct types (e.g. dates, quantities, int, floats).
 For a complete listing of the issues checked see `~sunpy.io.meta.fits_meta.SolarnetHeader.validate()`.
 
-You can define your own schema by creatin a yaml file with the following structure for each keywords.
+You can define your own schema by creating a yaml file with the following structure for each keywords.
 
 .. code-block:: yaml
 
