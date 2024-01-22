@@ -857,7 +857,7 @@ class GenericTimeSeries:
         Parameters
         ----------
         **kwargs : `dict`
-            All keyword arguments are passed to `pandas.DataFrame.to_numpy`.
+            All keyword arguments are passed to ``pandas.DataFrame.to_numpy``.
 
         Returns
         -------
