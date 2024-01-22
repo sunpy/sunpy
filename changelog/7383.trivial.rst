@@ -1,5 +1,6 @@
 Increased minimum versions for:
 
+- python >= 3.10
 - astropy >= 5.2.0
 - asdf-astropy >= 0.2.0
 - asdf >= 2.11.0
