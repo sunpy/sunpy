@@ -1,6 +1,6 @@
 :meth:`sunpy.net.jsoc.JSOCClient.fetch` called `drms` API that passed a ``progress`` keyword which added extra print statements to the console.
 This has been removed in `drms` 0.7.0, which had breaking API changes within this release.
-As a result, we increased the minimum required version of `drms` to 0.7.0.
+As a result, we increased the minimum required version of `drms` to 0.7.1.
 
 This specifically refers to the following information that was printed to the console by default:
 
