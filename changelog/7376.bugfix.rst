@@ -1,0 +1,1 @@
+Notes heading reappearing due to already existence of notes in subclass docstring fix. Now we find the best point of intersection in to the docstring.
