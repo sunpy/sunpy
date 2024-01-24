@@ -378,6 +378,7 @@ def test_rotation_matrix_crota(aia171_test_map):
 _PC_KEYWORDS = ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']
 _CD_KEYWORDS = ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
 
+
 @pytest.mark.parametrize('key', ['PC', 'CD'])
 @pytest.mark.parametrize('i', [1, 2])
 @pytest.mark.parametrize('j', [1, 2])
@@ -855,7 +856,7 @@ def test_superpixel_dims_values(aia171_test_map, f):
 
 
 @pytest.mark.parametrize(("f", "dimensions"), [(np.sum, (2, 3)*u.pix),
-                                           (np.mean, (3, 2)*u.pix)])
+                                               (np.mean, (3, 2)*u.pix)])
 def test_superpixel_metadata(generic_map, f, dimensions):
     superpix_map = generic_map.superpixel(dimensions, func=f)
 
@@ -1635,7 +1636,7 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # noqa: PT012
+    with pytest.raises(TypeError):  # NOQA: PT012
         # A runtime warning is thrown when dividing by zero in the case of
         # the map test
         with warn_context:

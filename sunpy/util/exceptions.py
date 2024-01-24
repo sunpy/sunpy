@@ -44,6 +44,7 @@ class SunpyMetadataWarning(UserWarning, SunpyWarning):
     stacklevel=3 to show the user where the issue occurred in their code.
     """
 
+
 class SunpyDeprecationWarning(FutureWarning, SunpyWarning):
     """
     A warning class to indicate a deprecated feature.
@@ -97,6 +98,7 @@ def warn_user(msg, stacklevel=1):
     """
     warnings.warn(msg, SunpyUserWarning, stacklevel + 1)
 
+
 def warn_connection(msg, stacklevel=1):
     """
     Raise a `SunpyConnectionWarning`.
@@ -111,6 +113,7 @@ def warn_connection(msg, stacklevel=1):
         code that calls this function.
     """
     warnings.warn(msg, SunpyConnectionWarning, stacklevel + 1)
+
 
 def warn_deprecated(msg, stacklevel=1):
     """

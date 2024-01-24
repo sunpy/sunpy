@@ -19,6 +19,7 @@ class Error(Exception):
     Public ivars:
         msg -- contains the message
     """
+
     def __init__(self, msg):
         self.msg = msg
 
@@ -124,22 +125,16 @@ class Unpacker:
     unpack_bytes = unpack_string
 
     def unpack_list(self, unpack_item):
-        list = []
-        while 1:
-            x = self.unpack_uint()
-            if x == 0:
-                break
+        alist = []
+        while (x := self.unpack_uint()) != 0:
             if x != 1:
                 raise ConversionError(f'0 or 1 expected, got {x!r}')
             item = unpack_item()
-            list.append(item)
-        return list
+            alist.append(item)
+        return alist
 
     def unpack_farray(self, n, unpack_item):
-        list = []
-        for i in range(n):
-            list.append(unpack_item())
-        return list
+        return [unpack_item() for _ in range(n)]
 
     def unpack_array(self, unpack_item):
         n = self.unpack_uint()
@@ -320,6 +315,5 @@ def read_genx(filename):
                                                          ('OS', os),
                                                          ('RELEASE', release)])
     skeleton['HEADER']['TEXT'] = text
-    # TODO: for python >= 3.2; so we can keep the original order as how it's stored in the file
-    # skeleton.move_to_end('HEADER', last=False)
+    skeleton.move_to_end('HEADER', last=False)
     return skeleton

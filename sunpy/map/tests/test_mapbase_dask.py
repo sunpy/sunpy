@@ -43,7 +43,7 @@ with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
     pytest.param("rotate", {}, marks=pytest.mark.xfail(reason="nanmedian is not implemented in Dask")),
     ("std", {}),
     ("superpixel", {"dimensions": (10, 10)*u.pix}),
-    ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height":10*u.pixel}),
+    ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height": 10*u.pixel}),
 ])
 def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func, args):
     """

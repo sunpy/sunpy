@@ -56,14 +56,11 @@ release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
-# We want to ignore all warnings in a release version.
-if is_release:
-    warnings.simplefilter("ignore")
+# We want to make sure all the following warnings fail the build
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
-warnings.filterwarnings("ignore", message="The `sunpy.io.file_tools` module is deprecated",category=SunpyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
