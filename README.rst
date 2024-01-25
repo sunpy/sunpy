@@ -8,13 +8,13 @@
 +===================================+===================================+===================================+
 |       |Latest PyPi Version|       |        |Python Versions|          |         |Matrix Chat Room|        |
 +-----------------------------------+-----------------------------------+-----------------------------------+
-|     |Latest Conda Version|        |     |Project Status: Active|      |                                   |
+|     |Latest Conda Version|        |     |Project Status: Active|      |     |OpenAstronomy Discourse|     |
 +-----------------------------------+-----------------------------------+-----------------------------------+
 |      |Zenodo - Latest DOI|        |  |Continuous Integration Status|  |    |Google Groups Mailing List|   |
 +-----------------------------------+-----------------------------------+-----------------------------------+
 |    |sunpy stable documentation|   |     |CodeCov Code Coverage|       |       |Powered by NumFOCUS|       |
 +-----------------------------------+-----------------------------------+-----------------------------------+
-|                                   |                                   |            |pyOpenSci|            |
+|         |sunpy citation|          |                                   |            |pyOpenSci|            |
 +-----------------------------------+-----------------------------------+-----------------------------------+
 
 .. |SunPy Logo| image:: https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_landscape.png
@@ -36,7 +36,7 @@
    :target: https://zenodo.org/badge/latestdoi/2165383
 .. |Continuous Integration Status| image:: https://github.com/sunpy/sunpy/actions/workflows/ci.yml/badge.svg?branch=main
    :target: https://github.com/sunpy/sunpy/actions/workflows/ci.yml
-.. |Google Groups Mailing List| image:: https://fonts.gstatic.com/s/i/productlogos/groups/v9/web-48dp/logo_groups_color_1x_web_48dp.png
+.. |Google Groups Mailing List| image:: https://upload.wikimedia.org/wikipedia/commons/2/27/Google_Groups_logo.gif
    :height: 20px
    :target: https://groups.google.com/g/sunpy
 .. |sunpy stable documentation| image:: https://readthedocs.org/projects/sunpy/badge/?version=stable
@@ -45,6 +45,8 @@
    :target: https://codecov.io/gh/sunpy/sunpy
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
+.. |sunpy citation| image:: https://img.shields.io/badge/cite-sunpy-orange
+   :target: https://docs.sunpy.org/en/stable/citation.html
 .. |pyOpenSci| image:: https://tinyurl.com/y22nb8up
    :target: https://github.com/pyOpenSci/software-submission/issues/147
 
