@@ -304,7 +304,7 @@ class HeliographicStonyhurst(BaseHeliographic):
     def _apply_diffrot(self, duration, rotation_model):
         oldrepr = self.spherical
 
-        from sunpy.physics.differential_rotation import diff_rot
+        from sunpy.sun.models import diff_rot
         log.debug(f"Applying {duration} of solar rotation")
         newlon = oldrepr.lon + diff_rot(duration,
                                         oldrepr.lat,
