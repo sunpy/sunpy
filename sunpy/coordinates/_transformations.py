@@ -17,6 +17,7 @@ from copy import deepcopy
 from functools import wraps
 from contextlib import contextmanager
 
+import erfa
 import numpy as np
 
 import astropy.units as u
@@ -39,8 +40,6 @@ from astropy.coordinates.representation import (
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
-# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
-from astropy.coordinates.sky_coordinate import erfa
 from astropy.coordinates.transformations import FunctionTransform, FunctionTransformWithFiniteDifference
 from astropy.time import Time
 

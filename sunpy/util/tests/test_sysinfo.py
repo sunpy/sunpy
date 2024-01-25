@@ -28,6 +28,7 @@ EXTRA_DEPS = [
     'zeep',
     'cdflib',
     'h5netcdf',
+    'pyerfa',
     'h5py',
     'pandas'
 ]

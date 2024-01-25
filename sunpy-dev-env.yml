@@ -16,6 +16,7 @@ dependencies:
   - packaging
   - pandas
   - parfive
+  - pyerfa
   # - python  # Commented out to avoid triggering an upgrade
   - python_abi
   - python-dateutil
