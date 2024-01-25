@@ -3,6 +3,7 @@ Sun-specific coordinate calculations
 """
 from typing import Literal
 
+import erfa
 import numpy as np
 
 import astropy.units as u
@@ -23,8 +24,6 @@ from astropy.coordinates import (
 )
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
-# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
-from astropy.coordinates.sky_coordinate import erfa
 from astropy.time import Time
 
 from sunpy import log
