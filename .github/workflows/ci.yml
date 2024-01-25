@@ -49,8 +49,7 @@ jobs:
       envs: |
         - windows: py311
         - macos: py310
-        - linux: py39
-        - linux: py39-oldestdeps
+        - linux: py310-oldestdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -58,7 +57,7 @@ jobs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
@@ -79,7 +78,7 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -100,7 +99,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py39-online
+        - linux: py312-online
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -112,7 +111,7 @@ jobs:
       )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -142,7 +141,7 @@ jobs:
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
-          python-version: 3.9
+          python-version: 3.10
       - name: Install sunpy
         shell: bash -el {0}
         run: |
