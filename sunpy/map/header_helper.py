@@ -132,7 +132,7 @@ def make_fitswcs_header(data,
 
 
 def _validate_coordinate(coordinate):
-    if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
+    if not isinstance(coordinate, SkyCoord | frames.BaseCoordinateFrame):
         raise ValueError("coordinate needs to be a coordinate frame or an SkyCoord instance.")
 
     if isinstance(coordinate, SkyCoord):
