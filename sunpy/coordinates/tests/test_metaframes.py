@@ -12,8 +12,8 @@ import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
 from sunpy.coordinates.tests.helpers import assert_longitude_allclose
 from sunpy.coordinates.tests.strategies import latitudes, longitudes, times
-from sunpy.sun.models import diff_rot
 from sunpy.sun import constants
+from sunpy.sun.models import diff_rot
 
 # NorthOffsetFrame is tested in test_offset_frame.py
 

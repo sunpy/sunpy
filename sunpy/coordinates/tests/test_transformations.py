@@ -40,9 +40,9 @@ from sunpy.coordinates import (
 )
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth
 from sunpy.coordinates.frames import _J2000
-from sunpy.sun.models import diff_rot
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.sun.constants import sidereal_rotation_rate
+from sunpy.sun.models import diff_rot
 from sunpy.time import parse_time
 
 
