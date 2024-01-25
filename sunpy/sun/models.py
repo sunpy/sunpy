@@ -18,10 +18,15 @@ References
 ----------
 * Adapted from Turck-Chieze et al. (1988) with composition: X = 0.7046, Y = 0.2757, Z = 0.0197
 """
+import numpy as np
+
 import astropy.units as u
+from astropy.coordinates import Longitude
 from astropy.table import QTable
 
-__all__ = ["interior", "evolution"]
+from sunpy.sun.constants import sidereal_rotation_rate
+
+__all__ = ["interior", "evolution","diff_rot"]
 
 
 # Radius -  R_sun
@@ -84,3 +89,119 @@ _t = {'time': _time, 'luminosity': _tluminosity, 'radius': _tradius,
 evolution = QTable(_t)
 evolution.source = 'Unknown'
 evolution.add_index('time')
+
+
+
+@u.quantity_input
+def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
+    r"""
+    This function computes the change in longitude over days in degrees.
+
+    Parameters
+    ----------
+    duration : `~astropy.units.Quantity`
+        Number of seconds to rotate over.
+    latitude : `~astropy.units.Quantity`
+        heliographic coordinate latitude in Degrees.
+    rot_type : `str`
+        The differential rotation model to use.
+
+        One of:
+
+        | ``howard`` : Use values from Howard et al. (1990)
+        | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
+        | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
+        | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
+
+    frame_time : `str`
+        One of : ``'sidereal'`` or  ``'synodic'``. Choose 'type of day' time reference frame.
+
+    Returns
+    -------
+    longitude_delta : `~astropy.units.Quantity`
+        The change in longitude over days (units=degrees)
+
+    Notes
+    -----
+    The rotation rate at a heliographic latitude :math:`\theta` is given by
+
+    .. math::
+
+        A + B \sin^{2} \left (\theta \right ) + C \sin^{4} \left ( \theta \right )
+
+    where :math:`A, B, C` are constants that depend on the model:
+
+    ========= ======= ====== ====== ==========
+    Model     A       B      C      Unit
+    ========= ======= ====== ====== ==========
+    howard    2.894   -0.428 -0.370 microrad/s
+    snodgrass 2.851   -0.343 -0.474 microrad/s
+    allen     14.44   -3.0   0      deg/day
+    rigid     14.1844 0      0      deg/day
+    ========= ======= ====== ====== ==========
+
+    1 microrad/s is approximately 4.95 deg/day.
+
+    References
+    ----------
+    * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
+    * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
+
+    Examples
+    --------
+    .. minigallery:: sunpy.sun.models.diff_rot
+
+    Default rotation calculation over two days at 30 degrees latitude:
+
+    >>> import numpy as np
+    >>> import astropy.units as u
+    >>> from sunpy.sun.models import diff_rot
+    >>> diff_rot(2 * u.day, 30 * u.deg)
+    <Longitude 27.36432679 deg>
+
+    Default rotation over two days for a number of latitudes:
+
+    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+    <Longitude [22.05449682, 23.03214991, 24.12033958, 25.210281  ,
+                26.21032832, 27.05716463, 27.71932645, 28.19299667,
+                28.49196765, 28.63509765, 28.63509765, 28.49196765,
+                28.19299667, 27.71932645, 27.05716463, 26.21032832,
+                25.210281  , 24.12033958, 23.03214991, 22.05449682] deg>
+
+    With rotation type 'allen':
+
+    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
+    <Longitude [23.58186667, 24.14800185, 24.82808733, 25.57737945,
+            26.34658134, 27.08508627, 27.74430709, 28.28087284,
+            28.6594822 , 28.85522599, 28.85522599, 28.6594822 ,
+            28.28087284, 27.74430709, 27.08508627, 26.34658134,
+            25.57737945, 24.82808733, 24.14800185, 23.58186667] deg>
+    """
+
+    latitude = latitude.to(u.deg)
+
+    sin2l = (np.sin(latitude))**2
+    sin4l = sin2l**2
+
+    rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
+                  'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
+                  'allen': [14.44, -3.0, 0] * u.deg / u.day,
+                  'rigid': sidereal_rotation_rate * [1, 0, 0]
+                  }
+
+    if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:
+        raise ValueError("rot_type must equal one of "
+                         "{{ {} }}".format(" , ".join(rot_params.keys())))
+
+    A, B, C = rot_params[rot_type]
+
+    # This calculation of the rotation assumes a sidereal frame time.
+    rotation = (A + B * sin2l + C * sin4l) * duration
+
+    # Applying this correction assumes that the observer is on the Earth,
+    # and that the Earth is at the same distance from the Sun at all times
+    # during the year.
+    if frame_time == 'synodic':
+        rotation -= 0.9856 * u.deg / u.day * duration
+
+    return Longitude(rotation.to(u.deg))
