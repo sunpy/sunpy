@@ -33,13 +33,13 @@ The minimum required versions of these optional dependencies has also been updat
 - scikit-image >= 0.19.0
 - scipy >= 1.8.0
 - lxml >= 4.9.0
-- reproject>=0.9.0
+- reproject >= 0.9.0
 - beautifulsoup4 >= 4.11.0
 - tqdm >= 4.64.0
-- zeep>=4.1.0
-- spiceypy>=5.0.0
+- zeep >= 4.1.0
+- spiceypy >= 5.0.0
 - cdflib >= 0.4.4
-- h5netcdf > =1.0.0
+- h5netcdf >= 1.0.0
 - h5py >= 3.7.0
 - pandas >= 1.4.0
 - opencv-python >= 4.6.0.66
