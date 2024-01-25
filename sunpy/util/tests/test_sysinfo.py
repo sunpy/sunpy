@@ -12,7 +12,7 @@ from sunpy.util.sysinfo import (
 def test_find_dependencies():
     missing, installed = find_dependencies()
     assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive"])
+    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive", 'pyerfa'])
 
     missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
     assert missing == {}
@@ -37,6 +37,7 @@ def test_find_dependencies():
                                                      'tqdm',
                                                      'zeep',
                                                      'cdflib',
+                                                     'pyerfa',
                                                      'h5netcdf',
                                                      'h5py',
                                                      'pandas'])

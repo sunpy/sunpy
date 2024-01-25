@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pytest
-from erfa.core import ErfaWarning
+from erfa import ErfaWarning
 from pandas import DataFrame
 
 import astropy.units as u
