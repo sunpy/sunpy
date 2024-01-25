@@ -37,6 +37,7 @@ def test_find_dependencies():
                                                      'tqdm',
                                                      'zeep',
                                                      'cdflib',
+                                                     'pyerfa'
                                                      'h5netcdf',
                                                      'h5py',
                                                      'pandas'])
