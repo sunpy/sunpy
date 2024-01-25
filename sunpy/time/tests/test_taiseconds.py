@@ -1,7 +1,7 @@
+import erfa
 import pytest
 
 from astropy.time import Time
-from astropy.time.formats import erfa
 
 # This registers the TimeTaiSeconds format with astropy
 from sunpy.time import *  # NOQA
