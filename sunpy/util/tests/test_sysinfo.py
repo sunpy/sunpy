@@ -25,6 +25,7 @@ EXTRA_DEPS = [
     'packaging',
     'pandas',
     'parfive',
+    'pyerfa',
     'python-dateutil',
     'reproject',
     'scikit-image',

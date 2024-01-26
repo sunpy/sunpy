@@ -111,7 +111,7 @@ class GenericTimeSeries:
         if meta is None:
             # No meta given, so default
             self.meta = TimeSeriesMetaData(MetaDict(), tr, self.columns)
-        elif isinstance(meta, (dict, OrderedDict, MetaDict)):
+        elif isinstance(meta, dict | OrderedDict | MetaDict):
             # Given the values for metadata (dict) and infer timerange and colnames from the data
             self.meta = TimeSeriesMetaData(meta, tr, self.columns)
         elif isinstance(meta, tuple):
