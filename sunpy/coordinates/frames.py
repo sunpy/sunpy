@@ -161,7 +161,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
         # If a frame wrap angle is set, use that wrap angle for any spherical representations.
         if self._wrap_angle is not None and \
-           isinstance(data, (UnitSphericalRepresentation, SphericalRepresentation)):
+           isinstance(data, UnitSphericalRepresentation | SphericalRepresentation):
             data.lon.wrap_angle = self._wrap_angle
         return data
 

@@ -154,7 +154,7 @@ def _validate_observer_args(initial_obstime, observer, time):
             "but not both simultaneously.")
     elif observer is not None:
         # Check that the new_observer is specified correctly.
-        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
+        if not (isinstance(observer, BaseCoordinateFrame | SkyCoord)):
             raise ValueError(
                 "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
         if observer.obstime is None:
