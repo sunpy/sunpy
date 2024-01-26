@@ -86,7 +86,7 @@ def seconds_per_day():
 
 
 def test_diff_rot_deprecated_warning(seconds_per_day):
-    with pytest.warns(SunpyDeprecationWarning):
+    with pytest.warns(SunpyDeprecationWarning, match='The diff_rot function is deprecated and may be removed in version 6.1.\n        Use sunpy.sun.models.diff_rot instead.'):
         diff_rot(10 * seconds_per_day, 30 * u.deg)
 
 
