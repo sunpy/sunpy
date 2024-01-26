@@ -2,17 +2,15 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import Longitude, SkyCoord
+from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
 
-import sunpy.map
 from sunpy.sun.models import diff_rot
 
 
 @pytest.fixture
 def seconds_per_day():
     return 24 * 60 * 60.0 * u.s
-
 
 
 

@@ -1,0 +1,1 @@
+Moved sunpy.physics.differential_rotation.diff_rot to sunpy.sun.models.diff_rot and. deprecated sunpy.physics.differential_rotation.diff_rot, it's now suggested to use sunpy.sun.models.diff_rot instead.
