@@ -110,8 +110,11 @@ def _warn_missing_deps(extras):
         if missing_deps:
             warn_user(f"Importing sunpy.{extras} without its extra dependencies may result in errors.\n"
                       f"The following packages are not installed:\n{missing_deps}\n"
-                      f"To install sunpy with these dependencies use `install sunpy[{extras}]`"
-                      f"or `install sunpy[all]` for all extras.")
+                      f"To install sunpy with these dependencies use `pip install sunpy[{extras}]` "
+                      f"or `pip install sunpy[all]` for all extras. \n"
+                      "If you installed sunpy via conda, please report this "
+                      "to the community channel: https://matrix.to/#/#sunpy:openastronomy.org"
+                      )
 
 
 def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):

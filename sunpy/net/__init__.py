@@ -1,4 +1,3 @@
-
 # Check if user has installed the net extras
 from sunpy.util.sysinfo import _warn_missing_deps
 
