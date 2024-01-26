@@ -26,7 +26,7 @@ from astropy.table import QTable
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
-__all__ = ["interior", "evolution","diff_rot"]
+__all__ = ["interior", "evolution", "diff_rot"]
 
 
 # Radius -  R_sun
@@ -89,7 +89,6 @@ _t = {'time': _time, 'luminosity': _tluminosity, 'radius': _tradius,
 evolution = QTable(_t)
 evolution.source = 'Unknown'
 evolution.add_index('time')
-
 
 
 @u.quantity_input

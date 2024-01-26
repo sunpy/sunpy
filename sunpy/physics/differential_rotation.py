@@ -87,36 +87,6 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     ----------
     * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
     * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
-
-    Examples
-    --------
-    .. minigallery:: sunpy.physics.differential_rotation.diff_rot
-
-    Default rotation calculation over two days at 30 degrees latitude:
-
-    >>> import numpy as np
-    >>> import astropy.units as u
-    >>> from sunpy.physics.differential_rotation import diff_rot
-    >>> diff_rot(2 * u.day, 30 * u.deg)
-    <Longitude 27.36432679 deg>
-
-    Default rotation over two days for a number of latitudes:
-
-    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
-    <Longitude [22.05449682, 23.03214991, 24.12033958, 25.210281  ,
-                26.21032832, 27.05716463, 27.71932645, 28.19299667,
-                28.49196765, 28.63509765, 28.63509765, 28.49196765,
-                28.19299667, 27.71932645, 27.05716463, 26.21032832,
-                25.210281  , 24.12033958, 23.03214991, 22.05449682] deg>
-
-    With rotation type 'allen':
-
-    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
-    <Longitude [23.58186667, 24.14800185, 24.82808733, 25.57737945,
-            26.34658134, 27.08508627, 27.74430709, 28.28087284,
-            28.6594822 , 28.85522599, 28.85522599, 28.6594822 ,
-            28.28087284, 27.74430709, 27.08508627, 26.34658134,
-            25.57737945, 24.82808733, 24.14800185, 23.58186667] deg>
     """
 
     latitude = latitude.to(u.deg)
