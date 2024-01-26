@@ -6,6 +6,7 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord
 from astropy.time import TimeDelta
 
+import sunpy.sun.models
 from sunpy.coordinates import (
     Heliocentric,
     HeliographicStonyhurst,
@@ -32,7 +33,7 @@ __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
 
 @u.quantity_input
-@deprecated( since="6.0",message="We will be moving this", alternative="sunpy.sun.models.diff_rot")
+@deprecated( since="6.0", alternative="sunpy.sun.models.diff_rot")
 def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
     r"""
     This function computes the change in longitude over days in degrees.
@@ -299,7 +300,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
 
     # Compute the differential rotation
-    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+    drot = sunpy.sun.models.diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
     # Rotate the input coordinate as seen by the original observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
@@ -468,7 +469,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation.
-        drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+        drot = sunpy.sun.models.diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
         # The change in longitude is negative because we are mapping from the
         # new coordinates to the old.
