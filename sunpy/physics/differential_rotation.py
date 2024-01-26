@@ -33,7 +33,7 @@ __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
 
 @u.quantity_input
-@deprecated( since="6.0", alternative="sunpy.sun.models.diff_rot")
+@deprecated(since="6.0", alternative="sunpy.sun.models.diff_rot")
 def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
     r"""
     This function computes the change in longitude over days in degrees.
