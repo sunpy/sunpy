@@ -1,1 +1,3 @@
-Moved sunpy.physics.differential_rotation.diff_rot to sunpy.sun.models.diff_rot and. deprecated sunpy.physics.differential_rotation.diff_rot, it's now suggested to use sunpy.sun.models.diff_rot instead.
+:func:`sunpy.physics.differential_rotation.diff_rot` has been deprecated and replaced by :func:`sunpy.sun.models.diff_rot`.
+
+It will be removed in sunpy 7.0.
