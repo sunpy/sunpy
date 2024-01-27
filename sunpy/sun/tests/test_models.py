@@ -13,7 +13,6 @@ def seconds_per_day():
     return 24 * 60 * 60.0 * u.s
 
 
-
 def test_single(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg)
     assert_quantity_allclose(rot, 136.8216 * u.deg, rtol=1e-3)
