@@ -50,7 +50,6 @@ dependencies:
   - pytest-timeout
   - pytest-xdist
   - tox
-  - tox-conda
 
   # Documentation
   - astroquery
