@@ -41,8 +41,9 @@ from .strategies import matrix_meta
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(get_test_filepath('aia_171_level1.fits'))[0].data
-    np.testing.assert_allclose(aia171_test_map.data, data)
+        hdulist = fits.open(get_test_filepath('aia_171_level1.fits'))
+    np.testing.assert_allclose(aia171_test_map.data, hdulist[0].data)
+    hdulist.close()
 
 
 def test_header_fits_io():
@@ -1219,8 +1220,10 @@ def test_more_than_two_dimensions():
     hdr['TELESCOP'] = 'XXX'
     hdr['cunit1'] = 'arcsec'
     hdr['cunit2'] = 'arcsec'
-    with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
-        bad_map = sunpy.map.Map(bad_data, hdr)
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN'):
+            with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+                bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
@@ -1229,11 +1232,12 @@ def test_more_than_two_dimensions():
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
     with pytest.warns(Warning) as record:
-        header = {}
-        header['cunit1'] = 'arcsec'
-        header['cunit2'] = 'arcsec'
-        header['ctype1'] = 'HPLN-TAN'
-        header['ctype2'] = 'HPLT-TAN'
+        header = {
+            'cunit1': 'arcsec',
+            'cunit2': 'arcsec',
+            'ctype1': 'HPLN-TAN',
+            'ctype2': 'HPLT-TAN',
+        }
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
