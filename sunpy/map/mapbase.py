@@ -2421,7 +2421,7 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self,*, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
