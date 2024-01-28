@@ -14,6 +14,7 @@ from astropy.wcs import WCS
 import sunpy.map
 from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 @pytest.fixture
@@ -128,3 +129,14 @@ def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
 
         # Reproject with the mismatched rsun
         aia171_test_map.reproject_to(hpc_header)
+
+
+def test_deprecated_positional_args(aia_map):
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
+        aia_map.plot(True)
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass title='interpolation' as keyword args"):
+        aia_map.plot('interpolation')
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True, title='interpolation' as keyword args"):
+        aia_map.plot('interpolation', True)

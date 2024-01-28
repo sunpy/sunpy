@@ -50,6 +50,7 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -2437,6 +2438,7 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
+    @deprecate_positional_args_since("5.1.1")
     def plot(self,*, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
