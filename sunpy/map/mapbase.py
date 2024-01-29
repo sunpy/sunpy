@@ -2438,8 +2438,8 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    @deprecate_positional_args_since("5.1.1")
-    def plot(self,*, annotate=True, axes=None, title=True, autoalign=False,
+    @deprecate_positional_args_since("6.0.0")
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent

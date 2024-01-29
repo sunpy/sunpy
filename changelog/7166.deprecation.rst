@@ -1,0 +1,5 @@
+- Deprecations:
+  - Deprecate positional arguments in `plot` method.
+
+    Passing the ``annotate``, ``axes``, ``title``, ``clip_interval`` arguments as positional arguments is deprecated.
+    Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.
