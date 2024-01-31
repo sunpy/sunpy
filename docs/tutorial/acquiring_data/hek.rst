@@ -154,10 +154,10 @@ Let's look further at the FRM attribute:
     |  Data descriptors defined here:
     |
     |  __dict__
-    |      dictionary for instance variables (if defined)
+    |      dictionary for instance variables
     |
     |  __weakref__
-    |      list of weak references to the object (if defined)
+    |      list of weak references to the object
     |
     |  ----------------------------------------------------------------------
     |  Data and other attributes defined here:
