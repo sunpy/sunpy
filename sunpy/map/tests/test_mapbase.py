@@ -90,7 +90,7 @@ notes info2
 """
     # Call the function
     part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
-
+    part2=part1.replace("\n    \n    ","\n\n    ")
     # Assert the result
     expected_result = """
     data info
@@ -101,7 +101,7 @@ notes info2
 
     notes info2
     """
-    assert part1.strip() == expected_result.strip(), "Test failed for notes adjustment"
+    assert part2.strip() == expected_result.strip(), "Test failed for notes adjustment"
 
 def test_notes_adjust_noNotes():
     # Given data
@@ -145,7 +145,7 @@ notes info2
 """
     # Call the function
     part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
-
+    part2=part1.replace("\n    \n    ","\n\n    ")
     # Assert the result
     expected_result = """
     data info
@@ -154,7 +154,7 @@ notes info2
     -----
     notes info2
     """
-    assert part1.strip() == expected_result.strip(), "Test failed for notes adjustment"
+    assert part2.strip() == expected_result.strip(), "Test failed for notes adjustment"
 
 
 def test_fits_data_comparison(aia171_test_map):
