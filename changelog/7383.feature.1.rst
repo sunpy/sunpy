@@ -1,4 +1,4 @@
-Added a new optional extra group to install "opencv" if you want to it for affine transform.
+Added a new optional extra group to install "opencv" if you want to it for affine transforms.
 
 .. code-block:: bash
 
