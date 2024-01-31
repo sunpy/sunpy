@@ -7,6 +7,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
+from astropy.wcs import FITSFixedWarning
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
@@ -21,7 +22,7 @@ def aia171_test_dask_map(aia171_test_map):
     )
 
 
-def test_dask_array(aia171_test_dask_map):
+def test_dask_array_repr(aia171_test_dask_map):
     # Check that _repr_html_ functions for a dask array
     html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
     html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
@@ -31,7 +32,8 @@ def test_dask_array(aia171_test_dask_map):
 # This is needed for the reproject_to function
 with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
     with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
-        aia_wcs = astropy.wcs.WCS(header=hdu[0].header)
+        with pytest.warns(FITSFixedWarning, match="'datfix' made the change"):
+            aia_wcs = astropy.wcs.WCS(header=hdu[0].header)
 
 
 @pytest.mark.parametrize(("func", "args"), [
