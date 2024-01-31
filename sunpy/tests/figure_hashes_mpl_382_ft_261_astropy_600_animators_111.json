@@ -13,6 +13,7 @@
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scipy]": "9168fca9a4e04def3da12624196b29ebe954004ad269faa4bab11276a85366af",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scikit-image]": "17748c119a97c112e77fcb368af595f2b5faada067a7188abe846c7b160f9ea8",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[opencv]": "cd86fb9c0ed0e26eaae00d816d0b5d3f381b2be22b8e99d45afe5a511ccd55e5",
+  "sunpy.map.tests.test_mapbase.test_draw_contours_with_transform": "150dccec0fbd2728300d75db0d9de1dc7d000daa78ce26decdae149a0482b114",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "5a7217dd55ab3a593a27741fecfe0851208fd1d31baeca4cbd018d65aaf3f483",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "3cdc53f41914028a4e9f23112d7e616ce8a423ef5670c8365fdadbc0e59780ca",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot_custom_cmap_norm": "c1276702147f4debaa14c17f6b0b2ab7f9e0b1ace309c72e767b2af071c4405e",

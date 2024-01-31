@@ -1555,6 +1555,14 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
 
+@figure_test
+def test_draw_contours_with_transform(aia171_test_map):
+    aia_map = sunpy.map.Map(aia171_test_map)
+    fig = plt.figure(figsize=(8, 4))
+    ax = fig.add_subplot(projection=aia_map)
+    aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+    aia_map.draw_contours([-2,2]*u.percent, transform=ax.get_transform('pixel'))
+    return fig
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
