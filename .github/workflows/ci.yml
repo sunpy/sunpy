@@ -158,7 +158,7 @@ jobs:
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
-          python-version: 3.10
+          python-version: "3.11"
       - name: Install sunpy
         shell: bash -el {0}
         run: |

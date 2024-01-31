@@ -11,9 +11,9 @@ eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
 
 
 def test_eve():
-    # Test an EVE TimeSeries
-    with pytest.warns(SunpyUserWarning, match='Unknown units for x_cool proxy'):
-        ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+    with pytest.warns(SunpyUserWarning, match='Unknown units for oldXRSB proxy'):
+        with pytest.warns(SunpyUserWarning, match='Unknown units for x_cool'):
+            ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
     assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
 
