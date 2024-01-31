@@ -38,6 +38,125 @@ from .conftest import make_simple_map
 from .strategies import matrix_meta
 
 
+def test_notes_adjust():
+    # Given data
+    clsDoc = """
+    data info
+
+    Notes
+    -----
+    notes info
+
+    References
+    ----------
+    reference info
+    """
+    notesDoc= """
+Notes
+-----
+notes info2
+"""
+    # Call the function
+    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
+
+    # Assert the result
+    expected_result = """
+    data info
+
+    Notes
+    -----
+    notes info
+
+    notes info2
+    References
+    ----------
+    reference info
+    """
+    assert part1 == expected_result, "Test failed for notes adjustment"
+
+def test_notes_adjust_noReferences():
+    # Given data
+    clsDoc = """
+    data info
+
+    Notes
+    -----
+    notes info
+    """
+    notesDoc= """
+Notes
+-----
+notes info2
+"""
+    # Call the function
+    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
+
+    # Assert the result
+    expected_result = """
+    data info
+
+    Notes
+    -----
+    notes info
+
+    notes info2
+    """
+    assert part1.strip() == expected_result.strip(), "Test failed for notes adjustment"
+
+def test_notes_adjust_noNotes():
+    # Given data
+    clsDoc = """
+    data info
+
+    References
+    ----------
+    reference info
+    """
+    notesDoc= """
+Notes
+-----
+notes info2
+"""
+    # Call the function
+    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
+
+    # Assert the result
+    expected_result = """
+    data info
+
+    Notes
+    -----
+    notes info2
+    References
+    ----------
+    reference info
+    """
+    assert part1 == expected_result, "Test failed for notes adjustment"
+
+def test_notes_adjust_noNotes_noReferences():
+    # Given data
+    clsDoc = """
+    data info
+    """
+    notesDoc= """
+Notes
+-----
+notes info2
+"""
+    # Call the function
+    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
+
+    # Assert the result
+    expected_result = """
+    data info
+
+    Notes
+    -----
+    notes info2
+    """
+    assert part1.strip() == expected_result.strip(), "Test failed for notes adjustment"
+
+
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
