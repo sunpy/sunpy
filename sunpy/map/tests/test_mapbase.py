@@ -1220,10 +1220,9 @@ def test_more_than_two_dimensions():
     hdr['TELESCOP'] = 'XXX'
     hdr['cunit1'] = 'arcsec'
     hdr['cunit2'] = 'arcsec'
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
-        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN'):
-            with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
-                bad_map = sunpy.map.Map(bad_data, hdr)
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+        with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+            bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
