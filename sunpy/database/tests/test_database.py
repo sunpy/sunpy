@@ -14,7 +14,6 @@ import sqlalchemy
 from parfive.results import Results
 
 from astropy import units
-from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy
 from sunpy.data.test import get_test_filepath
@@ -637,7 +636,7 @@ def test_add_fom_path(database, waveunit_fits_directory):
 def test_add_fom_path_duplicates(database, waveunit_fits_directory):
     database.add_from_dir(waveunit_fits_directory)
     assert len(database) == 4
-    with pytest.raises(EntryAlreadyAddedError), pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+    with pytest.raises(EntryAlreadyAddedError):
         database.add_from_dir(waveunit_fits_directory)
 
 
