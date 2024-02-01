@@ -398,7 +398,7 @@ Documentation
 - Improved the plotting guide. (`#6430 <https://github.com/sunpy/sunpy/pull/6430>`__)
 - Slight improvements to the downloading data with Fido part of the guide. (`#6444 <https://github.com/sunpy/sunpy/pull/6444>`__)
 - Split the units and coordinate guides on to separate pages, and made minor improvements to them. (`#6462 <https://github.com/sunpy/sunpy/pull/6462>`__)
-- Added a how-to guide (:ref:`conda_for_dependencies`) for using ``conda`` to set up an environment with the complete set of dependencies to use all optional features, build the documentation, and/or run the full test suite.
+- Added a how-to guide ``conda_for_dependencies`` for using ``conda`` to set up an environment with the complete set of dependencies to use all optional features, build the documentation, and/or run the full test suite.
   The guide also describes how best to have an editable installation of ``sunpy`` in this environment. (`#6524 <https://github.com/sunpy/sunpy/pull/6524>`__)
 
 
@@ -2021,7 +2021,7 @@ Deprecations and Removals
 - Removed ``GenericClient.get`` in favour of `sunpy.net.dataretriever.GenericClient.fetch`. This changes applies to the other clients as well. (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``Map.xrange`` and ``Map.yrange`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``sunpy.net.attrs.Wave`` in favour of ``sunpy.net.vso.attrs.Wavelength`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``JSOCClient.check_request`` in favour of `drms.client.ExportRequest.status` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``JSOCClient.check_request`` in favour of `drms.ExportRequest.status` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - ``sunpy.net.vso.VSOClient.query_legacy`` and ``sunpy.net.vso.VSOClient.latest`` have been deprecated as we strongly recommend people use `sunpy.net.Fido` for all queries. (`#2866 <https://github.com/sunpy/sunpy/pull/2866>`__)
 - The deprecated ``sunpy.physics.transforms`` module has been removed, it is
   replaced by ``sunpy.physics.solar_rotation`` and

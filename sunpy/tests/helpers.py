@@ -2,14 +2,12 @@ import sys
 import platform
 import warnings
 from pathlib import Path
-from platform import python_version
 from functools import wraps
 from importlib.metadata import entry_points
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pytest
-from packaging.version import Version
 
 import astropy
 from astropy.wcs.wcs import FITSFixedWarning
@@ -46,21 +44,11 @@ else:
 skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
-if Version(python_version()) >= Version("3.10.0"):
-    asdf_entry_points = pytest.mark.skipif(
-        not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
-        reason="No SunPy ASDF entry points.",
-    )
-else:
-    asdf_entry_points = pytest.mark.skipif(
-        not any(
-            [
-                enter_point.name == "sunpy"
-                for enter_point in entry_points()["asdf.resource_mappings"]
-            ]
-        ),
-        reason="No SunPy ASDF entry points.",
-    )
+asdf_entry_points = pytest.mark.skipif(
+    not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
+    reason="No SunPy ASDF entry points.",
+)
+
 
 
 @pytest.fixture

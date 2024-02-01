@@ -170,10 +170,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Return `True` if ``meta`` is an object that could store metadata.
         """
-        return isinstance(meta, (astropy.io.fits.header.Header,
-                                 sunpy.io.header.FileHeader,
-                                 dict,
-                                 sunpy.timeseries.TimeSeriesMetaData))
+        return isinstance(meta, astropy.io.fits.header.Header | sunpy.io.header.FileHeader | dict | sunpy.timeseries.TimeSeriesMetaData)
 
     @staticmethod
     def _is_units(units):
@@ -261,7 +258,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         i = 0
         while i < len(args):
             arg = args[i]
-            if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
+            if isinstance(arg, np.ndarray | Table | pd.DataFrame):
                 # Extract data and metadata
                 # The next item is data
                 data = args[i]

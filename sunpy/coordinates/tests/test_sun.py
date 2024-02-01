@@ -2,13 +2,13 @@ import warnings
 
 import numpy as np
 import pytest
+from erfa import ErfaWarning
 from numpy.testing import assert_allclose
 
 import astropy.units as u
 from astropy.coordinates import Angle, EarthLocation
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
-from astropy.utils.exceptions import ErfaWarning
 
 from sunpy.coordinates import sun
 from sunpy.sun.constants import radius

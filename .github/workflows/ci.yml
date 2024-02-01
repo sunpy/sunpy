@@ -49,8 +49,7 @@ jobs:
       envs: |
         - windows: py311
         - macos: py310
-        - linux: py39
-        - linux: py39-oldestdeps
+        - linux: py310-oldestdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -58,7 +57,7 @@ jobs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
@@ -79,7 +78,7 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -100,7 +99,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py39-online
+        - linux: py312-online
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -112,7 +111,7 @@ jobs:
       )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -125,6 +124,23 @@ jobs:
         - linux: py311-devdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  sdist_verify:
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip install -U --user build
+      - run: python -m build . --sdist
+      - run: python -m pip install -U --user twine
+      - run: python -m twine check dist/*
 
   conda:
     if: |
@@ -142,7 +158,7 @@ jobs:
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
-          python-version: 3.9
+          python-version: "3.11"
       - name: Install sunpy
         shell: bash -el {0}
         run: |
@@ -153,7 +169,7 @@ jobs:
           conda list
           cd /tmp
           pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/setup.cfg $GITHUB_WORKSPACE/docs -n auto
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
@@ -174,6 +190,10 @@ jobs:
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
+      upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+      anaconda_user: sunpy
+      anaconda_package: sunpy
+      anaconda_keep_n_latest: -1
       sdist: false
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
@@ -184,11 +204,16 @@ jobs:
         - cp3{9,10,11,12}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
+      anaconda_token: ${{ secrets.anaconda_token }}
 
   publish_pure:
     needs: [publish]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
     with:
+      upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+      anaconda_user: sunpy
+      anaconda_package: sunpy
+      anaconda_keep_n_latest: -1
       python-version: "3.10"
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
@@ -197,6 +222,7 @@ jobs:
         SUNPY_NO_BUILD_ANA_EXTENSION: 1
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
+      anaconda_token: ${{ secrets.anaconda_token }}
 
   notify:
     if: always() && github.event_name == 'workflow_dispatch'

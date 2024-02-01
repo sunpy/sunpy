@@ -420,7 +420,7 @@ def solar_angle_equivalency(observer):
     <Quantity 1.00603718 arcsec>
     """
 
-    if not isinstance(observer, (SkyCoord, BaseCoordinateFrame)):
+    if not isinstance(observer, SkyCoord | BaseCoordinateFrame):
         raise TypeError(
             "Invalid input, observer must be of type SkyCoord or BaseCoordinateFrame.")
     if observer.obstime is None:
