@@ -100,7 +100,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py39-online
+        - linux: py312-online
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
