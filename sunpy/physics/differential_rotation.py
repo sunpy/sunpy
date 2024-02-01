@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.time import TimeDelta
 
 import sunpy.sun.models
@@ -23,7 +23,6 @@ from sunpy.map import (
     on_disk_bounding_coordinates,
 )
 from sunpy.map.header_helper import get_observer_meta
-from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
 from sunpy.util import expand_list
 from sunpy.util.decorators import deprecated
@@ -89,33 +88,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
     """
 
-    latitude = latitude.to(u.deg)
-
-    sin2l = (np.sin(latitude))**2
-    sin4l = sin2l**2
-
-    rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
-                  'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
-                  'allen': [14.44, -3.0, 0] * u.deg / u.day,
-                  'rigid': sidereal_rotation_rate * [1, 0, 0]
-                  }
-
-    if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:
-        raise ValueError("rot_type must equal one of "
-                         "{{ {} }}".format(" , ".join(rot_params.keys())))
-
-    A, B, C = rot_params[rot_type]
-
-    # This calculation of the rotation assumes a sidereal frame time.
-    rotation = (A + B * sin2l + C * sin4l) * duration
-
-    # Applying this correction assumes that the observer is on the Earth,
-    # and that the Earth is at the same distance from the Sun at all times
-    # during the year.
-    if frame_time == 'synodic':
-        rotation -= 0.9856 * u.deg / u.day * duration
-
-    return Longitude(rotation.to(u.deg))
+    return sunpy.sun.models.diff_rot(duration, latitude, rot_type, frame_time)
 
 
 def _validate_observer_args(initial_obstime, observer, time):

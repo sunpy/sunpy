@@ -1,13 +1,15 @@
 """
 Solar Physical Models
 ---------------------
-This module contains standard models of the Sun from various sources.
+This module contains standard models of the Sun from various sources,
+it also provides `~sunpy.sun.models.diff_rot` function which computes the
+change in longitude over days in degrees.
 
 All data is saved in `astropy.table.QTable` with an added attribute:
 
 * source : names the source of the data
 
-Object
+Objects
 ------
     interior : `astropy.table.QTable`
         The standard model of the solar interior.
