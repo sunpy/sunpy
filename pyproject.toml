@@ -193,7 +193,7 @@ filterwarnings = [
   "ignore::sunpy.util.exceptions.SunpyConnectionWarning",
   # https://github.com/pandas-dev/pandas/issues/54466
   # Should stop when pandas 3.0.0 is released
-  "ignore:\nPyarrow will become a required dependency of pandas in the next major release of pandas:DeprecationWarning",
+  "ignore:(?s).*Pyarrow will become a required dependency of pandas:DeprecationWarning",
   # Zeep relies on deprecated cgi in Python 3.11
   # Needs a release of zeep 4.2.2 or higher
   # https://github.com/mvantellingen/python-zeep/pull/1364
