@@ -2,7 +2,7 @@ exclude: "\\.asdf$"
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.1.11"
+    rev: "v0.1.15"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -10,7 +10,7 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
-        args: ["--sp", "setup.cfg"]
+        args: ["--sp", "pyproject.toml"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|sunpy/extern)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -31,7 +31,9 @@ repos:
     rev: v2.2.6
     hooks:
       - id: codespell
-        args: ['--config setup.cfg --write-changes']
+        additional_dependencies:
+        - tomli
+        args: ['--config pyproject.toml --write-changes']
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
