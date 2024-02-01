@@ -16,13 +16,15 @@ from urllib.request import Request, urlopen
 
 import zeep
 
+from astropy.utils.decorators import deprecated_renamed_argument
+
 from sunpy import config, log
 from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import warn_connection, warn_user
+from sunpy.util.exceptions import SunpyDeprecationWarning, warn_connection, warn_user
 from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .exceptions import (
@@ -180,6 +182,8 @@ class VSOClient(BaseClient):
         obj = self.api.get_type(f"VSO:{atype}")
         return obj(**kwargs)
 
+
+    @deprecated_renamed_argument("response_format", None,"6.0", warning_type=SunpyDeprecationWarning)
     def search(self, *query, response_format=None):
         """
         Query data from the VSO with the new API. Takes a variable number
@@ -193,6 +197,8 @@ class VSOClient(BaseClient):
             ``"table"`` to return the responses in a subclass of
             `~astropy.table.QTable`.
 
+            Now deprecated, will be removed in sunpy 7.0.
+
         Examples
         --------
         Query all data from eit or aia between 2010-01-01T00:00 and
@@ -203,8 +209,7 @@ class VSOClient(BaseClient):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    a.Instrument.eit | a.Instrument.aia,
-        ...    response_format="table")   # doctest:  +REMOTE_DATA
+        ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
         <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
             Start Time               End Time        Source ... Extent Type   Size
                                                             ...              Mibyte

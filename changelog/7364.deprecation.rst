@@ -1,0 +1,5 @@
+The keyword ``response_format`` in :meth:`sunpy.net.vso.VSOClient.search` has been deprecated.
+This was originally introduced to restore the previous behaviour of the VSO client, which was to return
+``sunpy.net.vso.legacy_response.QueryResponse`` instead of `sunpy.net.vso.table_response.VSOQueryResponseTable` objects.
+This behaviour has been the default for over 4 years and the keyword is no longer needed.
+The plan is to remove this keyword and the older ``sunpy.net.vso.legacy_response.QueryResponse`` class in a sunpy 7.0.
