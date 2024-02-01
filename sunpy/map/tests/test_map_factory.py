@@ -13,12 +13,7 @@ import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.tests.helpers import figure_test, skip_glymur
-from sunpy.util.exceptions import (
-    NoMapsInFileError,
-    SunpyDeprecationWarning,
-    SunpyMetadataWarning,
-    SunpyUserWarning,
-)
+from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
 
 a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
 
@@ -272,7 +267,7 @@ def test_sources(file, mapcls):
     m = get_dummy_map_from_header(p) if p.suffix == '.header' else sunpy.map.Map(p)
     assert isinstance(m, mapcls)
 
-
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises a warning for this test")
 def test_no_2d_hdus(tmpdir):
     # Create a fake FITS file with a valid header but 1D data
     tmp_fpath = str(tmpdir / 'data.fits')
@@ -283,7 +278,6 @@ def test_no_2d_hdus(tmpdir):
         sunpy.map.Map(tmp_fpath)
 
     with pytest.warns(SunpyUserWarning, match='One of the arguments failed to parse'):
-        with pytest.warns(SunpyDeprecationWarning, match='"silence_errors" was deprecated in version 5.1 and will be removed in a future version'):
             sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
 
 

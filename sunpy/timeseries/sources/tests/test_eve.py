@@ -11,6 +11,7 @@ esp_filepath = get_test_filepath('eve_l1_esp_2011046_00_truncated.fits')
 eve_filepath = get_test_filepath('EVE_L0CS_DIODES_1m_truncated.txt')
 
 
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises an extra warning for this test")
 def test_eve():
     with pytest.warns(SunpyUserWarning, match='Unknown units for oldXRSB proxy'):
         with pytest.warns(SunpyUserWarning, match='Unknown units for x_cool'):
