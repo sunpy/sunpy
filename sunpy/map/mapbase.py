@@ -235,6 +235,10 @@ class GenericMap(NDData):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
+        self.plot_settings = {'cmap': 'gray',
+                            'interpolation': 'nearest',
+                            'origin': 'lower'
+                            }
         if self.dtype != np.uint8:
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
