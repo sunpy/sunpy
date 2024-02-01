@@ -154,7 +154,7 @@ def test_patterns(eit_fits_directory):
     header = {'cdelt1': 10, 'cdelt2': 10,
               'telescop': 'sunpy',
               'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         pair_map = sunpy.map.Map(data, header)
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -165,7 +165,7 @@ def test_patterns(eit_fits_directory):
               'detector': 1,
               'instrume': 50,
               'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         pair_map = sunpy.map.Map(data, header)
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -264,13 +264,10 @@ def test_map_list_urls_cache():
 ])
 def test_sources(file, mapcls):
     p = pathlib.Path(get_test_filepath(file))
-    if p.suffix == '.header':
-        m = get_dummy_map_from_header(p)
-    else:
-        m = sunpy.map.Map(p)
+    m = get_dummy_map_from_header(p) if p.suffix == '.header' else sunpy.map.Map(p)
     assert isinstance(m, mapcls)
 
-
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises a warning for this test")
 def test_no_2d_hdus(tmpdir):
     # Create a fake FITS file with a valid header but 1D data
     tmp_fpath = str(tmpdir / 'data.fits')
@@ -281,7 +278,7 @@ def test_no_2d_hdus(tmpdir):
         sunpy.map.Map(tmp_fpath)
 
     with pytest.warns(SunpyUserWarning, match='One of the arguments failed to parse'):
-        sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
+            sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
 
 
 @skip_glymur

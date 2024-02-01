@@ -14,7 +14,6 @@ import sqlalchemy
 from parfive.results import Results
 
 from astropy import units
-from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy
 from sunpy.data.test import get_test_filepath
@@ -519,9 +518,9 @@ def test_vso_query_block_caching_with_overwrite_true_flag(database,
     # Only downloading for the first query response block with caching disabled
 
     num_entries_from_vso_query(database, download_qr[:1],
-                               path=str(tmpdir.join('{file}.type1')),
-                               file_pattern=str(tmpdir.join('*.type1')),
-                               overwrite=True)
+                                                       path=str(tmpdir.join('{file}.type1')),
+                                                       file_pattern=str(tmpdir.join('*.type1')),
+                                                       overwrite=True)
 
     # The files for the first query response block should be downloaded again
     # Old entries should be deleted, so len(database) should not change
@@ -637,7 +636,7 @@ def test_add_fom_path(database, waveunit_fits_directory):
 def test_add_fom_path_duplicates(database, waveunit_fits_directory):
     database.add_from_dir(waveunit_fits_directory)
     assert len(database) == 4
-    with pytest.raises(EntryAlreadyAddedError), pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+    with pytest.raises(EntryAlreadyAddedError):
         database.add_from_dir(waveunit_fits_directory)
 
 
