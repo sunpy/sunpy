@@ -22,7 +22,7 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
-        args: ['--enforce-all','--maxkb=1054']
+        args: ["--enforce-all", "--maxkb=1054"]
       - id: end-of-file-fixer
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
       - id: mixed-line-ending
@@ -32,8 +32,8 @@ repos:
     hooks:
       - id: codespell
         additional_dependencies:
-        - tomli
-        args: ['--config pyproject.toml --write-changes']
+          - tomli
+        args: ["--config pyproject.toml --write-changes"]
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
