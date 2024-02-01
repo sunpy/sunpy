@@ -1,1 +1,0 @@
-Moved sunpy.physics.differential_rotation.diff_rot to sunpy.sun.models.diff_rot and added tests to sunpy.sun.tests.test_models. deprecated sunpy.physics.differential_rotation.diff_rot
