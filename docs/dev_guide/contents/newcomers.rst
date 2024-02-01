@@ -164,6 +164,11 @@ This will make submitting changes easier in the long term for you:
 
     $ git clone https://github.com/<username>/sunpy.git sunpy-git
     $ cd sunpy-git
+    # This adds the main sunpy repository as a remote called "upstream".
+    # This will help you keep your fork up to date with the main sunpy repository.
+    $ git remote add upstream https://github.com/sunpy/sunpy.git
+    # This retrieves the tags from the main sunpy repository, which are used for determining the version of your fork.
+    $ git fetch --tags upstream
     $ pip install -e ".[dev]"
 
 .. note::
