@@ -239,16 +239,6 @@ class GenericMap(NDData):
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
             self.plot_settings['norm'] = colors.Normalize()
-            self.plot_settings = {'cmap': 'gray',
-                                'norm': norm,
-                                'interpolation': 'nearest',
-                                'origin': 'lower'
-                                }
-        else:
-            self.plot_settings = {'cmap': 'gray',
-                                'interpolation': 'nearest',
-                                'origin': 'lower'
-                                }
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
