@@ -10,7 +10,6 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
-        args: ["--sp", "pyproject.toml"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|sunpy/extern)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -33,7 +32,7 @@ repos:
       - id: codespell
         additional_dependencies:
           - tomli
-        args: ["--config pyproject.toml --write-changes"]
+        args: ["--write-changes"]
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
