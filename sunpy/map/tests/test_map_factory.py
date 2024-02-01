@@ -284,7 +284,7 @@ def test_sources(file, mapcls):
     m = get_dummy_map_from_header(p) if p.suffix == '.header' else sunpy.map.Map(p)
     assert isinstance(m, mapcls)
 
-
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises a warning for this test")
 def test_no_2d_hdus(tmpdir):
     # Create a fake FITS file with a valid header but 1D data
     tmp_fpath = str(tmpdir / 'data.fits')
