@@ -238,9 +238,7 @@ class GenericMap(NDData):
         if self.dtype != np.uint8:
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
-            norm = colors.Normalize()
-
-        # Visualization attributes
+            self.plot_settings['norm'] = colors.Normalize()
             self.plot_settings = {'cmap': 'gray',
                                 'norm': norm,
                                 'interpolation': 'nearest',
