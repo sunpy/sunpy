@@ -96,28 +96,19 @@ visualization = [
     "mpl-animators>=1.0.0",
 ]
 all = [
-    "%(asdf)s",
-    "%(dask)s",
-    "%(image)s",
-    "%(jpeg2000)s",
-    "%(map)s",
-    "%(net)s",
-    "%(timeseries)s",
-    "%(visualization)s",
+  "sunpy[asdf,dask,image,jpeg2000,map,net,timeseries,visualization]",
 ]
 tests = [
-    "%(all)s",
+    "sunpy[all,opencv,spice]",
     "hvpy>=1.1.0",
     "jplephem>=2.14", # For some coordinates tests
-    "%(opencv)s",
     "pytest-astropy>=0.11.0",
     "pytest-mpl>=0.16",
     "pytest-xdist>=3.0.2",
     "pytest>=7.1.0",
-    "%(spice)s",
 ]
 docs = [
-    "%(all)s",
+    "sunpy[all,spice]", # Importing sunpy.coordinates.spice raises an error if spiceypy is not installed
     "hvpy>=1.1.0",
     "ruamel.yaml>=0.17.19",
     "sphinx>=5.0.0",
@@ -127,21 +118,17 @@ docs = [
     "sphinx-design>=0.2.0",
     "sphinx-gallery>=0.13.0",
     "sphinxext-opengraph>=0.6.0",
-    "%(spice)s", # Importing sunpy.coordinates.spice raises an error if spiceypy is not installed
     "sunpy-sphinx-theme>=2.0.3",
     "sphinx-hoverxref>=1.3.0",
 ]
 docs-gallery = [
-    "%(docs)s",
+    "sunpy[docs,opencv]",
     "astroquery>=0.4.6",
     "jplephem>=2.14",
     "mplcairo>=0.5",
-    "%(opencv)s",
 ]
 dev = [
-    "%(all)s",
-    "%(tests)s",
-    "%(docs)s",
+    "sunpy[all,docs,tests]",
 ]
 
 [project.entry-points."asdf.resource_mappings"]
