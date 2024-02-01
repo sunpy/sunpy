@@ -38,123 +38,93 @@ from .conftest import make_simple_map
 from .strategies import matrix_meta
 
 
-def test_notes_adjust():
-    # Given data
-    clsDoc = """
-    data info
+def test_notes_combined():
+    map_documentation = """
+    Class Info.
 
     Notes
     -----
-    notes info
+    This is a note.
 
     References
     ----------
-    reference info
+    This is reference.
     """
-    notesDoc= """
-Notes
------
-notes info2
-"""
-    # Call the function
-    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
-
-    # Assert the result
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
     expected_result = """
-    data info
+    Class Info.
 
     Notes
     -----
-    notes info
+    This is a note.
 
-    notes info2
+    This should be combined.
     References
     ----------
-    reference info
+    This is reference.
     """
-    assert part1 == expected_result, "Test failed for notes adjustment"
+    assert updated_documentation == expected_result
 
-def test_notes_adjust_noReferences():
-    # Given data
-    clsDoc = """
-    data info
+def test_notes_combined_noReferences():
+    map_documentation = """
+    Class Info.
 
     Notes
     -----
-    notes info
+    This is a note.
     """
-    notesDoc= """
-Notes
------
-notes info2
-"""
-    # Call the function
-    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
-    part2=part1.replace("\n    \n    ","\n\n    ")
-    # Assert the result
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
-    data info
+    Class Info.
 
     Notes
     -----
-    notes info
+    This is a note.
 
-    notes info2
+    This should be combined.
     """
-    assert part2.strip() == expected_result.strip(), "Test failed for notes adjustment"
+    assert updated_documentation2.strip() == expected_result.strip()
 
-def test_notes_adjust_noNotes():
-    # Given data
-    clsDoc = """
-    data info
+def test_notes_combined_noNotes():
+    map_documentation = """
+    Class Info.
 
     References
     ----------
-    reference info
+    This is reference.
     """
-    notesDoc= """
-Notes
------
-notes info2
-"""
-    # Call the function
-    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
-
-    # Assert the result
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
     expected_result = """
-    data info
+    Class Info.
 
     Notes
     -----
-    notes info2
+    This should be combined.
     References
     ----------
-    reference info
+    This is reference.
     """
-    assert part1 == expected_result, "Test failed for notes adjustment"
+    assert updated_documentation == expected_result
 
-def test_notes_adjust_noNotes_noReferences():
-    # Given data
-    clsDoc = """
-    data info
+def test_notes_combined_noNotes_noReferences():
+    map_documentation = """
+    Class Info.
     """
-    notesDoc= """
-Notes
------
-notes info2
-"""
-    # Call the function
-    part1= GenericMap.__init_subclass__()(notesDoc,clsDoc)
-    part2=part1.replace("\n    \n    ","\n\n    ")
-    # Assert the result
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
-    data info
+    Class Info.
 
     Notes
     -----
-    notes info2
+    This should be combined.
     """
-    assert part2.strip() == expected_result.strip(), "Test failed for notes adjustment"
+    assert updated_documentation2.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):

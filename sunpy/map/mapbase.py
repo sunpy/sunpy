@@ -193,32 +193,7 @@ class GenericMap(NDData):
         if cls.__doc__ is None:
             # Set an empty string, to prevent an error adding None to str in the next line
             cls.__doc__ = ''
-
-        def notes_fix(notes_doc, datadoc):
-            existing_notes_pos = datadoc.find('Notes\n    -----')
-            existing_notes_pos2 = notes_doc.find('Notes\n-----')
-            existing_notes_data = textwrap.indent(notes_doc[existing_notes_pos2 + len('Notes\n-----'):].strip(), "    ")
-            references_pattern = "References\n    ----------"
-            examples_pattern = "Examples\n   -------"
-            start_index = existing_notes_pos + len('Notes\n    -----')
-            references_pos = datadoc.find(references_pattern, start_index)
-            examples_pos = datadoc.find(examples_pattern, start_index)
-            if existing_notes_pos != -1:
-                if references_pos != -1 or examples_pos != -1:
-                    next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
-                    other_patterns = datadoc[:next_pattern_pos]
-                    datadoc = (other_patterns + existing_notes_data.lstrip() + '\n    ' + datadoc[next_pattern_pos:])
-                else:
-                    datadoc +="\n"+existing_notes_data
-            else:
-                if references_pos != -1 or examples_pos != -1:
-                    next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
-                    other_patterns = datadoc[:next_pattern_pos]
-                    datadoc = (other_patterns + 'Notes\n    -----\n' + existing_notes_data + '\n    ' + datadoc[next_pattern_pos:])
-                else:
-                    datadoc += textwrap.indent(notes_doc, "    ")
-            return datadoc
-        cls.__doc__ = notes_fix(_notes_doc, cls.__doc__)
+        cls.__doc__ = cls.notes_fix(_notes_doc, cls.__doc__)
 
         if hasattr(cls, 'is_datasource_for'):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
@@ -226,8 +201,6 @@ class GenericMap(NDData):
             # See https://github.com/sunpy/sunpy/issues/7294 for more information.
             if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
                 cls._registry[cls] = cls.is_datasource_for
-
-        return notes_fix
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
@@ -544,6 +517,32 @@ class GenericMap(NDData):
         if plot_settings is not None:
             new_map.plot_settings.update(plot_settings)
         return new_map
+
+    @classmethod
+    def notes_fix(cls, notes_doc, datadoc):
+            existing_notes_pos = datadoc.find('Notes\n    -----')
+            existing_notes_pos2 = notes_doc.find('Notes\n-----')
+            existing_notes_data = textwrap.indent(notes_doc[existing_notes_pos2 + len('Notes\n-----'):].strip(), "    ")
+            references_pattern = "References\n    ----------"
+            examples_pattern = "Examples\n   -------"
+            start_index = existing_notes_pos + len('Notes\n    -----')
+            references_pos = datadoc.find(references_pattern, start_index)
+            examples_pos = datadoc.find(examples_pattern, start_index)
+            if existing_notes_pos != -1:
+                if references_pos != -1 or examples_pos != -1:
+                    next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
+                    other_patterns = datadoc[:next_pattern_pos]
+                    datadoc = (other_patterns + existing_notes_data.lstrip() + '\n    ' + datadoc[next_pattern_pos:])
+                else:
+                    datadoc +="\n"+existing_notes_data
+            else:
+                if references_pos != -1 or examples_pos != -1:
+                    next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
+                    other_patterns = datadoc[:next_pattern_pos]
+                    datadoc = (other_patterns + 'Notes\n    -----\n' + existing_notes_data + '\n    ' + datadoc[next_pattern_pos:])
+                else:
+                    datadoc += textwrap.indent(notes_doc, "    ")
+            return datadoc
 
     def _get_lon_lat(self, frame):
         """
@@ -2773,7 +2772,6 @@ class GenericMap(NDData):
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
-
 
 
 class InvalidHeaderInformation(ValueError):
