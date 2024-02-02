@@ -519,30 +519,27 @@ class GenericMap(NDData):
         return new_map
 
     @classmethod
-    def notes_fix(cls, notes_doc, datadoc):
-            existing_notes_pos = datadoc.find('Notes\n    -----')
-            existing_notes_pos2 = notes_doc.find('Notes\n-----')
-            existing_notes_data = textwrap.indent(notes_doc[existing_notes_pos2 + len('Notes\n-----'):].strip(), "    ")
-            references_pattern = "References\n    ----------"
-            examples_pattern = "Examples\n   -------"
-            start_index = existing_notes_pos + len('Notes\n    -----')
-            references_pos = datadoc.find(references_pattern, start_index)
-            examples_pos = datadoc.find(examples_pattern, start_index)
-            if existing_notes_pos != -1:
-                if references_pos != -1 or examples_pos != -1:
-                    next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
-                    other_patterns = datadoc[:next_pattern_pos]
-                    datadoc = (other_patterns + existing_notes_data.lstrip() + '\n    ' + datadoc[next_pattern_pos:])
-                else:
-                    datadoc +="\n"+existing_notes_data
+    def notes_fix( cls,notes_doc, datadoc):
+        existing_notes_pos = datadoc.find('Notes\n    -----')
+        existing_notes_pos2 = notes_doc.find('Notes\n-----')
+        existing_notes_data = textwrap.indent(notes_doc[existing_notes_pos2 + len('Notes\n-----'):].strip(), "    ")
+        references_pattern = "References\n    ----------"
+        examples_pattern = "Examples\n   -------"
+        start_index = existing_notes_pos + len('Notes\n    -----')
+        references_pos = datadoc.find(references_pattern, start_index)
+        examples_pos = datadoc.find(examples_pattern, start_index)
+        if references_pos != -1 or examples_pos != -1:
+            next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
+            other_patterns = datadoc[:next_pattern_pos]
+            if existing_notes_pos!=-1:
+                datadoc = other_patterns + existing_notes_data.lstrip() + '\n    ' + datadoc[next_pattern_pos:]
             else:
-                if references_pos != -1 or examples_pos != -1:
-                    next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
-                    other_patterns = datadoc[:next_pattern_pos]
-                    datadoc = (other_patterns + 'Notes\n    -----\n' + existing_notes_data + '\n    ' + datadoc[next_pattern_pos:])
-                else:
-                    datadoc += textwrap.indent(notes_doc, "    ")
-            return datadoc
+                datadoc = other_patterns + 'Notes\n    -----\n' + existing_notes_data + '\n    ' + datadoc[next_pattern_pos:]
+        elif existing_notes_pos != -1 and (references_pos == -1 or examples_pos == -1):
+            datadoc +="\n"+existing_notes_data
+        else:
+            datadoc += textwrap.indent(notes_doc, "    ")
+        return datadoc
 
     def _get_lon_lat(self, frame):
         """
