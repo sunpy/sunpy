@@ -399,7 +399,7 @@ class VSOClient(BaseClient):
         """
         if path is None:
             path = Path(config.get('downloads', 'download_dir')) / '{file}'
-        elif isinstance(path, (str, os.PathLike)) and '{file}' not in str(path):
+        elif isinstance(path, str | os.PathLike) and '{file}' not in str(path):
             path = Path(path) / '{file}'
         else:
             path = Path(path)
@@ -410,7 +410,7 @@ class VSOClient(BaseClient):
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
-        if isinstance(query_response, (QueryResponse, list)):
+        if isinstance(query_response, QueryResponse | list):
             query_response = VSOQueryResponseTable.from_zeep_response(query_response,
                                                                       client=self,
                                                                       _sort=False)

@@ -87,21 +87,21 @@ class TimeSeriesMetaData:
         self.metadata = []
         # Parse in arguments
         if meta is not None:
-            if (isinstance(meta, (dict, MetaDict)) and
+            if (isinstance(meta, dict | MetaDict) and
                 isinstance(timerange, TimeRange) and
                     isinstance(colnames, list)):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
                 self.metadata.append((timerange, colnames, meta))
             elif isinstance(meta, tuple):
                 # Given a single metadata entry as a tuple.
-                if isinstance(meta[0], TimeRange) and isinstance(meta[1], list) and isinstance(meta[2], (dict, MetaDict)):
+                if isinstance(meta[0], TimeRange) and isinstance(meta[1], list) and isinstance(meta[2], dict | MetaDict):
                     self.metadata.append(meta)
                 else:
                     raise ValueError("Invalid parameters passed in the meta")
             elif isinstance(meta, list):
                 # Given a complex metadata list (of tuples)
                 for meta_tuple in meta:
-                    if isinstance(meta_tuple[0], TimeRange) and isinstance(meta_tuple[1], list) and isinstance(meta_tuple[2], (dict, MetaDict)):
+                    if isinstance(meta_tuple[0], TimeRange) and isinstance(meta_tuple[1], list) and isinstance(meta_tuple[2], dict | MetaDict):
                         self.metadata.append(meta_tuple)
                     else:
                         raise ValueError("Invalid parameters passed in the meta")

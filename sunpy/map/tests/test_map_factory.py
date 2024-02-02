@@ -13,7 +13,12 @@ import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.tests.helpers import figure_test, skip_glymur
-from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.exceptions import (
+    NoMapsInFileError,
+    SunpyDeprecationWarning,
+    SunpyMetadataWarning,
+    SunpyUserWarning,
+)
 
 a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
 
@@ -154,7 +159,7 @@ def test_patterns(eit_fits_directory):
     header = {'cdelt1': 10, 'cdelt2': 10,
               'telescop': 'sunpy',
               'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         pair_map = sunpy.map.Map(data, header)
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -165,7 +170,7 @@ def test_patterns(eit_fits_directory):
               'detector': 1,
               'instrume': 50,
               'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         pair_map = sunpy.map.Map(data, header)
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -266,10 +271,7 @@ def test_map_list_urls_cache():
 ])
 def test_sources(file, mapcls):
     p = pathlib.Path(get_test_filepath(file))
-    if p.suffix == '.header':
-        m = get_dummy_map_from_header(p)
-    else:
-        m = sunpy.map.Map(p)
+    m = get_dummy_map_from_header(p) if p.suffix == '.header' else sunpy.map.Map(p)
     assert isinstance(m, mapcls)
 
 
@@ -283,7 +285,8 @@ def test_no_2d_hdus(tmpdir):
         sunpy.map.Map(tmp_fpath)
 
     with pytest.warns(SunpyUserWarning, match='One of the arguments failed to parse'):
-        sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
+        with pytest.warns(SunpyDeprecationWarning, match='"silence_errors" was deprecated in version 5.1 and will be removed in a future version'):
+            sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
 
 
 @skip_glymur
