@@ -539,7 +539,7 @@ class GenericMap(NDData):
             cls_doc += textwrap.indent(subclass_doc, "    ")
 
         return cls_doc
-        
+
     def _get_lon_lat(self, frame):
         """
         Given a coordinate frame, extract the lon and lat by casting to
