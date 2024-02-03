@@ -67,7 +67,7 @@ def test_notes_combined():
     """
     assert updated_documentation == expected_result
 
-def test_notes_combined_noReferences():
+def test_notes_combined_no_references():
     map_documentation = """
     Class Info.
 
@@ -89,7 +89,7 @@ def test_notes_combined_noReferences():
     """
     assert updated_documentation2.strip() == expected_result.strip()
 
-def test_notes_combined_noNotes():
+def test_notes_combined_no_existing_notes():
     map_documentation = """
     Class Info.
 
@@ -112,7 +112,7 @@ def test_notes_combined_noNotes():
     """
     assert updated_documentation == expected_result
 
-def test_notes_combined_noNotes_noReferences():
+def test_notes_combined_no_notes_no_references():
     map_documentation = """
     Class Info.
     """
