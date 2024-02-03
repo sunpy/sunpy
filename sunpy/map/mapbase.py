@@ -193,7 +193,7 @@ class GenericMap(NDData):
         if cls.__doc__ is None:
             # Set an empty string, to prevent an error adding None to str in the next line
             cls.__doc__ = ''
-        cls.__doc__ = cls.notes_fix(_notes_doc, cls.__doc__)
+        cls.__doc__ = cls.fix_duplicate_notes(_notes_doc, cls.__doc__)
 
         if hasattr(cls, 'is_datasource_for'):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
@@ -519,28 +519,26 @@ class GenericMap(NDData):
         return new_map
 
     @classmethod
-    def notes_fix( cls,notes_doc, datadoc):
-        existing_notes_pos = datadoc.find('Notes\n    -----')
-        existing_notes_pos2 = notes_doc.find('Notes\n-----')
-        existing_notes_data = textwrap.indent(notes_doc[existing_notes_pos2 + len('Notes\n-----'):].strip(), "    ")
+    def fix_duplicate_notes( cls,subclass_doc, cls_doc):
+        existing_notes_pos = cls_doc.find('Notes\n    -----')
+        subclass_notes_pos = subclass_doc.find('Notes\n-----')
+        subclass_notes_data = textwrap.indent(subclass_doc[subclass_notes_pos + len('Notes\n-----'):].strip(), "    ")
         references_pattern = "References\n    ----------"
         examples_pattern = "Examples\n   -------"
-        start_index = existing_notes_pos + len('Notes\n    -----')
-        references_pos = datadoc.find(references_pattern, start_index)
-        examples_pos = datadoc.find(examples_pattern, start_index)
-        if references_pos != -1 or examples_pos != -1:
-            next_pattern_pos = min(pos for pos in [references_pos, examples_pos] if pos != -1)
-            other_patterns = datadoc[:next_pattern_pos]
+        start_index = cls_doc.find(references_pattern if references_pattern in cls_doc else examples_pattern)
+        if start_index!=-1:
+            next_pattern_pos = min(pos for pos in [cls_doc.find(references_pattern, start_index), cls_doc.find(examples_pattern, start_index)] if pos != -1)
+            other_patterns = cls_doc[:next_pattern_pos]
             if existing_notes_pos!=-1:
-                datadoc = other_patterns + existing_notes_data.lstrip() + '\n    ' + datadoc[next_pattern_pos:]
+                cls_doc = other_patterns + subclass_notes_data.lstrip() + '\n\n    ' + cls_doc[next_pattern_pos:]
             else:
-                datadoc = other_patterns + 'Notes\n    -----\n' + existing_notes_data + '\n    ' + datadoc[next_pattern_pos:]
-        elif existing_notes_pos != -1 and (references_pos == -1 or examples_pos == -1):
-            datadoc +="\n"+existing_notes_data
+                cls_doc = other_patterns + 'Notes\n    -----\n' + subclass_notes_data + '\n\n    ' + cls_doc[next_pattern_pos:]
+        elif existing_notes_pos != -1:
+            cls_doc +="\n"+subclass_notes_data
         else:
-            datadoc += textwrap.indent(notes_doc, "    ")
-        return datadoc
+            cls_doc += textwrap.indent(subclass_doc, "    ")
 
+        return cls_doc
     def _get_lon_lat(self, frame):
         """
         Given a coordinate frame, extract the lon and lat by casting to

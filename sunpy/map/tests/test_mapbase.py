@@ -51,7 +51,7 @@ def test_notes_combined():
     This is reference.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
+    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
     expected_result = """
     Class Info.
 
@@ -60,6 +60,7 @@ def test_notes_combined():
     This is a note.
 
     This should be combined.
+
     References
     ----------
     This is reference.
@@ -75,7 +76,7 @@ def test_notes_combined_noReferences():
     This is a note.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
+    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
     updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
     Class Info.
@@ -97,13 +98,14 @@ def test_notes_combined_noNotes():
     This is reference.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
+    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
     expected_result = """
     Class Info.
 
     Notes
     -----
     This should be combined.
+
     References
     ----------
     This is reference.
@@ -115,7 +117,7 @@ def test_notes_combined_noNotes_noReferences():
     Class Info.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.notes_fix(extra_note_section,map_documentation)
+    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
     updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
     Class Info.
