@@ -25,20 +25,10 @@ Taking two opposite corners as a single SkyCoord object
     >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> fig = plt.figure(figsize=(5, 5))
     >>> ax = fig.add_subplot(projection=aia_map)
-    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
-    >>> coords = SkyCoord(
-        Tx=(100, 500) * u.arcsec,
-        Ty=(200, 500) * u.arcsec,
-        frame=aia_map.coordinate_frame,
-        )
-    >>> aia_map.draw_quadrangle(
-        coords,
-        axes=ax,
-        edgecolor="blue",
-        linestyle="-",
-        linewidth=2,
-        label='2-element SkyCoord'
-        )
+    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent) # doctest: +SKIP
+    >>> coords = SkyCoord(Tx=(100, 500) * u.arcsec, Ty=(200, 500) * u.arcsec,frame=aia_map.coordinate_frame)
+    >>> aia_map.draw_quadrangle(coords, axes=ax, edgecolor="blue") # doctest: +SKIP
+    >>> plt.show() # doctest: +SKIP
 
 Specify Corners as Separate `~astropy.coordinates.SkyCoord` Objects
 ===================================================================
@@ -50,18 +40,11 @@ Taking two opposite corners as separate SkyCoord Objects
     >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> fig = plt.figure(figsize=(5, 5))
     >>> ax = fig.add_subplot(projection=aia_map)
-    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent) # doctest: +SKIP
     >>> bottom_left = SkyCoord(-500 * u.arcsec, 200 * u.arcsec, frame=aia_map.coordinate_frame)
     >>> top_right = SkyCoord(-100 * u.arcsec, 500 * u.arcsec, frame=aia_map.coordinate_frame)
-    >>> aia_map.draw_quadrangle(
-        bottom_left,
-        axes=ax,
-        top_right=top_right,
-        edgecolor="green",
-        linestyle="--",
-        linewidth=2,
-        label='two SkyCoords'
-        )
+    >>> aia_map.draw_quadrangle(bottom_left, axes=ax, top_right=top_right, edgecolor="green", linestyle="-") # doctest: +SKIP
+    >>> plt.show() # doctest: +SKIP
 
 Specify One Corner, Width, and Height
 =====================================
@@ -71,20 +54,12 @@ Specify One Corner, Width, and Height
     >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> fig = plt.figure(figsize=(5, 5))
     >>> ax = fig.add_subplot(projection=aia_map)
-    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent) # doctest: +SKIP
     >>> bottom_left = SkyCoord(-500 * u.arcsec, -500 * u.arcsec, frame=aia_map.coordinate_frame)
     >>> width = 400 * u.arcsec
     >>> height = 300 * u.arcsec
-    >>> aia_map.draw_quadrangle(
-        bottom_left,
-        axes=ax,
-        width=width,
-        height=height,
-        edgecolor="yellow",
-        linestyle="-.",
-        linewidth=2,
-        label='width/height'
-        )
+    >>> aia_map.draw_quadrangle( bottom_left, axes=ax, width=width, height=height, edgecolor="yellow") # doctest: +SKIP
+    >>> plt.show() # doctest: +SKIP
 
 Draw a Rectangle in Pixel Coordinates
 =====================================
@@ -94,15 +69,8 @@ Draw a Rectangle in Pixel Coordinates
     >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> fig = plt.figure(figsize=(5, 5))
     >>> ax = fig.add_subplot(projection=aia_map)
-    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+    >>> aia_map.plot(axes=ax, clip_interval=(1, 99.99)*u.percent) # doctest: +SKIP
     >>> bottom_left = aia_map.wcs.pixel_to_world(600 * u.pixel, 350 * u.pixel)
     >>> top_right = aia_map.wcs.pixel_to_world(800 * u.pixel, 450 * u.pixel)
-    >>> aia_map.draw_quadrangle(
-        bottom_left,
-        axes=ax,
-        top_right=top_right,
-        edgecolor="red",
-        linestyle=":",
-        linewidth=2,
-        label='pixel_to_world()'
-        )
+    >>> aia_map.draw_quadrangle(bottom_left,axes=ax,top_right=top_right,edgecolor="red") # doctest: +SKIP
+    >>> plt.show() # doctest: +SKIP
