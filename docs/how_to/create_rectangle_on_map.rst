@@ -4,8 +4,7 @@
 How to Draw a Rectangle on sunpy map
 ************************************
 
-
-SunPy provides a convenient method called :meth:`~sunpy.map.GenericMap.draw_quadrangle` to draw rectangles on maps. 
+SunPy provides a convenient method called :meth:`~sunpy.map.GenericMap.draw_quadrangle` to draw rectangles on maps.
 In this guide, we'll demonstrate four different ways to draw a rectangle on a map using SunPy.
 
 Specify Corners as a Single `~astropy.coordinates.SkyCoord` Object
