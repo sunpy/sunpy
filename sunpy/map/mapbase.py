@@ -11,7 +11,6 @@ import itertools
 import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
-import warnings
 
 import matplotlib
 import matplotlib.pyplot as plt
