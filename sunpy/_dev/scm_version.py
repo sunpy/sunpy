@@ -7,6 +7,6 @@ try:
 
     version = get_version(root=os.path.join('..', '..'), relative_to=__file__)
 except ImportError:
-    raise ImportError('setuptools_scm not installed')
+    raise
 except Exception as e:
-    raise ValueError(f'setuptools_scm broken with {e}')
+    raise ValueError(f'setuptools_scm can not determine version.') from e

@@ -1,5 +1,5 @@
 # NOTE: First try _dev.scm_version if it exists and setuptools_scm is installed
-# This file is not included in sunpy wheels/tarballs, so otherwise it will
+# This file is not included in wheels/tarballs, so otherwise it will
 # fall back on the generated _version module.
 try:
     try:
@@ -15,9 +15,3 @@ except Exception:
     del warnings
 
     version = '0.0.0'
-
-from packaging.version import parse as _parse
-
-_version = _parse(version)
-major, minor, bugfix = [*_version.release, 0][:3]
-release = not _version.is_devrelease
