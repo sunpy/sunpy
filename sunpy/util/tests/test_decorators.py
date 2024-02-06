@@ -4,7 +4,13 @@ import pytest
 
 import astropy.units as u
 
-from sunpy.util.decorators import deprecate_positional_args_since, deprecated, get_removal_version
+from sunpy.util.decorators import (
+    active_contexts,
+    deprecate_positional_args_since,
+    deprecated,
+    get_removal_version,
+    sunpycontextmanager,
+)
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 
@@ -82,3 +88,22 @@ def test_deprecate_positional_args_warns_for_class():
 
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass c=3, d=4 as keyword args"):
         A2(1, 2, 3, 4)
+
+
+@sunpycontextmanager
+def somefunc():
+    print("Entering")
+    yield
+    print("Exiting")
+
+
+def test_somefunc_context():
+    # Check that the context is not active before entering
+    assert not active_contexts.get('somefunc' , False)
+
+    with somefunc():
+        # Check that the context is active while inside
+        assert active_contexts.get('somefunc', False)
+
+    # Check that the context is not active after exiting
+    assert not active_contexts.get('somefunc' , False)
