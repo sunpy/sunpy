@@ -1,5 +1,5 @@
-#!/usr/bin/env python
+# We can remove this file when the default pip version
+# that Python installs is pip >= 21.3
 from setuptools import setup
-from extension_helpers import get_extensions
 
-setup(ext_modules=get_extensions())
+setup()
