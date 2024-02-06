@@ -2728,7 +2728,7 @@ class GenericMap(NDData):
         """
         #Check if both the context managers are active
         if globals().get('_autoapply_diffrot') and globals().get('_assume_spherical_screen'):
-            warnings.warn("Using propogate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+            warn_user("Using propogate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
         
         try:
             import reproject
