@@ -10,7 +10,7 @@ All data is saved in `astropy.table.QTable` with an added attribute:
 * source : names the source of the data
 
 Objects
-------
+-------
     interior : `astropy.table.QTable`
         The standard model of the solar interior.
     evolution : `astropy.table.QTable`
