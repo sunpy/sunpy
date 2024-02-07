@@ -1,0 +1,2 @@
+When calling :meth:`~reproject_to` along with context managers :meth:`~propagate_with_solar_surface` and :meth:`~assume_spherical_screen` raises a warning.
+This is done by creating a global context tracker that is used to keep track of the active context managers.

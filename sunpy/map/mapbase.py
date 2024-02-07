@@ -12,6 +12,8 @@ import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
+from sunpy.util.context_tracker import global_context_tracker
+import warnings
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -2727,8 +2729,8 @@ class GenericMap(NDData):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         #Check if both the context managers are active
-        if globals().get('_autoapply_diffrot') and globals().get('_assume_spherical_screen'):
-            warn_user("Using propogate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+        if global_context_tracker.is_active('propagate_with_solar_surface') and global_context_tracker.is_active('assume_spherical_screen'):
+            warnings.warn("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
         
         try:
             import reproject

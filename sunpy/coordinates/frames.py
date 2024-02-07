@@ -8,6 +8,7 @@ import os
 import re
 import traceback
 from contextlib import contextmanager
+from sunpy.util.context_tracker import global_context_tracker 
 
 import numpy as np
 
@@ -730,6 +731,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
              (1276., 0., 1.00125872), (1595., 0., 1.00125872),
              (1914., 0., 1.00125872)]>
         """
+        global_context_tracker.enter_context('assume_spherical_screen')
         try:
             old_spherical_screen = cls._spherical_screen  # nominally None
 
@@ -742,6 +744,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             yield
         finally:
             cls._spherical_screen = old_spherical_screen
+            global_context_tracker.exit_context('assume_spherical_screen')
 
 
 @add_common_docstring(**_frame_parameters())
