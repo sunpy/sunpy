@@ -34,6 +34,7 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.util.util import fix_duplicate_notes
 from .conftest import make_simple_map
 from .strategies import matrix_meta
 
@@ -51,7 +52,7 @@ def test_notes_combined():
     This is reference.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
     expected_result = """
     Class Info.
 
@@ -76,7 +77,7 @@ def test_notes_combined_no_references():
     This is a note.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
     updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
     Class Info.
@@ -98,7 +99,7 @@ def test_notes_combined_no_existing_notes():
     This is reference.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
     expected_result = """
     Class Info.
 
@@ -117,7 +118,7 @@ def test_notes_combined_no_notes_no_references():
     Class Info.
     """
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= GenericMap.fix_duplicate_notes(extra_note_section,map_documentation)
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
     updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
     Class Info.
