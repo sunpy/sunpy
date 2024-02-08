@@ -296,7 +296,7 @@ def fix_duplicate_notes(subclass_doc, cls_doc):
     Returns
     -------
     str
-    	Updated documentation that contains no note section duplication.
+        Updated documentation that contains no note section duplication.
     """
     existing_notes_pos = cls_doc.find('Notes\n    -----')
     subclass_notes_pos = subclass_doc.find('Notes\n-----')
