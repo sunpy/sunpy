@@ -283,6 +283,21 @@ def _figure_to_base64(fig):
 
 
 def fix_duplicate_notes(subclass_doc, cls_doc):
+    """
+    Returns a new cls_doc such that there is no notes duplication in in `~sunpy.map.Map` subclasses
+
+    Parameters
+    ----------
+    subclass_doc
+        subclass_doc contains the notes section that needs to be appended.
+
+    cls_doc
+        cls_doc contains the content of the class.
+
+    Returns
+    -------
+    An updated cls_doc that has no notes duplication.
+    """
     existing_notes_pos = cls_doc.find('Notes\n    -----')
     subclass_notes_pos = subclass_doc.find('Notes\n-----')
     subclass_notes_data = textwrap.indent(subclass_doc[subclass_notes_pos + len('Notes\n-----'):].strip(), "    ")
