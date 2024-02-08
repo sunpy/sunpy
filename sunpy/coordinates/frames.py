@@ -8,7 +8,6 @@ import os
 import re
 import traceback
 from contextlib import contextmanager
-from sunpy.util.context_tracker import global_context_tracker 
 
 import numpy as np
 
@@ -30,6 +29,7 @@ from astropy.utils.data import download_file
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.context_tracker import global_context_tracker
 from sunpy.util.decorators import add_common_docstring
 from sunpy.util.exceptions import warn_user
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy

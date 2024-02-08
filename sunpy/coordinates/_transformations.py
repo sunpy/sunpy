@@ -16,7 +16,6 @@ import logging
 from copy import deepcopy
 from functools import wraps
 from contextlib import contextmanager
-from sunpy.util.context_tracker import global_context_tracker
 
 import erfa
 import numpy as np
@@ -46,6 +45,7 @@ from astropy.time import Time
 
 from sunpy import log
 from sunpy.sun import constants
+from sunpy.util.context_tracker import global_context_tracker
 from .frames import (
     _J2000,
     GeocentricEarthEquatorial,

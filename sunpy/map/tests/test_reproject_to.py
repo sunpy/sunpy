@@ -12,11 +12,11 @@ from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
 import sunpy.map
+from sunpy.coordinates import frames
+from sunpy.coordinates._transformations import propagate_with_solar_surface
 from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.context_tracker import global_context_tracker
-from sunpy.coordinates._transformations import *
-from sunpy.coordinates import frames
 
 
 @pytest.fixture
@@ -138,7 +138,7 @@ def test_reproject_to_warn_using_global(aia171_test_map, hpc_header):
     global_context_tracker.enter_context('propagate_with_solar_surface')
     global_context_tracker.enter_context('assume_spherical_screen')
 
-    # Check if a warning is raised if both the context managers are used at the same time.
+    # Check if a warning is raised if both context managers are used at the same time.
     with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data."):
         aia171_test_map.reproject_to(hpc_header)
 
@@ -146,10 +146,9 @@ def test_reproject_to_warn_using_global(aia171_test_map, hpc_header):
     global_context_tracker.exit_context('propagate_with_solar_surface')
     global_context_tracker.exit_context('assume_spherical_screen')
 
-# @pytest.fixture
 def test_reproject_to_warn_using_contexts(aia171_test_map, hpc_header):
     with propagate_with_solar_surface():
         with frames.Helioprojective.assume_spherical_screen(aia171_test_map.observer_coordinate):
-            # Check if a warning is raised if both the context managers are used at the same time.
+            # Check if a warning is raised if both context managers are used at the same time.
             with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data."):
                 aia171_test_map.reproject_to(hpc_header)
