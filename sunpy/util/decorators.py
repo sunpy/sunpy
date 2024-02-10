@@ -8,13 +8,14 @@ import warnings
 import functools
 from inspect import Parameter, signature
 from functools import wraps
+from contextlib import contextmanager
 
 import astropy.units as u
 from astropy.nddata import NDData
 
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning, warn_deprecated
 
-__all__ = ['deprecated']
+__all__ = ['deprecated','sunpycontextmanager', 'active_contexts']
 
 
 def get_removal_version(since):
@@ -406,3 +407,22 @@ def check_arithmetic_compatibility(func):
             return NotImplemented
         return func(instance, value)
     return inner
+
+active_contexts = {}  # Public dictionary for context activation tracking
+
+def sunpycontextmanager(func):
+    """
+    A decorator that tracks the entry and exit of a context manager,
+    setting the key's value to True on entry and False on exit.
+    """
+    @wraps(func)
+    @contextmanager
+    def wrapper(*args, **kwargs):
+        context = func.__name__
+        active_contexts[context] = True
+        try:
+            yield  func(*args,**kwargs) # Context manager block starts here
+        finally:
+            active_contexts[context] = False
+
+    return  wrapper

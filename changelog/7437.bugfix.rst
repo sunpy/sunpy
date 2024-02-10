@@ -1,1 +1,2 @@
 When calling :meth:`~reproject_to` along with both context managers :meth:`~propagate_with_solar_surface` and :meth:`~assume_spherical_screen` now raises a warning.
+Added a new decorator :func:`~sunpycontextmanager` which tracks the active context managers and stores them in a public dictionary `active_contexts`.

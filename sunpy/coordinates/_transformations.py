@@ -45,7 +45,7 @@ from astropy.time import Time
 
 from sunpy import log
 from sunpy.sun import constants
-from sunpy.util.context_tracker import global_context_tracker
+from sunpy.util.decorators import sunpycontextmanager
 from .frames import (
     _J2000,
     GeocentricEarthEquatorial,
@@ -139,7 +139,7 @@ def transform_with_sun_center():
         _ignore_sun_motion = old_ignore_sun_motion
 
 
-@contextmanager
+@sunpycontextmanager
 def propagate_with_solar_surface(rotation_model='howard'):
     """
     Context manager for coordinate transformations to automatically apply solar

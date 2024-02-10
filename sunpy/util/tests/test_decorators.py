@@ -2,7 +2,7 @@ import warnings
 
 import pytest
 
-from sunpy.util.decorators import deprecated, get_removal_version
+from sunpy.util.decorators import active_contexts, deprecated, get_removal_version, sunpycontextmanager
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 
@@ -38,3 +38,18 @@ def test_deprecated_warning_message(since, pending, warning, message, warning_me
     with pytest.warns(warning, match=warning_message):
         warnings.simplefilter('always')
         foo()
+
+@sunpycontextmanager
+def somefunc():
+    pass
+
+def test_somefunc_context():
+    # Check that the context is not active before entering
+    assert not active_contexts.get('somefunc' , False)
+
+    with somefunc():
+        # Check that the context is active while inside
+        assert active_contexts.get('somefunc', False)
+
+    # Check that the context is not active after exiting
+    assert not active_contexts.get('somefunc' , False)
