@@ -203,7 +203,6 @@ def propagate_with_solar_surface(rotation_model='howard'):
          (85.1064,   0., 1.), (85.1064,  30., 1.),
          (85.1064,  60., 1.)]>
     """
-    global_context_tracker.enter_context('propagate_with_solar_surface')
     with transform_with_sun_center():
         try:
             global _autoapply_diffrot
@@ -219,7 +218,6 @@ def propagate_with_solar_surface(rotation_model='howard'):
                 log.debug("Disabling automatic solar differential rotation "
                           "for any changes in obstime")
             _autoapply_diffrot = old_autoapply_diffrot
-            global_context_tracker.exit_context('propagate_with_solar_surface')
 
 
 # Global counter to keep track of the layer of transformation
