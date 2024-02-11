@@ -2290,6 +2290,49 @@ class GenericMap(NDData):
         quad = Quadrangle(anchor, width, height, **kwergs)
         axes.add_patch(quad)
         return quad
+    
+    def _calculate_contour_levels_by_area(self, levels):
+        """
+        Calculate contour levels based on area containment.
+
+        Parameters
+        ----------
+        levels : array_like
+            An array-like object specifying the percentages of the total area to be contained within the generated contour levels.
+            This can be a single value or an array of values representing the desired percentages, where each value should be in the range [0, 1].
+        
+        Returns
+        -------
+        thresholds : ndarray
+            An array of threshold values representing the data values below which the specified percentages of the total area are contained.
+            The length of this array is equal to the length of the input `levels`.
+        
+        Notes
+        -----
+        This function calculates contour levels based on the area contained within them relative to the maximum value in the map data.
+        It normalizes the map data, sorts the normalized values, calculates the cumulative sum, and finds thresholds corresponding to the specified percentages of the total area.
+        The thresholds are then returned as an array.
+
+        Examples
+        --------
+        >>> map_data = np.random.rand(100, 100)
+        >>> quantiles = [0.1, 0.3, 0.5, 0.7, 0.9]
+        >>> contour_levels = self._calculate_contour_levels_by_area(quantiles)
+        >>> print(contour_levels)
+        [0.3160296  0.54729944 0.70897832 0.83778233 0.95295992]
+        """
+        
+        normalized_data = (self.data - np.nanmin(self.data)) / (np.nanmax(self.data) - np.nanmin(self.data))
+        sorted_data = np.sort(normalized_data.flatten())[::-1]
+        
+        cumulative_sum = np.cumsum(sorted_data)
+        cumulative_sum /= cumulative_sum.max()
+        
+        indices = np.searchsorted(cumulative_sum, levels)
+        thresholds = np.sort(sorted_data[indices])
+        
+        return thresholds
+    
 
     def _process_levels_arg(self, levels):
         """
@@ -2305,7 +2348,9 @@ class GenericMap(NDData):
                                 "it should be an Astropy Quantity object.")
 
         if levels.unit == u.percent:
-            return 0.01 * levels.to_value('percent') * np.nanmax(self.data)
+            # Calculate contour levels based on area containment
+            contour_levels = self._calculate_contour_levels_by_area(levels)
+            return contour_levels
         elif self.unit is not None:
             return levels.to_value(self.unit)
         elif levels.unit.is_equivalent(u.dimensionless_unscaled):
