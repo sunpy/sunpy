@@ -2292,6 +2292,7 @@ class GenericMap(NDData):
         return quad
     
     def _calculate_contour_levels_by_area(self, levels):
+        
         """
         Calculate contour levels based on area covered.
 
@@ -2313,13 +2314,14 @@ class GenericMap(NDData):
         It normalizes the data, sorts the normalized values, calculates the cumulative sum, and finds thresholds corresponding to the specified percentages of the total area.
         The thresholds are then returned as an array.
 
-        Examples
-        --------
+        >>> import numpy as np
         >>> map_data = np.random.rand(100, 100)
         >>> quantiles = [0.1, 0.3, 0.5, 0.7, 0.9]
         >>> contour_levels = self._calculate_contour_levels_by_area(quantiles)
-        >>> print(contour_levels)
-        [0.3160296  0.54729944 0.70897832 0.83778233 0.95295992]
+        >>> contour_levels  # doctest: +SKIP
+        # output : array([0.3160296 , 0.54729944, 0.70897832, 0.83778233, 0.95295992])
+        
+        Derived from a source at https://gist.github.com/settwi/5d3f34b79843df00c2058ec1d49da2ea.
         """
         
         normalized_data = (self.data - np.nanmin(self.data)) / (np.nanmax(self.data) - np.nanmin(self.data))
