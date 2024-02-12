@@ -2293,7 +2293,7 @@ class GenericMap(NDData):
     
     def _calculate_contour_levels_by_area(self, levels):
         """
-        Calculate contour levels based on area containment.
+        Calculate contour levels based on area covered.
 
         Parameters
         ----------
