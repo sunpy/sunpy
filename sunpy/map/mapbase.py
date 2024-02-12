@@ -2309,7 +2309,7 @@ class GenericMap(NDData):
         
         Notes
         -----
-        This function calculates contour levels based on the area contained within them relative to the maximum value in the map data.
+        This function calculates contour levels based on the area contained within them relative to the maximum value in the data.
         It normalizes the map data, sorts the normalized values, calculates the cumulative sum, and finds thresholds corresponding to the specified percentages of the total area.
         The thresholds are then returned as an array.
 
