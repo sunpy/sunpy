@@ -50,7 +50,7 @@ class KeywordComparison(AttrComparison):
     ----------
     name : str
     operator : str
-    value : Numeric
+    value : number or str
     """
 
 
@@ -253,5 +253,4 @@ def _apply1(wlk, query, imap):
     if query.min != query.max:
         raise ValueError(
             "For JSOC queries Wavelength.min must equal Wavelength.max")
-
     imap[query.__class__.__name__.lower()] = query.min

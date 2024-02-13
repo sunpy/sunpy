@@ -628,7 +628,7 @@ class JSOCClient(BaseClient):
             # Check whether any primekey listed in PRIMEKEY_LIST_TIME has been passed through
             # PrimeKey() attribute. If yes, raise an error, since Time can only be passed
             # either through PrimeKey() attribute or Time() attribute.
-            if not any(x in PRIMEKEY_LIST_TIME for x in primekey):
+            if all(x not in PRIMEKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
                     start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
@@ -650,27 +650,19 @@ class JSOCClient(BaseClient):
                                  "prime-keys is not yet supported. Alternative is to "
                                  "use only one of the primekey to query for series data.")
                 raise ValueError(error_message)
-            if match:
-                timestr = '{}'.format(primekey.pop(list(match)[0], ''))
-            else:
-                timestr = ''
-        if wavelength != '':
-            if not primekey.get('WAVELNTH', ''):
-                if isinstance(wavelength, list):
-                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                    wavelength = str(wavelength)
-                else:
-                    wavelength = f'{int(np.ceil(wavelength.to(u.AA).value))}'
-            else:
-                # This is executed when wavelength has been passed both through PrimeKey()
-                # and Wavelength().
-                error_message = ("Wavelength attribute has been passed both as a Wavelength()"
-                                 " and PrimeKey(). Please provide any one of them"
-                                 " or separate them by OR operator.")
-                raise ValueError(error_message)
-        else:
+            timestr = f"{primekey.pop(list(match)[0], '')}" if match else ''
+        if wavelength == '':
             # This is executed when wavelength has been passed through PrimeKey().
-            wavelength = '{}'.format(primekey.pop('WAVELNTH', ''))
+            wavelength = f"{primekey.pop('WAVELNTH', '')}"
+        elif not primekey.get('WAVELNTH'):
+            wavelength = f'{int(np.ceil(wavelength.to(u.AA).value))}'
+        else:
+            # This is executed when wavelength has been passed both through PrimeKey()
+            # and Wavelength().
+            error_message = ("Wavelength attribute has been passed both as a Wavelength()"
+                             " and PrimeKey(). Please provide any one of them"
+                             " or separate them by OR operator.")
+            raise ValueError(error_message)
         # Populate primekey dict with formatted Time and Wavlength.
         if timestr:
             primekey['TIME'] = timestr
@@ -682,16 +674,12 @@ class JSOCClient(BaseClient):
         si = c.info(series)
         primekeys_istime = si.keywords.loc[si.primekeys].is_time
         for pkey in primekeys_istime.index.values:
-            # The loop is iterating over the list of prime-keys existing for the given series.
-            if len(primekey) > 0:
-                if primekeys_istime[pkey]:
-                    primekey_string += '[{}]'.format(primekey.pop('TIME', ''))
-                else:
-                    primekey_string += '[{}]'.format(primekey.pop(pkey, ''))
-            else:
+            if len(primekey) <= 0:
                 break
-                # break because we can skip adding {} at the end of primekey_string, if the primekey
-                # dict is empty.
+            if primekeys_istime[pkey]:
+                primekey_string += f"[{primekey.pop('TIME', '')}]"
+            else:
+                primekey_string += f"[{primekey.pop(pkey, '')}]"
         if not primekey_string:
             # primekey_string cannot be totally empty
             #
@@ -702,12 +690,11 @@ class JSOCClient(BaseClient):
         keys = []
         keyword_info = c.keys(series)
         for key, value in keyword.items():
-            if key in keyword_info:
-                # We have to ensure that any values that are strings are quoted
-                other_value = value['value'] if str(value['value']).isnumeric() else f"'{value['value']}'"
-                keys.append(f"{key}{value['operator']}{other_value}")
-            else:
+            if key not in keyword_info:
                 raise ValueError(f"Keyword: '{key}' is not supported by series: {series}")
+            # We have to ensure that any values that are strings are quoted
+            other_value = value['value'] if str(value['value']).isnumeric() else f"'{value['value']}'"
+            keys.append(f"{key}{value['operator']}{other_value}")
         keyword_string = f"[? {' AND '.join(keys)} ?]" if keys else ""
         return f"{series}{primekey_string}{keyword_string}{segment}"
 
@@ -715,7 +702,7 @@ class JSOCClient(BaseClient):
         """
         Do a LookData request to JSOC to workout what results the query returns.
         """
-        isMeta = iargs.get('meta', False)
+        is_meta = iargs.get('meta', False)
         keywords = iargs.get('keys', '**ALL**')
         client = drms.Client()
         if 'series' not in iargs:
@@ -728,17 +715,15 @@ class JSOCClient(BaseClient):
         # whether the passed PrimeKeys is a subset of that.
         primekeys = client.pkeys(iargs['series'])
         primekeys_passed = iargs.get('primekey', None)  # primekeys_passes is a dict, with key-value pairs.
-        if primekeys_passed is not None:
-            if not set(list(primekeys_passed.keys())) <= set(primekeys):
-                error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following Keywords: {primekeys}"
-                raise ValueError(error_message.format(series=iargs['series'], primekeys=primekeys))
+        if primekeys_passed is not None and not set(list(primekeys_passed.keys())) <= set(primekeys):
+            error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following Keywords: {primekeys}"
+            raise ValueError(error_message.format(series=iargs['series'], primekeys=primekeys))
         # Raise special error for wavelength (even though the code would ignore it anyway)
         wavelength = iargs.get('wavelength', '')
-        if wavelength != '':
-            if 'WAVELNTH' not in primekeys:
-                error_message = (f"The series {iargs['series']} does not support wavelength attribute. "
-                                 f"The following primekeys are supported {primekeys}")
-                raise TypeError(error_message.format(series=iargs['series'], pkeys=primekeys))
+        if wavelength != '' and 'WAVELNTH' not in primekeys:
+            error_message = (f"The series {iargs['series']} does not support wavelength attribute. "
+                             f"The following primekeys are supported {primekeys}")
+            raise TypeError(error_message.format(series=iargs['series'], pkeys=primekeys))
         # Raise errors for segments
         # Get a set of the segments that exist for the given series, and check
         # whether the passed segments is a subset of that.
@@ -766,7 +751,7 @@ class JSOCClient(BaseClient):
             key = keywords
         log.debug(f"Running following query: {ds}")
         log.debug(f"Requesting following keywords: {key}")
-        result = client.query(ds, key=key, rec_index=isMeta)
+        result = client.query(ds, key=key, rec_index=is_meta)
         if result is None or result.empty:
             return astropy.table.Table()
         else:
