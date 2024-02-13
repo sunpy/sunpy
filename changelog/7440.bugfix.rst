@@ -1,0 +1,1 @@
+Fixed incorrect JSOC query creation when using string comparison values for keywords.
