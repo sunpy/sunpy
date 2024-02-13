@@ -371,3 +371,14 @@ def test_empty_response_fetch(client):
     assert len(response) == 0
     result = client.fetch(response)
     assert len(result) == 0
+
+
+@pytest.mark.remote_data
+def test_string_keyword_is_converted_correctly(client):
+    # Bug reported here:
+    # https://community.openastronomy.org/t/how-to-select-only-fuv-iris-level-1-data-using-jsoc/900
+    responses = client.search(
+        a.Time("2014-01-01T00:00", "2014-01-01T00:05"),
+        a.jsoc.Series("iris.lev1"), a.jsoc.Keyword("INSTRUME") == "FUV"
+        )
+    assert len(responses) == 6

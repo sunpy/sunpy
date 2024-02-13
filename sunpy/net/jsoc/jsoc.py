@@ -703,7 +703,9 @@ class JSOCClient(BaseClient):
         keyword_info = c.keys(series)
         for key, value in keyword.items():
             if key in keyword_info:
-                keys.append(f"{key}{value['operator']}{value['value']}")
+                # We have to ensure that any values that are strings are quoted
+                other_value = value['value'] if str(value['value']).isnumeric() else f"'{value['value']}'"
+                keys.append(f"{key}{value['operator']}{other_value}")
             else:
                 raise ValueError(f"Keyword: '{key}' is not supported by series: {series}")
         keyword_string = f"[? {' AND '.join(keys)} ?]" if keys else ""
