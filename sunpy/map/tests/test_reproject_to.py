@@ -15,8 +15,8 @@ import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates._transformations import propagate_with_solar_surface
 from sunpy.tests.helpers import figure_test
-from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.context_tracker import global_context_tracker
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 @pytest.fixture
