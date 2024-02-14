@@ -300,11 +300,12 @@ class JSOCClient(BaseClient):
         query = and_(*query)
         blocks = []
         for block in walker.create(query):
-            iargs = kwargs.copy()
-            iargs.update(block)
-            # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
-            blocks.append(copy.deepcopy(iargs))
-            return_results = astropy.table.vstack([return_results, self._lookup_records(iargs)])
+            extra_kwargs = kwargs.copy()
+            extra_kwargs |= block
+            # Update blocks with deep copy of extra_kwargs because in _make_recordset we use .pop() on
+            # element from extra_kwargs
+            blocks.append(copy.deepcopy(extra_kwargs))
+            return_results = astropy.table.vstack([return_results, self._lookup_records(extra_kwargs)])
         return_results.query_args = blocks
         return_results._original_num_rows = len(return_results)
         return return_results
@@ -335,8 +336,8 @@ class JSOCClient(BaseClient):
 
         requests = []
         self.query_args = jsoc_response.query_args
-        supported_protocols = {'fits', 'as-is'}
-        supported_methods = {'url-tar', 'url', 'url-quick'}
+        supported_protocols = sorted({'fits', 'as-is'})
+        supported_methods = sorted({'url-tar', 'url', 'url-quick'})
         for block in jsoc_response.query_args:
 
             ds = self._make_recordset(**block)
@@ -345,12 +346,10 @@ class JSOCClient(BaseClient):
             cutout = block.get('cutout')
 
             if protocol not in supported_protocols:
-                error_message = f"Protocols other than {','.join(supported_protocols)} "\
-                                "are not supported."
+                error_message = f"Protocols other than {','.join(supported_protocols)} are not supported."
                 raise TypeError(error_message)
             if method not in supported_methods:
-                error_message = f"Methods other than {','.join(supported_methods)} "\
-                                "are not supported."
+                error_message = f"Methods other than {','.join(supported_methods)}  are not supported."
                 raise TypeError(error_message)
             process = {'im_patch': cutout} if cutout is not None else None
 
@@ -360,9 +359,7 @@ class JSOCClient(BaseClient):
 
             requests.append(r)
 
-        if len(requests) == 1:
-            return requests[0]
-        return requests
+        return requests[0] if len(requests) == 1 else requests
 
     @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
@@ -426,15 +423,13 @@ class JSOCClient(BaseClient):
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
-        defaults = {'max_splits': 1}
-        defaults.update(kwargs)
-
+        defaults = {'max_splits': 1} | kwargs
         # Make response iterable
         if not isiterable(responses):
             responses = [responses]
 
         # Add them to the response for good measure
-        jsoc_response.requests = [r for r in responses]
+        jsoc_response.requests = list(responses)
         time.sleep(sleep/2.)
 
         for response in responses:
@@ -799,14 +794,14 @@ class JSOCClient(BaseClient):
                 data = client.info(item)
                 series_store.append((data.name, data.note))
                 if not data.segments.empty:
-                    for row in data.segments.iterrows():
-                        segments.append((row[0], row[1][-1]))
+                    segments.extend((row[0], row[1][-1]) for row in data.segments.iterrows())
         series_store = list(set(series_store))
         segments = list(set(segments))
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
-            keyword_info = {}
-            keyword_info["series_store"] = sorted(series_store)
-            keyword_info["segments"] = sorted(segments)
+            keyword_info = {
+                "series_store": sorted(series_store),
+                "segments": sorted(segments),
+            }
             json.dump(keyword_info, attrs_file, indent=2)
 
     @staticmethod
@@ -828,5 +823,5 @@ class JSOCClient(BaseClient):
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}
         segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
-        attrs = {**series_dict, **segments_dict}
+        attrs = series_dict | segments_dict
         return attrs
