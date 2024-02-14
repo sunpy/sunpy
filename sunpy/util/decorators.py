@@ -416,13 +416,15 @@ def sunpycontextmanager(func):
     setting the key's value to True on entry and False on exit.
     """
     @wraps(func)
-    @contextmanager
     def wrapper(*args, **kwargs):
-        context = func.__name__
-        active_contexts[context] = True
+        active_contexts[func.__name__] = True
+        gen = func(*args, **kwargs)
+        value = next(gen)
         try:
-            yield  func(*args,**kwargs) # Context manager block starts here
-        finally:
-            active_contexts[context] = False
-
-    return  wrapper
+            yield value
+        except Exception as e:
+            gen.throw(e)
+        else:
+            next(gen, None)
+            active_contexts[func.__name__] = False
+    return contextmanager(wrapper)

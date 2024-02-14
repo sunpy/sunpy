@@ -41,7 +41,9 @@ def test_deprecated_warning_message(since, pending, warning, message, warning_me
 
 @sunpycontextmanager
 def somefunc():
-    pass
+    print("Entering")
+    yield
+    print("Exiting")
 
 def test_somefunc_context():
     # Check that the context is not active before entering

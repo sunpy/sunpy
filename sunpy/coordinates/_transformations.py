@@ -15,7 +15,6 @@ This module contains the functions for converting one
 import logging
 from copy import deepcopy
 from functools import wraps
-from contextlib import contextmanager
 
 import erfa
 import numpy as np
@@ -75,7 +74,7 @@ _ignore_sun_motion = False
 _autoapply_diffrot = None
 
 
-@contextmanager
+@sunpycontextmanager
 def transform_with_sun_center():
     """
     Context manager for coordinate transformations to ignore the motion of the center of the Sun.
