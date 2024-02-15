@@ -77,7 +77,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame','transform_vector_field']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -467,3 +467,68 @@ def get_fov(instrument, time, *, resolution=100):
                    obstime=obstime,
                    representation_type='unitspherical')
     return fov
+
+def transform_vector_field(components,source_frame,target_frame,from_time,to_time=None):
+    """
+    Transforms a vector field from one frame to another using the SPICE toolkit.
+
+    This function takes a vector field defined in the `source_frame` and transforms it to the `target_frame`
+    at a specified time. The transformation is done using the SPICE toolkit, which provides accurate
+    transformations between different astronomical frames.
+
+    Parameters
+    ----------
+    components : `~astropy.units.Quantity`
+        The components of the vector field in the source frame. This should be a 3-element Quantity.
+
+    source_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
+        The frame in which the input vector field is defined. This can be a string with the name of the frame,
+        an integer with the SPICE ID of the frame, or an Astropy BaseCoordinateFrame instance.
+
+    target_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
+        The frame to which the vector field should be transformed. This can be a string with the name of the frame,
+        an integer with the SPICE ID of the frame, or an Astropy BaseCoordinateFrame instance.
+
+    from_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`
+        The time at which the vector field is defined in the source frame. This can be any format that is
+        accepted by SunPy's `parse_time` function.
+
+    to_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`, optional
+        The time at which the vector field should be defined in the target frame. If not provided, `from_time`
+        is used, meaning that the transformation will be a spatial transformation only, without any change in time.
+
+    Returns
+    -------
+    `~astropy.units.Quantity`
+        The components of the vector field in the target frame. This is a 3-element Quantity with the same units
+        as the input `components`.
+
+    Examples
+    --------
+    >>> from astropy import units as u
+    >>> components = [1, 0, 0] * u.km
+    >>> transform_vector_field(components, 'J2000', 'GALACTIC', '2001-01-01T00:00:00')
+    TODO ? Add an example in the How-To guide
+    """
+    # Convert SunPy frames to SPICE strings
+    source_frame_spice = source_frame.name.upper() if hasattr(source_frame, 'name') else str(source_frame).upper()
+    target_frame_spice = target_frame.name.upper() if hasattr(target_frame, 'name') else str(target_frame).upper()
+
+    # Convert times to parse_time()-compatible format
+    from_time = parse_time(from_time)
+    to_time = parse_time(to_time) if to_time else from_time
+
+    # Convert times to ET
+    from_time_et = _convert_to_et(from_time)
+    to_time_et = _convert_to_et(to_time)
+
+    # Compute state transformation matrix using spiceypy
+    state_matrix = spiceypy.sxform(source_frame_spice, target_frame_spice, to_time_et or from_time_et)
+
+    # The state transformation matrix is a 6x6 matrix. The upper left 3x3 block is the rotation matrix.
+    rotation_matrix = state_matrix[:3, :3]
+
+    # Apply rotation matrix to vector field components
+    transformed_components = rotation_matrix @ components
+
+    return transformed_components
