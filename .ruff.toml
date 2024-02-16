@@ -7,6 +7,8 @@ exclude = [
   "sunpy/extern/**",
   "sunpy/version.py",
 ]
+
+[lint]
 select = ["E", "F", "W", "UP", "PT"]
 extend-ignore = [
   # pycodestyle (E, W)
