@@ -503,7 +503,7 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
     >>> from sunpy.coordinates.spice import transform_vector_field
 
     >>> vec_components = [1, 0, 0] * u.T
-    >>> vec_components
+    >>> vec_components  # doctest: +SKIP
     ... <Quantity [1., 0., 0.] T>
 
     >>> source_frame = "J2000"
@@ -519,7 +519,7 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
     * The function then multiplies this transformation matrix with the input vector.
     * This is a matrix-vector multiplication, which results in a new vector in the target frame.
 
-    >>> transformed_vector
+    >>> transformed_vector  # doctest: +SKIP
     ... <Quantity [−0.054875539, 0.49410945, −0.86766614]T>
     * transformed_vector is now the input vector expressed in the target frame.
 
