@@ -470,8 +470,8 @@ def get_fov(instrument, time, *, resolution=100):
 
 def transform_vector_field(components, source_frame, target_frame, from_time, to_time=None):
     """
-    Transforms a vector field from ``source_frame`` to ``target_frame`` at a specified 
-    time using the SPICE toolkit, which provides accurate transformations between 
+    Transforms a vector field from ``source_frame`` to ``target_frame`` at a specified
+    time using the SPICE toolkit, which provides accurate transformations between
     different astronomical frames.
 
     Parameters
@@ -509,7 +509,6 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
     >>> source_frame = "J2000"
     >>> target_frame = "Galactic"
     >>> from_time = '2001-01-01T00:00:00'
-    >>> end_time = Optional 
 
     >>> transformed_vector = transform_vector_field(vec_components, source_frame, target_frame, from_time)
 
