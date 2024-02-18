@@ -21,6 +21,7 @@ def test_slugify():
     assert sunpy.util.net.slugify("äb c", "b_c")
     assert sunpy.util.net.slugify("file.greg.fits") == "file_greg.fits"
     assert sunpy.util.net.slugify("file.greg.fits", "x") == "filexgreg.fits"
+    assert sunpy.util.net.slugify("file.name.fits.hdu") == "file_name.fits.hdu"
     assert sunpy.util.net.slugify("filegreg.fits") == "filegreg.fits"
     assert sunpy.util.net.slugify("filegreg") == "filegreg"
     assert sunpy.util.net.slugify("f/i*l:e,gr.eg.fits") == "f_i_l_e_gr_eg.fits"
