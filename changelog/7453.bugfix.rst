@@ -1,0 +1,1 @@
+Fix the bug which did not handled the ``FITS`` filename with compound extension properly when :func:`~sunpy.utils.slugify` is called.
