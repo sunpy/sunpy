@@ -16,7 +16,7 @@ __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
            'get_system_filename', 'download_file', 'download_fileobj']
 
 # Characters not allowed in slugified version.
-_punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+_punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},]+')
 
 
 def slugify(text, delim='_'):
@@ -38,11 +38,8 @@ def slugify(text, delim='_'):
     text = normalize('NFKD', text)
 
     period = '.'
-    if ".fits" in text and not text.endswith(".fits") :
-        name_and_extension_partition = text.partition("fits.")
-        name_and_extension = [name_and_extension_partition[0], ''.join(name_and_extension_partition[1:])]
-    else:
-        name_and_extension = text.rsplit(period, 1)
+
+    name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
     name = str(delim).join(
