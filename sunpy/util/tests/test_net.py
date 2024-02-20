@@ -18,7 +18,7 @@ def test_content_disposition_unicode():
 
 
 def test_slugify():
-    assert sunpy.util.net.slugify("™bc") == "TMbc"  # Unicode normalization
+    assert sunpy.util.net.slugify("ä™") == "äTM"  # Unicode NFKC normalization
     assert sunpy.util.net.slugify("filegreg") == "filegreg"  # no file extension
     assert sunpy.util.net.slugify("filegreg.fits") == "filegreg.fits"  # one file extension
     assert sunpy.util.net.slugify("file.greg.fits") == "file.greg.fits"  # more than one apparent file extension
