@@ -2,7 +2,6 @@
 This module provides general net utility functions.
 """
 import os
-import re
 import sys
 import shutil
 from unicodedata import normalize
@@ -17,11 +16,11 @@ __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
 
 
 def slugify(text, delim='_'):
-    """
+    r"""
     Slugify given unicode text.
 
     This function performs a Unicode normalization to NFKD form, followed by replacing
-    the following characters by the delimeter:
+    the following characters by the delimiter:
 
     : (tab) (space) ! " # $ % & ' ( ) * - / < = > ? @ [ \ ] ^ _ ` { | } ,
 
@@ -39,10 +38,10 @@ def slugify(text, delim='_'):
     """
     text = normalize('NFKD', text)
 
-    chars_to_replace = ":\t !\"#$%&'()*-/<=>?@[\]^_`{|},"
-    trans_dict = {c: delim for c in chars_to_replace}
+    chars_to_replace = ":\t !\"#$%&'()*-/<=>?@[\\]^_`{|},"
+    trans_map = str.maketrans({c: delim for c in chars_to_replace})
 
-    return text.translate(trans_dict)
+    return text.translate(trans_map)
 
 
 def get_content_disposition(content_disposition):
