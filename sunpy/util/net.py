@@ -15,13 +15,15 @@ from sunpy.util import replacement_filename
 __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
            'get_system_filename', 'download_file', 'download_fileobj']
 
-# Characters not allowed in slugified version.
-_punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},]+')
-
 
 def slugify(text, delim='_'):
     """
     Slugify given unicode text.
+
+    This function performs a Unicode normalization to NFKD form, followed by replacing
+    the following characters by the delimeter:
+
+    : (tab) (space) ! " # $ % & ' ( ) * - / < = > ? @ [ \ ] ^ _ ` { | } ,
 
     Parameters
     ----------
@@ -37,19 +39,10 @@ def slugify(text, delim='_'):
     """
     text = normalize('NFKD', text)
 
-    period = '.'
+    chars_to_replace = ":\t !\"#$%&'()*-/<=>?@[\]^_`{|},"
+    trans_dict = {c: delim for c in chars_to_replace}
 
-    name_and_extension = text.rsplit(period, 1)
-    name = name_and_extension[0]
-
-    name = str(delim).join(
-        filter(None, (word for word in _punct_re.split(name.lower()))))
-
-    if len(name_and_extension) == 2:
-        extension = name_and_extension[1]
-        return str(period).join([name, extension])
-    else:
-        return name
+    return text.translate(trans_dict)
 
 
 def get_content_disposition(content_disposition):
