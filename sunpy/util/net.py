@@ -19,10 +19,10 @@ def slugify(text, delim='_'):
     r"""
     Slugify given unicode text.
 
-    This function performs a Unicode normalization to NFKD form, followed by replacing
+    This function performs a Unicode normalization to NFKC form, followed by replacing
     the following characters by the delimiter:
 
-    : (tab) (space) ! " # $ % & ' ( ) * - / < = > ? @ [ \ ] ^ _ ` { | } ,
+    : (tab) (space) ! " # $ % & ' ( ) * - / < = > ? @ [ \\ ] ^ _ ` { | } ,
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ def slugify(text, delim='_'):
     `str` :
         The slugify `str` name.
     """
-    text = normalize('NFKD', text)
+    text = normalize('NFKC', text)
 
     chars_to_replace = ":\t !\"#$%&'()*-/<=>?@[\\]^_`{|},"
     trans_map = str.maketrans({c: delim for c in chars_to_replace})
