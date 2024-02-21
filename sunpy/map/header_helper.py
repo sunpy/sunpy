@@ -280,7 +280,7 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
     if exposure is not None:
         meta_wcs['exptime'] = exposure.to_value(u.s)
     if unit is not None:
-        meta_wcs['bunit'] = unit.to_string("fits")
+        meta_wcs['bunit'] = u.Unit(unit).to_string("fits")
 
     return meta_wcs
 
