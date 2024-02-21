@@ -1,0 +1,1 @@
+Allow units to be passed to `~sunpy.map.make_fitswcs_header` as strings.
