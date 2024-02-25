@@ -2320,10 +2320,10 @@ class GenericMap(NDData):
         >>> contour_levels = self._calculate_contour_levels_by_area(quantiles)
         >>> contour_levels  # doctest: +SKIP
         # output : array([0.3160296 , 0.54729944, 0.70897832, 0.83778233, 0.95295992])
-        
-        Derived from a source at https://gist.github.com/settwi/5d3f34b79843df00c2058ec1d49da2ea.
         """
         
+        # Derived from a source at https://gist.github.com/settwi/5d3f34b79843df00c2058ec1d49da2ea.
+
         normalized_data = (self.data - np.nanmin(self.data)) / (np.nanmax(self.data) - np.nanmin(self.data))
         sorted_data = np.sort(normalized_data.flatten())[::-1]
         
