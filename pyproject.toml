@@ -39,6 +39,7 @@ dependencies = [
   "pyerfa",
   "requests",
 ]
+dependencies = []
 dynamic = ["version"]
 
 [project.readme]

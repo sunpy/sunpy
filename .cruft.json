@@ -1,6 +1,6 @@
 {
   "template": "/home/sam/Code/OpenAstronomy/packaging-guide",
-  "commit": "d32d742311581bbb9e698ec3631f43ccec3d07a9",
+  "commit": "951d5647d26df413478884b4b6654afc8833c8d2",
   "checkout": null,
   "context": {
     "cookiecutter": {

@@ -1,0 +1,22 @@
+repos:
+    # This should be before any formatting hooks like isort
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|sunpy/extern)$"
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-case-conflict
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      # Ignore the template for checks which will be confused by jinja syntax
+      - id: check-ast
+        exclude: "sunpy"
+      - id: check-yaml
+        exclude: "sunpy"
+      - id: debug-statements
+        exclude: "sunpy"

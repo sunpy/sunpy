@@ -1,4 +1,4 @@
-name: rtd_sunpy
+name: sunpy
 channels:
   - conda-forge
 dependencies:

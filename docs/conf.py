@@ -52,6 +52,7 @@ import doctest  # NOQA: E402
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
 # The full version, including alpha/beta/rc tags
+from sunpy import __version__
 release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
@@ -118,9 +119,6 @@ extensions = [
     'sphinx_copybutton',
     'hoverxref.extension',
 ]
-
-# Set automodapi to generate files inside the generated directory
-automodapi_toctreedirnm = "generated/api"
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']

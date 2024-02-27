@@ -22,8 +22,6 @@ exclude =
     __pycache__
     docs/conf.py
     build
-    sunpy/data/sample.py
-    sunpy/extern/**
     sunpy/__init__.py,
 rst-directives =
     plot
