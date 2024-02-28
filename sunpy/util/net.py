@@ -17,6 +17,7 @@ __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+punct = ['[', ':', '\t', '!', '"', '#', '$', '%', '&', '\\', "'", '(', ')', '*', '-', '/', '<', '=', '>', '?', '@','^', '`', '{', '|', '}' ',' '.', ']', '+']
 
 
 def slugify(text, delim='_'):
@@ -39,18 +40,26 @@ def slugify(text, delim='_'):
 
     period = '.'
 
-    name_and_extension = text.rsplit(period, 1)
-    name = name_and_extension[0]
+    splitIndex = 0
+    # searching for the first "valid dot" from the right
+    for i in range(len(text)-1, 0, -1):
+        if text[i] == period:
+            splitIndex = i
+        if text[i] in punct:
+            break
+
+    name = text[:splitIndex]
+    extention = text[splitIndex:]
+
 
     name = str(delim).join(
         filter(None, (word for word in _punct_re.split(name.lower()))))
 
-    if len(name_and_extension) == 2:
-        extension = name_and_extension[1]
-        return str(period).join([name, extension])
-    else:
-        return name
+    name += extention
+    #print(name)
+    return name
 
+print(slugify('a_b   d.f_c.d'))
 
 def get_content_disposition(content_disposition):
     """
