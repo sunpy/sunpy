@@ -17,6 +17,7 @@ __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+
 punct = ['[', ':', '\t', '!', '"', '#', '$', '%', '&', '\\', "'", '(', ')', '*', '-', '/', '<', '=', '>', '?', '@','^', '`', '{', '|', '}' ',' '.', ']', '+']
 
 
@@ -51,15 +52,11 @@ def slugify(text, delim='_'):
     name = text[:splitIndex]
     extention = text[splitIndex:]
 
-
     name = str(delim).join(
         filter(None, (word for word in _punct_re.split(name.lower()))))
 
     name += extention
-    #print(name)
     return name
-
-print(slugify('a_b   d.f_c.d'))
 
 def get_content_disposition(content_disposition):
     """
