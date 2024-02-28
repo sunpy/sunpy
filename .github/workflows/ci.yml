@@ -191,9 +191,9 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
       upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
-      anaconda_user: sunpy
+      anaconda_user: scientific-python-nightly-wheels
       anaconda_package: sunpy
-      anaconda_keep_n_latest: -1
+      anaconda_keep_n_latest: 1
       sdist: false
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
@@ -204,16 +204,12 @@ jobs:
         - cp3{9,10,11,12}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
-      anaconda_token: ${{ secrets.anaconda_token }}
+      anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
   publish_pure:
     needs: [publish]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
     with:
-      upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
-      anaconda_user: scientific-python-nightly-wheels
-      anaconda_package: sunpy
-      anaconda_keep_n_latest: -1
       python-version: "3.10"
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
@@ -222,7 +218,6 @@ jobs:
         SUNPY_NO_BUILD_ANA_EXTENSION: 1
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
-      anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
   notify:
     if: always() && github.event_name == 'workflow_dispatch'
