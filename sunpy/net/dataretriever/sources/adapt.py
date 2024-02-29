@@ -1,6 +1,5 @@
 
-import sunpy.net
-from sunpy.net import attr, attrs
+from sunpy.net import attr, attrs, Fido
 from sunpy.net.dataretriever import GenericClient
 
 class ADAPTFileType(attr.SimpleAttr):
@@ -82,7 +81,7 @@ class ADAPTClient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs as a
 
-        adict = {attrs.Instrument: [('ADAPT', 'ADvanced Adaptive Prediction Technique.')],
+        adict ={attrs.Instrument: [('ADAPT', 'ADvanced Adaptive Prediction Technique.')],
                 attrs.Source: [('NSO', 'National Solar Observatory.')],
                 attrs.Provider: [('GONG', 'Global Oscillation Network Group.')],
                 ADAPTFileType: [('4', 'Public')],
@@ -110,3 +109,64 @@ class ADAPTClient(GenericClient):
         all_attrs = {type(x) for x in query}
         # print(all_attrs)
         return required.issubset(all_attrs) and all_attrs.issubset(required.union(optional))
+
+def carrington_time(CR=2193, frames=1):
+    """Get the start date for the start of a carrington rotation,
+    and a duration that will retrieve a given number of frames
+
+    Returns:
+        _type_: _description_
+    """
+    import astropy.units as u
+    import sunpy.coordinates
+    date = sunpy.coordinates.sun.carrington_rotation_time(CR)
+    date_end = date + frames*(3*1.9999999 * u.hour)
+
+    # Format the Search Dates
+    tstring = r"%Y-%m-%dT%H:%M:%S"
+    get_date    =date.strftime(tstring)
+    get_date_end=date_end.strftime(tstring)
+    return get_date, get_date_end
+
+def test_client(CR=2193, frames=1, ask=False):
+    res = test_search(CR, frames)
+    print("Found {} files".format(len(res)))
+    print(res)
+    # ask the user to continue or not
+    if len(res) > 0:
+        if ask:
+            print("Do you want to continue?")
+            inp = input("y/n: ")
+            if inp == 'y':
+                out = test_fetch(res)
+            else:
+                print("Aborting")
+                return None
+        else:
+            return test_fetch(res)
+
+
+def test_search(CR=2193, frames=1):
+    # Get the date range
+    get_date, get_date_end = carrington_time(CR, frames)
+    LngType = '0' # 0 is carrington, 1 is central meridian
+    res = Fido.search(attrs.Instrument('adapt'), attrs.Time(get_date, get_date_end), ADAPTLngType(LngType))
+    print(res)
+    return res
+
+def test_fetch(res, path="../flux-extra/downloads"):
+    import os
+    directory = os.path.join(os.getcwd(), path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    ret =  Fido.fetch(res, path=directory)
+    test_download(ret)
+    return ret
+
+
+def test_download(out):
+    print(out)
+    pass
+
+if __name__ == "__main__":
+    test_client()
