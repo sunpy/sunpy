@@ -10,7 +10,6 @@ Reference
    sunpy
    coordinates/index
    data
-   database
    image
    io
    map

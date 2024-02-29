@@ -21,8 +21,10 @@ from sunpy.net import attrs as a
 # and make use of the search attributes in `sunpy.net.jsoc` that allow us to query the JSOC.
 #
 # Exporting data from the JSOC requires registering your email first.
-# Please replace this with your email address once you have registered.
+# Please replace this with your email address once you have registered
+# like so: jsoc_email = "your_email@example.com"
 # See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`__ for more details.
+
 jsoc_email = os.environ["JSOC_EMAIL"]
 
 result = Fido.search(a.Time("2011-03-09 23:20:00", "2011-03-09 23:30:00"),

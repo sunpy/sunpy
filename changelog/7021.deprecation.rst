@@ -1,2 +1,0 @@
-Deprecated ``silence_errors`` in Map and Timeseries.
-This has been replaced with ``allow_errors`` keyword.

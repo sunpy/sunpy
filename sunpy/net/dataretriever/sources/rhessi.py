@@ -2,7 +2,6 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 import csv
-import socket
 from datetime import datetime
 from http.client import RemoteDisconnected
 from urllib.error import URLError
@@ -92,7 +91,7 @@ def get_base_url():
         try:
             urlopen(server, timeout=1)
             return server
-        except (RemoteDisconnected, URLError, socket.timeout):
+        except (TimeoutError, RemoteDisconnected, URLError):
             pass
     raise OSError(f'Unable to find an online HESSI server from {data_servers}')
 

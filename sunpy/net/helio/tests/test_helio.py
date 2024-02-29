@@ -2,6 +2,7 @@ import urllib
 from unittest import mock
 
 import pytest
+from requests.exceptions import SSLError
 
 from sunpy.net import attrs as a
 from sunpy.net.helio.hec import HECClient
@@ -246,6 +247,16 @@ def test_link_test_on_urlerror(mock_link_test):
     """
     link_test('') is None
 
+
+@mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=wsdl_urls())
+@mock.patch('sunpy.net.helio.parser.taverna_parser', return_value=some_taverna_urls())
+@mock.patch('sunpy.net.helio.parser.link_test', return_value='some text read')
+@mock.patch('sunpy.net.helio.hec.Client', side_effect=SSLError('SSL error'))
+def test_ssl_verify_error(mock_webservice, mock_taverna, mock_link, mock_zeep, caplog):
+    client = HECClient()
+    query = client.search(a.Time('2023/02/03', '2023/02/03'))
+    assert len(query) == 0
+    assert "Set the 'NO_VERIFY_HELIO_SSL' environment variable disable SSL verification for Helio." in caplog.text
 
 @pytest.fixture(scope="session")
 def client():

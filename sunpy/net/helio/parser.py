@@ -177,9 +177,7 @@ def link_test(link):
     --------
     >>> from sunpy.net.helio import parser
     >>> result = parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +SKIP
-
     >>> print(parser.link_test('http://rrnx.invalid_url5523.com'))  # doctest: +SKIP
-        None
     """
     try:
         with closing(urlopen(link, timeout=LINK_TIMEOUT)) as fd:

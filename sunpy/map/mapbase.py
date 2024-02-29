@@ -12,11 +12,11 @@ import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from packaging import version
 
 try:
     from dask.array import Array as DaskArray
@@ -50,7 +50,6 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
-    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -62,7 +61,7 @@ TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
-_META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
 # class attribute in GenericMap.__init__()
@@ -197,7 +196,11 @@ class GenericMap(NDData):
         cls.__doc__ += textwrap.indent(_notes_doc, "    ")
 
         if hasattr(cls, 'is_datasource_for'):
-            cls._registry[cls] = cls.is_datasource_for
+            # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
+            # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
+            # See https://github.com/sunpy/sunpy/issues/7294 for more information.
+            if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
+                cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
@@ -220,7 +223,7 @@ class GenericMap(NDData):
 
         # Setup some attributes
         self._nickname = None
-        # These are palceholders for default attributes, which are only set
+        # These are placeholders for default attributes, which are only set
         # once if their data isn't present in the map metadata.
         self._default_time = None
         self._default_dsun = None
@@ -356,7 +359,7 @@ class GenericMap(NDData):
         # Use a grayscale colormap with histogram equalization (and red for bad values)
         # Make a copy of the colormap to avoid modifying the matplotlib instance when
         # doing set_bad() (copy not needed when min mpl is 3.5, as already a copy)
-        cmap = copy.copy(sunpy_cm._get_mpl_cmap('gray'))
+        cmap = copy.copy(matplotlib.colormaps['gray'])
         cmap.set_bad(color='red')
         norm = ImageNormalize(stretch=HistEqStretch(finite_data))
 
@@ -724,7 +727,8 @@ class GenericMap(NDData):
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
                         'dn': 'ct',
-                        'dn/s': 'ct/s'}
+                        'dn/s': 'ct/s',
+                        'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
@@ -732,7 +736,7 @@ class GenericMap(NDData):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                           f'See {_META_FIX_URL} for how to fix metadata before loading it '
                           'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                           'the FITS unit standards.')
             unit = None
         return unit
@@ -1696,12 +1700,13 @@ class GenericMap(NDData):
         unpad_x = -np.min((diff[0], 0))
         unpad_y = -np.min((diff[1], 0))
 
-        # Numpy 1.20+ prevents np.pad from padding with NaNs in integer arrays
-        # Before it would be cast to 0, but now it raises an error.
-        if version.parse(np.__version__) < version.parse("1.20.0") and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
-            warn_user("The specified `missing` value is not an integer, but the data "
-                      "array is of integer type, so the output may be strange.")
-        # Pad the image array
+        # Raise an informative error message if trying to pad an integer array with NaNs
+        if (pad_x > 0 or pad_y > 0) and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
+            raise ValueError("The underlying data is integers, but the fill value for missing "
+                             "pixels cannot be cast to an integer, which is the case for the "
+                             "default fill value of NaN.  Set the `missing` keyword to an "
+                             "appropriate integer value for the data set.")
+
         new_data = np.pad(self.data,
                           ((pad_y, pad_y), (pad_x, pad_x)),
                           mode='constant',
@@ -2469,6 +2474,11 @@ class GenericMap(NDData):
         :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
         manager may be appropriate.
         """
+        # Users sometimes assume that the first argument is `axes` instead of `annotate`
+        if not isinstance(annotate, bool):
+            raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
+                            "If you are specifying the axes, use `axes=...` to pass it in.")
+
         # Set the default approach to autoalignment
         if autoalign not in [False, True, 'pcolormesh']:
             raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
@@ -2520,7 +2530,7 @@ class GenericMap(NDData):
         msg = ('Cannot manually specify {0}, as the norm '
                'already has {0} set. To prevent this error set {0} on '
                '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-        if 'norm' in imshow_args:
+        if imshow_args.get('norm', None) is not None:
             norm = imshow_args['norm']
             if 'vmin' in imshow_args:
                 if norm.vmin is not None:
@@ -2655,7 +2665,6 @@ class GenericMap(NDData):
 
         return axes
 
-    @deprecate_positional_args_since("4.1")
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      **reproject_args):
         """

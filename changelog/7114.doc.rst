@@ -1,1 +1,0 @@
-Removed the specification of a non-identity rotation matrix in two reprojection examples.

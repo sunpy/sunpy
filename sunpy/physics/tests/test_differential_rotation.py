@@ -8,10 +8,9 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
 import sunpy.map
-from sunpy.coordinates import frames
+from sunpy.coordinates import frames, transform_with_sun_center
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.coordinates.metaframes import RotatedSunFrame
-from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.map.maputils import map_edges
 from sunpy.physics.differential_rotation import (
     _get_bounding_coordinates,
@@ -148,7 +147,7 @@ def test_solar_rotate_coordinate():
         d = solar_rotate_coordinate(c, observer='earth')
 
     # Test that the code properly filters the time keyword
-    with pytest.raises(ValueError):  # noqa: PT012
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional"):
         with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
             d = solar_rotate_coordinate(c, time='noon')
 

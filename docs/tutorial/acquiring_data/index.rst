@@ -138,7 +138,7 @@ To see a summary of the results print the result variable that came back from th
     <BLANKLINE>
 
 Queries can be made more flexible or specific by adding more attrs objects to the `~sunpy.net.Fido` search.
-As an example, specific passbands can be searched for by supplying an `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute:
+As an example, specific passbands can be searched for by supplying a `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute:
 
 .. code-block:: python
 

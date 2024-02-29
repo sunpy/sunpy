@@ -1,0 +1,13 @@
+[codespell]
+skip = *.asdf,*.fits,*.fts,*.header,*.json,*.xsh,*cache*,*egg*,*extern*,.git,.idea,.tox,_build,*truncated,*.svg,.asv_env,.history
+ignore-words-list =
+    alog,
+    nd,
+    nin,
+    observ,
+    ot,
+    te,
+    upto,
+    afile,
+    precessed,
+    precess

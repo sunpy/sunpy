@@ -1,0 +1,89 @@
+.. _whatsnew-5.1:
+
+************************
+What's New in sunpy 5.1?
+************************
+
+The SunPy Project is pleased to announce the 5.1 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 5.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+This release of ``sunpy`` contains 361 commits in 102 merged pull requests closing 27 issues from 19 people, 7 of which are first-time contributors to ``sunpy``.
+
+* 361 commits have been added since 5.0
+* 27 issues have been closed since 5.0
+* 102 pull requests have been merged since 5.0
+* 19 people have contributed since 5.0
+* 7 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Brett J Graham  *
+-  David Stansby
+-  Hannah Collier  *
+-  Jan Gieseler
+-  Kurt McKee  *
+-  Laura Hayes
+-  Nabil Freij
+-  Paul Wright  *
+-  Samuel Badman  *
+-  Samuel J. Van Kooten  *
+-  Shane Maloney
+-  Steven Christe
+-  Stuart Mumford
+-  Trestan Simon  *
+-  Will Barnes
+
+Where a * indicates that this release contains their first contribution to ``sunpy``.
+
+Calculating the amount of solar eclipse
+=======================================
+In anticipation of the upcoming `"Great North American Eclipse" <https://en.wikipedia.org/wiki/Solar_eclipse_of_April_8,_2024>`__ on April 8, 2024, there is a new function :func:`sunpy.coordinates.sun.eclipse_amount` that returns how much of the Sun is occulted by the Moon at the specified observer location and time.
+The output can be used to determine the start/end times of partial eclipse and of totality.
+
+.. minigallery:: sunpy.coordinates.sun.eclipse_amount
+
+Computations using SPICE kernels
+================================
+The `SPICE <https://naif.jpl.nasa.gov/naif/>`__ observation geometry information system is being increasingly used by space missions to describe the locations of spacecraft and the time-varying orientations of reference frames.
+The new `sunpy.coordinates.spice` module enables the use of the `~astropy.coordinates.SkyCoord` API to perform SPICE computations such as the location of bodies or the transformation of a vector from one coordinate frame to another coordinate frame.
+Although SPICE kernels can define coordinate frames that are very similar to the frames that `sunpy.coordinates` already provides, there will very likely be slight differences.
+Using `sunpy.coordinates.spice` will ensure that the definitions are exactly what the mission specifies and that the results are identical to other implementations of SPICE (e.g., CSPICE or Icy).
+
+.. note::
+    `sunpy.coordinates.spice` requires the optional dependency `~spiceypy.spiceypy` to be installed.
+
+.. minigallery:: sunpy.coordinates.spice.initialize
+
+Support for GONG Synoptic Data
+==============================
+The Global Oscillation Network Group (GONG) are a network of observatories located around the Earth that produce photospheric magnetograms every hour.
+These magnetograms are used to derive synoptic maps which show a full-surface picture of the solar magnetic field.
+A new map source, `~sunpy.map.sources.GONGSynopticMap`, has been added to support these synoptic data products.
+This means that GONG synoptic data products can now be loaded directly into `~sunpy.map.Map` objects.
+If you have ``pfsspy`` installed, this new map source will be used instead of the one built into ``pfsspy``.
+
+Coordinate frames related to the Earth's magnetic dipole
+========================================================
+Three new coordinate frames are available: `~sunpy.coordinates.Geomagnetic` (MAG), `~sunpy.coordinates.SolarMagnetic` (SM), and `~sunpy.coordinates.GeocentricSolarMagnetospheric` (GSM).
+These frames depend on the orientation of the Earth's magnetic dipole, as defined by the `International Geomagnetic Reference Field (IGRF) <https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__ model.
+The latest model at the time of this release (IGRF-13) is used by default, but an older model can be selected if desired via the ``magnetic_model`` frame attribute.
+
+New Method for Determining Visibility of Helioprojective Coordinates
+====================================================================
+A new method has been added to the `~sunpy.coordinates.Helioprojective` frame to determine whether a coordinate is visible or not.
+Visibility is determined as whether or not the coordinate is behind the limb relative to the observer coordinate.
+See the documentation for :meth:`~sunpy.coordinates.Helioprojective.is_visible` for more information.
+
+Improved Support for WISPR Data
+===============================
+The default colorbar limits and stretching for `~sunpy.map.sources.WISPRMap` have been improved to better emphasize the coronal structures present in many images.
+Metadata handling has also been improved, including handling non-integer processing levels (e.g. "L2b") and adding more intuitive labels for the different detectors (e.g. "inner" and "outer" instead of "1" and "2").

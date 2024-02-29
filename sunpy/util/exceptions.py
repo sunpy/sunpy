@@ -8,8 +8,8 @@ import warnings
 
 __all__ = ["NoMapsInFileError",
            "SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
-           "SunpyPendingDeprecationWarning", "SunpyMetadataWarning",
-           "warn_user", "warn_deprecated", "warn_metadata"]
+           "SunpyPendingDeprecationWarning", "SunpyMetadataWarning", "SunpyConnectionWarning",
+           "warn_user", "warn_deprecated", "warn_metadata", "warn_connection"]
 
 
 class NoMapsInFileError(Exception):
@@ -57,6 +57,16 @@ class SunpyPendingDeprecationWarning(PendingDeprecationWarning, SunpyWarning):
     """
 
 
+class SunpyConnectionWarning(SunpyUserWarning):
+    """
+    A warning class to indicate a connection warning.
+
+    This warning should be issued when a recoverable error occurs during a connection to a remote server, such as falling back to a mirror etc.
+
+    This will not fail the CI (via a pytest ignore) as it is not a critical warning.
+    """
+
+
 def warn_metadata(msg, stacklevel=1):
     """
     Raise a `SunpyMetadataWarning`.
@@ -87,6 +97,22 @@ def warn_user(msg, stacklevel=1):
         code that calls this function.
     """
     warnings.warn(msg, SunpyUserWarning, stacklevel + 1)
+
+
+def warn_connection(msg, stacklevel=1):
+    """
+    Raise a `SunpyConnectionWarning`.
+
+    Parameters
+    ----------
+    msg : str
+        Warning message.
+    stacklevel : int
+        This is interpreted relative to the call to this function,
+        e.g. ``stacklevel=1`` (the default) sets the stack level in the
+        code that calls this function.
+    """
+    warnings.warn(msg, SunpyConnectionWarning, stacklevel + 1)
 
 
 def warn_deprecated(msg, stacklevel=1):

@@ -97,7 +97,7 @@ def expand_list(inp):
 
 def expand_list_generator(inp):
     for item in inp:
-        if isinstance(item, (tuple, list, UserList)):
+        if isinstance(item, tuple | list | UserList):
             yield from expand_list_generator(item)
         else:
             yield item

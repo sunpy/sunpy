@@ -438,7 +438,7 @@ class JSOCClient(BaseClient):
         time.sleep(sleep/2.)
 
         for response in responses:
-            response.wait(verbose=progress)
+            response.wait()
 
         return self.get_request(responses, path=path, overwrite=overwrite,
                                 progress=progress, downloader=downloader,
@@ -547,8 +547,7 @@ class JSOCClient(BaseClient):
 
         if urls:
             if progress:
-                print_message = "{0} URLs found for download. Full request totalling {1}MB"
-                print(print_message.format(len(urls), request._d['size']))
+                log.info(f"{len(urls)} URLs found for download. Full request totaling {request._d['size']}MB")
             for aurl, fname in zip(urls, paths):
                 downloader.enqueue_file(aurl, filename=fname, max_splits=max_splits)
 

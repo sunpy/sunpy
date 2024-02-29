@@ -17,5 +17,3 @@ Utilities (`sunpy.util`)
    :headings: ^"
 
 .. automodapi:: sunpy.util.functools
-
-.. automodapi:: sunpy.util.types

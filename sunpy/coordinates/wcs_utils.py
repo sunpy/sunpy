@@ -61,11 +61,7 @@ except ImportError:
         non-finite values included.
 
         """
-        if (obsgeo is None
-            or len(obsgeo) != 6
-            or np.all(np.array(obsgeo) == 0)
-            or np.all(~np.isfinite(obsgeo))
-        ):  # NOQA
+        if obsgeo is None or len(obsgeo) != 6 or np.all(np.array(obsgeo) == 0) or np.all(~np.isfinite(obsgeo)):
             raise ValueError(f"Can not parse the 'obsgeo' location ({obsgeo}). "
                              "obsgeo should be a length 6 non-zero, finite numpy array")
 
@@ -100,6 +96,10 @@ def solar_wcs_frame_mapping(wcs):
     dateobs = wcs.wcs.dateavg or wcs.wcs.dateobs or None
 
     # Get observer coordinate from the WCS auxiliary information
+    # Note: the order of the entries is important, as it determines which set
+    # of header keys is given priority below. Stonyhurst should usually be
+    # prioritized, as it is defined more consistently across implementations,
+    # and so it should occur before Carrington here.
     required_attrs = {HeliographicStonyhurst: ['hgln_obs', 'hglt_obs', 'dsun_obs'],
                       HeliographicCarrington: ['crln_obs', 'hglt_obs', 'dsun_obs']}
 
@@ -129,6 +129,7 @@ def solar_wcs_frame_mapping(wcs):
                              attrs[1] * u.deg,
                              attrs[2] * u.m,
                              **kwargs)
+            break
 
     # Read the observer out of obsgeo for ground based observers
     if observer is None:

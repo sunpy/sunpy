@@ -143,6 +143,8 @@ Next we will want to setup the conda environment and we will need to add the `co
 .. code:: bash
 
     $ conda config --add channels conda-forge
+    # Note you might need to add python=<version> if a new release of Python has come out very recently.
+    # Typically it will take around 3 months before we can support the latest version of Python.
     $ conda create -n sunpy-dev pip
     $ conda activate sunpy-dev
 
@@ -162,7 +164,12 @@ This will make submitting changes easier in the long term for you:
 
     $ git clone https://github.com/<username>/sunpy.git sunpy-git
     $ cd sunpy-git
-    $ pip install -e .[dev]
+    # This adds the main sunpy repository as a remote called "upstream".
+    # This will help you keep your fork up to date with the main sunpy repository.
+    $ git remote add upstream https://github.com/sunpy/sunpy.git
+    # This retrieves the tags from the main sunpy repository, which are used for determining the version of your fork.
+    $ git fetch --tags upstream
+    $ pip install -e ".[dev]"
 
 .. note::
     If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.

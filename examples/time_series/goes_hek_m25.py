@@ -18,7 +18,7 @@ from sunpy.timeseries import TimeSeries
 # Here we are searching for data from the GOES-15 satellite and for the 1-min average time-sampled data.
 
 tr = a.Time('2011-06-07 04:00', '2011-06-07 12:00')
-results = Fido.search(tr, a.Instrument.xrs & a.goes.SatelliteNumber(15) & a.Resolution("avg1m") | a.hek.FL & (a.hek.FRM.Name == 'SWPC'))  # NOQA
+results = Fido.search(tr, a.Instrument.xrs & a.goes.SatelliteNumber(15) & a.Resolution("avg1m") | a.hek.FL & (a.hek.FRM.Name == 'SWPC'))
 
 ###############################################################################
 # Then download the XRS data and load it into a TimeSeries.
@@ -46,5 +46,6 @@ ax.axvspan(
 )
 ax.legend(loc=2)
 ax.set_yscale('log')
+ax.set_xlim(tr.start.to_datetime(), tr.end.to_datetime())
 
 plt.show()

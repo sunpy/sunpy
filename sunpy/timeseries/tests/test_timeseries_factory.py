@@ -124,7 +124,7 @@ def test_read_cdf_empty_variable():
                                    a.cdaweb.Dataset('AC_H6_SWI'))
     filename = Fido.fetch(result[0, 0])
 
-    # Temporarily reset sunpy.io.cdf registry of known unit conversions
+    # Temporarily reset sunpy.io._cdf registry of known unit conversions
     import sunpy.io._cdf as sunpy_cdf
     known_units = sunpy_cdf._known_units
     sunpy_cdf._known_units = {}
@@ -368,6 +368,7 @@ def test_invalid_manual_data():
     with pytest.raises(NoMatchError, match=""):
         sunpy.timeseries.TimeSeries(data, meta)
 
+
 @pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 def test_invalid_filepath():
     invalid_filepath = os.path.join(rootdir, 'invalid_filepath_here')
@@ -379,6 +380,7 @@ def test_invalid_filepath():
     # Now with allow_errors kwarg set
     with pytest.raises(ValueError, match='Did not find any files'):
         sunpy.timeseries.TimeSeries(invalid_filepath, allow_errors=True)
+
 
 @pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 def test_invalid_file():

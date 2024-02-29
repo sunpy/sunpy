@@ -170,10 +170,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Return `True` if ``meta`` is an object that could store metadata.
         """
-        return isinstance(meta, (astropy.io.fits.header.Header,
-                                 sunpy.io.header.FileHeader,
-                                 dict,
-                                 sunpy.timeseries.TimeSeriesMetaData))
+        return isinstance(meta, astropy.io.fits.header.Header | sunpy.io.header.FileHeader | dict | sunpy.timeseries.TimeSeriesMetaData)
 
     @staticmethod
     def _is_units(units):
@@ -261,7 +258,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         i = 0
         while i < len(args):
             arg = args[i]
-            if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
+            if isinstance(arg, np.ndarray | Table | pd.DataFrame):
                 # Extract data and metadata
                 # The next item is data
                 data = args[i]
@@ -411,8 +408,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    @deprecated_renamed_argument("silence_errors","allow_errors","5.1", warning_type=SunpyDeprecationWarning)
-    def __call__(self, *args, silence_errors=False,allow_errors=False, **kwargs):
+    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
+    def __call__(self, *args, silence_errors=False, allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
         arguments and passes them to a sequence of pre-registered types to

@@ -465,8 +465,7 @@ def test_timeranges(basic_ascending_append_md):
 
 
 def test_columns(complex_append_md):
-    lis = complex_append_md.metadata[0][1] + complex_append_md.metadata[1][1]
-    lis.sort()
+    lis = sorted(complex_append_md.metadata[0][1] + complex_append_md.metadata[1][1])
     assert complex_append_md.columns == lis
 
 

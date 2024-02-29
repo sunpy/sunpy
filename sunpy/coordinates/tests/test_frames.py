@@ -15,6 +15,7 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy import sun
 from sunpy.coordinates.frames import (
+    Geomagnetic,
     Heliocentric,
     HeliographicCarrington,
     HeliographicStonyhurst,
@@ -231,6 +232,41 @@ def test_hpc_low_precision_float_warning():
         hpc.make_3d()
 
 
+def test_hpc_obstime_from_observer():
+    # Test that observer.obstime is used for obstime if obstime is not provided
+    observer = HeliographicStonyhurst(obstime='2023-09-08')
+    hpc = Helioprojective(observer=observer)
+    assert hpc.obstime == observer.obstime
+
+    # Test that obstime is None if observer does not have an obstime
+    hpc = Helioprojective(observer='earth')
+    assert hpc.obstime is None
+
+
+def test_hpc_is_visible_2d():
+    hpc = Helioprojective(2000*u.arcsec, 2000*u.arcsec,
+                          observer='earth', obstime='2023-08-03')
+    assert hpc.is_visible()
+
+
+def test_hpc_is_visible():
+    hpc = Helioprojective([0]*2*u.arcsec, [0]*2*u.arcsec, [0.5, 1.5]*u.AU,
+                          observer='earth', obstime='2023-08-03')
+    assert (hpc.is_visible() == [True, False]).all()
+
+
+def test_hpc_is_visible_tolerance():
+    hpc = Helioprojective(200*u.arcsec, 0*u.arcsec,
+                          observer='earth', obstime='2023-08-03').make_3d()
+
+    # Due to the limitations of numerical precision, the coordinate may be computed to be slightly
+    # below the solar surface, and thus may be invisible when the tolerance is set to zero
+    if hpc.is_visible(tolerance=0*u.m):
+        pytest.skip("Test already passes prior to increasing the tolerance.")
+
+    assert hpc.is_visible(tolerance=1*u.m)
+
+
 # ==============================================================================
 # ## Heliographic Tests
 # ==============================================================================
@@ -379,8 +415,8 @@ def test_hcc_default_observer():
 
 
 @pytest.mark.parametrize(('x', 'y', 'psi'), [(0*u.km, -1*u.km, 270*u.deg),
-                                       (0*u.km, 1*u.km, 90*u.deg),
-                                       (-1*u.km, 0*u.km, 180*u.deg)])
+                                             (0*u.km, 1*u.km, 90*u.deg),
+                                             (-1*u.km, 0*u.km, 180*u.deg)])
 def test_heliocentric_radial_psi(x, y, psi):
     # The cylindrical representation of HCC is Heliocentric Radial
     # Test that the `psi` component is represented as desired
@@ -388,6 +424,31 @@ def test_heliocentric_radial_psi(x, y, psi):
     hcc = Heliocentric(CartesianRepresentation(x, y, 0*u.km), representation_type='cylindrical')
 
     assert_quantity_allclose(hcc.psi, psi)
+
+
+# ==============================================================================
+# Magnetic-model coordinate frame tests
+# ==============================================================================
+
+
+def test_magnetic_model_default():
+    # Also tests that no downloading happens because this test is not marked as remote
+    obstime = '2012-07-01'
+    frame_default = Geomagnetic(obstime=obstime)
+    frame_igrf13 = Geomagnetic(obstime=obstime, magnetic_model='igrf13')
+
+    assert_quantity_allclose(frame_igrf13.dipole_lonlat, [-72.408328, 80.16423]*u.deg)
+    assert_quantity_allclose(frame_default.dipole_lonlat, frame_igrf13.dipole_lonlat)
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize(('magnetic_model', 'obstime', 'dipole_lonlat'),
+                         [('igrf12', '2012-07-01', [-72.414318, 80.16354]*u.deg),
+                          ('igrf11', '2006-01-01', [-71.886023, 79.801523]*u.deg),
+                          ('igrf10', '2006-01-01', [-71.822653, 79.785185]*u.deg)])
+def test_magnetic_model_with(magnetic_model, obstime, dipole_lonlat):
+    frame = Geomagnetic(magnetic_model=magnetic_model, obstime=obstime)
+    assert_quantity_allclose(frame.dipole_lonlat, dipole_lonlat)
 
 
 # ==============================================================================

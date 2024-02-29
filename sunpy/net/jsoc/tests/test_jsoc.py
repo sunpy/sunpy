@@ -321,7 +321,7 @@ def test_row_and_warning(mocker, client, jsoc_response_double):
     request_data = mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.request_data")
     with pytest.warns(SunpyUserWarning):
         client.fetch(jsoc_response_double[0], sleep=0)
-    assert request_data.called_once_with(jsoc_response_double[0].as_table())
+    request_data.assert_called_once_with(jsoc_response_double[0].as_table())
 
 
 @pytest.mark.remote_data

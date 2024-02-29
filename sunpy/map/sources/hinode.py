@@ -19,7 +19,7 @@ class XRTMap(GenericMap):
     Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
-    which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
+    which is a successor to Yohkoh. It provides 2-arcsecond resolution images
     of the highest temperature solar coronal material,
     from 1,000,000 to 10,000,000 Kelvin.
 

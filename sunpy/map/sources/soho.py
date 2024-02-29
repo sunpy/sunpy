@@ -148,6 +148,10 @@ class LASCOMap(GenericMap):
         filter = self.meta.get('filter', '')
         return f'{self.instrument}-{self.detector} {filter}'
 
+    @nickname.setter
+    def nickname(self, value):
+        raise AttributeError("Cannot manually set nickname for LASCOMap")
+
     @property
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.

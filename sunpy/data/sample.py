@@ -23,11 +23,6 @@ Sample shortnames
    * - Sample shortname
      - Name of downloaded file
 """
-# download_sample_data is deprecated and not used here,
-# but during deprecation period want to keep it in this namespace
-# for backwards compatibility. noqa stops it being removed by
-# pre-commit as an unused import
-from ._sample import download_sample_data  # noqa
 from ._sample import _SAMPLE_DATA, _get_sample_files
 
 # Add a table row to the module docstring for each sample file
@@ -36,7 +31,7 @@ for _keyname, _filename in sorted(_SAMPLE_DATA.items()):
 
 
 # file_dict and file_list are not normal variables; see __getattr__() below
-__all__ = list(sorted(_SAMPLE_DATA.keys())) + ['download_all', 'file_dict', 'file_list']  # noqa: F822
+__all__ = list(sorted(_SAMPLE_DATA.keys())) + ['download_all', 'file_dict', 'file_list']  # NOQA: F822
 
 
 # See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()

@@ -333,7 +333,7 @@ This default colormap is available as an attribute,
 .. code-block:: python
 
     >>> my_map.cmap.name  # doctest: +REMOTE_DATA
-    'SDO AIA 171.0 Angstrom'
+    'sdoaia171'
 
 When visualizing a Map, you can change the colormap using the ``cmap`` keyword argument.
 For example, you can use the 'inferno' colormap from `matplotlib`:

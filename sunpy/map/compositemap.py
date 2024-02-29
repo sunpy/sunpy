@@ -525,7 +525,7 @@ class CompositeMap:
             if draw_grid:
                 self.draw_grid(axes=axes)
 
-        elif isinstance(draw_grid, (int, float)):
+        elif isinstance(draw_grid, int | float):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")

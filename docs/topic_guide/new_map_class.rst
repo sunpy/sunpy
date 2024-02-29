@@ -14,7 +14,7 @@ Any subclass of `~sunpy.map.GenericMap` which defines a method named ``is_dataso
 The ``is_datasource_for()`` method is used by the `~sunpy.map.Map` factory to check if a file should use a particular instrument Map class.
 This function can run any test it needs to determine this.
 For example, it might check the value of the "INSTRUMENT" key in the metadata dictionary.
-The following example shows how this works and includes a sample doc string that is compatible with the :ref:`Docs Guidelines for Data Sources`:
+The following example shows how this works and includes a sample doc string that is aligned with `the documentation guidelines <https://docs.sunpy.org/en/latest/dev_guide/contents/documentation.html#docs-guidelines-for-data-sources>`__:
 
 .. code-block:: python
 

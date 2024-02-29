@@ -21,8 +21,11 @@ from sunpy.net import attrs as a
 
 timerange = a.Time('2010/8/1 03:40', '2010/8/1 3:40:10')
 
-# Note that JSOC needs an email address to export the files, if you want to run
-# this, you must supply your own email here.
+# Exporting data from the JSOC requires registering your email first.
+# Please replace this with your email address once you have registered
+# like so: jsoc_email = "your_email@example.com"
+# See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`__ for more details.
+
 jsoc_email = os.environ["JSOC_EMAIL"]
 
 results = Fido.search(timerange,

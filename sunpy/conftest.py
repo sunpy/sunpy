@@ -206,16 +206,3 @@ def eit_fits_directory(tmp_path_factory):
     for f in eit_header_files:
         _ = write_image_file_from_header_file(f, eit_dir)
     return pathlib.Path(eit_dir)
-
-
-@pytest.fixture(scope="session")
-def waveunit_fits_directory(tmp_path_factory):
-    # Create a temporary directory of dummy FITS files
-    # from the header data. This directory is then used to
-    # test directory patterns for database
-    waveunit_dir = tmp_path_factory.mktemp('waveunit')
-    header_files = [f for f in get_test_data_filenames()
-                    if f.parents[0].relative_to(f.parents[1]).name == 'waveunit']
-    for f in header_files:
-        _ = write_image_file_from_header_file(f, waveunit_dir)
-    return pathlib.Path(waveunit_dir)

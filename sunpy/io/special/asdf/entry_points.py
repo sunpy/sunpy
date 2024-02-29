@@ -1,15 +1,11 @@
 """
 This file contains the entry points for asdf.
 """
-import sys
+
+import importlib.resources as importlib_resources
 
 from asdf.extension import ManifestExtension
 from asdf.resource import DirectoryResourceMapping
-
-if sys.version_info < (3, 9):
-    import importlib_resources
-else:
-    import importlib.resources as importlib_resources
 
 
 def get_resource_mappings():
@@ -43,6 +39,12 @@ def get_extensions():
     sunpy_converters = [GenericMapConverter()] + SUNPY_FRAME_CONVERTERS
 
     return [
+        ManifestExtension.from_uri("asdf://sunpy.org/sunpy/manifests/sunpy-1.1.0",
+                                   converters=sunpy_converters,
+                                   # Register that this is a replacement for
+                                   # the old extension so old files still work.
+                                   # without throwing a warning.
+                                   legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"]),
         ManifestExtension.from_uri("asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",
                                    converters=sunpy_converters,
                                    # Register that this is a replacement for

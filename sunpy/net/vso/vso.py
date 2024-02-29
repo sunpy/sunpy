@@ -22,7 +22,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import warn_user
+from sunpy.util.exceptions import warn_connection, warn_user
 from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .exceptions import (
@@ -59,7 +59,7 @@ def check_connection(url):
     try:
         return urlopen(url, timeout=15).getcode() == 200
     except (OSError, HTTPError, URLError) as e:
-        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        warn_connection(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
 
 
@@ -74,10 +74,10 @@ def check_cgi_connection(url):
     except HTTPError as e:
         if e.code == 411:
             return True
-        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        warn_connection(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
     except (OSError, URLError) as e:
-        warn_user(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
+        warn_connection(f"Connection to {url} failed with error {e}. Retrying with different url and port.")
         return False
 
 
@@ -399,7 +399,7 @@ class VSOClient(BaseClient):
         """
         if path is None:
             path = Path(config.get('downloads', 'download_dir')) / '{file}'
-        elif isinstance(path, (str, os.PathLike)) and '{file}' not in str(path):
+        elif isinstance(path, str | os.PathLike) and '{file}' not in str(path):
             path = Path(path) / '{file}'
         else:
             path = Path(path)
@@ -410,7 +410,7 @@ class VSOClient(BaseClient):
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
-        if isinstance(query_response, (QueryResponse, list)):
+        if isinstance(query_response, QueryResponse | list):
             query_response = VSOQueryResponseTable.from_zeep_response(query_response,
                                                                       client=self,
                                                                       _sort=False)
@@ -680,10 +680,9 @@ class VSOClient(BaseClient):
         # Construct and format the request
         keyword_info = {}
         url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
         for keyword in keywords:
-            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
-            req = Request(url=url, data=data, headers=headers)
+            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')})
+            req = Request(url=url + f"?{data}")
             response = urlopen(req)
             keyword_info[keyword.replace("+", "")] = json.loads(response.read())
 
@@ -697,6 +696,10 @@ class VSOClient(BaseClient):
                         attrs[key].append((str(item[key]), str(item[key])))
                     else:
                         attrs[key].append((str(item[key]), str(item[key+"_long"])))
+
+        # Sort values within each attribute
+        for attr in attrs:
+            attrs[attr] = sorted(attrs[attr], key=lambda _list: _list[0])
 
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
             json.dump(dict(sorted(attrs.items())), attrs_file, indent=2)

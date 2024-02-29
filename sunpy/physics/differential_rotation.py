@@ -6,8 +6,13 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord
 from astropy.time import TimeDelta
 
-from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective, get_earth
-from sunpy.coordinates.transformations import transform_with_sun_center
+from sunpy.coordinates import (
+    Heliocentric,
+    HeliographicStonyhurst,
+    Helioprojective,
+    get_earth,
+    transform_with_sun_center,
+)
 from sunpy.map import (
     contains_full_disk,
     coordinate_is_on_solar_disk,
@@ -147,7 +152,7 @@ def _validate_observer_args(initial_obstime, observer, time):
             "but not both simultaneously.")
     elif observer is not None:
         # Check that the new_observer is specified correctly.
-        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
+        if not (isinstance(observer, BaseCoordinateFrame | SkyCoord)):
             raise ValueError(
                 "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
         if observer.obstime is None:

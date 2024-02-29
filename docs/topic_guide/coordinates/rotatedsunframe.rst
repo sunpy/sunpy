@@ -196,7 +196,7 @@ Note that equator rotates slightly faster than the Carrington rotation rate (its
 
 Be aware that transformations with a change in ``obstime`` will also contend with a translation of the center of the Sun.
 Note that the ``radius`` component above is no longer precisely on the surface of the Sun.
-For precise transformations of solar features, one should also use the context manager :func:`~sunpy.coordinates.transformations.transform_with_sun_center` to account for the translational motion of the Sun.
+For precise transformations of solar features, one should also use the context manager :func:`~sunpy.coordinates.transform_with_sun_center` to account for the translational motion of the Sun.
 Using the context manager, the ``radius`` component stays as the solar radius as desired:
 
 

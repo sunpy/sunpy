@@ -329,7 +329,8 @@ class MapSequence:
         fig = axes.get_figure()
 
         if not plot_function:
-            def plot_function(fig, ax, smap): return []
+            def plot_function(fig, ax, smap):
+                return []
         removes = []
 
         # Normal plot
@@ -450,7 +451,7 @@ class MapSequence:
         >>> mplani = ani.get_animation()   # doctest: +SKIP
         """
         # Move the import for speed reasons
-        from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator  # noqa
+        from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
         if resample:
             if self.all_maps_same_shape():

@@ -5,12 +5,12 @@ import re
 import tempfile
 import contextlib
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
-from packaging import version
 
 import astropy.units as u
 import astropy.wcs
@@ -34,7 +34,6 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
-from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 from .conftest import make_simple_map
 from .strategies import matrix_meta
 
@@ -42,8 +41,9 @@ from .strategies import matrix_meta
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(get_test_filepath('aia_171_level1.fits'))[0].data
-    np.testing.assert_allclose(aia171_test_map.data, data)
+        hdulist = fits.open(get_test_filepath('aia_171_level1.fits'))
+    np.testing.assert_allclose(aia171_test_map.data, hdulist[0].data)
+    hdulist.close()
 
 
 def test_header_fits_io():
@@ -278,7 +278,7 @@ def test_units(generic_map):
 
 
 def test_cmap(generic_map):
-    assert generic_map.cmap == _get_mpl_cmap('gray')
+    assert generic_map.cmap == matplotlib.colormaps['gray']
 
 
 def test_coordinate_frame(aia171_test_map):
@@ -294,6 +294,52 @@ def test_heliographic_longitude_crln(hmi_test_map):
     assert_quantity_allclose(hmi_test_map.heliographic_longitude,
                              hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.date),
                              rtol=1e-3)  # A tolerance is needed because L0 is for Earth, not SDO
+
+
+def test_observer_hgln_crln_priority():
+    """
+    When extracting the observer information from a FITS header, ensure
+    Stonyhurst (HG) coordinates are preferred over Carrington (CR) if present
+    (if not overridden by an instrument-specific `Map` subclass). Note that
+    `Map` creates a custom FITS header with a sanitized observer location, so
+    we also test a directly-instantiated `WCS` object in the coordinates
+    module.
+    """
+    data = np.ones([6, 6], dtype=np.float64)
+    header = {'CRVAL1': 0,
+              'CRVAL2': 0,
+              'CRPIX1': 5,
+              'CRPIX2': 5,
+              'CDELT1': 10,
+              'CDELT2': 10,
+              'CUNIT1': 'arcsec',
+              'CUNIT2': 'arcsec',
+              'PC1_1': 0,
+              'PC1_2': -1,
+              'PC2_1': 1,
+              'PC2_2': 0,
+              'NAXIS1': 6,
+              'NAXIS2': 6,
+              'CTYPE1': 'HPLN-TAN',
+              'CTYPE2': 'HPLT-TAN',
+              'date-obs': '1970-01-01T00:00:00',
+              'mjd-obs': 40587,
+              'hglt_obs': 0,
+              'hgln_obs': 0,
+              'crlt_obs': 2,
+              'crln_obs': 2,
+              'dsun_obs': 10,
+              'rsun_ref': 690000000}
+    generic_map = sunpy.map.Map((data, header))
+
+    c = generic_map.pixel_to_world(0*u.pix, 0*u.pix)
+    assert c.observer.lon == 0 * u.deg
+    # Note: don't test whether crlt or hglt is used---according to
+    # coordinates.wcs_utils._set_wcs_aux_obs_coord, those are expected to
+    # always be the same and so the same one is always used
+
+    c = generic_map.wcs.pixel_to_world(0, 0)
+    assert c.observer.lon == 0 * u.deg
 
 
 def test_remove_observers(aia171_test_map):
@@ -332,6 +378,7 @@ def test_rotation_matrix_crota(aia171_test_map):
 
 _PC_KEYWORDS = ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']
 _CD_KEYWORDS = ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
+
 
 @pytest.mark.parametrize('key', ['PC', 'CD'])
 @pytest.mark.parametrize('i', [1, 2])
@@ -810,7 +857,7 @@ def test_superpixel_dims_values(aia171_test_map, f):
 
 
 @pytest.mark.parametrize(("f", "dimensions"), [(np.sum, (2, 3)*u.pix),
-                                           (np.mean, (3, 2)*u.pix)])
+                                               (np.mean, (3, 2)*u.pix)])
 def test_superpixel_metadata(generic_map, f, dimensions):
     superpix_map = generic_map.superpixel(dimensions, func=f)
 
@@ -982,30 +1029,15 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
-@pytest.mark.xfail(version.parse(np.__version__) >= version.parse("1.20.0"),
-                   reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
-def test_rotate_with_incompatible_missing_dtype_warning():
-    data = np.arange(0, 100).reshape(10, 10)
-    coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
-                     observer='earth', frame=sunpy.coordinates.Helioprojective)
-    header = sunpy.map.make_fitswcs_header(data, coord)
-    test_map = sunpy.map.Map(data, header)
-    with pytest.warns(SunpyUserWarning,
-                      match="The specified `missing` value is not an integer, but the data "
-                      "array is of integer type, so the output may be strange."):
-        test_map.rotate(order=3, missing=np.nan)
-
-
-@pytest.mark.skipif(version.parse(np.__version__) <= version.parse("1.20.0"),
-                    reason="Numpy >= 1.20.0 doesn't allow NaN to int conversion")
 def test_rotate_with_incompatible_missing_dtype_error():
     data = np.arange(0, 100).reshape(10, 10)
     coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime='2013-10-28',
                      observer='earth', frame=sunpy.coordinates.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
     test_map = sunpy.map.Map(data, header)
-    with pytest.raises(ValueError, match="cannot convert float NaN to integer"):
-        test_map.rotate(order=3, missing=np.nan)
+    with pytest.raises(ValueError, match="The underlying data is integers, but the fill value for "
+                                         "missing pixels cannot be cast to an integer"):
+        test_map.rotate(angle=45 * u.deg, missing=np.nan, order=3)
 
 
 def test_rotate_crpix_zero_degrees(generic_map):
@@ -1107,6 +1139,12 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
 
 
+def test_plot_with_norm_none(aia171_test_map):
+    # Confirm that norm == None does not raise an error, see https://github.com/sunpy/sunpy/pull/7261
+    ax = plt.subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax, norm=None, vmin=0, vmax=0)
+
+
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
     with pytest.warns(SunpyMetadataWarning) as w:
@@ -1144,9 +1182,6 @@ def test_validate_non_spatial(generic_map):
         sunpy.map.Map(generic_map.data, generic_map.meta)
 
 
-# Heliographic Map Tests
-
-
 def test_hg_coord(heliographic_test_map):
     assert heliographic_test_map.coordinate_system[0] == "CRLN-CAR"
     assert heliographic_test_map.coordinate_system[1] == "CRLT-CAR"
@@ -1169,12 +1204,13 @@ def test_hg_data_to_pix(heliographic_test_map):
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
 
-# Dimension testing
 
-
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
 def test_more_than_two_dimensions():
-    """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
+    """
+    Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
+    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)
@@ -1182,8 +1218,9 @@ def test_more_than_two_dimensions():
     hdr['TELESCOP'] = 'XXX'
     hdr['cunit1'] = 'arcsec'
     hdr['cunit2'] = 'arcsec'
-    with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
-        bad_map = sunpy.map.Map(bad_data, hdr)
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+        with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+            bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
@@ -1192,11 +1229,12 @@ def test_more_than_two_dimensions():
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
     with pytest.warns(Warning) as record:
-        header = {}
-        header['cunit1'] = 'arcsec'
-        header['cunit2'] = 'arcsec'
-        header['ctype1'] = 'HPLN-TAN'
-        header['ctype2'] = 'HPLT-TAN'
+        header = {
+            'cunit1': 'arcsec',
+            'cunit2': 'arcsec',
+            'ctype1': 'HPLN-TAN',
+            'ctype2': 'HPLT-TAN',
+        }
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
@@ -1255,17 +1293,6 @@ def test_quicklook(mocker, aia171_test_map):
     with open(file_url[7:]) as f:
         html_string = f.read()
     assert aia171_test_map._repr_html_() in html_string
-
-
-def test_dask_array(generic_map):
-    dask_array = pytest.importorskip('dask.array')
-    da = dask_array.from_array(generic_map.data, chunks=(1, 1))
-    pair_map = sunpy.map.Map(da, generic_map.meta)
-
-    # Check that _repr_html_ functions for a dask array
-    html_dask_repr = pair_map._repr_html_(compute_dask=False)
-    html_computed_repr = pair_map._repr_html_(compute_dask=True)
-    assert html_dask_repr != html_computed_repr
 
 
 @pytest.fixture
@@ -1610,7 +1637,7 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # noqa: PT012
+    with pytest.raises(TypeError):  # NOQA: PT012
         # A runtime warning is thrown when dividing by zero in the case of
         # the map test
         with warn_context:
@@ -1647,3 +1674,9 @@ def test_only_cd():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
+
+
+def test_plot_annotate_nonboolean(aia171_test_map):
+    ax = plt.subplot(projection=aia171_test_map)
+    with pytest.raises(TypeError, match="non-boolean value"):
+        aia171_test_map.plot(ax)

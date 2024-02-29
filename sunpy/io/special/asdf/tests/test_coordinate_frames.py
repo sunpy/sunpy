@@ -26,7 +26,6 @@ def assert_round_trip_frame(old):
 
 
 @pytest.fixture(params=sunpy_frames)
-@asdf_entry_points
 def coordframe_scalar(request):
     frame = request.param
 
@@ -39,7 +38,6 @@ def coordframe_scalar(request):
 
 
 @pytest.fixture(params=sunpy_frames)
-@asdf_entry_points
 def coordframe_array(request):
     frame = request.param
 
@@ -51,12 +49,13 @@ def coordframe_array(request):
     return frame(*data, obstime='2018-01-01T00:00:00')
 
 
-# Ignore warnings thrown when trying to load the ASDF in a different astropy
-# version to that with which it was created.
+# Ignore warnings thrown when trying to load the ASDF in a different
+# astropy version to that with which it was created.
 @pytest.mark.filterwarnings('ignore:.*was created with extension.*')
+@asdf_entry_points
 def test_hgc_100():
-    # Test that HeliographicCarrington is populated with Earth as the observer when loading a
-    # older schema (1.0.0)
+    # Test that HeliographicCarrington is populated with Earth as the
+    # observer when loading a older schema (1.0.0)
     test_file = os.path.join(os.path.dirname(__file__), "hgc_100.asdf")
     with asdf.open(test_file) as input_asdf:
         hgc = input_asdf['hgc']

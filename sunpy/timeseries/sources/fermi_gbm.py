@@ -13,7 +13,6 @@ from astropy.time import TimeDelta
 import sunpy.io
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -96,7 +95,6 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         return axes
 
     @peek_show
-    @deprecate_positional_args_since("4.1")
     def peek(self, *, title=None, columns=None, **kwargs):
         """
         Displays the GBM timeseries by calling

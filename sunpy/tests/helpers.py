@@ -2,14 +2,12 @@ import sys
 import platform
 import warnings
 from pathlib import Path
-from platform import python_version
 from functools import wraps
 from importlib.metadata import entry_points
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pytest
-from packaging.version import Version
 
 import astropy
 from astropy.wcs.wcs import FITSFixedWarning
@@ -46,21 +44,11 @@ else:
 skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
-if Version(python_version()) >= Version("3.10.0"):
-    asdf_entry_points = pytest.mark.skipif(
-        not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
-        reason="No SunPy ASDF entry points.",
-    )
-else:
-    asdf_entry_points = pytest.mark.skipif(
-        not any(
-            [
-                enter_point.name == "sunpy"
-                for enter_point in entry_points()["asdf.resource_mappings"]
-            ]
-        ),
-        reason="No SunPy ASDF entry points.",
-    )
+asdf_entry_points = pytest.mark.skipif(
+    not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
+    reason="No SunPy ASDF entry points.",
+)
+
 
 
 @pytest.fixture
@@ -75,11 +63,11 @@ def get_hash_library_name():
     Generate the hash library name for this env.
     """
     import mpl_animators
-    version = mpl_animators.__version__
-    animators_version = "dev" if "+" in version else version.replace('.', '')
+
+    animators_version = "dev" if (("dev" in mpl_animators.__version__) or ("rc" in mpl_animators.__version__)) else mpl_animators.__version__.replace('.', '')
     ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
-    mpl_version = "dev" if ("+" in mpl.__version__) or ("rc" in mpl.__version__) else mpl.__version__.replace('.', '')
-    astropy_version = "dev" if "dev" in astropy.__version__ else astropy.__version__.replace('.', '')
+    mpl_version = "dev" if (("dev" in mpl.__version__) or ("rc" in mpl.__version__)) else mpl.__version__.replace('.', '')
+    astropy_version = "dev" if (("dev" in astropy.__version__) or ("rc" in astropy.__version__)) else astropy.__version__.replace('.', '')
     return f"figure_hashes_mpl_{mpl_version}_ft_{ft2_version}_astropy_{astropy_version}_animators_{animators_version}.json"
 
 

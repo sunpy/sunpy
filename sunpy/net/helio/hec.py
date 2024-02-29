@@ -6,11 +6,13 @@ import os
 
 from lxml import etree
 from requests import Session
+from requests.exceptions import SSLError
 from zeep import Client
 from zeep.transports import Transport
 
 from astropy.io.votable.table import parse_single_table
 
+from sunpy import log
 from sunpy.net import attrs as a
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.helio import attrs as ha
@@ -87,7 +89,12 @@ class HECClient(BaseClient):
         # This is for use in our test suite.
         session.verify = not (bool(os.environ.get("NO_VERIFY_HELIO_SSL", 0)))
         transport = Transport(session=session)
-        self.hec_client = Client(link, transport=transport)
+        try:
+            self.hec_client = Client(link, transport=transport)
+        except SSLError:
+            log.warning('SSL verification error for HEC client.\n'
+                     'Set the \'NO_VERIFY_HELIO_SSL\' environment variable disable SSL verification for Helio.')
+            self.hec_client = None
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -137,6 +144,9 @@ class HECClient(BaseClient):
         <BLANKLINE>
         <BLANKLINE>
         """
+        if self.hec_client is None:
+            table = HECResponse([], client=self)
+            return table
         qrdict = {}
         for elem in args:
             if isinstance(elem, a.Time):
@@ -217,8 +227,7 @@ class HECClient(BaseClient):
         >>> hc.select_table()  # doctest: +SKIP
         """
         tables = self.get_table_names()
-        table_list = [t[0] for t in tables if len(t[0]) > 0]
-        table_list.sort()
+        table_list = sorted([t[0] for t in tables if len(t[0]) > 0])
         for index, table in enumerate(table_list):
             print(f'{index + 1} - {table}')
         while True:

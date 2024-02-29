@@ -35,11 +35,10 @@ top_right = SkyCoord(150*u.arcsec, 375*u.arcsec, obstime=start_time, observer="e
 cutout = a.jsoc.Cutout(bottom_left, top_right=top_right, tracking=True)
 
 #####################################################
-# Exporting data from the JSOC requires registering your
-# email first. Please replace this with your email
-# address once you have registered.
-# See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`_
-# for more details.
+# Exporting data from the JSOC requires registering your email first.
+# Please replace this with your email address once you have registered
+# like so: jsoc_email = "your_email@example.com"
+# See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`__ for more details.
 
 jsoc_email = os.environ["JSOC_EMAIL"]
 

@@ -21,7 +21,7 @@ Language Standard
 
 * The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`_, and packages already required by the sunpy core package.
   Adding dependencies to sunpy core will be considered but are highly discouraged.
-  Such optional dependencies should be recorded in the ``setup.cfg`` file in the ``extras_require`` entry.
+  Such optional dependencies should be recorded in the ``pyproject.toml`` file in the ``project.optional-dependencies`` section.
 
 Coding Style/Conventions
 ========================

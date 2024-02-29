@@ -6,6 +6,7 @@ import os
 import sys
 import datetime
 import warnings
+
 from packaging.version import Version
 
 # -- Read the Docs Specific Configuration --------------------------------------
@@ -19,7 +20,8 @@ if on_rtd:
     os.environ['PARFIVE_HIDE_PROGRESS'] = 'True'
 
 # -- Check for dependencies ----------------------------------------------------
-from sunpy.util import missing_dependencies_by_extra  # NOQA
+from sunpy.util import missing_dependencies_by_extra  # NOQA: E402
+
 missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
 if missing_requirements:
     print(
@@ -28,25 +30,25 @@ if missing_requirements:
     )
     sys.exit(1)
 
-# -- Non stdlib imports --------------------------------------------------------
-import ruamel.yaml as yaml  # NOQA
-from sphinx_gallery.sorting import ExplicitOrder  # NOQA
-from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
+from matplotlib import MatplotlibDeprecationWarning  # NOQA: E402
+from ruamel.yaml import YAML  # NOQA: E402
+from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder  # NOQA: E402
+from sunpy_sphinx_theme import PNG_ICON  # NOQA: E402
 
-import sunpy  # NOQA
-from sunpy import __version__  # NOQA
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA
-from matplotlib import MatplotlibDeprecationWarning  # NOQA
-from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA
+from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA: E402
+
+import sunpy  # NOQA: E402
+from sunpy import __version__  # NOQA: E402
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA: E402
 
 # -- Project information -------------------------------------------------------
-project = 'SunPy'
+project = 'sunpy'
 author = 'The SunPy Community'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
-
 # Register remote data option with doctest
-import doctest  # NOQA
+import doctest  # NOQA: E402
+
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
 # The full version, including alpha/beta/rc tags
@@ -54,24 +56,20 @@ release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
-# We want to ignore all warnings in a release version.
-if is_release:
-    warnings.simplefilter("ignore")
+# We want to make sure all the following warnings fail the build
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
-warnings.filterwarnings("ignore", message='The sunpy.database module is no longer actively maintained', category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
-warnings.filterwarnings("ignore", message="The `sunpy.io.cdf` module is deprecated",category=SunpyDeprecationWarning)
-warnings.filterwarnings("ignore", message="The `sunpy.io.jp2` module is deprecated",category=SunpyDeprecationWarning)
-warnings.filterwarnings("ignore", message="The `sunpy.io.file_tools` module is deprecated",category=SunpyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
-import sunpy.data.sample  # NOQA
+
+import sunpy.data.sample  # NOQA: E402
+
 sunpy.data.sample.download_all()
 sunpy.log.setLevel(ori_level)
 
@@ -191,8 +189,8 @@ intersphinx_mapping = {
     "aiapy": ("https://aiapy.readthedocs.io/en/stable/", None),
     "asdf": ("https://asdf.readthedocs.io/en/stable/", None),
     "astropy": ("https://docs.astropy.org/en/stable/", None),
-    "astroquery": ("https://astroquery.readthedocs.io/en/latest/", None),
-    "drms": ("https://docs.sunpy.org/projects/drms/en/stable/", None),
+    "dask": ("https://docs.dask.org/en/stable/", None),
+    "drms": ("https://docs.sunpy.org/projects/drms/en/v0.6.4.post1/", None),
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
@@ -200,7 +198,7 @@ intersphinx_mapping = {
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
     "skimage": ("https://scikit-image.org/docs/stable/", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/latest/", None),
+    "spiceypy": ("https://spiceypy.readthedocs.io/en/stable/", None),
     "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
@@ -235,7 +233,7 @@ hoverxref_role_types = {
     # Roles within the std domain
     "confval": "tooltip",
     "hoverxref": "tooltip",
-    "ref": "tooltip", # Would be used by hoverxref_auto_ref if we set it to True
+    "ref": "tooltip",  # Would be used by hoverxref_auto_ref if we set it to True
     "term": "tooltip",
 }
 
@@ -243,8 +241,7 @@ hoverxref_role_types = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-from sunpy_sphinx_theme.conf import *  # NOQA
-from sunpy_sphinx_theme.conf import png_icon  # NOQA
+html_theme = "sunpy"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -287,7 +284,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
-    "default_thumb_file": png_icon,
+    "default_thumb_file": PNG_ICON,
     'abort_on_example_error': False,
     'plot_gallery': 'True',
     'remove_config_comments': True,
@@ -312,8 +309,7 @@ try:
     cv_namespace = stable_docs.find("a", string="cv").attrs['href']
 
     # Find the relative URL for warpAffine/filter2D in the `cv` namespace
-    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text,
-                           'html.parser')
+    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text, 'html.parser')
     warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
     filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
 
@@ -339,7 +335,8 @@ copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
 with open('./reference/sunpy_stability.yaml') as estability:
-    sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
+    yaml = YAML(typ='rt')
+    sunpy_modules = yaml.load(estability.read())
 
 html_context = {
     'sunpy_modules': sunpy_modules,

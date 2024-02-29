@@ -65,9 +65,11 @@ def test_parse_location(loc_column, exp_longitude, exp_latitude):
 
 # test _try_drop_empty_column (tdec)
 
+
 @pytest.fixture
 def data_lines():
     return ['NMBR  LOCATION  LO  COMMENT', '8000  S14W96   232']
+
 
 @pytest.fixture
 def expected_pattern_dict():
@@ -79,15 +81,18 @@ def expected_pattern_dict():
         'Additional Number': r'^\d+$',
     }
 
+
 @pytest.fixture
 def column_name_to_drop():
     return 'COMMENT'
+
 
 def test_tdec(data_lines, expected_pattern_dict, column_name_to_drop):
     result = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
     out = data_lines.copy()
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
+
 
 def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
     """
@@ -100,6 +105,7 @@ def test_tdec_smallest_dict_example(data_lines, expected_pattern_dict, column_na
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert result == out
 
+
 def test_tdec_too_small_dict_example(data_lines, expected_pattern_dict, column_name_to_drop):
     """
     Columns aren't a subset of the dictionary: no pattern to match for column `LO`
@@ -108,6 +114,7 @@ def test_tdec_too_small_dict_example(data_lines, expected_pattern_dict, column_n
     filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, filtered_dict)
+
 
 def test_tdec_no_data(expected_pattern_dict, column_name_to_drop):
     """
@@ -118,6 +125,7 @@ def test_tdec_no_data(expected_pattern_dict, column_name_to_drop):
     out[0] = ' '.join([col.title() for col in out[0].split()][:-1])
     assert out == srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
 
+
 def test_tdec_col_not_empty(expected_pattern_dict, column_name_to_drop):
     """
     Column not empty
@@ -126,9 +134,10 @@ def test_tdec_col_not_empty(expected_pattern_dict, column_name_to_drop):
         'NMBR  LOCATION  LO  COMMENT',
         '8000  S14W96   232',
         '3020 N20E20  210 additional_info',
-        ]
+    ]
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
+
 
 def test_tdec_col_not_match_pattern(expected_pattern_dict, column_name_to_drop):
     """
@@ -137,9 +146,10 @@ def test_tdec_col_not_match_pattern(expected_pattern_dict, column_name_to_drop):
     data_lines = [
         'NMBR  LOCATION  LO  COMMENT',
         '8000  S14W926   232',
-        ]
+    ]
     with pytest.raises(ValueError):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
+
 
 def test_tdec_colname_not_exist(data_lines, expected_pattern_dict):
     """

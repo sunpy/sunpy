@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
 import pytest
+from erfa import ErfaWarning
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
-from astropy.utils.exceptions import ErfaWarning
 
 import sunpy.time
 from sunpy.time import is_time_equal
