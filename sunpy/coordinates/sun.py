@@ -759,15 +759,20 @@ def eclipse_amount(observer, *, moon_radius: Literal['IAU', 'minimum'] = 'IAU'):
     --------
     .. minigallery:: sunpy.coordinates.sun.eclipse_amount
     """
-    # TODO: Find somewhere more appropriate to define these constants
     # The radius of the Moon to use (in units of Earth radii)
     # See https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html
-    if moon_radius == 'IAU':
-        k = 0.2725076
-    elif moon_radius == 'minimum':
-        k = 0.272281
-    else:
+    class K:
+        IAU = 0.2725076
+        MINIMUM = 0.272281
+
+    if moon_radius not in ['IAU', 'minimum']:
         raise ValueError("The supported values for `moon_radius` are 'IAU' and 'minimum'.")
+
+    k = K.IAU  # IAU is the default
+
+    if moon_radius == 'minimum':
+        k = K.MINIMUM
+
     R_moon = k * R_earth
 
     # Get the light-travel-time adjusted location of the Moon
