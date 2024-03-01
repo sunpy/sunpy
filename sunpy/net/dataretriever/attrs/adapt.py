@@ -1,8 +1,8 @@
 from sunpy.net.attr import SimpleAttr
 
 # the names of all of the classes below
-__all__ = ['ADAPTInstrument', 'ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource', 
-           'ADAPTDataAssimilation', 'ADAPTResolution', 'ADAPTVersionYear', 'ADAPTVersionMonth', 
+__all__ = ['ADAPTInstrument', 'ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource',
+           'ADAPTDataAssimilation', 'ADAPTResolution', 'ADAPTVersionYear', 'ADAPTVersionMonth',
            'ADAPTEvolutionMode', 'ADAPTHelioData', 'ADAPTRealizations', 'ADAPTMagData']
 
 # Define a custom __dir__ to restrict tab-completion to __all__

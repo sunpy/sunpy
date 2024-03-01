@@ -1,81 +1,21 @@
+# # Author: Gilly <gilly@swri.org>
+# import sunpy.net
 
-from sunpy.net import attr, attrs, Fido
+from sunpy.net import attrs
+from sunpy.net.fido_factory import Fido
 from sunpy.net.dataretriever import GenericClient
-
-class ADAPTFileType(attr.SimpleAttr):
-    """
-    ADAPT file type: Public.
-    """
-    pass
-
-class ADAPTLngType(attr.SimpleAttr):
-    """
-    ADAPT longitude type: Carrington Fixed, Central Meridian, East Limb.
-    """
-    pass
-
-class ADAPTInputSource(attr.SimpleAttr):
-    """
-    ADAPT input source: All, KPVT, VSM, GONG, HMI, MDI, MWO.
-    """
-    pass
-
-class ADAPTDataAssimilation(attr.SimpleAttr):
-    """
-    ADAPT data assimilation: WH, enLS, enkf, enLAKF.
-    """
-    pass
-
-class ADAPTResolution(attr.SimpleAttr):
-    """
-    ADAPT model spatial resolution: 1.0 deg, 0.2 deg.
-    """
-    pass
-
-class ADAPTVersionYear(attr.SimpleAttr):
-    """
-    ADAPT code version year.
-    """
-    pass
-
-class ADAPTVersionMonth(attr.SimpleAttr):
-    """
-    ADAPT code version month.
-    """
-    pass
-
-class ADAPTEvolutionMode(attr.SimpleAttr):
-    """
-    ADAPT evolution mode: Data assimilation step, Intermediate step, Forecast step.
-    """
-    pass
-
-class ADAPTHelioData(attr.SimpleAttr):
-    """
-    ADAPT helioseismic data: Not added or no data, Far-side, Emergence, Both emergence & far-side.
-    """
-    pass
-
-class ADAPTRealizations(attr.SimpleAttr):
-    """
-    ADAPT realizations: number of model/file realizations, e.g., 16 -> "016"
-    """
-    pass
+from sunpy.net.dataretriever.attrs.adapt import *
+import sunpy.net.dataretriever.attrs as atrs
+from sunpy.net.attr import SimpleAttr
 
 
-class ADAPTMagData(attr.SimpleAttr):
-    """
-    ADAPT magnetic data: Not added or no data, Mag-los, Mag-vector, Mag- both los & vector, Mag- polar avg obs, Mag- los & polar, Mag- vector & polar, Mag- both los and vector & polar.
-    """
-    pass
+__all__ = ['ADAPTClient']
 
 
 class ADAPTClient(GenericClient):
 
     baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
     pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLngType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
-
-
 
     @classmethod
     def register_values(cls):
@@ -128,45 +68,7 @@ def carrington_time(CR=2193, frames=1):
     get_date_end=date_end.strftime(tstring)
     return get_date, get_date_end
 
-def test_client(CR=2193, frames=1, ask=False):
-    res = test_search(CR, frames)
-    print("Found {} files".format(len(res)))
-    print(res)
-    # ask the user to continue or not
-    if len(res) > 0:
-        if ask:
-            print("Do you want to continue?")
-            inp = input("y/n: ")
-            if inp == 'y':
-                out = test_fetch(res)
-            else:
-                print("Aborting")
-                return None
-        else:
-            return test_fetch(res)
-
-
-def test_search(CR=2193, frames=1):
-    # Get the date range
-    get_date, get_date_end = carrington_time(CR, frames)
-    LngType = '0' # 0 is carrington, 1 is central meridian
-    res = Fido.search(attrs.Instrument('adapt'), attrs.Time(get_date, get_date_end), ADAPTLngType(LngType))
-    print(res)
-    return res
-
-def test_fetch(res, path="../flux-extra/downloads"):
-    import os
-    directory = os.path.join(os.getcwd(), path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    ret =  Fido.fetch(res, path=directory)
-    test_download(ret)
-    return ret
-
-
-def test_download(out):
-    print(out)
-    pass
 
 if __name__ == "__main__":
+    from sunpy.net.dataretriever.sources.tests.test_adapt import test_client
     test_client()
