@@ -117,6 +117,7 @@ class H2VClient:
         self.vso_results = []
         self.num_of_records = 0
 
+    @deprecated_renamed_argument("progress", None,"6.0", warning_type=SunpyDeprecationWarning)
     def full_query(self, client_query, limit=None, progress=False):
         """
         An encompassing method that takes a HEK query and returns a VSO result
