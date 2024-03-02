@@ -43,6 +43,12 @@ def test_nickname(gong_halpha):
     """Tests the nickname property of the GONGHalphaMap map."""
     assert gong_halpha.nickname == "NSO-GONG, Big Bear"
 
+
+def test_earth_location(gong_halpha):
+    assert_equal(gong_halpha._earth_location.lat, 34.26032998167749*u.deg)
+    assert_equal(gong_halpha._earth_location.lon, -116.92141999386104*u.deg)
+
+
 def test_observer_coordinate(gong_halpha):
-    assert_equal(gong_halpha.earth_location.lat, 34.26032998167749*u.deg)
-    assert_equal(gong_halpha.earth_location.lon, -116.92141999386104*u.deg)
+    assert_equal(gong_halpha.observer_coordinate.data.xyz,
+                 [146712246479.363, -5563586.169750214, -17605285536.73928] * u.m)

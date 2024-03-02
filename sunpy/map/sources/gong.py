@@ -19,10 +19,10 @@ _SITE_NAMES = {
     'UD': 'Udaipur',
     'TD': 'El Teide',
     'CT': 'Cerro Tololo',
-    # '': 'Engineering site', TODO check fits header
     'BB': 'Big Bear',
     'ML': 'Mauna Loa'
 }
+
 
 class GONGSynopticMap(GenericMap):
     """
@@ -87,11 +87,6 @@ class GONGHalphaMap(GenericMap):
     * `GONG Header Keywords <https://gong.nso.edu/data/HEADER_KEY.html>`_
     * `DOI:/10.25668/as28-7p13 <https://doi.org/10.25668/as28-7p13>`_
     """
-    def __init__(self, data, header, **kwargs):
-        header['WCSNAME'] = 'Helioprojective-Cartesian'
-        header['CTYPE1'] = 'HPLN-TAN'
-        header['CTYPE2'] = 'HPLT-TAN'
-        super().__init__(data, header, **kwargs)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -106,7 +101,16 @@ class GONGHalphaMap(GenericMap):
     def scale(self):
         solar_r = self.meta['SOLAR-R'] * u.arcsec
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
-                           solar_r / (self.meta['FNDLMBMA'] * u.pixel))
+                           solar_r/ (self.meta['FNDLMBMA'] * u.pixel))
+
+    @property
+    def coordinate_system(self):
+        """
+        Coordinate system used
+
+        Overrides the values in the header which are not understood by Astropy WCS
+        """
+        return SpatialPair("HPLN-TAN", "HPLT-TAN")
 
     @property
     def nickname(self):
@@ -124,4 +128,4 @@ class GONGHalphaMap(GenericMap):
 
     @property
     def observer_coordinate(self):
-        return SkyCoord(self.earth_location.itrs).heliographic_stonyhurst
+        return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
