@@ -343,57 +343,6 @@ def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
     assert not caplog.records
 
 
-# TODO: Remove all these tests after Astropy 5.0 when we can just import obsgeo_to_frame.
-def test_obsgeo_cartesian(dkist_location):
-    obstime = Time("2021-05-21T03:00:00")
-    wcs = WCS(naxis=2)
-    # tolist() returns a tuple.
-    wcs.wcs.obsgeo = list(dkist_location.to_value(u.m).tolist()) + [0, 0, 0]
-    wcs.wcs.dateobs = obstime.isot
-
-    frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
-
-    assert isinstance(frame, ITRS)
-    assert frame.x == dkist_location.x
-    assert frame.y == dkist_location.y
-    assert frame.z == dkist_location.z
-
-
-def test_obsgeo_spherical(dkist_location):
-    obstime = Time("2021-05-21T03:00:00")
-    dkist_location = dkist_location.get_itrs(obstime)
-    loc_sph = dkist_location.spherical
-
-    wcs = WCS(naxis=2)
-    wcs.wcs.obsgeo = [0, 0, 0] + [loc_sph.lon.to_value(u.deg), loc_sph.lat.to_value(u.deg), loc_sph.distance.to_value(u.m)]
-    wcs.wcs.dateobs = obstime.isot
-
-    frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
-
-    assert isinstance(frame, ITRS)
-    assert u.allclose(frame.x, dkist_location.x)
-    assert u.allclose(frame.y, dkist_location.y)
-    assert u.allclose(frame.z, dkist_location.z)
-
-
-def test_obsgeo_nonfinite(dkist_location):
-    obstime = Time("2021-05-21T03:00:00")
-    dkist_location = dkist_location.get_itrs(obstime)
-    loc_sph = dkist_location.spherical
-
-    wcs = WCS(naxis=2)
-    wcs.wcs.obsgeo = [1, 1, np.nan] + [loc_sph.lon.value, loc_sph.lat.value, loc_sph.distance.value]
-    wcs.wcs.dateobs = obstime.isot
-    wcs.wcs.set()
-
-    frame = obsgeo_to_frame(wcs.wcs.obsgeo, obstime)
-
-    assert isinstance(frame, ITRS)
-    assert u.allclose(frame.x, dkist_location.x)
-    assert u.allclose(frame.y, dkist_location.y)
-    assert u.allclose(frame.z, dkist_location.z)
-
-
 @pytest.mark.parametrize("obsgeo", ([np.nan] * 6, None, [0] * 6, [54] * 5))
 def test_obsgeo_invalid(obsgeo):
 
