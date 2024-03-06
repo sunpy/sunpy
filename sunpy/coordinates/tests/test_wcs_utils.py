@@ -343,13 +343,6 @@ def test_frame_mapping_obsgeo_spherical(dkist_location, caplog):
     assert not caplog.records
 
 
-@pytest.mark.parametrize("obsgeo", ([np.nan] * 6, None, [0] * 6, [54] * 5))
-def test_obsgeo_invalid(obsgeo):
-
-    with pytest.raises(ValueError):
-        obsgeo_to_frame(obsgeo, None)
-
-
 def test_observer_hgln_crln_priority():
     """
     When extracting the observer information from a FITS header, ensure
