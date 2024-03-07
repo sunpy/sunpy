@@ -1,16 +1,9 @@
-import numpy as np
 
 import astropy.units as u
 import astropy.wcs.utils
-from astropy.wcs.utils import obsgeo_to_frame
-from astropy.coordinates import (
-    ITRS,
-    BaseCoordinateFrame,
-    CartesianRepresentation,
-    SkyCoord,
-    SphericalRepresentation,
-)
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.wcs import WCS
+from astropy.wcs.utils import obsgeo_to_frame
 
 from sunpy import log
 from .frames import (

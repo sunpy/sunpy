@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import ITRS, BaseCoordinateFrame, SkyCoord
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.coordinates.earth import EarthLocation
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
@@ -18,7 +18,6 @@ from sunpy.coordinates.frames import (
 )
 from sunpy.coordinates.wcs_utils import (
     _set_wcs_aux_obs_coord,
-    obsgeo_to_frame,
     solar_frame_to_wcs_mapping,
     solar_wcs_frame_mapping,
 )
