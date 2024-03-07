@@ -27,9 +27,6 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto
-      libraries: |
-        apt:
-          - libopenjp2-7
       envs: |
         - linux: py312
     secrets:
@@ -43,9 +40,6 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto
-      libraries: |
-        brew:
-          - openjpeg
       envs: |
         - windows: py311
         - macos: py310
@@ -69,7 +63,6 @@ jobs:
       cache-key: docs-${{ github.run_id }}
       libraries: |
         apt:
-          - libopenjp2-7
           - graphviz
       envs: |
         - linux: build_docs
@@ -84,9 +77,6 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --dist loadgroup
-      libraries: |
-        apt:
-          - libopenjp2-7
       envs: |
         - linux: build_docs-gallery
           posargs: ''
@@ -117,9 +107,6 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto
-      libraries: |
-        apt:
-          - libopenjp2-7
       envs: |
         - linux: base_deps
         - linux: py311-devdeps
