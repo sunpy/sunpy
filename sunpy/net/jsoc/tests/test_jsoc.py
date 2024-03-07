@@ -54,8 +54,6 @@ def test_return_query_args(client):
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
     # Because res.query_args is list that contains dict
     assert 'primekey' in res.query_args[0]
-    assert "magnetogram" in res.keys()
-    assert res["magnetogram"][0].startswith("/SUM")
 
 
 @pytest.mark.remote_data
@@ -379,3 +377,25 @@ def test_string_keyword_is_converted_correctly(client):
         a.jsoc.Series("iris.lev1"), a.jsoc.Keyword("INSTRUME") == "FUV"
     )
     assert len(responses) == 6
+
+@pytest.mark.remote_data
+def test_segments_query(client):
+    res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
+                        a.jsoc.Series('hmi.sharp_cea_720s'))
+    seg_res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
+                        a.jsoc.Series('hmi.sharp_cea_720s'),
+                        a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
+    # Check that the correct segments are returned and are not returned in the original query
+    assert len(res) == len(seg_res) == 1223
+    assert len(res.columns) != len(seg_res.columns)
+    assert len(seg_res.columns) - len(res.columns) == 2
+    assert "magnetogram" not in res.keys()
+    assert "Bp" not in res.keys()
+    assert "magnetogram" in seg_res.keys()
+    assert "Bp" in seg_res.keys()
+    # SUMS directories are like /SUM93/D1044682184/S00000/Bp.fits
+    # So checking the start and end is the easiest way to check the segments
+    assert seg_res["magnetogram"][0].startswith("/SUM")
+    assert seg_res["Bp"][0].startswith("/SUM")
+    assert seg_res["magnetogram"][0].endswith("magnetogram.fits")
+    assert seg_res["Bp"][0].endswith("Bp.fits")
