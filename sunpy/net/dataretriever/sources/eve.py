@@ -12,7 +12,7 @@ class EVEClient(GenericClient):
     Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
 
     To use this client you must request Level 0 data.
-    It is hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-access/>`__.
+    It is hosted by `LASP <https://lasp.colorado.edu/eve/data_access/eve-space-weather/>`__.
 
     Examples
     --------
@@ -25,7 +25,7 @@ class EVEClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the EVEClient:
-    Source: https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/
+    Source: https://lasp.colorado.edu/eve/data_access/eve_data/quicklook/L0CS/SpWx/
     <BLANKLINE>
            Start Time               End Time        Instrument ... Provider Level
     ----------------------- ----------------------- ---------- ... -------- -----
@@ -41,7 +41,7 @@ class EVEClient(GenericClient):
 
     @property
     def info_url(self):
-        return 'https://lasp.colorado.edu/eve/data_access/eve-space-weather/index.html'
+        return 'https://lasp.colorado.edu/eve/data_access/eve_data/quicklook/L0CS/SpWx/'
 
     @classmethod
     def register_values(cls):
