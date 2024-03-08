@@ -176,7 +176,7 @@ def write(fname, data, header, **kwargs):
 
     tmpname = fname + "tmp.jp2"
     jp2_data = np.uint8(data)
-    jp2 = Jp2k(tmpname, jp2_data, **kwargs)
+    jp2 = Jp2k(tmpname, np.flip(jp2_data, 0), **kwargs)
 
     # Append the XML data to the header information stored in jp2.box
     meta_boxes = jp2.box
