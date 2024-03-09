@@ -90,7 +90,7 @@ class UnifiedResponse(Sequence):
         The first index is to the client and the second index is the records
         returned from those clients.
         """
-        if isinstance(aslice, int | slice):
+        if isinstance(aslice, (int | slice)):
             ret = self._list[aslice]
 
         # using the client's name for indexing the responses.
@@ -119,7 +119,7 @@ class UnifiedResponse(Sequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers or strings.")
 
-        if isinstance(ret, QueryResponseTable | QueryResponseColumn | QueryResponseRow):
+        if isinstance(ret, (QueryResponseTable | QueryResponseColumn | QueryResponseRow)):
             return ret
 
         return UnifiedResponse(*ret)
@@ -318,8 +318,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
         results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
-
-        return UnifiedResponse(*results)
+        results = UnifiedResponse(*results)
+        if results._numfile == 0:
+            return " WARNING : No data found for query"
+        return results
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):

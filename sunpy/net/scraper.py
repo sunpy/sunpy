@@ -283,8 +283,10 @@ class Scraper:
             return self._ftpfileslist(timerange)
         if urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
+        directory_tries_count = { directory : 0 for directory in directories}
         while directories:
             directory = directories.pop(0)
+            directory_tries_count[directory] += 1
             try:
                 opn = urlopen(directory)
                 try:
@@ -321,6 +323,9 @@ class Scraper:
                     # Put this dir back on the queue
                     directories.insert(0, directory)
                     continue
+                if directory_tries_count[directory] == 5:
+                    # Retry the directory
+                    return "Failed to scrape directory {} after 5 tries.".format(directory)
                 raise
             except Exception:
                 raise
