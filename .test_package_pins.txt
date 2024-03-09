@@ -2,4 +2,4 @@
 # Do not remove, even if it's empty!
 
 # https://github.com/scientific-python/pytest-doctestplus/issues/243
-pytest<8.1.1
+pytest<8.1
