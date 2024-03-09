@@ -90,7 +90,7 @@ class UnifiedResponse(Sequence):
         The first index is to the client and the second index is the records
         returned from those clients.
         """
-        if isinstance(aslice, (int | slice)):
+        if isinstance(aslice, int | slice):
             ret = self._list[aslice]
 
         # using the client's name for indexing the responses.
@@ -119,7 +119,7 @@ class UnifiedResponse(Sequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers or strings.")
 
-        if isinstance(ret, (QueryResponseTable | QueryResponseColumn | QueryResponseRow)):
+        if isinstance(ret, QueryResponseTable | QueryResponseColumn | QueryResponseRow):
             return ret
 
         return UnifiedResponse(*ret)
