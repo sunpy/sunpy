@@ -143,7 +143,7 @@ plt.show()
 fig = plt.figure()
 ax = fig.add_subplot(projection=instrument_map)
 instrument_map.plot(axes=ax, title=False)
-instrument_map.draw_grid(axes=ax,grid_spacing=5*u.deg, color='k')
+instrument_map.draw_grid(axes=ax, color='k')
 ax.plot_coord(box_origin, marker='x', color='r', ls='', label='Simulation Box Center')
 ax.plot_coord(hcc_orientation, color='b', marker='x', ls='', label='Simulation Box Bottom')
 for i,edge in enumerate(edge_coords):
@@ -197,7 +197,7 @@ earth_map = make_fake_map(
 fig = plt.figure()
 ax = fig.add_subplot(projection=earth_map)
 earth_map.plot(axes=ax, title=False)
-earth_map.draw_grid(axes=ax, grid_spacing=5*u.deg, color='k')
+earth_map.draw_grid(axes=ax, color='k')
 for los in lines_of_sight:
     ax.plot_coord(los, color='C0', marker='', ls='-', alpha=0.2)
 for los in lines_of_sight:
