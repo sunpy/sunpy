@@ -1,6 +1,6 @@
 from sunpy.net.attr import SimpleAttr
 
-__all__ = ['ADAPTInstrument', 'ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource',
+__all__ = ['ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource',
            'ADAPTDataAssimilation', 'ADAPTResolution', 'ADAPTVersionYear', 'ADAPTVersionMonth',
            'ADAPTEvolutionMode', 'ADAPTHelioData', 'ADAPTRealizations', 'ADAPTMagData']
 
