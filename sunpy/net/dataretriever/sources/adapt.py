@@ -1,6 +1,3 @@
-# # Author: Gilly <gilly@swri.org>
-# import sunpy.net
-
 from sunpy.net import attrs
 from sunpy.net.fido_factory import Fido
 from sunpy.net.dataretriever import GenericClient
@@ -13,7 +10,37 @@ __all__ = ['ADAPTClient']
 
 
 class ADAPTClient(GenericClient):
+    """
+    Provides access to the ADvanced Adaptive Prediction Technique (ADAPT) products of the National Solar Observatory.
 
+        Searches data hosted by the `National Solar Observatory <https://gong.nso.edu/adapt/maps/gong/>`__
+
+        Examples
+        --------
+        >>> from sunpy.net import Fido, attrs as a
+        >>> get_date, get_date_end = adapt_source.carrington_time(CR, frames)
+        >>> LngType = '0' # 0 is carrington, 1 is central meridian
+        >>> print (f"Searching for images from {get_date} to {get_date_end}\n")
+        >>> res = Fido.search(attrs.Instrument('adapt'), attrs.Time(get_date, get_date_end), ADAPTLngType(LngType))
+        >>> print(res)
+        >>> ret =  Fido.fetch(res, path=make_dir())
+
+
+    Searching for images from 2017-07-20T06:03:05 to 2017-07-20T12:03:05
+
+    Results from 1 Provider:
+
+    1 Results from the ADAPTClient:
+
+        Start Time               End Time        ... minutes_since_last_obs seconds_since_last_obs
+    ----------------------- ----------------------- ... ---------------------- ----------------------
+    2017-07-20 08:00:00.000 2017-07-20 08:00:59.999 ...                     56                      0
+
+
+    Fetching search_result:
+    Files Downloaded: 100%|███████████████████████████████████████████| 1/1 [00:00<00:00,  7.65file/s]
+    Success!
+    """
     baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
     pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLngType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
 
