@@ -5,6 +5,8 @@ Understanding Observer Orientation Relative to a Simulated Volume with `astropy.
 
 This notebook demonstrates how to use the `astropy.coordinates` framework, combined with the solar coordinate frameworks provided by SunPy, to find the intersection of a set of lines of sight defined by an observer position with a simulated volume represented by a Cartesian box.
 """
+# sphinx_gallery_thumbnail_number = 4
+
 import itertools
 
 import matplotlib.pyplot as plt
@@ -77,7 +79,7 @@ for indices in map_indices.T:
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=instrument_map)
-instrument_map.plot(axes=ax)
+instrument_map.plot(axes=ax, title=False)
 instrument_map.draw_grid(axes=ax, color='k')
 for los in lines_of_sight:
     ax.plot_coord(los[0], color='C0', marker='.', ls='', markersize=1,)
@@ -127,7 +129,7 @@ for edge in edges:
 # look right.
 fig = plt.figure()
 ax = fig.add_subplot(projection=instrument_map)
-instrument_map.plot(axes=ax)
+instrument_map.plot(axes=ax, title=False)
 instrument_map.draw_grid(axes=ax, color='k')
 for edge in edge_coords:
     ax.plot_coord(edge, color='k', ls='-', marker='')
@@ -140,7 +142,7 @@ plt.show()
 # a single plot. We'll also overlay the pixel grid of our fake image.
 fig = plt.figure()
 ax = fig.add_subplot(projection=instrument_map)
-instrument_map.plot(axes=ax)
+instrument_map.plot(axes=ax, title=False)
 instrument_map.draw_grid(axes=ax,grid_spacing=5*u.deg, color='k')
 ax.plot_coord(box_origin, marker='x', color='r', ls='', label='Simulation Box Center')
 ax.plot_coord(hcc_orientation, color='b', marker='x', ls='', label='Simulation Box Bottom')
@@ -194,7 +196,7 @@ earth_map = make_fake_map(
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=earth_map)
-earth_map.plot(axes=ax)
+earth_map.plot(axes=ax, title=False)
 earth_map.draw_grid(axes=ax, grid_spacing=5*u.deg, color='k')
 for los in lines_of_sight:
     ax.plot_coord(los, color='C0', marker='', ls='-', alpha=0.2)
