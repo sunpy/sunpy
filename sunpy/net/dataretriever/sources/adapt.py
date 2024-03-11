@@ -4,7 +4,8 @@ from sunpy.net.dataretriever import GenericClient
 from sunpy.net.dataretriever.attrs.adapt import *
 import sunpy.net.dataretriever.attrs as atrs
 from sunpy.net.attr import SimpleAttr
-
+import astropy.units as u
+import sunpy.coordinates
 
 __all__ = ['ADAPTClient']
 
@@ -74,7 +75,6 @@ class ADAPTClient(GenericClient):
                     ADAPTHelioData, ADAPTMagData}
 
         all_attrs = {type(x) for x in query}
-        # print(all_attrs)
         return required.issubset(all_attrs) and all_attrs.issubset(required.union(optional))
 
 def carrington_time(CR=2193, frames=1):
@@ -84,8 +84,6 @@ def carrington_time(CR=2193, frames=1):
     Returns:
         _type_: _description_
     """
-    import astropy.units as u
-    import sunpy.coordinates
     date = sunpy.coordinates.sun.carrington_rotation_time(CR)
     date_end = date + frames*(3*1.9999999 * u.hour)
 
@@ -96,6 +94,3 @@ def carrington_time(CR=2193, frames=1):
     return get_date, get_date_end
 
 
-if __name__ == "__main__":
-    from sunpy.net.dataretriever.sources.tests.test_adapt import test_client
-    test_client()
