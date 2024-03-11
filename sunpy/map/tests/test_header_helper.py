@@ -211,6 +211,13 @@ def test_quantity_input(map_data, hpc_coord):
     assert header['bunit'] == override_unit.to_string('fits')
 
 
+def test_unit_as_string(map_data, hpc_coord):
+    # Test that unit can be passed in as a string
+    map_unit = u.Unit('ct / (pix s)')
+    header = make_fitswcs_header(map_data, hpc_coord, unit=map_unit.to_string())
+    assert header['bunit'] == map_unit.to_string('fits')
+
+
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
     # Raise the HCC error
     with pytest.raises(ValueError):
