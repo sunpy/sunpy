@@ -1,6 +1,5 @@
 from sunpy.net.attr import SimpleAttr
 
-# the names of all of the classes below
 __all__ = ['ADAPTInstrument', 'ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource',
            'ADAPTDataAssimilation', 'ADAPTResolution', 'ADAPTVersionYear', 'ADAPTVersionMonth',
            'ADAPTEvolutionMode', 'ADAPTHelioData', 'ADAPTRealizations', 'ADAPTMagData']
@@ -9,11 +8,6 @@ __all__ = ['ADAPTInstrument', 'ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource
 def __dir__():
     return __all__
 
-class ADAPTInstrument(SimpleAttr):
-    """
-    ADAPT file type: Public.
-    """
-    pass
 
 class ADAPTFileType(SimpleAttr):
     """
