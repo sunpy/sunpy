@@ -161,6 +161,8 @@ ax.hlines(y=ypix_edges,
           xmax=xpix_edges[-1],
           color='k', ls='--', lw=.5,)
 ax.legend(loc=2, frameon=False)
+ax.set_xlim(-10, 35)
+ax.set_ylim(-10, 35)
 plt.show()
 
 #############################################################################################
@@ -204,4 +206,6 @@ for edge in edge_coords:
     ax.plot_coord(edge, color='k', ls='-')
 ax.plot_coord(box_origin, marker='x', color='r')
 ax.plot_coord(hcc_orientation, color='b', marker='x', ls='')
+ax.set_xlim(-10, 35)
+ax.set_ylim(-10, 35)
 plt.show()
