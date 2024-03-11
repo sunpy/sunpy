@@ -1,6 +1,6 @@
 {
-  "template": "/home/sam/Code/OpenAstronomy/packaging-guide",
-  "commit": "951d5647d26df413478884b4b6654afc8833c8d2",
+  "template": "https://github.com/sunpy/package-template.git",
+  "commit": "d91a5d5e80dfa4402924cc0abfe104db30e239f9",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -9,7 +9,7 @@
       "short_description": "SunPy core package: Python for Solar Physics",
       "author_name": "The SunPy Community",
       "author_email": "sunpy@googlegroups.com",
-      "project_url": "sunpy.org",
+      "project_url": "https://sunpy.org",
       "license": "BSD 2-Clause",
       "minimum_python_version": "3.10",
       "use_compiled_extensions": "y",
@@ -24,7 +24,7 @@
         "docs/_static",
         ".github/workflows/sub_package_update.yml"
       ],
-      "_template": "/home/sam/Code/OpenAstronomy/packaging-guide"
+      "_template": "https://github.com/sunpy/package-template.git"
     }
   },
   "directory": null
