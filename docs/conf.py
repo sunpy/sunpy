@@ -52,6 +52,8 @@ import doctest  # NOQA: E402
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
 # The full version, including alpha/beta/rc tags
+from sunpy import __version__
+
 release = __version__
 sunpy_version = Version(__version__)
 is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
@@ -80,7 +82,7 @@ linkcheck_ignore = [r"https://doi.org/\d+",
                     r"https://docs.sunpy.org/\d+"]
 linkcheck_anchors = False
 
-# -- General configuration -----------------------------------------------------
+# -- General configuration ---------------------------------------------------
 # sphinxext-opengraph
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
@@ -94,7 +96,7 @@ ogp_custom_meta_tags = [
 suppress_warnings = ['app.add_directive', ]
 
 # Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
+# extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
 extensions = [
     'matplotlib.sphinxext.plot_directive',
@@ -123,7 +125,7 @@ extensions = [
 automodapi_toctreedirnm = "generated/api"
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
+# templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -134,14 +136,14 @@ automodapi_toctreedirnm = "generated/api"
 # directly to the root of the documentation.
 html_extra_path = ['robots.txt']
 
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 if is_release:
     exclude_patterns.append('dev_guide/contents/*')
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = 'index'
@@ -171,7 +173,8 @@ for line in open('nitpick-exceptions'):
     nitpick_ignore.append((dtype, target))
 
 
-# -- Options for intersphinx extension -----------------------------------------
+# -- Options for intersphinx extension ---------------------------------------
+
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": (
@@ -246,7 +249,7 @@ html_theme = "sunpy"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+# html_static_path = ["_static"]
 
 # Render inheritance diagrams in SVG
 graphviz_output_format = "svg"

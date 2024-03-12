@@ -1,10 +1,11 @@
 [build-system]
 requires = [
-  "extension-helpers",
-  "numpy>=1.25",
-  "setuptools>=61.2",
+  "setuptools>=62.1",
   "setuptools_scm[toml]>=6.2",
   "wheel",
+  "extension-helpers",
+  "numpy>=1.25",
+  "cython"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -221,3 +222,12 @@ showcontent = true
 directory = "trivial"
 name = "Internal Changes"
 showcontent = true
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools.packages.find]
+
+[tool.setuptools_scm]
+write_to = "sunpy/_version.py"
