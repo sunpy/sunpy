@@ -222,12 +222,3 @@ showcontent = true
 directory = "trivial"
 name = "Internal Changes"
 showcontent = true
-
-[tool.setuptools]
-zip-safe = false
-include-package-data = true
-
-[tool.setuptools.packages.find]
-
-[tool.setuptools_scm]
-write_to = "sunpy/_version.py"
