@@ -33,8 +33,8 @@ dependencies = [
   "numpy>=1.21.0",
   "packaging>=21.3",
   "parfive[ftp]>=2.0.0",
-  "pyerfa",
-  "requests",
+  "pyerfa>=2.0",
+  "requests>=2.27.0",
 ]
 dynamic = ["version"]
 
