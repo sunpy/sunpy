@@ -20,7 +20,7 @@ if on_rtd:
     os.environ['PARFIVE_HIDE_PROGRESS'] = 'True'
 
 # -- Check for dependencies ----------------------------------------------------
-from sunpy.util import missing_dependencies_by_extra  # NOQA: E402
+from sunpy.util import missing_dependencies_by_extra
 
 missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
 if missing_requirements:
@@ -30,16 +30,15 @@ if missing_requirements:
     )
     sys.exit(1)
 
-from matplotlib import MatplotlibDeprecationWarning  # NOQA: E402
-from ruamel.yaml import YAML  # NOQA: E402
-from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder  # NOQA: E402
-from sunpy_sphinx_theme import PNG_ICON  # NOQA: E402
+from matplotlib import MatplotlibDeprecationWarning
+from ruamel.yaml import YAML
+from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder
+from sunpy_sphinx_theme import PNG_ICON
 
-from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA: E402
+from astropy.utils.exceptions import AstropyDeprecationWarning
 
-import sunpy  # NOQA: E402
-from sunpy import __version__  # NOQA: E402
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning  # NOQA: E402
+import sunpy
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 # -- Project information -------------------------------------------------------
 project = 'sunpy'
@@ -47,7 +46,7 @@ author = 'The SunPy Community'
 copyright = f'{datetime.datetime.now().year}, {author}'
 
 # Register remote data option with doctest
-import doctest  # NOQA: E402
+import doctest
 
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
@@ -70,7 +69,7 @@ warnings.filterwarnings("error", category=AstropyDeprecationWarning)
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
 
-import sunpy.data.sample  # NOQA: E402
+import sunpy.data.sample
 
 sunpy.data.sample.download_all()
 sunpy.log.setLevel(ori_level)

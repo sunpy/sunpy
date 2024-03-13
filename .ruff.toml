@@ -29,9 +29,9 @@ extend-ignore = [
 # Part of configuration, not a package.
 "setup.py" = ["INP001"]
 "conftest.py" = ["INP001"]
+"docs/conf.py" = ["E402"]
 "docs/*.py" = [
   "INP001",  # Implicit-namespace-package. The examples are not a package.
-  "E402",  # Module imports not at top of file
 ]
 "__init__.py" = ["E402", "F401", "F403"]
 "test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
@@ -41,4 +41,6 @@ extend-ignore = [
 "sunpy/util/exceptions.py" = ["TID251"]
 "sunpy/util/tests/test_logger.py" = ["TID251"]
 "sunpy/util/decorators.py" = ["TID251"]
+
+[lint.pydocstyle]
 convention = "numpy"
