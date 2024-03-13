@@ -33,7 +33,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test:
-    needs: [core, sdist_verify]
+    needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       submodules: false
@@ -188,7 +188,6 @@ jobs:
         - cp3{9,10,11,12}-manylinux*_x86_64
         - cp3{9,10,11,12}-macosx_x86_64
         - cp3{9,10,11,12}-macosx_arm64
-        - cp3{9,10,11,12}-win_amd64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_token }}
