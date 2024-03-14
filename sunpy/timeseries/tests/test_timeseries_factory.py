@@ -368,6 +368,7 @@ def test_invalid_manual_data():
     with pytest.raises(NoMatchError, match=""):
         sunpy.timeseries.TimeSeries(data, meta)
 
+
 @pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 def test_invalid_filepath():
     invalid_filepath = os.path.join(rootdir, 'invalid_filepath_here')
@@ -379,6 +380,7 @@ def test_invalid_filepath():
     # Now with allow_errors kwarg set
     with pytest.raises(ValueError, match='Did not find any files'):
         sunpy.timeseries.TimeSeries(invalid_filepath, allow_errors=True)
+
 
 @pytest.mark.filterwarnings('ignore:"silence_errors" was deprecated in version 5')
 def test_invalid_file():

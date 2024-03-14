@@ -61,7 +61,7 @@ TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
-_META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata'
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
 # class attribute in GenericMap.__init__()
@@ -727,7 +727,8 @@ class GenericMap(NDData):
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
                         'dn': 'ct',
-                        'dn/s': 'ct/s'}
+                        'dn/s': 'ct/s',
+                        'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
@@ -735,7 +736,7 @@ class GenericMap(NDData):
             warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                           f'See {_META_FIX_URL} for how to fix metadata before loading it '
                           'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for'
+                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                           'the FITS unit standards.')
             unit = None
         return unit
@@ -1707,9 +1708,9 @@ class GenericMap(NDData):
                              "appropriate integer value for the data set.")
 
         new_data = np.pad(self.data,
-                      ((pad_y, pad_y), (pad_x, pad_x)),
-                      mode='constant',
-                      constant_values=(missing, missing))
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))
 
         # All of the following pixel calculations use a pixel origin of 0
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
@@ -2529,8 +2530,7 @@ class GenericMap(NDData):
         msg = ('Cannot manually specify {0}, as the norm '
                'already has {0} set. To prevent this error set {0} on '
                '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-        if imshow_args.get('norm', None) is not None:
-            norm = imshow_args['norm']
+        if (norm := imshow_args.get('norm', None)) is not None:
             if 'vmin' in imshow_args:
                 if norm.vmin is not None:
                     raise ValueError(msg.format('vmin'))

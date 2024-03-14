@@ -8,6 +8,7 @@ from sunpy.util.sysinfo import _warn_missing_deps
 _warn_missing_deps('map')
 
 from ._units import maxwell
+
 from sunpy.map.mapbase import *
 
 from sunpy.map import sources

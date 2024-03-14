@@ -36,6 +36,7 @@ obstime = parse_time('now')
 
 hee_frame = HeliocentricEarthEcliptic(obstime=obstime)
 
+
 def get_first_orbit(coord):
     lon = coord.transform_to(hee_frame).spherical.lon
     shifted = Longitude(lon - lon[0])
@@ -43,6 +44,7 @@ def get_first_orbit(coord):
     if ends.size > 0:
         return coord[:ends[0]]
     return coord
+
 
 ##############################################################################
 # Obtain the locations and trajectories of the various planets and spacecraft.
@@ -68,10 +70,12 @@ mission_coords = {mission: get_first_orbit(get_horizons_coord(mission, {'start':
 # Define a convenience function for converting coordinates to plot positions
 # in the ecliptic plane.
 
+
 def coord_to_heexy(coord):
     coord = coord.transform_to(hee_frame)
     coord.representation_type = 'cartesian'
     return coord.y.to_value('AU'), coord.x.to_value('AU')
+
 
 ##############################################################################
 # Set Matplotlib settings to the desired appearance and initialize the axes.

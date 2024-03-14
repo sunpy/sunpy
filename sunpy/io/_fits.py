@@ -203,7 +203,7 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     if not hdu_type:
         hdu_type = fits.PrimaryHDU
 
-    if isinstance(hdu_type, (fits.PrimaryHDU, fits.hdu.base.ExtensionHDU)):
+    if isinstance(hdu_type, fits.PrimaryHDU | fits.hdu.base.ExtensionHDU):
         hdu = hdu_type  # HDU already initialized
         # Merge `header` into HDU's header
         # Values in `header` take priority, including cards such as

@@ -111,7 +111,7 @@ class GenericTimeSeries:
         if meta is None:
             # No meta given, so default
             self.meta = TimeSeriesMetaData(MetaDict(), tr, self.columns)
-        elif isinstance(meta, (dict, OrderedDict, MetaDict)):
+        elif isinstance(meta, dict | OrderedDict | MetaDict):
             # Given the values for metadata (dict) and infer timerange and colnames from the data
             self.meta = TimeSeriesMetaData(meta, tr, self.columns)
         elif isinstance(meta, tuple):
@@ -236,7 +236,7 @@ class GenericTimeSeries:
         channels = "<br>".join(channels)
 
         uni = list(set(self.units.values()))
-        uni = [x.unit if type(x) == u.quantity.Quantity else x for x in uni]
+        uni = [x.unit if isinstance(x, u.quantity.Quantity) else x for x in uni]
         uni = ["dimensionless" if x == u.dimensionless_unscaled else x for x in uni]
         uni = "<br>".join(str(x) for x in uni)
 
@@ -855,7 +855,7 @@ class GenericTimeSeries:
         Parameters
         ----------
         **kwargs : `dict`
-            All keyword arguments are passed to `pandas.DataFrame.to_numpy`.
+            All keyword arguments are passed to ``pandas.DataFrame.to_numpy``.
 
         Returns
         -------

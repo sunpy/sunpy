@@ -161,7 +161,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
         # If a frame wrap angle is set, use that wrap angle for any spherical representations.
         if self._wrap_angle is not None and \
-           isinstance(data, (UnitSphericalRepresentation, SphericalRepresentation)):
+           isinstance(data, UnitSphericalRepresentation | SphericalRepresentation):
             data.lon.wrap_angle = self._wrap_angle
         return data
 
@@ -177,30 +177,6 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     def _is_2d(self):
         return (self._data is not None and self._data.norm().unit is u.one
                 and u.allclose(self._data.norm(), 1*u.one))
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        # TODO: Remove this after the minimum Astropy dependency includes astropy/astropy#12005
-        cls._fix_property_docstrings()
-
-    @classmethod
-    def _fix_property_docstrings(cls):
-        # This class method adds docstrings to properties dynamically created by
-        # BaseCoordinateFrame.__init_subclass__().  Accordingly, this method needs to itself be
-        # called from SunPyBaseCoordinateFrame.__init_subclass__() to work for our subclasses.
-        property_docstrings = {
-            'default_representation': "Default representation for position data",
-            'default_differential': "Default representation for differential data",
-            'frame_specific_representation_info': "Mapping for frame-specific component names",
-        }
-        for prop, docstring in property_docstrings.items():
-            if getattr(cls, prop).__doc__ is None:
-                setattr(getattr(cls, prop), '__doc__', docstring)
-
-
-# TODO: Remove this after the minimum Astropy dependency includes astropy/astropy#12005
-SunPyBaseCoordinateFrame._fix_property_docstrings()
 
 
 class BaseHeliographic(SunPyBaseCoordinateFrame):

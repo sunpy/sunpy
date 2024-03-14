@@ -41,8 +41,9 @@ from .strategies import matrix_meta
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
-        data = fits.open(get_test_filepath('aia_171_level1.fits'))[0].data
-    np.testing.assert_allclose(aia171_test_map.data, data)
+        hdulist = fits.open(get_test_filepath('aia_171_level1.fits'))
+    np.testing.assert_allclose(aia171_test_map.data, hdulist[0].data)
+    hdulist.close()
 
 
 def test_header_fits_io():
@@ -377,6 +378,7 @@ def test_rotation_matrix_crota(aia171_test_map):
 
 _PC_KEYWORDS = ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']
 _CD_KEYWORDS = ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
+
 
 @pytest.mark.parametrize('key', ['PC', 'CD'])
 @pytest.mark.parametrize('i', [1, 2])
@@ -855,7 +857,7 @@ def test_superpixel_dims_values(aia171_test_map, f):
 
 
 @pytest.mark.parametrize(("f", "dimensions"), [(np.sum, (2, 3)*u.pix),
-                                           (np.mean, (3, 2)*u.pix)])
+                                               (np.mean, (3, 2)*u.pix)])
 def test_superpixel_metadata(generic_map, f, dimensions):
     superpix_map = generic_map.superpixel(dimensions, func=f)
 
@@ -1180,9 +1182,6 @@ def test_validate_non_spatial(generic_map):
         sunpy.map.Map(generic_map.data, generic_map.meta)
 
 
-# Heliographic Map Tests
-
-
 def test_hg_coord(heliographic_test_map):
     assert heliographic_test_map.coordinate_system[0] == "CRLN-CAR"
     assert heliographic_test_map.coordinate_system[1] == "CRLT-CAR"
@@ -1205,12 +1204,13 @@ def test_hg_data_to_pix(heliographic_test_map):
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
 
-# Dimension testing
 
-
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
 def test_more_than_two_dimensions():
-    """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
+    """
+    Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
+    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)
@@ -1218,8 +1218,9 @@ def test_more_than_two_dimensions():
     hdr['TELESCOP'] = 'XXX'
     hdr['cunit1'] = 'arcsec'
     hdr['cunit2'] = 'arcsec'
-    with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
-        bad_map = sunpy.map.Map(bad_data, hdr)
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+        with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+            bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
@@ -1228,11 +1229,12 @@ def test_more_than_two_dimensions():
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
     with pytest.warns(Warning) as record:
-        header = {}
-        header['cunit1'] = 'arcsec'
-        header['cunit2'] = 'arcsec'
-        header['ctype1'] = 'HPLN-TAN'
-        header['ctype2'] = 'HPLT-TAN'
+        header = {
+            'cunit1': 'arcsec',
+            'cunit2': 'arcsec',
+            'ctype1': 'HPLN-TAN',
+            'ctype2': 'HPLT-TAN',
+        }
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
@@ -1635,7 +1637,7 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # noqa: PT012
+    with pytest.raises(TypeError):  # NOQA: PT012
         # A runtime warning is thrown when dividing by zero in the case of
         # the map test
         with warn_context:

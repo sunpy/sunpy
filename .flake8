@@ -1,0 +1,29 @@
+[flake8]
+ignore =
+    # missing-whitespace-around-operator
+    E225
+    # missing-whitespace-around-arithmetic-operator
+    E226
+    # line-too-long
+    E501
+    # unused-import
+    F401
+    # undefined-local-with-import-star
+    F403
+    # redefined-while-unused
+    F811
+    # Line break occurred before a binary operator
+    W503,
+    # Line break occurred after a binary operator
+    W504
+max-line-length = 110
+exclude =
+    .git
+    __pycache__
+    docs/conf.py
+    build
+    sunpy/data/sample.py
+    sunpy/extern/**
+    sunpy/__init__.py,
+rst-directives =
+    plot
