@@ -178,7 +178,7 @@ def write(fname, data, header, **kwargs):
     jp2_data = np.uint8(data)
 
     # The jp2 data is flipped when read in, so we have to flip it back before
-    # saving.
+    # saving. See https://github.com/sunpy/sunpy/pull/768 for context.
     flipped = np.flip(jp2_data, 0)
     jp2 = Jp2k(tmpname, flipped, **kwargs)
 
