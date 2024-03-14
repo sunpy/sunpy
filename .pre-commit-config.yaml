@@ -2,7 +2,7 @@ exclude: "\\.asdf$"
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.1.11"
+    rev: "v0.2.1"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -10,7 +10,6 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
-        args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|sunpy/extern)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -22,7 +21,7 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
-        args: ['--enforce-all','--maxkb=1054']
+        args: ["--enforce-all", "--maxkb=1054"]
       - id: end-of-file-fixer
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|.json)$|^CITATION.rst$"
       - id: mixed-line-ending
@@ -31,7 +30,9 @@ repos:
     rev: v2.2.6
     hooks:
       - id: codespell
-        args: ['--config setup.cfg --write-changes']
+        additional_dependencies:
+          - tomli
+        args: ["--write-changes"]
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs

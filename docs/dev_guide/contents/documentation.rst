@@ -158,7 +158,7 @@ If you'd like to start from scratch (i.e., remove the tox cache) then change to 
     tox -r -e build_docs-gallery
 
 
-To build the documentation in your current python environment you must have all the dependencies specified in ``setup.cfg`` installed (``pip install -e .[docs,docs-gallery]``).
+To build the documentation in your current python environment you must have all the dependencies specified in ``pyproject.toml`` installed (``pip install -e .[docs,docs-gallery]``).
 Then change to the :file:`docs/` directory and run::
 
     make html

@@ -22,10 +22,10 @@ formats:
   - htmlzip
 
 python:
-   install:
-     - method: pip
-       extra_requirements:
+  install:
+    - method: pip
+      extra_requirements:
         - all
         - docs
         - docs-gallery
-       path: .
+      path: .
