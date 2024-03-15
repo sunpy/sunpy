@@ -1,5 +1,2 @@
 # This file is used to pin test packages across sunpy coordinated packages
 # Do not remove, even if it's empty!
-
-# https://github.com/scientific-python/pytest-doctestplus/issues/243
-pytest<8.1
