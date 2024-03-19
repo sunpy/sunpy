@@ -18,7 +18,7 @@ examples:
     - asdf-standard-1.6.0
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarecliptic-1.1.0>
-          frame_attributes: {obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'}
+          frame_attributes: {obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'}
 
 allOf:
   - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.1.0"

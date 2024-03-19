@@ -21,7 +21,7 @@ examples:
         !<tag:sunpy.org:sunpy/coordinates/frames/geomagnetic-1.1.0>
           frame_attributes:
             magnetic_model: igrf13
-            obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'
+            obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'
 
 allOf:
   - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.1.0"
