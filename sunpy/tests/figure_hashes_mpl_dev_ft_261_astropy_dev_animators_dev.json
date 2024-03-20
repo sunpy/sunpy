@@ -39,6 +39,7 @@
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "854f60a854e0f3166762c94831445b83f5402a8aa70e34013616f7e4074476fe",
   "sunpy.map.tests.test_plotting.test_draw_contours_aia": "90f83a5c24fdd88a1d14807034ba2b4ee1644d3f53745935eb8e537a2acc2b9a",
   "sunpy.map.tests.test_plotting.test_draw_contours_different_wcs": "9cbb12775ed1da71226dcc500f434bdf0ece76d54894942fb34c1805d8d11de0",
+  "sunpy.map.tests.test_plotting.test_draw_contours_aia_fill": "abd8a02404ddcd6a4490b6b4a7d7bb0987fec7fa74cec9224bf58dcbad19985b",
   "sunpy.map.tests.test_plotting.test_heliographic_peek": "662a24f525b30ce89ba15b7668518f31d439fa8b0c5ba84da2a71bbda31edb9a",
   "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_width_height": "a52dca9100f3f96644e924f283c7ba9bd26db115be3a8e19b91898406d06f9ba",
   "sunpy.map.tests.test_plotting.test_heliographic_quadrangle_top_right": "40591e49e6b32ec3a27b6fc50b9e2fdfcaa9665eca70b6a515dfb9dc7c0b1724",

@@ -1,0 +1,1 @@
+JPEG2000 files are now saved with the correct orientation. Previously they would be vertically flipped when saved.
