@@ -2358,7 +2358,7 @@ class GenericMap(NDData):
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
         if self.wcs is not axes.wcs:
-            if "transfrom" in contour_args:
+            if "transform" in contour_args:
                 transform_orig = contour_args.pop("transform")
             else:
                 transform_orig = axes.get_transform(self.wcs)
