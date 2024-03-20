@@ -228,6 +228,12 @@ def test_draw_contours_different_wcs(aia171_test_map):
 
 
 @figure_test
+def test_draw_contours_aia_fill(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'), fill=True)
+
+
+@figure_test
 def test_heliographic_peek(heliographic_test_map):
     heliographic_test_map.peek()
 
