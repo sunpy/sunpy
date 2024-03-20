@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
+from packaging.version import Version
 
 import astropy.units as u
 import astropy.wcs
@@ -1399,8 +1400,15 @@ def test_contour_units(simple_map):
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
+@pytest.mark.skipif(Version(matplotlib.__version__) < Version("3.6.0"), reason="Fails on old MPL versions, the first with block raises a different error")
+def test_contour_inputs(simple_map):
+    with pytest.raises(ValueError, match='Contour levels must be increasing'):
+        simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
 
-def test_contour_input(simple_map):
+    with pytest.raises(ValueError, match=r'The provided level \(1000.0\) is not smaller than the maximum data value \(8\)'):
+        simple_map.draw_contours(1000 * u.dimensionless_unscaled, fill=True)
+
+
     simple_map.meta['bunit'] = 'm'
 
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
