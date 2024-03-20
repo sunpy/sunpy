@@ -35,6 +35,7 @@ dependencies:
   - jplephem
   - lxml
   - opencv
+  - libopencv *=headless*
   - spiceypy
 
   # Testing
