@@ -206,7 +206,7 @@ def contains_full_disk(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
-    angle = np.arctan(np.abs(edge_of_world.Ty / edge_of_world.Tx))
+    angle = np.abs(np.arctan(np.divide(edge_of_world.Ty, edge_of_world.Tx)))
     coordinate_angles = np.divide(edge_of_world.Tx , np.cos(angle))
     coordinate_angles=np.where(edge_of_world.Tx == 0, edge_of_world.Ty, coordinate_angles) # Fix for division by zero
 
@@ -259,10 +259,10 @@ def coordinate_is_on_solar_disk(coordinates):
     _verify_coordinate_helioprojective(coordinates)
     # Calculate the angle of every pixel from the center of the Sun and compare it the angular
     # radius of the Sun.
-    angle = np.arctan(np.abs(coordinates.Ty / coordinates.Tx))
+    angle = np.abs(np.arctan(np.divide(coordinates.Ty, coordinates.Tx)))
     coordinate_angles = np.divide(coordinates.Tx , np.cos(angle))
     coordinate_angles=np.where(coordinates.Tx == 0, coordinates.Ty, coordinate_angles) # Fix for division by zero
-    
+
     return coordinate_angles < solar_angular_radius(coordinates)
 
 
@@ -293,7 +293,7 @@ def is_all_off_disk(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
-    angle = np.arctan(np.abs(edge_of_world.Ty / edge_of_world.Tx))
+    angle = np.abs(np.arctan(np.divide(edge_of_world.Ty, edge_of_world.Tx)))
     coordinate_angles = np.divide(edge_of_world.Tx , np.cos(angle))
     coordinate_angles=np.where(edge_of_world.Tx == 0, edge_of_world.Ty, coordinate_angles) # Fix for division by zero
 
