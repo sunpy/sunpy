@@ -336,8 +336,8 @@ class JSOCClient(BaseClient):
 
         requests = []
         self.query_args = jsoc_response.query_args
-        supported_protocols = sorted({'fits', 'as-is'})
-        supported_methods = sorted({'url-tar', 'url', 'url-quick'})
+        supported_protocols = sorted(['fits', 'as-is'])
+        supported_methods = sorted(['url-tar', 'url', 'url-quick'])
         for block in jsoc_response.query_args:
 
             ds = self._make_recordset(**block)
@@ -680,16 +680,15 @@ class JSOCClient(BaseClient):
             #
             # Note that whilst it is technically possible to just search by series,
             # this is not allowed here, because some of these would be very large
-            # searches that would make JSOC sad
+            # searches that would make JSOC unhappy with sunpy
             raise ValueError("Time, Wavelength or an explicit PrimeKey must be specified.")
         keys = []
         keyword_info = c.keys(series)
         for key, value in keyword.items():
             if key not in keyword_info:
                 raise ValueError(f"Keyword: '{key}' is not supported by series: {series}")
-            # We have to ensure that any values that are strings are quoted
-            other_value = value['value'] if str(value['value']).isnumeric() else f"'{value['value']}'"
-            keys.append(f"{key}{value['operator']}{other_value}")
+            # We have to ensure that any input values that are strings are quoted
+            keys.append(f"{key}{value['operator']}'{value['value']}'")
         keyword_string = f"[? {' AND '.join(keys)} ?]" if keys else ""
         return f"{series}{primekey_string}{keyword_string}{segment}"
 
