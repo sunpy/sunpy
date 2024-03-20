@@ -5,3 +5,4 @@ This behaviour has been the default for over 4 years and the keyword is no longe
 The plan is to remove this keyword and the older ``sunpy.net.vso.legacy_response.QueryResponse`` class in a sunpy 7.0.
 The keyword `progress` in :meth:`sunpy.net.hek2vso.H2VClient.full_query` has been deprecated and will be removed in sunpy 7.0.
 The keyword `progress` in :meth:`sunpy.net.hek2vso.H2VClient.full_query` has been deprecated and will be removed in sunpy 7.0.
+The keyword `progress` in :meth:`sunpy.net.hek2vso.H2VClient.full_query` has been deprecated and will be removed in sunpy 7.0.
