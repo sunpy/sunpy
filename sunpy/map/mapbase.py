@@ -2755,6 +2755,12 @@ class GenericMap(NDData):
         outmap = GenericMap(output_array, target_wcs.to_header(),
                             plot_settings=self.plot_settings)
 
+        # Check rsun mismatch
+        if self.rsun_meters != outmap.rsun_meters:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
+
         if return_footprint:
             return outmap, footprint
         return outmap
