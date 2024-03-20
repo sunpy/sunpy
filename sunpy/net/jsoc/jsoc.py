@@ -650,7 +650,7 @@ class JSOCClient(BaseClient):
             # This is executed when wavelength has been passed through PrimeKey().
             wavelength = f"{primekey.pop('WAVELNTH', '')}"
         elif not primekey.get('WAVELNTH'):
-            wavelength = f'{int(np.ceil(wavelength.to(u.AA).value))}'
+            wavelength = f'{int(np.ceil(wavelength.to_value(u.AA)))}'
         else:
             # This is executed when wavelength has been passed both through PrimeKey()
             # and Wavelength().

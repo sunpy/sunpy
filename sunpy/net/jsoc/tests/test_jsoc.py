@@ -375,5 +375,5 @@ def test_string_keyword_is_converted_correctly(client):
     responses = client.search(
         a.Time("2014-01-01T00:00", "2014-01-01T00:05"),
         a.jsoc.Series("iris.lev1"), a.jsoc.Keyword("INSTRUME") == "FUV"
-        )
+    )
     assert len(responses) == 6
