@@ -9,6 +9,7 @@ __all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text', '
 class NotTextNodeError(Exception):
     pass
 
+
 def xml_to_dict(xmlstring):
     """
     Converts an XML string to a Python dictionary.
@@ -24,19 +25,22 @@ def xml_to_dict(xmlstring):
 
     Returns
     -------
-    `dict`:
+    `dict`
         The string xml input as a dictionary.
 
     Examples
     --------
-    ::
+
+    .. code-block:: xml
 
         <outer>
             <inner>one</inner>
             <inner>two</inner>
         </outer>
 
-    gives you the dict::
+    gives you the dict:
+
+    .. code-block:: python
 
        {u'outer': {u'inner': u'two'}}
 
@@ -139,15 +143,15 @@ def xml_comments_to_dict(xmlstring):
 
     Returns
     -------
-    `dict`:
+    `dict`
         The comments present in the string xml input as a dictionary.
-    `str`:
+    `str`
         A concatenated string containing all the comments from the 'HISTORY' element
 
     Examples
     --------
 
-    ::
+    .. code-block:: xml
 
         <outer>
             <inner comment = "One">one</inner>
@@ -156,10 +160,11 @@ def xml_comments_to_dict(xmlstring):
             <HISTORY comment = "four">two</inner>
         </outer>
 
-    gives you the dict::
+    gives you the dict and a string:
+
+    .. code-block:: python
 
         {u'inner': 'Two'}
-    and a str::
         u'three four'
     """
     key_comments_dict = {}
@@ -193,4 +198,3 @@ def node_comments_to_dict(node, comments, history):
                 else:
                     comments.update({n.nodeName: n.getAttribute("comment")})
         node_comments_to_dict(n, comments, history)
-
