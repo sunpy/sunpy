@@ -120,6 +120,7 @@ box_origin = SkyCoord(x=box_origin.x,
 
 #############################################################################################
 # Using that origin, we can compute the coordinates of all edges.
+
 edge_coords = []
 for edge in edges:
     edge_coords.append(SkyCoord(x=box_origin.x+u.Quantity([edge[0][0],edge[1][0]]),
