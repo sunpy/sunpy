@@ -170,7 +170,6 @@ ax.hlines(y=ypix_edges,
 ax.legend(loc=2, frameon=False)
 ax.set_xlim(-10, 35)
 ax.set_ylim(-10, 35)
-plt.show()
 
 #############################################################################################
 # Finally, we have all of the pieces of information we need to understand whether a given LOS
