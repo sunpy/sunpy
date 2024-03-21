@@ -27,7 +27,7 @@ from sunpy.coordinates import Heliocentric, Helioprojective
 # We do this by specifying a coordinate in the Heliographic Stonyhurst frame (HGS) and then
 # using that coordinate to define the coordinate frame of the simulation box in a
 # Heliocentric Cartesian (HCC) frame. For more information on all of these frames, see
-# `Thompson (2006) <https://ui.adsabs.harvard.edu/abs/2006A%26A...449..791T/abstract>`_.
+# `Thompson (2006) <https://ui.adsabs.harvard.edu/abs/2006A%26A...449..791T/abstract>`__.
 
 hcc_orientation = SkyCoord(lon=0*u.deg, lat=20*u.deg,
                            radius=sunpy.sun.constants.radius,
