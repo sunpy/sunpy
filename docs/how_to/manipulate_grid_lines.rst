@@ -13,10 +13,12 @@ By default `sunpy.map.GenericMap.plot` draws a grid tracing the lines of heliopr
     :context: close-figs
 
     import matplotlib.pyplot as plt
-    import sunpy.map
-    from sunpy.data.sample import AIA_171_IMAGE
+    import astropy.units as u
 
-    smap = sunpy.map.Map(AIA_171_IMAGE)
+    import sunpy.map
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    smap = sunpy.map.Map(HMI_LOS_IMAGE)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection=smap)
@@ -33,10 +35,12 @@ Since the underlying axes is a `~astropy.visualization.wcsaxes.WCSAxes`, you wil
     :context: close-figs
 
     import matplotlib.pyplot as plt
-    import sunpy.map
-    from sunpy.data.sample import AIA_171_IMAGE
+    import astropy.units as u
 
-    smap = sunpy.map.Map(AIA_171_IMAGE)
+    import sunpy.map
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    smap = sunpy.map.Map(HMI_LOS_IMAGE)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection=smap)
@@ -47,11 +51,38 @@ Since the underlying axes is a `~astropy.visualization.wcsaxes.WCSAxes`, you wil
 
     plt.show()
 
+Changing the appearance of Helioprojective grid
+-----------------------------------------------
+
+As the Helioprojective grid is applied by  `~astropy.visualization.wcsaxes.WCSAxes`, if you want to change the appeerance of the grid lines, you will need to access the ``grid`` method on the axes' object ``coord`` attribute and pass the desired keywords to it:
+
+.. plot::
+    :include-source:
+    :context: close-figs
+
+    import matplotlib.pyplot as plt
+    import astropy.units as u
+
+    import sunpy.map
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    smap = sunpy.map.Map(HMI_LOS_IMAGE)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection=smap)
+
+    smap.plot(axes=ax)
+
+    ax.coords[0].grid(color='yellow', linestyle='solid', alpha=0.5)
+    ax.coords[1].grid(color='red', linestyle='dotted', alpha=0.5)
+
+    plt.show()
+
 Changing the appearance of Heliographic grid
 --------------------------------------------
 
 `sunpy.map.GenericMap.draw_grid` allows users to overlay a Heliographic grid on their solar image plot.
-This method does not explicitly provide many options for  the appearance of the grid lines.
+This method does not explicitly provide many options for the appearance of the grid lines.
 Instead is accepts keyword arguments and transparently passes them onto the underlying infrastructure.
 Therefore to change the width of the lines to say, 0.25, and their style to say, dotted, do the following:
 
@@ -60,10 +91,12 @@ Therefore to change the width of the lines to say, 0.25, and their style to say,
     :context: close-figs
 
     import matplotlib.pyplot as plt
-    import sunpy.map
-    from sunpy.data.sample import AIA_171_IMAGE
+    import astropy.units as u
 
-    smap = sunpy.map.Map(AIA_171_IMAGE)
+    import sunpy.map
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    smap = sunpy.map.Map(HMI_LOS_IMAGE)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection=smap)
