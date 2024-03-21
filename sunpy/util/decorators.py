@@ -269,12 +269,20 @@ def deprecate_positional_args_since(func=None, *, since):
     Using the keyword-only argument syntax in pep 3102, arguments after the
     * will issue a warning when passed as a positional argument.
 
+    Note that when you apply this, you also have to put at * in the signature
+    to create new keyword only parameters!
+
     Parameters
     ----------
     func : callable, default=None
         Function to check arguments on.
     since : str
         The version since when positional arguments will result in error.
+
+    Notes
+    -----
+    Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/utils/validation.py#L1271>`__.
+    Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
     """
     def _inner_deprecate_positional_args(f):
         sig = signature(f)
@@ -288,7 +296,6 @@ def deprecate_positional_args_since(func=None, *, since):
 
         @wraps(f)
         def inner_f(*args, **kwargs):
-            #breakpoint()
             extra_args = len(args) - len(all_args)
             if extra_args <= 0:
                 return f(*args, **kwargs)
@@ -311,8 +318,10 @@ def deprecate_positional_args_since(func=None, *, since):
 
         return inner_f
 
-    return _inner_deprecate_positional_args
+    if func is not None:
+        return _inner_deprecate_positional_args(func)
 
+    return _inner_deprecate_positional_args
 
 _NOT_FOUND = object()
 
