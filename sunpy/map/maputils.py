@@ -8,6 +8,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.visualization import AsymmetricPercentileInterval
 
 from sunpy.coordinates import Helioprojective, sun
 
@@ -19,6 +20,36 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
            'pixelate_coord_path']
+
+
+def _clip_interval(data, clip_interval):
+    """
+    Just a helper function to check the input and return the clip interval.
+    Avoids some code duplication.
+    """
+    if len(clip_interval) != 2:
+        raise ValueError("Clip percentile interval must be specified as two numbers.")
+    clip_percentages = clip_interval.to('%').value
+    vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(data)
+    return vmin, vmax
+
+
+def _handle_norm(norm, imshow_args):
+    """
+    Just a helper function to handle the norm of a map or map sequence.
+    Avoids some code duplication.
+    """
+    msg = ('Cannot manually specify {0}, as the norm '
+            'already has {0} set. To prevent this error set {0} on '
+            '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
+    if 'vmin' in imshow_args:
+        if norm.vmin is not None:
+            raise ValueError(msg.format('vmin'))
+        norm.vmin = imshow_args.pop('vmin')
+    if 'vmax' in imshow_args:
+        if norm.vmax is not None:
+            raise ValueError(msg.format('vmax'))
+        norm.vmax = imshow_args.pop('vmax')
 
 
 def all_pixel_indices_from_map(smap):

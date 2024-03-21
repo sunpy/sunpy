@@ -11,9 +11,9 @@ import numpy as np
 import numpy.ma as ma
 
 import astropy.units as u
-from astropy.visualization import AsymmetricPercentileInterval
 
 from sunpy.map import GenericMap
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import expand_list
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
@@ -282,7 +282,6 @@ class MapSequence:
             Color map to be used in coloring the plot.
             This will override the predefined value in ``plot_settings['cmap']``.
 
-
         Returns
         -------
         `matplotlib.animation.FuncAnimation`
@@ -363,33 +362,15 @@ class MapSequence:
 
             im.set_array(ani_data[i].data)
             im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
-
             norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
 
             if clip_interval is not None:
-                if len(clip_interval) == 2:
-                    clip_percentages = clip_interval.to('%').value
-                    vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(ani_data[i].data)
-                else:
-                    raise ValueError("Clip percentile interval must be specified as two numbers.")
-
+                vmin, vmax = _clip_interval(self.data, clip_interval)
                 norm.vmin=vmin
                 norm.vmax=vmax
+            _handle_norm(norm, kwargs)
 
-            msg = ('Cannot manually specify {0}, as the norm '
-                   'already has {0} set. To prevent this error set {0} on '
-                   '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-            if 'vmin' in kwargs:
-                if norm.vmin is not None:
-                    raise ValueError(msg.format('vmin'))
-                norm.vmin = kwargs.get('vmin')
-            if 'vmax' in kwargs:
-                if norm.vmax is not None:
-                    raise ValueError(msg.format('vmax'))
-                norm.vmax = kwargs.get('vmax')
-
-            # The following explicit call is for bugged versions of Astropy's
-            # ImageNormalize
+            # The following explicit call is for bugged versions of Astropy's ImageNormalize
             norm.autoscale_None(ani_data[i].data)
             im.set_norm(norm)
 

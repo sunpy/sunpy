@@ -29,7 +29,7 @@ import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
-from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
+from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
@@ -43,6 +43,7 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
@@ -2534,27 +2535,12 @@ class GenericMap(NDData):
         imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
-            if len(clip_interval) == 2:
-                clip_percentages = clip_interval.to('%').value
-                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
-            else:
-                raise ValueError("Clip percentile interval must be specified as two numbers.")
-
+            vmin, vmax = _clip_interval(self.data, clip_interval)
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
-        msg = ('Cannot manually specify {0}, as the norm '
-               'already has {0} set. To prevent this error set {0} on '
-               '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
         if (norm := imshow_args.get('norm', None)) is not None:
-            if 'vmin' in imshow_args:
-                if norm.vmin is not None:
-                    raise ValueError(msg.format('vmin'))
-                norm.vmin = imshow_args.pop('vmin')
-            if 'vmax' in imshow_args:
-                if norm.vmax is not None:
-                    raise ValueError(msg.format('vmax'))
-                norm.vmax = imshow_args.pop('vmax')
+            _handle_norm(norm, imshow_args)
 
         if self.mask is None:
             data = self.data
