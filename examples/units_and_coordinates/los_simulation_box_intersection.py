@@ -140,7 +140,6 @@ for edge in edge_coords:
     ax.plot_coord(edge, color='k', ls='-', marker='')
 ax.plot_coord(box_origin, color='r', marker='x')
 ax.plot_coord(hcc_orientation, color='b', marker='x')
-plt.show()
 
 #############################################################################################
 # Let's combine all of these pieces by plotting the lines of sight and the simulation box on
