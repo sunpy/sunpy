@@ -1,12 +1,12 @@
 .. _how-to-manipulate-grid-lines-in-image-plots:
 
-Manipulate Grids Lines in Image Plots
+Manipulate Grids Lines when plotting Map with WCSAxes
 =====================================
 
 Turning Off Helioprojective Grid
 --------------------------------
 
-By default `sunpy.map.Map.plot` draws a grid tracing the lines of helioprojective
+By default `sunpy.map.GenericMap.plot` draws a grid tracing the lines of helioprojective
 latitude and longitude, as below::
 
     >>> import matplotlib.pyplot as plt
@@ -21,8 +21,8 @@ latitude and longitude, as below::
     >>> plt.show()
 
 
-In some cases it may be desirable to remove this grid. This can be done by
-accesing the ``grid`` method on the axes' object ``coord`` attribute::
+In some cases it may be desirable to remove this grid. 
+Since the underlying axes is a WCSAxes, you will need to access the  the ``grid`` method on the axes' object ``coord`` attribute::
 
     >>> fig = plt.figure()
     >>> ax = fig.add_subplot(111, projection=smap)
@@ -31,15 +31,13 @@ accesing the ``grid`` method on the axes' object ``coord`` attribute::
     >>> ax.coords[1].grid(draw_grid=False)  # Disable grid for 2nd axis
     >>> plt.show()
 
-Changing Appearance of Heliocentric Grid
+Changing Appearance of Heliographic Grid
 ----------------------------------------
 
-`sunpy.ma.Map.draw_grid` allows users to overlay a heliocentric grid on their
+`sunpy.map.Map.draw_grid` allows users to overlay a heliographic grid on their
 solar image plot::
 
-    >>> fig = plt.figure()
-    >>> ax = fig.add_subplot(111, projection=smap)
-    >>> smap.plot(ax)
+
 
 This method does not explicitly provide many options for manipulating
 the appearance of the grid lines. Instead is accepts keyword arguments and
