@@ -144,6 +144,7 @@ ax.plot_coord(hcc_orientation, color='b', marker='x')
 #############################################################################################
 # Let's combine all of these pieces by plotting the lines of sight and the simulation box on
 # a single plot. We'll also overlay the pixel grid of our fake image.
+
 fig = plt.figure()
 ax = fig.add_subplot(projection=instrument_map)
 instrument_map.plot(axes=ax, title=False)
