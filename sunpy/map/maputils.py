@@ -206,7 +206,7 @@ def contains_full_disk(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
-    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
+    coordinate_angles = np.arccos(np.cos(edge_of_world.Tx) * np.cos(edge_of_world.Ty))
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
@@ -257,7 +257,7 @@ def coordinate_is_on_solar_disk(coordinates):
     _verify_coordinate_helioprojective(coordinates)
     # Calculate the angle of every pixel from the center of the Sun and compare it the angular
     # radius of the Sun.
-    return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) < solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):
@@ -287,7 +287,7 @@ def is_all_off_disk(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Calculate the distance of the edge of the world in solar radii
-    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
+    coordinate_angles = np.arccos(np.cos(edge_of_world.Tx) * np.cos(edge_of_world.Ty))
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the solar center is
