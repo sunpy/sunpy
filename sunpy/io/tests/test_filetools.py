@@ -106,35 +106,32 @@ def test_read_file__header_ana():
 
 
 @skip_ana
-def test_write_file_ana():
+def test_write_file_ana(tmpdir):
     ana = sunpy.io.read_file(get_test_filepath("test_ana.fz"))[0]
-    sunpy.io.write_file("ana_test_write.fz", ana[0], str(ana[1]))
-    assert os.path.exists("ana_test_write.fz")
+    sunpy.io.write_file(str(tmpdir.join("ana_test_write.fz")), ana[0], str(ana[1]))
+    assert os.path.exists(str(tmpdir.join("ana_test_write.fz")))
     outpair = sunpy.io.read_file(get_test_filepath("test_ana.fz"))
     assert np.all(np.equal(outpair[0][1], ana[1]))
     assert outpair[0][1] == ana[1]
-    os.remove("ana_test_write.fz")
 
 
 @pytest.mark.parametrize('fname', ['aia_171_image.fits',
                                    pathlib.Path('aia_171_image.fits')])
-def test_write_file_fits(fname):
+def test_write_file_fits(fname, tmpdir):
     aiapair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
-    sunpy.io.write_file(fname, aiapair[0], aiapair[1],
+    sunpy.io.write_file(str(tmpdir.join(fname)), aiapair[0], aiapair[1],
                         overwrite=True)
-    assert os.path.exists("aia_171_image.fits")
+    assert os.path.exists(str(tmpdir.join(fname)))
     outpair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
     assert np.all(np.equal(outpair[0], aiapair[0]))
     assert outpair[1] == aiapair[1]
-    os.remove("aia_171_image.fits")
 
 
-def test_write_file_fits_bytes():
+def test_write_file_fits_bytes(tmpdir):
     aiapair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
-    with open("aia_171_image_bytes.fits", 'wb') as fileo:
+    with open(str(tmpdir.join("aia_171_image_bytes.fits")), 'wb') as fileo:
         sunpy.io.write_file(fileo, aiapair[0], aiapair[1], filetype='fits')
-    assert os.path.exists("aia_171_image_bytes.fits")
+    assert os.path.exists(str(tmpdir.join("aia_171_image_bytes.fits")))
     outpair = sunpy.io.read_file(TEST_AIA_IMAGE)[0]
     assert np.all(np.equal(outpair[0], aiapair[0]))
     assert outpair[1] == aiapair[1]
-    os.remove("aia_171_image_bytes.fits")
