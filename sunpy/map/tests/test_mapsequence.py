@@ -235,5 +235,6 @@ def test_save(aia171_test_map, hmi_test_map, tmp_path):
 @figure_test
 def test_map_sequence_plot_clip_interval(aia171_test_map):
     seq = sunpy.map.Map([aia171_test_map, aia171_test_map, aia171_test_map], sequence=True)
-    animation = seq.plot(cmap='Greys', clip_interval=(1,99.5)*u.percent)
+    # We want to blow the image out to make sure it is clipped on the test data
+    animation = seq.plot(clip_interval=(5,75)*u.percent)
     animation._step()
