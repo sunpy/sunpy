@@ -21,7 +21,7 @@ By default `sunpy.map.GenericMap.plot` draws a grid tracing the lines of heliopr
     fig = plt.figure()
     ax = fig.add_subplot(111, projection=smap)
 
-    smap.plot(ax)
+    smap.plot(axes=ax)
 
     plt.show()
 
@@ -41,7 +41,7 @@ Since the underlying axes is a `~astropy.visualization.wcsaxes.WCSAxes`, you wil
     fig = plt.figure()
     ax = fig.add_subplot(111, projection=smap)
 
-    smap.plot(ax)
+    smap.plot(axes=ax)
     ax.coords[0].grid(draw_grid=False)  # Disable grid for 1st axis
     ax.coords[1].grid(draw_grid=False)  # Disable grid for 2nd axis
 
@@ -50,7 +50,7 @@ Since the underlying axes is a `~astropy.visualization.wcsaxes.WCSAxes`, you wil
 Changing the appearance of Heliographic grid
 --------------------------------------------
 
-`sunpy.map.Map.draw_grid` allows users to overlay a Heliographic grid on their solar image plot.
+`sunpy.map.GenericMap.draw_grid` allows users to overlay a Heliographic grid on their solar image plot.
 This method does not explicitly provide many options for  the appearance of the grid lines.
 Instead is accepts keyword arguments and transparently passes them onto the underlying infrastructure.
 Therefore to change the width of the lines to say, 0.25, and their style to say, dotted, do the following:
@@ -68,7 +68,7 @@ Therefore to change the width of the lines to say, 0.25, and their style to say,
     fig = plt.figure()
     ax = fig.add_subplot(111, projection=smap)
 
-    smap.plot(ax)
-    smap.draw_grid(ax, linewidth=0.25, linestyle="dotted")
+    smap.plot(axes=ax)
+    smap.draw_grid(axes=ax, linewidth=0.25, linestyle="dotted")
 
     plt.show()
