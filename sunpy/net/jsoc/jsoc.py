@@ -753,7 +753,7 @@ class JSOCClient(BaseClient):
             query_result = pd.concat([query_result, segment_result],axis=1)
         else:
             query_result = result
-        if result is None or result.empty:
+        if result is None or query_result.empty:
             return astropy.table.Table()
         return astropy.table.Table.from_pandas(query_result)
 
