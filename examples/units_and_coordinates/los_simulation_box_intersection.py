@@ -185,6 +185,7 @@ def is_coord_in_box(box_edges, coord):
     in_z = np.logical_and(coord_hcc.z<box_edges.z.max(), coord_hcc.z>box_edges.z.min())
     return np.all([in_x, in_y, in_z], axis=0)
 
+
 #############################################################################################
 # Next we define another map, using a different orientation from our observer, so we can look
 # at the intersection of the box and the many LOS from a different viewing angle.
