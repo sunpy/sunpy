@@ -131,6 +131,7 @@ for edge in edges:
 #############################################################################################
 # Let's overlay the simulation box on top of our fake map we created earlier to see if things
 # look right.
+
 fig = plt.figure()
 ax = fig.add_subplot(projection=instrument_map)
 instrument_map.plot(axes=ax, title=False)
