@@ -67,7 +67,10 @@ map_indices = sunpy.map.all_pixel_indices_from_map(instrument_map).value.astype(
 map_indices = map_indices.reshape((2, map_indices.shape[1]*map_indices.shape[2]))
 
 #############################################################################################
-# We can then use the WCS of the map to find the associate world coordinate for each pixel coordinate. Note that by default, the "z" or *distance* coordinate in the HPC frame is assumed to lie on the solar surface. As such, for each LOS, we will add a z coordinate that spans from 99% to 101% of the observer radius. This gives us a reasonable range of distances that will intersect our simulation box.
+# We can then use the WCS of the map to find the associate world coordinate for each pixel coordinate.
+# Note that by default, the "z" or *distance* coordinate in the HPC frame is assumed to lie on the solar surface.
+# As such, for each LOS, we will add a z coordinate that spans from 99% to 101% of the observer radius.
+# This gives us a reasonable range of distances that will intersect our simulation box.
 
 lines_of_sight = []
 distance = np.linspace(0.99, 1.01, 10000)*observer.radius
