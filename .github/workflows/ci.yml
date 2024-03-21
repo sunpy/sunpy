@@ -26,7 +26,6 @@ jobs:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
         - linux: py312
     secrets:
@@ -39,7 +38,6 @@ jobs:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
         - windows: py311
         - macos: py310
@@ -88,7 +86,6 @@ jobs:
               - libopenjp2-7
               - graphviz
         - linux: py312-online
-          posargs: -n auto --dist loadgroup --color=yes
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -104,7 +101,6 @@ jobs:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
         - linux: base_deps
         - linux: py311-devdeps
