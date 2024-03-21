@@ -87,7 +87,6 @@ instrument_map.plot(axes=ax, title=False)
 instrument_map.draw_grid(axes=ax, color='k')
 for los in lines_of_sight:
     ax.plot_coord(los[0], color='C0', marker='.', ls='', markersize=1,)
-plt.show()
 
 #############################################################################################
 # The next step is to define our simulation box. We'll choose somewhat arbitrary dimensions
