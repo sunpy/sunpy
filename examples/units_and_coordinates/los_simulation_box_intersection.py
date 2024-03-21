@@ -59,7 +59,6 @@ def make_fake_map(ref_coord):
     return sunpy.map.Map(instrument_data, instrument_header)
 instrument_map = make_fake_map(hcc_orientation.transform_to(frame_hpc))
 
-
 #############################################################################################
 # Now that we have our map representing our fake observation, we can get the coordinates, in
 # pixel space, of the center of each pixel. These will be our lines of sight.
