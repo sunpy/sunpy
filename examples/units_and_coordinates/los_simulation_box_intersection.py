@@ -215,4 +215,5 @@ ax.plot_coord(box_origin, marker='x', color='r')
 ax.plot_coord(hcc_orientation, color='b', marker='x', ls='')
 ax.set_xlim(-10, 35)
 ax.set_ylim(-10, 35)
+
 plt.show()
