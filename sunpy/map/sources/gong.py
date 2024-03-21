@@ -93,9 +93,6 @@ class GONGHalphaMap(GenericMap):
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
                 str(header.get('IMTYPE', '')).startswith('H-ALPHA'))
 
-    @property
-    def date(self):
-        return Time(self.meta.get('date-obs'))
 
     @property
     def scale(self):

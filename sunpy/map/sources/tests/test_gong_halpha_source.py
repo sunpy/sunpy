@@ -37,7 +37,7 @@ def test_date(gong_halpha):
 def test_scale(gong_halpha):
     """Tests the scale property of the GONGHalphaMap map."""
     assert_equal(gong_halpha.scale.axis1, 1.0794939681708389 * (u.arcsec / u.pix))
-    assert_equal(gong_halpha.scale.axis1, 1.0794939681708389 * (u.arcsec / u.pix))
+    assert_equal(gong_halpha.scale.axis2, 1.0794939681708389 * (u.arcsec / u.pix))
 
 
 def test_nickname(gong_halpha):
@@ -53,4 +53,5 @@ def test_earth_location(gong_halpha):
 def test_observer_coordinate(gong_halpha):
     xyz_expected = [146712246479.363, -5563586.169750214, -17605285536.73928] * u.m
     with pytest.warns(AstropyWarning, match='Tried to get polar motions for times after IERS data is valid.'):
-        assert u.isclose(gong_halpha.observer_coordinate.data.xyz, xyz_expected, rtol=1e-8).all()
+        with pytest.warns(AstropyWarning, match='times are outside of range covered by IERS table'):
+            assert u.isclose(gong_halpha.observer_coordinate.data.xyz, xyz_expected, rtol=1e-8).all()
