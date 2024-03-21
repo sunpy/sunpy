@@ -24,15 +24,18 @@ def test_read_header():
     header = _jp2.get_header(AIA_193_JP2)[0]
     assert isinstance(header, FileHeader)
 
+
 @skip_glymur
 def test_read_header_comments():
-    header = jp2.get_header(EUI_174_JP2)[0]
+    header = _jp2.get_header(EUI_174_JP2)[0]
     assert header["KEYCOMMENTS"]['XTENSION'] == "binary table extension"
+
 
 @skip_glymur
 def test_read_header_history():
-    header = jp2.get_header(EUI_174_JP2)[0]
+    header = _jp2.get_header(EUI_174_JP2)[0]
     assert "Last 32 columns removed" in header['HISTORY']
+
 
 @skip_glymur
 def test_read_memmap():
