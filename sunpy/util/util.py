@@ -4,6 +4,7 @@ This module provides general utility functions.
 import os
 import hashlib
 import inspect
+import textwrap
 from io import BytesIO
 from base64 import b64encode
 from shutil import get_terminal_size
@@ -12,8 +13,7 @@ from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
            'expand_list_generator', 'dict_keys_same', 'hash_file', 'get_width',
-           'get_keywords', 'get_set_methods']
-
+           'get_keywords', 'get_set_methods', 'fix_duplicate_notes']
 
 def unique(itr, key=None):
     """
@@ -280,3 +280,40 @@ def _figure_to_base64(fig):
     buf = BytesIO()
     fig.savefig(buf, format='png', facecolor='none')  # works better than transparent=True
     return b64encode(buf.getvalue()).decode('utf-8')
+
+
+def fix_duplicate_notes(subclass_doc, cls_doc):
+    """
+    Returns a new documentation string such that there are notes section duplication in in `~sunpy.map.Map` subclasses.
+
+    Parameters
+    ----------
+    subclass_doc : str
+        The documentation that needs to be appended.
+    cls_doc
+        The original class's documentation.
+
+    Returns
+    -------
+    str
+        Updated documentation that contains no note section duplication.
+    """
+    existing_notes_pos = cls_doc.find('Notes\n    -----')
+    subclass_notes_pos = subclass_doc.find('Notes\n-----')
+    subclass_notes_data = textwrap.indent(subclass_doc[subclass_notes_pos + len('Notes\n-----'):].strip(), "    ")
+    references_pattern = "References\n    ----------"
+    examples_pattern = "Examples\n   -------"
+    start_index = cls_doc.find(references_pattern if references_pattern in cls_doc else examples_pattern)
+    if start_index!=-1:
+        next_pattern_pos = min(pos for pos in [cls_doc.find(references_pattern, start_index), cls_doc.find(examples_pattern, start_index)] if pos != -1)
+        other_patterns = cls_doc[:next_pattern_pos]
+        if existing_notes_pos!=-1:
+            cls_doc = other_patterns + subclass_notes_data.lstrip() + '\n\n    ' + cls_doc[next_pattern_pos:]
+        else:
+            cls_doc = other_patterns + 'Notes\n    -----\n' + subclass_notes_data + '\n\n    ' + cls_doc[next_pattern_pos:]
+    elif existing_notes_pos != -1:
+        cls_doc +="\n"+subclass_notes_data
+    else:
+        cls_doc += textwrap.indent(subclass_doc, "    ")
+
+    return cls_doc
