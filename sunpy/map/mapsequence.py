@@ -365,7 +365,7 @@ class MapSequence:
             norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
 
             if clip_interval is not None:
-                vmin, vmax = _clip_interval(self.data, clip_interval)
+                vmin, vmax = _clip_interval(ani_data[i].data, clip_interval)
                 norm.vmin=vmin
                 norm.vmax=vmax
             _handle_norm(norm, kwargs)
