@@ -1742,6 +1742,8 @@ class GenericMap(NDData):
         new_meta['crval2'] = rotation_center[1].value
         new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
         new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
+        new_meta['NAXIS1'] = new_data.shape[1]
+        new_meta['NAXIS2'] = new_data.shape[0]
 
         # Unpad the array if necessary
         if unpad_x > 0:
