@@ -1,22 +1,45 @@
 """
 This module provides a JPEG 2000 file reader for internal use.
 
-.. warning::
-
-    ``sunpy.io.jp2`` is deprecated, and will be removed in sunpy 4.1. This is
-    because it was designed for internal use only.
+It was developed to read JPEG 2000 files created by the Helioviewer Project
+and not as a general JPEG 2000 file reader.
 """
 import os
-from xml.etree import ElementTree as ET
 
+import lxml.etree as ET
 import numpy as np
 
 from sunpy.io.header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
-from sunpy.util.xml import xml_comments_to_dict, xml_to_dict
 
 __all__ = ['read', 'get_header', 'write']
 
+# TODO: Do we need to do this to the values?
+def _sanative_value(value):
+    if value is None:
+        return
+    if value.isdigit() or value.isnumeric():
+        value = int(value)
+    elif string_is_float(value):
+        value = float(value)
+    # We replace newlines with spaces so when we join the history
+    # it won't be so ugly
+    elif "\n" in value:
+        value = value.replace("\n", " ")
+    return value
+
+def _parse_xml_metadata(xml_data):
+    keycomments = {}
+    final_dict = {}
+    history = []
+    for node in xml_data.xml.getroot().iter():
+        if node.tag in ['HISTORY']:
+            history.append(node.attrib.get('comment', ''))
+            continue
+        if node.text is not None:
+            final_dict[node.tag] = _sanative_value(node.text)
+            keycomments[node.tag] = node.attrib.get('comment', '')
+    return {**final_dict, "HISTORY": "".join(history), 'KEYCOMMENTS': keycomments}
 
 def read(filepath, **kwargs):
     """
@@ -59,26 +82,9 @@ def get_header(filepath):
     # Put import here to speed up sunpy.io import time
     from glymur import Jp2k
     jp2 = Jp2k(filepath)
-    xml_box = [box for box in jp2.box if box.box_id == 'xml ']
-    xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
-    pydict = xml_to_dict(xmlstring)["fits"]
-
-    # Fix types
-    for k, v in pydict.items():
-        if v.isdigit():
-            pydict[k] = int(v)
-        elif string_is_float(v):
-            pydict[k] = float(v)
-
-    # Remove newlines from comment
-    if 'comment' in pydict:
-        pydict['comment'] = pydict['comment'].replace("\n", "")
-
-    # Is this file a Helioviewer Project JPEG2000 file?
-    pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
-    key_comments, history = xml_comments_to_dict(xmlstring)
-    pydict.update({'KEYCOMMENTS': key_comments})
-    pydict.update({'HISTORY': history})
+    # We assume that the header is the first XMLBox in the file
+    xml_box = [box for box in jp2.box if box.box_id == 'xml '][0]
+    pydict = _parse_xml_metadata(xml_box)
     return [FileHeader(pydict)]
 
 
@@ -99,12 +105,7 @@ def header_to_xml(header):
         in the form <key>value</key> derived from the key/value
         pairs in the given header dictionary
     """
-    # glymur uses lxml and will crash if trying to use
-    # python's builtin xml.etree
-    import lxml.etree as ET
-
     fits = ET.Element("fits")
-
     already_added = set()
     for key in header:
         # Some headers span multiple lines and get duplicated as keys
@@ -112,19 +113,15 @@ def header_to_xml(header):
         # a key again, we can assume it was already added to the xml tree.
         if (key in already_added):
             continue
-
         # Add to the set so we don't duplicate entries
         already_added.add(key)
-
         el = ET.SubElement(fits, key)
         data = header.get(key)
         if isinstance(data, bool):
             data = "1" if data else "0"
         else:
             data = str(data)
-
         el.text = data
-
     return fits
 
 
@@ -142,9 +139,6 @@ def generate_jp2_xmlbox(header):
     `XMLBox`
         XML box containing FITS metadata to be used in jp2 headers
     """
-    # glymur uses lxml and will crash if trying to use
-    # python's builtin xml.etree
-    import lxml.etree as ET
     from glymur import jp2box
 
     header_xml = header_to_xml(header)
@@ -176,21 +170,17 @@ def write(fname, data, header, **kwargs):
     """
     from glymur import Jp2k
 
-    tmpname = fname + "tmp.jp2"
+    tmpname = f"{fname}tmp.jp2"
     jp2_data = np.uint8(data)
-
     # The jp2 data is flipped when read in, so we have to flip it back before
     # saving. See https://github.com/sunpy/sunpy/pull/768 for context.
     flipped = np.flip(jp2_data, 0)
     jp2 = Jp2k(tmpname, flipped, **kwargs)
-
     # Append the XML data to the header information stored in jp2.box
     meta_boxes = jp2.box
     target_index = len(meta_boxes) - 1
     fits_box = generate_jp2_xmlbox(header)
     meta_boxes.insert(target_index, fits_box)
-
     # Rewrites the jp2 file on disk with the xml data in the header
     jp2.wrap(fname, boxes=meta_boxes)
-
     os.remove(tmpname)
