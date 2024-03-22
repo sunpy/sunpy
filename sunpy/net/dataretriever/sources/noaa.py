@@ -176,10 +176,8 @@ class SRSClient(GenericClient):
             return 0
 
         parfive.downloader.get_ftp_size = dummy_get_ftp
-
         dl = super().fetch(qres, path=path, overwrite=overwrite,
                            progress=progress, downloader=downloader, wait=wait, **kwargs)
-
         parfive.downloader.get_ftp_size = orig_get_ftp
         return dl
 

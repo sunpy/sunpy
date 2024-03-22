@@ -246,7 +246,7 @@ def test_client_repr(indices_client):
     Repr check
     """
     output = str(indices_client)
-    assert output[:50] == 'sunpy.net.dataretriever.sources.noaa.NOAAIndicesCl'
+    assert output.startswith('sunpy.net.dataretriever.sources.noaa.NOAAIndicesCl')
 
 
 def test_show():
@@ -257,3 +257,13 @@ def test_show():
     assert not allcols.difference(qrshow0.colnames)
     assert qrshow1.colnames == ['Source', 'Instrument']
     assert qrshow0['Instrument'][0] == 'NOAA-Indices'
+
+
+@pytest.mark.remote_data
+def test_srs_aioftp_warning(srs_client, tmpdir, caplog):
+    # For some reason it seems that the getting the size of a file is disabled on the NOAA server hence
+    # the 550 error on these calls.
+    # We now patch the fetch to remove this and we check the log is empty.
+    srs_query = srs_client.search(a.Time('2022-12-15', '2022-12-16'), a.Instrument.srs_table)
+    srs_client.fetch(srs_query, path=tmpdir)
+    assert "aioftp.errors.StatusCodeError: Waiting for ('2xx',) but got 550 [' Permission denied.']" not in caplog.text
