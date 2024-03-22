@@ -7,7 +7,7 @@ import pytest
 
 import astropy.io.fits as fits
 
-from sunpy.data.test import get_test_data_filenames, get_test_filepath
+from sunpy.data.test import get_test_data_filenames, get_test_filepath, write_image_file_from_header_file
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 from sunpy.io import _fits
 from sunpy.util import MetaDict, SunpyMetadataWarning
@@ -17,8 +17,8 @@ TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 TEST_EIT_HEADER = get_test_filepath('EIT_header/efz20040301.000010_s.header')
 TEST_SWAP_HEADER = get_test_filepath('SWAP/resampled1_swap.header')
 TEST_GONG_HEADER = get_test_filepath('gong_synoptic.header')
-# Some of the tests images contain an invalid BLANK keyword
-# ignore the warning raised by this
+TEST_IRIS_SJI_HEADER = get_test_filepath('iris_l2_20130801_074720_4040000014_SJI_1400_t000.header')
+# Some of the tests images contain an invalid BLANK keyword ignore the warning raised by this
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
 
@@ -177,16 +177,20 @@ def test_warn_longkey():
     assert 'BADLONGKEY' not in fits.keys()
 
 
-def test_read_memmap():
-    memmap_data, _ = _fits.read(TEST_AIA_IMAGE, memmap=True)[0]
+@pytest.mark.filterwarnings("ignore:Error validating header for HDU")
+def test_read_memmap(tmpdir):
+    # We use the IRIS one since it contains a BZERO and BSCALE
+    file_path = write_image_file_from_header_file(Path(TEST_IRIS_SJI_HEADER), Path(tmpdir))
+    memmap_data, memmap_header = _fits.read(file_path, memmap=True)[0]
     assert memmap_data.base is not None
     assert isinstance(memmap_data.base, mmap.mmap)
 
-    raw_data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
+    raw_data, raw_header = _fits.read(file_path, memmap=False)[0]
     assert raw_data.base is None
 
-    # Check we get the same data back with scaling
+    # Check we get the same data back
     np.testing.assert_allclose(memmap_data, raw_data)
+    assert memmap_header == raw_header
 
 def test_merge_multiple_comment_history_entries():
     header = fits.Header()
