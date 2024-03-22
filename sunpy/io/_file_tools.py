@@ -23,7 +23,8 @@ except ImportError:
 
 __all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 
-_known_extensions = {
+# File formats supported by sunpy.io
+_KNOWN_EXTENSIONS = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
     ('fz', 'f0'): 'ana'
@@ -38,34 +39,60 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError(f"The Reader sunpy.io.{key} is not available, "
-                              "please check that you have the required dependencies "
-                              "installed.")
+            raise ReaderError(
+                f"The Reader sunpy.io.{key} is not available, "
+                "please check that you have the required dependencies "
+                "installed."
+            )
         return val
 
-
-_readers = Readers({
+# File readers supported by sunpy.io
+_READERS = Readers({
     'fits': fits,
     'jp2': _jp2,
     'ana': ana
 })
 
 
+
 def _read(filepath, function_name, filetype=None, **kwargs):
+    """
+    This functions provides the logic paths for reading a file.
+
+    It is trying to handle, reading files with known extensions and reading files with known readers.
+
+    We also want the detection logic to first try to detect the filetype based on the content and then
+    fallback to using extension.
+
+    Parameters
+    ----------
+    filepath : pathlib.Path, str
+        The file to be read.
+    function_name : {'read' | 'get_header'}
+        The name of the function to call on the reader.
+    filetype : {'jp2' | 'fits' | 'ana'}, optional
+        Supported reader or extension to manually specify the filetype.
+        Supported readers are ('jp2', 'fits', 'ana')
+
+    Returns
+    -------
+    pairs : `list`
+        A list of (data, header) tuples.
+    """
     filepath = str(filepath)
     if filetype is not None:
-        return getattr(_readers[filetype], function_name)(filepath, **kwargs)
+        return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
         readername = detect_filetype(filepath)
-        if readername not in _readers.keys():
+        if readername not in _READERS.keys():
             readername = None
     except UnrecognizedFileTypeError:
         readername = None
-    for extension, name in _known_extensions.items():
+    for extension, name in _KNOWN_EXTENSIONS.items():
         if filepath.endswith(extension) or filetype in extension:
             readername = name
     if readername is not None:
-        return getattr(_readers[readername], function_name)(filepath, **kwargs)
+        return getattr(_READERS[readername], function_name)(filepath, **kwargs)
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
@@ -143,9 +170,9 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     if filetype == 'auto':
         # Get the extension without the leading dot
         filetype = pathlib.Path(fname).suffix[1:]
-    for extension, readername in _known_extensions.items():
+    for extension, readername in _KNOWN_EXTENSIONS.items():
         if filetype in extension:
-            return _readers[readername].write(fname, data, header, **kwargs)
+            return _READERS[readername].write(fname, data, header, **kwargs)
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
 
@@ -155,7 +182,7 @@ def detect_filetype(filepath):
 
     Parameters
     ----------
-    filepath : `str`
+    filepath : `str`, `pathlib.Path`
         Where the file is.
 
     Returns
@@ -163,7 +190,7 @@ def detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
-    if "http" in filepath or "ftp" in filepath:
+    if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
 
     with open(filepath, 'rb') as fp:
@@ -222,10 +249,4 @@ class UnrecognizedFileTypeError(OSError):
 class ReaderError(ImportError):
     """
     Exception to raise when a reader errors.
-    """
-
-
-class InvalidJPEG2000FileExtension(OSError):
-    """
-    Exception to raise when an invalid JPEG2000 file type is encountered.
     """
