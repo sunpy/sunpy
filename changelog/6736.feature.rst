@@ -1,1 +1,1 @@
-:func:`sunpy.io.filetools.read` will now try to detect the filetype based on the content and then fallback to using the file extension.
+:func:`sunpy.io.read_file` will now try to detect the filetype based on the content and then fallback to using the file extension.
