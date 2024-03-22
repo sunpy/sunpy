@@ -83,9 +83,10 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
 
         for i, hdu in enumerate(hdulist):
             try:
-                hdu.data  # access data to force any scaling BSCALE/BZERO to be applied and keyword will be updated
-                header = get_header(hdu)[0]
-                pairs.append(HDPair(hdu.data, header))
+                # Access data to force any BSCALE/BZERO scaling to be applied
+                # which will update the keywords in the header.
+                data = hdu.data
+                pairs.append(HDPair(data, get_header(hdu)[0]))
             except (KeyError, ValueError) as e:
                 message = f"Error when reading HDU {i}. Skipping.\n"
                 for line in traceback.format_tb(sys.exc_info()[2]):
@@ -114,7 +115,7 @@ def get_header(afile):
     if isinstance(afile, fits.HDUList):
         hdulist = afile
         close = False
-    elif isinstance(afile, (fits.PrimaryHDU, fits.hdu.base.ExtensionHDU)):
+    elif isinstance(afile, (fits.PrimaryHDU | fits.hdu.base.ExtensionHDU)):
         hdulist = [afile]
         close = False
     else:

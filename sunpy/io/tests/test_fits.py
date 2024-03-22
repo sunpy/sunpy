@@ -178,13 +178,15 @@ def test_warn_longkey():
 
 
 def test_read_memmap():
-    data, _ = _fits.read(TEST_AIA_IMAGE, memmap=True)[0]
-    assert data.base is not None
-    assert isinstance(data.base, mmap.mmap)
+    memmap_data, _ = _fits.read(TEST_AIA_IMAGE, memmap=True)[0]
+    assert memmap_data.base is not None
+    assert isinstance(memmap_data.base, mmap.mmap)
 
-    data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
-    assert data.base is None
+    raw_data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
+    assert raw_data.base is None
 
+    # Check we get the same data back with scaling
+    np.testing.assert_allclose(memmap_data, raw_data)
 
 def test_merge_multiple_comment_history_entries():
     header = fits.Header()
