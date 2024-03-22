@@ -3,7 +3,7 @@ This module provides XML helper functions.
 """
 from xml.dom.minidom import parseString
 
-__all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text', 'xml_comments_to_dict', 'node_comments_to_dict']
+__all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
 
 
 class NotTextNodeError(Exception):
@@ -127,74 +127,3 @@ def get_node_text(node):
         else:
             raise NotTextNodeError
     return t
-
-def xml_comments_to_dict(xmlstring):
-    """
-    Parses all the XML comments provided in an XML string into a dictionary
-
-    .. warning::
-
-        For elements with the same name, the last value will be taken.
-
-    Parameters
-    ----------
-    xmlstring : `str`
-        A `str` of xml content.
-
-    Returns
-    -------
-    `dict`
-        The comments present in the string xml input as a dictionary.
-    `str`
-        A concatenated string containing all the comments from the 'HISTORY' element
-
-    Examples
-    --------
-
-    .. code-block:: xml
-
-        <outer>
-            <inner comment = "One">one</inner>
-            <inner comment = "Two">two</inner>
-            <HISTORY comment = "three">two</inner>
-            <HISTORY comment = "four">two</inner>
-        </outer>
-
-    gives you the dict and a string:
-
-    .. code-block:: python
-
-        {u'inner': 'Two'}
-        u'three four'
-    """
-    key_comments_dict = {}
-    history = []
-    node_comments_to_dict(parseString(xmlstring), key_comments_dict, history)
-    history = "".join(history).strip()
-    return key_comments_dict, history
-
-
-def node_comments_to_dict(node, comments, history):
-    """
-    Scans through the children of the node and updates the dictionary with their 'Comment'
-    Attributes and list with the same of the 'HISTORY' elements
-
-    Parameters
-    ----------
-    node : `xml.etree.ElementTree.Element`
-        A XML element node.
-    comments: `dict`
-        A dict storing the element name and the comment as key value pairs
-    history: `list`
-        A list storing all the comment attributes for 'HISTORY' elements
-    """
-    for n in node.childNodes:
-        if n.nodeType == n.TEXT_NODE:
-            continue
-        if n.nodeType == n.ELEMENT_NODE:
-            if n.getAttribute("comment"):
-                if n.nodeName == 'HISTORY':
-                    history.append(n.getAttribute("comment"))
-                else:
-                    comments.update({n.nodeName: n.getAttribute("comment")})
-        node_comments_to_dict(n, comments, history)

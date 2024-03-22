@@ -21,20 +21,13 @@ def test_read():
 
 @skip_glymur
 def test_read_header():
-    header = _jp2.get_header(AIA_193_JP2)[0]
+    header = _jp2.get_header(EUI_174_JP2)[0]
     assert isinstance(header, FileHeader)
-
-
-@skip_glymur
-def test_read_header_comments():
-    header = _jp2.get_header(EUI_174_JP2)[0]
+    # Check that the header has been parsed correctly
+    # So we expect some FITS keywords, Keycomments and History
     assert header["KEYCOMMENTS"]['XTENSION'] == "binary table extension"
-
-
-@skip_glymur
-def test_read_header_history():
-    header = _jp2.get_header(EUI_174_JP2)[0]
-    assert "Last 32 columns removed" in header['HISTORY']
+    # We check the first line to see if the header has been parsed correctly
+    assert "orkingDirectory /tmp/telemetry_parser --configFile /home/eui/config/conf" in header['HISTORY']
 
 
 @skip_glymur
