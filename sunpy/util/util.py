@@ -9,7 +9,7 @@ from io import BytesIO
 from base64 import b64encode
 from shutil import get_terminal_size
 from itertools import chain, count
-from collections.abc import Iterable
+from collections.abc import Iterator
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
            'expand_list_generator', 'dict_keys_same', 'hash_file', 'get_width',
@@ -92,12 +92,14 @@ def expand_list(inp):
     ----------
     * https://stackoverflow.com/questions/2185822/expanding-elements-in-a-list/2185971#2185971
     """
-    return [item for item in expand_list_generator(inp)]
+    return list(expand_list_generator(inp))
 
 
 def expand_list_generator(inp):
+    exclude_union = (str | bytes)
+    include_union = (list | tuple | Iterator)
     for item in inp:
-        if not isinstance(item, (str, bytes)) and isinstance(item, Iterable):
+        if not isinstance(item, exclude_union) and isinstance(item, include_union):
             yield from expand_list_generator(item)
         else:
             yield item
