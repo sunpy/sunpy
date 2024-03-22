@@ -1357,10 +1357,7 @@ def test_non_str_key():
 
 def test_updating_of_naxisi_on_rotate(aia171_test_map):
     aia171_test_map_rotated = aia171_test_map.rotate(45 * u.deg, missing=0)
-
-    # Check initial shape
-    assert aia171_test_map.data.shape == (128,128)
-    # Check the updated shape.
+    assert aia171_test_map.data.shape == (128, 128)
     assert aia171_test_map_rotated.meta['NAXIS1'] == 182
     assert aia171_test_map_rotated.meta['NAXIS2'] == 182
 
