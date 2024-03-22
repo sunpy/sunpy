@@ -15,7 +15,6 @@ import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates._transformations import propagate_with_solar_surface
 from sunpy.tests.helpers import figure_test
-from sunpy.util.context_tracker import global_context_tracker
 from sunpy.util.exceptions import SunpyUserWarning
 
 
@@ -132,19 +131,6 @@ def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
         # Reproject with the mismatched rsun
         aia171_test_map.reproject_to(hpc_header)
 
-
-def test_reproject_to_warn_using_global(aia171_test_map, hpc_header):
-    # Enter the context managers
-    global_context_tracker.enter_context('propagate_with_solar_surface')
-    global_context_tracker.enter_context('assume_spherical_screen')
-
-    # Check if a warning is raised if both context managers are used at the same time.
-    with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data."):
-        aia171_test_map.reproject_to(hpc_header)
-
-    # Exit the context managers
-    global_context_tracker.exit_context('propagate_with_solar_surface')
-    global_context_tracker.exit_context('assume_spherical_screen')
 
 def test_reproject_to_warn_using_contexts(aia171_test_map, hpc_header):
     with propagate_with_solar_surface():
