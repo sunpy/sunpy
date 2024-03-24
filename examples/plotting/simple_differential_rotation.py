@@ -23,7 +23,8 @@ from astropy.time import TimeDelta
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
+from sunpy.physics.differential_rotation import solar_rotate_coordinate
+from sunpy.sun.models import diff_rot
 
 ##############################################################################
 # Next lets explore solar differential rotation by replicating Figure 1
