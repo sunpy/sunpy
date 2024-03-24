@@ -1,0 +1,2 @@
+Added a check in `sunpy.physics.differential_rotation.solar_rotate_coordinate` to ensure the input frame has an "observer" attribute before replicating frame 
+attributes, preventing potential issues with frames lacking this attribute.
