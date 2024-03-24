@@ -1355,6 +1355,13 @@ def test_non_str_key():
         sunpy.map.GenericMap(np.zeros((10, 10)), header)
 
 
+def test_updating_of_naxisi_on_rotate(aia171_test_map):
+    aia171_test_map_rotated = aia171_test_map.rotate(45 * u.deg, missing=0)
+    assert aia171_test_map.data.shape == (128, 128)
+    assert aia171_test_map_rotated.meta['NAXIS1'] == 182
+    assert aia171_test_map_rotated.meta['NAXIS2'] == 182
+
+
 def test_wcs_isot(aia171_test_map):
     # Check that a Map WCS returns the time as isot format
     assert aia171_test_map.wcs.to_header()['DATE-OBS'] == '2011-02-15T00:00:00.340'
@@ -1595,7 +1602,7 @@ def test_meta_modifications(aia171_test_map):
     assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
     assert set(aiamap_rot.meta.added_items.keys()) == set(['pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
-    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1', 'naxis1', 'naxis2'])
 
 
 def test_no_wcs_observer_info(heliographic_test_map):
