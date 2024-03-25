@@ -96,10 +96,8 @@ def expand_list(inp):
 
 
 def expand_list_generator(inp):
-    exclude_union = (str | bytes)
-    include_union = (list | tuple | Iterator)
     for item in inp:
-        if not isinstance(item, exclude_union) and isinstance(item, include_union):
+        if isinstance(item, (list | tuple | Iterator)):
             yield from expand_list_generator(item)
         else:
             yield item
