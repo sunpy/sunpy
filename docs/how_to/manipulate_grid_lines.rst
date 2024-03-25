@@ -1,7 +1,8 @@
 .. _how-to-manipulate-grid-lines-in-image-plots:
 
+*****************************************************
 Manipulate grids lines when plotting Map with WCSAxes
-=====================================================
+*****************************************************
 
 Underneath the hood, `sunpy.map.GenericMap.plot` uses `~astropy.visualization.wcsaxes.WCSAxes` to have to ability to plot images in world coordinates.
 This means that sometimes the standard matplotlib methods to manipulate grid lines may not work as expected.
@@ -11,7 +12,7 @@ So you have to access the `~astropy.visualization.wcsaxes.WCSAxes` object to man
 Here we provide a solar example of how to manipulate grid lines when plotting a `~sunpy.map.GenericMap`.
 
 Turning off the Helioprojective grid
-------------------------------------
+====================================
 
 By default `sunpy.map.GenericMap.plot` draws a grid tracing the lines of helioprojective latitude and longitude, as below:
 
@@ -52,7 +53,7 @@ Since the underlying axes is a `~astropy.visualization.wcsaxes.WCSAxes`, you wil
     plt.show()
 
 Changing the appearance of Helioprojective grid
------------------------------------------------
+===============================================
 
 As the Helioprojective grid is applied by  `~astropy.visualization.wcsaxes.WCSAxes`, if you want to change the appeerance of the grid lines, you will need to access the ``grid`` method on the axes' object ``coord`` attribute and pass the desired keywords to it:
 
