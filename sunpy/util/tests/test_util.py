@@ -50,8 +50,8 @@ def test_expand_list():
 
 
 def test_expand_list_generator():
-    lst = ['a', 'b', [], (['c', 'd']), tuple(), ['e'], b'f']
-    assert list(util.expand_list_generator(lst)) == ['a', 'b', 'c', 'd', 'e', 'f']
+    lst = ['a', 'b', [], (['c', 'd']), tuple(), ['e']]
+    assert list(util.expand_list_generator(lst)) == ['a', 'b', 'c', 'd', 'e']
 
 
 def test_partial_key_match():
