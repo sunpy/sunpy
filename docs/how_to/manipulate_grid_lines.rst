@@ -3,6 +3,13 @@
 Manipulate grids lines when plotting Map with WCSAxes
 =====================================================
 
+Underneath the hood, `sunpy.map.GenericMap.plot` uses `~astropy.visualization.wcsaxes.WCSAxes` to have to ability to plot images in world coordinates.
+This means that sometimes the standard matplotlib methods to manipulate grid lines may not work as expected.
+So you have to access the `~astropy.visualization.wcsaxes.WCSAxes` object to manipulate the grid lines.
+
+`Astropy have a guide on how to manipulate grid lines in WCSAxes <https://docs.astropy.org/en/stable/visualization/wcsaxes/index.html>`__.
+Here we provide a solar example of how to manipulate grid lines when plotting a `~sunpy.map.GenericMap`.
+
 Turning off the Helioprojective grid
 ------------------------------------
 
