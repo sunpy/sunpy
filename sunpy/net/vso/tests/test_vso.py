@@ -130,11 +130,10 @@ def test_path(client, tmpdir):
     files = client.fetch(qr, path=tmp_dir)
 
     assert len(files) == 1
-
-    # The construction of a VSO filename is bonkers complex, so there is no
+    # The construction of a VSO filename is BONKERS, so there is no
     # practical way to determine what it should be in this test, so we just
     # put it here.
-    assert "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" in files[0]
+    assert "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" in files[0]
 
 
 @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
@@ -357,10 +356,10 @@ def test_incorrect_content_disposition(client):
     results = client.search(
         core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
         core_attrs.Instrument('mdi'), response_format="table")
-    files = client.fetch(results[0:1])
+    files = client.fetch(results[:1])
 
     assert len(files) == 1
-    assert files[0].endswith("mdi_vw_v_9466622_9466622.tar")
+    assert files[0].endswith("mdi_vw_V_9466622_9466622.tar")
     assert "Content" not in files[0]
 
 
@@ -435,7 +434,7 @@ def test_iris_filename(client):
     url = "https://www.lmsal.com/solarsoft/irisa/data/level2_compressed/2018/01/02/20180102_153155_3610108077/iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz"
     search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"), a.Instrument.iris)
     filename = client.mk_filename(pattern, search_results[0], None, url)
-    assert filename.endswith("iris_l2_20180102_153155_3610108077_sji_1330_t000_fits.gz")
+    assert filename.endswith("iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz")
 
 
 @pytest.mark.remote_data

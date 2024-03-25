@@ -1,3 +1,4 @@
+import re
 import tempfile
 
 import pytest
@@ -78,7 +79,7 @@ def test_post_notify_fail(client):
     responses = client.search(
         a.Time('2020/1/1T00:00:00', '2020/1/1T00:00:45'),
         a.jsoc.Series('hmi.M_45s'))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Email address is invalid or not registered"):
         client.request_data(responses)
 
 
@@ -126,7 +127,7 @@ def test_get_request_tar(client, jsoc_test_email):
 
 @pytest.mark.remote_data
 def test_invalid_query(client):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Series must be specified for a JSOC Query"):
         client.search(a.Time('2020/1/1T01:00:00', '2020/1/1T01:00:45'))
 
 
@@ -134,64 +135,60 @@ def test_invalid_query(client):
 def test_lookup_records_errors(client):
     d1 = {'end_time': astropy.time.Time('2020-01-01 01:00:35'),
           'start_time': astropy.time.Time('2020-01-01 00:00:35')}
-    # Series must be specified for a JSOC Query
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Series must be specified for a JSOC Query"):
         client._lookup_records(d1)
 
-    d1.update({'series': 'aia.lev1_euv_12s'})
-    d1.update({'keys': 123})
-    # Keywords can only be passed as a list or comma-separated strings.
-    with pytest.raises(TypeError):
+    d1['series'] = 'aia.lev1_euv_12s'
+    d1['keys'] = 123
+    with pytest.raises(TypeError, match="Keywords can only be passed as a list or comma-separated strings."):
         client._lookup_records(d1)
-
     d1['keys'] = 'T_OBS'
-    d1.update({'primekey': {'foo': 'bar'}})
-    # Unexpected PrimeKeys were passed.
-    with pytest.raises(ValueError):
+    d1['primekey'] = {'foo': 'bar'}
+    with pytest.raises(ValueError, match=re.escape("Unexpected PrimeKeys were passed. The series aia.lev1_euv_12s supports the following Keywords: ['T_REC', 'WAVELNTH']")):
         client._lookup_records(d1)
 
     del d1['primekey']
-    d1.update({'segment': 123})
-    d1.update({'wavelength': 304*u.AA})
-    # Segments can only be passed as a comma-separated string or a list of strings.
-    with pytest.raises(TypeError):
+    d1['segment'] = 123
+    d1['wavelength'] = 304*u.AA
+    with pytest.raises(TypeError, match="Segments can only be passed as a comma-separated string or a list of strings."):
         client._lookup_records(d1)
 
-    # Unexpected Segments were passed.
-    d1.update({'segment': 'foo'})
-    with pytest.raises(ValueError):
+    d1['segment'] = 'foo'
+    with pytest.raises(ValueError, match=re.escape("Unexpected Segments were passed. The series aia.lev1_euv_12s contains the following Segments ['image', 'spikes']")):
         client._lookup_records(d1)
 
     del d1['segment']
-    d1.update({'series': 'hmi.m_45s'})
+    d1['series'] = 'hmi.m_45s'
     # The series does not support wavelength attribute.
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match=re.escape("The series hmi.m_45s does not support wavelength attribute. The following primekeys are supported ['T_REC', 'CAMERA']")):
         client._lookup_records(d1)
 
 
 @pytest.mark.remote_data
 def test_make_recordset_errors(client):
     d1 = {'series': 'aia.lev1_euv_12s'}
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Time, Wavelength or an explicit PrimeKey must be specified."):
         client._make_recordset(**d1)
 
-    d1.update({
+    d1 |= {
         'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
         'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
-        'primekey': {'T_REC': '2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI'}
-    })
+        'primekey': {
+            'T_REC': '2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI'
+        },
+    }
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("Time attribute has been passed both as a Time() and PrimeKey(). Please provide any one of them or separate them by OR operator.")):
         client._make_recordset(**d1)
 
-    d1.update({
+    d1 |= {
         'end_time': astropy.time.Time('2020-01-01 01:00:35', scale='tai'),
         'start_time': astropy.time.Time('2020-01-01 00:00:35', scale='tai'),
         'wavelength': 604*u.AA,
-        'primekey': {'WAVELNTH': '604'}
-    })
+        'primekey': {'WAVELNTH': '604'},
+    }
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("Wavelength attribute has been passed both as a Wavelength() and PrimeKey(). Please provide any one of them or separate them by OR operator.")):
         client._make_recordset(**d1)
 
 
@@ -204,12 +201,12 @@ def test_make_recordset(client):
     exp = 'aia.lev1_euv_12s[2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
 
-    d1.update({'wavelength': 604*u.AA})
+    d1['wavelength'] = 604*u.AA
     exp = 'aia.lev1_euv_12s[2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI][604]'
     assert client._make_recordset(**d1) == exp
 
     del d1['wavelength']
-    d1.update({'primekey': {'WAVELNTH': '604'}})
+    d1['primekey'] = ({'WAVELNTH': '604'})
     assert client._make_recordset(**d1) == exp
 
     del d1['start_time'], d1['end_time']
@@ -234,13 +231,11 @@ def test_make_recordset(client):
           'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }
-    exp = 'hmi.sharp_720s[4864][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI]'\
-          '{continuum,magnetogram}'
+    exp = 'hmi.sharp_720s[4864][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI]{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
 
-    d1.update({'sample': 300.0})
-    exp = 'hmi.sharp_720s[][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI@300.0s]'\
-          '{continuum,magnetogram}'
+    d1['sample'] = 300.0
+    exp = 'hmi.sharp_720s[][2020.01.01_00:00:35_TAI-2020.01.01_01:00:35_TAI@300.0s]{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
 
 
@@ -250,7 +245,7 @@ def test_request_data_error(client, jsoc_test_email):
         a.Time('2020/1/1T1:00:36', '2020/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify(jsoc_test_email),
         a.jsoc.Protocol('foo'))
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="Protocols other than as-is,fits are not supported."):
         client.request_data(responses)
 
 
@@ -371,3 +366,36 @@ def test_empty_response_fetch(client):
     assert len(response) == 0
     result = client.fetch(response)
     assert len(result) == 0
+
+
+@pytest.mark.remote_data
+def test_string_keyword_is_converted_correctly(client):
+    # Bug reported here:
+    # https://community.openastronomy.org/t/how-to-select-only-fuv-iris-level-1-data-using-jsoc/900
+    responses = client.search(
+        a.Time("2014-01-01T00:00", "2014-01-01T00:05"),
+        a.jsoc.Series("iris.lev1"), a.jsoc.Keyword("INSTRUME") == "FUV"
+    )
+    assert len(responses) == 6
+
+@pytest.mark.remote_data
+def test_segments_query(client):
+    res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
+                        a.jsoc.Series('hmi.sharp_cea_720s'))
+    seg_res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
+                        a.jsoc.Series('hmi.sharp_cea_720s'),
+                        a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
+    # Check that the correct segments are returned and are not returned in the original query
+    assert len(res) == len(seg_res) == 1223
+    assert len(res.columns) != len(seg_res.columns)
+    assert len(seg_res.columns) - len(res.columns) == 2
+    assert "magnetogram" not in res.keys()
+    assert "Bp" not in res.keys()
+    assert "magnetogram" in seg_res.keys()
+    assert "Bp" in seg_res.keys()
+    # SUMS directories are like /SUM93/D1044682184/S00000/Bp.fits
+    # So checking the start and end is the easiest way to check the segments
+    assert seg_res["magnetogram"][0].startswith("/SUM")
+    assert seg_res["Bp"][0].startswith("/SUM")
+    assert seg_res["magnetogram"][0].endswith("magnetogram.fits")
+    assert seg_res["Bp"][0].endswith("Bp.fits")

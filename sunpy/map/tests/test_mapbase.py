@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
+from packaging.version import Version
 
 import astropy.units as u
 import astropy.wcs
@@ -34,8 +35,100 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.util.util import fix_duplicate_notes
 from .conftest import make_simple_map
 from .strategies import matrix_meta
+
+
+def test_notes_combined():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_references():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
+
+def test_notes_combined_no_existing_notes():
+    map_documentation = """
+    Class Info.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_notes_no_references():
+    map_documentation = """
+    Class Info.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):
@@ -1399,8 +1492,15 @@ def test_contour_units(simple_map):
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
+@pytest.mark.skipif(Version(matplotlib.__version__) < Version("3.6.0"), reason="Fails on old MPL versions, the first with block raises a different error")
+def test_contour_inputs(simple_map):
+    with pytest.raises(ValueError, match='Contour levels must be increasing'):
+        simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
 
-def test_contour_input(simple_map):
+    with pytest.raises(ValueError, match=r'The provided level \(1000.0\) is not smaller than the maximum data value \(8\)'):
+        simple_map.draw_contours(1000 * u.dimensionless_unscaled, fill=True)
+
+
     simple_map.meta['bunit'] = 'm'
 
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):

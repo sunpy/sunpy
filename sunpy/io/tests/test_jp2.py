@@ -44,3 +44,8 @@ def test_simple_write(tmpdir):
     # Sanity check that reading back the jp2 returns coherent data
     jp2_readback = _jp2.read(outfile)
     assert header['DATE'] == jp2_readback[0].header['DATE']
+
+    # jp2 requires the data array to have type uint8, so cast the original
+    # data array to uint8 to compare it with the generated jp2 file.
+    original_data = np.uint8(data)
+    assert np.array_equal(original_data, jp2_readback[0].data)

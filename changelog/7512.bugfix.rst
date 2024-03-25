@@ -1,0 +1,1 @@
+Fixed a very minor inaccuracy in three `sunpy.map` utility functions (:func:`~sunpy.map.contains_full_disk`, :func:`~sunpy.map.coordinate_is_on_solar_disk`, and :func:`~sunpy.map.is_all_off_disk`) resulting from the accidental use of the small-angle approximation.

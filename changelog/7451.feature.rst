@@ -1,0 +1,1 @@
+Add a new map source `~sunpy.map.sources.gong.GONGHalphaMap` for GONG H-Alpha data.

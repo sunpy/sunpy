@@ -489,7 +489,7 @@ Here we'll just download the first file in the result:
     >>> downloaded_files = Fido.fetch(results[0, 0]) # doctest: +REMOTE_DATA
     >>> downloaded_files # doctest: +REMOTE_DATA
     <parfive.results.Results object at ...>
-    ['.../aia_lev1_335a_2020_01_01t00_00_00_64z_image_lev1.fits']
+    ['.../aia.lev1.335A_2020_01_01T00_00_00.64Z.image_lev1.fits']
 
 This downloads the files to the location set in the sunpy config file.
 It also returns a `parfive.Results` object ``downloaded_files``, which contains local file paths to all the downloaded data.

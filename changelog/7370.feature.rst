@@ -1,0 +1,1 @@
+Added a warning message for ``rsun`` mismatch in :meth:`~sunpy.map.GenericMap.reproject_to` method.
