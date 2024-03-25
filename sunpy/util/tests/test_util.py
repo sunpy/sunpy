@@ -67,6 +67,9 @@ def test_expand_list_generator(aia171_test_map):
     assert list(util.expand_list_generator([aia171_test_map.data, aia171_test_map.wcs, header])) == [aia171_test_map.data, aia171_test_map.wcs, header]
     assert list(util.expand_list_generator(generator)) == ['c', 'd']
     assert list(util.expand_list_generator(zip_generator)) == ['1', '3', '2', '4']
+    with open(get_test_filepath('aia_171_level1.fits'), 'rb') as f:
+        with open(get_test_filepath('aia_171_level1.fits'), 'rb') as f2:
+            assert list(util.expand_list_generator([f])) == f2.readlines()
 
 def test_partial_key_match():
     test_dict = {('a', 'b', 'c'): (1, 2, 3), ('a', 'b', 'd'): (4, 5, 6), ('e', 'f', 'g'): (8, 7, 9)}
