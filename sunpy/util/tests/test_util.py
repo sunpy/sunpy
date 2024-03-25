@@ -61,9 +61,9 @@ def test_expand_list_generator(aia171_test_map):
     header = fits.getheader(get_test_filepath('aia_171_level1.fits'))
     generator = iter(['c', 'd'])
     zip_generator = zip(['1', '2'], ['3', '4'])
-    first_list = ['a', 'b', [], (['c', 'd']), tuple(), ['e'], b'f']
+    first_list = ['a1234', 'b', [], (['c', 'd']), tuple(), ['e'], b'fghj']
     # The empty list and tuple should be ignored
-    assert list(util.expand_list_generator(first_list)) == ['a', 'b', 'c', 'd', 'e', b'f']
+    assert list(util.expand_list_generator(first_list)) == ['a1234', 'b', 'c', 'd', 'e', b'fghj']
     assert list(util.expand_list_generator([aia171_test_map.data, aia171_test_map.wcs, header])) == [aia171_test_map.data, aia171_test_map.wcs, header]
     assert list(util.expand_list_generator(generator)) == ['c', 'd']
     assert list(util.expand_list_generator(zip_generator)) == ['1', '3', '2', '4']
