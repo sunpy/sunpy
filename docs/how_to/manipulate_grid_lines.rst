@@ -1,8 +1,8 @@
 .. _how-to-manipulate-grid-lines-in-image-plots:
 
-*****************************************************
-Manipulate grids lines when plotting Map with WCSAxes
-*****************************************************
+*****************************************
+Manipulate grids lines when plotting Maps
+*****************************************
 
 Underneath the hood, `sunpy.map.GenericMap.plot` uses `~astropy.visualization.wcsaxes.WCSAxes` to have to ability to plot images in world coordinates.
 This means that sometimes the standard matplotlib methods to manipulate grid lines may not work as expected.
@@ -72,7 +72,7 @@ As the Helioprojective grid is applied by  `~astropy.visualization.wcsaxes.WCSAx
     plt.show()
 
 Changing the appearance of Heliographic grid
---------------------------------------------
+============================================
 
 `sunpy.map.GenericMap.draw_grid` allows users to overlay a Heliographic grid on their solar image plot.
 This method does not explicitly provide many options for the appearance of the grid lines.
