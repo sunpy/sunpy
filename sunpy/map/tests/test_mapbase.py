@@ -1556,13 +1556,11 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
 
+@pytest.mark.remote_data
 @figure_test
-def test_draw_contours_with_transform():
-    # TODO: Use test data
-    from sunpy.data.sample import AIA_171_IMAGE, HMI_LOS_IMAGE
-
-    aia_map = sunpy.map.Map(AIA_171_IMAGE)
-    hmi_map = sunpy.map.Map(HMI_LOS_IMAGE)
+def test_draw_contours_with_transform(sample_171, sample_hmi):
+    aia_map = sunpy.map.Map(sample_171)
+    hmi_map = sunpy.map.Map(sample_hmi)
     fig = plt.figure(figsize=(16, 4))
 
     # Panel 1: Implicit transform
