@@ -679,14 +679,14 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
     @classmethod
     @contextmanager
-    def assume_spherical_screen(cls, center, only_off_disk=False):
+    def assume_spherical_screen(cls, center, only_off_disk=False, radius='center_to_sun'):
         """
         Context manager to interpret 2D coordinates as being on the inside of a spherical screen.
 
-        The radius of the screen is the distance between the specified ``center`` and Sun center.
-        This ``center`` does not have to be the same as the observer location for the coordinate
-        frame.  If they are the same, then this context manager is equivalent to assuming that the
-        helioprojective "zeta" component is zero.
+        The radius of the screen is, by default, the distance between the specified ``center`` and
+        Sun center. This ``center`` does not have to be the same as the observer location for the
+        coordinate frame.  If they are the same, then this context manager is equivalent to assuming
+        that the helioprojective "zeta" component is zero.
 
         This replaces the default assumption where 2D coordinates are mapped onto the surface of the
         Sun.
@@ -698,6 +698,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         only_off_disk : `bool`, optional
             If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
             still mapped onto the surface of the Sun.  Defaults to `False`.
+        radius : `~astropy.units.Quantity`
+            The radius of the spherical screen. The default sets the radius to the distance from the
+            screen center to the Sun.
 
         Examples
         --------
@@ -733,10 +736,13 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         try:
             old_spherical_screen = cls._spherical_screen  # nominally None
 
-            center_hgs = center.transform_to(HeliographicStonyhurst(obstime=center.obstime))
+            if radius == 'center_to_sun':
+                center_hgs = center.transform_to(HeliographicStonyhurst(obstime=center.obstime))
+                radius = center_hgs.radius
+
             cls._spherical_screen = {
                 'center': center,
-                'radius': center_hgs.radius,
+                'radius': radius,
                 'only_off_disk': only_off_disk
             }
             yield
