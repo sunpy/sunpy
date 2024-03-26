@@ -77,7 +77,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame','transform_vector_field']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -467,3 +467,83 @@ def get_fov(instrument, time, *, resolution=100):
                    obstime=obstime,
                    representation_type='unitspherical')
     return fov
+
+def transform_vector_field(components, source_frame, target_frame, from_time, to_time=None):
+    """
+    Transforms a vector field from ``source_frame`` to ``target_frame`` at a specified
+    time using the SPICE toolkit, which provides accurate transformations between
+    different astronomical frames.
+
+    Parameters
+    ----------
+    components : `~astropy.units.Quantity`
+        A 3-element Quantity representing the vector field in the source frame.
+
+    source_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
+        The frame of the input vector field, specified as a frame name, SPICE ID, or Astropy BaseCoordinateFrame.
+
+    target_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
+        The frame to which the vector field will be transformed, specified in the same formats as `source_frame`.
+
+    from_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`
+        The time at which the vector field is defined in the source frame, in any format accepted by `parse_time`.
+
+    to_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`, optional
+        The time at which the vector field should be defined in the target frame. Defaults to `from_time`, resulting in a spatial-only transformation.
+
+    Returns
+    -------
+    `~astropy.units.Quantity`
+        The components of the vector field in the target frame. This is a 3-element Quantity with the same units
+        as the input `components`.
+
+    Examples
+    --------
+    >>> from astropy import units as u
+    >>> from sunpy.coordinates.spice import transform_vector_field
+
+    >>> vec_components = [1, 0, 0] * u.T
+    >>> vec_components  # doctest: +SKIP
+        <Quantity [1., 0., 0.] T>
+
+    >>> source_frame = "J2000"
+    >>> target_frame = "Galactic"
+    >>> from_time = '2001-01-01T00:00:00'
+
+    >>> transformed_vector = transform_vector_field(vec_components, source_frame, target_frame, from_time)
+
+    * The transform_vector_field function will first determine the transformation matrix
+    * that converts vectors from the source frame to the target frame at the specified time.
+    * This transformation matrix is a 3x3 matrix that represents the rotation between the two frames.
+
+    * The function then multiplies this transformation matrix with the input vector.
+    * This is a matrix-vector multiplication, which results in a new vector in the target frame.
+
+    >>> transformed_vector  # doctest: +SKIP
+        <Quantity [−0.054875539, 0.49410945, −0.86766614]T>
+    * transformed_vector is now the input vector expressed in the target frame.
+
+    TODO ? Add an example in the How-To guide
+    """
+    # Convert SunPy frames to SPICE strings
+    source_frame_spice = source_frame.name.upper() if hasattr(source_frame, 'name') else str(source_frame).upper()
+    target_frame_spice = target_frame.name.upper() if hasattr(target_frame, 'name') else str(target_frame).upper()
+
+    # Convert times to parse_time()-compatible format
+    from_time = parse_time(from_time)
+    to_time = parse_time(to_time) if to_time else from_time
+
+    # Convert times to ET
+    from_time_et = _convert_to_et(from_time)
+    to_time_et = _convert_to_et(to_time)
+
+    # Compute state transformation matrix using spiceypy
+    state_matrix = spiceypy.sxform(source_frame_spice, target_frame_spice, to_time_et or from_time_et)
+
+    # The state transformation matrix is a 6x6 matrix. The upper left 3x3 block is the rotation matrix.
+    rotation_matrix = state_matrix[:3, :3]
+
+    # Apply rotation matrix to vector field components
+    transformed_components = rotation_matrix @ components
+
+    return transformed_components
