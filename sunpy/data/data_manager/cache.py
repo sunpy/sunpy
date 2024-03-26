@@ -73,23 +73,33 @@ class Cache:
             if details:
                 break
         if details:
-            if redownload or self._has_expired(details):
-                # if file is in cache and it has to be redownloaded or the cache has expired
-                # then remove the file and delete the details from the storage
-                os.remove(details['file_path'])
-                self._storage.delete_by_key('url', details['url'])
-            else:
+            if not (redownload or self._has_expired(details)):
                 return Path(details['file_path'])
+        try:
 
-        file_path, file_hash, url = self._download_and_hash(urls, namespace)
+            file_path, file_hash, url = self._download_and_hash(urls, namespace)
 
-        self._storage.store({
-            'file_hash': file_hash,
-            'file_path': str(file_path),
-            'url': url,
-            'time': datetime.now().isoformat(),
-        })
-        return file_path
+            if details:
+                if redownload or self._has_expired(details):    
+                    # if file is in cache and it has to be redownloaded or the cache has expired
+                    # then remove the file and delete the details from the storage
+                    os.remove(details['file_path'])
+                    self._storage.delete_by_key('url', details['url'])
+
+            self._storage.store({
+                'file_hash': file_hash,
+                'file_path': str(file_path),
+                'url': url,
+                'time': datetime.now().isoformat(),
+             })
+            
+            return file_path
+        except Exception as e:
+                warn_user(f"{e} \n Due to the above error, you might now be working
+                           with a stale version of the file in cache.")
+                if details:
+                    
+                    return Path(details['file_path'])
 
     def _has_expired(self, details):
         """
