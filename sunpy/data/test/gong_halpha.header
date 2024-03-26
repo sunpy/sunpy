@@ -1,0 +1,149 @@
+SIMPLE  =                    T / Fits standard
+BITPIX  =                   16 / Bits per pixel
+NAXIS   =                    2 / Number of axes
+NAXIS1  =                 2048 / Axis length
+NAXIS2  =                 2048 / Axis length
+GONGKEY1= '--------- Gong Keywords Section 1: Solarsoft ----------------'
+ORIGIN  = 'National Solar Observatory -- GONG' / FITS file originator
+OBS-SITE= 'NSO/GONG NETWORK'   / Instrument Site location
+TELESCOP= 'NSO-GONG'           / NSO/GONG Network
+OBS-URL = 'http://gong.nso.edu' / The GONG website
+DATE    = '2024-02-16T00:00:34' / Date FITS file was generated
+DATE-OBS= '2024-02-16T00:00:02' / Observation start date and time (UTC)
+TIME-OBS= '00:00:02'           / Observation start time (UTC)
+WAVELNTH=             6562.808 / [A] exact wavelength of obs
+WCSNAME = 'Heliocentric-cartesian (approximate)'
+CTYPE1  = 'GONGX   '           / Coordinate Axis Label
+CTYPE2  = 'GONGY   '           / Coordinate Axis Label
+CRVAL1  =              0.00000 / Reference Pixel value
+CRVAL2  =              0.00000 / Reference Pixel value
+CRPIX1  =               1024.0
+CRPIX2  =               1024.0
+EPH_RA  =         -0.540739371 / Right Acension (radians)
+EPH_DEC =         -0.219638138 / Declination (radians)
+IMTYPE  = 'H-ALPHA '
+IMGMN01 =       1798.557739258 / Image mean
+IMGRMS01=       1419.457763672 / Image RMS (Standard Deviation)
+IMGSKW01=         -0.357077062 / Image skewness
+IMGMIN01=                   -4 / Image Min
+IMGMAX01=                 4075 / Image Max
+IMGADV01=       1398.280761719 / Image Average Deviation
+IMGVAR01=    2014860.375000000 / Image Variance
+IMGKUR01=         -1.752291441 / Image Kurtosis
+GONGKEY2= '--------- Gong Keywords Section 2: Raw ----------------'
+IRAF-TLM= '2024-02-16T00:00:34' / Time of last modification
+SITENAME= 'BB      '
+SITE    = 'BB      '
+J2000   =       8811.500038061 / Julian 2000 date
+LST     =           0.49887299 / Local apparent sidereal time (radians)
+ZENITH  =          1.279864672 / Zenith distance (radians)
+RA      =         -0.540739371 / Right ascension (radians)
+DEC     =         -0.219638138 / Declination (radians)
+PA      =         -0.306063955 / Solar position angle (radians)
+HA      =          1.039612361 / Hour angle (radians)
+BETA    =           0.57774989 / Parallactic angle (radians)
+RADIUS  =                  900
+EROLL   =          1.242187927 / Ephemeris roll angle (radians)
+EPITCH  =         -0.476036991 / Ephemeris pitch angle (radians)
+EROTATOR=          1.447722326 / Ephemeris rotator angle (radians)
+ROLL    =          1.245810789 / Roll position (radians)
+PITCH   =         -0.476309028 / Pitch position (radians)
+ROTATOR =          1.447715686 / Rotator position (radians)
+SMEAR   =                0.016 / Camera smear correction parameter
+CAMERA  = 'DVC 4000M-CL'       / Camera Model
+CAMERASN=                 3344 / Camera serial number
+SHARPNSS=  0.00844678586376128 / Image sharpness quantifier (0=Worst,1=Best)
+SKYBRITE=                  196 / Average of square regions in four corners
+ECLIPSE =                    0 / Eclipse Flag (1=TRUE, 0=FALSE)
+HASERNUM= 'QPE101409DH'        / H-Alpha filter Serial Number
+HAVERSN =                  1.6 / H-Alpha filter Firmware Version
+HAERRCOD=                    0 / H-Alpha filter Error Code (0=Good)
+HAONBAND=                    1 / Filter On-Band status (0=Controlling,1=Setpt)
+HACNTRWL=               6562.7 / H-Alpha filter current Center Wavelength
+HAWNGSHF=                 -0.1 / H-Alpha filter Wavelength Shift setting
+HAHT1PWM=                22.58 / Filter Heater 1 Power Module setting (0-100%)
+HALMTPWM=                 1023 / Filter Power Modules Limit setting (<=1023)
+HATEMP1 =                137.6 / Filter Heater 1 current Temperature (F)
+HAVOLTS =                11.33 / H-Alpha filter Current Voltage
+HAPOTPOS=                    0 / Filter calibration Pot Postion (0=Normal)
+HATEMP2 =               156.64 / Filter Heater 2 current Temperature (F)
+HAHT2PWM=                58.65 / Filter Heater 2 Power Module setting (0-100%)
+HATURNON=                  296 / H-Alpha filter Turn On count
+HA-AGE  =              7447630 / H-Alpha filter power-on Age in minutes
+RMS_XROI=                  960 / X starting position of RMS ROI box (GONG)
+RMS_YROI=                  960 / Y starting position of RMS ROI box (GONG)
+RMS_SIZE=                  181 / Axis length of RMS ROI box (GONG)
+RMS     =     3089.76956542187 / RMS of pixel values in RMS ROI box (GONG)
+GTCLMBXC=              1031.33 / Saved getctr values
+GTCLMBYC=              1020.55
+GTCLMBRA=               907.61
+GTCLMBSX=                0.577
+GTCLMBSY=                1.192
+GTCLMBSR=                0.767
+GTC_FLAG=                    0
+GEOLMBXC=             1031.432 / Saved geom values
+GEOLMBYC=             1020.365
+GEOLMBMA=              908.046
+GEOLMBMI=               906.96
+GEOLMBAN=               26.992
+GONGKEY3= '--------- Gong Keywords Section 3: Processing History ------------'
+HALKEY10= 'H Alpha Site Paramters'
+HA-OBJ  =      59.565400614931 / [arcdeg] sun's local hour angle (+=West)
+DEC-OBJ =    -12.5843383275119 / [arcdeg] sun's declination (+=North)
+AZ-OBJ  =                  0.0 / [arcdeg] sun's azimuth
+EL-OBJ  =     16.6691559465046 / [arcdeg] sun's elevation
+ETA-OBJ =     33.1026303111476 / [arcdeg] sun's parallactic angle (+=North)
+SOLAR-P =    -17.5284061063507 / [arcdeg] solar P angle
+SOLAR-B0=    -6.84025359645092 / [arcdeg] solar B0 angle
+SOLAR-L0=     341.742813689823 / [arcdeg] Carrington Longitude
+SOLAR-SR=                 2281 / Synodic Rotation Number
+SOLAR-R =     971.544571353755 / [arcsec] solar semi-diameter
+SITE-LON=    -116.921419993861 / [arcdeg] Site's longitude (+=East)
+SITE-LAT=     34.2603299816775 / [arcdeg] Site's latitude (+=North)
+CCD-ROT =     82.9479987426867 / [arcdeg] CCD camera angle
+BC-METHD= 'radial  '           / Calibration method
+BC-SETPT=               3200.0 / [a/d cts] ROI setpoint (GONG)
+BC-VALUE=               3288.0 / [a/d cts] central intensity (GONG)
+BC-SCALE=     0.97323600973236 / scale factor applied (GONG)
+BC-TILT1=                  0.0 / plane tilt removed:
+BC-TILT2=                  0.0 / plane = t[1] + t[2]*x + t[3]*y
+BC-TILT3=                  0.0
+DISKPRO1=                  0.0 / Disk Profile Coefs.: p[]
+DISKPRO2=                  0.0 / phi = 1 - cosT*ln(1 + 1/cosT)
+DISKPRO3=                  0.0 / profile = p[1] + p[2]*cosT + p[3]*phi
+HALKEY11= 'HAL Processing History'
+GHISTSEQ=                    9
+GHIST000= 'Task GEOM (24/02/16 00:00:32, V2.14)'
+GHIST001= 'edge_type=gradient,opt_type=ols,kern_width=3,usehdr=no,auto_type'
+GHIST002= '=none,xcenter=1031.33,ycenter=1020.55,majorax=907.61,minorax=907'
+GHIST003= '.61,angle=0.,nfit=5,width=30.,pcfit=1.,pixlenx=1.,pixleny=1.,fco'
+GHIST004= 'l=1,lcol=2048,frow=1,lrow=2048,niter=1,finterp_fact=0,output=no,'
+GHIST005= 'resout=no,lmbout=no,updhdr=yes,err_action=skip'
+GHIST006= 'Task LMBCOR (24/02/16 00:00:33, V2.14)'
+GHIST007= 'sw_dim=yes,n1_ot=0,n2_ot=0,sw_pix=no,pxlx_ot=1.,pxly_ot=1.,sw_li'
+GHIST008= 'mb=no,xcenter=1024.,ycenter=1024.,minorax=900.,majorax=900.,angl'
+GHIST009= 'e=0.,pcr=115.,rot=87.548,interp=4'
+FNDLMBXC=               1024.0
+FNDLMBYC=               1024.0
+FNDLMBMI=                900.0
+FNDLMBMA=                900.0
+FNDLMBAN=                  0.0
+PIXLENX =                  1.0
+PIXLENY =                  1.0
+OFFSET  =                  4.6 / Per site camera offset angle (degrees,+=CCW)
+COMMENT
+COMMENT This GONG product is produced by the H Alpha Laminator (HAL).
+COMMENT
+COMMENT See http://gong.nso.edu for more information about GONG.
+COMMENT
+TFACTOR =                  575 / Centering alg limb threshold scale factor
+THRSHCLC=                  405 / Calculated refraction corrected threshold
+LIMBPTCT=                    3 / Number of centering algorithm limb points
+LIMBMEDN=                  343 / Median brightness of limb threshold values
+FIT-X0  =               1034.0 / [pix] raw image ellipse x-center
+FIT-Y0  =               1026.0 / [pix] raw image ellipse y-center
+PLATFORM= 'Linux ncs-gong-proc3-lx'
+FITSWASH= '$RCSfile: halpha_header.kw,v $ $Revision: 1.15 $ $Date: 2011/06/29 1'
+CHECKSUM= '9qaJHoSH9oYHGoYH'   / HDU checksum updated 2024-02-16T00:00:38
+DATASUM = '1007389216'         / data unit checksum updated 2024-02-16T00:00:38
+EXTEND  =                    T / File may contain extensions

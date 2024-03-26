@@ -9,6 +9,7 @@ from packaging.markers import Marker
 from packaging.requirements import Requirement
 
 import sunpy.extern.distro as distro
+from sunpy.util import warn_user
 
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 
@@ -98,6 +99,22 @@ def find_dependencies(package="sunpy", extras=None):
         missing_requirements[package] = format_requirement_string(
             resolve_requirement_versions(package_versions))
     return missing_requirements, installed_requirements
+
+
+def _warn_missing_deps(extras):
+    """
+    Warn a user if they are missing dependencies defined in a given extras.
+    """
+    if (deps := find_dependencies(package="sunpy", extras=extras)):
+        missing_deps = [deps[0][key].split(";")[0].removeprefix("Missing ") for key in deps[0].keys()]
+        if missing_deps:
+            warn_user(f"Importing sunpy.{extras} without its extra dependencies may result in errors.\n"
+                      f"The following packages are not installed:\n{missing_deps}\n"
+                      f"To install sunpy with these dependencies use `pip install sunpy[{extras}]` "
+                      f"or `pip install sunpy[all]` for all extras. \n"
+                      "If you installed sunpy via conda, please report this "
+                      "to the community channel: https://matrix.to/#/#sunpy:openastronomy.org"
+                      )
 
 
 def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):

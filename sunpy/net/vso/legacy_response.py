@@ -4,13 +4,14 @@ from astropy.table import Table
 from sunpy import config
 from sunpy.net.base_client import BaseQueryResponse
 from sunpy.time import TimeRange, parse_time
+from sunpy.util.decorators import deprecated
 from .table_response import iter_sort_response
 
 __all__ = ['QueryResponse']
 
 TIME_FORMAT = config.get("general", "time_format")
 
-
+@deprecated(since="6.0", alternative="sunpy.net.vso.table_response.QueryResponse")
 class QueryResponse(BaseQueryResponse):
     """
     A container for VSO Records returned from VSO Searches.

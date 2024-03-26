@@ -176,7 +176,11 @@ def write(fname, data, header, **kwargs):
 
     tmpname = fname + "tmp.jp2"
     jp2_data = np.uint8(data)
-    jp2 = Jp2k(tmpname, jp2_data, **kwargs)
+
+    # The jp2 data is flipped when read in, so we have to flip it back before
+    # saving. See https://github.com/sunpy/sunpy/pull/768 for context.
+    flipped = np.flip(jp2_data, 0)
+    jp2 = Jp2k(tmpname, flipped, **kwargs)
 
     # Append the XML data to the header information stored in jp2.box
     meta_boxes = jp2.box

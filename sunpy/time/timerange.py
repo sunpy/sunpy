@@ -43,10 +43,13 @@ class TimeRange:
 
     Examples
     --------
+    >>> import numpy as np
+    >>> from astropy.time import TimeDelta
+    >>> import astropy.units as u
     >>> from sunpy.time import TimeRange
+
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
-    >>> import astropy.units as u
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
     >>> TimeRange('2010/03/04 00:10', 400 * u.day)
        <sunpy.time.timerange.TimeRange object at ...>
@@ -58,6 +61,7 @@ class TimeRange:
                576000.0 minutes or
                34560000.0 seconds
     <BLANKLINE>
+
     >>> time1 = '2014/5/5 12:11'
     >>> time2 = '2012/5/5 12:11'
     >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
@@ -66,12 +70,18 @@ class TimeRange:
     >>> time2 in time_range
     False
 
-    >>> import numpy as np
-    >>> from astropy.time import TimeDelta
     >>> time_range = TimeRange('2014/05/05 12:00', '2014/05/10 12:00')
-    >>> np.arange(time_range.start, time_range.end, TimeDelta(24*60*60, format = "sec"))
+    >>> time_arr = np.arange(time_range.start, time_range.end, TimeDelta(24*60*60, format = "sec"))
+    >>> time_arr
     array([<Time object: scale='utc' format='isot' value=2014-05-05T12:00:00.000>,
        <Time object: scale='utc' format='isot' value=2014-05-06T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-07T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-08T12:00:00.000>,
+       <Time object: scale='utc' format='isot' value=2014-05-09T12:00:00.000>],
+      dtype=object)
+
+    >>> time_arr[np.logical_and(time_arr > time_range.start, time_arr < time_range.end)]
+    array([<Time object: scale='utc' format='isot' value=2014-05-06T12:00:00.000>,
        <Time object: scale='utc' format='isot' value=2014-05-07T12:00:00.000>,
        <Time object: scale='utc' format='isot' value=2014-05-08T12:00:00.000>,
        <Time object: scale='utc' format='isot' value=2014-05-09T12:00:00.000>],

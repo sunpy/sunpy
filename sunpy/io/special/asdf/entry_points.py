@@ -37,18 +37,22 @@ def get_extensions():
     from sunpy.io.special.asdf.converters.generic_map import GenericMapConverter
 
     sunpy_converters = [GenericMapConverter()] + SUNPY_FRAME_CONVERTERS
+    # order here is important as asdf will pick the first matching
+    # extension, start with the newest
+    _manifest_uris = [
+        "asdf://sunpy.org/sunpy/manifests/sunpy-1.2.0",
+        "asdf://sunpy.org/sunpy/manifests/sunpy-1.1.0",
+        "asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",
+    ]
+
 
     return [
-        ManifestExtension.from_uri("asdf://sunpy.org/sunpy/manifests/sunpy-1.1.0",
-                                   converters=sunpy_converters,
-                                   # Register that this is a replacement for
-                                   # the old extension so old files still work.
-                                   # without throwing a warning.
-                                   legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"]),
-        ManifestExtension.from_uri("asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",
+        ManifestExtension.from_uri(uri,
                                    converters=sunpy_converters,
                                    # Register that this is a replacement for
                                    # the old extension so old files still work.
                                    # without throwing a warning.
                                    legacy_class_names=["sunpy.io.special.asdf.extension.SunpyExtension"])
+        for uri
+        in _manifest_uris
     ]

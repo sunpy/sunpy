@@ -72,3 +72,12 @@ Arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` are now keywords o
 The arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` have been changed to be keyword only.
 This means that you must now specify the arguments by name, rather than by position and has been done to make the API more consistent.
 This has been raising a warning since sunpy 4.1 and is now an error.
+
+Fix filename sanitization for downloaded files from the VSO
+===========================================================
+
+The `.VSOClient` has been sanitizing filenames to ensure that they are valid on all platforms.
+However, we have now fixed the sanitization to be more conservative, to follow the NFKC Unicode normalization, which is the recommended normalization for filenames on most platforms.
+This now does not replace periods, does not change letter case and do not leave Unicode characters decomposed.
+An example of this is that the filename ``ä`` will now be replaced with ``ä`` instead of being left out of the filename.
+Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" used to be replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" and now will not be.

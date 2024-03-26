@@ -22,11 +22,6 @@ class KCorMap(GenericMap):
     COSMO K-Cor, which was deployed to the Mauna Loa Solar Observatory (MLSO) in Hawaii in
     September 2013, replacing the aging MLSO Mk4 K-coronameter.
 
-    References
-    ----------
-    * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`_
-    * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`_
-
     Notes
     -----
     Observer location: The standard K-Cor metadata does not include the full 3D
@@ -34,6 +29,11 @@ class KCorMap(GenericMap):
     using them is not recommended because the calculation of Carrington longitude
     differs from ``sunpy`` (see :ref:`sunpy-topic-guide-coordinates-carrington`).
     Instead, we assume the default observer location to be the geographic location of MLSO.
+
+    References
+    ----------
+    * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`_
+    * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`_
     """
 
     # MLSO location per Wikipedia (https://en.wikipedia.org/wiki/Mauna_Loa_Solar_Observatory)

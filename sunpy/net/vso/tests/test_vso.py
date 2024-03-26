@@ -24,7 +24,7 @@ from sunpy.net.vso.vso import (
 )
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyConnectionWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyConnectionWarning, SunpyDeprecationWarning, SunpyUserWarning
 
 
 class MockQRRecord:
@@ -122,19 +122,19 @@ def test_path(client, tmpdir):
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
     """
-    qr = client.search(
-        core_attrs.Time('2020-06-07 06:33', '2020-06-07 06:33:13'),
-        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
-        response_format="table")
+    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
+        qr = client.search(
+            core_attrs.Time('2020-06-07 06:33', '2020-06-07 06:33:13'),
+            core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
+            response_format="table")
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir)
 
     assert len(files) == 1
-
-    # The construction of a VSO filename is bonkers complex, so there is no
+    # The construction of a VSO filename is BONKERS, so there is no
     # practical way to determine what it should be in this test, so we just
     # put it here.
-    assert "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" in files[0]
+    assert "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" in files[0]
 
 
 @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
@@ -156,7 +156,8 @@ def test_no_download(client):
     stereo = (core_attrs.Detector('STEREO_B') &
               core_attrs.Instrument('EUVI') &
               core_attrs.Time('1900-01-01', '1900-01-01T00:10:00'))
-    qr = client.search(stereo, response_format="table")
+    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
+        qr = client.search(stereo, response_format="table")
     downloader = MockDownloader()
     res = client.fetch(qr, wait=False, downloader=downloader)
     assert downloader.download_called is False
@@ -166,8 +167,7 @@ def test_no_download(client):
 def test_non_str_instrument():
     # Sanity Check
     assert isinstance(core_attrs.Instrument("lyra"), core_attrs.Instrument)
-
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Instrument names must be strings"):
         core_attrs.Instrument(1234)
 
 
@@ -250,8 +250,9 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
-                        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'), response_format="table")
+    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
+        res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
+                            core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'), response_format="table")
 
     dr = client.make_getdatarequest(res)
 
@@ -337,30 +338,31 @@ def test_VSOClient(mocker):
     Unable to find any valid VSO mirror? Raise ConnectionError
     """
     mocker.patch('sunpy.net.vso.vso.get_online_vso_url', return_value=None)
-    with pytest.raises(ConnectionError):
+    with pytest.raises(ConnectionError, match="No online VSO mirrors could be found."):
         VSOClient()
 
 
 def test_build_client(mocker):
     mocker.patch('sunpy.net.vso.vso.check_connection', return_value=None)
-    with pytest.raises(ConnectionError):
+    with pytest.raises(ConnectionError, match="Can't connect to url http://notathing.com/"):
         build_client(url="http://notathing.com/", port_name="spam")
 
 
 def test_build_client_params():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Both url and port_name must be specified if either is."):
         build_client(url="http://notathing.com/")
 
 
 @pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
-    results = client.search(
-        core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
-        core_attrs.Instrument('mdi'), response_format="table")
-    files = client.fetch(results[0:1])
+    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
+        results = client.search(
+            core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
+            core_attrs.Instrument('mdi'), response_format="table")
+    files = client.fetch(results[:1])
 
     assert len(files) == 1
-    assert files[0].endswith("mdi_vw_v_9466622_9466622.tar")
+    assert files[0].endswith("mdi_vw_V_9466622_9466622.tar")
     assert "Content" not in files[0]
 
 
@@ -402,10 +404,11 @@ def test_vso_repr(client):
 
 @pytest.mark.remote_data
 def test_response_block_properties(client):
-    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
-                        a.Wavelength(171 * u.angstrom),
-                        a.Sample(10 * u.minute),
-                        response_format="legacy")
+    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
+        res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
+                            a.Wavelength(171 * u.angstrom),
+                            a.Sample(10 * u.minute),
+                            response_format="legacy")
     properties = res.response_block_properties()
     assert len(properties) == 0
 
@@ -435,7 +438,7 @@ def test_iris_filename(client):
     url = "https://www.lmsal.com/solarsoft/irisa/data/level2_compressed/2018/01/02/20180102_153155_3610108077/iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz"
     search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"), a.Instrument.iris)
     filename = client.mk_filename(pattern, search_results[0], None, url)
-    assert filename.endswith("iris_l2_20180102_153155_3610108077_sji_1330_t000_fits.gz")
+    assert filename.endswith("iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz")
 
 
 @pytest.mark.remote_data

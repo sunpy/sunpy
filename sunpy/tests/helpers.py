@@ -12,7 +12,8 @@ import pytest
 import astropy
 from astropy.wcs.wcs import FITSFixedWarning
 
-import sunpy.map
+# NOTE: Do not import sunpy subpackages which have optional dependencies here,
+# this module should be importable with no extra dependencies installed.
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
 
@@ -118,6 +119,8 @@ def no_vso(f):
 
 
 def fix_map_wcs(smap):
+    import sunpy.map
+
     # Helper function to fix a WCS and silence the warnings
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=FITSFixedWarning)

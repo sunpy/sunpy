@@ -41,7 +41,7 @@ jobs:
       - name: Run benchmarks for commits since v2.1
         run: taskset -c 0 asv run --skip-existing-successful v3.0.dev..
       - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.8.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.ASV_CI_KEY }}
       - name: Push results

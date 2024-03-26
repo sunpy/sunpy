@@ -86,7 +86,7 @@ class XRSTimeSeries(GenericTimeSeries):
         plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
         data = self.to_dataframe()
         for channel in columns:
-            axes.plot_date(
+            axes.plot(
                 data.index, data[channel], "-", label=plot_settings[channel][1], color=plot_settings[channel][0], lw=2, **kwargs
             )
         axes.set_yscale("log")

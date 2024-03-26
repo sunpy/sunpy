@@ -589,7 +589,8 @@ def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
     A = start_representation.to_cartesian()
     B = end_representation.to_cartesian()
     rotation_axis = A.cross(B)
-    rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
+    # Calculate the angle using both cross and dot products to minimize numerical-precision issues
+    rotation_angle = -np.arctan2(rotation_axis.norm(), A.dot(B))  # negation is required
 
     if rotation_angle.isscalar:
         # This line works around some input/output quirks of Astropy's rotation_matrix()

@@ -1,3 +1,7 @@
+# Check if user has installed the net extras
+from sunpy.util.sysinfo import _warn_missing_deps
+
+_warn_missing_deps('net')
 
 # Import and register the clients but we do not want them in the namespace, we import them as _
 from sunpy.net import base_client as _
