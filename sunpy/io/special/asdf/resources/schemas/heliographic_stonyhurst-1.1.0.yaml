@@ -1,7 +1,7 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "asdf://sunpy.org/schemas/heliographic_stonyhurst-1.1.0"
+id: "asdf://sunpy.org/sunpy/schemas/heliographic_stonyhurst-1.1.0"
 
 title: |
   Represents an heliographic stonyhurst coordinate object from SunPy
@@ -9,12 +9,14 @@ title: |
 examples:
   -
     - A HeliographicStonyhurst frame without data
+    - asdf-standard-1.5.0
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0>
           frame_attributes:
             rsun: !unit/quantity-1.1.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
   -
     - A HeliographicStonyhurst frame with an obstime
+    - asdf-standard-1.5.0
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0>
           frame_attributes:
