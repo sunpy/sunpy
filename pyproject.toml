@@ -53,7 +53,6 @@ Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 [project.optional-dependencies]
 # The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
 asdf = ["asdf-astropy>=0.2.0", "asdf>=2.11.0"]
-dask = ["dask[array]>=2022.5.2"]
 image = [
   "scikit-image>=0.19.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
@@ -67,7 +66,6 @@ map = [
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
   "scipy>=1.8.0,!=1.10.0",
 ]
-opencv = ["opencv-python>=4.6.0.66"]
 net = [
   "beautifulsoup4>=4.11.0",
   "drms>=0.7.1",
