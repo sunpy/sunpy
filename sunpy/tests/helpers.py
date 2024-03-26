@@ -12,8 +12,6 @@ import pytest
 import astropy
 from astropy.wcs.wcs import FITSFixedWarning
 
-import sunpy.map
-
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
@@ -118,6 +116,8 @@ def no_vso(f):
 
 
 def fix_map_wcs(smap):
+    import sunpy.map
+
     # Helper function to fix a WCS and silence the warnings
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=FITSFixedWarning)
