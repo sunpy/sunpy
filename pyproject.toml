@@ -54,7 +54,6 @@ Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 # The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
 asdf = ["asdf-astropy>=0.2.0", "asdf>=2.11.0"]
 image = [
-  "scikit-image>=0.19.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
   "scipy>=1.8.0,!=1.10.0",
 ]
