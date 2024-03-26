@@ -23,24 +23,20 @@ class ADAPTClient(GenericClient):
 
     >>> start_datetime, end_datetime = carrington_time(CR, frames)
     >>> longitude_type = '0'
-    >>> Fido.search(attrs.Instrument('adapt'), attrs.Time(start_datetime, end_datetime), ADAPTLngType(LngType))
-
-
-    Searching for images from 2017-07-20T06:03:05 to 2017-07-20T12:03:05
-
+    >>> res = Fido.search(attrs.Instrument('adapt'), attrs.Time(start_datetime, end_datetime), ADAPTLngType(LngType))
+    <class 'sunpy.net.fido_factory.UnifiedResponse'>
     Results from 1 Provider:
-
+    <BLANKLINE>
     1 Results from the ADAPTClient:
+    <BLANKLINE>
+            Start Time              End Time        Instrument Source Provider ADAPTFileType ... seconds_since_last_obs
+    ----------------------- ----------------------- ---------- ------ -------- ------------- ... ----------------------
+    2017-07-20 08:00:00.000 2017-07-20 08:00:59.999      ADAPT    NSO     GONG             4 ...                      0
+    <BLANKLINE>
+    <BLANKLINE>
 
-        Start Time               End Time        ... minutes_since_last_obs seconds_since_last_obs
-    ----------------------- ----------------------- ... ---------------------- ----------------------
-    2017-07-20 08:00:00.000 2017-07-20 08:00:59.999 ...                     56                      0
-
-
-    Fetching search_result:
-    Files Downloaded: 100%|███████████████████████████████████████████| 1/1 [00:00<00:00,  7.65file/s]
-    Success!
     """
+
     baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
     pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLngType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
 
