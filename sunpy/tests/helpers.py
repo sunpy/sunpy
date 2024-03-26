@@ -12,6 +12,9 @@ import pytest
 import astropy
 from astropy.wcs.wcs import FITSFixedWarning
 
+# NOTE: Do not import sunpy subpackages which have optional dependencies here,
+# this module should be importable with no extra dependencies installed.
+
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
