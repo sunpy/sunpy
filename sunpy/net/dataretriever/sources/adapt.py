@@ -12,19 +12,18 @@ __all__ = ['ADAPTClient']
 
 class ADAPTClient(GenericClient):
     """
-    Provides access to the ADvanced Adaptive Prediction Technique (ADAPT) products of the National Solar Observatory.
+    Provides access to the ADvanced Adaptive Prediction Technique (ADAPT) products of the National Solar Observatory (NSO).
 
-        Searches data hosted by the `National Solar Observatory <https://gong.nso.edu/adapt/maps/gong/>`__
+     `Searches data hosted by the NSO <https://gong.nso.edu/adapt/maps/gong/>`__
 
-        Examples
-        --------
-        >>> from sunpy.net import Fido, attrs as a
-        >>> get_date, get_date_end = adapt_source.carrington_time(CR, frames)
-        >>> LngType = '0' # 0 is carrington, 1 is central meridian
-        >>> print (f"Searching for images from {get_date} to {get_date_end}\n")
-        >>> res = Fido.search(attrs.Instrument('adapt'), attrs.Time(get_date, get_date_end), ADAPTLngType(LngType))
-        >>> print(res)
-        >>> ret =  Fido.fetch(res, path=make_dir())
+    Examples
+    --------
+    >>> from sunpy.net import Fido, attrs as a
+    >>> from sunpy.net.datatretriver.sources.adapat import carrington_time
+
+    >>> start_datetime, end_datetime = carrington_time(CR, frames)
+    >>> longitude_type = '0'
+    >>> Fido.search(attrs.Instrument('adapt'), attrs.Time(start_datetime, end_datetime), ADAPTLngType(LngType))
 
 
     Searching for images from 2017-07-20T06:03:05 to 2017-07-20T12:03:05
