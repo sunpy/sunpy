@@ -107,6 +107,7 @@ jobs:
       posargs: -n auto --color=yes
       envs: |
         - linux: base_deps
+        - linux: core_deps
         - linux: py311-devdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
