@@ -83,7 +83,7 @@ def get_filename(sock, url):
 
     Returns
     -------
-    `str`:
+    `str`
         The filename.
     """
     name = None
