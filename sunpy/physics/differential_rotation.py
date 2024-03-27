@@ -309,8 +309,13 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     # Calculate where the rotated coordinate appears as seen by new observer
     # for the coordinate system of the input coordinate.  The translational
     # motion of the Sun will be ignored for the transformation.
-    frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
+
+    # Check if the original frame has the observer attribute.
+    if "observer" in coordinate.frame.frame_attributes.keys():
+        frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
                                                            obstime=new_observer.obstime)
+    else:
+        frame_newobs = coordinate.frame.replicate_without_data(obstime=new_observer.obstime)
     with transform_with_sun_center():
         return heliographic_rotated.transform_to(frame_newobs)
 
