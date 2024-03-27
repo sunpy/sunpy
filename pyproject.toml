@@ -51,8 +51,8 @@ Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 "Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
 
 [project.optional-dependencies]
-# The list of available extras is also in the installation docs, if you add or remove one please edit it
-# there as well.
+# The list of available extras is also in the installation docs,
+# if you add or remove one please edit it there as well.
 asdf = ["asdf-astropy>=0.2.0", "asdf>=2.11.0"]
 image = [
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
