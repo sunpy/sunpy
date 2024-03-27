@@ -112,7 +112,7 @@ docs = [
   "sphinx-hoverxref>=1.3.0",
 ]
 docs-gallery = [
-  "sunpy[docs,asdf]",
+  "sunpy[docs]",
   "astroquery>=0.4.6",
   "jplephem>=2.14",
   "mplcairo>=0.5",
