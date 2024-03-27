@@ -87,7 +87,7 @@ timeseries = [
 ]
 visualization = ["matplotlib>=3.5.0", "mpl-animators>=1.0.0"]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
-all = ["sunpy[all,jpeg2000,opencv,spice,scikit-image]"]
+all = ["sunpy[core,jpeg2000,opencv,spice,scikit-image]"]
 tests = [
   "sunpy[all,asdf]",
   "hvpy>=1.1.0",
