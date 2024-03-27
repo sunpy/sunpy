@@ -1,10 +1,5 @@
 """
 This module provides a JPEG 2000 file reader for internal use.
-
-.. warning::
-
-    ``sunpy.io.jp2`` is deprecated, and will be removed in sunpy 4.1. This is
-    because it was designed for internal use only.
 """
 import os
 from xml.etree import ElementTree as ET

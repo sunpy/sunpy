@@ -1,9 +1,6 @@
 """
 This module provides a FITS file reader for internal use.
 
-We instead recommend users use the `astropy.io.fits` module,
-which provides more generic functionality to read FITS files.
-
 Notes
 -----
 1. FITS files allow comments to be attached to every value in the header.
