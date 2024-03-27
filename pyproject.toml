@@ -51,11 +51,10 @@ Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 "Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
 
 [project.optional-dependencies]
-# The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
+# The list of available extras is also in the installation docs, if you add or remove one please edit it
+# there as well.
 asdf = ["asdf-astropy>=0.2.0", "asdf>=2.11.0"]
-dask = ["dask[array]>=2022.5.2"]
 image = [
-  "scikit-image>=0.19.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
   "scipy>=1.8.0,!=1.10.0",
 ]
@@ -75,6 +74,7 @@ net = [
   "tqdm>=4.64.0",
   "zeep>=4.1.0",
 ]
+scikit-image = ["scikit-image>=0.19.0"]
 spice = ["spiceypy>=5.0.0"]
 timeseries = [
   "cdflib>=0.4.4,!=1.0.0",
@@ -86,18 +86,19 @@ timeseries = [
   "pandas>=1.4.0",
 ]
 visualization = ["matplotlib>=3.5.0", "mpl-animators>=1.0.0"]
-all = ["sunpy[asdf,dask,image,jpeg2000,map,net,timeseries,visualization]"]
+core = ["sunpy[image,map,net,timeseries,visualization]"]
+all = ["sunpy[all,jpeg2000,opencv,spice,scikit-image]"]
 tests = [
-  "sunpy[all,opencv,spice]",
+  "sunpy[all,asdf]",
   "hvpy>=1.1.0",
-  "jplephem>=2.14",          # For some coordinates tests
+  "jplephem>=2.14",  # For some coordinates tests
   "pytest-astropy>=0.11.0",
   "pytest-mpl>=0.16",
   "pytest-xdist>=3.0.2",
   "pytest>=7.1.0",
 ]
 docs = [
-  "sunpy[all,spice]",           # Importing sunpy.coordinates.spice raises an error if spiceypy is not installed
+  "sunpy[all,asdf]",  # Importing sunpy.coordinates.spice raises an error if spiceypy is not installed
   "hvpy>=1.1.0",
   "ruamel.yaml>=0.17.19",
   "sphinx>=5.0.0",
@@ -111,12 +112,12 @@ docs = [
   "sphinx-hoverxref>=1.3.0",
 ]
 docs-gallery = [
-  "sunpy[docs,opencv]",
+  "sunpy[docs,asdf]",
   "astroquery>=0.4.6",
   "jplephem>=2.14",
   "mplcairo>=0.5",
 ]
-dev = ["sunpy[all,docs,tests]"]
+dev = ["sunpy[docs,tests]"]
 
 [project.entry-points."asdf.resource_mappings"]
 sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
