@@ -27,7 +27,6 @@ EXTRA_DEPS = [
     'pyerfa',
     'python-dateutil',
     'reproject',
-    'scikit-image',
     'scipy',
     'zeep',
 ]
