@@ -1,0 +1,1 @@
+Update ASDF schemas for upcoming ASDF standard 1.6.0.

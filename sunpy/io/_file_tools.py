@@ -23,34 +23,77 @@ except ImportError:
 
 __all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 
-# File formats supported by SunPy
-_known_extensions = {
+# File formats supported by sunpy.io
+_KNOWN_EXTENSIONS = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
     ('fz', 'f0'): 'ana'
 }
 
 
-# Define a dict which raises a custom error message if the value is None
 class Readers(dict):
+    # Define a dict which raises a custom error message if the value is None
     def __init__(self, *args):
         dict.__init__(self, *args)
 
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError(f"The Reader sunpy.io.{key} is not available, "
-                              "please check that you have the required dependencies "
-                              "installed.")
+            raise ReaderError(
+                f"The Reader sunpy.io.{key} is not available, "
+                "please check that you have the required dependencies "
+                "installed."
+            )
         return val
 
-
-# Map the readers
-_readers = Readers({
+# File readers supported by sunpy.io
+_READERS = Readers({
     'fits': fits,
     'jp2': _jp2,
     'ana': ana
 })
+
+
+
+def _read(filepath, function_name, filetype=None, **kwargs):
+    """
+    This functions provides the logic paths for reading a file.
+
+    It is trying to handle, reading files with known extensions and reading files with known readers.
+
+    We also want the detection logic to first try to detect the filetype based on the content and then
+    fallback to using extension.
+
+    Parameters
+    ----------
+    filepath : pathlib.Path, str
+        The file to be read.
+    function_name : {'read' | 'get_header'}
+        The name of the function to call on the reader.
+    filetype : {'jp2' | 'fits' | 'ana'}, optional
+        Supported reader or extension to manually specify the filetype.
+        Supported readers are ('jp2', 'fits', 'ana')
+
+    Returns
+    -------
+    pairs : `list`
+        A list of (data, header) tuples.
+    """
+    filepath = str(filepath)
+    if filetype is not None:
+        return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
+    try:
+        readername = detect_filetype(filepath)
+        if readername not in _READERS.keys():
+            readername = None
+    except UnrecognizedFileTypeError:
+        readername = None
+    for extension, name in _KNOWN_EXTENSIONS.items():
+        if filepath.endswith(extension) or filetype in extension:
+            readername = name
+    if readername is not None:
+        return getattr(_READERS[readername], function_name)(filepath, **kwargs)
+    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
 def read_file(filepath, filetype=None, **kwargs):
@@ -75,20 +118,7 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    # Convert Path objects to strings as the filepath can also be a URL
-    filepath = str(filepath)
-    # Use the explicitly passed filetype
-    if filetype is not None:
-        return _readers[filetype].read(filepath, **kwargs)
-
-    # Go through the known extensions
-    for extension, readername in _known_extensions.items():
-        if filepath.endswith(extension) or filetype in extension:
-            return _readers[readername].read(filepath, **kwargs)
-
-    # If filetype is not apparent from the extension, attempt to detect it
-    readername = _detect_filetype(filepath)
-    return _readers[readername].read(filepath, **kwargs)
+    return _read(filepath, 'read', filetype, **kwargs)
 
 
 def read_file_header(filepath, filetype=None, **kwargs):
@@ -112,18 +142,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
-    # Use the explicitly passed filetype
-    if filetype is not None:
-        return _readers[filetype].get_header(filepath, **kwargs)
-
-    # Go through the known extensions
-    for extension, readername in _known_extensions.items():
-        if filepath.endswith(extension) or filetype in extension:
-            return _readers[readername].get_header(filepath, **kwargs)
-
-    # If filetype is not apparent from the extension, attempt to detect it
-    readername = _detect_filetype(filepath)
-    return _readers[readername].get_header(filepath, **kwargs)
+    return _read(filepath, 'get_header', filetype, **kwargs)
 
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
@@ -151,37 +170,10 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     if filetype == 'auto':
         # Get the extension without the leading dot
         filetype = pathlib.Path(fname).suffix[1:]
-
-    for extension, readername in _known_extensions.items():
+    for extension, readername in _KNOWN_EXTENSIONS.items():
         if filetype in extension:
-            return _readers[readername].write(fname, data, header, **kwargs)
-
-    # Nothing has matched, report an error
+            return _READERS[readername].write(fname, data, header, **kwargs)
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
-
-
-def _detect_filetype(filepath):
-    """
-    Attempts to determine the type of data contained in a file and returns
-    the filetype if the available readers exist within sunpy.io
-
-    Parameters
-    ----------
-    filepath : `str`
-        Where the file is.
-
-    Returns
-    -------
-    filetype : `str`
-        The type of file.
-    """
-
-    if detect_filetype(filepath) in _readers.keys():
-        return detect_filetype(filepath)
-
-    # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError("The requested filetype is not currently "
-                                    "supported by SunPy.")
 
 
 def detect_filetype(filepath):
@@ -190,7 +182,7 @@ def detect_filetype(filepath):
 
     Parameters
     ----------
-    filepath : `str`
+    filepath : `str`, `pathlib.Path`
         Where the file is.
 
     Returns
@@ -198,18 +190,19 @@ def detect_filetype(filepath):
     filetype : `str`
         The type of file.
     """
+    if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
+        return None
 
-    # Open file and read in first two lines
     with open(filepath, 'rb') as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
         fp.seek(0)
         first80 = fp.read(80)
-        # first 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
+        # First 8 bytes of netcdf4/hdf5 to determine filetype as have same sequence
         fp.seek(0)
         first_8bytes = fp.read(8)
-        # first 4 bytes of CDF
+        # First 4 bytes of CDF
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
 
@@ -244,9 +237,7 @@ def detect_filetype(filepath):
     if cdf_magic_number in ['cdf30001', 'cdf26002', '0000ffff']:
         return 'cdf'
 
-    # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError("The requested filetype is not currently "
-                                    "supported by SunPy.")
+    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 
 class UnrecognizedFileTypeError(OSError):
@@ -258,10 +249,4 @@ class UnrecognizedFileTypeError(OSError):
 class ReaderError(ImportError):
     """
     Exception to raise when a reader errors.
-    """
-
-
-class InvalidJPEG2000FileExtension(OSError):
-    """
-    Exception to raise when an invalid JPEG2000 file type is encountered.
     """

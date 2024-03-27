@@ -1,6 +1,6 @@
 %YAML 1.1
 ---
-id: asdf://sunpy.org/manifests/sunpy-1.1.0
+id: asdf://sunpy.org/sunpy/manifests/sunpy-1.1.0
 extension_uri: asdf://sunpy.org/extensions/sunpy-1.1.0
 title: SunPy ASDF Manifest
 description: ASDF schemas and tags for SunPy classes.

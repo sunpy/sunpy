@@ -106,7 +106,7 @@ def _warn_missing_deps(extras):
     Warn a user if they are missing dependencies defined in a given extras.
     """
     if (deps := find_dependencies(package="sunpy", extras=extras)):
-        missing_deps = [deps[0][key].split(";")[0].strip("Missing ") for key in deps[0].keys()]
+        missing_deps = [deps[0][key].split(";")[0].removeprefix("Missing ") for key in deps[0].keys()]
         if missing_deps:
             warn_user(f"Importing sunpy.{extras} without its extra dependencies may result in errors.\n"
                       f"The following packages are not installed:\n{missing_deps}\n"

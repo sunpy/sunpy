@@ -1,7 +1,7 @@
 %YAML 1.1
 ---
 $schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
-id: "asdf://sunpy.org/schemas/generic_map-1.1.0"
+id: "asdf://sunpy.org/sunpy/schemas/generic_map-1.1.0"
 
 title: |
   Represents the SunPy GenericMap object

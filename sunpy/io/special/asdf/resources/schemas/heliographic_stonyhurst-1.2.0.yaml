@@ -1,0 +1,37 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/sunpy/schemas/heliographic_stonyhurst-1.2.0"
+
+title: |
+  Represents an heliographic stonyhurst coordinate object from SunPy
+
+examples:
+  -
+    - A HeliographicStonyhurst frame without data
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.2.0>
+          frame_attributes:
+            rsun: !unit/quantity-1.2.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
+  -
+    - A HeliographicStonyhurst frame with an obstime
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.2.0>
+          frame_attributes:
+            obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'
+            rsun: !unit/quantity-1.2.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
+
+allOf:
+  - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.1.0"
+  - properties:
+      frame_attributes:
+        type: object
+        properties:
+          rsun:
+            tag: "tag:stsci.edu:asdf/unit/quantity-1.*"
+          obstime:
+            tag: "tag:stsci.edu:asdf/time/time-1.*"
+        additionalProperties: False
+...
