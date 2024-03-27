@@ -1,8 +1,5 @@
 """
 This module provides a JPEG 2000 file reader for internal use.
-
-It was developed to read JPEG 2000 files created by the Helioviewer Project
-and not as a general JPEG 2000 file reader.
 """
 import os
 
