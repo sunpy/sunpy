@@ -91,7 +91,7 @@ all = ["sunpy[core,jpeg2000,opencv,spice,scikit-image]"]
 tests = [
   "sunpy[all,asdf]",
   "hvpy>=1.1.0",
-  "jplephem>=2.14",  # For some coordinates tests
+  "jplephem>=2.14",
   "pytest-astropy>=0.11.0",
   "pytest-mpl>=0.16",
   "pytest-xdist>=3.0.2",
