@@ -98,7 +98,7 @@ tests = [
   "pytest>=7.1.0",
 ]
 docs = [
-  "sunpy[all,asdf]",  # Importing sunpy.coordinates.spice raises an error if spiceypy is not installed
+  "sunpy[all,asdf]",
   "hvpy>=1.1.0",
   "ruamel.yaml>=0.17.19",
   "sphinx>=5.0.0",
