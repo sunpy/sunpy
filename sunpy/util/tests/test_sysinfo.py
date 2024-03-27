@@ -14,7 +14,6 @@ EXTRA_DEPS = [
     'astropy',
     'beautifulsoup4',
     'cdflib',
-    'dask',
     'drms',
     'h5netcdf',
     'h5py',
@@ -36,7 +35,6 @@ EXTRA_DEPS = [
 EXTRA_ALL_GROUPS = [
     'all',
     'asdf',
-    'dask',
     'dev',
     'docs-gallery',
     'docs',
