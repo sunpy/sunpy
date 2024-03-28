@@ -6,6 +6,7 @@ and not as a general JPEG 2000 file reader.
 """
 import os
 
+# We have to use lxml as lxml can not  serialize xml from the standard library
 import lxml.etree as ET
 import numpy as np
 
@@ -14,7 +15,7 @@ from sunpy.util.io import HDPair, string_is_float
 
 __all__ = ['read', 'get_header', 'write']
 
-# TODO: Do we need to do this to the values?
+
 def _sanative_value(value):
     if value is None:
         return
@@ -91,7 +92,7 @@ def get_header(filepath):
 def header_to_xml(header):
     """
     Converts image header metadata into an XML Tree that can be inserted into
-    a JP2 file header.
+    a JPEG2000 file header.
 
     Parameters
     ----------
@@ -127,7 +128,7 @@ def header_to_xml(header):
 
 def generate_jp2_xmlbox(header):
     """
-    Generates the JP2 XML box to be inserted into the jp2 file.
+    Generates the JPEG2000 XML box to be inserted into the JPEG2000 file.
 
     Parameters
     ----------
@@ -137,7 +138,7 @@ def generate_jp2_xmlbox(header):
     Returns
     ----------
     `XMLBox`
-        XML box containing FITS metadata to be used in jp2 headers
+        XML box containing FITS metadata to be used in JPEG2000 headers
     """
     from glymur import jp2box
 
@@ -150,32 +151,31 @@ def generate_jp2_xmlbox(header):
 
 def write(fname, data, header, **kwargs):
     """
-    Take a data header pair and write a JP2 file.
+    Take a data header pair and write a JPEG2000 file.
 
     Parameters
     ----------
     fname : `str`
         File name, with extension.
     data : `numpy.ndarray`
-        n-dimensional data array.
+        N-Dimensional data array.
     header : `dict`
         A header dictionary.
     kwargs :
-        Additional keyword args are passed to the glymur.Jp2k constructor
+        Additional keyword args are passed to glymur's Jp2k constructor.
 
     Notes
     -----
-    Saving as a JPEG2000 will cast the data array to
-    uint8 values to support the JPEG2000 format.
+    Saving as a JPEG2000 will cast the data array to uint8 values to support the JPEG2000 format.
     """
     from glymur import Jp2k
 
-    tmpname = f"{fname}tmp.jp2"
+    tmp_filename = f"{fname}tmp.jp2"
     jp2_data = np.uint8(data)
     # The jp2 data is flipped when read in, so we have to flip it back before
     # saving. See https://github.com/sunpy/sunpy/pull/768 for context.
     flipped = np.flip(jp2_data, 0)
-    jp2 = Jp2k(tmpname, flipped, **kwargs)
+    jp2 = Jp2k(tmp_filename, flipped, **kwargs)
     # Append the XML data to the header information stored in jp2.box
     meta_boxes = jp2.box
     target_index = len(meta_boxes) - 1
@@ -183,4 +183,4 @@ def write(fname, data, header, **kwargs):
     meta_boxes.insert(target_index, fits_box)
     # Rewrites the jp2 file on disk with the xml data in the header
     jp2.wrap(fname, boxes=meta_boxes)
-    os.remove(tmpname)
+    os.remove(tmp_filename)
