@@ -4,6 +4,7 @@ from astropy.io import fits
 
 from sunpy.data.test import get_test_filepath
 from sunpy.util import util
+from sunpy.util.parfive_helpers import Results
 
 
 def test_unique():
@@ -62,14 +63,21 @@ def test_expand_list_generator(aia171_test_map):
     generator = iter(['c', 'd'])
     zip_generator = zip(['1', '2'], ['3', '4'])
     first_list = ['a1234', 'b', [], (['c', 'd']), tuple(), ['e'], b'fghj']
+    parfive_results = Results(["a", "b", "c"])
     # The empty list and tuple should be ignored
     assert list(util.expand_list_generator(first_list)) == ['a1234', 'b', 'c', 'd', 'e', b'fghj']
+    # These should not be expanded
     assert list(util.expand_list_generator([aia171_test_map.data, aia171_test_map.wcs, header])) == [aia171_test_map.data, aia171_test_map.wcs, header]
+    # The generators should be expanded
     assert list(util.expand_list_generator(generator)) == ['c', 'd']
     assert list(util.expand_list_generator(zip_generator)) == ['1', '3', '2', '4']
+    # The parfive results should be expanded
+    assert list(util.expand_list_generator(parfive_results)) == ["a", "b", "c"]
+    # The file handles should not be expanded
     with open(get_test_filepath('aia_171_level1.fits'), 'rb') as f:
-        with open(get_test_filepath('aia_171_level1.fits'), 'rb') as f2:
-            assert list(util.expand_list_generator([f])) == f2.readlines()
+        file_contents = f.readlines()
+        f.seek(0)
+        assert list(util.expand_list_generator([f])) == file_contents
 
 def test_partial_key_match():
     test_dict = {('a', 'b', 'c'): (1, 2, 3), ('a', 'b', 'd'): (4, 5, 6), ('e', 'f', 'g'): (8, 7, 9)}
