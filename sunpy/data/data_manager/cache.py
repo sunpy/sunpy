@@ -78,9 +78,13 @@ class Cache:
              })
             return file_path
         except Exception as e:
-                warn_user(f"{e}\n Due to the above error, you might now be working with a stale version of the file in cache.")
-                if present:
-                    return Path(present['file_path'])
+            exception_msg = f"{e} \n"
+            if not present:
+                raise RuntimeError(exception_msg) from e
+            warn_user(
+                f"{exception_msg}Due to the above error, you will be working with a stale version of the file in the cache."
+            )
+            return Path(present['file_path'])
 
     def _has_expired(self, details):
         """
@@ -109,8 +113,7 @@ class Cache:
         sha_hash : `str`
             SHA-256 hash of the file.
         """
-        details = self._storage.find_by_key('file_hash', sha_hash)
-        return details
+        return self._storage.find_by_key('file_hash', sha_hash)
 
     def _get_by_url(self, url):
         """
@@ -121,35 +124,26 @@ class Cache:
         url : `str`
             URL of the file.
         """
-        details = self._storage.find_by_key('url', url)
-        return details
+        return self._storage.find_by_key('url', url)
 
-    def _download_and_hash(self, urls, namespace=''):
+    def _download_and_hash(self, url, namespace=''):
         """
         Downloads the file and returns the path, hash and url it used to download.
 
         Parameters
         ----------
-        urls : `list`
-            List of urls.
+        urls : `str`
+            A url.
 
         Returns
         -------
         `str`, `str`, `str`
             Path, hash and URL of the file.
         """
-        def download(url):
+        try:
             path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
             self._downloader.download(url, path)
             shahash = hash_file(path)
             return path, shahash, url
-
-        errors = []
-        for url in urls:
-            try:
-                return download(url)
-            except Exception as e:
-                warn_user(f"{e}")
-                errors.append(f"{e}")
-        else:
-            raise RuntimeError(errors)
+        except Exception as e:
+            raise RuntimeError(f"{e}") from e
