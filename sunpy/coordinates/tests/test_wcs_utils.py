@@ -9,7 +9,6 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 from astropy.wcs import WCS
 
-import sunpy.map
 from sunpy.coordinates.frames import (
     Heliocentric,
     HeliographicCarrington,
@@ -93,6 +92,8 @@ def test_wcs_aux():
     Make sure auxiliary information round trips properly from coordinate frames
     to WCS and back.
     """
+    pytest.importorskip('sunpy.map')
+    import sunpy.map
     data = np.ones([6, 6], dtype=np.float64)
     header = {'CRVAL1': 0,
               'CRVAL2': 0,

@@ -71,7 +71,7 @@ def test_parse_time_int():
 
 
 def test_parse_time_pandas_timestamp():
-    import pandas
+    pandas = pytest.importorskip('pandas')
 
     ts = pandas.Timestamp(LANDING.datetime)
 
@@ -82,7 +82,7 @@ def test_parse_time_pandas_timestamp():
 
 
 def test_parse_time_nanoseconds():
-    import pandas
+    pandas = pytest.importorskip('pandas')
 
     # Check that nanosecon precision is retained when parsing pandas timestamps
     ts = pandas.Timestamp('2020-07-31 00:00:26.166196864')
@@ -93,7 +93,7 @@ def test_parse_time_nanoseconds():
 
 
 def test_parse_time_pandas_series():
-    import pandas
+    pandas = pytest.importorskip('pandas')
 
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.Series(inputs)
@@ -106,7 +106,7 @@ def test_parse_time_pandas_series():
 
 
 def test_parse_time_pandas_series_2():
-    import pandas
+    pandas = pytest.importorskip('pandas')
 
     inputs = [[datetime(2012, 1, 1, 0, 0), datetime(2012, 1, 2, 0, 0)],
               [datetime(2012, 1, 3, 0, 0), datetime(2012, 1, 4, 0, 0)]]
@@ -121,7 +121,7 @@ def test_parse_time_pandas_series_2():
 
 
 def test_parse_time_pandas_index():
-    import pandas
+    pandas = pytest.importorskip('pandas')
 
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.DatetimeIndex(inputs)

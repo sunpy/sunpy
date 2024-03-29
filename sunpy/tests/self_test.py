@@ -1,5 +1,5 @@
 
-__all__ = ['self_test', '_test_base_deps']
+__all__ = ['self_test']
 
 def _print_missing_dependencies_report(missing, package="sunpy"):
     printed = False
@@ -75,9 +75,11 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     return pytest.main(test_args)
 
 def _test_base_deps():
+    # Provide a way to test the base dependencies without running the full test suite.
     import pytest
 
-    module_names = ["coordinates", "data", "io", "physics", "sun", "time", "util"]
+    # While we can import io and data, they need actual dependencies to test.
+    module_names = ["coordinates", "physics", "sun", "time", "util"]
     test_args = ["-c", "/dev/null", "--pyargs"] + [f"sunpy.{name}" for name in module_names]
     return pytest.main(test_args)
 

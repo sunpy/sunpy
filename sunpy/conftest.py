@@ -190,7 +190,9 @@ def pytest_runtest_teardown(item):
 
 @pytest.fixture(scope="session")
 def aia171_test_map():
+    pytest.importorskip("sunpy.map")
     from sunpy.map import Map
+
     return Map(get_test_filepath('aia_171_level1.fits'))
 
 

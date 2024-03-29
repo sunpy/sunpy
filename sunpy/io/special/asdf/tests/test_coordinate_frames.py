@@ -3,7 +3,6 @@ import os
 import numpy as np
 import pytest
 
-import asdf
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 
@@ -54,6 +53,8 @@ def coordframe_array(request):
 @pytest.mark.filterwarnings('ignore:.*was created with extension.*')
 @asdf_entry_points
 def test_hgc_100():
+    import asdf
+
     # Test that HeliographicCarrington is populated with Earth as the
     # observer when loading a older schema (1.0.0)
     test_file = os.path.join(os.path.dirname(__file__), "hgc_100.asdf")

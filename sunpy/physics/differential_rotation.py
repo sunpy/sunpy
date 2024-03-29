@@ -13,7 +13,8 @@ from sunpy.coordinates import (
     get_earth,
     transform_with_sun_center,
 )
-from sunpy.map import (
+from sunpy.map.header_helper import get_observer_meta
+from sunpy.map.maputils import (
     contains_full_disk,
     coordinate_is_on_solar_disk,
     is_all_off_disk,
@@ -21,7 +22,6 @@ from sunpy.map import (
     map_edges,
     on_disk_bounding_coordinates,
 )
-from sunpy.map.header_helper import get_observer_meta
 from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
 from sunpy.util import expand_list
