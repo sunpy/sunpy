@@ -3,6 +3,7 @@ Screen class definitions for making assumptions about off-disk emission
 """
 import numpy as np
 
+import astropy.units as u
 from astropy.coordinates.representation import CartesianRepresentation, UnitSphericalRepresentation
 
 from sunpy.coordinates import HeliographicStonyhurst
@@ -110,20 +111,25 @@ class PlanarScreen(BaseScreen):
     ----------
     vantage_point : `~astropy.coordinates.SkyCoord`
         The vantage point that defines the orientation of the plane.
+    distance_from_center : `~astropy.units.Quantity`
+        Distance from Sun center of the planar screen. Defaults to 0 such
+        that the plane goes through Sun center
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun.  Defaults to `False`.
     """
 
-    def __init__(self, vantage_point, **kwargs):
+    @u.quantity_input
+    def __init__(self, vantage_point, distance_from_center: u.m=0*u.m, **kwargs):
         super().__init__('planar', **kwargs)
         self.vantage_point = vantage_point
+        self.distance_from_center = distance_from_center
 
     def calculate_distance(self, frame):
         direction = self.vantage_point.transform_to(frame).cartesian
         direction = CartesianRepresentation(1, 0, 0) * frame.observer.radius - direction
         direction /= direction.norm()
-        d_from_plane = frame.observer.radius * direction.x
+        d_from_plane = (frame.observer.radius - self.distance_from_center) * direction.x
         rep = frame.represent_as(UnitSphericalRepresentation)
         distance = d_from_plane / rep.dot(direction)
         return distance
