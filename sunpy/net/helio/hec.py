@@ -152,6 +152,8 @@ class HECClient(BaseClient):
             if isinstance(elem, a.Time):
                 qrdict['Time'] = elem
             elif isinstance(elem, ha.MaxRecords):
+                if elem.value > 20000:
+                    raise ValueError("The maximum allowed value for `a.helio.MaxRecords` is 20000.")
                 qrdict['max_records'] = elem.value
             elif isinstance(elem, ha.TableName):
                 qrdict['table_name'] = elem.value
@@ -173,10 +175,16 @@ class HECClient(BaseClient):
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
         table = HECResponse(results.to_table(), client=self)
-        if len(table) == max_records == 500:
-            warn_user("Number of results is the same as the default `max_records` of 500. "
-                      "It is possible your query has been truncated. "
-                      "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
+        if len(table) == max_records:
+            if max_records == 500:
+                # 500 is the default value for max_records
+                warn_user("Number of results is the same as the default `max_records` of 500. "
+                          "It is possible your query has been truncated. "
+                          "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
+            else:
+                warn_user("Number of results is the same as the `a.helio.MaxRecords` limit of " + str(max_records) +
+                          ". It is possible your query has been truncated. "
+                          "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
         return table
 
     def get_table_names(self):
