@@ -36,70 +36,51 @@ class Cache:
         self._cache_dir = Path(cache_dir)
         self._expiry = expiry if expiry is None else TimeDelta(expiry)
 
-    def download(self, urls, namespace='', redownload=False):
+    def download(self, url, namespace='', redownload=False):
         """
         Downloads the files from the urls.
 
-        The overall flow of this function is:
-            1. If ``redownload``: Download, update cache and return file path.
-            2. If not ``redownload``: Check cache,
-                i. If present in cache:
-                    - If cache has expired, remove the entry from cache, download and add to cache
-                    - If cache has not expired, return the path
-
         Parameters
         ----------
-        urls : `list` or `str`
-            A list of urls or a single url.
-        redownload : `bool`
+        urls : `str`
+            A single url.
+        namespace : `str`, optional
+            A namespace to be used for the file name.
+            Defaults to an empty string.
+        redownload : `bool`, optional
             Whether to skip cache and redownload.
+            Defaults to `False`.
 
         Returns
         -------
-        `pathlib.PosixPath`
+        `pathlib.Path`
             Path to the downloaded file.
         """
-        if isinstance(urls, str):
-            urls = [urls]
-        # Program flow
+        # Logic flow
         # 1. If redownload: Download, update cache and return file path
         # 2. If not redownload: Check cache,
         #    i. If present in cache:
-        #        - If cache expired, remove entry from cache, download and add to cache
+        #        - If cache expired, download and add to cache and remove entry from cache
         #        - If cache not expired, return path
-        details = None
-        for url in urls:
-            details = self._get_by_url(url)
-            if details:
-                break
-        if details:
-            if not (redownload or self._has_expired(details)):
-                return Path(details['file_path'])
+        present = self._get_by_url(url)
+        if present and not redownload and not self._has_expired(present):
+            return Path(present['file_path'])
         try:
-
-            file_path, file_hash, url = self._download_and_hash(urls, namespace)
-
-            if details:
-                if redownload or self._has_expired(details):    
-                    # if file is in cache and it has to be redownloaded or the cache has expired
-                    # then remove the file and delete the details from the storage
-                    os.remove(details['file_path'])
-                    self._storage.delete_by_key('url', details['url'])
-
+            file_path, file_hash, url = self._download_and_hash(url, namespace)
+            if present and (redownload or self._has_expired(present)):
+                os.remove(present['file_path'])
+                self._storage.delete_by_key('url', present['url'])
             self._storage.store({
                 'file_hash': file_hash,
                 'file_path': str(file_path),
                 'url': url,
                 'time': datetime.now().isoformat(),
              })
-            
             return file_path
         except Exception as e:
-                warn_user(f"{e} \n Due to the above error, you might now be working
-                           with a stale version of the file in cache.")
-                if details:
-                    
-                    return Path(details['file_path'])
+                warn_user(f"{e}\n Due to the above error, you might now be working with a stale version of the file in cache.")
+                if present:
+                    return Path(present['file_path'])
 
     def _has_expired(self, details):
         """
