@@ -1,10 +1,8 @@
 import numpy as np
 import pytest
 
-import asdf
 import astropy.units as u
 
-import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import asdf_entry_points
 from .helpers import roundtrip_object
@@ -25,19 +23,13 @@ def assert_roundtrip_map(old):
     assert old.unit == new.unit
 
 
-@pytest.fixture
-def aia171_test_map():
-    aia_path = get_test_filepath("aia_171_level1.fits")
-    return sunpy.map.Map(aia_path)
-
-
 @asdf_entry_points
-def test_genericmap_basic(aia171_test_map, tmpdir):
+def test_genericmap_basic(aia171_test_map):
     assert_roundtrip_map(aia171_test_map)
 
 
 @asdf_entry_points
-def test_genericmap_mask(aia171_test_map, tmpdir):
+def test_genericmap_mask(aia171_test_map):
     mask = np.zeros_like(aia171_test_map.data)
     mask[10, 10] = 1
     aia171_test_map.mask = mask
@@ -47,6 +39,10 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
 
 @asdf_entry_points
 def test_load_100_file_with_shift():
+    import asdf
+    pytest.importorskip("sunpy.map")
+    import sunpy.map
+
     fname = get_test_filepath("aiamap_shift_genericmap_1.0.0.asdf")
     with asdf.open(fname, copy_arrays=True) as af:
         aiamap = af['object']
@@ -58,6 +54,10 @@ def test_load_100_file_with_shift():
 
 @asdf_entry_points
 def test_load_100_file_with_no_shift():
+    import asdf
+    pytest.importorskip("sunpy.map")
+    import sunpy.map
+
     fname = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
     with asdf.open(fname, copy_arrays=True) as af:
         aiamap = af['object']

@@ -12,11 +12,7 @@ import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.backend_bases import FigureCanvasBase
-from matplotlib.figure import Figure
 
 try:
     from dask.array import Array as DaskArray
@@ -313,6 +309,9 @@ class GenericMap(NDData):
         """
         Produce an HTML summary with plots for use in Jupyter notebooks.
         """
+        import matplotlib.pyplot as plt
+        from matplotlib.backend_bases import FigureCanvasBase
+
         # Convert the text repr to an HTML table
         partial_html = self._text_summary()[20:].replace('\n', '</td></tr><tr><th>')\
                                                 .replace(':\t', '</th><td>')
@@ -357,14 +356,12 @@ class GenericMap(NDData):
             bad_pixel_text += ", ".join(text_list)
 
         # Use a grayscale colormap with histogram equalization (and red for bad values)
-        # Make a copy of the colormap to avoid modifying the matplotlib instance when
-        # doing set_bad() (copy not needed when min mpl is 3.5, as already a copy)
-        cmap = copy.copy(matplotlib.colormaps['gray'])
+        cmap = plt.get_cmap('gray')
         cmap.set_bad(color='red')
         norm = ImageNormalize(stretch=HistEqStretch(finite_data))
 
         # Plot the image in pixel space
-        fig = Figure(figsize=(5.2, 4.8))
+        fig = plt.Figure(figsize=(5.2, 4.8))
         # Figure instances in matplotlib<3.1 do not create a canvas by default
         if fig.canvas is None:
             FigureCanvasBase(fig)
@@ -377,7 +374,7 @@ class GenericMap(NDData):
         bounds = ax.get_position().bounds  # save these axes bounds for later use
 
         # Plot the image using WCS information, with the same axes bounds as above
-        fig = Figure(figsize=(5.2, 4.8))
+        fig = plt.Figure(figsize=(5.2, 4.8))
         # Figure instances in matplotlib<3.1 do not create a canvas by default
         if fig.canvas is None:
             FigureCanvasBase(fig)
@@ -389,7 +386,7 @@ class GenericMap(NDData):
         wcs_src = _figure_to_base64(fig)
 
         # Plot the histogram of pixel values
-        fig = Figure(figsize=(4.8, 2.4), constrained_layout=True)
+        fig = plt.Figure(figsize=(4.8, 2.4), constrained_layout=True)
         # Figure instances in matplotlib<3.1 do not create a canvas by default
         if fig.canvas is None:
             FigureCanvasBase(fig)
@@ -410,7 +407,7 @@ class GenericMap(NDData):
         hist_src = _figure_to_base64(fig)
 
         # Plot the CDF of the pixel values using a symmetric-log horizontal scale
-        fig = Figure(figsize=(4.8, 2.4), constrained_layout=True)
+        fig = plt.Figure(figsize=(4.8, 2.4), constrained_layout=True)
         # TODO: Figure instances in matplotlib<3.1 do not create a canvas by default
         if fig.canvas is None:
             FigureCanvasBase(fig)
@@ -2115,6 +2112,8 @@ class GenericMap(NDData):
         """
         Return the `matplotlib.colors.Colormap` instance this map uses.
         """
+        import matplotlib.pyplot as plt
+
         cmap = self.plot_settings['cmap']
         if isinstance(cmap, str):
             cmap = plt.get_cmap(cmap)
@@ -2405,6 +2404,8 @@ class GenericMap(NDData):
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """
+        import matplotlib.pyplot as plt
+
         figure = plt.figure()
         axes = wcsaxes_compat.gca_wcs(self.wcs)
 
@@ -2492,6 +2493,8 @@ class GenericMap(NDData):
         :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
         manager may be appropriate.
         """
+        import matplotlib.pyplot as plt
+
         # Users sometimes assume that the first argument is `axes` instead of `annotate`
         if not isinstance(annotate, bool):
             raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "

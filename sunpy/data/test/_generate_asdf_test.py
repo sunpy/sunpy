@@ -1,13 +1,14 @@
 """
 This file will generate an asdf file in the test data, using the newest schema version.
 """
-import asdf
 import astropy.units as u
 
 from sunpy.data.test import rootdir
 
 
 def generate_asdf_tree(obj, filename):
+    import asdf
+
     tree = {"object": obj}
     with asdf.AsdfFile(tree) as af:
         # TODO: Automatically determine filename based on tag used
@@ -16,6 +17,7 @@ def generate_asdf_tree(obj, filename):
 
 if __name__ == "__main__":
     import sunpy.map
+
     test_map = rootdir / "aia_171_level1.fits"
     obj = sunpy.map.Map(test_map)
     obj = obj.resample((2, 2)*u.pix)

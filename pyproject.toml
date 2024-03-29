@@ -32,7 +32,6 @@ dependencies = [
   "astropy>=5.2.0",
   "numpy>=1.21.0",
   "packaging>=21.3",
-  "parfive[ftp]>=2.0.0",
   "pyerfa",
   "requests",
 ]
@@ -54,6 +53,7 @@ Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 # The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
 asdf = ["asdf-astropy>=0.2.0", "asdf>=2.11.0"]
 dask = ["dask[array]>=2022.5.2"]
+data = ["parfive[ftp]>=2.0.0"]
 image = [
   "scikit-image>=0.19.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718

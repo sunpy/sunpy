@@ -30,15 +30,6 @@ def hmi_test_map():
 
 
 @pytest.fixture
-def aia171_test_map():
-    (data, header), = sunpy.io.read_file(get_test_filepath('aia_171_level1.fits'))
-
-    # Get rid of the blank keyword to prevent some astropy fits fixing warnings
-    header.pop('BLANK')
-    return sunpy.map.Map((data, header))
-
-
-@pytest.fixture
 def aia171_roll_map(aia171_test_map):
     return aia171_test_map.rotate(-45*u.deg)
 

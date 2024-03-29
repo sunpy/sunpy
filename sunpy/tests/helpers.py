@@ -5,8 +5,6 @@ from pathlib import Path
 from functools import wraps
 from importlib.metadata import entry_points
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import pytest
 
 import astropy
@@ -15,7 +13,7 @@ from astropy.wcs.wcs import FITSFixedWarning
 # NOTE: Do not import sunpy subpackages which have optional dependencies here,
 # this module should be importable with no extra dependencies installed.
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_cdf', 'warnings_as_errors', 'asdf_entry_points']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
 # First we check to make sure that glymur imports correctly before proceeding.
@@ -37,6 +35,13 @@ except ImportError:
 else:
     SKIP_ANA = False
 
+try:
+    import cdflib  # NOQA
+except ImportError:
+    SKIP_CDF = True
+else:
+    SKIP_CDF = False
+
 if sys.maxsize > 2**32:
     SKIP_32 = False
 else:
@@ -45,6 +50,7 @@ else:
 skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
+skip_cdf = pytest.mark.skipif(SKIP_CDF, reason="cdflib is not installed.")
 asdf_entry_points = pytest.mark.skipif(
     not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
     reason="No SunPy ASDF entry points.",
@@ -63,8 +69,8 @@ def get_hash_library_name():
     """
     Generate the hash library name for this env.
     """
+    import matplotlib as mpl
     import mpl_animators
-
     animators_version = "dev" if (("dev" in mpl_animators.__version__) or ("rc" in mpl_animators.__version__)) else mpl_animators.__version__.replace('.', '')
     ft2_version = f"{mpl.ft2font.__freetype_version__.replace('.', '')}"
     mpl_version = "dev" if (("dev" in mpl.__version__) or ("rc" in mpl.__version__)) else mpl.__version__.replace('.', '')
@@ -87,6 +93,8 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+    import matplotlib.pyplot as plt
+
     hash_library_name = get_hash_library_name()
     hash_library_file = Path(__file__).parent / hash_library_name
 

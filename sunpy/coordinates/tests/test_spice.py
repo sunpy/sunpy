@@ -1,5 +1,7 @@
 import numpy as np
 import pytest
+
+pytest.importorskip('spiceypy')
 import spiceypy
 
 import astropy.units as u
