@@ -36,14 +36,15 @@ class Cache:
         self._cache_dir = Path(cache_dir)
         self._expiry = expiry if expiry is None else TimeDelta(expiry)
 
-    def download(self, url, namespace='', redownload=False):
+    def download(self, urls, namespace='', redownload=False):
         """
         Downloads the files from the urls.
 
         Parameters
         ----------
-        urls : `str`
-            A single url.
+        urls : `list` of path-like or one path-like
+            A list of urls or a single url.
+            The list is for urls of the same file but from different sources.
         namespace : `str`, optional
             A namespace to be used for the file name.
             Defaults to an empty string.
@@ -56,13 +57,18 @@ class Cache:
         `pathlib.Path`
             Path to the downloaded file.
         """
+        if isinstance(urls, str | Path):
+            urls = [urls]
         # Logic flow
         # 1. If redownload: Download, update cache and return file path
         # 2. If not redownload: Check cache,
         #    i. If present in cache:
         #        - If cache expired, download and add to cache and remove entry from cache
         #        - If cache not expired, return path
-        present = self._get_by_url(url)
+        for url in urls:
+            present = self._get_by_url(url)
+            if present:
+                break
         if present and not redownload and not self._has_expired(present):
             return Path(present['file_path'])
         try:
@@ -126,24 +132,28 @@ class Cache:
         """
         return self._storage.find_by_key('url', url)
 
-    def _download_and_hash(self, url, namespace=''):
+    def _download_and_hash(self, urls, namespace):
         """
         Downloads the file and returns the path, hash and url it used to download.
 
         Parameters
         ----------
-        urls : `str`
-            A url.
+        urls : `list` of `str`
+            List of urls.
 
         Returns
         -------
         `str`, `str`, `str`
             Path, hash and URL of the file.
         """
-        try:
-            path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
-            self._downloader.download(url, path)
-            shahash = hash_file(path)
-            return path, shahash, url
-        except Exception as e:
-            raise RuntimeError(f"{e}") from e
+        errors = []
+        for url in urls:
+            try:
+                path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
+                self._downloader.download(url, path)
+                shahash = hash_file(path)
+                return path, shahash, url
+            except Exception as e:
+                warn_user(f"{e}")
+                errors.append(f"{e}")
+        raise RuntimeError(errors)
