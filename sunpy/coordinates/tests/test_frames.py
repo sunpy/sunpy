@@ -259,9 +259,10 @@ def test_hpc_is_visible_tolerance():
     hpc = Helioprojective(200*u.arcsec, 0*u.arcsec,
                           observer='earth', obstime='2023-08-03').make_3d()
 
-    # Due to the limitations of numerical precision, the coordinate will be computed to be slightly
-    # below the solar surface, and thus invisible when the tolerance is set to zero
-    assert not hpc.is_visible(tolerance=0*u.m)
+    # Due to the limitations of numerical precision, the coordinate may be computed to be slightly
+    # below the solar surface, and thus may be invisible when the tolerance is set to zero
+    if hpc.is_visible(tolerance=0*u.m):
+        pytest.skip("Test already passes prior to increasing the tolerance.")
 
     assert hpc.is_visible(tolerance=1*u.m)
 
@@ -414,8 +415,8 @@ def test_hcc_default_observer():
 
 
 @pytest.mark.parametrize(('x', 'y', 'psi'), [(0*u.km, -1*u.km, 270*u.deg),
-                                       (0*u.km, 1*u.km, 90*u.deg),
-                                       (-1*u.km, 0*u.km, 180*u.deg)])
+                                             (0*u.km, 1*u.km, 90*u.deg),
+                                             (-1*u.km, 0*u.km, 180*u.deg)])
 def test_heliocentric_radial_psi(x, y, psi):
     # The cylindrical representation of HCC is Heliocentric Radial
     # Test that the `psi` component is represented as desired

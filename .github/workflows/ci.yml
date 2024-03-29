@@ -26,12 +26,9 @@ jobs:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto
-      libraries: |
-        apt:
-          - libopenjp2-7
+      posargs: -n auto --color=yes
       envs: |
-        - linux: py311
+        - linux: py312
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -42,14 +39,11 @@ jobs:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto
-      libraries: |
-        brew:
-          - openjpeg
+      posargs: -n auto --color=yes
       envs: |
-        - windows: py310
-        - macos: py39
-        - linux: py39-oldestdeps
+        - windows: py311
+        - macos: py310
+        - linux: py310-oldestdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -57,7 +51,7 @@ jobs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
@@ -68,7 +62,6 @@ jobs:
       cache-key: docs-${{ github.run_id }}
       libraries: |
         apt:
-          - libopenjp2-7
           - graphviz
       envs: |
         - linux: build_docs
@@ -78,17 +71,12 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --dist loadgroup
-      libraries: |
-        apt:
-          - libopenjp2-7
       envs: |
         - linux: build_docs-gallery
-          posargs: ''
           pytest: false
           cache-path: |
             docs/_build/
@@ -99,7 +87,8 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-        - linux: py39-online
+        - linux: py312-online
+          posargs: -n auto --dist loadgroup --color=yes
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -111,19 +100,33 @@ jobs:
       )
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      default_python: '3.9'
+      default_python: '3.10'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto
-      libraries: |
-        apt:
-          - libopenjp2-7
+      posargs: -n auto --color=yes
       envs: |
         - linux: base_deps
         - linux: py311-devdeps
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  sdist_verify:
+    if: |
+      github.event_name == 'workflow_dispatch' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip install -U --user build
+      - run: python -m build . --sdist
+      - run: python -m pip install -U --user twine
+      - run: python -m twine check dist/*
 
   conda:
     if: |
@@ -141,7 +144,7 @@ jobs:
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
-          python-version: 3.9
+          python-version: "3.11"
       - name: Install sunpy
         shell: bash -el {0}
         run: |
@@ -151,8 +154,8 @@ jobs:
         run: |
           conda list
           cd /tmp
-          pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/setup.cfg $GITHUB_WORKSPACE/docs -n auto
-      - uses: codecov/codecov-action@v3
+          pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
@@ -173,23 +176,28 @@ jobs:
     needs: [test]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
+      upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+      anaconda_user: scientific-python-nightly-wheels
+      anaconda_package: sunpy
+      anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'all,tests'
+      test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
-        - cp3{9,10,11}-manylinux*_x86_64
-        - cp3{9,10,11}-macosx_x86_64
-        - cp3{9,10,11}-macosx_arm64
+        - cp3{9,10,11,12}-manylinux*_x86_64
+        - cp3{9,10,11,12}-macosx_x86_64
+        - cp3{9,10,11,12}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
+      anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
   publish_pure:
     needs: [publish]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
     with:
       python-version: "3.10"
-      test_extras: 'all,tests'
+      test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       env: |

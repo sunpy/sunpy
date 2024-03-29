@@ -9,7 +9,6 @@ import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 
@@ -60,12 +59,6 @@ def hgs_header(map_data, hgs_coord):
 @pytest.fixture
 def hpc_coord_notime():
     return SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
-
-
-def test_metakeywords():
-    with pytest.warns(SunpyDeprecationWarning):
-        meta = sunpy.map.meta_keywords()
-        assert isinstance(meta, dict)
 
 
 def test_scale_conversion(map_data, hpc_coord):
@@ -218,6 +211,13 @@ def test_quantity_input(map_data, hpc_coord):
     assert header['bunit'] == override_unit.to_string('fits')
 
 
+def test_unit_as_string(map_data, hpc_coord):
+    # Test that unit can be passed in as a string
+    map_unit = u.Unit('ct / (pix s)')
+    header = make_fitswcs_header(map_data, hpc_coord, unit=map_unit.to_string())
+    assert header['bunit'] == map_unit.to_string('fits')
+
+
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
     # Raise the HCC error
     with pytest.raises(ValueError):
@@ -282,11 +282,11 @@ def test_make_heliographic_header_invalid_inputs(aia171_test_map):
     # Test new keyword propagates correctly to header reference pixel coordinate
     # hgc/hgs = heliographic carrington/stonyhurst
     header_test_hgs = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington')
-    header_test_hgc = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=180*u.deg)
+    header_test_hgc = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=180*u.deg)
     assert header_test_hgs['crval1'] == 0.0
     assert header_test_hgc['crval1'] == 180.0
     # Test keyword wraps correctly to range [0,360]
-    header_test_above = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=361*u.deg)
-    header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington',map_center_longitude=-1*u.deg)
+    header_test_above = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=361*u.deg)
+    header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=-1*u.deg)
     assert header_test_above['crval1'] == 1.0
     assert header_test_below['crval1'] == 359.0

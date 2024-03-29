@@ -25,7 +25,6 @@ from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import _figure_to_base64
@@ -112,7 +111,7 @@ class GenericTimeSeries:
         if meta is None:
             # No meta given, so default
             self.meta = TimeSeriesMetaData(MetaDict(), tr, self.columns)
-        elif isinstance(meta, (dict, OrderedDict, MetaDict)):
+        elif isinstance(meta, dict | OrderedDict | MetaDict):
             # Given the values for metadata (dict) and infer timerange and colnames from the data
             self.meta = TimeSeriesMetaData(meta, tr, self.columns)
         elif isinstance(meta, tuple):
@@ -237,7 +236,7 @@ class GenericTimeSeries:
         channels = "<br>".join(channels)
 
         uni = list(set(self.units.values()))
-        uni = [x.unit if type(x) == u.quantity.Quantity else x for x in uni]
+        uni = [x.unit if isinstance(x, u.quantity.Quantity) else x for x in uni]
         uni = ["dimensionless" if x == u.dimensionless_unscaled else x for x in uni]
         uni = "<br>".join(str(x) for x in uni)
 
@@ -751,7 +750,6 @@ class GenericTimeSeries:
             ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
 
     @peek_show
-    @deprecate_positional_args_since("4.1")
     def peek(self, *, columns=None, title=None, **kwargs):
         """
         Displays a graphical overview of the data in this object for user evaluation.
@@ -857,7 +855,7 @@ class GenericTimeSeries:
         Parameters
         ----------
         **kwargs : `dict`
-            All keyword arguments are passed to `pandas.DataFrame.to_numpy`.
+            All keyword arguments are passed to ``pandas.DataFrame.to_numpy``.
 
         Returns
         -------

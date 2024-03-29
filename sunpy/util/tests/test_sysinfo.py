@@ -9,58 +9,58 @@ from sunpy.util.sysinfo import (
 )
 
 EXTRA_DEPS = [
-    'asdf',
     'asdf-astropy',
+    'asdf',
     'astropy',
-    'numpy',
-    'parfive',
-    'packaging',
+    'beautifulsoup4',
+    'cdflib',
     'dask',
-    'scikit-image',
-    'scipy',
+    'drms',
+    'h5netcdf',
+    'h5py',
     'lxml',
     'matplotlib',
     'mpl-animators',
-    'reproject',
-    'beautifulsoup4',
-    'drms',
+    'numpy',
+    'packaging',
+    'pandas',
+    'parfive',
+    'pyerfa',
     'python-dateutil',
+    'reproject',
+    'scikit-image',
+    'scipy',
     'zeep',
-    'cdflib',
-    'h5netcdf',
-    'h5py',
-    'pandas'
 ]
 
 EXTRA_ALL_GROUPS = [
     'all',
     'asdf',
-    'required',
     'dask',
-    'data',
     'dev',
-    'docs',
     'docs-gallery',
+    'docs',
     'image',
     'jpeg2000',
     'map',
     'net',
+    'opencv',
+    'required',
     'spice',
     'tests',
     'timeseries',
-    'visualization'
+    'visualization',
 ]
 
-
 def test_find_dependencies():
-    missing, installed = find_dependencies()
-    assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging"])
-    missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
-    assert missing == {}
+    """
+    This is ran in several test environments with varying dependencies installed.
+    So it will be common to find not docs installed, so there will be "missing" dependencies.
+    But this is not a problem.
+    """
+    _, installed = find_dependencies(package="sunpy", extras=["required", *EXTRA_ALL_GROUPS])
     for package in EXTRA_DEPS:
         assert package in installed
-
 
 
 def test_missing_dependencies_by_extra():

@@ -138,7 +138,7 @@ To see a summary of the results print the result variable that came back from th
     <BLANKLINE>
 
 Queries can be made more flexible or specific by adding more attrs objects to the `~sunpy.net.Fido` search.
-As an example, specific passbands can be searched for by supplying an `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute:
+As an example, specific passbands can be searched for by supplying a `~astropy.units.Quantity` to the `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute:
 
 .. code-block:: python
 
@@ -489,7 +489,7 @@ Here we'll just download the first file in the result:
     >>> downloaded_files = Fido.fetch(results[0, 0]) # doctest: +REMOTE_DATA
     >>> downloaded_files # doctest: +REMOTE_DATA
     <parfive.results.Results object at ...>
-    ['.../aia_lev1_335a_2020_01_01t00_00_00_64z_image_lev1.fits']
+    ['.../aia.lev1.335A_2020_01_01T00_00_00.64Z.image_lev1.fits']
 
 This downloads the files to the location set in the sunpy config file.
 It also returns a `parfive.Results` object ``downloaded_files``, which contains local file paths to all the downloaded data.

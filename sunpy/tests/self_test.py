@@ -60,7 +60,7 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
         print(list(test_missing.keys()))
         print()
         print("If are using conda, you will want to run conda install <package name>")
-        print('Otherwise you will want run pip install "sunpy[all,tests]"')
+        print('Otherwise you will want run pip install "sunpy[tests]"')
         print()
         return 1
     print()

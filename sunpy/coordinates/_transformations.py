@@ -17,6 +17,7 @@ from copy import deepcopy
 from functools import wraps
 from contextlib import contextmanager
 
+import erfa
 import numpy as np
 
 import astropy.units as u
@@ -39,8 +40,6 @@ from astropy.coordinates.representation import (
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
-# Import erfa via astropy to make sure we are using the same ERFA library as Astropy
-from astropy.coordinates.sky_coordinate import erfa
 from astropy.coordinates.transformations import FunctionTransform, FunctionTransformWithFiniteDifference
 from astropy.time import Time
 
@@ -296,9 +295,9 @@ def _observers_are_equal(obs_1, obs_2):
                            "source observer is different.")
 
     return np.atleast_1d(u.allclose(obs_1.lat, obs_2.lat) and
-                          u.allclose(obs_1.lon, obs_2.lon) and
-                          u.allclose(obs_1.radius, obs_2.radius) and
-                          _times_are_equal(obs_1.obstime, obs_2.obstime)).all()
+                         u.allclose(obs_1.lon, obs_2.lon) and
+                         u.allclose(obs_1.radius, obs_2.radius) and
+                         _times_are_equal(obs_1.obstime, obs_2.obstime)).all()
 
 
 def _check_observer_defined(frame):
@@ -590,7 +589,8 @@ def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
     A = start_representation.to_cartesian()
     B = end_representation.to_cartesian()
     rotation_axis = A.cross(B)
-    rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
+    # Calculate the angle using both cross and dot products to minimize numerical-precision issues
+    rotation_angle = -np.arctan2(rotation_axis.norm(), A.dot(B))  # negation is required
 
     if rotation_angle.isscalar:
         # This line works around some input/output quirks of Astropy's rotation_matrix()

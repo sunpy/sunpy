@@ -7,26 +7,8 @@ from astropy.coordinates import SkyCoord
 from sunpy import log
 from sunpy.coordinates import frames, sun
 from sunpy.util import MetaDict
-from sunpy.util.decorators import deprecated
 
-__all__ = ['meta_keywords', 'make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
-
-
-@deprecated(since="5.0", message="Unused and will be removed in 6.0")
-def meta_keywords():
-    """
-    Returns the metadata keywords that are used when creating a `sunpy.map.GenericMap`.
-
-    Examples
-    --------
-    Returns a dictionary of all meta keywords that are used in a `sunpy.map.GenericMap` header:
-        >>> import sunpy.map
-        >>> sunpy.map.meta_keywords() # doctest: +SKIP
-        {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
-         'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
-         ...
-    """
-    return _map_meta_keywords.copy()
+__all__ = ['make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
 
 
 @u.quantity_input(equivalencies=u.spectral())
@@ -150,7 +132,7 @@ def make_fitswcs_header(data,
 
 
 def _validate_coordinate(coordinate):
-    if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
+    if not isinstance(coordinate, SkyCoord | frames.BaseCoordinateFrame):
         raise ValueError("coordinate needs to be a coordinate frame or an SkyCoord instance.")
 
     if isinstance(coordinate, SkyCoord):
@@ -298,7 +280,7 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
     if exposure is not None:
         meta_wcs['exptime'] = exposure.to_value(u.s)
     if unit is not None:
-        meta_wcs['bunit'] = unit.to_string("fits")
+        meta_wcs['bunit'] = u.Unit(unit).to_string("fits")
 
     return meta_wcs
 
@@ -384,6 +366,7 @@ _map_meta_keywords = {
     'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.'
 }
 
+
 @u.quantity_input
 def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR",
                              map_center_longitude: u.Quantity[u.deg] = 0.0*u.deg):
@@ -426,7 +409,33 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
     >>> observer = get_earth(date)
     >>> header = make_heliographic_header(date, observer, [90, 180], frame='carrington')
     >>> header
-    MetaDict([('wcsaxes', 2), ('crpix1', 90.5), ('crpix2', 45.5), ('cdelt1', 2.0), ('cdelt2', 2.0), ('cunit1', 'deg'), ('cunit2', 'deg'), ('ctype1', 'CRLN-CAR'), ('ctype2', 'CRLT-CAR'), ('crval1', 0.0), ('crval2', 0.0), ('lonpole', 0.0), ('latpole', 90.0), ('mjdref', 0.0), ('date-obs', '2020-01-01T12:00:00.000'), ('rsun_ref', 695700000.0), ('dsun_obs', 147096975776.97), ('hgln_obs', 0.0), ('hglt_obs', -3.0011725838606), ('naxis', 2), ('naxis1', 180), ('naxis2', 90), ('pc1_1', 1.0), ('pc1_2', -0.0), ('pc2_1', 0.0), ('pc2_2', 1.0), ('rsun_obs', 975.5398432033492)])
+    MetaDict([('wcsaxes': '2')
+    ('crpix1': '90.5')
+    ('crpix2': '45.5')
+    ('cdelt1': '2.0')
+    ('cdelt2': '2.0')
+    ('cunit1': 'deg')
+    ('cunit2': 'deg')
+    ('ctype1': 'CRLN-CAR')
+    ('ctype2': 'CRLT-CAR')
+    ('crval1': '0.0')
+    ('crval2': '0.0')
+    ('lonpole': '0.0')
+    ('latpole': '90.0')
+    ('mjdref': '0.0')
+    ('date-obs': '2020-01-01T12:00:00.000')
+    ('rsun_ref': '695700000.0')
+    ('dsun_obs': '147096975776.97')
+    ('hgln_obs': '0.0')
+    ('hglt_obs': '-3.0011725838606')
+    ('naxis': '2')
+    ('naxis1': '180')
+    ('naxis2': '90')
+    ('pc1_1': '1.0')
+    ('pc1_2': '-0.0')
+    ('pc2_1': '0.0')
+    ('pc2_2': '1.0')
+    ('rsun_obs': '975.53984320334...
 
     .. minigallery:: sunpy.map.make_heliographic_header
     """

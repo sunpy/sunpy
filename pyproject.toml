@@ -1,148 +1,223 @@
 [build-system]
 requires = [
-    "extension-helpers",
-    "numpy>=1.25",
-    "setuptools>=56,!=61.0.0",
-    "setuptools_scm[toml]>=6.2",
-    "wheel",
+  "extension-helpers",
+  "numpy>=1.25",
+  "setuptools>=61.2",
+  "setuptools_scm[toml]>=6.2",
+  "wheel",
 ]
-build-backend = 'setuptools.build_meta'
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sunpy"
+description = "SunPy core package: Python for Solar Physics"
+authors = [{ name = "The SunPy Community", email = "sunpy@googlegroups.com" }]
+license = { text = "BSD 2-Clause" }
+keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: BSD License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+requires-python = ">=3.10"
+dependencies = [
+  "astropy>=5.2.0",
+  "numpy>=1.21.0",
+  "packaging>=21.3",
+  "pyerfa",
+  "requests",
+]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.rst"
+content-type = "text/x-rst"
+
+[project.urls]
+Homepage = "https://sunpy.org"
+Download = "https://pypi.org/project/sunpy/"
+"Source Code" = "https://github.com/sunpy/sunpy/"
+Documentation = "https://docs.sunpy.org/"
+Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
+"Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
+
+[project.optional-dependencies]
+# The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
+asdf = ["asdf-astropy>=0.2.0", "asdf>=2.11.0"]
+dask = ["dask[array]>=2022.5.2"]
+data = ["parfive[ftp]>=2.0.0"]
+image = [
+  "scikit-image>=0.19.0",
+  # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
+  "scipy>=1.8.0,!=1.10.0",
+]
+jpeg2000 = ["glymur>=0.9.1,!=0.9.5", "lxml>=4.9.0,!=5.0.0"]
+map = [
+  "matplotlib>=3.5.0",
+  "mpl-animators>=1.0.0",
+  "reproject>=0.9.0",
+  # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
+  "scipy>=1.8.0,!=1.10.0",
+]
+opencv = ["opencv-python>=4.6.0.66"]
+net = [
+  "beautifulsoup4>=4.11.0",
+  "drms>=0.7.1",
+  "python-dateutil>=2.8.0",
+  "tqdm>=4.64.0",
+  "zeep>=4.1.0",
+]
+spice = ["spiceypy>=5.0.0"]
+timeseries = [
+  "cdflib>=0.4.4,!=1.0.0",
+  "h5netcdf>=1.0.0",
+  # While a not direct dependency
+  # We need to raise this to ensure the goes netcdf files open.
+  "h5py>=3.7.0",
+  "matplotlib>=3.5.0",
+  "pandas>=1.4.0",
+]
+visualization = ["matplotlib>=3.5.0", "mpl-animators>=1.0.0"]
+all = ["sunpy[asdf,dask,image,jpeg2000,map,net,timeseries,visualization]"]
+tests = [
+  "sunpy[all,opencv,spice]",
+  "hvpy>=1.1.0",
+  "jplephem>=2.14",          # For some coordinates tests
+  "pytest-astropy>=0.11.0",
+  "pytest-mpl>=0.16",
+  "pytest-xdist>=3.0.2",
+  "pytest>=7.1.0",
+]
+docs = [
+  "sunpy[all,spice]",           # Importing sunpy.coordinates.spice raises an error if spiceypy is not installed
+  "hvpy>=1.1.0",
+  "ruamel.yaml>=0.17.19",
+  "sphinx>=5.0.0",
+  "sphinx-automodapi>=0.14.1",
+  "sphinx-changelog>=1.5.0",
+  "sphinx-copybutton>=0.5.0",
+  "sphinx-design>=0.2.0",
+  "sphinx-gallery>=0.13.0",
+  "sphinxext-opengraph>=0.6.0",
+  "sunpy-sphinx-theme>=2.0.3",
+  "sphinx-hoverxref>=1.3.0",
+]
+docs-gallery = [
+  "sunpy[docs,opencv]",
+  "astroquery>=0.4.6",
+  "jplephem>=2.14",
+  "mplcairo>=0.5",
+]
+dev = ["sunpy[all,docs,tests]"]
+
+[project.entry-points."asdf.resource_mappings"]
+sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
+
+[project.entry-points."asdf.extensions"]
+sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+platforms = ["any"]
+provides = ["sunpy"]
+license-files = ["LICENSE.rst"]
+
+[tool.setuptools.packages.find]
+exclude = ["sunpy._dev"]
+namespaces = false
 
 [tool.setuptools_scm]
 write_to = "sunpy/_version.py"
 
-# Until we have h5py binaries we can't test wheels on Python 3.11
+[tool.distutils.bdist_wheel]
+# The Py_LIMITED_API version hex in _pyana.c should match the version specified here
+py-limited-api = "cp310"
+
+[tool.extension-helpers]
+use_extension_helpers = "true"
+
 [tool.cibuildwheel]
 test-command = "pytest -p no:warnings --doctest-rst -m 'not mpl_image_compare' --pyargs sunpy"
-test-extras = ["all,tests"]
+test-extras = ["tests"]
 
-[ tool.gilesbot ]
-  [ tool.gilesbot.circleci_artifacts ]
-    enabled = true
+[tool.gilesbot]
+[tool.gilesbot.circleci_artifacts]
+enabled = true
 
-  [ tool.gilesbot.circleci_artifacts.figure_report ]
-    url = ".tmp/py310-figure/figure_test_images/fig_comparison.html"
-    message = "Click details to see the figure test comparisons, for py310-figure."
-    report_on_fail = true
+[tool.gilesbot.circleci_artifacts.figure_report]
+url = ".tmp/py312-figure/figure_test_images/fig_comparison.html"
+message = "Click details to see the figure test comparisons, for py312-figure."
+report_on_fail = true
 
-  [ tool.gilesbot.circleci_artifacts.figure_report_devdeps ]
-    url = ".tmp/py310-figure-devdeps/figure_test_images/fig_comparison.html"
-    message = "Click details to see the figure test comparisons for py310-figure-devdeps."
-    report_on_fail = true
+[tool.gilesbot.circleci_artifacts.figure_report_devdeps]
+url = ".tmp/py312-figure-devdeps/figure_test_images/fig_comparison.html"
+message = "Click details to see the figure test comparisons for py312-figure-devdeps."
+report_on_fail = true
 
-  [ tool.gilesbot.pull_requests ]
-    enabled = true
+[tool.gilesbot.pull_requests]
+enabled = true
 
-  [ tool.gilesbot.towncrier_changelog ]
-    enabled = true
-    verify_pr_number = true
-    changelog_skip_label = "No Changelog Entry Needed"
-    help_url = "https://github.com/sunpy/sunpy/blob/main/changelog/README.rst"
+[tool.gilesbot.towncrier_changelog]
+enabled = true
+verify_pr_number = true
+changelog_skip_label = "No Changelog Entry Needed"
+help_url = "https://github.com/sunpy/sunpy/blob/main/changelog/README.rst"
 
-    changelog_missing_long = "There isn't a changelog file in this pull request. Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)."
+changelog_missing_long = "There isn't a changelog file in this pull request. Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)."
 
-    type_incorrect_long = "The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)"
+type_incorrect_long = "The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)"
 
-    number_incorrect_long = "The number in the changelog file you added does not match the number of this pull request. Please rename the file."
+number_incorrect_long = "The number in the changelog file you added does not match the number of this pull request. Please rename the file."
 
+# TODO: This should be in towncrier.toml but Giles currently only works looks in
+# pyproject.toml we should move this back when it's fixed.
 [tool.towncrier]
-    package = "sunpy"
-    filename = "CHANGELOG.rst"
-    directory = "changelog/"
-    issue_format = "`#{issue} <https://github.com/sunpy/sunpy/pull/{issue}>`__"
-    title_format = "{version} ({project_date})"
+package = "sunpy"
+filename = "CHANGELOG.rst"
+directory = "changelog/"
+issue_format = "`#{issue} <https://github.com/sunpy/sunpy/pull/{issue}>`__"
+title_format = "{version} ({project_date})"
 
-    [[tool.towncrier.type]]
-        directory = "breaking"
-        name = "Breaking Changes"
-        showcontent = true
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking Changes"
+showcontent = true
 
-    [[tool.towncrier.type]]
-      directory = "deprecation"
-      name = "Deprecations"
-      showcontent = true
+[[tool.towncrier.type]]
+directory = "deprecation"
+name = "Deprecations"
+showcontent = true
 
-    [[tool.towncrier.type]]
-      directory = "removal"
-      name = "Removals"
-      showcontent = true
+[[tool.towncrier.type]]
+directory = "removal"
+name = "Removals"
+showcontent = true
 
-    [[tool.towncrier.type]]
-      directory = "feature"
-      name = "New Features"
-      showcontent = true
+[[tool.towncrier.type]]
+directory = "feature"
+name = "New Features"
+showcontent = true
 
-    [[tool.towncrier.type]]
-      directory = "bugfix"
-      name = "Bug Fixes"
-      showcontent = true
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bug Fixes"
+showcontent = true
 
-    [[tool.towncrier.type]]
-      directory = "doc"
-      name = "Documentation"
-      showcontent = true
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Documentation"
+showcontent = true
 
-    [[tool.towncrier.type]]
-      directory = "trivial"
-      name = "Internal Changes"
-      showcontent = true
-
-
-[tool.ruff]
-target-version = "py39"
-line-length = 110
-exclude=[
-    ".git,",
-    "__pycache__",
-    "build",
-    "sunpy/extern/**",
-    "sunpy/version.py",
-]
-
-select = [
-       "E",
-       "F",
-       "W",
-       "UP",
-       "PT",
-       #"RET",
-       #"TID",
-
-]
-extend-ignore = [
-    # pycodestyle (E, W)
-    "E501",  # LineTooLong                             # TODO! fix
-
-    # pytest (PT)
-    "PT001",  # Always use pytest.fixture()
-    "PT004",  # Fixtures which don't return anything should have leading _
-    "PT007",  # Parametrize should be lists of tuples  # TODO! fix
-    "PT011",  # Too broad exception assert             # TODO! fix
-    "PT023",  # Always use () on pytest decorators
-]
-
-[tool.ruff.flake8-tidy-imports]
-[tool.ruff.flake8-tidy-imports.banned-api]
-"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
-
-[tool.ruff.per-file-ignores]
-# Part of configuration, not a package.
-"setup.py" = ["INP001"]
-"conftest.py" = ["INP001"]
-# implicit-namespace-package. The examples are not a package.
-"docs/*.py" = ["INP001"]
-
-"__init__.py" = ["E402", "F401", "F403"]
-"test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
-
-# Need to import clients to register them, but don't use them in file
-"sunpy/net/__init__.py" = ["F811"]
-# These files are allowed to use warnings.warn
-"sunpy/util/exceptions.py" = ["TID251"]
-"sunpy/util/tests/test_logger.py" = ["TID251"]
-"sunpy/util/decorators.py" = ["TID251"]
-# Notebook config for binder uses undefined variable
-".jupyter/jupyter_notebook_config.py" = ["F821"]
-
-[tool.ruff.pydocstyle]
-convention = "numpy"
+[[tool.towncrier.type]]
+directory = "trivial"
+name = "Internal Changes"
+showcontent = true

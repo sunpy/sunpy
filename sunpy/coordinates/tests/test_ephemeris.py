@@ -13,6 +13,10 @@ from astropy.time import Time
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth, get_horizons_coord
 from sunpy.coordinates.tests.strategies import times
 
+# Ensure all of these tests are run on the same parallel worker
+# There are online flakey tests that are not parallel safe
+pytestmark = pytest.mark.xdist_group(name="ephemeris")
+
 
 def test_get_body_heliographic_stonyhurst():
     # Validate against published values from the Astronomical Almanac (2013)
