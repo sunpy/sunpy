@@ -570,26 +570,8 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
         if self._assumed_screen:
-            if self._assumed_screen['type'] == 'spherical':
-                sphere_center = self._assumed_screen['center'].transform_to(self).cartesian
-                c = sphere_center.norm()**2 - self._assumed_screen['radius']**2
-                b = -2 * sphere_center.dot(rep)
-                # Ignore sqrt of NaNs
-                with np.errstate(invalid='ignore'):
-                    dd = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
-
-            elif self._assumed_screen['type'] == 'planar':
-                direction = self._assumed_screen['vantage_point'].transform_to(self).cartesian
-                direction = CartesianRepresentation(1, 0, 0) * self.observer.radius - direction
-                direction /= direction.norm()
-
-                d_from_plane = self.observer.radius * direction.x
-                dd = d_from_plane / rep.dot(direction)
-
-            else:
-                raise ValueError(f"Unknown screen type: {self._assumed_screen['type']}")
-
-            d = np.fmin(d, dd) if self._assumed_screen['only_off_disk'] else dd
+            d_screen = self._assumed_screen.calculate_distance(self)
+            d = np.fmin(d, d_screen) if self._assumed_screen.only_off_disk else d_screen
 
         # This warning can be triggered in specific draw calls when plt.show() is called
         # we can not easily prevent this, so we check the specific function is being called
@@ -689,103 +671,24 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     _assumed_screen = None
 
     @classmethod
-    @sunpycontextmanager
-    def assume_spherical_screen(cls, center, only_off_disk=False):
+    @contextmanager
+    def assume_screen(cls, screen):
         """
-        Context manager to interpret 2D coordinates as being on the inside of a spherical screen.
-
-        The radius of the screen is the distance between the specified ``center`` and Sun center.
-        This ``center`` does not have to be the same as the observer location for the coordinate
-        frame.  If they are the same, then this context manager is equivalent to assuming that the
-        helioprojective "zeta" component is zero.
-
-        This replaces the default assumption where 2D coordinates are mapped onto the surface of the
-        Sun.
-
-        Parameters
-        ----------
-        center : `~astropy.coordinates.SkyCoord`
-            The center of the spherical screen
-        only_off_disk : `bool`, optional
-            If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
-            still mapped onto the surface of the Sun.  Defaults to `False`.
-
-        Examples
-        --------
-        .. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
-
-        >>> import astropy.units as u
-        >>> from sunpy.coordinates import Helioprojective
-        >>> h = Helioprojective(range(7)*u.arcsec*319, [0]*7*u.arcsec,
-        ...                     observer='earth', obstime='2020-04-08')
-        >>> print(h.make_3d())
-        <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-            [(   0., 0., 0.99660825), ( 319., 0., 0.99687244),
-             ( 638., 0., 0.99778472), ( 957., 0., 1.00103285),
-             (1276., 0.,        nan), (1595., 0.,        nan),
-             (1914., 0.,        nan)]>
-
-        >>> with Helioprojective.assume_spherical_screen(h.observer):
-        ...     print(h.make_3d())
-        <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-            [(   0., 0., 1.00125872), ( 319., 0., 1.00125872),
-             ( 638., 0., 1.00125872), ( 957., 0., 1.00125872),
-             (1276., 0., 1.00125872), (1595., 0., 1.00125872),
-             (1914., 0., 1.00125872)]>
-
-        >>> with Helioprojective.assume_spherical_screen(h.observer, only_off_disk=True):
-        ...     print(h.make_3d())
-        <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-            [(   0., 0., 0.99660825), ( 319., 0., 0.99687244),
-             ( 638., 0., 0.99778472), ( 957., 0., 1.00103285),
-             (1276., 0., 1.00125872), (1595., 0., 1.00125872),
-             (1914., 0., 1.00125872)]>
+        Context manager to interpret 2D coordinates as being on some surface.
         """
         try:
             old_assumed_screen = cls._assumed_screen  # nominally None
-
-            center_hgs = center.transform_to(HeliographicStonyhurst(obstime=center.obstime))
-            cls._assumed_screen = {
-                'type': 'spherical',
-                'center': center,
-                'radius': center_hgs.radius,
-                'only_off_disk': only_off_disk
-            }
+            cls._assumed_screen = screen
             yield
         finally:
             cls._assumed_screen = old_assumed_screen
 
     @classmethod
-    @contextmanager
-    def assume_planar_screen(cls, vantage_point, only_off_disk=False):
-        """
-        Context manager to interpret 2D coordinates as being on the inside of a planar screen.
-
-        The plane goes through Sun center and is perpendicular to the vector between the
-        specified vantage point and Sun center.
-
-        This replaces the default assumption where 2D coordinates are mapped onto the surface of the
-        Sun.
-
-        Parameters
-        ----------
-        vantage_point : `~astropy.coordinates.SkyCoord`
-            The vantage point that defines the orientation of the plane.
-        only_off_disk : `bool`, optional
-            If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
-            still mapped onto the surface of the Sun.  Defaults to `False`.
-        """
-        try:
-            old_assumed_screen = cls._assumed_screen  # nominally None
-
-            cls._assumed_screen = {
-                'type': 'planar',
-                'vantage_point': vantage_point,
-                'only_off_disk': only_off_disk
-            }
-            yield
-        finally:
-            cls._assumed_screen = old_assumed_screen
+    def assume_spherical_screen(cls, center, only_off_disk=False):
+        # TODO: this should issue a deprecation warning
+        from sunpy.coordinates.screens import SphericalScreen
+        sph_screen = SphericalScreen(center, only_off_disk=only_off_disk)
+        cls.assume_screen(sph_screen)
 
 
 @add_common_docstring(**_frame_parameters())
