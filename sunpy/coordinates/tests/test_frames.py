@@ -509,3 +509,29 @@ def test_angular_radius_no_obstime():
     coord = Helioprojective(0*u.deg, 0*u.deg, 5*u.km, obstime=None, observer="earth")
     with pytest.raises(ValueError, match=r"The observer must be fully defined by specifying `obstime`."):
         coord.angular_radius
+
+
+# Screen tests
+
+from sunpy.coordinates.screens import PlanarScreen, SphericalScreen
+
+
+@pytest.fixture
+def off_limb_coord():
+    frame = Helioprojective(observer='earth', obstime='2020-01-01')
+    return SkyCoord(Tx=1000*u.arcsec, Ty=1000*u.arcsec, frame=frame)
+
+
+@pytest.mark.parametrize('screen_class', [
+    SphericalScreen,
+    PlanarScreen,
+])
+def test_screen_classes(off_limb_coord, screen_class):
+    # Smoke test for spherical screen
+    with pytest.warns(SunpyUserWarning, match='The conversion of these 2D helioprojective coordinates to 3D is all NaNs'):
+            olc_3d = off_limb_coord.make_3d()
+    assert np.isnan(olc_3d.distance).all()
+    sph_screen = screen_class(off_limb_coord.observer)
+    with Helioprojective.assume_screen(sph_screen):
+        olc_3d = off_limb_coord.make_3d()
+    assert not np.isnan(olc_3d.distance).all()
