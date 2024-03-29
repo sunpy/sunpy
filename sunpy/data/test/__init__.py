@@ -112,7 +112,9 @@ def get_dummy_map_from_header(filename):
     """
     filepath = get_test_filepath(filename)
     header = _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
-    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
+    data = np.random.randint(low=0, high=100, size = (header['NAXIS2'], header['NAXIS1']))
+    if "BSCALE" in header:
+        data = data * header["BSCALE"] + header["BZERO"]
     if 'BITPIX' in header:
         data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
     # NOTE: by reading straight from the data header pair, we are skipping
