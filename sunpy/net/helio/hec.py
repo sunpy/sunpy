@@ -176,15 +176,9 @@ class HECClient(BaseClient):
         results = votable_handler(etree.tostring(results))
         table = HECResponse(results.to_table(), client=self)
         if len(table) == max_records:
-            if max_records == 500:
-                # 500 is the default value for max_records
-                warn_user("Number of results is the same as the default `max_records` of 500. "
-                          "It is possible your query has been truncated. "
-                          "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
-            else:
-                warn_user("Number of results is the same as the `a.helio.MaxRecords` limit of " + str(max_records) +
-                          ". It is possible your query has been truncated. "
-                          "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
+            warn_user("Number of results is the same as the " + ("default " if max_records == 500 else "") + "`a.helio.MaxRecords` limit of " + str(max_records) +
+                      ". It is possible your query has been truncated. "
+                      "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
         return table
 
     def get_table_names(self):
