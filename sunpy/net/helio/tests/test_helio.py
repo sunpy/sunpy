@@ -293,6 +293,9 @@ def test_client_search(client):
     res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
     assert len(res) == 10
 
+    with pytest.raises(ValueError):
+        res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(99999))
+
 
 @pytest.mark.remote_data
 def test_HECResponse_iter(client):
