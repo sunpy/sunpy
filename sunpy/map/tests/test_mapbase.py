@@ -25,7 +25,7 @@ import sunpy
 import sunpy.coordinates
 import sunpy.map
 import sunpy.sun
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
@@ -1819,3 +1819,22 @@ def test_plot_deprecated_positional_args(aia171_test_map):
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
         with pytest.raises(TypeError, match="non-boolean value"):
             aia171_test_map.plot('interpolation', True)
+
+
+def test_submap_nan_error_bottom_left(aia171_test_map):
+    h = Helioprojective([1,7]*u.arcsec*319, 0*u.arcsec,
+                        observer='earth', obstime='2020-04-08')
+    h_3d = h.make_3d()
+    with pytest.raises(ValueError, match="ABC"):
+        aia171_test_map.submap(h_3d)
+
+def test_submap_nan_error_top_right(aia171_test_map):
+    h = Helioprojective(1*u.arcsec*319, 0*u.arcsec,
+                        observer='earth', obstime='2020-04-08')
+    h2 = Helioprojective(7*u.arcsec*319, 0*u.arcsec,
+                        observer='earth', obstime='2020-04-08')
+    h_3d = h.make_3d()
+    with pytest.warns(SunpyUserWarning):
+        h2_3d = h2.make_3d()
+    with pytest.raises(ValueError, match="DEF."):
+        aia171_test_map.submap(h_3d, top_right=h2_3d)
