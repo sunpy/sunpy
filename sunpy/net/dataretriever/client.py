@@ -241,6 +241,7 @@ class GenericClient(BaseClient):
         for i in filesmeta:
             rowdict = self.post_search_hook(i, matchdict)
             metalist.append(rowdict)
+        print("metalist", metalist)
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
