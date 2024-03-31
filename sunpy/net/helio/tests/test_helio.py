@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 from requests.exceptions import SSLError
 
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.net import attrs as a
 from sunpy.net.helio.hec import HECClient
 from sunpy.net.helio.parser import (
@@ -295,6 +296,11 @@ def test_client_search(client):
 
     with pytest.raises(ValueError, match="Helio will only return a max of 20000 results."):
         res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(99999))
+
+    with pytest.warns(SunpyUserWarning, match="Number of results is the same as current limit. "
+                      "It is possible your query has been truncated. "
+                      "If you want to change this, set `a.helio.MaxRecords` to a higher value."):
+        res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
 
 
 @pytest.mark.remote_data
