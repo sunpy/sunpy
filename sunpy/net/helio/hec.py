@@ -176,7 +176,7 @@ class HECClient(BaseClient):
         results = votable_handler(etree.tostring(results))
         table = HECResponse(results.to_table(), client=self)
         if len(table) == max_records:
-            warn_user("Number of results is the same as the " + ("default " if max_records == 500 else "") + "`a.helio.MaxRecords` limit of " + str(max_records) +
+            warn_user("Number of results is the same as current limit. "
                       ". It is possible your query has been truncated. "
                       "If you want to change this, set `a.helio.MaxRecords` to a higher value.")
         return table
