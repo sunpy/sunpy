@@ -293,7 +293,7 @@ def test_client_search(client):
     res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
     assert len(res) == 10
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Helio will only return a max of 20000 results."):
         res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(99999))
 
 
