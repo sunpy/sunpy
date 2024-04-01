@@ -330,8 +330,6 @@ class Scraper:
         urls = self.filelist(timerange)
         metalist = []
         for url in urls:
-            metadict = parse(self.pattern, url) 
-            #print(url , metadict , matcher)
             if metadict is not None:
                 append = True
                 metadict = metadict.named
