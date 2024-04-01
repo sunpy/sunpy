@@ -1,24 +1,18 @@
 """
 Solar Physical Models
 ---------------------
-This module contains standard models of the Sun from various sources,
-it also provides `~sunpy.sun.models.diff_rot` function which computes the
-change in longitude over days in degrees.
+This module contains models of the Sun from various sources:
 
-All data is saved in `astropy.table.QTable` with an added attribute:
-
-* source : names the source of the data
-
-Objects
--------
-    interior : `astropy.table.QTable`
-        The standard model of the solar interior.
-    evolution : `astropy.table.QTable`
-        The evolution as a function of time of the Sun.
+* ``interior``: `~astropy.table.QTable` of the structure of the solar interior
+  as defined in Table 7 of Turck-Chieze et al. (1988)
+* ``evolution``: `~astropy.table.QTable` of the evolution of the Sun over time
+  as defined in Table 6 of Turck-Chieze et al. (1988)
+* :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
+  solar differential rotation for different models
 
 References
 ----------
-* Adapted from Turck-Chieze et al. (1988) with composition: X = 0.7046, Y = 0.2757, Z = 0.0197
+* Turck-Chieze et al. (1988), ApJ, 335, 415-424, https://doi.org/10.1086/166936
 """
 import numpy as np
 
@@ -28,7 +22,7 @@ from astropy.table import QTable
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
-__all__ = ["interior", "evolution", "diff_rot"]
+__all__ = ["interior", "evolution", "differential_rotation"]
 
 
 # Radius -  R_sun
@@ -89,12 +83,12 @@ _tcentral_temperature = [13.35, 13.46, 13.68, 14.08, 14.22, 14.60,
 _t = {'time': _time, 'luminosity': _tluminosity, 'radius': _tradius,
       'central temperature': _tcentral_temperature}
 evolution = QTable(_t)
-evolution.source = 'Unknown'
+evolution.source = 'Turck-Chieze et al. (1988)'
 evolution.add_index('time')
 
 
 @u.quantity_input
-def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
+def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', frame_time='sidereal'):
     r"""
     This function computes the change in longitude over days in degrees.
 
@@ -104,7 +98,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
         Number of seconds to rotate over.
     latitude : `~astropy.units.Quantity`
         heliographic coordinate latitude in Degrees.
-    rot_type : `str`
+    model : `str`
         The differential rotation model to use.
 
         One of:
@@ -150,19 +144,19 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     Examples
     --------
-    .. minigallery:: sunpy.sun.models.diff_rot
+    .. minigallery:: sunpy.sun.models.differential_rotation
 
     Default rotation calculation over two days at 30 degrees latitude:
 
     >>> import numpy as np
     >>> import astropy.units as u
-    >>> from sunpy.sun.models import diff_rot
-    >>> diff_rot(2 * u.day, 30 * u.deg)
+    >>> from sunpy.sun.models import differential_rotation
+    >>> differential_rotation(2 * u.day, 30 * u.deg)
     <Longitude 27.36432679 deg>
 
     Default rotation over two days for a number of latitudes:
 
-    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+    >>> differential_rotation(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
     <Longitude [22.05449682, 23.03214991, 24.12033958, 25.210281  ,
                 26.21032832, 27.05716463, 27.71932645, 28.19299667,
                 28.49196765, 28.63509765, 28.63509765, 28.49196765,
@@ -171,7 +165,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     With rotation type 'allen':
 
-    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
+    >>> differential_rotation(2 * u.day, np.linspace(-70, 70, 20) * u.deg, model='allen')
     <Longitude [23.58186667, 24.14800185, 24.82808733, 25.57737945,
             26.34658134, 27.08508627, 27.74430709, 28.28087284,
             28.6594822 , 28.85522599, 28.85522599, 28.6594822 ,
@@ -190,11 +184,11 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
                   'rigid': sidereal_rotation_rate * [1, 0, 0]
                   }
 
-    if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:
-        raise ValueError("rot_type must equal one of "
+    if model not in rot_params:
+        raise ValueError("model must equal one of "
                          "{{ {} }}".format(" , ".join(rot_params.keys())))
 
-    A, B, C = rot_params[rot_type]
+    A, B, C = rot_params[model]
 
     # This calculation of the rotation assumes a sidereal frame time.
     rotation = (A + B * sin2l + C * sin4l) * duration
