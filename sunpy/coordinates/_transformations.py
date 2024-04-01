@@ -161,7 +161,7 @@ def propagate_with_solar_surface(rotation_model='howard'):
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``,
         ``'allen'``, and ``'rigid'``.  See the documentation for
-        :func:`~sunpy.physics.differential_rotation.diff_rot` for the differences
+        :func:`~sunpy.sun.models.differential_rotation` for the differences
         between these models.
 
     Notes

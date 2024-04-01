@@ -32,7 +32,7 @@ __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
 
 @u.quantity_input
-@deprecated( since="6.0", alternative="sunpy.sun.models.diff_rot")
+@deprecated(since="6.0", alternative="sunpy.sun.models.differential_rotation")
 def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
     r"""
     This function computes the change in longitude over days in degrees.
@@ -88,7 +88,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
     """
 
-    return sunpy.sun.models.diff_rot(duration, latitude, rot_type, frame_time)
+    return sunpy.sun.models.differential_rotation(duration, latitude, model=rot_type, frame_time=frame_time)
 
 
 def _validate_observer_args(initial_obstime, observer, time):
@@ -193,7 +193,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         interpretable obstime property).
     time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
     **diff_rot_kwargs : `dict`
-        Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
+        Keyword arguments are passed on as keyword arguments to `~sunpy.sun.models.differential_rotation`.
         Note that the keyword "frame_time" is automatically set to the value
         "sidereal".
 
@@ -243,7 +243,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
 
     # Compute the differential rotation
-    drot = sunpy.sun.models.diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+    drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
     # Rotate the input coordinate as seen by the original observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
@@ -280,7 +280,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     observer : `~astropy.coordinates.SkyCoord`
         The location of the observer.
     **diff_rot_kwargs : None, `~dict`
-        Keyword arguments accepted by `~sunpy.physics.differential_rotation.diff_rot`.
+        Keyword arguments accepted by `~sunpy.sun.models.differential_rotation`.
 
     Returns
     -------
@@ -412,7 +412,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation.
-        drot = sunpy.sun.models.diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+        drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
         # The change in longitude is negative because we are mapping from the
         # new coordinates to the old.
