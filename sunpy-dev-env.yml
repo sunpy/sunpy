@@ -34,6 +34,7 @@ dependencies:
   - jplephem
   - lxml
   - opencv
+  - libopencv *=headless*
   - spiceypy
 
   # Testing
@@ -76,7 +77,7 @@ dependencies:
   - pycairo
 
   - pip:
-    - mplcairo
-    - sphinx-bootstrap-theme
-    - sphinx-changelog
-    - sunpy-sphinx-theme
+      - mplcairo
+      - sphinx-bootstrap-theme
+      - sphinx-changelog
+      - sunpy-sphinx-theme

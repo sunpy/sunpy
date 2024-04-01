@@ -53,7 +53,7 @@ from sunpy.util.decorators import (
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.util import _figure_to_base64
+from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
@@ -193,7 +193,7 @@ class GenericMap(NDData):
         if cls.__doc__ is None:
             # Set an empty string, to prevent an error adding None to str in the next line
             cls.__doc__ = ''
-        cls.__doc__ += textwrap.indent(_notes_doc, "    ")
+        cls.__doc__ = fix_duplicate_notes(_notes_doc, cls.__doc__)
 
         if hasattr(cls, 'is_datasource_for'):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
@@ -1742,6 +1742,8 @@ class GenericMap(NDData):
         new_meta['crval2'] = rotation_center[1].value
         new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
         new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
+        new_meta['NAXIS1'] = new_data.shape[1]
+        new_meta['NAXIS2'] = new_data.shape[0]
 
         # Unpad the array if necessary
         if unpad_x > 0:
@@ -2316,7 +2318,7 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
-    def draw_contours(self, levels, axes=None, **contour_args):
+    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
 
@@ -2329,6 +2331,10 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
             axes.
+        fill : `bool`, optional
+            Determines the style of the contours:
+            - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
+            - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
 
         Returns
         -------
@@ -2339,10 +2345,9 @@ class GenericMap(NDData):
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~matplotlib.axes.Axes.contour` function.
+        corresponding matplotlib method.
         """
         axes = self._check_axes(axes)
-
         levels = self._process_levels_arg(levels)
 
         # Pixel indices
@@ -2362,7 +2367,20 @@ class GenericMap(NDData):
             # Mask out the data array anywhere the coordinate arrays are not finite
             data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
 
-        cs = axes.contour(x, y, data, levels, **contour_args)
+        if fill:
+            # Ensure we have more than one level if fill is True
+            if len(levels) == 1:
+                max_val = np.nanmax(self.data)
+                # Ensure the existing level is less than max_val
+                if levels[0] < max_val:
+                    levels = np.append(levels, max_val)
+                else:
+                    raise ValueError(
+                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). "
+                        "Contour level must be smaller than the maximum data value to use `fill=True`.")
+            cs = axes.contourf(x, y, data, levels, **contour_args)
+        else:
+            cs = axes.contour(x, y, data, levels, **contour_args)
         return cs
 
     @peek_show
@@ -2530,8 +2548,7 @@ class GenericMap(NDData):
         msg = ('Cannot manually specify {0}, as the norm '
                'already has {0} set. To prevent this error set {0} on '
                '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-        if imshow_args.get('norm', None) is not None:
-            norm = imshow_args['norm']
+        if (norm := imshow_args.get('norm', None)) is not None:
             if 'vmin' in imshow_args:
                 if norm.vmin is not None:
                     raise ValueError(msg.format('vmin'))
@@ -2739,6 +2756,12 @@ class GenericMap(NDData):
         # Create and return a new GenericMap
         outmap = GenericMap(output_array, target_wcs.to_header(),
                             plot_settings=self.plot_settings)
+
+        # Check rsun mismatch
+        if self.rsun_meters != outmap.rsun_meters:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
 
         if return_footprint:
             return outmap, footprint

@@ -1,0 +1,13 @@
+[run]
+omit =
+  sunpy/cython_version*
+  sunpy/extern/*
+  sunpy/version*
+  sunpy/data/sample.py
+  sunpy/data/_sample.py
+  sunpy/data/test/_generate_asdf_test.py
+  */sunpy/cython_version*
+  */sunpy/extern/*
+  */sunpy/version*
+  */sunpy/data/sample.py
+  */sunpy/data/_sample.py

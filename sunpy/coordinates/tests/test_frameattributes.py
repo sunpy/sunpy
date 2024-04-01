@@ -130,8 +130,8 @@ def test_observer_not_default_representation(oca):
 
 def test_coord_get():
 
-    # Test default (instance=None)
-    obs = Helioprojective.observer
+    # Test default observer is None
+    obs = Helioprojective().observer
     assert obs is None
 
     # Test get

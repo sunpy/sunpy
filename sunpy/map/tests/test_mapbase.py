@@ -11,6 +11,7 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
+from packaging.version import Version
 
 import astropy.units as u
 import astropy.wcs
@@ -34,8 +35,100 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.util.util import fix_duplicate_notes
 from .conftest import make_simple_map
 from .strategies import matrix_meta
+
+
+def test_notes_combined():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_references():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
+
+def test_notes_combined_no_existing_notes():
+    map_documentation = """
+    Class Info.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_notes_no_references():
+    map_documentation = """
+    Class Info.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):
@@ -1182,9 +1275,6 @@ def test_validate_non_spatial(generic_map):
         sunpy.map.Map(generic_map.data, generic_map.meta)
 
 
-# Heliographic Map Tests
-
-
 def test_hg_coord(heliographic_test_map):
     assert heliographic_test_map.coordinate_system[0] == "CRLN-CAR"
     assert heliographic_test_map.coordinate_system[1] == "CRLT-CAR"
@@ -1207,12 +1297,13 @@ def test_hg_data_to_pix(heliographic_test_map):
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
 
-# Dimension testing
 
-
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
 def test_more_than_two_dimensions():
-    """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
+    """
+    Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
+    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)
@@ -1262,6 +1353,13 @@ def test_non_str_key():
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
         sunpy.map.GenericMap(np.zeros((10, 10)), header)
+
+
+def test_updating_of_naxisi_on_rotate(aia171_test_map):
+    aia171_test_map_rotated = aia171_test_map.rotate(45 * u.deg, missing=0)
+    assert aia171_test_map.data.shape == (128, 128)
+    assert aia171_test_map_rotated.meta['NAXIS1'] == 182
+    assert aia171_test_map_rotated.meta['NAXIS2'] == 182
 
 
 def test_wcs_isot(aia171_test_map):
@@ -1401,8 +1499,15 @@ def test_contour_units(simple_map):
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
+@pytest.mark.skipif(Version(matplotlib.__version__) < Version("3.6.0"), reason="Fails on old MPL versions, the first with block raises a different error")
+def test_contour_inputs(simple_map):
+    with pytest.raises(ValueError, match='Contour levels must be increasing'):
+        simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
 
-def test_contour_input(simple_map):
+    with pytest.raises(ValueError, match=r'The provided level \(1000.0\) is not smaller than the maximum data value \(8\)'):
+        simple_map.draw_contours(1000 * u.dimensionless_unscaled, fill=True)
+
+
     simple_map.meta['bunit'] = 'm'
 
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
@@ -1497,7 +1602,7 @@ def test_meta_modifications(aia171_test_map):
     assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
     assert set(aiamap_rot.meta.added_items.keys()) == set(['pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
-    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1', 'naxis1', 'naxis2'])
 
 
 def test_no_wcs_observer_info(heliographic_test_map):

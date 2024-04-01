@@ -695,6 +695,13 @@ def test_hme_hee_sunspice():
     assert_quantity_allclose(new.distance, old.distance)
 
 
+def test_hee_earth():
+    # The Earth in HEE should have negligible Z component
+    times = parse_time('2013-08-10 12:00') + np.arange(10) * u.s
+    earth_hee = get_earth(times).heliocentricearthecliptic
+    assert_quantity_allclose(0*u.m, earth_hee.cartesian.z, atol=1e-4*u.m)
+
+
 def test_hee_hee():
     # Test HEE loopback transformation
     obstime = Time('2001-01-01')
