@@ -256,7 +256,7 @@ class Scraper:
         Goes over http archives hosted on the web, to return list of files in the given timerange.
         """
         directories = self.range(timerange)
-        filesurls , errorlist = list()
+        filesurls = list()
         retry_counts = {} 
         while directories:
             directory = directories.pop(0)
@@ -280,7 +280,7 @@ class Scraper:
                 # Ignore missing directories (issue #2684).
                 if http_err.code in [400 , 404 , 403]:
                     #return the error object somehow 
-                    errorlist.append(http_err)
+                    log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
                     continue
                 if http_err.code in [429 , 504]:
                     # See if the server has told us how long to back off for
