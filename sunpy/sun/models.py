@@ -12,7 +12,7 @@ This module contains models of the Sun from various sources:
 
 References
 ----------
-* Turck-Chieze et al. (1988), ApJ, 335, 415-424, https://doi.org/10.1086/166936
+* `Turck-Chieze et al. (1988), *ApJ*, **335**, 415-424 <https://doi.org/10.1086/166936>`__
 """
 import numpy as np
 
@@ -90,16 +90,19 @@ evolution.add_index('time')
 @u.quantity_input
 def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', frame_time='sidereal'):
     r"""
-    This function computes the change in longitude over days in degrees.
+    Computes the change in longitude over a duration for a given latitude.
+
+    Since the Sun is not a rigid body, different heliographic latitudes rotate with
+    different periods.  This is known as solar differential rotation.
 
     Parameters
     ----------
     duration : `~astropy.units.Quantity`
-        Number of seconds to rotate over.
+        Amount of time to rotate over.
     latitude : `~astropy.units.Quantity`
-        heliographic coordinate latitude in Degrees.
+        Heliographic latitude.
     model : `str`
-        The differential rotation model to use.
+        The differential-rotation model to use.
 
         One of:
 
@@ -109,12 +112,15 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
         | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
 
     frame_time : `str`
-        One of : ``'sidereal'`` or  ``'synodic'``. Choose 'type of day' time reference frame.
+        If ``'sidereal'``, returns the change in longitude as referenced to distant
+        stars.  If ``'synodic'``, returns the apparent change in longitude as
+        observed by the average orbital motion of Earth, which results in a slower
+        rotation rate.  Defaults to ``'sidereal'``.
 
     Returns
     -------
-    longitude_delta : `~astropy.units.Quantity`
-        The change in longitude over days (units=degrees)
+    `~astropy.units.Quantity`
+        The change in longitude
 
     Notes
     -----
@@ -163,7 +169,7 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
                 28.19299667, 27.71932645, 27.05716463, 26.21032832,
                 25.210281  , 24.12033958, 23.03214991, 22.05449682] deg>
 
-    With rotation type 'allen':
+    With rotation model 'allen':
 
     >>> differential_rotation(2 * u.day, np.linspace(-70, 70, 20) * u.deg, model='allen')
     <Longitude [23.58186667, 24.14800185, 24.82808733, 25.57737945,
