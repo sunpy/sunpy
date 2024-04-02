@@ -294,10 +294,16 @@ def test_client_search(client):
     res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
     assert len(res) == 10
 
+
+@pytest.mark.remote_data
+def test_client_search_warning(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = 'rhessi_hxr_flare'
     with pytest.warns(SunpyUserWarning, match="Number of results is the same as current limit. "
                       "It is possible your query has been truncated. "
                       "If you want to change this, set `a.helio.MaxRecords` to a higher value."):
-        res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+        client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
 
 
 def test_client_search_limit(client):
