@@ -13,7 +13,6 @@ from sunpy.net.helio.parser import (
     webservice_parser,
     wsdl_retriever,
 )
-from sunpy.util.exceptions import SunpyUserWarning
 
 # Currently helio makes unverified requests - this filter should be removed when
 # https://github.com/sunpy/sunpy/issues/4401 is fixed
