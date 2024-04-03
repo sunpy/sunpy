@@ -152,8 +152,6 @@ class HECClient(BaseClient):
             if isinstance(elem, a.Time):
                 qrdict['Time'] = elem
             elif isinstance(elem, ha.MaxRecords):
-                if elem.value > 20000:
-                    raise ValueError("Helio will only return a max of 20000 results.")
                 qrdict['max_records'] = elem.value
             elif isinstance(elem, ha.TableName):
                 qrdict['table_name'] = elem.value
