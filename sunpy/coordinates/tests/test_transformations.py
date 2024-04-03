@@ -1055,6 +1055,36 @@ def test_rsun_preservation():
             assert_quantity_allclose(out_coord.rsun, args_out['rsun'])
 
 
+_framepairs = [
+    ('hcrs', 'heliographic_stonyhurst'),
+    ('heliographic_stonyhurst', 'heliographic_carrington'),
+    ('heliographic_stonyhurst', 'heliocentricinertial'),
+    ('heliographic_stonyhurst', 'heliocentric'),
+    ('heliocentric', 'helioprojective'),
+    ('heliocentricmeanecliptic', 'heliocentricearthecliptic'),
+    ('heliocentricearthecliptic', 'geocentricsolarecliptic'),
+    ('heliocentricmeanecliptic', 'geocentricearthequatorial'),
+    ('itrs', 'geomagnetic'),
+    ('geomagnetic', 'solarmagnetic'),
+    ('solarmagnetic', 'geocentricsolarmagnetospheric'),
+]
+
+
+@pytest.mark.parametrize(("frame1", "frame2"), _framepairs)
+@pytest.mark.parametrize("unit", [u.m, u.AU])
+def test_unit_preservation(frame1, frame2, unit):
+    coord = SkyCoord(CartesianRepresentation(0, 0, 0) * unit,
+                     frame=frame1, obstime="2001-01-01", observer="earth")
+
+    # Transform one direction and verify the unit is preserved
+    result1 = coord.transform_to(frame2)
+    assert result1.cartesian.xyz.unit == unit
+
+    # Transform back and verify the unit is preserved
+    result2 = result1.transform_to(frame1)
+    assert result2.cartesian.xyz.unit == unit
+
+
 def test_propagate_with_solar_surface():
     # Test propagating the meridian by 6 days of solar rotation
     meridian = SkyCoord(0*u.deg, np.arange(0, 90, 10)*u.deg, 1*u.AU,

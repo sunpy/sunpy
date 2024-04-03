@@ -1071,7 +1071,7 @@ def gei_to_hme(geicoord, hmeframe):
     earth_object_int = geicoord.cartesian.transform(rot_matrix)
 
     # Find the Sun-object vector in the intermediate frame
-    sun_object_int = sun_earth_int + earth_object_int
+    sun_object_int = earth_object_int + sun_earth_int  # add in this order to preserve the original units
     int_coord = int_frame.realize_frame(sun_object_int)
 
     # Convert to the final frame through HCRS
