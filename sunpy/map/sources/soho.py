@@ -8,7 +8,8 @@ from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy import log
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 

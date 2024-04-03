@@ -7,7 +7,8 @@ from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEclipti
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']

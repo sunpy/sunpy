@@ -12,7 +12,7 @@ from sunpy.map import GenericMap
 
 __all__ = ['GONGSynopticMap', 'GONGHalphaMap']
 
-from sunpy.map.mapbase import SpatialPair
+from sunpy.map.mixins.mapmeta import SpatialPair
 
 _SITE_NAMES = {
     'LE': 'Learmonth',

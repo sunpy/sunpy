@@ -7,7 +7,8 @@ import astropy.units as u
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['TRACEMap']
