@@ -256,13 +256,11 @@ class Scraper:
         """
         Goes over http archives hosted on the web, to return list of files in the given timerange.
         """
-        #print(type(timerange), timerange)
-        if self.directories == []:
-         self.directories = self.range(timerange)
+        directories = self.range(timerange)
         filesurls = list()
         retry_counts = {} 
-        while self.directories:
-            directory = self.directories.pop(0)
+        while directories:
+            directory = directories.pop(0)
             try:
                 opn = urlopen(directory)
                 try:
@@ -295,18 +293,17 @@ class Scraper:
                     #     log.debug(f"Converting retry_after failed: {e}")
                     #     retry_after = 2
                     #     raise
-                    #print("uhuh")
                     # log.debug(
                     #     f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
                     # )
                     #sleep(retry_after)
-                    if retry_counts.get(directory,0) > 5:
+                    if retry_counts.get(directory,0) > 4:
                      print(f"Exceeded maximum retry limit for {directory}")
                      log.debug(f"Exceeded maximum retry limit for {directory}")
                      raise
                     retry_counts[directory] = retry_counts.get(directory, 0) + 1
-                    self.directories.insert(0, directory)
-                    continue 
+                    directories.insert(0, directory)
+                    continue
             except (URLError) as ulr_err:
                log.debug(f"Failed to parse content from {directory}: {ulr_err}")
             except Exception:
