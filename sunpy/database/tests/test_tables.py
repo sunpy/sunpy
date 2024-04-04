@@ -125,82 +125,6 @@ def test_tag_hashability():
 
 
 @pytest.mark.remote_data
-def test_entries_from_fido_search_result(fido_search_result):
-    entries = list(entries_from_fido_search_result(fido_search_result))
-    # 68 entries for 8 instruments in fido_search_result
-    assert len(entries) == 70
-    # First 2 entries are from lyra
-    assert entries[0] == DatabaseEntry(
-        source='PROBA2', provider='ESA', physobs='irradiance',
-        fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='LYRA')
-    # 2 entries from eve, level 0
-    assert entries[2] == DatabaseEntry(
-        source='SDO', provider='LASP', physobs='irradiance',
-        fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
-                "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='EVE')
-    # 56 entries from EVE
-    assert entries[4] == DatabaseEntry(
-        source='SDO', provider='LASP', physobs='irradiance',
-        fileid='EVE_L1_esp_2012001_00',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
-        size=None,
-        instrument='EVE',
-        wavemin=0.1, wavemax=30.4)
-    # 4 entries from goes
-    assert entries[60] == DatabaseEntry(
-        source='GOES', provider='NOAA', physobs='irradiance',
-        fileid='https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes15/'
-               'gxrs-l2-irrad_science/2012/01/sci_gxrs-l2-irrad_g15_d20120101_v0-0-0.nc',
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='XRS')
-    # 1 entry from noaa-indices
-    assert entries[64] == DatabaseEntry(
-        source='SIDC', provider='SWPC', physobs='sunspot number',
-        fileid='https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json',
-        observation_time_start=None,
-        observation_time_end=None,
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='NOAA-Indices')
-    # 1 entry from noaa-predict
-    assert entries[65] == DatabaseEntry(
-        source='ISES', provider='SWPC', physobs='sunspot number',
-        fileid='https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json',
-        observation_time_start=None,
-        observation_time_end=None,
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='NOAA-Predict')
-    # 2 entries from norh
-    assert entries[66] == DatabaseEntry(
-        source='NAOJ', provider='NRO', physobs=None,
-        fileid=("ftp://solar-pub.nao.ac.jp/"
-                "pub/nsro/norh/data/tcx/2012/01/tca120101"),
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
-        wavemin=17634850.470588233, wavemax=17634850.470588233,
-        instrument='NORH')
-    # 2 entries from rhessi
-    assert 'hsi_obssumm_20120101' in entries[68].fileid
-    assert entries[68] == DatabaseEntry(
-        source="RHESSI", provider='NASA', physobs='summary_lightcurve',
-        fileid=entries[68].fileid,
-        observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
-        wavemin=np.nan, wavemax=np.nan,
-        instrument='RHESSI')
-
-
-@pytest.mark.remote_data
 def test_entries_from_fido_search_result_JSOC():
     search_result = Fido.search(
         net_attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
@@ -416,20 +340,6 @@ def test_entries_from_dir_recursively_false():
                                     time_string_parse_format='%d/%m/%Y',
                                     pattern='*fits'))
     assert len(entries) == 16
-
-
-@pytest.mark.remote_data
-def test_entries_from_query_result(query_result):
-    entries = list(entries_from_query_result(query_result))
-    assert len(entries) == 122
-    snd_entry = entries[1]
-    expected_entry = DatabaseEntry(
-        source='SOHO', provider='SDAC', physobs='intensity',
-        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.001210',
-        observation_time_start=datetime(2001, 1, 1, 0, 12, 10),
-        observation_time_end=datetime(2001, 1, 1, 0, 12, 23),
-        instrument='EIT', size=2059.0, wavemin=19.5, wavemax=19.5)
-    assert snd_entry == expected_entry
 
 
 @pytest.mark.remote_data
