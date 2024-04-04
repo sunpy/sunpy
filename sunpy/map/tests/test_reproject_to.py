@@ -13,8 +13,7 @@ from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.tests.helpers import figure_test
-from sunpy.util.exceptions import SunpyDeprecationWarning
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 
 @pytest.fixture
