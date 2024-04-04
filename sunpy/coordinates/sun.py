@@ -472,8 +472,7 @@ def print_params(t='now'):
     print(f'True (long, lat) = ({true_longitude(t).to_string()}, {true_latitude(t).to_string()})')
     print(f'Apparent (long, lat) = ({apparent_longitude(t).to_string()}, {apparent_latitude(t).to_string()})')
     print(f'True (RA, Dec) = ({true_rightascension(t).to_string()}, {true_declination(t).to_string()})')
-    print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t).to_string(),
-                                                 apparent_declination(t).to_string()))
+    print(f'Apparent (RA, Dec) = ({apparent_rightascension(t).to_string()}, {apparent_declination(t).to_string()})')
     print(f'Heliographic long. and lat of disk center = ({L0(t).to_string()}, {B0(t).to_string()})')
     print(f'Position angle of north pole = {P(t)}')
     print(f'Carrington rotation number = {carrington_rotation_number(t)}')

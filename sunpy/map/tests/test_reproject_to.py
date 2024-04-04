@@ -13,7 +13,7 @@ from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.tests.helpers import figure_test
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 
 @pytest.fixture
@@ -128,3 +128,12 @@ def test_deprecated_positional_args(aia171_test_map, hpc_header):
 
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass algorithm=interpolation, return_footprint=True as keyword args"):
         aia171_test_map.reproject_to(hpc_header, 'interpolation', True)
+
+
+def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
+    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
+        # Modifying the `hpc_header` rsun value to create a mismatch
+        hpc_header["rsun_ref"] += 1
+
+        # Reproject with the mismatched rsun
+        aia171_test_map.reproject_to(hpc_header)

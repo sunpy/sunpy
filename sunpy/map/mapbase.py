@@ -53,7 +53,7 @@ from sunpy.util.decorators import (
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.util import _figure_to_base64
+from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
@@ -193,7 +193,7 @@ class GenericMap(NDData):
         if cls.__doc__ is None:
             # Set an empty string, to prevent an error adding None to str in the next line
             cls.__doc__ = ''
-        cls.__doc__ += textwrap.indent(_notes_doc, "    ")
+        cls.__doc__ = fix_duplicate_notes(_notes_doc, cls.__doc__)
 
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
@@ -2738,6 +2738,12 @@ class GenericMap(NDData):
         # Create and return a new GenericMap
         outmap = GenericMap(output_array, target_wcs.to_header(),
                             plot_settings=self.plot_settings)
+
+        # Check rsun mismatch
+        if self.rsun_meters != outmap.rsun_meters:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
 
         if return_footprint:
             return outmap, footprint
