@@ -1,1 +1,0 @@
-Created a how to guide on fixing metadata that is either missing or incorrect before passing the header into the `~sunpy.map.Map` class.

@@ -1,3 +1,31 @@
+5.0.4 (2024-04-04)
+==================
+
+Bug Fixes
+---------
+
+- Fix a bug which caused ``Fido.search`` to crash due to SSL certificate verification error for the `~sunpy.net.helio.HECClient` now returns no results and logs a warning in this case. (`#7446 <https://github.com/sunpy/sunpy/pull/7446>`__)
+- The creation of the series string for a JSOC query was not adding the correct escape characters for  comparison values for keywords.
+  This was causing the JSOC to error. (`#7467 <https://github.com/sunpy/sunpy/pull/7467>`__)
+- Fixed a very minor inaccuracy in three `sunpy.map` utility functions (:func:`~sunpy.map.contains_full_disk`, :func:`~sunpy.map.coordinate_is_on_solar_disk`, and :func:`~sunpy.map.is_all_off_disk`) resulting from the accidental use of the small-angle approximation. (`#7512 <https://github.com/sunpy/sunpy/pull/7512>`__)
+- The :meth:`~sunpy.map.GenericMap.rotate` function now correctly updates the NAXISi. (`#7522 <https://github.com/sunpy/sunpy/pull/7522>`__)
+- Fixed an inaccuracy in the implementation of `~sunpy.coordinates.HeliocentricEarthEcliptic` and `~sunpy.coordinates.GeocentricSolarEcliptic` such that the Earth was not exactly in the XY plane, but rather had an error of up ~10 meters. (`#7530 <https://github.com/sunpy/sunpy/pull/7530>`__)
+- Fixed a bug with any coordinate transformation starting in `~sunpy.coordinates.GeocentricEarthEquatorial` (GEI) returning output with AU as the length unit, rather than preserving the length unit of the initial coordinate. (`#7545 <https://github.com/sunpy/sunpy/pull/7545>`__)
+
+
+Documentation
+-------------
+
+- Created a how to guide on fixing metadata that is either missing or incorrect before passing the header into the `~sunpy.map.Map` class. (`#7262 <https://github.com/sunpy/sunpy/pull/7262>`__)
+
+
+Internal Changes
+----------------
+
+- ``pyerfa`` is now a new direct dependency.
+  It has been an indirect dependency from sunpy 3.1, over two years ago. (`#7397 <https://github.com/sunpy/sunpy/pull/7397>`__)
+
+
 5.0.3 (2024-01-12)
 ==================
 
