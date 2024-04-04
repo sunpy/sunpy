@@ -33,8 +33,8 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
-from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 from sunpy.util.util import fix_duplicate_notes
+from sunpy.visualization.colormaps.cm import _get_mpl_cmap
 from .conftest import make_simple_map
 from .strategies import matrix_meta
 
