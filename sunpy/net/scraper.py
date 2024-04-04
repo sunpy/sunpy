@@ -74,6 +74,7 @@ class Scraper:
     def __init__(self, pattern, **kwargs):
         pattern = pattern.format(**kwargs)
         timepattern = pattern
+        self.directories = []
         for k, v in TIME_CONVERSIONS.items():
             if k in timepattern:
                 timepattern = timepattern.replace(k,v)
@@ -251,11 +252,13 @@ class Scraper:
         """
         Goes over http archives hosted on the web, to return list of files in the given timerange.
         """
-        directories = self.range(timerange)
+        #print(type(timerange), timerange)
+        if self.directories == []:
+         self.directories = self.range(timerange)
         filesurls = list()
         retry_counts = {} 
-        while directories:
-            directory = directories.pop(0)
+        while self.directories:
+            directory = self.directories.pop(0)
             try:
                 opn = urlopen(directory)
                 try:
@@ -277,30 +280,30 @@ class Scraper:
                 if http_err.code in [400 , 404 , 403]:
                     #return the error object somehow 
                     log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
-                    continue
+                    raise
                 if http_err.code in [429 , 504]:
                     # See if the server has told us how long to back off for
                     # retry the request. , max 
-                    retry_after = http_err.hdrs.get('Retry-After', 2)
-                    try:
-                        # Ensure that we can parse the header as an int in sec
-                        retry_after = int(retry_after)
-                    except Exception as e:
-                        log.debug(f"Converting retry_after failed: {e}")
-                        retry_after = 2
-                    log.debug(
-                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
-                    )
-                    sleep(retry_after)
+                    # retry_after = http_err.hdrs.get('Retry-After', 2)
+                    # try:
+                    #     # Ensure that we can parse the header as an int in sec
+                    #     retry_after = int(retry_after)
+                    # except Exception as e:
+                    #     log.debug(f"Converting retry_after failed: {e}")
+                    #     retry_after = 2
+                    #     raise
+                    #print("uhuh")
+                    # log.debug(
+                    #     f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
+                    # )
+                    #sleep(retry_after)
+                    if retry_counts.get(directory,0) > 5:
+                     print(f"Exceeded maximum retry limit for {directory}")
+                     log.debug(f"Exceeded maximum retry limit for {directory}")
+                     raise
                     retry_counts[directory] = retry_counts.get(directory, 0) + 1
-                    if retry_counts[directory] > 5:
-                        # We have retried too many times, now return the error object
-                        log.debug(f"Exceeded maximum retry limit for {directory}")
-                        continue
-                    # Put this dir back on the queue
-                    directories.insert(0, directory)
-                    continue
-                raise
+                    self.directories.insert(0, directory)
+                    continue 
             except (URLError) as ulr_err:
                log.debug(f"Failed to parse content from {directory}: {ulr_err}")
             except Exception:
@@ -326,6 +329,7 @@ class Scraper:
         urls = self.filelist(timerange)
         metalist = []
         for url in urls:
+            metadict = parse(self.pattern, url)
             if metadict is not None:
                 append = True
                 metadict = metadict.named
