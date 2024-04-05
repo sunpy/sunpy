@@ -297,7 +297,7 @@ def test_client_search(client):
     assert len(res) == 10
 
 
-def test_client_search_limit():
+def test_max_records_limit():
     with pytest.raises(ValueError, match="Helio will only return a max of 20000 results."):
         ha.MaxRecords(99999)
 
