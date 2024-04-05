@@ -14,6 +14,7 @@ from sunpy.net.helio.parser import (
     webservice_parser,
     wsdl_retriever,
 )
+from sunpy.util.exceptions import SunpyUserWarning
 
 # Currently helio makes unverified requests - this filter should be removed when
 # https://github.com/sunpy/sunpy/issues/4401 is fixed
@@ -291,7 +292,8 @@ def test_client_search(client):
     start = '2005/01/03'
     end = '2005/12/03'
     table_name = 'rhessi_hxr_flare'
-    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    with pytest.warns(SunpyUserWarning, match="Number of results is the same as current limit. "):
+        res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
     assert len(res) == 10
 
 
