@@ -529,7 +529,7 @@ class GenericMap(NDData):
     @property
     def quantity(self):
         """Unitful representation of the map data."""
-        return u.Quantity(self.data, self.unit, copy=False)
+        return u.Quantity(self.data, self.unit, copy=True)
 
     def _new_instance_from_op(self, new_data):
         """
