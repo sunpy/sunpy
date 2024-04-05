@@ -87,6 +87,7 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
+              - cairo
         - linux: py312-online
           posargs: -n auto --dist loadgroup --color=yes
     secrets:
