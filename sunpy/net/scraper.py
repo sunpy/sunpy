@@ -6,32 +6,18 @@ import re
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
-from urllib.error import HTTPError , URLError 
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
-
-from bs4 import BeautifulSoup 
+from urllib.error import URLError
 from bs4 import BeautifulSoup
+
 from sunpy import log
 from sunpy.extern.parse import parse
-from sunpy.net.scraper_utils import check_timerange, date_floor, extract_timestep
 from sunpy.net.scraper_utils import check_timerange, date_floor, extract_timestep
 
 __all__ = ['Scraper']
 
-# `parse` expressions to convert into datetime format
-TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
-            "{month:2d}": "%m",
-            "{month_name:l}": "%B",
-            "{month_name_abbr:l}": "%b",
-            "{day:2d}": "%d", "{day_of_year:3d}": "%j",
-            "{hour:2d}": "%H",
-            "{minute:2d}": "%M",
-            "{second:2d}": "%S",
-            "{microsecond:6d}": "%f",
-            "{millisecond:3d}": "%e", # added `%e` as for milliseconds `%f/1000`
-            "{week_number:2d}": "%W",
-        }
 # `parse` expressions to convert into datetime format
 TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{month:2d}": "%m",
@@ -59,11 +45,6 @@ class Scraper:
         as a string format, the former represented using double curly-brackets
         to differentiate from the latter.
         The accepted parse representations for datetime values are as given in ``TIME_CONVERSIONS``.
-        A string containing the url with the date and other information to be
-        extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
-        as a string format, the former represented using double curly-brackets
-        to differentiate from the latter.
-        The accepted parse representations for datetime values are as given in ``TIME_CONVERSIONS``.
         This can also be a uri to a local file patterns.
 
 
@@ -79,11 +60,8 @@ class Scraper:
     >>> from sunpy.net import Scraper
     >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}{{second:2d}}.fits')
-    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
-    ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}{{second:2d}}.fits')
     >>> swap = Scraper(pattern, instrument='swap')
     >>> print(swap.pattern)
-    http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
     http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
@@ -97,18 +75,6 @@ class Scraper:
     def __init__(self, pattern, **kwargs):
         pattern = pattern.format(**kwargs)
         timepattern = pattern
-        self.directories = []
-        for k, v in TIME_CONVERSIONS.items():
-            if k in timepattern:
-                timepattern = timepattern.replace(k,v)
-        self.timepattern = timepattern
-        if "year:4d" in pattern and "year:2d" in pattern:
-            pattern = pattern.replace("year:2d", ":2d")
-        self.pattern = pattern
-    def __init__(self, pattern, **kwargs):
-        pattern = pattern.format(**kwargs)
-        timepattern = pattern
-        self.directories = []
         for k, v in TIME_CONVERSIONS.items():
             if k in timepattern:
                 timepattern = timepattern.replace(k,v)
@@ -118,33 +84,14 @@ class Scraper:
         self.pattern = pattern
         self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
         milliseconds = re.search(r'\%e', self.timepattern)
-        milliseconds = re.search(r'\%e', self.timepattern)
         if not milliseconds:
-            self.now = datetime.now().strftime(self.timepattern)
             self.now = datetime.now().strftime(self.timepattern)
         else:
             now = datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(f'{self.timetimepattern[0:milliseconds.start()]}{milliseconds_:03d}{self.timetimepattern[milliseconds.end():]}')
+            self.now = now.strftime(f'{self.timepattern[0:milliseconds.start()]}{milliseconds_:03d}{self.timepattern[milliseconds.end():]}')
 
     def matches(self, filepath, date):
-        """
-        Checks if the given filepath is how the file path is expected
-        to look on given date based on the pattern.
-
-        Parameters
-        ----------
-        filepath : `str`
-            File path to check.
-        date : `datetime.datetime` or `astropy.time.Time`
-            The date for which to check.
-
-        Returns
-        -------
-        `bool`
-            `True` if the given filepath matches with the calculated one for given date, else `False`.
-        """
-        return parse(date.strftime(self.timepattern), filepath) is not None
         """
         Checks if the given filepath is how the file path is expected
         to look on given date based on the pattern.
@@ -182,15 +129,10 @@ class Scraper:
         if '/' in self.timepattern:
             directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
         timestep = extract_timestep(directorypattern)
-        if '/' in self.timepattern:
-            directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
-        timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:
             directories = []
-            cur = date_floor(timerange.start, timestep)
-            end = date_floor(timerange.end, timestep) + timestep
             cur = date_floor(timerange.start, timestep)
             end = date_floor(timerange.end, timestep) + timestep
             while cur < end:
@@ -218,8 +160,6 @@ class Scraper:
         >>> from sunpy.net import Scraper
         >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
-        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
-        ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
         >>> swap = Scraper(pattern, instrument='swap')
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-01T00:12:00')
@@ -227,18 +167,6 @@ class Scraper:
         ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
          'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
          'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001157.fits']
-
-        While writing the pattern, we can also leverage parse capabilities by using the ``{{}}`` notation to match parts of the filename that cannot be known beforehand:
-        >>> from sunpy.net import Scraper
-        >>> from sunpy.time import TimeRange
-        >>> pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
-        >>> lyra = Scraper(pattern)
-        >>> timerange = TimeRange('2023-03-06T00:08:00','2023-03-12T00:12:00')
-        >>> print(swap.filelist(timerange)) # doctest: +REMOTE_DATA
-        ['http://proba2.oma.be/lyra/data/bsd/2023/03/06/lyra_20230306-000000_lev2_std.fits',
-        'http://proba2.oma.be/lyra/data/bsd/2023/03/06/lyra_20230306-000000_lev3_std.fits',
-        '...',
-        'http://proba2.oma.be/lyra/data/bsd/2023/03/12/lyra_20230312-000000_lev3_std.fits']
 
         While writing the pattern, we can also leverage parse capabilities by using the ``{{}}`` notation to match parts of the filename that cannot be known beforehand:
         >>> from sunpy.net import Scraper
@@ -261,8 +189,6 @@ class Scraper:
         """
         directories = self.range(timerange)
         if urlsplit(directories[0]).scheme == "ftp":
-            return self._ftpfilelist(timerange)
-        elif urlsplit(directories[0]).scheme == "file":
             return self._ftpfilelist(timerange)
         elif urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
@@ -362,7 +288,6 @@ class Scraper:
                     except Exception as e:
                         log.debug(f"Converting retry_after failed: {e}")
                         retry_after = 2
-                        raise
                     log.debug(
                         f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
                     )
@@ -399,16 +324,10 @@ class Scraper:
         metalist = []
         for url in urls:
             metadict = parse(self.pattern, url)
-            metadict = parse(self.pattern, url)
             if metadict is not None:
                 append = True
                 metadict = metadict.named
                 metadict['url'] = url
-                if 'month' not in metadict:
-                    if 'month_name' in metadict:
-                        metadict['month'] = datetime.strptime(metadict['month_name'], '%B').month
-                    elif 'month_name_abbr' in metadict:
-                        metadict['month'] = datetime.strptime(metadict['month_name_abbr'], '%b').month
                 if 'month' not in metadict:
                     if 'month_name' in metadict:
                         metadict['month'] = datetime.strptime(metadict['month_name'], '%B').month
