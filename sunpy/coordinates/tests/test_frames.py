@@ -525,11 +525,11 @@ def off_limb_coord():
 def test_screen_classes(off_limb_coord, screen_class):
     # Smoke test for spherical screen
     with pytest.warns(SunpyUserWarning, match='The conversion of these 2D helioprojective coordinates to 3D is all NaNs'):
-            olc_3d = off_limb_coord.make_3d()
+            olc_3d = off_limb_coord[0].make_3d()
     assert np.isnan(olc_3d.distance).all()
-    sph_screen = screen_class(off_limb_coord.observer)
+    sph_screen = screen_class(off_limb_coord[0].observer)
     with sph_screen:
-        olc_3d = off_limb_coord.make_3d()
+        olc_3d = off_limb_coord[0].make_3d()
     assert not np.isnan(olc_3d.distance).all()
 
 
