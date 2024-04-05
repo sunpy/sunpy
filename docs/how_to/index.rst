@@ -13,9 +13,11 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
 
    coord_components
    create_a_map
+   create_rectangle_on_map
    create_coords
    create_custom_map
    create_custom_timeseries
+   fix_map_metadata
    parse_time
    remote_data_manager
    search_multiple_wavelengths

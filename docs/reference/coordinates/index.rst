@@ -8,6 +8,7 @@ This sub-package contains:
 * A robust framework for working with solar-physics coordinate systems
 * Functions to obtain the locations of solar-system bodies (`sunpy.coordinates.ephemeris`)
 * Functions to calculate Sun-specific coordinate information (`sunpy.coordinates.sun`)
+* Bridge module to enable the use of the `~astropy.coordinates.SkyCoord` API to perform computations using `SPICE <https://naif.jpl.nasa.gov/naif/>`__ kernels (`sunpy.coordinates.spice`)
 
 The SunPy coordinate framework extends the
 :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
@@ -78,6 +79,18 @@ Supported Coordinate Systems
      - GSE
      - `~sunpy.coordinates.frames.GeocentricSolarEcliptic`
      -
+   * - Geomagnetic
+     - MAG
+     - `~sunpy.coordinates.frames.Geomagnetic`
+     -
+   * - Solar Magnetic
+     - SM
+     - `~sunpy.coordinates.frames.SolarMagnetic`
+     -
+   * - GeocentricSolarMagnetospheric
+     - GSM
+     - `~sunpy.coordinates.frames.GeocentricSolarMagnetospheric`
+     -
 
 
 For a description of these coordinate systems,
@@ -92,6 +105,8 @@ Reference/API
 .. automodapi:: sunpy.coordinates
 
 .. automodapi:: sunpy.coordinates.ephemeris
+
+.. automodapi:: sunpy.coordinates.spice
 
 .. automodapi:: sunpy.coordinates.sun
 

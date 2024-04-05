@@ -76,11 +76,6 @@ HELIO
 .. automodapi:: sunpy.net.helio.attrs
    :headings: ^"
 
-Helioviewer
------------
-
-.. automodapi:: sunpy.net.helioviewer
-   :headings: ^"
 
 Internal Classes and Functions
 ==============================

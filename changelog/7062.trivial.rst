@@ -1,2 +1,0 @@
-Removed the Binder configuration and link in README.
-This is because the configuration was untested, and does not currently work.

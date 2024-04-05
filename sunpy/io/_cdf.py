@@ -60,7 +60,7 @@ def read_cdf(fname):
             continue
         # TODO: use to_astropy_time() instead here when we drop pandas in timeseries
         index = CDFepoch.to_datetime(index)
-        df = pd.DataFrame(index=pd.DatetimeIndex(name=index_key, data=index))
+        df_dict = {}
         units = {}
 
         for var_key in sorted(var_keys):
@@ -111,13 +111,13 @@ def read_cdf(fname):
             elif data.ndim == 2:
                 # Multiple columns, give each column a unique label
                 for i, col in enumerate(data.T):
-                    df[var_key + f'_{i}'] = col
+                    df_dict[var_key + f'_{i}'] = col
                     units[var_key + f'_{i}'] = unit
             else:
                 # Single column
-                df[var_key] = data
+                df_dict[var_key] = data
                 units[var_key] = unit
-
+        df = pd.DataFrame(df_dict, index=pd.DatetimeIndex(name=index_key, data=index))
         all_ts.append(GenericTimeSeries(data=df, units=units, meta=meta))
 
     if not len(all_ts):

@@ -52,6 +52,8 @@ _SAMPLE_DATA = {
     "STEREO_A_195_JUN2012": "20120601_000530_n4eua.fits",
     "STEREO_B_195_JUN2012": "20120601_000530_n4eub.fits",
     "SWAP_LEVEL1_IMAGE": "swap_lv1_20110607_063329.fits",
+    "AIA_STEREOSCOPIC_IMAGE": "aia_lev1_171a_2023_07_06t00_05_33_35z_image_lev1.fits",
+    "EUVI_STEREOSCOPIC_IMAGE": "20230706_000525_n4eua.fts"
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to

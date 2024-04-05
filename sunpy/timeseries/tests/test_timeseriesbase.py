@@ -18,7 +18,7 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 # Test fixtures are in ../conftest.py
@@ -549,11 +549,6 @@ def test_timeseries_array():
         ts = sunpy.timeseries.TimeSeries(data, {})
         assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
-
-def test_deprecated_positional_peek_args(many_ts):
-    # Check that all positional arguments to peek() are deprecated
-    with pytest.warns(SunpyDeprecationWarning, match='passing these as positional arguments will result in an error'):
-        many_ts.peek(many_ts.columns[0:1])
 
 # TODO:
 # _validate_units

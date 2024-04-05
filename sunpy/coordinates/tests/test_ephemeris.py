@@ -1,4 +1,5 @@
 
+import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from numpy.testing import assert_array_equal
@@ -11,6 +12,10 @@ from astropy.time import Time
 
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth, get_horizons_coord
 from sunpy.coordinates.tests.strategies import times
+
+# Ensure all of these tests are run on the same parallel worker
+# There are online flakey tests that are not parallel safe
+pytestmark = pytest.mark.xdist_group(name="ephemeris")
 
 
 def test_get_body_heliographic_stonyhurst():
@@ -75,9 +80,6 @@ def test_get_earth():
 
 @pytest.mark.remote_data
 def test_get_horizons_coord():
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
     assert_quantity_allclose(e1.lon, 0*u.deg, atol=5e-6*u.deg)
@@ -92,9 +94,6 @@ def test_get_horizons_coord():
 
 @pytest.mark.remote_data
 def test_get_horizons_coord_array_time():
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     # Validate against published values from the Astronomical Almanac (2013, C8-C13)
     array_time = Time(['2013-05-01', '2013-06-01', '2013-04-01', '2013-03-01'])
     e = get_horizons_coord('Geocenter', array_time)
@@ -116,11 +115,14 @@ def test_get_horizons_coord_array_time():
     assert_quantity_allclose(e[3].radius, 0.9908173*u.AU, atol=5e-7*u.AU)
 
 
+def test_get_horizons_coord_array_time_too_large():
+    array_time = Time('2001-02-03') + np.arange(10001) * u.s
+    with pytest.raises(ValueError, match="For more than 10,000 time values"):
+        get_horizons_coord('Does not matter', array_time)
+
+
 @pytest.mark.remote_data
 def test_get_horizons_coord_dict_time():
-    # get_horizons_coord() depends on astroquery
-    pytest.importorskip("astroquery")
-
     time_dict = {'start': '2013-03-01', 'stop': '2013-03-03', 'step': '1d'}
     time_ref = Time(['2013-03-01', '2013-03-02', '2013-03-03'])
 
@@ -135,20 +137,27 @@ def test_get_horizons_coord_dict_time():
     assert_quantity_allclose(e.radius, e_ref.radius)
 
 
-@pytest.fixture
-def use_DE440s():
-    # This class is for test functions that need the Astropy ephemeris to be set to DE432s
-    pytest.importorskip("astroquery")
+def test_get_horizons_coord_bad_id_type():
+    with pytest.raises(ValueError, match="Invalid id_type"):
+        get_horizons_coord('Garbage', '2001-02-03', id_type="unknown")
 
-    old_ephemeris = solar_system_ephemeris.get()
-    try:
-        solar_system_ephemeris.set('de440s')
-    except ValueError:
-        pytest.skip("The installed version of Astropy cannot set the ephemeris to DE440s")
 
-    yield
+@pytest.mark.remote_data
+def test_get_horizons_coord_multiple_major_matches():
+    with pytest.raises(ValueError, match="Multiple major-bodies match string"):
+        get_horizons_coord('Neptune', '2001-02-03')
 
-    solar_system_ephemeris.set(old_ephemeris)
+
+@pytest.mark.remote_data
+def test_get_horizons_coord_multiple_minor_matches():
+    with pytest.raises(ValueError, match="Matching small-bodies:"):
+        get_horizons_coord('Halley', '2001-02-03')
+
+
+@pytest.mark.remote_data
+def test_get_horizons_coord_zero_matches():
+    with pytest.raises(ValueError, match="No matches found."):
+        get_horizons_coord('This will not match', '2001-02-03')
 
 
 @pytest.mark.remote_data

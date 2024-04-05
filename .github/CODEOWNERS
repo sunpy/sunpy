@@ -1,9 +1,6 @@
 sunpy/coordinates/                @sunpy/coordinates
 docs/code_ref/coordinates.rst     @sunpy/coordinates
 
-sunpy/database/                   @sunpy/database
-docs/code_ref/database.rst        @sunpy/database
-
 sunpy/image/                      @sunpy/image
 docs/code_ref/image.rst           @sunpy/image
 

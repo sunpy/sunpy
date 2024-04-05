@@ -192,8 +192,8 @@ def contains_full_disk(smap):
     Returns
     -------
     `~bool`
-        Returns `False` if any of the coordinates at the edge of the map
-         are less than one solar radius away from the center of the Sun.
+        Returns `True` if the map contains the full disk of the Sun,
+        otherwise `False`.
 
     Notes
     -----
@@ -205,12 +205,8 @@ def contains_full_disk(smap):
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
-    # Calculate the distance of the edge of the world in solar radii
-    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
-
-    # Test if all the edge pixels are more than one solar radius distant
-    # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and contains_solar_center(smap)
+    # Check that the edge pixels are all beyond the limb yet the Sun center is in the map
+    return np.all(~coordinate_is_on_solar_disk(edge_of_world)) and contains_solar_center(smap)
 
 
 def contains_solar_center(smap):
@@ -255,16 +251,16 @@ def coordinate_is_on_solar_disk(coordinates):
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
     _verify_coordinate_helioprojective(coordinates)
-    # Calculate the angle of every pixel from the center of the Sun and compare it the angular
-    # radius of the Sun.
-    return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
+    # Calculate the radial angle from the center of the Sun (do not assume small angles)
+    # and compare it to the angular radius of the Sun
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):
     """
     Checks if none of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
 
-    This is done by checking if the edges of the map do not contain the solar limb, and
+    This is done by checking if the edges of the map are all beyond the solar limb, and
     checking that the solar center is not in the map.
 
     Parameters
@@ -275,23 +271,19 @@ def is_all_off_disk(smap):
     Returns
     -------
     `~bool`
-        Returns `True` if all map pixels have an angular radius greater than
-        the angular radius of the Sun.
+        Returns `True` if the map does not contain any part of the disk of the
+        Sun, otherwise `False`.
 
     Notes
     -----
     For coronagraph images such as those from LASCO C2 and C3 the full disk is
-    within the field of view of the instrument, but the solar disk itself is not imaged.
-    For such images this function will return `False`.
+    within the field of view of the instrument, even though the solar disk
+    itself is not imaged.  For such images this function will return `False`.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
-    # Calculate the distance of the edge of the world in solar radii
-    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
-
-    # Test if all the edge pixels are more than one solar radius distant
-    # and that the solar center is
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~contains_solar_center(smap)
+    # Check that the edge pixels are all beyond the limb and the Sun center is not in the map
+    return np.all(~coordinate_is_on_solar_disk(edge_of_world)) and ~contains_solar_center(smap)
 
 
 def is_all_on_disk(smap):

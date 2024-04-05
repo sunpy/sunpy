@@ -1,0 +1,38 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/sunpy/schemas/geocentricsolarmagnetospheric-1.0.0"
+
+title: |
+  Represents a Geocentric Solar Magnetospheric (GSM) coordinate object from SunPy
+
+examples:
+  -
+    - A Geocentric Solar Magnetospheric frame without data
+    - asdf-standard-1.5.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarmagnetospheric-1.0.0>
+          frame_attributes:
+            magnetic_model: igrf13
+  -
+    - A Geocentric Solar Magnetospheric frame with an obstime
+    - asdf-standard-1.5.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarmagnetospheric-1.0.0>
+          frame_attributes:
+            magnetic_model: igrf13
+            obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'
+
+allOf:
+  - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.0.0"
+  - properties:
+      frame_attributes:
+        type: object
+        properties:
+          magnetic_model:
+            type: string
+          obstime:
+            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
+        required: [magnetic_model]
+        additionalProperties: False
+...

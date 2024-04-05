@@ -18,25 +18,17 @@ from matplotlib.colors import Normalize
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
+import sunpy.data.sample
 import sunpy.map
 from sunpy.coordinates import Helioprojective
-from sunpy.net import Fido
-from sunpy.net import attrs as a
 
 ##############################################################################
 # Download co-temporal SDO/AIA image STEREO/EUVI images.  The EUVI map does
 # not explicitly define their reference radius of the Sun, so we set it to be
 # the same as for the AIA map to silence some informational messages.
 
-obstime = a.Time('2023/07/06 00:05:30', '2023/07/06 00:05:35')
-
-result = Fido.search(obstime, a.Instrument.aia, a.Wavelength(171*u.angstrom))
-aia_file = Fido.fetch(result)
-aia_map = sunpy.map.Map(aia_file)
-
-result = Fido.search(obstime, a.Detector.euvi, a.Wavelength(171*u.angstrom))
-euvi_file = Fido.fetch(result)
-euvi_map = sunpy.map.Map(euvi_file)
+aia_map = sunpy.map.Map(sunpy.data.sample.AIA_STEREOSCOPIC_IMAGE)
+euvi_map = sunpy.map.Map(sunpy.data.sample.EUVI_STEREOSCOPIC_IMAGE)
 euvi_map.meta['rsun_ref'] = aia_map.meta['rsun_ref']
 
 
@@ -51,21 +43,23 @@ print(euvi_map.observer_coordinate.separation(aia_map.observer_coordinate))
 # same direction, but at a distance of 1 AU, and then reproject both maps. The
 # purpose is to make the Sun exactly the same size in pixels in both maps.
 
+
 def reproject_to_1au(in_map):
     header = sunpy.map.make_fitswcs_header(
-                 (1000, 1000),
-                 SkyCoord(
-                     0*u.arcsec, 0*u.arcsec,
-                     frame='helioprojective',
-                     obstime=in_map.date,
-                     observer=in_map.observer_coordinate.realize_frame(
-                         in_map.observer_coordinate.represent_as('unitspherical') * u.AU
-                     )
-                 ),
-                 scale=(2.2, 2.2)*u.arcsec/u.pixel
-             )
+        (1000, 1000),
+        SkyCoord(
+            0*u.arcsec, 0*u.arcsec,
+            frame='helioprojective',
+            obstime=in_map.date,
+            observer=in_map.observer_coordinate.realize_frame(
+                in_map.observer_coordinate.represent_as('unitspherical') * u.AU
+            )
+        ),
+        scale=(2.2, 2.2)*u.arcsec/u.pixel
+    )
     with Helioprojective.assume_spherical_screen(in_map.observer_coordinate):
         return in_map.reproject_to(header)
+
 
 euvi_map = reproject_to_1au(euvi_map)
 aia_map = reproject_to_1au(aia_map)

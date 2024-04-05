@@ -8,61 +8,65 @@ from sunpy.util.sysinfo import (
     system_info,
 )
 
+EXTRA_DEPS = [
+    'asdf-astropy',
+    'asdf',
+    'astropy',
+    'beautifulsoup4',
+    'cdflib',
+    'dask',
+    'drms',
+    'h5netcdf',
+    'h5py',
+    'lxml',
+    'matplotlib',
+    'mpl-animators',
+    'numpy',
+    'packaging',
+    'pandas',
+    'parfive',
+    'pyerfa',
+    'python-dateutil',
+    'reproject',
+    'scikit-image',
+    'scipy',
+    'zeep',
+]
+
+EXTRA_ALL_GROUPS = [
+    'all',
+    'asdf',
+    'dask',
+    'dev',
+    'docs-gallery',
+    'docs',
+    'image',
+    'jpeg2000',
+    'map',
+    'net',
+    'opencv',
+    'required',
+    'spice',
+    'tests',
+    'timeseries',
+    'visualization',
+]
 
 def test_find_dependencies():
-    missing, installed = find_dependencies()
-    assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive"])
-
-    missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
-    assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(['asdf',
-                                                     'asdf-astropy',
-                                                     'astropy',
-                                                     'numpy',
-                                                     'parfive',
-                                                     'packaging',
-                                                     'dask',
-                                                     'sqlalchemy',
-                                                     'scikit-image',
-                                                     'scipy',
-                                                     'glymur',
-                                                     'lxml',
-                                                     'matplotlib',
-                                                     'mpl-animators',
-                                                     'reproject',
-                                                     'beautifulsoup4',
-                                                     'drms',
-                                                     'python-dateutil',
-                                                     'tqdm',
-                                                     'zeep',
-                                                     'cdflib',
-                                                     'h5netcdf',
-                                                     'h5py',
-                                                     'pandas'])
+    """
+    This is ran in several test environments with varying dependencies installed.
+    So it will be common to find not docs installed, so there will be "missing" dependencies.
+    But this is not a problem.
+    """
+    _, installed = find_dependencies(package="sunpy", extras=["required", *EXTRA_ALL_GROUPS])
+    for package in EXTRA_DEPS:
+        assert package in installed
 
 
 def test_missing_dependencies_by_extra():
     missing = missing_dependencies_by_extra()
-    assert sorted(list(missing.keys())) == sorted(['all',
-                                                   'asdf',
-                                                   'required',
-                                                   'dask',
-                                                   'database',
-                                                   'dev',
-                                                   'docs',
-                                                   'docs-gallery',
-                                                   'image',
-                                                   'jpeg2000',
-                                                   'map',
-                                                   'net',
-                                                   'tests',
-                                                   'timeseries',
-                                                   'visualization'])
-    missing = missing_dependencies_by_extra(exclude_extras=["all"])
-    assert sorted(list(missing.keys())) == sorted(['asdf', 'required', 'dask', 'database', 'dev', 'docs',
-                                                   'docs-gallery', 'image', 'jpeg2000', 'map', 'net',
-                                                   'tests', 'timeseries', 'visualization'])
+    for group in EXTRA_ALL_GROUPS:
+        assert group in missing
 
 
 def test_resolve_requirement_versions():

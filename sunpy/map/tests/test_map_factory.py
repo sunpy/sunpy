@@ -13,7 +13,12 @@ import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.tests.helpers import figure_test, skip_glymur
-from sunpy.util.exceptions import NoMapsInFileError, SunpyMetadataWarning, SunpyUserWarning
+from sunpy.util.exceptions import (
+    NoMapsInFileError,
+    SunpyDeprecationWarning,
+    SunpyMetadataWarning,
+    SunpyUserWarning,
+)
 
 a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
 
@@ -154,7 +159,7 @@ def test_patterns(eit_fits_directory):
     header = {'cdelt1': 10, 'cdelt2': 10,
               'telescop': 'sunpy',
               'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         pair_map = sunpy.map.Map(data, header)
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -165,7 +170,7 @@ def test_patterns(eit_fits_directory):
               'detector': 1,
               'instrume': 50,
               'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN'):
+    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         pair_map = sunpy.map.Map(data, header)
     assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -201,6 +206,7 @@ def test_silence_errors(silence, error, match):
     with pytest.raises(error, match=match):
         sunpy.map.Map(data, {}, silence_errors=silence)
 
+
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('allow_errors', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
@@ -212,22 +218,13 @@ def test_allow_errors(allow_errors, error, match):
     with pytest.raises(error, match=match):
         sunpy.map.Map(data, {}, allow_errors=allow_errors)
 
+
 def test_dask_array():
     dask_array = pytest.importorskip('dask.array')
     amap = sunpy.map.Map(AIA_171_IMAGE)
     da = dask_array.from_array(amap.data, chunks=(1, 1))
     pair_map = sunpy.map.Map(da, amap.meta)
     assert isinstance(pair_map, sunpy.map.GenericMap)
-
-
-def test_databaseentry():
-    pytest.importorskip('sqlalchemy')
-    sunpy_database = pytest.importorskip('sunpy.database')
-    db = sunpy_database.Database(url='sqlite://', default_waveunit='angstrom')
-    db.add_from_file(AIA_171_IMAGE)
-    res = db.get_entry_by_id(1)
-    db_map = sunpy.map.Map(res)
-    assert isinstance(db_map, sunpy.map.GenericMap)
 
 
 @pytest.mark.remote_data
@@ -274,13 +271,11 @@ def test_map_list_urls_cache():
 ])
 def test_sources(file, mapcls):
     p = pathlib.Path(get_test_filepath(file))
-    if p.suffix == '.header':
-        m = get_dummy_map_from_header(p)
-    else:
-        m = sunpy.map.Map(p)
+    m = get_dummy_map_from_header(p) if p.suffix == '.header' else sunpy.map.Map(p)
     assert isinstance(m, mapcls)
 
 
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises a warning for this test")
 def test_no_2d_hdus(tmpdir):
     # Create a fake FITS file with a valid header but 1D data
     tmp_fpath = str(tmpdir / 'data.fits')
@@ -291,7 +286,8 @@ def test_no_2d_hdus(tmpdir):
         sunpy.map.Map(tmp_fpath)
 
     with pytest.warns(SunpyUserWarning, match='One of the arguments failed to parse'):
-        sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
+        with pytest.warns(SunpyDeprecationWarning, match='"silence_errors" was deprecated in version 5.1 and will be removed in a future version'):
+            sunpy.map.Map([tmp_fpath, AIA_171_IMAGE], silence_errors=True)
 
 
 @skip_glymur
@@ -326,11 +322,12 @@ def test_map_fits():
     assert isinstance(fits_map, sunpy.map.GenericMap)
     assert fits_map.data.base is not None
 
+
 def test_map_list_of_files_with_one_broken():
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits')]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map(files, allow_errors=True)
-        assert amap.data.shape == (128,128)
+        assert amap.data.shape == (128, 128)
 
     files = [AIA_171_IMAGE, get_test_filepath('not_actually_fits.fits'), AIA_171_IMAGE]
     with pytest.warns(SunpyUserWarning, match='Failed to read'):

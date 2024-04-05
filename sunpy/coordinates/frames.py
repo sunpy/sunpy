@@ -4,6 +4,7 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+import os
 import re
 import traceback
 from contextlib import contextmanager
@@ -11,7 +12,8 @@ from contextlib import contextmanager
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import ConvertError, QuantityAttribute
+from astropy.constants import R_earth
+from astropy.coordinates import Attribute, ConvertError, Latitude, Longitude, QuantityAttribute
 from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
 from astropy.coordinates.representation import (
     CartesianDifferential,
@@ -22,6 +24,7 @@ from astropy.coordinates.representation import (
     UnitSphericalRepresentation,
 )
 from astropy.time import Time
+from astropy.utils.data import download_file
 
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
@@ -32,11 +35,12 @@ from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunP
 
 _J2000 = Time('J2000.0', scale='tt')
 
-__all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic',
+__all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic', 'BaseMagnetic',
            'HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
            'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
-           'HeliocentricInertial', 'GeocentricEarthEquatorial']
+           'HeliocentricInertial', 'GeocentricEarthEquatorial',
+           'Geomagnetic', 'SolarMagnetic', 'GeocentricSolarMagnetospheric']
 
 
 def _frame_parameters():
@@ -98,6 +102,13 @@ def _frame_parameters():
     ret['equinox'] = (f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
                       "        The date for the mean vernal equinox.\n"
                       "        Defaults to the J2000.0 equinox.")
+    ret['magnetic_model'] = ("magnetic_model : `str`\n"
+                             "        The IGRF model to use for determining the orientation of\n"
+                             "        Earth's magnetic dipole pole.  The supported options are\n"
+                             "        ``'igrf13'`` (default), ``'igrf12'``, ``'igrf11'``, and\n"
+                             "        ``'igrf10'``.")
+    ret['igrf_reference'] = ("* `International Geomagnetic Reference Field (IGRF) "
+                             "<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__")
 
     return ret
 
@@ -150,7 +161,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
         # If a frame wrap angle is set, use that wrap angle for any spherical representations.
         if self._wrap_angle is not None and \
-           isinstance(data, (UnitSphericalRepresentation, SphericalRepresentation)):
+           isinstance(data, UnitSphericalRepresentation | SphericalRepresentation):
             data.lon.wrap_angle = self._wrap_angle
         return data
 
@@ -166,30 +177,6 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     def _is_2d(self):
         return (self._data is not None and self._data.norm().unit is u.one
                 and u.allclose(self._data.norm(), 1*u.one))
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        # TODO: Remove this after the minimum Astropy dependency includes astropy/astropy#12005
-        cls._fix_property_docstrings()
-
-    @classmethod
-    def _fix_property_docstrings(cls):
-        # This class method adds docstrings to properties dynamically created by
-        # BaseCoordinateFrame.__init_subclass__().  Accordingly, this method needs to itself be
-        # called from SunPyBaseCoordinateFrame.__init_subclass__() to work for our subclasses.
-        property_docstrings = {
-            'default_representation': "Default representation for position data",
-            'default_differential': "Default representation for differential data",
-            'frame_specific_representation_info': "Mapping for frame-specific component names",
-        }
-        for prop, docstring in property_docstrings.items():
-            if getattr(cls, prop).__doc__ is None:
-                setattr(getattr(cls, prop), '__doc__', docstring)
-
-
-# TODO: Remove this after the minimum Astropy dependency includes astropy/astropy#12005
-SunPyBaseCoordinateFrame._fix_property_docstrings()
 
 
 class BaseHeliographic(SunPyBaseCoordinateFrame):
@@ -847,3 +834,186 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
     Aberration due to Earth motion is not included.
     """
     equinox = TimeFrameAttributeSunPy(default=_J2000)
+
+
+class BaseMagnetic(SunPyBaseCoordinateFrame):
+    """
+    Base class for frames that rely on the Earth's magnetic model (MAG, SM, and GSM).
+
+    This class is not intended to be used directly and has no transformations defined.
+    """
+    magnetic_model = Attribute(default='igrf13')
+
+    @property
+    def _igrf_file(self):
+        if not self.magnetic_model.startswith("igrf"):
+            raise ValueError
+
+        # First look if the file is bundled in package
+        local_file = os.path.join(os.path.dirname(__file__), "data",
+                                  f"{self.magnetic_model}coeffs.txt")
+        if os.path.exists(local_file):
+            return local_file
+
+        # Otherwise download the file and cache it
+        return download_file("https://www.ngdc.noaa.gov/IAGA/vmod/coeffs/"
+                             f"{self.magnetic_model}coeffs.txt", cache=True)
+
+    @property
+    def _lowest_igrf_coeffs(self):
+        with open(self._igrf_file) as f:
+            while not (line := f.readline()).startswith('g/h'):
+                pass
+
+            years = list(map(float, line.split()[3:-1]))
+            g10s = list(map(float, f.readline().split()[3:]))
+            g11s = list(map(float, f.readline().split()[3:]))
+            h11s = list(map(float, f.readline().split()[3:]))
+
+        decimalyear = self.obstime.utc.decimalyear
+        if decimalyear < 1900.0:
+            raise ValueError
+
+        if decimalyear <= years[-1]:
+            # Use piecewise linear interpolation before the last year
+            g10 = np.interp(decimalyear, years, g10s[:-1])
+            g11 = np.interp(decimalyear, years, g11s[:-1])
+            h11 = np.interp(decimalyear, years, h11s[:-1])
+        else:
+            # Use secular variation beyond the last year
+            g10 = g10s[-2] + (decimalyear - years[-1]) * g10s[-1]
+            g11 = g11s[-2] + (decimalyear - years[-1]) * g11s[-1]
+            h11 = h11s[-2] + (decimalyear - years[-1]) * h11s[-1]
+
+        return g10, g11, h11
+
+    @add_common_docstring(**_frame_parameters())
+    @property
+    def dipole_lonlat(self):
+        """
+        The geographic longitude/latitude of the Earth's magnetic north pole.
+
+        This position is calculated from the first three coefficients of the selected
+        IGRF model per Franz & Harper (2002).  The small offset between dipole center
+        and Earth center is ignored.
+
+        References
+        ----------
+        {igrf_reference}
+        """
+        g10, g11, h11 = self._lowest_igrf_coeffs
+        # Intentionally use arctan() instead of arctan2() to get angles in specific quadrants
+        lon = (np.arctan(h11 / g11) << u.rad).to(u.deg)
+        lat = 90*u.deg - np.arctan((g11 * np.cos(lon) + h11 * np.sin(lon)) / g10)
+        return Longitude(lon, wrap_angle=180*u.deg), Latitude(lat)
+
+    @add_common_docstring(**_frame_parameters())
+    @property
+    def dipole_moment(self):
+        """
+        The Earth's dipole moment.
+
+        The moment is calculated from the first three coefficients of the selected
+        IGRF model per Franz & Harper (2002).
+
+        References
+        ----------
+        {igrf_reference}
+        """
+        g10, g11, h11 = self._lowest_igrf_coeffs
+        moment = np.sqrt(g10**2 + g11**2 + h11**2) * R_earth**3
+        return moment
+
+
+@add_common_docstring(**_frame_parameters())
+class Geomagnetic(BaseMagnetic):
+    """
+    A coordinate or frame in the Geomagnetic (MAG) system.
+
+    - The origin is the center of the Earth.
+    - The Z-axis (+90 degrees latitude) is aligned with the Earth's magnetic north
+      pole.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the
+      component of the Earth's geographic north pole that is perpendicular to the
+      Z-axis.
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_earth}
+    {magnetic_model}
+    {common}
+
+    Notes
+    -----
+    The position of Earth's magnetic north pole is calculated from the first three
+    coefficients of the selected IGRF model per Franz & Harper (2002).  The small
+    offset between dipole center and Earth center is ignored.
+
+    References
+    ----------
+    {igrf_reference}
+    """
+
+
+@add_common_docstring(**_frame_parameters())
+class SolarMagnetic(BaseMagnetic):
+    """
+    A coordinate or frame in the Solar Magnetic (SM) system.
+
+    - The origin is the center of the Earth.
+    - The Z-axis (+90 degrees latitude) is aligned with the Earth's magnetic north
+      pole.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the
+      component of the Earth-Sun line that is perpendicular to the Z-axis.
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_earth}
+    {magnetic_model}
+    {common}
+
+    Notes
+    -----
+    The position of Earth's magnetic north pole is calculated from the first three
+    coefficients of the selected IGRF model per Franz & Harper (2002).  The small
+    offset between dipole center and Earth center is ignored.
+
+    References
+    ----------
+    {igrf_reference}
+    """
+
+
+@add_common_docstring(**_frame_parameters())
+class GeocentricSolarMagnetospheric(BaseMagnetic):
+    """
+    A coordinate or frame in the GeocentricSolarMagnetospheric (GSM) system.
+
+    - The origin is the center of the Earth.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the
+      Earth-Sun line.
+    - The Z-axis (+90 degrees latitude) is aligned with the component of the Earth's
+      magnetic north pole that is perpendicular to the X-axis.
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_earth}
+    {magnetic_model}
+    {common}
+
+    Notes
+    -----
+    The position of Earth's magnetic north pole is calculated from the first three
+    coefficients of the selected IGRF model per Franz & Harper (2002).  The small
+    offset between dipole center and Earth center is ignored.
+
+    References
+    ----------
+    {igrf_reference}
+    """

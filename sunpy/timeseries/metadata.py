@@ -72,7 +72,7 @@ class TimeSeriesMetaData:
     >>> md.find(parse_time('2012-06-01T21:08:12')).values()
     ['eve_val', 'goes_val']
     >>> md.find(parse_time('2012-06-01T21:08:12')).metas
-    [MetaDict([('goes_key', 'goes_val')]), MetaDict([('eve_key', 'eve_val')])]
+    [MetaDict([('goes_key': 'goes_val')]), MetaDict([('eve_key': 'eve_val')])]
     >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
@@ -87,21 +87,21 @@ class TimeSeriesMetaData:
         self.metadata = []
         # Parse in arguments
         if meta is not None:
-            if (isinstance(meta, (dict, MetaDict)) and
+            if (isinstance(meta, dict | MetaDict) and
                 isinstance(timerange, TimeRange) and
                     isinstance(colnames, list)):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
                 self.metadata.append((timerange, colnames, meta))
             elif isinstance(meta, tuple):
                 # Given a single metadata entry as a tuple.
-                if isinstance(meta[0], TimeRange) and isinstance(meta[1], list) and isinstance(meta[2], (dict, MetaDict)):
+                if isinstance(meta[0], TimeRange) and isinstance(meta[1], list) and isinstance(meta[2], dict | MetaDict):
                     self.metadata.append(meta)
                 else:
                     raise ValueError("Invalid parameters passed in the meta")
             elif isinstance(meta, list):
                 # Given a complex metadata list (of tuples)
                 for meta_tuple in meta:
-                    if isinstance(meta_tuple[0], TimeRange) and isinstance(meta_tuple[1], list) and isinstance(meta_tuple[2], (dict, MetaDict)):
+                    if isinstance(meta_tuple[0], TimeRange) and isinstance(meta_tuple[1], list) and isinstance(meta_tuple[2], dict | MetaDict):
                         self.metadata.append(meta_tuple)
                     else:
                         raise ValueError("Invalid parameters passed in the meta")
@@ -459,8 +459,7 @@ class TimeSeriesMetaData:
         all_cols = set()
         for metatuple in self.metadata:
             all_cols.update(metatuple[1])
-        all_cols = list(all_cols)
-        all_cols.sort()
+        all_cols = sorted(all_cols)
         return all_cols
 
     @property
@@ -494,8 +493,7 @@ class TimeSeriesMetaData:
         for metatuple in self.metadata:
             for key, value in metatuple[2].items():
                 all_vals.add(str(value))
-        all_vals = list(all_vals)
-        all_vals.sort()
+        all_vals = sorted(all_vals)
         return all_vals
 
     @property

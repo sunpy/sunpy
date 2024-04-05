@@ -19,13 +19,13 @@ The testing framework used by sunpy is the `pytest`_ framework, accessed through
 Dependencies for testing
 ------------------------
 
-Since the testing dependencies are not actually required to install or use sunpy, they are not included in "install_requires" in "setup.cfg".
+Since the testing dependencies are not actually required to install or use sunpy, they are not included in "install_requires" in "pyproject.toml".
 
 Developers who want to run the test suite will need to install the testing packages using pip::
 
     $ pip install -e ".[tests]"
 
-If you want to see the current test dependencies, you check "extras_require" in "setup.cfg".
+If you want to see the current test dependencies, you check "extras_require" in "pyproject.toml".
 
 Running Tests
 =============
@@ -55,13 +55,13 @@ This is the method that our continuous integration uses.
 ----------
 
 The test suite can be run directly from the native ``pytest`` command.
-In this case, it is important for developers to be aware that they must manually rebuild any extensions by running ``python setup.py build_ext`` before testing.
+In this case, it is important for developers to be aware that they must manually rebuild any extensions by running ``pip install -e .`` before testing.
 
 To run the entire suite with ``pytest``::
 
     $ pytest
 
-will use the settings in ``setup.cfg``.
+will use the settings in ``pyproject.toml``.
 
 If you want to run one specific test file::
 
@@ -76,6 +76,13 @@ or one specific test in a test file::
 If a test errors, you can use ``pdb`` to create a debugging session at the moment the test fails::
 
     $ pytest --pdb
+
+If you see mention of::
+
+    UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+
+You will have to either export ``MPLBACKEND = agg`` as an environmental variable or pass it as a command line pre-argument to ``pytest``.
+This comes from the figure tests (see below).
 
 ``self_test``
 =============
@@ -104,7 +111,7 @@ If this is the case, you will see the following when you run the test suite::
     * sqlalchemy
     ...
     You do not have all the required dependencies installed to run the sunpy test suite.
-    If you want to run the sunpy tests install the 'tests' extra with `pip install "sunpy[all,tests]"`
+    If you want to run the sunpy tests install the 'tests' extra with `pip install "sunpy[tests]"`
 
 This does not mean sunpy is broken, but you will need to install the extra packages to ensure a "complete" installation of sunpy and run the entire test suite.
 It is quite likely that you will run into not having the tests dependencies installed.
@@ -156,7 +163,7 @@ or::
 Coverage reports
 ----------------
 
-sunpy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``setup.cfg``.
+sunpy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``pyproject.toml``.
 This plugin can be installed using `pip`_::
 
     $ pip install pytest-cov
@@ -324,7 +331,7 @@ Code examples in the documentation will also be run as tests and this helps to v
 sunpy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
 
 You do not have to do anything extra in order to run any documentation tests.
-Within our ``setup.cfg`` file we have set default options for ``pytest``, such that you only need to run::
+Within our ``pyproject.toml`` file we have set default options for ``pytest``, such that you only need to run::
 
     $ pytest <file to test>
 
