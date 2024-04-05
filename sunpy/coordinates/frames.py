@@ -28,7 +28,7 @@ from astropy.utils.data import download_file
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, sunpycontextmanager
+from sunpy.util.decorators import add_common_docstring, deprecated
 from sunpy.util.exceptions import warn_user
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
@@ -672,24 +672,11 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
     @classmethod
     @contextmanager
-    def assume_screen(cls, screen):
-        """
-        Context manager to interpret 2D coordinates as being on some surface.
-        """
-        try:
-            old_assumed_screen = cls._assumed_screen  # nominally None
-            cls._assumed_screen = screen
-            yield
-        finally:
-            cls._assumed_screen = old_assumed_screen
-
-    @classmethod
-    @contextmanager
+    @deprecated('6.0', alternative='sunpy.coordinates.screens.SphericalScreen')
     def assume_spherical_screen(cls, center, only_off_disk=False):
-        # TODO: this should issue a deprecation warning
         try:
             old_assumed_screen = cls._assumed_screen  # nominally None
-            from sunpy.coordinates.screens import SphericalScreen
+            from sunpy.coordinates import SphericalScreen
             sph_screen = SphericalScreen(center, only_off_disk=only_off_disk)
             cls._assumed_screen = sph_screen
             yield
