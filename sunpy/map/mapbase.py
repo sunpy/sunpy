@@ -566,6 +566,7 @@ class GenericMap(NDData):
     def __rmul__(self, value):
         return self.__mul__(value)
 
+    @check_arithmetic_compatibility
     def __truediv__(self, value):
         return self.__mul__(1/value)
 
