@@ -17,14 +17,13 @@ from astropy.wcs.wcs import FITSFixedWarning
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
 
-# SunPy's JPEG2000 capabilities rely on the glymur library.
-# First we check to make sure that glymur imports correctly before proceeding.
 try:
     import glymur
 except ImportError:
     SKIP_GLYMUR = True
 else:
-    # See if we have a C backend
+    # See if we have a C backend installed.
+    # Glymur will not be able to read JPEG2000 files without it.
     if glymur.lib.openjp2.OPENJP2:
         SKIP_GLYMUR = False
     else:
