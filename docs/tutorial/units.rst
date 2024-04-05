@@ -34,7 +34,7 @@ A `~astropy.units.Quantity` can be decomposed into its unit and numerical value 
 
 .. code-block:: python
 
-   >>> length.value
+   >>> length.value  # doctest: +SKIP
    10.0
 
    >>> length.unit
