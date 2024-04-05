@@ -285,20 +285,19 @@ class Scraper:
                 if http_err.code in [429 , 504]:
                     # See if the server has told us how long to back off for
                     # retry the request. , max 
-                    # retry_after = http_err.hdrs.get('Retry-After', 2)
-                    # try:
-                    #     # Ensure that we can parse the header as an int in sec
-                    #     retry_after = int(retry_after)
-                    # except Exception as e:
-                    #     log.debug(f"Converting retry_after failed: {e}")
-                    #     retry_after = 2
-                    #     raise
-                    # log.debug(
-                    #     f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
-                    # )
-                    #sleep(retry_after)
+                    retry_after = http_err.hdrs.get('Retry-After', 2)
+                    try:
+                        # Ensure that we can parse the header as an int in sec
+                        retry_after = int(retry_after)
+                    except Exception as e:
+                        log.debug(f"Converting retry_after failed: {e}")
+                        retry_after = 2
+                        raise
+                    log.debug(
+                        f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
+                    )
+                    sleep(retry_after)
                     if retry_counts.get(directory,0) > 4:
-                     print(f"Exceeded maximum retry limit for {directory}")
                      log.debug(f"Exceeded maximum retry limit for {directory}")
                      raise
                     retry_counts[directory] = retry_counts.get(directory, 0) + 1
