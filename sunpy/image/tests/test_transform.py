@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 import skimage.data as images
