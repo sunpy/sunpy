@@ -401,7 +401,7 @@ def check_arithmetic_compatibility(func):
             # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
             # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
             # actual operations by numpy and astropy respectively.
-            _ = u.Quantity(value, copy=True)
+            _ = u.Quantity(value, copy=False)
         except TypeError:
             return NotImplemented
         return func(instance, value)

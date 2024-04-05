@@ -126,9 +126,9 @@ As shown above, you can retrieve the just the numerical value of a `~astropy.uni
 
 .. code-block:: python
 
-   >>> length.to_value()
+   >>> length.to_value()  # doctest: +SKIP
    10.0
-   >>> length.to_value(u.km)
+   >>> length.to_value(u.km)  # doctest: +SKIP
    0.01
 
 Quantities as function arguments
