@@ -5,7 +5,6 @@ import pytest
 from requests.exceptions import SSLError
 
 from sunpy.net import attrs as a
-from sunpy.net.helio import attrs as ha
 from sunpy.net.helio.hec import HECClient
 from sunpy.net.helio.parser import (
     endpoint_parser,
@@ -299,7 +298,7 @@ def test_client_search(client):
 
 def test_max_records_limit():
     with pytest.raises(ValueError, match="Helio will only return a max of 20000 results."):
-        ha.MaxRecords(99999)
+        a.helio.MaxRecords(99999)
 
 
 @pytest.mark.remote_data
