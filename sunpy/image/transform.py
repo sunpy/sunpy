@@ -349,7 +349,7 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
 
     # Swap the byte order if it is non-native (e.g., big-endian on a little-endian system)
     if adjusted_image.dtype.byteorder == ('>' if sys.byteorder == 'little' else '<'):
-        adjusted_image = adjusted_image.byteswap().newbyteorder()
+        adjusted_image = adjusted_image.view(adjusted_image.dtype.newbyteorder()).byteswap()
 
     # Be aware that even though mode is set to 'constant', when skimage 0.19 calls scipy,
     # it specifies the scipy mode to be 'grid-constant' rather than 'constant'
@@ -404,7 +404,7 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
 
     # Swap the byte order if it is non-native (e.g., big-endian on a little-endian system)
     if adjusted_image.dtype.byteorder == ('>' if sys.byteorder == 'little' else '<'):
-        adjusted_image = adjusted_image.byteswap().newbyteorder()
+        adjusted_image = adjusted_image.view(adjusted_image.dtype.newbyteorder()).byteswap()
 
     # missing must be a Python float, not a NumPy float
     missing = float(missing)

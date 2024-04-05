@@ -1,3 +1,4 @@
+
 import numpy as np
 import pytest
 import skimage.data as images
@@ -338,7 +339,7 @@ def test_endian(method, order, rot30):
 
     # Test that the rotation output values do not change with input byte order
     native = np.ones((10, 10))
-    swapped = native.byteswap().newbyteorder()
+    swapped = native.view(native.dtype.newbyteorder()).byteswap()
 
     rot_native = affine_transform(native, rot30, order=order, method=method, missing=0)
     rot_swapped = affine_transform(swapped, rot30, order=order, method=method, missing=0)
