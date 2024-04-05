@@ -1,24 +1,34 @@
 """
 Screen class definitions for making assumptions about off-disk emission
 """
+import abc
+
 import numpy as np
 
 import astropy.units as u
 from astropy.coordinates.representation import CartesianRepresentation, UnitSphericalRepresentation
 
-from sunpy.coordinates import HeliographicStonyhurst
+from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
 
 __all__ = ['SphericalScreen', 'PlanarScreen']
 
 
-class BaseScreen:
+class BaseScreen(abc.ABC):
 
-    def __init__(self, type, only_off_disk=False):
-        self.type = type
+    def __init__(self, only_off_disk=False):
         self.only_off_disk = only_off_disk
 
-    def calculate_distance(self):
-        raise NotImplementedError
+    @abc.abstractmethod
+    @u.quantity_input
+    def calculate_distance(self) -> u.cm:
+        ...
+
+    def __enter__(self):
+        self._old_assumed_screen = Helioprojective._assumed_screen  # nominally None
+        Helioprojective._assumed_screen = self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        Helioprojective._assumed_screen = self._old_assumed_screen
 
 
 class SphericalScreen(BaseScreen):
@@ -46,7 +56,7 @@ class SphericalScreen(BaseScreen):
     .. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
 
     >>> import astropy.units as u
-    >>> from sunpy.coordinates import Helioprojective
+    >>> from sunpy.coordinates import Helioprojective, SphericalScreen
     >>> h = Helioprojective(range(7)*u.arcsec*319, [0]*7*u.arcsec,
     ...                     observer='earth', obstime='2020-04-08')
     >>> print(h.make_3d())
@@ -56,7 +66,7 @@ class SphericalScreen(BaseScreen):
             (1276., 0.,        nan), (1595., 0.,        nan),
             (1914., 0.,        nan)]>
 
-    >>> with Helioprojective.assume_spherical_screen(h.observer):
+    >>> with SphericalScreen(h.observer):
     ...     print(h.make_3d())
     <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         [(   0., 0., 1.00125872), ( 319., 0., 1.00125872),
@@ -64,7 +74,7 @@ class SphericalScreen(BaseScreen):
             (1276., 0., 1.00125872), (1595., 0., 1.00125872),
             (1914., 0., 1.00125872)]>
 
-    >>> with Helioprojective.assume_spherical_screen(h.observer, only_off_disk=True):
+    >>> with SphericalScreen(h.observer, only_off_disk=True):
     ...     print(h.make_3d())
     <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         [(   0., 0., 0.99660825), ( 319., 0., 0.99687244),
@@ -74,8 +84,8 @@ class SphericalScreen(BaseScreen):
     """
 
     def __init__(self, center, **kwargs):
-        super().__init__('spherical', **kwargs)
         self.center = center
+        super().__init__(**kwargs)
 
     @property
     def center_hgs(self):
@@ -121,9 +131,9 @@ class PlanarScreen(BaseScreen):
 
     @u.quantity_input
     def __init__(self, vantage_point, distance_from_center: u.m=0*u.m, **kwargs):
-        super().__init__('planar', **kwargs)
         self.vantage_point = vantage_point
         self.distance_from_center = distance_from_center
+        super().__init__(**kwargs)
 
     def calculate_distance(self, frame):
         direction = self.vantage_point.transform_to(frame).cartesian
