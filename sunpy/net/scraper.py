@@ -278,7 +278,7 @@ class Scraper:
                 if http_err.code in [400, 404, 403]:
                     log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
                     raise
-                if http_err.code in [429 , 504]:
+                if http_err.code in [429, 504]:
                     # See if the server has told us how long to back off for
                     # retry the request. , max 
                     retry_after = http_err.hdrs.get('Retry-After', 2)
