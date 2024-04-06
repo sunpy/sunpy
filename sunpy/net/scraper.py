@@ -6,10 +6,10 @@ import re
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
-from urllib.error import HTTPError
+from urllib.error import URLError, HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
-from urllib.error import URLError
+
 from bs4 import BeautifulSoup
 
 from sunpy import log
@@ -254,7 +254,7 @@ class Scraper:
         """
         directories = self.range(timerange)
         filesurls = list()
-        retry_counts = {} 
+        retry_counts = {}
         while directories:
             directory = directories.pop(0)
             try:
@@ -280,7 +280,7 @@ class Scraper:
                     raise
                 if http_err.code in [429 , 504]:
                     # See if the server has told us how long to back off for
-                    # retry the request. , max 
+                    # retry the request. , max
                     retry_after = http_err.hdrs.get('Retry-After', 2)
                     try:
                         # Ensure that we can parse the header as an int in sec

@@ -1,6 +1,8 @@
 import datetime
 from pathlib import Path
+from urllib.error import HTTPError
 from unittest.mock import Mock, patch
+
 import pytest
 
 from sunpy.data.test import rootdir
@@ -225,30 +227,15 @@ def test_yearly_overlap():
     trange = TimeRange("2013-01-02", "2013-01-03")
     assert len(scraper.filelist(trange)) == 1
 
-
-def test_scraper_http_error(endpoint=404):
-    def patch_range(self, range):
-        return [f'http://httpbin.org/status/{endpoint}']
-    time = TimeRange('2012/3/4', '2012/3/4 02:00')
-    pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
-    scraper = Scraper(pattern)
-    with patch.object(Scraper, 'range', new=patch_range):
-        try:
-            res = scraper._httpfilelist(time)
-        except HTTPError as e:
-            assert (e.code == endpoint)
-
-
-def test_enqueue_limit(endpoint=504):
-    def patch_range(self, range):
-        return [f'http://httpbin.org/status/{endpoint}']
-    time = TimeRange('2012/3/4', '2012/3/4 02:00')
-    pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
-    scraper = Scraper(pattern)
-    with patch.object(Scraper, 'range', new=patch_range):
-        try:
-            res = scraper._httpfilelist(time)
-        except HTTPError as e:
-            assert (e.code == endpoint)
-
-
+@pytest.fixture(params=[400 , 403 , 404 , 429 , 504])
+def endpoint(request):
+    return request.param
+def test_scraper_http_error_enqueue_limit(endpoint):
+      with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+              mocked_urlopen.side_effect = HTTPError('http://example.com', endpoint,'',{},None)
+              time = TimeRange('2012/3/4', '2012/3/4 02:00')
+              pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+              scraper = Scraper(pattern)
+              with pytest.raises(HTTPError) as excinfo:
+               scraper._httpfilelist(time)
+              assert excinfo.value.code == endpoint
