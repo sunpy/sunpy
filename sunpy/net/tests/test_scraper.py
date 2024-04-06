@@ -1,6 +1,6 @@
 import datetime
 from pathlib import Path
-from urllib.error import HTTPError , URLError
+from urllib.error import HTTPError, URLError
 from unittest.mock import Mock, patch
 
 import pytest
@@ -12,21 +12,24 @@ from sunpy.time import TimeRange, parse_time
 
 
 def testDirectoryDatePattern():
-    s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
+    s = Scraper(
+        '{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
     testpath = str(Path('2014/03/05/') / '20140305_013000_59.fit.gz')
     d = parse_time((2014, 3, 5, 1, 30))
     assert s.matches(testpath, d)
 
 
 def testDirectoryDatePatternFalse():
-    s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
+    s = Scraper(
+        '{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
     testpath = str(Path('2013/03/05/') / '20140305_013000_59.fit.gz')
     d = parse_time((2014, 3, 5, 1, 30))
     assert not s.matches(testpath, d)
 
 
 def testDirectoryObsPattern():
-    s = Scraper('{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
+    s = Scraper(
+        '{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
     testpath = str(Path('140305') / 'SDO_20140305.fits')
     d = parse_time((2014, 3, 5))
     assert s.matches(testpath, d)
@@ -62,6 +65,7 @@ def testNoDateDirectory():
     timerange = TimeRange('2009/11/20', '2010/01/03')
     assert s.range(timerange) == directory_list
 
+
 def testDirectoryRangeHours():
     s = Scraper('{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}/{{hour:2d}}{{minute:2d}}.csv')
     timerange = TimeRange('2009-12-31T23:40:00', '2010-01-01T01:15:00')
@@ -95,6 +99,7 @@ def testNoDirectory():
     timerange = TimeRange(startdate, enddate)
     assert len(s.range(timerange)) == 1
 
+
 @pytest.mark.parametrize(('pattern', 'filename', 'metadict'), [
     ('_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:3d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts',
      {'year': 2020, 'month': 15, 'day': 35, 'millisecond': 12}),
@@ -104,12 +109,14 @@ def testNoDirectory():
 def testURL_pattern(pattern, filename, metadict):
     assert parse(pattern.format(None), filename).named == metadict
 
+
 def testURL_patternMillisecondsZeroPadded():
     # Asserts solution to ticket #1954.
     # Milliseconds must be zero-padded in order to match URL lengths.
     now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
     with patch('sunpy.net.scraper.datetime', now=now_mock):
-        s = Scraper('fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts')
+        s = Scraper(
+            'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts')
     now_mock.assert_called_once()
     assert s.now == 'fd_20190419_000000_004.fts'
 
@@ -190,7 +197,8 @@ def test_filelist_relative_hrefs():
 @pytest.mark.remote_data
 def test_parse_pattern_data():
     prefix = 'https://gong2.nso.edu/oQR/zqs/'
-    pattern = prefix + '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
+    pattern = prefix + \
+        '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
     s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert len(s.filelist(timerange)) == 37
@@ -216,6 +224,7 @@ def test_extract_files_meta():
     assert metalist1[3]['CAR_ROT'] == 2226
     assert metalist1[-1]['url'] == urls[-1]
 
+
 @pytest.mark.remote_data
 def test_yearly_overlap():
     # Check that a time range that falls within the interval that a file represents
@@ -228,27 +237,31 @@ def test_yearly_overlap():
     assert len(scraper.filelist(trange)) == 1
 
 
-@pytest.fixture(params=[400 , 403 , 404 , 429 , 504])
+@pytest.fixture(params=[400, 403, 404, 429, 504])
 def endpoint(request):
     return request.param
 
 
 def test_scraper_http_error_enqueue_limit(endpoint):
-      with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
-          mocked_urlopen.side_effect = HTTPError('http://example.com', endpoint, '', {}, None)
-          time = TimeRange('2012/3/4', '2012/3/4 02:00')
-          pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
-          scraper = Scraper(pattern)
-          with pytest.raises(HTTPError) as excinfo:
-              scraper._httpfilelist(time)
-          assert excinfo.value.code == endpoint
+    with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+        mocked_urlopen.side_effect = HTTPError('http://example.com', endpoint, '', {}, None)
+        time = TimeRange('2012/3/4', '2012/3/4 02:00')
+        pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+        scraper = Scraper(pattern)
+        with pytest.raises(HTTPError) as excinfo:
+            scraper._httpfilelist(time)
+        assert excinfo.value.code == endpoint
+        if endpoint == 429 or endpoint == 504:
+            # we would expect the function to be called 6 times since it will retry 5 times
+            assert mocked_urlopen.call_count == 6
+
 
 def test_function_with_http_error():
-            with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
-              mocked_urlopen.side_effect = URLError('connection error')
-              time = TimeRange('2012/3/4', '2012/3/4 02:00')
-              pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
-              scraper = Scraper(pattern)
-              with pytest.raises(URLError) as excinfo:   
-               print(scraper._httpfilelist(time))
-              assert excinfo.value.args[0] == 'connection error'
+    with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+        mocked_urlopen.side_effect = URLError('connection error')
+        time = TimeRange('2012/3/4', '2012/3/4 02:00')
+        pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+        scraper = Scraper(pattern)
+        with pytest.raises(URLError) as excinfo:
+            print(scraper._httpfilelist(time))
+        assert excinfo.value.args[0] == 'connection error'
