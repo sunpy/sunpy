@@ -263,5 +263,5 @@ def test_function_with_http_error():
         pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(pattern)
         with pytest.raises(URLError) as excinfo:
-            print(scraper._httpfilelist(time))
+            scraper._httpfilelist(time)
         assert excinfo.value.args[0] == 'connection error'
