@@ -298,7 +298,7 @@ class Scraper:
                     directories.insert(0, directory)
                     continue
             except (URLError) as ulr_err:
-               log.debug(f"Failed to parse content from {directory}: {ulr_err}")
+               log.debug(f"Failed to parse content from {directory}: {url_err}")
             except Exception:
                 raise
         return filesurls
