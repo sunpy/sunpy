@@ -226,7 +226,10 @@ def test_yearly_overlap():
     # Should return a single file for 2013
     trange = TimeRange("2013-01-02", "2013-01-03")
     assert len(scraper.filelist(trange)) == 1
-
+    
+#this fixture is used to test the case when the server returns http errors like 400, 403, 429, 504
+#the first element of the tuple is the error code and the second element is the number of times the urlopen function is called
+#the urlopen function is called multiple times because the scraper retries the request so the test asserts the max retry limit
 @pytest.fixture(params=[(400,1) , (403,1) , (429,6) , (504,6)])
 def endpoint(request):
     return request.param
