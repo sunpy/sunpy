@@ -280,7 +280,6 @@ class Scraper:
                     raise
                 if http_err.code in [429, 504]:
                     # See if the server has told us how long to back off for
-                    # retry the request. , max
                     retry_after = http_err.hdrs.get('Retry-After', 2)
                     try:
                         # Ensure that we can parse the header as an int in sec
