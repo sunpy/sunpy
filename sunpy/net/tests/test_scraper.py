@@ -240,7 +240,7 @@ def test_scraper_http_error_enqueue_limit(endpoint):
           pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
           scraper = Scraper(pattern)
           with pytest.raises(HTTPError) as excinfo:
-           scraper._httpfilelist(time)
+              scraper._httpfilelist(time)
           assert excinfo.value.code == endpoint
 
 def test_function_with_http_error():
