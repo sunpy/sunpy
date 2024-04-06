@@ -275,7 +275,10 @@ class Scraper:
                     opn.close()
             except HTTPError as http_err:
                 # Ignore missing directories (issue #2684).
-                if http_err.code in [400, 404, 403]:
+                if http_err.code == 404:
+                    log.debug(f"Directory {directory} not found.")
+                    continue
+                if http_err.code in [400, 403]:
                     log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
                     raise
                 if http_err.code in [429, 504]:
