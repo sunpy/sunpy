@@ -230,6 +230,8 @@ def test_yearly_overlap():
 @pytest.fixture(params=[400 , 403 , 404 , 429 , 504])
 def endpoint(request):
     return request.param
+
+
 def test_scraper_http_error_enqueue_limit(endpoint):
       with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
               mocked_urlopen.side_effect = HTTPError('http://example.com', endpoint,'',{},None)
