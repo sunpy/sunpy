@@ -306,7 +306,7 @@ def test_HECResponse_iter(client):
     start = '2005/01/03'
     end = '2005/12/03'
     table_name = 'rhessi_hxr_flare'
-    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10))
+    res = client.search(a.Time(start, end), a.helio.TableName(table_name), a.helio.MaxRecords(10000))
     for i in res:
         # Just to make sure iter still works, check number of columns
         assert len(i) == 13
