@@ -299,6 +299,7 @@ class Scraper:
                     continue
             except URLError as url_err:
                log.debug(f"Failed to parse content from {directory}: {url_err}")
+               raise
             except Exception:
                 raise
         return filesurls

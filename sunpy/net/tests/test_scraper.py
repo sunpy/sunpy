@@ -1,6 +1,6 @@
 import datetime
 from pathlib import Path
-from urllib.error import HTTPError
+from urllib.error import HTTPError , URLError
 from unittest.mock import Mock, patch
 
 import pytest
@@ -242,3 +242,13 @@ def test_scraper_http_error_enqueue_limit(endpoint):
           with pytest.raises(HTTPError) as excinfo:
            scraper._httpfilelist(time)
           assert excinfo.value.code == endpoint
+
+def test_function_with_http_error():
+            with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+              mocked_urlopen.side_effect = URLError('connection error')
+              time = TimeRange('2012/3/4', '2012/3/4 02:00')
+              pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+              scraper = Scraper(pattern)
+              with pytest.raises(URLError) as excinfo:   
+               print(scraper._httpfilelist(time))
+              assert excinfo.value.args[0] == 'connection error'
