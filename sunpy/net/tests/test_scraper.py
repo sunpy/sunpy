@@ -227,6 +227,7 @@ def test_yearly_overlap():
     trange = TimeRange("2013-01-02", "2013-01-03")
     assert len(scraper.filelist(trange)) == 1
 
+
 @pytest.fixture(params=[400 , 403 , 404 , 429 , 504])
 def endpoint(request):
     return request.param
