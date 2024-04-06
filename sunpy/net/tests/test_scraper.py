@@ -240,9 +240,6 @@ def test_scraper_http_error_enqueue_limit(endpoint):
             scraper._httpfilelist(time)
         assert excinfo.value.code == endpoint[0]
         assert mocked_urlopen.call_count == endpoint[1]
-        # if endpoint == 429 or endpoint == 504:
-        #     # we would expect the function to be called 6 times since it will retry 5 times
-        #     assert mocked_urlopen.call_count == 6
 
 def test_function_with_http_error():
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
