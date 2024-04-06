@@ -10,6 +10,7 @@ from sunpy.extern import parse
 from sunpy.net.scraper import Scraper
 from sunpy.time import TimeRange, parse_time
 
+
 def testDirectoryDatePattern():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
     testpath = str(Path('2014/03/05/') / '20140305_013000_59.fit.gz')
