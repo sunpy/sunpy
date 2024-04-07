@@ -113,8 +113,7 @@ def testURL_patternMillisecondsZeroPadded():
     # Milliseconds must be zero-padded in order to match URL lengths.
     now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
     with patch('sunpy.net.scraper.datetime', now=now_mock):
-        s = Scraper(
-            'fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts')
+        s = Scraper('fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts')
     now_mock.assert_called_once()
     assert s.now == 'fd_20190419_000000_004.fts'
 
