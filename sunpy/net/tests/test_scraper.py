@@ -198,8 +198,7 @@ def test_filelist_relative_hrefs():
 @pytest.mark.remote_data
 def test_parse_pattern_data():
     prefix = 'https://gong2.nso.edu/oQR/zqs/'
-    pattern = prefix + \
-        '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
+    pattern = prefix + '{{year:4d}}{{month:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}/mrzqs{{year:2d}}{{month:2d}}{{day:2d}}t{{hour:2d}}{{minute:2d}}c{{:4d}}_{{:3d}}.fits.gz'
     s = Scraper(pattern)
     timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert len(s.filelist(timerange)) == 37
