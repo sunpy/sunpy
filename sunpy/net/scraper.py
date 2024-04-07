@@ -294,7 +294,7 @@ class Scraper:
                         f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
                     )
                     sleep(retry_after)
-                    if retry_counts.get(directory,0) > 4:
+                    if retry_counts.get(directory, 0) > 4:
                      log.debug(f"Exceeded maximum retry limit for {directory}")
                      raise
                     retry_counts[directory] = retry_counts.get(directory, 0) + 1

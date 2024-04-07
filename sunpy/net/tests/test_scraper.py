@@ -255,7 +255,6 @@ def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error
         time_range = TimeRange("2012/3/4", "2012/3/4 02:00")
         pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(pattern)
-
         with pytest.raises(HTTPError, match=error_message) as excinfo:
             scraper._httpfilelist(time_range)
         assert excinfo.value.code == error_code
