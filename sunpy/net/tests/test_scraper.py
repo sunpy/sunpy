@@ -1,8 +1,8 @@
+import logging
 import datetime
 from pathlib import Path
-from urllib.error import HTTPError, URLError
+from urllib.error import URLError, HTTPError
 from unittest.mock import Mock, patch
-import logging
 
 import pytest
 
