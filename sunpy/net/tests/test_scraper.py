@@ -264,7 +264,7 @@ def test_connection_error():
         with pytest.raises(URLError, match = 'connection error'):
             scraper._httpfilelist(time)
             
-def test_http_404_error_debug_message(caplog):
+def test_http_404_message(caplog):
     log = logging.getLogger('sunpy')
     log.setLevel(logging.DEBUG)
     def patch_range(self, range):
