@@ -254,6 +254,7 @@ def test_http_errors_with_enqueue_limit(error_code, expected_calls, error_messag
         assert excinfo.value.msg == error_message  # Check the error message
         assert mocked_urlopen.call_count == expected_calls
 
+
 def test_connection_error():
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
         mocked_urlopen.side_effect = URLError('connection error')
