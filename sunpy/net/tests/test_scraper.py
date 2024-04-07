@@ -263,7 +263,8 @@ def test_connection_error():
         scraper = Scraper(pattern)
         with pytest.raises(URLError, match = 'connection error'):
             scraper._httpfilelist(time)
-            
+
+
 def test_http_404_message(caplog):
     log = logging.getLogger('sunpy')
     log.setLevel(logging.DEBUG)
