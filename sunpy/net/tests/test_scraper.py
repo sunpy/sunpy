@@ -2,6 +2,7 @@ import datetime
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from unittest.mock import Mock, patch
+import logging
 
 import pytest
 
@@ -251,5 +252,20 @@ def test_connection_error():
         time = TimeRange('2012/3/4', '2012/3/4 02:00')
         pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(pattern)
-        with pytest.raises(URLError, match = 'connection error') as excinfo:
+        with pytest.raises(URLError, match = 'connection error'):
             scraper._httpfilelist(time)
+            
+def test_http_404_error_debug_message(caplog):
+    log = logging.getLogger('sunpy')
+    log.setLevel(logging.DEBUG)
+    def patch_range(self, range):
+        return ['http://test.com/']
+    with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+        with patch.object(Scraper, 'range', patch_range):
+            mocked_urlopen.side_effect = HTTPError('http://example.com', 404, '', {}, None)
+            time = TimeRange('2012/3/4', '2012/3/4 02:00')
+            pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+            scraper = Scraper(pattern)
+            scraper._httpfilelist(time)
+            assert "Directory http://test.com/ not found." in caplog.text
+    log.setLevel(logging.NOTSET)
