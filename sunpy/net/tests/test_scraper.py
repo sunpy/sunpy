@@ -1,5 +1,7 @@
+import logging
 import datetime
 from pathlib import Path
+from urllib.error import URLError, HTTPError
 from unittest.mock import Mock, patch
 
 import pytest
@@ -61,6 +63,7 @@ def testNoDateDirectory():
     timerange = TimeRange('2009/11/20', '2010/01/03')
     assert s.range(timerange) == directory_list
 
+
 def testDirectoryRangeHours():
     s = Scraper('{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}/{{hour:2d}}{{minute:2d}}.csv')
     timerange = TimeRange('2009-12-31T23:40:00', '2010-01-01T01:15:00')
@@ -94,6 +97,7 @@ def testNoDirectory():
     timerange = TimeRange(startdate, enddate)
     assert len(s.range(timerange)) == 1
 
+
 @pytest.mark.parametrize(('pattern', 'filename', 'metadict'), [
     ('_{{year:4d}}{{month:2d}}{{day:2d}}__{{millisecond:3d}}c{{:5d}}_{{:2d}}{{}}.fts', '_20201535__012c12345_33 .fts',
      {'year': 2020, 'month': 15, 'day': 35, 'millisecond': 12}),
@@ -102,6 +106,7 @@ def testNoDirectory():
 ])
 def testURL_pattern(pattern, filename, metadict):
     assert parse(pattern.format(None), filename).named == metadict
+
 
 def testURL_patternMillisecondsZeroPadded():
     # Asserts solution to ticket #1954.
@@ -215,6 +220,7 @@ def test_extract_files_meta():
     assert metalist1[3]['CAR_ROT'] == 2226
     assert metalist1[-1]['url'] == urls[-1]
 
+
 @pytest.mark.remote_data
 def test_yearly_overlap():
     # Check that a time range that falls within the interval that a file represents
@@ -225,3 +231,50 @@ def test_yearly_overlap():
     # Should return a single file for 2013
     trange = TimeRange("2013-01-02", "2013-01-03")
     assert len(scraper.filelist(trange)) == 1
+
+
+@pytest.mark.parametrize(
+    ("error_code", "expected_number_calls", "error_message"),
+    [
+        (400, 1, "Bad Request"),
+        (403, 1, "Forbidden"),
+        (429, 6, "Too Many Requests"),
+        (504, 6, "Gateway Timeout"),
+    ],
+)
+def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error_message):
+    with patch("sunpy.net.scraper.urlopen") as mocked_urlopen:
+        mocked_urlopen.side_effect = HTTPError(
+            "http://example.com", error_code, error_message, {}, None
+        )
+        time_range = TimeRange("2012/3/4", "2012/3/4 02:00")
+        pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+        scraper = Scraper(pattern)
+        with pytest.raises(HTTPError, match=error_message) as excinfo:
+            scraper._httpfilelist(time_range)
+        assert excinfo.value.code == error_code
+        assert mocked_urlopen.call_count == expected_number_calls
+
+
+def test_connection_error():
+    with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+        mocked_urlopen.side_effect = URLError('connection error')
+        time = TimeRange('2012/3/4', '2012/3/4 02:00')
+        pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+        scraper = Scraper(pattern)
+        with pytest.raises(URLError, match='connection error'):
+            scraper._httpfilelist(time)
+
+
+def test_http_404_error_debug_message(caplog):
+    with caplog.at_level(logging.DEBUG, logger='sunpy'):
+        def patch_range(self, range):
+            return ['http://test.com/']
+        with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
+            with patch.object(Scraper, 'range', patch_range):
+                mocked_urlopen.side_effect = HTTPError('http://example.com', 404, '', {}, None)
+                time = TimeRange('2012/3/4', '2012/3/4 02:00')
+                pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+                scraper = Scraper(pattern)
+                scraper._httpfilelist(time)
+                assert "Directory http://test.com/ not found." in caplog.text

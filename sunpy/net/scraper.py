@@ -6,7 +6,7 @@ import re
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
-from urllib.error import HTTPError
+from urllib.error import URLError, HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
@@ -254,6 +254,7 @@ class Scraper:
         """
         directories = self.range(timerange)
         filesurls = list()
+        retry_counts = {}
         while directories:
             directory = directories.pop(0)
             try:
@@ -275,8 +276,12 @@ class Scraper:
             except HTTPError as http_err:
                 # Ignore missing directories (issue #2684).
                 if http_err.code == 404:
+                    log.debug(f"Directory {directory} not found.")
                     continue
-                if http_err.code == 429:
+                if http_err.code in [400, 403]:
+                    log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
+                    raise
+                if http_err.code in [429, 504]:
                     # See if the server has told us how long to back off for
                     retry_after = http_err.hdrs.get('Retry-After', 2)
                     try:
@@ -286,13 +291,18 @@ class Scraper:
                         log.debug(f"Converting retry_after failed: {e}")
                         retry_after = 2
                     log.debug(
-                        f"Got 429 while scraping {directory}, waiting for {retry_after} seconds before retrying."
+                        f"Got {http_err.code} while scraping {directory}, waiting for {retry_after} seconds before retrying."
                     )
                     sleep(retry_after)
-                    # Put this dir back on the queue
+                    if retry_counts.get(directory, 0) > 4:
+                     log.debug(f"Exceeded maximum retry limit for {directory}")
+                     raise
+                    retry_counts[directory] = retry_counts.get(directory, 0) + 1
                     directories.insert(0, directory)
                     continue
-                raise
+            except URLError as url_err:
+               log.debug(f"Failed to parse content from {directory}: {url_err}")
+               raise
             except Exception:
                 raise
         return filesurls
