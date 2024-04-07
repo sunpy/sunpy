@@ -234,7 +234,7 @@ def test_yearly_overlap():
 def endpoint(request):
     return request.param
 
-def test_scraper_http_error_enqueue_limit(endpoint):
+def test_http_errors_with_enqueue_limit(endpoint):
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
         mocked_urlopen.side_effect = HTTPError('http://example.com', endpoint[0], '', {}, None)
         time = TimeRange('2012/3/4', '2012/3/4 02:00')
