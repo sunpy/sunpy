@@ -27,8 +27,7 @@ def testDirectoryDatePatternFalse():
 
 
 def testDirectoryObsPattern():
-    s = Scraper(
-        '{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
+    s = Scraper('{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
     testpath = str(Path('140305') / 'SDO_20140305.fits')
     d = parse_time((2014, 3, 5))
     assert s.matches(testpath, d)
