@@ -20,8 +20,7 @@ def testDirectoryDatePattern():
 
 
 def testDirectoryDatePatternFalse():
-    s = Scraper(
-        '{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
+    s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
     testpath = str(Path('2013/03/05/') / '20140305_013000_59.fit.gz')
     d = parse_time((2014, 3, 5, 1, 30))
     assert not s.matches(testpath, d)
