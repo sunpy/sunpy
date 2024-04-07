@@ -245,7 +245,7 @@ def test_http_errors_with_enqueue_limit(endpoint):
         assert excinfo.value.code == endpoint[0]
         assert mocked_urlopen.call_count == endpoint[1]
 
-def test_function_with_http_error():
+def test_connection_error():
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
         mocked_urlopen.side_effect = URLError('connection error')
         time = TimeRange('2012/3/4', '2012/3/4 02:00')
