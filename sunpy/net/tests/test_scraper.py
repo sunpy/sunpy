@@ -230,7 +230,7 @@ def test_yearly_overlap():
 
 
 @pytest.mark.parametrize(
-    ("error_code", "expected_calls", "error_message"),
+    ("error_code", "expected_number_calls", "error_message"),
     [
         (400, 1, "Bad Request"),
         (403, 1, "Forbidden"),
@@ -238,7 +238,7 @@ def test_yearly_overlap():
         (504, 6, "Gateway Timeout"),
     ],
 )
-def test_http_errors_with_enqueue_limit(error_code, expected_calls, error_message):
+def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error_message):
     with patch("sunpy.net.scraper.urlopen") as mocked_urlopen:
         mocked_urlopen.side_effect = HTTPError(
             "http://example.com", error_code, error_message, {}, None
@@ -247,12 +247,10 @@ def test_http_errors_with_enqueue_limit(error_code, expected_calls, error_messag
         pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(pattern)
 
-        with pytest.raises(HTTPError) as excinfo:
+        with pytest.raises(HTTPError , match = error_message) as excinfo:
             scraper._httpfilelist(time_range)
-
-        assert excinfo.value.code == error_code
-        assert excinfo.value.msg == error_message  # Check the error message
-        assert mocked_urlopen.call_count == expected_calls
+        assert excinfo.value.code == error_code  
+        assert mocked_urlopen.call_count == expected_number_calls
 
 
 def test_connection_error():
@@ -268,6 +266,7 @@ def test_connection_error():
 def test_http_404_message(caplog):
     log = logging.getLogger('sunpy')
     log.setLevel(logging.DEBUG)
+    original_level = log.level
     def patch_range(self, range):
         return ['http://test.com/']
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
@@ -278,4 +277,4 @@ def test_http_404_message(caplog):
             scraper = Scraper(pattern)
             scraper._httpfilelist(time)
             assert "Directory http://test.com/ not found." in caplog.text
-    log.setLevel(logging.NOTSET)
+    log.setLevel(original_level)
