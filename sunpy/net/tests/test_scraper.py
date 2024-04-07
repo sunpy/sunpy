@@ -227,24 +227,32 @@ def test_yearly_overlap():
     # Should return a single file for 2013
     trange = TimeRange("2013-01-02", "2013-01-03")
     assert len(scraper.filelist(trange)) == 1
-    
-#this fixture is used to test the case when the server returns http errors like 400, 403, 429, 504
-#the first element of the tuple is the error code and the second element is the number of times the urlopen function is called
-#the urlopen function is called multiple times because the scraper retries the request so the test asserts the max retry limit
-@pytest.fixture(params=[(400,1) , (403,1) , (429,6) , (504,6)])
-def endpoint(request):
-    return request.param
 
-def test_http_errors_with_enqueue_limit(endpoint):
-    with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
-        mocked_urlopen.side_effect = HTTPError('http://example.com', endpoint[0], '', {}, None)
-        time = TimeRange('2012/3/4', '2012/3/4 02:00')
+
+@pytest.mark.parametrize(
+    ("error_code", "expected_calls", "error_message"),
+    [
+        (400, 1, "Bad Request"),
+        (403, 1, "Forbidden"),
+        (429, 6, "Too Many Requests"),
+        (504, 6, "Gateway Timeout"),
+    ],
+)
+def test_http_errors_with_enqueue_limit(error_code, expected_calls, error_message):
+    with patch("sunpy.net.scraper.urlopen") as mocked_urlopen:
+        mocked_urlopen.side_effect = HTTPError(
+            "http://example.com", error_code, error_message, {}, None
+        )
+        time_range = TimeRange("2012/3/4", "2012/3/4 02:00")
         pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(pattern)
+
         with pytest.raises(HTTPError) as excinfo:
-            scraper._httpfilelist(time)
-        assert excinfo.value.code == endpoint[0]
-        assert mocked_urlopen.call_count == endpoint[1]
+            scraper._httpfilelist(time_range)
+
+        assert excinfo.value.code == error_code
+        assert excinfo.value.msg == error_message  # Check the error message
+        assert mocked_urlopen.call_count == expected_calls
 
 def test_connection_error():
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
