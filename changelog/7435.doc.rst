@@ -1,0 +1,1 @@
+Convert draw rectangle gallery example into a how-to guide(:ref:`sunpy-how-to-create-rectangle-on-map`)
