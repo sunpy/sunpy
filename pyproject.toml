@@ -1,10 +1,10 @@
 [build-system]
 requires = [
-  "extension-helpers",
-  "numpy>=1.25",
-  "setuptools>=61.2",
+  "setuptools>=62.1",
   "setuptools_scm[toml]>=6.2",
   "wheel",
+  "extension-helpers",
+  "numpy>=1.25"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -30,11 +30,11 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
   "astropy>=5.2.0",
-  "numpy>=1.21.0",
+  "numpy>=1.23.0",
   "packaging>=21.3",
   "parfive[ftp]>=2.0.0",
-  "pyerfa",
-  "requests",
+  "pyerfa>=2.0",
+  "requests>=2.27.0",
 ]
 dynamic = ["version"]
 
