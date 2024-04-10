@@ -16,32 +16,44 @@ from astropy.wcs.wcs import FITSFixedWarning
 
 import sunpy.map
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors', 'asdf_entry_points']
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_cdf', 'skip_opencv', 'skip_numpy2',
+           'warnings_as_errors', 'asdf_entry_points']
 
-# SunPy's JPEG2000 capabilities rely on the glymur library.
-# First we check to make sure that glymur imports correctly before proceeding.
 try:
     import glymur
 except ImportError:
     SKIP_GLYMUR = True
 else:
-    # See if we have a C backend
-    if glymur.lib.openjp2.OPENJP2:
-        SKIP_GLYMUR = False
-    else:
-        SKIP_GLYMUR = True
+    # See if we have a C backend installed.
+    # Glymur will not be able to read JPEG2000 files without it.
+    SKIP_GLYMUR = not glymur.lib.openjp2.OPENJP2
 
 try:
     from sunpy.io import _pyana  # NOQA
+    SKIP_ANA = False
 except ImportError:
     SKIP_ANA = True
-else:
-    SKIP_ANA = False
 
 if sys.maxsize > 2**32:
     SKIP_32 = False
 else:
     SKIP_32 = True
+
+try:
+    import cv2  # NOQA
+    SKIP_OPENCV = False
+except ImportError:
+    SKIP_OPENCV = True
+
+try:
+    import cdflib  # NOQA
+    SKIP_CDF = False
+except ImportError:
+    SKIP_CDF = True
+
+import numpy
+
+SKIP_NUMPY2 = numpy.__version__.startswith('2.')
 
 skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
@@ -61,6 +73,9 @@ else:
         ),
         reason="No SunPy ASDF entry points.",
     )
+skip_cdf = pytest.mark.skipif(SKIP_CDF, reason="CDFlib is not available.")
+skip_opencv = pytest.mark.skipif(SKIP_OPENCV, reason="opencv is not available.")
+skip_numpy2 = pytest.mark.skipif(SKIP_NUMPY2, reason="numpy2 breaks this test do to dependency issues.")
 
 
 @pytest.fixture

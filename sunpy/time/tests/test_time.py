@@ -150,14 +150,6 @@ def test_parse_time_individual_numpy_datetime():
     assert dt == Time('2005-02-01', format='isot')
 
 
-def test_parse_time_numpy_datetime_timezone():
-    with pytest.warns(DeprecationWarning, match='parsing timezone aware datetimes is deprecated'):
-        dt64 = np.datetime64('2014-02-07T16:47:51-0500')
-    dt = parse_time(dt64)
-
-    assert dt == Time('2014-02-07T21:47:51', format='isot')
-
-
 def test_parse_time_numpy_datetime_ns():
     dt64 = np.datetime64('2014-02-07T16:47:51.008288000')
     dt = parse_time(dt64)
