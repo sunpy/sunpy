@@ -9,6 +9,8 @@ import functools
 from inspect import Parameter, signature
 from functools import wraps
 
+import numpy as np
+
 import astropy.units as u
 from astropy.nddata import NDData
 
@@ -16,6 +18,7 @@ from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecati
 
 __all__ = ['deprecated']
 
+_NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 
 def get_removal_version(since):
     # Work out which version this will be removed in
@@ -400,7 +403,7 @@ def check_arithmetic_compatibility(func):
             # a proxy for these possible inputs. If it can be cast to a unitful quantity, we can
             # do arithmetic with it. Broadcasting or unit mismatches are handled later in the
             # actual operations by numpy and astropy respectively.
-            _ = u.Quantity(value, copy=False)
+            _ = u.Quantity(value, copy=_NUMPY_COPY_IF_NEEDED)
         except TypeError:
             return NotImplemented
         return func(instance, value)
