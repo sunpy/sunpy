@@ -60,7 +60,7 @@ from sunpy.visualization.colormaps import cm as sunpy_cm
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
-
+_NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
@@ -529,7 +529,7 @@ class GenericMap(NDData):
     @property
     def quantity(self):
         """Unitful representation of the map data."""
-        return u.Quantity(self.data, self.unit, copy=False)
+        return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
     def _new_instance_from_op(self, new_data):
         """
@@ -570,6 +570,7 @@ class GenericMap(NDData):
     def __rmul__(self, value):
         return self.__mul__(value)
 
+    @check_arithmetic_compatibility
     def __truediv__(self, value):
         return self.__mul__(1/value)
 

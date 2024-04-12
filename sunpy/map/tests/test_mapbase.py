@@ -3,7 +3,6 @@ Test Generic Map
 """
 import re
 import tempfile
-import contextlib
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -1732,23 +1731,15 @@ def test_map_arithmetic_neg(aia171_test_map):
     check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
 
 
-@pytest.mark.parametrize(("value", "warn_context"), [
-    ('map', pytest.warns(RuntimeWarning)),
-    ('foobar', contextlib.nullcontext()),
-    (None, contextlib.nullcontext()),
-    (['foo', 'bar'], contextlib.nullcontext()),
-])
-def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
+@pytest.mark.parametrize("value", ['map', 'foobar', None, ['foo', 'bar']])
+def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
     value = aia171_test_map if value == 'map' else value
     with pytest.raises(TypeError):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # NOQA: PT012
-        # A runtime warning is thrown when dividing by zero in the case of
-        # the map test
-        with warn_context:
-            _ = value / aia171_test_map
+    with pytest.raises(TypeError):
+        _ = value / aia171_test_map
 
 
 def test_parse_fits_units():
