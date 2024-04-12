@@ -54,30 +54,23 @@ def test_expand_list():
     lst = [1, 2, 3, [4, 5, 6], 7, (8, 9), ((10, 11), ((12, 13),))]
     assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
+
+@pytest.mark.parametrize(('input_data', 'expected_output'), (
+    (['a1234', 'b', [], (['c', 'd']), (), ['e'], b'fghj'], ['a1234', 'b', 'c', 'd', 'e', b'fghj']),
+    (iter(['c', 'd']), ['c', 'd']),
+    (zip(['1', '2'], ['3', '4']), ['1', '3', '2', '4']),
+    (Results(["a", "b", "c"]), ["a", "b", "c"]),
+    ([open(get_test_filepath('aia_171_level1.fits'), 'rb')], open(get_test_filepath('aia_171_level1.fits'), 'rb').readlines())
+))
+def test_expand_list_generator(input_data, expected_output):
+    assert list(util.expand_list_generator(input_data)) == expected_output
+
+
 @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
-def test_expand_list_generator(aia171_test_map):
-    # We want to ensure that it does not expand:
-    # - strings, bytes, array-like objects, WCS or FITS headers
-    # Only lists, tuples and Generator objects should be expanded
-    header = fits.getheader(get_test_filepath('aia_171_level1.fits'))
-    generator = iter(['c', 'd'])
-    zip_generator = zip(['1', '2'], ['3', '4'])
-    first_list = ['a1234', 'b', [], (['c', 'd']), tuple(), ['e'], b'fghj']
-    parfive_results = Results(["a", "b", "c"])
-    # The empty list and tuple should be ignored
-    assert list(util.expand_list_generator(first_list)) == ['a1234', 'b', 'c', 'd', 'e', b'fghj']
-    # These should not be expanded
-    assert list(util.expand_list_generator([aia171_test_map.data, aia171_test_map.wcs, header])) == [aia171_test_map.data, aia171_test_map.wcs, header]
-    # The generators should be expanded
-    assert list(util.expand_list_generator(generator)) == ['c', 'd']
-    assert list(util.expand_list_generator(zip_generator)) == ['1', '3', '2', '4']
-    # The parfive results should be expanded
-    assert list(util.expand_list_generator(parfive_results)) == ["a", "b", "c"]
-    # The file handles should not be expanded
-    with open(get_test_filepath('aia_171_level1.fits'), 'rb') as f:
-        file_contents = f.readlines()
-        f.seek(0)
-        assert list(util.expand_list_generator([f])) == file_contents
+def test_expand_list_generator_map(aia171_test_map):
+    before = after = [aia171_test_map.data, aia171_test_map.wcs, fits.getheader(get_test_filepath('aia_171_level1.fits'))]
+    assert list(util.expand_list_generator(before)) == after
+
 
 def test_partial_key_match():
     test_dict = {('a', 'b', 'c'): (1, 2, 3), ('a', 'b', 'd'): (4, 5, 6), ('e', 'f', 'g'): (8, 7, 9)}
