@@ -1,0 +1,14 @@
+diff a/.ruff.toml b/.ruff.toml	(rejected hunks)
+@@ -24,9 +24,11 @@ extend-ignore = [
+ # Part of configuration, not a package.
+ "setup.py" = ["INP001"]
+ "conftest.py" = ["INP001"]
++"docs/conf.py" = [
++  "E402"  # Module imports not at top of file
++]
+ "docs/*.py" = [
+   "INP001",  # Implicit-namespace-package. The examples are not a package.
+-  "E402",  # Module imports not at top of file
+ ]
+ "__init__.py" = ["E402", "F401", "F403"]
+ "test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]

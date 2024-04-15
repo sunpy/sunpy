@@ -1,0 +1,9 @@
+diff a/.flake8 b/.flake8	(rejected hunks)
+@@ -22,6 +22,6 @@ exclude =
+     __pycache__
+     docs/conf.py
+     build
+-    sunpy/__init__.py,
++    sunpy/__init__.py
+ rst-directives =
+     plot

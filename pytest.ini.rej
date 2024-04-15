@@ -1,0 +1,12 @@
+diff a/pytest.ini b/pytest.ini	(rejected hunks)
+@@ -1,8 +1,8 @@
+ [pytest]
+ minversion = 7.0
+ testpaths =
+-  sunpy
+-  docs
++    sunpy
++    docs
+ norecursedirs =
+     .tox
+     build

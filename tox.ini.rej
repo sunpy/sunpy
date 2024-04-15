@@ -1,0 +1,23 @@
+diff a/tox.ini b/tox.ini	(rejected hunks)
+@@ -3,9 +3,10 @@ min_version = 4.0
+ requires =
+     tox-pypi-filter>=0.14
+ envlist =
+-    py{39,310,311,312}
++    py{310,311,312}
+     py312-devdeps
+-    py39-oldestdeps
++    py310-oldestdeps
++    build_docs
+     codestyle
+     build_docs
+ 
+@@ -34,7 +35,7 @@ set_env =
+     MPLBACKEND = agg
+     devdeps: PIP_EXTRA_INDEX_URL = https://pypi.anaconda.org/astropy/simple https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
+     # Define the base test command here to allow us to add more flags for each tox factor
+-    PYTEST_COMMAND = pytest -vvv -r fEs --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config={toxinidir}/pyproject.toml {toxinidir}/docs
++    PYTEST_COMMAND = pytest -vvv -r fEs --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config={toxinidir}/.coveragerc {toxinidir}/docs
+ 
+ deps =
+     # For packages which publish nightly wheels this will pull the latest nightly

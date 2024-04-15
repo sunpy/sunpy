@@ -1,0 +1,12 @@
+diff a/.isort.cfg b/.isort.cfg	(rejected hunks)
+@@ -1,8 +1,8 @@
+ [settings]
+ balanced_wrapping = true
+ skip =
+-    docs/conf.py,
+-    sunpy/__init__.py,
++    docs/conf.py
++    sunpy/__init__.py
+ default_section = THIRDPARTY
+ include_trailing_comma = true
+ known_astropy = astropy, asdf
