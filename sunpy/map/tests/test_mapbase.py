@@ -1654,8 +1654,8 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map.peek()
 
 
-@pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
+@pytest.mark.parametrize('method', _rotation_registry.keys())
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation
     weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)

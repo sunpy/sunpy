@@ -296,8 +296,8 @@ def test_clipping(rot30):
     return fig
 
 
-@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
 @figure_test
+@pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
 def test_nans(rot30):
     # Generates a plot to test the preservation and expansions of NaNs by the rotation
     image_with_nans = np.ones((23, 23))
