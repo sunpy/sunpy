@@ -171,6 +171,7 @@ for line in open('nitpick-exceptions'):
     target = target.strip()
     nitpick_ignore.append((dtype, target))
 
+show_warning_types = True
 
 # -- Options for intersphinx extension ---------------------------------------
 
