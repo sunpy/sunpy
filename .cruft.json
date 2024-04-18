@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "d91a5d5e80dfa4402924cc0abfe104db30e239f9",
+  "commit": "969d0c6e228744fef96a1669d24f4da932181103",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -11,7 +11,7 @@
       "author_email": "sunpy@googlegroups.com",
       "project_url": "https://sunpy.org",
       "license": "BSD 2-Clause",
-      "minimum_python_version": "3.9",
+      "minimum_python_version": "3.10",
       "use_compiled_extensions": "y",
       "enable_dynamic_dev_versions": "y",
       "include_example_code": "n",
