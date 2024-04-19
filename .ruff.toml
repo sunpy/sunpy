@@ -29,7 +29,9 @@ extend-ignore = [
 # Part of configuration, not a package.
 "setup.py" = ["INP001"]
 "conftest.py" = ["INP001"]
-"docs/conf.py" = ["E402"]
+"docs/conf.py" = [
+  "E402"  # Module imports not at top of file
+]
 "docs/*.py" = [
   "INP001",  # Implicit-namespace-package. The examples are not a package.
 ]
