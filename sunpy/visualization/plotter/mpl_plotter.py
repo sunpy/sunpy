@@ -28,15 +28,11 @@ class MatplotlibPlotter(BasePlotter):
         # is run before map sources fix some of their metadata, so
         # just ignore any exceptions raised.
         try:
-            cmap = self._get_cmap_name()
+            cmap = self.smap._get_cmap_name()
             if cmap in sunpy_cm.cmlist:
                 self.plot_settings['cmap'] = cmap
         except Exception:
             pass
-
-    def _get_cmap_name(self):
-        cmap_string = f"{self.smap.observatory}{self.smap.detector}{self.smap.wavelength.to_value('AA'):.0f}"
-        return cmap_string.lower()
 
     @property
     def plot_settings(self):
@@ -240,31 +236,6 @@ class MatplotlibPlotter(BasePlotter):
         axes.add_patch(quad)
         return quad
 
-    def _process_levels_arg(self, levels):
-        """
-        Accept a percentage or dimensionless or map unit input for contours.
-        """
-        levels = np.atleast_1d(levels)
-        if not hasattr(levels, 'unit'):
-            if self.smap.unit is None:
-                # No map units, so allow non-quantity through
-                return levels
-            else:
-                raise TypeError("The levels argument has no unit attribute, "
-                                "it should be an Astropy Quantity object.")
-
-        if levels.unit == u.percent:
-            return 0.01 * levels.to_value('percent') * np.nanmax(self.smap.data)
-        elif self.smap.unit is not None:
-            return levels.to_value(self.smap.unit)
-        elif levels.unit.is_equivalent(u.dimensionless_unscaled):
-            # Handle case where map data has no units
-            return levels.to_value(u.dimensionless_unscaled)
-        else:
-            # Map data has no units, but levels doesn't have dimensionless units
-            raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
-                               "or in u.dimensionless_unscaled units.")
-
     def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
@@ -295,7 +266,7 @@ class MatplotlibPlotter(BasePlotter):
         corresponding matplotlib method.
         """
         axes = self._check_axes(axes)
-        levels = self._process_levels_arg(levels)
+        levels = self.smap._process_levels_arg(levels)
 
         # Pixel indices
         y, x = np.indices(self.smap.data.shape)

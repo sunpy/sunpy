@@ -1351,20 +1351,20 @@ class GenericMap(MapMetaMixin, NDCube):
         new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings, mask=new_mask)
         return new_map
 
-# #### Visualization #### #
-
     @property
     def cmap(self):
         return self.plotter.cmap
 
-    @u.quantity_input
+    def _get_cmap_name(self):
+        cmap_string = f"{self.observatory}{self.detector}{self.wavelength.to_value('AA'):.0f}"
+        return cmap_string.lower()
+
     def draw_grid(self, *args, **kwargs):
         return self.plotter.draw_grid(*args, **kwargs)
 
     def draw_limb(self, *args, **kwargs):
         return self.plotter.draw_limb(*args, **kwargs)
 
-    @u.quantity_input
     def draw_quadrangle(self, *args, **kwargs):
         return self.plotter.draw_quadrangle(*args, **kwargs)
 
@@ -1376,6 +1376,31 @@ class GenericMap(MapMetaMixin, NDCube):
 
     def plot(self, *args, **kwargs):
         return self.plotter.plot(*args, **kwargs)
+
+    def _process_levels_arg(self, levels):
+        """
+        Accept a percentage or dimensionless or map unit input for contours.
+        """
+        levels = np.atleast_1d(levels)
+        if not hasattr(levels, 'unit'):
+            if self.unit is None:
+                # No map units, so allow non-quantity through
+                return levels
+            else:
+                raise TypeError("The levels argument has no unit attribute, "
+                                "it should be an Astropy Quantity object.")
+
+        if levels.unit == u.percent:
+            return 0.01 * levels.to_value('percent') * np.nanmax(self.data)
+        elif self.unit is not None:
+            return levels.to_value(self.unit)
+        elif levels.unit.is_equivalent(u.dimensionless_unscaled):
+            # Handle case where map data has no units
+            return levels.to_value(u.dimensionless_unscaled)
+        else:
+            # Map data has no units, but levels doesn't have dimensionless units
+            raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
+                               "or in u.dimensionless_unscaled units.")
 
     def contour(self, level, **kwargs):
         """
