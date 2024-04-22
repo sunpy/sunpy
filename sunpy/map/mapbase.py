@@ -33,6 +33,7 @@ from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 import sunpy
 # The next two are not used but are called to register functions with external modules
 import sunpy.io as io
+from ndcube import NDCube
 from sunpy import config
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -49,7 +50,7 @@ from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
-from .mixins.mapmeta import MapMetaMixin, MapMetaValidationError, PixelPair
+from .mixins.mapmeta import MapMetaValidationError, PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -97,7 +98,7 @@ to the standard PC_ij described in section 6.1 of .
 __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
-class GenericMap(MapMetaMixin, NDData):
+class GenericMap(NDCube):
     """
     A Generic spatially-aware 2D data array
 
