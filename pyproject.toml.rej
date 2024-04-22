@@ -1,0 +1,25 @@
+diff a/pyproject.toml b/pyproject.toml	(rejected hunks)
+@@ -25,13 +25,13 @@ dynamic = ["version"]
+ tests = [
+   "pytest",
+   "pytest-doctestplus",
+-  "pytest-cov"
++  "pytest-cov",
++  "pytest-xdist",
+ ]
+ docs = [
+   "sphinx",
+   "sphinx-automodapi",
+ ]
+-
+ [project.urls]
+ repository = "https://sunpy.org"
+ 
+@@ -40,6 +40,7 @@ zip-safe = false
+ include-package-data = true
+ 
+ [tool.setuptools.packages.find]
++exclude = ["sunpy._dev*"]
+ 
+ [tool.setuptools_scm]
+ write_to = "sunpy/_version.py"
