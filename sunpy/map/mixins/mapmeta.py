@@ -25,6 +25,7 @@ _META_FIX_URL = 'https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-m
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
+
 class MapMetaValidationError(AttributeError):
     pass
 
