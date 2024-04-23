@@ -62,4 +62,4 @@ def test_new_instance_preserves_plot_settings(rhessi_map):
 
 def test_wcs(rhessi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    rhessi_map.pixel_to_world(0*u.pix, 0*u.pix)
+    rhessi_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
