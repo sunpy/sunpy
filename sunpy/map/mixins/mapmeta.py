@@ -40,54 +40,6 @@ class MapMetaMixin:
         return self.meta.item_hash()
 
     @property
-    @cached_property_based_on('_meta_hash')
-    def wcs(self):
-        """
-        The `~astropy.wcs.WCS` property of the map.
-        """
-        w2 = astropy.wcs.WCS(naxis=2)
-
-        # Add one to go from zero-based to one-based indexing
-        w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
-        # Make these a quantity array to prevent the numpy setting element of
-        # array with sequence error.
-        # Explicitly call ``.to()`` to check that scale is in the correct units
-        w2.wcs.cdelt = u.Quantity([self.scale[0].to(self.spatial_units[0] / u.pix),
-                                   self.scale[1].to(self.spatial_units[1] / u.pix)])
-        w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
-        w2.wcs.ctype = self.coordinate_system
-        w2.wcs.pc = self.rotation_matrix
-        w2.wcs.set_pv(self._pv_values)
-        # FITS standard doesn't allow both PC_ij *and* CROTA keywords
-        w2.wcs.crota = (0, 0)
-        w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
-        w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
-
-        # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
-        sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
-        if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
-            # Clear all the aux information that was set earlier. This is to avoid
-            # issues with maps that store multiple observer coordinate keywords.
-            # Note that we have to create a new WCS as it's not possible to modify
-            # wcs.wcs.aux in place.
-            header = w2.to_header()
-            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-                header.pop(kw, None)
-            w2 = astropy.wcs.WCS(header)
-
-            # Get observer coord, and set the aux information
-            obs_coord = self.observer_coordinate
-            sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
-
-        # Set the shape of the data array
-        w2.array_shape = self.data.shape
-
-        # Validate the WCS here.
-        w2.wcs.set()
-        return w2
-
-    @property
     def coordinate_frame(self):
         """
         An `astropy.coordinates.BaseCoordinateFrame` instance created from the coordinate
@@ -755,6 +707,10 @@ class MapMetaMixin:
         validation should be handled in the relevant file in the
         sunpy.map.sources package.
         """
+        # Only run this once
+        if self._metadata_validated:
+            return
+
         msg = ('Image coordinate units for axis {} not present in metadata.')
         err_message = []
         for i in [0, 1]:
@@ -782,3 +738,5 @@ class MapMetaMixin:
             raise MapMetaValidationError(
                 'Map only supports spherical coordinate systems with angular units '
                 f'(ie. equivalent to arcsec), but this map has units {units}')
+
+        self._metadata_validated = True
