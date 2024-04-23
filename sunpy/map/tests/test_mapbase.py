@@ -591,7 +591,7 @@ def test_crota_scale():
 def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally consistent"""
     test_pixel = generic_map.wcs.world_to_pixel(generic_map.reference_coordinate)
-    assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+    assert_quantity_allclose(test_pixel * u.pix, generic_map.reference_pixel)
 
 
 def test_world_to_pixel_error(generic_map):
@@ -605,8 +605,8 @@ def test_world_pixel_roundtrip(simple_map):
     coord = simple_map.wcs.pixel_to_world(*pix)
     pix_roundtrip = simple_map.wcs.world_to_pixel(coord)
 
-    assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
-    assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
+    assert u.allclose(pix_roundtrip[1] * u.pix, pix[0], atol=1e-10 * u.pix)
+    assert u.allclose(pix_roundtrip[0] * u.pix, pix[1], atol=1e-10 * u.pix)
 
 
 def test_swapped_ctypes(simple_map):
@@ -1294,8 +1294,8 @@ def test_hg_data_to_pix(heliographic_test_map):
     out = heliographic_test_map.wcs.world_to_pixel(
         SkyCoord(
             0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
-    assert_quantity_allclose(out[0], 180 * u.pix)
-    assert_quantity_allclose(out[1], 90 * u.pix)
+    assert_quantity_allclose(out[0], 180)
+    assert_quantity_allclose(out[1], 90)
 
 
 @pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
