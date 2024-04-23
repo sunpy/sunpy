@@ -1222,7 +1222,8 @@ def test_rotate_assumed_obstime():
     assert_quantity_allclose(rotated.reference_pixel.y, original.reference_pixel.y)
     # The returned map should also not be missing the observing time as we set it to "now"
     assert rotated.date is not None
-    assert rotated.date > old_now_time and rotated.date > original.date
+    assert rotated.date > old_now_time
+    assert rotated.date > original.date
 
 
 def test_as_mpl_axes_aia171(aia171_test_map):
