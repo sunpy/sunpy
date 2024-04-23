@@ -543,54 +543,6 @@ class GenericMap(MapMetaMixin, NDCube):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
-    def _new_instance_from_op(self, new_data):
-        """
-        Helper function for creating new map instances after arithmetic
-        operations.
-        """
-        new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string('fits')
-        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
-
-    def __neg__(self):
-        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
-
-    @check_arithmetic_compatibility
-    def __pow__(self, value):
-        new_data = self.quantity ** value
-        return self._new_instance_from_op(new_data)
-
-    @check_arithmetic_compatibility
-    def __add__(self, value):
-        new_data = self.quantity + value
-        return self._new_instance_from_op(new_data)
-
-    def __radd__(self, value):
-        return self.__add__(value)
-
-    def __sub__(self, value):
-        return self.__add__(-value)
-
-    def __rsub__(self, value):
-        return self.__neg__().__add__(value)
-
-    @check_arithmetic_compatibility
-    def __mul__(self, value):
-        new_data = self.quantity * value
-        return self._new_instance_from_op(new_data)
-
-    def __rmul__(self, value):
-        return self.__mul__(value)
-
-    @check_arithmetic_compatibility
-    def __truediv__(self, value):
-        return self.__mul__(1/value)
-
-    @check_arithmetic_compatibility
-    def __rtruediv__(self, value):
-        new_data = value / self.quantity
-        return self._new_instance_from_op(new_data)
-
     def _set_symmetric_vmin_vmax(self):
         """
         Set symmetric vmin and vmax about zero
