@@ -8,6 +8,7 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
+from numbers import Integral
 from tempfile import NamedTemporaryFile
 
 import matplotlib
@@ -253,10 +254,11 @@ class GenericMap(MapMetaMixin, NDCube):
             pass
 
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        if any(map(lambda x: isinstance(x, Integral), key)):
+            raise TypeError("Invalid key. Arguments to `__getitem__` must be "
+                            "slices. In order to index a slice, use generic_map[0:1, :]")
+        return super().__getitem__(key)
+
 
     def _text_summary(self):
         dt = self.exposure_time
