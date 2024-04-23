@@ -193,7 +193,7 @@ class MDIMap(GenericMap):
         super().__init__(data, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Magnetic field maps, not intensity maps
-            self._set_symmetric_vmin_vmax()
+            self.plotter._set_symmetric_vmin_vmax()
 
     @property
     def _date_obs(self):

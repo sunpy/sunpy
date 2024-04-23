@@ -34,6 +34,14 @@ class MatplotlibPlotter(BasePlotter):
         except Exception:
             pass
 
+    def _set_symmetric_vmin_vmax(self):
+        """
+        Set symmetric vmin and vmax about zero
+        """
+        threshold = np.nanmax(abs(self.smap.data))
+        self.plot_settings['norm'].vmin = -threshold
+        self.plot_settings['norm'].vmax = threshold
+
     @property
     def plot_settings(self):
         return self._plot_settings

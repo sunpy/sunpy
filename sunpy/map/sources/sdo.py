@@ -114,7 +114,7 @@ class HMIMap(GenericMap):
             # This means they are not scaled correctly.
             if self.plot_settings.get('norm') is not None:
                 # Magnetic field maps, not intensity maps
-                self._set_symmetric_vmin_vmax()
+                self.plotter._set_symmetric_vmin_vmax()
         self._nickname = self.detector
 
     @property
