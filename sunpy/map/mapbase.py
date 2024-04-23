@@ -535,7 +535,7 @@ class GenericMap(NDData):
         operations.
         """
         new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string('fits')
+        new_meta['bunit'] = new_data.unit.to_string()
         return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
 
     def __neg__(self):
@@ -725,19 +725,22 @@ class GenericMap(NDData):
     @staticmethod
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
-                        'dn': 'ct',
-                        'dn/s': 'ct/s',
                         'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
-                          'the FITS unit standards.')
-            unit = None
+            # NOTE: Special case DN here as it is not part of the FITS standard, but
+            # is widely used and is also a recognized astropy unit
+            if 'DN' in str(unit):
+                unit = u.Unit(unit_str)
+            else:
+                warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                               'with sunpy.map.Map.\n'
+                               'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                               'the FITS unit standards.')
+                unit = None
         return unit
 
     @property

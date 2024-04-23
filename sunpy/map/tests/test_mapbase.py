@@ -224,7 +224,7 @@ def test_std(generic_map):
 
 
 def test_unit(generic_map):
-    assert generic_map.unit == u.ct / u.s
+    assert generic_map.unit == u.DN / u.s
     generic_map.meta['bunit'] = 'not a unit'
     with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string "not a unit"'):
         assert generic_map.unit is None
@@ -1712,12 +1712,10 @@ def check_arithmetic_value_and_units(map_new, data_expected):
 
 
 @pytest.mark.parametrize('value', [
-    10 * u.ct,
-    10 * u.mct,
-    u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.mct),
+    10 * u.DN,
+    u.Quantity([10], u.DN),
+    u.Quantity(np.random.rand(128), u.DN),
+    u.Quantity(np.random.rand(128, 128), u.DN),
 ])
 def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     new_map = aia171_test_map + value
@@ -1731,10 +1729,10 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
 
 
 @pytest.mark.parametrize('value', [
-    10 * u.ct,
-    u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
+    10 * u.s,
+    u.Quantity([10], u.s),
+    u.Quantity(np.random.rand(128), u.s),
+    u.Quantity(np.random.rand(128, 128), u.s),
     10.0,
     np.random.rand(128),
     np.random.rand(128, 128),
@@ -1771,14 +1769,16 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
     with pytest.raises(TypeError):
         _ = value / aia171_test_map
 
-
-def test_parse_fits_units():
-    # Check that we parse a BUNIT of G correctly.
-    out_unit = GenericMap._parse_fits_unit("Gauss")
-    assert out_unit == u.G
-
-    out_unit = GenericMap._parse_fits_unit("G")
-    assert out_unit == u.G
+@pytest.mark.parametrize(('units_string','expected_unit'),[
+    ('Gauss', u.G),
+    ('G', u.G),
+    ('DN', u.DN),
+    ('DN/s', u.DN/u.s),
+    ('counts / pixel', u.ct/u.pix),
+])
+def test_parse_fits_units(units_string, expected_unit):
+    out_unit = GenericMap._parse_fits_unit(units_string)
+    assert out_unit == expected_unit
 
 
 def test_only_cd():
