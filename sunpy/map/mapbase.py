@@ -25,7 +25,6 @@ except ImportError:
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
-from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
@@ -191,6 +190,17 @@ class GenericMap(MapMetaMixin, NDCube):
                 cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
+        # Setup some attributes
+        self._metadata_validated = False
+        self._nickname = None
+        # These are placeholders for default attributes, which are only set
+        # once if their data isn't present in the map metadata.
+        self._default_time = None
+        self._default_dsun = None
+        self._default_carrington_longitude = None
+        self._default_heliographic_latitude = None
+        self._default_heliographic_longitude = None
+
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -205,19 +215,11 @@ class GenericMap(MapMetaMixin, NDCube):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        params = list(inspect.signature(NDData).parameters)
+        params = list(inspect.signature(NDCube).parameters)
         nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        if "wcs" in nddata_kwargs:
+            raise ValueError("Passing a wcs object to GenericMap is not supported")
         super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
-
-        # Setup some attributes
-        self._nickname = None
-        # These are placeholders for default attributes, which are only set
-        # once if their data isn't present in the map metadata.
-        self._default_time = None
-        self._default_dsun = None
-        self._default_carrington_longitude = None
-        self._default_heliographic_latitude = None
-        self._default_heliographic_longitude = None
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
@@ -681,6 +683,8 @@ class GenericMap(MapMetaMixin, NDCube):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
+        self._validate_meta()
+
         w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
@@ -816,7 +820,7 @@ class GenericMap(MapMetaMixin, NDCube):
         Resample to new dimension sizes.
 
         Uses the same parameters and creates the same coordinate lookup points
-        as IDL''s congrid routine, which apparently originally came from a
+        as IDL's congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
         Parameters
