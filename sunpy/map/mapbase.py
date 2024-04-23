@@ -97,7 +97,7 @@ to the standard PC_ij described in section 6.1 of .
 __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
-class GenericMap(NDCube, MapMetaMixin):
+class GenericMap(MapMetaMixin, NDCube):
     """
     A Generic spatially-aware 2D data array
 
@@ -820,7 +820,7 @@ class GenericMap(NDCube, MapMetaMixin):
         Resample to new dimension sizes.
 
         Uses the same parameters and creates the same coordinate lookup points
-        as IDL''s congrid routine, which apparently originally came from a
+        as IDL's congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
         Parameters

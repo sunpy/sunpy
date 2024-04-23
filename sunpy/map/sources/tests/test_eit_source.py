@@ -7,10 +7,9 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath
 from sunpy.map.sources.soho import EITMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 
 header_list = [f for f in get_test_data_filenames() if 'efz' in f.name and '.header' in f.name]
-
-__author__ = "Pritish C. (VaticanCameos)"
 
 
 @pytest.fixture(scope="module", params=header_list)
@@ -57,5 +56,6 @@ def test_wcs(eit_map):
 
 
 def test_old_eit_date():
-    eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
+    with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observer"):
+        eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
