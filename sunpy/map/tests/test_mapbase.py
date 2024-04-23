@@ -62,7 +62,7 @@ def test_notes_combined():
     -----
     This is a note.
 
-    This should be combined./get
+    This should be combined.
 
     References
     ----------
