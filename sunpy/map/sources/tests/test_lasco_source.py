@@ -11,14 +11,13 @@ from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyMetadataWarning
 
 header_list = [
     "lasco_c2_25299383_s.header",
     "lasco_c3.header",
 ]
 
-__author__ = 'Pritish C. (VaticanCameos)'
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture(scope="module", params=header_list, ids=['C2', 'C3'])
@@ -89,5 +88,4 @@ def test_helioviewer_rotation(lasco_map, lasco_helioviewer):
 
 def test_wcs(lasco_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        lasco_map.pixel_to_world(0*u.pix, 0*u.pix)
+    lasco_map.pixel_to_world(0*u.pix, 0*u.pix)

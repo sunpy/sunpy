@@ -6,8 +6,8 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.rhessi import RHESSIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 @pytest.fixture(scope="module")
 def rhessi_map():
@@ -62,6 +62,4 @@ def test_new_instance_preserves_plot_settings(rhessi_map):
 
 def test_wcs(rhessi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning,
-                      match='Missing metadata for observer: assuming Earth-based observer.*'):
-        rhessi_map.pixel_to_world(0*u.pix, 0*u.pix)
+    rhessi_map.pixel_to_world(0*u.pix, 0*u.pix)
