@@ -520,7 +520,8 @@ def test_rotation_matrix_cd_cdelt():
         'CTYPE1': 'HPLN-TAN',
         'CTYPE2': 'HPLT-TAN',
     }
-    cd_map = sunpy.map.Map((data, header))
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for'):
+        cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0.5, -1.], [1., 2.]]))
 
 
@@ -544,7 +545,8 @@ def test_rotation_matrix_cd_cdelt_square():
         'CTYPE1': 'HPLN-TAN',
         'CTYPE2': 'HPLT-TAN',
     }
-    cd_map = sunpy.map.Map((data, header))
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for'):
+        cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
 
 
@@ -1185,6 +1187,7 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=-1)
 
 
+@pytest.mark.filterwarnings("ignore:Missing metadata for observation time")
 def test_rotate_assumed_obstime():
     # Create an HPC map that is missing the observing time and has an off-disk reference coordinate
     header = {
@@ -1207,22 +1210,16 @@ def test_rotate_assumed_obstime():
         'rsun_ref': 700000000,
     }
     original = sunpy.map.Map(np.zeros((10, 10)), header)
-
     # Accessing the date makes the assumption of "now" for obstime
-    with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
-        original.date
-
+    original.date
     # The assumption has already been made, so no further warning should be emitted by rotate()
     rotated = original.rotate(0*u.deg)
-
     # The reference coordinate should be unchanged by this 0-degree rotation
     # Since the reference coordinate is off-disk, a non-identity transformation would result in NaNs
     assert_quantity_allclose(rotated.reference_pixel.x, original.reference_pixel.x)
     assert_quantity_allclose(rotated.reference_pixel.y, original.reference_pixel.y)
-
     # The returned map should also be missing observing time
-    with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
-        rotated.date
+    rotated.date
 
 
 def test_as_mpl_axes_aia171(aia171_test_map):
@@ -1310,9 +1307,10 @@ def test_more_than_two_dimensions():
     hdr['TELESCOP'] = 'XXX'
     hdr['cunit1'] = 'arcsec'
     hdr['cunit2'] = 'arcsec'
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
-        with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
-            bad_map = sunpy.map.Map(bad_data, hdr)
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for'):
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+            with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+                bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
@@ -1769,7 +1767,8 @@ def test_only_cd():
         'CTYPE1': 'HPLN-TAN',
         'CTYPE2': 'HPLT-TAN',
     }
-    cd_map = sunpy.map.Map((data, header))
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for'):
+        cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
 
