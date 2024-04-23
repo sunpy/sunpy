@@ -88,4 +88,4 @@ def test_helioviewer_rotation(lasco_map, lasco_helioviewer):
 
 def test_wcs(lasco_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    lasco_map.pixel_to_world(0*u.pix, 0*u.pix)
+    lasco_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

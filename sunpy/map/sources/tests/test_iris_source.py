@@ -51,4 +51,4 @@ def test_units(irismap):
 
 def test_wcs(irismap):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    irismap.pixel_to_world(0*u.pix, 0*u.pix)
+    irismap.wcs.pixel_to_world(0*u.pix, 0*u.pix)
