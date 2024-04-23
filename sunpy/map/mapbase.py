@@ -727,53 +727,12 @@ class GenericMap(MapMetaMixin, NDCube):
         w2.wcs.set()
         return w2
 
-# #### Miscellaneous #### #
     def _get_cmap_name(self):
         """Build the default color map name."""
         cmap_string = (self.observatory + self.detector +
                        str(int(self.wavelength.to('angstrom').value)))
         return cmap_string.lower()
 
-# #### Data conversion routines #### #
-    def world_to_pixel(self, coordinate):
-        """
-        Convert a world (data) coordinate to a pixel coordinate.
-
-        Parameters
-        ----------
-        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
-            The coordinate object to convert to pixel coordinates.
-
-        Returns
-        -------
-        x : `~astropy.units.Quantity`
-            Pixel coordinate on the CTYPE1 axis.
-        y : `~astropy.units.Quantity`
-            Pixel coordinate on the CTYPE2 axis.
-        """
-        x, y = self.wcs.world_to_pixel(coordinate)
-        return PixelPair(x * u.pixel, y * u.pixel)
-
-    @u.quantity_input
-    def pixel_to_world(self, x: u.pixel, y: u.pixel):
-        """
-        Convert a pixel coordinate to a data (world) coordinate.
-
-        Parameters
-        ----------
-        x : `~astropy.units.Quantity`
-            Pixel coordinate of the CTYPE1 axis. (Normally solar-x).
-        y : `~astropy.units.Quantity`
-            Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
-
-        Returns
-        -------
-        coord : `astropy.coordinates.SkyCoord`
-            A coordinate object representing the output coordinate.
-        """
-        return self.wcs.pixel_to_world(x, y)
-
-# #### I/O routines #### #
 
     def save(self, filepath, filetype='auto', **kwargs):
         """
