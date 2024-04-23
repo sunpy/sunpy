@@ -62,7 +62,7 @@ def test_notes_combined():
     -----
     This is a note.
 
-    This should be combined.
+    This should be combined./get
 
     References
     ----------
@@ -147,8 +147,11 @@ def test_header_fits_io():
 
 
 def test_get_item(generic_map):
-    with pytest.raises(NotImplementedError):
-        generic_map[10, 10]
+    with pytest.raises(TypeError, match="Invalid key. *"):
+        assert generic_map[1:3, 3]
+    assert generic_map[0:1, :] == 5
+
+
 
 
 def test_wcs(aia171_test_map):
