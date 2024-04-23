@@ -68,7 +68,8 @@ def test_creation_of_composite_maps():
     assert isinstance(comp, sunpy.map.CompositeMap)
 
 
-@pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
+@pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header",
+                            "ignore:Missing metadata for")
 def test_patterns(eit_fits_directory):
     # Test different Map pattern matching
 
@@ -261,7 +262,7 @@ def test_map_list_urls_cache():
     sunpy.map.Map(urls)
 
 
-@pytest.mark.filterwarnings('ignore:File may have been truncated')
+@pytest.mark.filterwarnings('ignore:File may have been truncated', 'ignore:Missing metadata for')
 @pytest.mark.parametrize(('file', 'mapcls'), [
     ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
     ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],
