@@ -254,9 +254,23 @@ class GenericMap(MapMetaMixin, NDCube):
             pass
 
     def __getitem__(self, key):
-        if any(map(lambda x: isinstance(x, Integral), key)):
-            raise TypeError("Invalid key. Arguments to `__getitem__` must be "
-                            "slices. In order to index a slice, use generic_map[0:1, :]")
+        def format_slice(key):
+            if not isinstance(key, slice):
+                return f"{key}"
+            return f"{key.start or ''}:{key.stop or ''}{f':{key.step}' if key.step else ''}"
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if any(intidx := list(map(lambda x: isinstance(x, Integral), key))):
+            strslice = ", ".join([f"{k}:{k+1}" if isint else format_slice(k)
+                                  for k, isint in zip(key, intidx)])
+            raise TypeError(
+                "It is not possible to slice a map with an integer as it will "
+                "reduce the number of data dimensions by one.\nIn order to "
+                "apply the same slice without dropping a dimension do "
+                f"mymap[{strslice}]."
+            )
         return super().__getitem__(key)
 
 
