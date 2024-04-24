@@ -52,8 +52,8 @@ class SXTMap(GenericMap):
     * `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`_
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self.plot_settings['cmap'] = 'yohkohsxt' + self.measurement[0:2].lower()
         self.plot_settings['norm'] = ImageNormalize(

@@ -35,8 +35,8 @@ class EITMap(GenericMap):
 
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
@@ -107,8 +107,8 @@ class LASCOMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
         self.plot_settings['norm'] = ImageNormalize(
@@ -189,8 +189,8 @@ class MDIMap(GenericMap):
     * `SOHO MDI Instrument Paper <https://doi.org/10.1007/978-94-009-0191-9_5>`_
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Magnetic field maps, not intensity maps
             self._set_symmetric_vmin_vmax()

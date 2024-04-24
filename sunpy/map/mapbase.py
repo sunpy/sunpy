@@ -219,10 +219,10 @@ class GenericMap(MapMetaMixin, NDCube):
                       "Data will be truncated to the first two dimensions.")
 
         params = list(inspect.signature(NDCube).parameters)
-        nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        if "wcs" in nddata_kwargs:
-            raise ValueError("Passing a wcs object to GenericMap is not supported")
-        super().__init__(data, meta=MetaDict(meta), **nddata_kwargs)
+        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        super().__init__(data, wcs=wcs, uncertainty=uncertainty, mask=mask,
+                         meta=MetaDict(meta), unit=unit, copy=copy,
+                         **ndcube_kwargs)
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
@@ -2053,7 +2053,7 @@ class GenericMap(MapMetaMixin, NDCube):
             output_array, footprint = output_array
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
+        outmap = GenericMap(output_array, meta=target_wcs.to_header(),
                             plot_settings=self.plot_settings)
 
         # Check rsun mismatch
