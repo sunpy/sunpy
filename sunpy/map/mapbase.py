@@ -27,10 +27,10 @@ except ImportError:
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import WCSAxes
+from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 import sunpy
 # The next two are not used but are called to register functions with external modules
@@ -42,14 +42,20 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
-from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
-from sunpy.map.mixins.mapmeta import MapMetaMixin
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import MetaDict
-from sunpy.util.decorators import add_common_docstring, cached_property_based_on
+from sunpy.util.decorators import (
+    add_common_docstring,
+    cached_property_based_on,
+    check_arithmetic_compatibility,
+    deprecate_positional_args_since,
+)
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization.plotter.mpl_plotter import MapPlotter
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.visualization.colormaps import cm as sunpy_cm
+from .mixins.mapmeta import MapMetaMixin, PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -97,7 +103,7 @@ to the standard PC_ij described in section 6.1 of .
 __all__ = ['GenericMap']
 
 
-class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
+class GenericMap(MapMetaMixin, NDCube):
     """
     A Generic spatially-aware 2D data array
 
@@ -231,19 +237,26 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
-        self.plotter = MapPlotter
+        self.plot_settings = {'cmap': 'gray',
+                            'interpolation': 'nearest',
+                            'origin': 'lower'
+                            }
+        if self.dtype != np.uint8:
+            # Put import here to reduce sunpy.map import time
+            from matplotlib import colors
+            self.plot_settings['norm'] = colors.Normalize()
         if plot_settings:
-            self.plotter.plot_settings.update(plot_settings)
+            self.plot_settings.update(plot_settings)
 
-    @property
-    # @deprecated('6.0', alternative='plotter.plot_settings')
-    def plot_settings(self):
-        return self.plotter.plot_settings
-
-    @plot_settings.setter
-    # @deprecated('6.0', alternative='plotter.plot_settings')
-    def plot_settings(self, value):
-        self.plotter.plot_settings = value
+        # Try and set the colormap. This is not always possible if this method
+        # is run before map sources fix some of their metadata, so
+        # just ignore any exceptions raised.
+        try:
+            cmap = self._get_cmap_name()
+            if cmap in sunpy_cm.cmlist:
+                self.plot_settings['cmap'] = cmap
+        except Exception:
+            pass
 
     def __getitem__(self, key):
         def format_slice(key):
@@ -285,7 +298,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                    Wavelength:\t\t {wave}
                    Observation Date:\t {date}
                    Exposure Time:\t\t {dt}
-                   Pixel Dimensions:\t\t {dim}
+                   Dimension:\t\t {dim}
                    Coordinate System:\t {coord}
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
@@ -294,7 +307,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
                                dt=dt,
-                               dim=u.Quantity(self.shape[::-1]),
+                               dim=u.Quantity(self.dimensions),
                                scale=u.Quantity(self.scale),
                                coord=self._coordinate_frame_name,
                                refpix=u.Quantity(self.reference_pixel),
@@ -502,18 +515,13 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    def _new_instance(self, data=None, meta=None, plot_settings=None, **kwargs):
+    @classmethod
+    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        if meta is None:
-            meta = copy.deepcopy(getattr(self, 'meta'))
-        if new_unit := kwargs.get('unit', None):
-            meta['bunit'] = new_unit.to_string('fits')
-        # NOTE: wcs=None is explicitly passed here because the wcs of a map is
-        # derived from the information in the metadata.
-        new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
+        new_map = cls(data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
@@ -534,6 +542,62 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     def quantity(self):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
+
+    def _new_instance_from_op(self, new_data):
+        """
+        Helper function for creating new map instances after arithmetic
+        operations.
+        """
+        new_meta = copy.deepcopy(self.meta)
+        new_meta['bunit'] = new_data.unit.to_string('fits')
+        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
+
+    def __neg__(self):
+        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
+
+    @check_arithmetic_compatibility
+    def __pow__(self, value):
+        new_data = self.quantity ** value
+        return self._new_instance_from_op(new_data)
+
+    @check_arithmetic_compatibility
+    def __add__(self, value):
+        new_data = self.quantity + value
+        return self._new_instance_from_op(new_data)
+
+    def __radd__(self, value):
+        return self.__add__(value)
+
+    def __sub__(self, value):
+        return self.__add__(-value)
+
+    def __rsub__(self, value):
+        return self.__neg__().__add__(value)
+
+    @check_arithmetic_compatibility
+    def __mul__(self, value):
+        new_data = self.quantity * value
+        return self._new_instance_from_op(new_data)
+
+    def __rmul__(self, value):
+        return self.__mul__(value)
+
+    @check_arithmetic_compatibility
+    def __truediv__(self, value):
+        return self.__mul__(1/value)
+
+    @check_arithmetic_compatibility
+    def __rtruediv__(self, value):
+        new_data = value / self.quantity
+        return self._new_instance_from_op(new_data)
+
+    def _set_symmetric_vmin_vmax(self):
+        """
+        Set symmetric vmin and vmax about zero
+        """
+        threshold = np.nanmax(abs(self.data))
+        self.plot_settings['norm'].vmin = -threshold
+        self.plot_settings['norm'].vmax = threshold
 
     def _as_mpl_axes(self):
         """
@@ -556,6 +620,51 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # This code is reused from Astropy
         return WCSAxes, {'wcs': self.wcs}
 
+    # Some numpy extraction
+    @property
+    def dimensions(self):
+        """
+        The dimensions of the array (x axis first, y axis second).
+        """
+        return PixelPair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
+
+    @property
+    def dtype(self):
+        """
+        The `numpy.dtype` of the array of the map.
+        """
+        return self.data.dtype
+
+    @property
+    def ndim(self):
+        """
+        The value of `numpy.ndarray.ndim` of the data array of the map.
+        """
+        return self.data.ndim
+
+    def std(self, *args, **kwargs):
+        """
+        Calculate the standard deviation of the data array, ignoring NaNs.
+        """
+        return np.nanstd(self.data, *args, **kwargs)
+
+    def mean(self, *args, **kwargs):
+        """
+        Calculate the mean of the data array, ignoring NaNs.
+        """
+        return np.nanmean(self.data, *args, **kwargs)
+
+    def min(self, *args, **kwargs):
+        """
+        Calculate the minimum value of the data array, ignoring NaNs.
+        """
+        return np.nanmin(self.data, *args, **kwargs)
+
+    def max(self, *args, **kwargs):
+        """
+        Calculate the maximum value of the data array, ignoring NaNs.
+        """
+        return np.nanmax(self.data, *args, **kwargs)
 
     @u.quantity_input
     def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
