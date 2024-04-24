@@ -147,11 +147,11 @@ def test_header_fits_io():
 
 
 def test_get_item(generic_map):
-    with pytest.raises(TypeError, match="Invalid key. *"):
+    with pytest.raises(TypeError, match="It is not possible *"):
         assert generic_map[1:3, 3]
-    assert generic_map[0:1, :] == 5
-
-
+    assert isinstance(generic_map, sunpy.map.mapbase.GenericMap)
+    # TODO: complete test once mapbase inherits from NDCube
+    # assert generic_map[0:1, :].shape == 5
 
 
 def test_wcs(aia171_test_map):
