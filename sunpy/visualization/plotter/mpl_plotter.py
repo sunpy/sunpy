@@ -19,7 +19,7 @@ from sunpy.visualization.colormaps import cm as sunpy_cm
 from sunpy.visualization.plotter.base import BasePlotter
 
 
-class MatplotlibPlotter(BasePlotter):
+class sunpyPlotter(BasePlotter):
 
     def __init__(self, smap, plot_settings=None):
         self.smap = smap
