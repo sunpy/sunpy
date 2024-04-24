@@ -72,7 +72,7 @@ class Cache:
         if present and not redownload and not self._has_expired(present):
             return Path(present['file_path'])
         try:
-            file_path, file_hash, url = self._download_and_hash(url, namespace)
+            file_path, file_hash, url = self._download_and_hash(urls, namespace)
             if present and (redownload or self._has_expired(present)):
                 os.remove(present['file_path'])
                 self._storage.delete_by_key('url', present['url'])
