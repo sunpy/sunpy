@@ -543,7 +543,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # derived from the information in the metadata.
         new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
         # plot_settings are set explicitly here as some map sources
-        # explicitly set some of the plot_settings in the constructor
+        # explicitly set some of the plot_xsettings in the constructor
         # and we want to preserve the plot_settings of the previous
         # instance.
         if plot_settings is not None:
