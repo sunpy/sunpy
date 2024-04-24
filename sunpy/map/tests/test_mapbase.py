@@ -3,6 +3,7 @@ Test Generic Map
 """
 import re
 import tempfile
+from copy import deepcopy
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -19,6 +20,7 @@ from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
+from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
 import sunpy
 import sunpy.coordinates
@@ -1781,3 +1783,31 @@ def test_plot_annotate_nonboolean(aia171_test_map):
     ax = plt.subplot(projection=aia171_test_map)
     with pytest.raises(TypeError, match="non-boolean value"):
         aia171_test_map.plot(ax)
+
+
+@pytest.mark.parametrize(("aslice", "dims"), (
+    (np.s_[600:], (0,)),
+    (np.s_[600:, 700:], (0, 1)),
+    (np.s_[:, 700:], (1,)),
+    )
+)
+def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
+    """
+    Given a slice which causes the crpix to be modified, assert that it is.
+    """
+    sliced_map = deepcopy(aia171_test_map)
+    sliced_map._data = aia171_test_map.data[aslice]
+    sliced_map.wcs = SlicedLowLevelWCS(aia171_test_map.wcs, aslice)
+
+    if 0 in dims:
+        assert sliced_map.meta["CRPIX2"] != aia171_test_map.meta["CRPIX2"]
+
+    if 1 in dims:
+        assert sliced_map.meta["CRPIX1"] != aia171_test_map.meta["CRPIX1"]
+
+    sliced_ref_coord = sliced_map.wcs.pixel_to_world_values(sliced_map.meta["CRPIX1"],
+                                                            sliced_map.meta["CRPIX2"])
+    ori_ref_coord = aia171_test_map.wcs.pixel_to_world_values(aia171_test_map.meta["CRPIX1"],
+                                                              aia171_test_map.meta["CRPIX2"])
+
+    assert np.allclose(sliced_ref_coord, ori_ref_coord)
