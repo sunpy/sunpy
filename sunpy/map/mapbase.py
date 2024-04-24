@@ -1980,44 +1980,23 @@ class GenericMap(MapMetaMixin, NDCube):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        try:
-            import reproject
-        except ImportError as exc:
-            raise ImportError("This method requires the optional package `reproject`.") from exc
-
-        if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(target_wcs)
-
-        # Select the desired reprojection algorithm
-        functions = {'interpolation': reproject.reproject_interp,
-                     'adaptive': reproject.reproject_adaptive,
-                     'exact': reproject.reproject_exact}
-        if algorithm not in functions:
-            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
-        func = functions[algorithm]
-
-        # reproject does not automatically grab the array shape from the WCS instance
-        if target_wcs.array_shape is not None:
-            reproject_args.setdefault('shape_out', target_wcs.array_shape)
-
-        # Reproject the array
-        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
+        reproject_outputs = super().reproject_to(target_wcs,
+                                                 algorithm=algorithm,
+                                                 return_footprint=return_footprint,
+                                                 **reproject_args)
         if return_footprint:
-            output_array, footprint = output_array
-
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
-                            plot_settings=self.plot_settings)
-
+            outmap, footprint = reproject_outputs
+        else:
+            outmap = reproject_outputs
         # Check rsun mismatch
         if self.rsun_meters != outmap.rsun_meters:
             warn_user("rsun mismatch detected: "
                       f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
                       "This might cause unexpected results during reprojection.")
-
         if return_footprint:
             return outmap, footprint
-        return outmap
+        else:
+            return outmap
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
