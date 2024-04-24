@@ -49,6 +49,8 @@ from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization.plotter.mpl_plotter import MatplotlibPlotter
 from .mixins.mapmeta import MapMetaMixin, PixelPair
+from sunpy.visualization.plotter.mpl_plotter import sunpyPlotter
+from .mixins.mapmeta import MapMetaMixin, MapMetaValidationError, PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -230,7 +232,7 @@ class GenericMap(MapMetaMixin, NDCube):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
-        self.plotter = MatplotlibPlotter(self, plot_settings)
+        self.plotter = sunpyPlotter
 
     @property
     def plot_settings(self):
