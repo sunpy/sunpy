@@ -10,6 +10,7 @@
   "sunpy.map.tests.test_compositemap.test_peek_composite_map": "601847a982ee4a372def1eede3a992921a33986735e6ec5b7ca1a92a7a056846",
   "sunpy.map.tests.test_map_factory.test_map_jp2_HMI": "d54c99b975dc2e5805bfd39e00627ad92fba9fe2d38e510fc72b143cfbc28e4c",
   "sunpy.map.tests.test_mapbase.test_rotation_rect_pixelated_data": "356822787795278a4dab61bb8bbf5d62cc29d979ec1280653286a85b6188e944",
+  "sunpy.map.tests.test_mapbase.test_draw_contours_with_transform": "cb1bfc0b30651b48df1430782ec43ebde5f2a785b892f99e4b9763abb4758221",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scipy]": "c15c6c707b3b0e707936988054aeb818eee7b39e2249db5309ca43585d325a51",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scikit-image]": "911a0442055922f0d31dd48d8f1ede3d1b8b4d11a55f00a3403e8124761c2346",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[opencv]": "072505693731f65824dcaa7f0843087990f15f34b519285a2bc8965a1fa0ed37",
