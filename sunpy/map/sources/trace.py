@@ -47,8 +47,8 @@ class TRACEMap(GenericMap):
         above concerning how to read "tri" files in SSWIDL.
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
         # Colour maps

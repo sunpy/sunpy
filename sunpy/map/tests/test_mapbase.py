@@ -143,7 +143,7 @@ def test_fits_data_comparison(aia171_test_map):
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
-            AIAMap(hdu[0].data, hdu[0].header)
+            AIAMap(hdu[0].data, meta=hdu[0].header)
 
 
 def test_get_item(generic_map):
@@ -1358,7 +1358,7 @@ def test_non_str_key():
               None: None,  # Cannot parse this into WCS
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
-        sunpy.map.GenericMap(np.zeros((10, 10)), header)
+        sunpy.map.GenericMap(np.zeros((10, 10)), meta=header)
 
 
 def test_updating_of_naxisi_on_rotate(aia171_test_map):
