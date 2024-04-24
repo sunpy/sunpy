@@ -47,8 +47,10 @@ from sunpy.util.decorators import add_common_docstring, cached_property_based_on
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization.plotter.mpl_plotter import MapPlotter
-from .mixins.mapmeta import MapDeprecateMixin, MapMetaMixin, PixelPair
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.visualization.colormaps import cm as sunpy_cm
+from .mixins.mapdeprecate import MapDeprecateMixin
+from .mixins.mapmeta import MapMetaMixin, MapMetaValidationError, PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
