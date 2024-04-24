@@ -191,7 +191,8 @@ class GenericMap(MapMetaMixin, NDCube):
             if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(self, data, wcs=None, uncertainty=None, mask=None, meta=None, unit=None,
+                 copy=False, plot_settings=None, **kwargs):
         # Setup some attributes
         self._metadata_validated = False
         self._nickname = None
@@ -221,7 +222,7 @@ class GenericMap(MapMetaMixin, NDCube):
         nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
         if "wcs" in nddata_kwargs:
             raise ValueError("Passing a wcs object to GenericMap is not supported")
-        super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
+        super().__init__(data, meta=MetaDict(meta), **nddata_kwargs)
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
