@@ -1980,23 +1980,19 @@ class GenericMap(MapMetaMixin, NDCube):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
+        if not isinstance(target_wcs, astropy.wcs.WCS):
+            target_wcs = astropy.wcs.WCS(header=target_wcs)
+        # Check rsun mismatch
+        rsun_target = target_wcs.aux.rsun_meters
+        if self.rsun_meters != rsun_target:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} rsun_meters of target WCS."
+                      "This might cause unexpected results during reprojection.")
         reproject_outputs = super().reproject_to(target_wcs,
                                                  algorithm=algorithm,
                                                  return_footprint=return_footprint,
                                                  **reproject_args)
-        if return_footprint:
-            outmap, footprint = reproject_outputs
-        else:
-            outmap = reproject_outputs
-        # Check rsun mismatch
-        if self.rsun_meters != outmap.rsun_meters:
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
-                      "This might cause unexpected results during reprojection.")
-        if return_footprint:
-            return outmap, footprint
-        else:
-            return outmap
+        return reproject_outputs
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
