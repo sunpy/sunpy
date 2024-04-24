@@ -230,3 +230,11 @@ def test_save(aia171_test_map, hmi_test_map, tmp_path):
     for k in seq.maps[1].meta:
         assert test_seq.maps[1].meta[k] == seq.maps[1].meta[k]
     assert_quantity_allclose(test_seq.maps[1].data, seq.maps[1].data)
+
+
+@figure_test
+def test_map_sequence_plot_clip_interval(aia171_test_map):
+    seq = sunpy.map.Map([aia171_test_map, aia171_test_map, aia171_test_map], sequence=True)
+    # We want to blow the image out to make sure it is clipped on the test data
+    animation = seq.plot(clip_interval=(5,75)*u.percent)
+    animation._step()

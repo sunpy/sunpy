@@ -40,9 +40,9 @@ from sunpy.coordinates import (
 )
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth
 from sunpy.coordinates.frames import _J2000
-from sunpy.physics.differential_rotation import diff_rot
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.sun.constants import sidereal_rotation_rate
+from sunpy.sun.models import differential_rotation
 from sunpy.time import parse_time
 
 
@@ -695,6 +695,13 @@ def test_hme_hee_sunspice():
     assert_quantity_allclose(new.distance, old.distance)
 
 
+def test_hee_earth():
+    # The Earth in HEE should have negligible Z component
+    times = parse_time('2013-08-10 12:00') + np.arange(10) * u.s
+    earth_hee = get_earth(times).heliocentricearthecliptic
+    assert_quantity_allclose(0*u.m, earth_hee.cartesian.z, atol=1e-4*u.m)
+
+
 def test_hee_hee():
     # Test HEE loopback transformation
     obstime = Time('2001-01-01')
@@ -1048,6 +1055,36 @@ def test_rsun_preservation():
             assert_quantity_allclose(out_coord.rsun, args_out['rsun'])
 
 
+_framepairs = [
+    ('hcrs', 'heliographic_stonyhurst'),
+    ('heliographic_stonyhurst', 'heliographic_carrington'),
+    ('heliographic_stonyhurst', 'heliocentricinertial'),
+    ('heliographic_stonyhurst', 'heliocentric'),
+    ('heliocentric', 'helioprojective'),
+    ('heliocentricmeanecliptic', 'heliocentricearthecliptic'),
+    ('heliocentricearthecliptic', 'geocentricsolarecliptic'),
+    ('heliocentricmeanecliptic', 'geocentricearthequatorial'),
+    ('itrs', 'geomagnetic'),
+    ('geomagnetic', 'solarmagnetic'),
+    ('solarmagnetic', 'geocentricsolarmagnetospheric'),
+]
+
+
+@pytest.mark.parametrize(("frame1", "frame2"), _framepairs)
+@pytest.mark.parametrize("unit", [u.m, u.AU])
+def test_unit_preservation(frame1, frame2, unit):
+    coord = SkyCoord(CartesianRepresentation(0, 0, 0) * unit,
+                     frame=frame1, obstime="2001-01-01", observer="earth")
+
+    # Transform one direction and verify the unit is preserved
+    result1 = coord.transform_to(frame2)
+    assert result1.cartesian.xyz.unit == unit
+
+    # Transform back and verify the unit is preserved
+    result2 = result1.transform_to(frame1)
+    assert result2.cartesian.xyz.unit == unit
+
+
 def test_propagate_with_solar_surface():
     # Test propagating the meridian by 6 days of solar rotation
     meridian = SkyCoord(0*u.deg, np.arange(0, 90, 10)*u.deg, 1*u.AU,
@@ -1064,14 +1101,14 @@ def test_propagate_with_solar_surface():
     # Using the context manager (also test default rotation model is 'howard')
     with propagate_with_solar_surface():
         result2 = meridian.transform_to(end_frame)
-    assert u.allclose(result2.lon, diff_rot(dt, meridian.lat, rot_type='howard'))
+    assert u.allclose(result2.lon, differential_rotation(dt, meridian.lat, model='howard'))
 
     # Check that nesting the context manager doesn't confuse anything (also test other models)
     with propagate_with_solar_surface('snodgrass'):
         with propagate_with_solar_surface('allen'):
             pass
         result3 = meridian.transform_to(end_frame)  # should use 'snodgrass', not 'allen'
-    assert u.allclose(result3.lon, diff_rot(dt, meridian.lat, rot_type='snodgrass'))
+    assert u.allclose(result3.lon, differential_rotation(dt, meridian.lat, model='snodgrass'))
 
     # After the context manager, the coordinate should have the same result as the first transform
     result4 = meridian.transform_to(end_frame)

@@ -27,22 +27,23 @@ The minimum required versions of core dependencies have been updated:
 
 The minimum required versions of these optional dependencies has also been updated:
 
+- asdf >= 2.12.0
 - asdf-astropy >= 0.2.0
-- asdf >= 2.11.0
-- dask >= 2022.5.2
-- scikit-image >= 0.19.0
-- scipy >= 1.8.0
-- lxml >= 4.9.0
-- reproject >= 0.9.0
 - beautifulsoup4 >= 4.11.0
-- tqdm >= 4.64.0
-- zeep >= 4.1.0
-- spiceypy >= 5.0.0
 - cdflib >= 0.4.4
+- dask >= 2022.5.2
 - h5netcdf >= 1.0.0
 - h5py >= 3.7.0
-- pandas >= 1.4.0
+- lxml >= 4.9.0
 - opencv-python >= 4.6.0.66
+- pandas >= 1.4.0
+- reproject >= 0.9.0
+- requests >= 2.28
+- scikit-image >= 0.19.0
+- scipy >= 1.8.0
+- spiceypy >= 5.0.0
+- tqdm >= 4.64.0
+- zeep >= 4.1.0
 
 Removal of ``sunpy.database``
 =============================
@@ -72,3 +73,18 @@ Arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` are now keywords o
 The arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` have been changed to be keyword only.
 This means that you must now specify the arguments by name, rather than by position and has been done to make the API more consistent.
 This has been raising a warning since sunpy 4.1 and is now an error.
+
+Fix filename sanitization for downloaded files from the VSO
+===========================================================
+
+The `.VSOClient` has been sanitizing filenames to ensure that they are valid on all platforms.
+However, we have now fixed the sanitization to be more conservative, to follow the NFKC Unicode normalization, which is the recommended normalization for filenames on most platforms.
+This now does not replace periods, does not change letter case and do not leave Unicode characters decomposed.
+An example of this is that the filename ``ä`` will now be replaced with ``ä`` instead of being left out of the filename.
+Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" used to be replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" and now will not be.
+
+Deprecate positional arguments in :meth:`sunpy.map.GenericMap.plot`
+===================================================================
+
+The arguments for :meth:`sunpy.map.GenericMap.plot` have been changed to being keyword only.
+Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.

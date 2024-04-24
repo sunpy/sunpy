@@ -1,0 +1,56 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/sunpy/schemas/heliographic_carrington-1.3.0"
+
+title: |
+  Represents an heliographic Carrington coordinate object from SunPy
+
+examples:
+  -
+    - A HeliographicCarrington frame without data
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-1.3.0>
+          frame_attributes:
+            rsun: !unit/quantity-1.2.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
+  -
+    - A HeliographicCarrington frame with an observer and an obstime
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-1.3.0>
+          frame_attributes:
+            observer: !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.2.0>
+              data: !<tag:astropy.org:astropy/coordinates/representation-1.1.0>
+                components:
+                  distance: !unit/quantity-1.2.0 {unit: !unit/unit-1.0.0 AU, value: 0.9833554225272192}
+                  lat: !<tag:astropy.org:astropy/coordinates/latitude-1.1.0> {unit: !unit/unit-1.0.0 deg,
+                    value: -2.982157245087939}
+                  lon: !<tag:astropy.org:astropy/coordinates/longitude-1.1.0>
+                    unit: !unit/unit-1.0.0 deg
+                    value: 0.0
+                    wrap_angle: !<tag:astropy.org:astropy/coordinates/angle-1.1.0> {unit: !unit/unit-1.0.0 deg,
+                      value: 180.0}
+                type: SphericalRepresentation
+              frame_attributes:
+                obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'
+                rsun: !unit/quantity-1.2.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
+            obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'
+            rsun: !unit/quantity-1.2.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
+
+allOf:
+  - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.1.0"
+  - properties:
+      frame_attributes:
+        type: object
+        properties:
+          observer:
+            anyOf:
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.*"
+              - type: string
+          rsun:
+            tag: "tag:stsci.edu:asdf/unit/quantity-1.*"
+          obstime:
+            tag: "tag:stsci.edu:asdf/time/time-1.*"
+        additionalProperties: False
+...

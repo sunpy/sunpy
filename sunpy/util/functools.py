@@ -11,7 +11,6 @@ def seconddispatch(func):
     """
     A variant of `functools.singledispatch` which dispatches on type of the second argument.
     """
-
     dispatcher = functools.singledispatch(func)
 
     def wrapper(*args, **kwargs):

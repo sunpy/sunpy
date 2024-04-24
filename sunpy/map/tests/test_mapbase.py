@@ -3,7 +3,6 @@ Test Generic Map
 """
 import re
 import tempfile
-import contextlib
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -34,10 +33,102 @@ from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.util.util import fix_duplicate_notes
 from .conftest import make_simple_map
 from .strategies import matrix_meta
+
+
+def test_notes_combined():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_references():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
+
+def test_notes_combined_no_existing_notes():
+    map_documentation = """
+    Class Info.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_notes_no_references():
+    map_documentation = """
+    Class Info.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):
@@ -1264,6 +1355,13 @@ def test_non_str_key():
         sunpy.map.GenericMap(np.zeros((10, 10)), header)
 
 
+def test_updating_of_naxisi_on_rotate(aia171_test_map):
+    aia171_test_map_rotated = aia171_test_map.rotate(45 * u.deg, missing=0)
+    assert aia171_test_map.data.shape == (128, 128)
+    assert aia171_test_map_rotated.meta['NAXIS1'] == 182
+    assert aia171_test_map_rotated.meta['NAXIS2'] == 182
+
+
 def test_wcs_isot(aia171_test_map):
     # Check that a Map WCS returns the time as isot format
     assert aia171_test_map.wcs.to_header()['DATE-OBS'] == '2011-02-15T00:00:00.340'
@@ -1504,7 +1602,7 @@ def test_meta_modifications(aia171_test_map):
     assert aiamap_rot.meta.original_meta == aiamap.meta.original_meta
     assert set(aiamap_rot.meta.added_items.keys()) == set(['pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'])
     assert set(aiamap_rot.meta.removed_items.keys()) == set(['crota2'])
-    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1'])
+    assert set(aiamap_rot.meta.modified_items) == set(['cdelt1', 'crpix1', 'crpix2', 'crval1', 'naxis1', 'naxis2'])
 
 
 def test_no_wcs_observer_info(heliographic_test_map):
@@ -1662,23 +1760,15 @@ def test_map_arithmetic_neg(aia171_test_map):
     check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
 
 
-@pytest.mark.parametrize(("value", "warn_context"), [
-    ('map', pytest.warns(RuntimeWarning)),
-    ('foobar', contextlib.nullcontext()),
-    (None, contextlib.nullcontext()),
-    (['foo', 'bar'], contextlib.nullcontext()),
-])
-def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
+@pytest.mark.parametrize("value", ['map', 'foobar', None, ['foo', 'bar']])
+def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
     value = aia171_test_map if value == 'map' else value
     with pytest.raises(TypeError):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # NOQA: PT012
-        # A runtime warning is thrown when dividing by zero in the case of
-        # the map test
-        with warn_context:
-            _ = value / aia171_test_map
+    with pytest.raises(TypeError):
+        _ = value / aia171_test_map
 
 
 def test_parse_fits_units():
@@ -1713,7 +1803,14 @@ def test_only_cd():
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
 
 
-def test_plot_annotate_nonboolean(aia171_test_map):
-    ax = plt.subplot(projection=aia171_test_map)
-    with pytest.raises(TypeError, match="non-boolean value"):
-        aia171_test_map.plot(ax)
+def test_plot_deprecated_positional_args(aia171_test_map):
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
+        aia171_test_map.plot(True)
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
+        with pytest.raises(TypeError, match="non-boolean value"):
+            aia171_test_map.plot('interpolation')
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
+        with pytest.raises(TypeError, match="non-boolean value"):
+            aia171_test_map.plot('interpolation', True)
