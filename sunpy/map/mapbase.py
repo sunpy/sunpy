@@ -50,6 +50,7 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -2439,8 +2440,9 @@ class GenericMap(NDData):
 
         return figure
 
+    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
@@ -2493,6 +2495,7 @@ class GenericMap(NDData):
         :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
         manager may be appropriate.
         """
+        # Todo: remove this when deprecate_positional_args_since is removed
         # Users sometimes assume that the first argument is `axes` instead of `annotate`
         if not isinstance(annotate, bool):
             raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
