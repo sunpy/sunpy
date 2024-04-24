@@ -27,10 +27,10 @@ except ImportError:
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
 from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
+from astropy.visualization.wcsaxes import WCSAxes
 
 import sunpy
 # The next two are not used but are called to register functions with external modules
@@ -42,18 +42,15 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
-from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import MetaDict
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
-    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 from .mixins.mapmeta import MapMetaMixin, PixelPair
 
@@ -859,8 +856,8 @@ class GenericMap(MapMetaMixin, NDCube):
                                         method, center=True)
         new_data = new_data.T
 
-        scale_factor_x = float(self.shape[1] / dimensions[0].value)
-        scale_factor_y = float(self.shape[0] / dimensions[1].value)
+        scale_factor_x = float(self.dimensions[0] / dimensions[0])
+        scale_factor_y = float(self.dimensions[1] / dimensions[1])
 
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
@@ -880,7 +877,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1453,6 +1450,8 @@ class GenericMap(MapMetaMixin, NDCube):
             # Map data has no units, but levels doesn't have dimensionless units
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
+
+
 
     def contour(self, level, **kwargs):
         """
