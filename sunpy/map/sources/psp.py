@@ -30,8 +30,8 @@ class WISPRMap(GenericMap):
     * `Instrument Paper <https://doi.org/10.1007/s11214-014-0114-y>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self.plot_settings['norm'] = ImageNormalize(
             stretch=AsinhStretch(a=0.001), vmin=0)

@@ -8,6 +8,7 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
+from numbers import Integral
 from tempfile import NamedTemporaryFile
 
 import matplotlib
@@ -33,6 +34,7 @@ import sunpy
 # The next two are not used but are called to register functions with external modules
 import sunpy.io as io
 from ndcube import NDCube
+from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -189,7 +191,8 @@ class GenericMap(MapMetaMixin, NDCube):
             if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(self, data, *, wcs=None, uncertainty=None, mask=None, meta,
+                 unit=None, copy=False, plot_settings=None, **kwargs):
         # Setup some attributes
         self._metadata_validated = False
         self._nickname = None
@@ -216,10 +219,10 @@ class GenericMap(MapMetaMixin, NDCube):
                       "Data will be truncated to the first two dimensions.")
 
         params = list(inspect.signature(NDCube).parameters)
-        nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        if "wcs" in nddata_kwargs:
-            raise ValueError("Passing a wcs object to GenericMap is not supported")
-        super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
+        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        super().__init__(data, wcs=wcs, uncertainty=uncertainty, mask=mask,
+                         meta=MetaDict(meta), unit=unit, copy=copy,
+                         **ndcube_kwargs)
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
@@ -252,10 +255,25 @@ class GenericMap(MapMetaMixin, NDCube):
             pass
 
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        def format_slice(key):
+            if not isinstance(key, slice):
+                return f"{key}"
+            return f"{key.start or ''}:{key.stop or ''}{f':{key.step}' if key.step else ''}"
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if any(intidx := list(map(lambda x: isinstance(x, Integral), key))):
+            strslice = ", ".join([f"{k}:{k+1}" if isint else format_slice(k)
+                                  for k, isint in zip(key, intidx)])
+            raise TypeError(
+                "It is not possible to slice a map with an integer as it will "
+                "reduce the number of data dimensions by one.\nIn order to "
+                "apply the same slice without dropping a dimension do "
+                f"mymap[{strslice}]."
+            )
+        return super().__getitem__(key)
+
 
     def _text_summary(self):
         dt = self.exposure_time
@@ -499,7 +517,7 @@ class GenericMap(MapMetaMixin, NDCube):
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        new_map = cls(data, meta, **kwargs)
+        new_map = cls(data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
@@ -727,6 +745,35 @@ class GenericMap(MapMetaMixin, NDCube):
         w2.wcs.set()
         return w2
 
+    @wcs.setter
+    def wcs(self, wcs):
+        """
+        Map uses the meta dict as the source of truth.
+        When setting the wcs of the map we convert it to a header and then update the header of the map.
+        """
+        # Unwrap any wrapper classes to FITS WCS
+        unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
+        # Convert to a header
+        new_header = unwrapped.to_header()
+        old_wcs_header = self.wcs.to_header()
+        # Reduce the new header to just the keys which differ from the current WCS
+        # We do this to figure out what's been changed post wcslib doing any
+        # conversion (such as arcsec -> deg)
+        changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+        # If any of the keys in spatial units are modified wcslib will have
+        # almost certainly changed their units to deg if they were arcsec, so we
+        # have to explicitly check this and convert them back to the original
+        # header units to not confuse people.
+        naughty_key_prefixes = {"CDELT", "CRVAL", "CD"}
+        for prefix in naughty_key_prefixes:
+            if any(k.startswith(prefix) for k in changed_header.keys()):
+                if new_header["CUNIT1"] != self.meta["CUNIT1"]:
+                    raise NotImplementedError(
+                        "Sorry wcslib needs you to do more programming"
+                    )
+        self.meta.update(MetaDict(changed_header))
+
+# #### Miscellaneous #### #
     def _get_cmap_name(self):
         """Build the default color map name."""
         cmap_string = (self.observatory + self.detector +
@@ -2006,7 +2053,7 @@ class GenericMap(MapMetaMixin, NDCube):
             output_array, footprint = output_array
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
+        outmap = GenericMap(output_array, meta=target_wcs.to_header(),
                             plot_settings=self.plot_settings)
 
         # Check rsun mismatch

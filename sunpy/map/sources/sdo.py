@@ -44,8 +44,8 @@ class AIAMap(GenericMap):
     * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`_
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         # Fill in some missing info
         self._nickname = self.detector
@@ -107,8 +107,8 @@ class HMIMap(GenericMap):
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Avoid JP2K images not having a norm due to UNIT8 data
             # This means they are not scaled correctly.
@@ -157,8 +157,8 @@ class HMISynopticMap(HMIMap):
     * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self.plot_settings['cmap'] = 'hmimag'
         self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
 
