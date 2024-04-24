@@ -60,7 +60,12 @@ image = [
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
   "scipy>=1.8.0,!=1.10.0",
 ]
-jpeg2000 = ["glymur>=0.9.1,!=0.9.5", "lxml>=4.9.0,!=5.0.0"]
+jpeg2000 = [
+  "glymur>=0.9.1,!=0.9.5",
+  # While a direct dependency of glymur, we import it to save JPEG2000 files.
+  # and we had issues with specific versions lxml.
+  "lxml>=4.9.0,!=5.0.0"
+]
 map = [
   "matplotlib>=3.5.0",
   "mpl-animators>=1.0.0",
