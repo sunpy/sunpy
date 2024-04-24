@@ -280,12 +280,12 @@ class HeliographicStonyhurst(BaseHeliographic):
     def _apply_diffrot(self, duration, rotation_model):
         oldrepr = self.spherical
 
-        from sunpy.physics.differential_rotation import diff_rot
+        from sunpy.sun.models import differential_rotation
         log.debug(f"Applying {duration} of solar rotation")
-        newlon = oldrepr.lon + diff_rot(duration,
-                                        oldrepr.lat,
-                                        rot_type=rotation_model,
-                                        frame_time='sidereal')
+        newlon = oldrepr.lon + differential_rotation(duration,
+                                                     oldrepr.lat,
+                                                     model=rotation_model,
+                                                     frame_time='sidereal')
         newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
 
         return self.realize_frame(newrepr)
