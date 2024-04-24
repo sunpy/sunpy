@@ -15,7 +15,7 @@ class MapDeprecateMixin:
     # Some numpy extraction
 
     @property
-    @deprecated(since="6.1", message=".dimension will be removed in 6.1. Use sunpy.map.GenericMap.shape instead")
+    @deprecated(since="6.1", message=".dimensions will be removed in 6.1. Use sunpy.map.GenericMap.shape instead")
     def dimensions(self):
         """
         The dimensions of the array (x axis first, y axis second).
