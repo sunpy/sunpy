@@ -42,15 +42,14 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
+from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
 from sunpy.util.decorators import add_common_docstring, cached_property_based_on
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
-from sunpy.visualization.colormaps import cm as sunpy_cm
-from .mixins.mapdeprecate import MapDeprecateMixin
-from .mixins.mapmeta import MapMetaMixin, MapMetaValidationError, PixelPair
+from sunpy.visualization.plotter import MapPlotter
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -295,7 +294,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
                                dt=dt,
-                               dim=u.Quantity(self.dimensions),
+                               dim=u.Quantity(self.shape),
                                scale=u.Quantity(self.scale),
                                coord=self._coordinate_frame_name,
                                refpix=u.Quantity(self.reference_pixel),
