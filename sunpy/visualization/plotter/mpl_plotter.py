@@ -18,6 +18,7 @@ from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
+__all__ = ['MapPlotter']
 
 class MapPlotter:
 
