@@ -21,6 +21,7 @@ from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
+from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
 import sunpy
 import sunpy.coordinates
@@ -2044,3 +2045,30 @@ def test_submap_nan_error(aia171_test_map):
     coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
     with pytest.raises(ValueError, match="The provided input coordinates to"):
         aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
+
+
+@pytest.mark.parametrize(("aslice", "dims"), [
+    (np.s_[600:], (0,)),
+    (np.s_[600:, 700:], (0, 1)),
+    (np.s_[:, 700:], (1,)),
+])
+def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
+    """
+    Given a slice which causes the crpix to be modified, assert that it is.
+    """
+    sliced_map = deepcopy(aia171_test_map)
+    sliced_map._data = aia171_test_map.data[aslice]
+    sliced_map.wcs = SlicedLowLevelWCS(aia171_test_map.wcs, aslice)
+
+    if 0 in dims:
+        assert sliced_map.meta["CRPIX2"] != aia171_test_map.meta["CRPIX2"]
+
+    if 1 in dims:
+        assert sliced_map.meta["CRPIX1"] != aia171_test_map.meta["CRPIX1"]
+
+    sliced_ref_coord = sliced_map.wcs.pixel_to_world_values(sliced_map.meta["CRPIX1"],
+                                                            sliced_map.meta["CRPIX2"])
+    ori_ref_coord = aia171_test_map.wcs.pixel_to_world_values(aia171_test_map.meta["CRPIX1"],
+                                                              aia171_test_map.meta["CRPIX2"])
+
+    assert np.allclose(sliced_ref_coord, ori_ref_coord)
