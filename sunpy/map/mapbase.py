@@ -29,7 +29,7 @@ import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
-from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
+from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
@@ -43,6 +43,7 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
@@ -50,6 +51,7 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -60,7 +62,7 @@ from sunpy.visualization.colormaps import cm as sunpy_cm
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
-
+_NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
@@ -235,19 +237,14 @@ class GenericMap(NDData):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
-        if self.dtype == np.uint8:
-            norm = None
-        else:
+        self.plot_settings = {'cmap': 'gray',
+                            'interpolation': 'nearest',
+                            'origin': 'lower'
+                            }
+        if self.dtype != np.uint8:
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
-            norm = colors.Normalize()
-
-        # Visualization attributes
-        self.plot_settings = {'cmap': 'gray',
-                              'norm': norm,
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
+            self.plot_settings['norm'] = colors.Normalize()
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
@@ -529,7 +526,7 @@ class GenericMap(NDData):
     @property
     def quantity(self):
         """Unitful representation of the map data."""
-        return u.Quantity(self.data, self.unit, copy=False)
+        return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
     def _new_instance_from_op(self, new_data):
         """
@@ -570,6 +567,7 @@ class GenericMap(NDData):
     def __rmul__(self, value):
         return self.__mul__(value)
 
+    @check_arithmetic_compatibility
     def __truediv__(self, value):
         return self.__mul__(1/value)
 
@@ -2438,8 +2436,9 @@ class GenericMap(NDData):
 
         return figure
 
+    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
@@ -2492,6 +2491,7 @@ class GenericMap(NDData):
         :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
         manager may be appropriate.
         """
+        # Todo: remove this when deprecate_positional_args_since is removed
         # Users sometimes assume that the first argument is `axes` instead of `annotate`
         if not isinstance(annotate, bool):
             raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
@@ -2536,27 +2536,12 @@ class GenericMap(NDData):
         imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
-            if len(clip_interval) == 2:
-                clip_percentages = clip_interval.to('%').value
-                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
-            else:
-                raise ValueError("Clip percentile interval must be specified as two numbers.")
-
+            vmin, vmax = _clip_interval(self.data, clip_interval)
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
-        msg = ('Cannot manually specify {0}, as the norm '
-               'already has {0} set. To prevent this error set {0} on '
-               '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
         if (norm := imshow_args.get('norm', None)) is not None:
-            if 'vmin' in imshow_args:
-                if norm.vmin is not None:
-                    raise ValueError(msg.format('vmin'))
-                norm.vmin = imshow_args.pop('vmin')
-            if 'vmax' in imshow_args:
-                if norm.vmax is not None:
-                    raise ValueError(msg.format('vmax'))
-                norm.vmax = imshow_args.pop('vmax')
+            _handle_norm(norm, imshow_args)
 
         if self.mask is None:
             data = self.data

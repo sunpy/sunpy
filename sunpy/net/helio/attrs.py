@@ -12,6 +12,10 @@ class MaxRecords(SimpleAttr):
     """
     The maximum number of desired records.
     """
+    def __init__(self, value):
+        super().__init__(value)
+        if self.value > 20000:
+            raise ValueError("Helio will only return a max of 20000 results.")
 
 
 class TableName(SimpleAttr):

@@ -3,7 +3,6 @@ Test Generic Map
 """
 import re
 import tempfile
-import contextlib
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -33,7 +32,7 @@ from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from sunpy.util.util import fix_duplicate_notes
 from .conftest import make_simple_map
@@ -1732,23 +1731,15 @@ def test_map_arithmetic_neg(aia171_test_map):
     check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
 
 
-@pytest.mark.parametrize(("value", "warn_context"), [
-    ('map', pytest.warns(RuntimeWarning)),
-    ('foobar', contextlib.nullcontext()),
-    (None, contextlib.nullcontext()),
-    (['foo', 'bar'], contextlib.nullcontext()),
-])
-def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value, warn_context):
+@pytest.mark.parametrize("value", ['map', 'foobar', None, ['foo', 'bar']])
+def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
     value = aia171_test_map if value == 'map' else value
     with pytest.raises(TypeError):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):  # NOQA: PT012
-        # A runtime warning is thrown when dividing by zero in the case of
-        # the map test
-        with warn_context:
-            _ = value / aia171_test_map
+    with pytest.raises(TypeError):
+        _ = value / aia171_test_map
 
 
 def test_parse_fits_units():
@@ -1783,7 +1774,14 @@ def test_only_cd():
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
 
 
-def test_plot_annotate_nonboolean(aia171_test_map):
-    ax = plt.subplot(projection=aia171_test_map)
-    with pytest.raises(TypeError, match="non-boolean value"):
-        aia171_test_map.plot(ax)
+def test_plot_deprecated_positional_args(aia171_test_map):
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
+        aia171_test_map.plot(True)
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
+        with pytest.raises(TypeError, match="non-boolean value"):
+            aia171_test_map.plot('interpolation')
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
+        with pytest.raises(TypeError, match="non-boolean value"):
+            aia171_test_map.plot('interpolation', True)
