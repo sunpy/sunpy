@@ -1783,8 +1783,9 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):
-        _ = value / aia171_test_map
+    with pytest.warns(RuntimeWarning):
+        with pytest.raises(TypeError):
+            _ = value / aia171_test_map
 
 
 def test_parse_fits_units():
