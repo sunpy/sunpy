@@ -1726,6 +1726,14 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
 def test_map_arithmetic_pow(aia171_test_map):
     new_map = aia171_test_map ** 2
     check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** 2)
+    with np.errstate(divide="ignore"):
+        new_map = aia171_test_map ** -2
+        check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** -2)
+
+def test_map_arithmetic_div(aia171_test_map):
+    with np.errstate(divide="ignore"):
+        new_map = 1 / aia171_test_map
+        check_arithmetic_value_and_units(new_map, 1 / aia171_test_map.quantity)
 
 
 def test_map_arithmetic_neg(aia171_test_map):
