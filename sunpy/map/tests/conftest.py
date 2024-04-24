@@ -70,7 +70,7 @@ def generic_map():
     l0 = sun.L0(dobs).to_value(u.deg)
     b0 = sun.B0(dobs).to_value(u.deg)
     dsun = sun.earth_distance(dobs).to_value(u.m)
-    header = {
+    meta = {
         'CRVAL1': 0,
         'CRVAL2': 0,
         'CRPIX1': 5,
@@ -98,7 +98,7 @@ def generic_map():
         'waveunit': 'm',
         'bunit': 'ct/s',
     }
-    return sunpy.map.Map((data, header))
+    return sunpy.map.Map((data, meta))
 
 
 def make_simple_map():

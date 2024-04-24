@@ -191,8 +191,8 @@ class GenericMap(MapMetaMixin, NDCube):
             if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, wcs=None, uncertainty=None, mask=None, meta=None, unit=None,
-                 copy=False, plot_settings=None, **kwargs):
+    def __init__(self, data, *, wcs=None, uncertainty=None, mask=None, meta,
+                 unit=None, copy=False, plot_settings=None, **kwargs):
         # Setup some attributes
         self._metadata_validated = False
         self._nickname = None
@@ -517,7 +517,7 @@ class GenericMap(MapMetaMixin, NDCube):
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        new_map = cls(data, meta, **kwargs)
+        new_map = cls(data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
