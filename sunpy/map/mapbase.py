@@ -33,6 +33,7 @@ import sunpy
 # The next two are not used but are called to register functions with external modules
 import sunpy.io as io
 from ndcube import NDCube
+from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -727,6 +728,35 @@ class GenericMap(MapMetaMixin, NDCube):
         w2.wcs.set()
         return w2
 
+    @wcs.setter
+    def wcs(self, wcs):
+        """
+        Map uses the meta dict as the source of truth.
+        When setting the wcs of the map we convert it to a header and then update the header of the map.
+        """
+        # Unwrap any wrapper classes to FITS WCS
+        unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
+        # Convert to a header
+        new_header = unwrapped.to_header()
+        old_wcs_header = self.wcs.to_header()
+        # Reduce the new header to just the keys which differ from the current WCS
+        # We do this to figure out what's been changed post wcslib doing any
+        # conversion (such as arcsec -> deg)
+        changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+        # If any of the keys in spatial units are modified wcslib will have
+        # almost certainly changed their units to deg if they were arcsec, so we
+        # have to explicitly check this and convert them back to the original
+        # header units to not confuse people.
+        naughty_key_prefixes = {"CDELT", "CRVAL", "CD"}
+        for prefix in naughty_key_prefixes:
+            if any(k.startswith(prefix) for k in changed_header.keys()):
+                if new_header["CUNIT1"] != self.meta["CUNIT1"]:
+                    raise NotImplementedError(
+                        "Sorry wcslib needs you to do more programming"
+                    )
+        self.meta.update(MetaDict(changed_header))
+
+# #### Miscellaneous #### #
     def _get_cmap_name(self):
         """Build the default color map name."""
         cmap_string = (self.observatory + self.detector +
