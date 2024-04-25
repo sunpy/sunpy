@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from datetime import datetime
 from urllib.request import urlopen
@@ -59,23 +58,22 @@ class Cache:
         """
         if isinstance(urls, str | Path):
             urls = [urls]
-        # Logic flow
+        # Logic plan
         # 1. If redownload: Download, update cache and return file path
         # 2. If not redownload: Check cache,
         #    i. If present in cache:
-        #        - If cache expired, download and add to cache and remove entry from cache
+        #        - If cache expired, download and update cache (without removing the old file if the download fails)
         #        - If cache not expired, return path
         for url in urls:
-            present = self._get_by_url(url)
-            if present:
+            cache_details = self._get_by_url(url)
+            if cache_details:
                 break
-        if present and not redownload and not self._has_expired(present):
-            return Path(present['file_path'])
+        if cache_details and not redownload and not self._has_expired(cache_details):
+            return Path(cache_details['file_path'])
         try:
             file_path, file_hash, url = self._download_and_hash(urls, namespace)
-            if present and (redownload or self._has_expired(present)):
-                os.remove(present['file_path'])
-                self._storage.delete_by_key('url', present['url'])
+            if cache_details and (redownload or self._has_expired(cache_details)):
+                self._storage.delete_by_key('url', cache_details['url'])
             self._storage.store({
                 'file_hash': file_hash,
                 'file_path': str(file_path),
@@ -85,12 +83,12 @@ class Cache:
             return file_path
         except Exception as e:
             exception_msg = f"{e} \n"
-            if not present:
+            if not cache_details:
                 raise RuntimeError(exception_msg) from e
             warn_user(
                 f"{exception_msg}Due to the above error, you will be working with a stale version of the file in the cache."
             )
-            return Path(present['file_path'])
+            return Path(cache_details['file_path'])
 
     def _has_expired(self, details):
         """
