@@ -688,7 +688,8 @@ class GenericMap(MapMetaMixin, NDCube):
     def wcs(self, wcs):
         """
         Map uses the meta dict as the source of truth.
-        When setting the wcs of the map we convert it to a header and then update the header of the map.
+        When setting the wcs of the map we convert it to a header and then
+        update the header of the map.
         """
         if wcs is None:
             return
@@ -704,17 +705,11 @@ class GenericMap(MapMetaMixin, NDCube):
         # We do this to figure out what's been changed post wcslib doing any
         # conversion (such as arcsec -> deg)
         changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
-        # If any of the keys in spatial units are modified wcslib will have
-        # almost certainly changed their units to deg if they were arcsec, so we
-        # have to explicitly check this and convert them back to the original
-        # header units to not confuse people.
-        naughty_key_prefixes = {"CDELT", "CRVAL", "CD"}
-        for prefix in naughty_key_prefixes:
-            if any(k.startswith(prefix) for k in changed_header.keys()):
-                if new_header["CUNIT1"] != self.meta["CUNIT1"]:
-                    raise NotImplementedError(
-                        "Sorry wcslib needs you to do more programming"
-                    )
+        # If the units are different to the original metadata then we override
+        # all the keys from the new WCS header to account for unit conversion.
+        if any([new_header[f"CUNIT{n}"] != self.meta[f"CUNIT{n}"] for n in range(1, 3)]):
+            # TODO: Do we want to make it so we don't change units?
+            changed_header = new_header
         self.meta.update(MetaDict(changed_header))
 
     def save(self, filepath, filetype='auto', **kwargs):
