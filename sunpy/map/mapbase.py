@@ -515,25 +515,22 @@ class GenericMap(MapMetaMixin, NDCube):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    @classmethod
-    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+    def _new_instance(self, data=None, meta=None, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        new_map = cls(data, meta=meta, **kwargs)
+        if meta is None:
+            meta = copy.deepcopy(getattr(self, 'meta'))
+        if new_unit := kwargs.get('unit', None):
+            meta['bunit'] = new_unit.to_string('fits')
+        new_map = super()._new_instance(data=data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
         # instance.
         if plot_settings is not None:
             new_map.plot_settings.update(plot_settings)
-        return new_map
-
-    def _new_instance_from_op(self, new_data, new_unit, new_uncertainty):
-        new_map = super()._new_instance_from_op(new_data, new_unit, new_uncertainty)
-        new_map.meta['bunit'] = new_unit.to_string('fits')
-        new_map.plot_settings = copy.deepcopy(self.plot_settings)
         return new_map
 
     def _get_lon_lat(self, frame):
@@ -653,7 +650,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plot_settings)
 
         return new_map
 
@@ -851,7 +848,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1044,7 +1041,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
 
         return new_map
 
@@ -1218,10 +1215,10 @@ class GenericMap(MapMetaMixin, NDCube):
         if self.mask is not None:
             new_mask = self.mask[arr_slice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+            new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings, mask=new_mask)
             return new_map
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
         return new_map
 
     @seconddispatch
@@ -1371,7 +1368,7 @@ class GenericMap(MapMetaMixin, NDCube):
             new_mask = None
 
         # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings, mask=new_mask)
         return new_map
 
 # #### Visualization #### #
