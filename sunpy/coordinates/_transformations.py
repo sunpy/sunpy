@@ -15,7 +15,6 @@ This module contains the functions for converting one
 import logging
 from copy import deepcopy
 from functools import wraps
-from contextlib import contextmanager
 
 import erfa
 import numpy as np
@@ -45,6 +44,7 @@ from astropy.time import Time
 
 from sunpy import log
 from sunpy.sun import constants
+from sunpy.util.decorators import sunpycontextmanager
 from .frames import (
     _J2000,
     GeocentricEarthEquatorial,
@@ -74,7 +74,7 @@ _ignore_sun_motion = False
 _autoapply_diffrot = None
 
 
-@contextmanager
+@sunpycontextmanager
 def transform_with_sun_center():
     """
     Context manager for coordinate transformations to ignore the motion of the center of the Sun.
@@ -138,7 +138,7 @@ def transform_with_sun_center():
         _ignore_sun_motion = old_ignore_sun_motion
 
 
-@contextmanager
+@sunpycontextmanager
 def propagate_with_solar_surface(rotation_model='howard'):
     """
     Context manager for coordinate transformations to automatically apply solar
@@ -161,7 +161,7 @@ def propagate_with_solar_surface(rotation_model='howard'):
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``,
         ``'allen'``, and ``'rigid'``.  See the documentation for
-        :func:`~sunpy.physics.differential_rotation.diff_rot` for the differences
+        :func:`~sunpy.sun.models.differential_rotation` for the differences
         between these models.
 
     Notes
