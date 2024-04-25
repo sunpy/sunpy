@@ -15,6 +15,7 @@ from sunpy.coordinates.frames import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    SunPyBaseCoordinateFrame,
 )
 from sunpy.coordinates.wcs_utils import (
     _set_wcs_aux_obs_coord,
@@ -379,3 +380,11 @@ def test_observer_hgln_crln_priority():
     # Note: don't test whether crlt or hglt is used---according to
     # _set_wcs_aux_obs_coord, those are expected to always be the same and so
     # the same one is always used
+
+
+def test_sunpybaseframe_external():
+    class MyFrame(SunPyBaseCoordinateFrame):
+        pass
+
+    out = solar_frame_to_wcs_mapping(MyFrame())
+    assert out is None
