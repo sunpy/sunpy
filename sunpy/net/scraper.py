@@ -230,6 +230,7 @@ class Scraper:
         pattern_temp, timepattern_temp = pattern.replace('file://', ''), timepattern.replace('file://', '')
         if os.name == 'nt':
             pattern_temp = pattern_temp.replace('\\', '/')
+            timepattern_temp = timepattern_temp.replace('\\', '/')
             prefix = 'file:///'
         else:
             prefix = 'file://'
