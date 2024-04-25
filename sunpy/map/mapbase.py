@@ -29,7 +29,7 @@ import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
 from astropy.utils.metadata import MetaData
-from astropy.visualization import HistEqStretch, ImageNormalize
+from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
 import sunpy
@@ -46,6 +46,11 @@ from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
 from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
 from sunpy.util.decorators import add_common_docstring, cached_property_based_on
+from sunpy.util.decorators import (
+    add_common_docstring,
+    cached_property_based_on,
+    check_arithmetic_compatibility,
+)
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
@@ -218,14 +223,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         params = list(inspect.signature(NDCube).parameters)
         ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        super().__init__(data, wcs=None, uncertainty=uncertainty, mask=mask,
+        super().__init__(data, wcs=wcs, uncertainty=uncertainty, mask=mask,
                          meta=MetaDict(meta), unit=unit, copy=copy,
                          **ndcube_kwargs)
-        # NDData.__init__ sets self.wcs before it sets self.meta as our wcs
-        # setter needs self.meta to exist we call the parent __init__ with
-        # wcs=None and then set self.wcs so that meta is already set before the
-        # wcs setter is run with the "real" wcs.
-        self.wcs = wcs
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
