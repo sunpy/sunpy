@@ -285,7 +285,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                    Wavelength:\t\t {wave}
                    Observation Date:\t {date}
                    Exposure Time:\t\t {dt}
-                   Dimension:\t\t {dim}
+                   Pixel Dimensions:\t\t {dim}
                    Coordinate System:\t {coord}
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
@@ -294,7 +294,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
                                dt=dt,
-                               dim=u.Quantity(self.shape),
+                               dim=u.Quantity(self.shape[::-1]),
                                scale=u.Quantity(self.scale),
                                coord=self._coordinate_frame_name,
                                refpix=u.Quantity(self.reference_pixel),
@@ -874,8 +874,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         inv_rmatrix = np.linalg.inv(rmatrix)
 
         # Calculate the shape in pixels to contain all of the image data
-        corners = itertools.product([-0.5, self.shape[1]-0.5],
-                                    [-0.5, self.shape[0]-0.5])
+        corners = itertools.product([-0.5, self.data.shape[1]-0.5],
+                                    [-0.5, self.data.shape[0]-0.5])
         rot_corners = np.vstack([rmatrix @ c for c in corners]) * scale
         extent = np.max(rot_corners, axis=0) - np.min(rot_corners, axis=0)
 

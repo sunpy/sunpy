@@ -1103,18 +1103,18 @@ def test_rotate(aia171_test_map):
     assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
     assert np.isnan(rotated_map_1.data[0, 0])
     assert np.isnan(rotated_map_2.data[0, 0])
-    np.testing.assert_allclose(aia171_test_map.data.mean(), np.nanmean(rotated_map_1.data), rtol=5e-3)
-    np.testing.assert_allclose(aia171_test_map.data.mean(), np.nanmean(rotated_map_2.data), rtol=5e-3)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_1.data), rtol=5e-3)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_2.data), rtol=5e-3)
 
     # A scaled-up map should have the same mean because the output map should be expanded
     rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=0, scale=2)
-    np.testing.assert_allclose(aia171_test_map.data.mean(), rotated_map_3.data.mean(), rtol=1e-4)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_3.data), rtol=1e-4)
 
     # Mean and std should be equal for a 90 degree rotation as long as 1 pixel is cropped out on
     # all sides
     rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=0)
-    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].mean(),
-                               rotated_map_4.data[1:-1, 1:-1].mean(), rtol=1e-10)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data[1:-1, 1:-1]),
+                               np.nanmean(rotated_map_4.data[1:-1, 1:-1]), rtol=1e-10)
     np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].std(),
                                rotated_map_4.data[1:-1, 1:-1].std(), rtol=1e-10)
 
