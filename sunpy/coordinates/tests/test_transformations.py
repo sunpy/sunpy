@@ -40,9 +40,9 @@ from sunpy.coordinates import (
 )
 from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth
 from sunpy.coordinates.frames import _J2000
-from sunpy.physics.differential_rotation import diff_rot
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.sun.constants import sidereal_rotation_rate
+from sunpy.sun.models import differential_rotation
 from sunpy.time import parse_time
 
 
@@ -1101,14 +1101,14 @@ def test_propagate_with_solar_surface():
     # Using the context manager (also test default rotation model is 'howard')
     with propagate_with_solar_surface():
         result2 = meridian.transform_to(end_frame)
-    assert u.allclose(result2.lon, diff_rot(dt, meridian.lat, rot_type='howard'))
+    assert u.allclose(result2.lon, differential_rotation(dt, meridian.lat, model='howard'))
 
     # Check that nesting the context manager doesn't confuse anything (also test other models)
     with propagate_with_solar_surface('snodgrass'):
         with propagate_with_solar_surface('allen'):
             pass
         result3 = meridian.transform_to(end_frame)  # should use 'snodgrass', not 'allen'
-    assert u.allclose(result3.lon, diff_rot(dt, meridian.lat, rot_type='snodgrass'))
+    assert u.allclose(result3.lon, differential_rotation(dt, meridian.lat, model='snodgrass'))
 
     # After the context manager, the coordinate should have the same result as the first transform
     result4 = meridian.transform_to(end_frame)

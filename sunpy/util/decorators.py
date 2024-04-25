@@ -8,6 +8,7 @@ import warnings
 import functools
 from inspect import Parameter, signature
 from functools import wraps
+from contextlib import contextmanager
 
 import numpy as np
 
@@ -16,7 +17,7 @@ from astropy.nddata import NDData
 
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning, warn_deprecated
 
-__all__ = ['deprecated']
+__all__ = ['deprecated','sunpycontextmanager', 'active_contexts']
 
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 
@@ -265,9 +266,10 @@ class add_common_docstring:
         return func
 
 
-def deprecate_positional_args_since(since, keyword_only=False):
+def deprecate_positional_args_since(func=None, *, since):
     """
-    Decorator for methods that issues warnings for positional arguments
+    Decorator for methods that issues warnings for positional arguments.
+
     Using the keyword-only argument syntax in pep 3102, arguments after the
     * will issue a warning when passed as a positional argument.
 
@@ -276,30 +278,20 @@ def deprecate_positional_args_since(since, keyword_only=False):
 
     Parameters
     ----------
+    func : callable, default=None
+        Function to check arguments on.
     since : str
-        Parameter denoting last supported version.
+        The version since when positional arguments will result in error.
+
+    Notes
+    -----
+    Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/utils/validation.py#L1271>`__.
+    Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
     """
-    def deprecate_positional_args(f):
-        """
-
-
-        Parameters
-        ----------
-        f : function
-            Function to check arguments on.
-
-        References
-        ----------
-        Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py#L1271>`__.
-        Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
-        """
-        nonlocal keyword_only
-
+    def _inner_deprecate_positional_args(f):
         sig = signature(f)
         kwonly_args = []
         all_args = []
-        keyword_only = keyword_only or tuple()
-
         for name, param in sig.parameters.items():
             if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
                 all_args.append(name)
@@ -309,24 +301,31 @@ def deprecate_positional_args_since(since, keyword_only=False):
         @wraps(f)
         def inner_f(*args, **kwargs):
             extra_args = len(args) - len(all_args)
-            if extra_args > 0:
-                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:]):
-                    if name in keyword_only:
-                        raise TypeError(f"{name} must be specified as a keyword argument.")
+            if extra_args <= 0:
+                return f(*args, **kwargs)
 
-                # ignore first 'self' argument for instance methods
-                args_msg = [f'{name}={arg}'
-                            for name, arg in zip(kwonly_args[:extra_args],
-                                                 args[-extra_args:])]
-                last_supported_version = ".".join(map(str, get_removal_version(since)))
-                warn_deprecated(f"Pass {', '.join(args_msg)} as keyword args. "
-                                f"From version {last_supported_version} "
-                                "passing these as positional arguments will result in an error.")
-            kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
+            # extra_args > 0
+            args_msg = [
+                f"{name}={arg}"
+                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:])
+            ]
+            args_msg = ", ".join(args_msg)
+            warn_deprecated(
+
+                    f"Pass {args_msg} as keyword args. From version "
+                    f"{since} passing these as positional arguments "
+                    "will result in an error"
+
+            )
+            kwargs.update(zip(sig.parameters, args))
             return f(**kwargs)
-        return inner_f
-    return deprecate_positional_args
 
+        return inner_f
+
+    if func is not None:
+        return _inner_deprecate_positional_args(func)
+
+    return _inner_deprecate_positional_args
 
 _NOT_FOUND = object()
 
@@ -409,3 +408,24 @@ def check_arithmetic_compatibility(func):
             return NotImplemented
         return func(instance, value)
     return inner
+
+active_contexts = {}  # Public dictionary for context activation tracking
+
+def sunpycontextmanager(func):
+    """
+    A decorator that tracks the entry and exit of a context manager,
+    setting the key's value to True on entry and False on exit.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        active_contexts[func.__name__] = True
+        gen = func(*args, **kwargs)
+        value = next(gen)
+        try:
+            yield value
+        except Exception as e:
+            gen.throw(e)
+        else:
+            next(gen, None)
+            active_contexts[func.__name__] = False
+    return contextmanager(wrapper)

@@ -82,3 +82,9 @@ However, we have now fixed the sanitization to be more conservative, to follow t
 This now does not replace periods, does not change letter case and do not leave Unicode characters decomposed.
 An example of this is that the filename ``ä`` will now be replaced with ``ä`` instead of being left out of the filename.
 Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" used to be replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" and now will not be.
+
+Deprecate positional arguments in :meth:`sunpy.map.GenericMap.plot`
+===================================================================
+
+The arguments for :meth:`sunpy.map.GenericMap.plot` have been changed to being keyword only.
+Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.

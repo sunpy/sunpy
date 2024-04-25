@@ -43,10 +43,19 @@ The header_helper sub-module contains helper functions for generating FITS-WCS h
 
 Instrument Map Classes
 ======================
+
 Defined in ``sunpy.map.sources`` are a set of `~sunpy.map.GenericMap` subclasses which convert the specific metadata and other differences in each instruments data to the standard `~sunpy.map.GenericMap` interface.
 These 'sources' also define things like the colormap and default normalization for each instrument.
 These subclasses also provide a method, which describes to the `~sunpy.map.Map` factory which data and metadata pairs match its instrument.
 
 .. automodapi:: sunpy.map.sources
+    :no-main-docstr:
+    :inherited-members:
+
+
+Map Mixins
+==========
+
+.. automodapi:: sunpy.map.mixins
     :no-main-docstr:
     :inherited-members:

@@ -12,6 +12,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
+from sunpy.map.mixins import MapMetaValidationError
 from sunpy.tests.helpers import figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
@@ -206,7 +207,7 @@ def test_errors(tmpdir):
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('silence', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
-                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                          (False, MapMetaValidationError,
                            'Image coordinate units for axis 1 not present in metadata.')])
 def test_silence_errors(silence, error, match):
     # Check that the correct errors are raised depending on silence_errors value
@@ -218,7 +219,7 @@ def test_silence_errors(silence, error, match):
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('allow_errors', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
-                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                          (False, MapMetaValidationError,
                            'Image coordinate units for axis 1 not present in metadata.')])
 def test_allow_errors(allow_errors, error, match):
     # Check that the correct errors are raised depending on allow_errors value
