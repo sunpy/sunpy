@@ -55,7 +55,7 @@ from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
-from .mixins.mapmeta import MapMetaMixin, MapMetaValidationError, PixelPair
+from .mixins.mapmeta import MapMetaMixin, PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -100,7 +100,7 @@ to the standard PC_ij described in section 6.1 of .
     rest will be discarded.
 """
 
-__all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
+__all__ = ['GenericMap']
 
 
 class GenericMap(MapMetaMixin, NDCube):

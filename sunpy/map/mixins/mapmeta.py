@@ -16,7 +16,7 @@ from sunpy.util import expand_list
 from sunpy.util.decorators import cached_property_based_on
 from sunpy.util.exceptions import warn_metadata, warn_user
 
-__all__ = ['MapMetaValidationError', 'MapMetaMixin']
+__all__ = ['MapMetaValidationError', 'MapMetaMixin', 'PixelPair', 'SpatialPair']
 
 
 TIME_FORMAT = config.get("general", "time_format")

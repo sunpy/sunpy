@@ -31,6 +31,7 @@ from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, su
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins import MapMetaValidationError
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
@@ -1277,7 +1278,7 @@ def test_validate_non_spatial(generic_map):
     generic_map.meta['cunit2'] = 'Angstrom'
     err_msg = ("Map only supports spherical coordinate systems with angular units "
                "(ie. equivalent to arcsec), but this map has units ['arcsec', 'Angstrom']")
-    with pytest.raises(sunpy.map.MapMetaValidationError, match=re.escape(err_msg)):
+    with pytest.raises(MapMetaValidationError, match=re.escape(err_msg)):
         sunpy.map.Map(generic_map.data, generic_map.meta)
 
 

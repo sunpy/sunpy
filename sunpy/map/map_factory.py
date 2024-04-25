@@ -14,8 +14,9 @@ from sunpy.data import cache
 from sunpy.io._file_tools import read_file
 from sunpy.io.header import FileHeader
 from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapbase import GenericMap, MapMetaValidationError
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.mapsequence import MapSequence
+from sunpy.map.mixins import MapMetaValidationError
 from sunpy.util import expand_list
 from sunpy.util.datatype_factory_base import (
     BasicRegistrationFactory,
