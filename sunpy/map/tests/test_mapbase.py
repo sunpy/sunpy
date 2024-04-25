@@ -1113,10 +1113,10 @@ def test_rotate(aia171_test_map):
     # Mean and std should be equal for a 90 degree rotation as long as 1 pixel is cropped out on
     # all sides
     rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=0)
-    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].data.mean(),
-                               rotated_map_4.data[1:-1, 1:-1].data.mean(), rtol=1e-10)
-    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].data.std(),
-                               rotated_map_4.data[1:-1, 1:-1].data.std(), rtol=1e-10)
+    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].mean(),
+                               rotated_map_4.data[1:-1, 1:-1].mean(), rtol=1e-10)
+    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].std(),
+                               rotated_map_4.data[1:-1, 1:-1].std(), rtol=1e-10)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
