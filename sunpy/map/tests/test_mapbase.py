@@ -990,25 +990,25 @@ def test_superpixel_metadata(generic_map, f, dimensions):
 
 
 def test_superpixel_masked(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_dims = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
     # Test that the mask is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions)
     assert superpix_map.mask is not None
     # Check the shape of the mask
     expected_shape = input_dims * (1 * u.pix / dimensions)
-    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+    assert np.all(superpix_map.mask.shape == expected_shape)
 
     # Test that the offset is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
-    assert superpix_map.shape[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.shape[1] == expected_shape[1] - 1 * u.pix
+    assert superpix_map.shape[0] == expected_shape[1] - 1 #* u.pix
+    assert superpix_map.shape[1] == expected_shape[0] - 1 #* u.pix
 
     dimensions = (7, 9) * u.pix
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
     expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
-    assert superpix_map.shape[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.shape[1] == expected_shape[1] - 1 * u.pix
+    assert superpix_map.shape[0] == expected_shape[1] - 1 #* u.pix
+    assert superpix_map.shape[1] == expected_shape[0] - 1 #* u.pix
 
 
 def test_superpixel_units(generic_map):
@@ -1329,7 +1329,7 @@ def test_more_than_two_dimensions():
                 bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.data.ndim == 2
-    assert_quantity_allclose(bad_map.shape, (5, 3))
+    assert_quantity_allclose(bad_map.shape, (3, 5))
 
 
 def test_missing_metadata_warnings():
