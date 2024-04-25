@@ -254,6 +254,9 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
             xcoord = 'HGLN' + '-' + projection
             ycoord = 'HGLT' + '-' + projection
             wcs.wcs.cunit = ['deg', 'deg']
+        else:
+            # A subclass not supported by the core library
+            return None
 
     else:
         return None
