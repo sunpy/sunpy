@@ -59,19 +59,23 @@ class Cache:
         if isinstance(urls, str | Path):
             urls = [urls]
         # Logic plan
-        # 1. If redownload: Download, update cache and return file path
-        # 2. If not redownload: Check cache,
-        #    i. If present in cache:
-        #        - If cache expired, download and update cache (without removing the old file if the download fails)
-        #        - If cache not expired, return path
+        # 1. Check if the file is present in cache by url
+        # 2. If present and it has not expired nor redownload, return the file path
+        # 3. If not present or present and (expired or redownload), download the file and update cache
+        #   a. If there is an error from the above steps, we will return the file from the cache if present
         for url in urls:
             cache_details = self._get_by_url(url)
             if cache_details:
                 break
+        # If we have a cache hit and we do not want to redownload it and its still valid
+        # We want to just return the file
         if cache_details and not redownload and not self._has_expired(cache_details):
             return Path(cache_details['file_path'])
         try:
             file_path, file_hash, url = self._download_and_hash(urls, namespace)
+            # We explicitly check for redownload or expiry:
+            # This isn't needed as it should be caught bt the above if statement
+            # but this is more explicit
             if cache_details and (redownload or self._has_expired(cache_details)):
                 self._storage.delete_by_key('url', cache_details['url'])
             self._storage.store({
@@ -82,9 +86,9 @@ class Cache:
              })
             return file_path
         except Exception as e:
-            exception_msg = f"{e} \n"
             if not cache_details:
-                raise RuntimeError(exception_msg) from e
+                raise e
+            exception_msg = f"{e} \n"
             warn_user(
                 f"{exception_msg}Due to the above error, you will be working with a stale version of the file in the cache."
             )
