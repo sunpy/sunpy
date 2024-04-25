@@ -210,24 +210,29 @@ def test_header_immutability(aia171_test_map):
     assert 'KEYCOMMENTS' in aia171_test_map.meta
 
 
+def test_deprecated_data_methods(generic_map):
+    with pytest.warns(SunpyDeprecationWarning):
+        assert generic_map.dtype == np.float64
+
+
 def test_dtype(generic_map):
-    assert generic_map.dtype == np.float64
+    assert generic_map.data.dtype == np.float64
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 0
+    assert generic_map.data.min() == 0
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 35
+    assert generic_map.data.max() == 35
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 17.5
+    assert generic_map.data.mean() == 17.5
 
 
 def test_std(generic_map):
-    np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
+    np.testing.assert_allclose(generic_map.data.std(), 10.388294694831615)
 
 
 def test_unit(generic_map):
@@ -719,8 +724,8 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.dimensions[0] == 3 * u.pix
-    assert simple_map.dimensions[1] == 3 * u.pix
+    assert simple_map.shape[0] == 3 * u.pix
+    assert simple_map.shape[1] == 3 * u.pix
 
 
 pixel_corners = [
@@ -872,8 +877,8 @@ resample_test_data = [('linear', (100, 200) * u.pixel),
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.dimensions[0] == new_dimensions[0]
-    assert resampled_map.dimensions[1] == new_dimensions[1]
+    assert resampled_map.shape[0] == new_dimensions[0]
+    assert resampled_map.shape[1] == new_dimensions[1]
 
 
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
@@ -948,10 +953,10 @@ def test_superpixel_dims_values(aia171_test_map, f):
     superpix_map = aia171_test_map.superpixel(dimensions, func=f)
 
     # Check dimensions of new map
-    old_dims = u.Quantity(aia171_test_map.dimensions)
+    old_dims = u.Quantity(aia171_test_map.shape)
     expected_new_dims = old_dims * (1 * u.pix / dimensions)
-    assert superpix_map.dimensions[0] == expected_new_dims[0]
-    assert superpix_map.dimensions[1] == expected_new_dims[1]
+    assert superpix_map.shape[0] == expected_new_dims[0]
+    assert superpix_map.shape[1] == expected_new_dims[1]
 
     # Check value of lower left pixel is calculated correctly
     expected = f(aia171_test_map.data[0:2, 0:2])
@@ -996,14 +1001,14 @@ def test_superpixel_masked(aia171_test_map_with_mask):
 
     # Test that the offset is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
-    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+    assert superpix_map.shape[0] == expected_shape[0] - 1 * u.pix
+    assert superpix_map.shape[1] == expected_shape[1] - 1 * u.pix
 
     dimensions = (7, 9) * u.pix
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
     expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
-    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+    assert superpix_map.shape[0] == expected_shape[0] - 1 * u.pix
+    assert superpix_map.shape[1] == expected_shape[1] - 1 * u.pix
 
 
 def test_superpixel_units(generic_map):
@@ -1098,20 +1103,20 @@ def test_rotate(aia171_test_map):
     assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
     assert np.isnan(rotated_map_1.data[0, 0])
     assert np.isnan(rotated_map_2.data[0, 0])
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_1.mean(), rtol=5e-3)
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_2.mean(), rtol=5e-3)
+    np.testing.assert_allclose(aia171_test_map.data.mean(), rotated_map_1.data.mean(), rtol=5e-3)
+    np.testing.assert_allclose(aia171_test_map.data.mean(), rotated_map_2.data.mean(), rtol=5e-3)
 
     # A scaled-up map should have the same mean because the output map should be expanded
     rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=0, scale=2)
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_3.mean(), rtol=1e-4)
+    np.testing.assert_allclose(aia171_test_map.data.mean(), rotated_map_3.data.mean(), rtol=1e-4)
 
     # Mean and std should be equal for a 90 degree rotation as long as 1 pixel is cropped out on
     # all sides
     rotated_map_4 = aia171_test_map.rotate(90 * u.deg, order=0)
-    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].mean(),
-                               rotated_map_4.data[1:-1, 1:-1].mean(), rtol=1e-10)
-    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].std(),
-                               rotated_map_4.data[1:-1, 1:-1].std(), rtol=1e-10)
+    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].data.mean(),
+                               rotated_map_4.data[1:-1, 1:-1].data.mean(), rtol=1e-10)
+    np.testing.assert_allclose(aia171_test_map.data[1:-1, 1:-1].data.std(),
+                               rotated_map_4.data[1:-1, 1:-1].data.std(), rtol=1e-10)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
@@ -1323,8 +1328,8 @@ def test_more_than_two_dimensions():
             with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
                 bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
-    assert bad_map.ndim == 2
-    assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
+    assert bad_map.data.ndim == 2
+    assert_quantity_allclose(bad_map.shape, (5, 3) * u.pix)
 
 
 def test_missing_metadata_warnings():
@@ -1465,7 +1470,7 @@ def test_submap_inputs(generic_map2, coords):
 
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
-        assert u.allclose(smap.dimensions, (3, 3) * u.pix)
+        assert u.allclose(smap.shape, (3, 3) * u.pix)
 
 
 def test_contour(simple_map):
