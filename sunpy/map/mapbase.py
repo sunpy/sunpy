@@ -533,6 +533,7 @@ class GenericMap(MapMetaMixin, NDCube):
     def _new_instance_from_op(self, new_data, new_unit, new_uncertainty):
         new_map = super()._new_instance_from_op(new_data, new_unit, new_uncertainty)
         new_map.meta['bunit'] = new_unit.to_string('fits')
+        new_map.plot_settings = copy.deepcopy(self.plot_settings)
         return new_map
 
     def _get_lon_lat(self, frame):
