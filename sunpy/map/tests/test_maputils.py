@@ -100,8 +100,8 @@ def test_all_coordinates_from_map(sub_smap):
     assert_quantity_allclose(ypix*u.pix, 0*u.pix, atol=1e-7*u.pix)
 
     xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[-1, -1])
-    assert_quantity_allclose(xpix*u.pix, sub_smap.dimensions[0] - 1*u.pix)
-    assert_quantity_allclose(ypix*u.pix, sub_smap.dimensions[1] - 1*u.pix)
+    assert_quantity_allclose(xpix*u.pix, sub_smap.shape[0] - 1*u.pix)
+    assert_quantity_allclose(ypix*u.pix, sub_smap.shape[1] - 1*u.pix)
 
 
 def test_all_corner_coordinates_from_map(sub_smap):
@@ -117,8 +117,8 @@ def test_all_corner_coordinates_from_map(sub_smap):
     assert_quantity_allclose(ypix*u.pix, -0.5*u.pix)
 
     xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[-1, -1])
-    assert_quantity_allclose(xpix*u.pix, sub_smap.dimensions[0] - 0.5*u.pix)
-    assert_quantity_allclose(ypix*u.pix, sub_smap.dimensions[1] - 0.5*u.pix)
+    assert_quantity_allclose(xpix*u.pix, sub_smap.shape[0] - 0.5*u.pix)
+    assert_quantity_allclose(ypix*u.pix, sub_smap.shape[1] - 0.5*u.pix)
 
 
 def test_map_edges(all_off_disk_map):
