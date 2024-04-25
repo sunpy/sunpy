@@ -47,7 +47,6 @@ from sunpy.util import MetaDict
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
-    check_arithmetic_compatibility,
     deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_user
