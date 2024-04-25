@@ -301,7 +301,7 @@ class MapMetaMixin:
         """
         The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
-        top_right = np.array([self.shape.x.value, self.shape.y.value]) - 1
+        top_right = np.array([self.shape[1], self.shape[0]]) - 1
         return self.wcs.pixel_to_world(*top_right)
 
     @property
@@ -312,7 +312,7 @@ class MapMetaMixin:
         If the array has an even number of pixels in a given dimension,
         the coordinate returned lies on the edge between the two central pixels.
         """
-        center = (np.array([self.shape.x.value, self.shape.y.value]) - 1) / 2.
+        center = (np.array([self.shape[1], self.shape[0]]) - 1) / 2.
         return self.wcs.pixel_to_world(*center)
 
     def _rsun_meters(self, dsun=None):

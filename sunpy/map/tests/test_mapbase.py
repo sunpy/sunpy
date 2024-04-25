@@ -160,7 +160,7 @@ def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
-    assert wcs.array_shape == aia171_test_map.data.shape
+    assert wcs.array_shape == aia171_test_map.shape
 
     assert all(wcs.wcs.crpix - 1 ==
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
@@ -724,8 +724,8 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.shape[0] == 3 * u.pix
-    assert simple_map.shape[1] == 3 * u.pix
+    assert simple_map.shape[0] == 3
+    assert simple_map.shape[1] == 3
 
 
 pixel_corners = [
@@ -791,10 +791,10 @@ def test_submap_world_corners(test_map):
     pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
     for pix_corner in pix_corners:
         assert ((-0.5, -0.5) <= pix_corner).all()
-        assert (pix_corner <= submap.data.shape[::-1]).all()
+        assert (pix_corner <= submap.shape[::-1]).all()
 
     if test_map.mask is not None:
-        assert submap.mask.shape == submap.data.shape
+        assert submap.mask.shape == submap.shape
 
 
 @pytest.mark.parametrize('test_map', ("aia171_test_map", "heliographic_test_map"),
@@ -814,15 +814,15 @@ def test_submap_hgs_corners(test_map):
     pix_corners = np.array(submap.wcs.world_to_pixel(corners)).T
     for pix_corner in pix_corners:
         assert ((-0.5, -0.5) <= pix_corner).all()
-        assert (pix_corner <= submap.data.shape[::-1]).all()
+        assert (pix_corner <= submap.shape[::-1]).all()
 
 
 # Check that submap works with units convertible to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap_data_header(generic_map, unit):
     """Check data and header information for a submap"""
-    width = generic_map.data.shape[1]
-    height = generic_map.data.shape[0]
+    width = generic_map.shape[1]
+    height = generic_map.shape[0]
 
     # Create a submap of the top-right quadrant of the image
     submap = generic_map.submap([width / 2., height / 2.] * unit, top_right=[width, height] * unit)
@@ -830,8 +830,8 @@ def test_submap_data_header(generic_map, unit):
     # Check to see if submap properties were updated properly
     assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - 1 - width / 2.
     assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - 1 - height / 2.
-    assert submap.data.shape[1] == width / 2.
-    assert submap.data.shape[0] == height / 2.
+    assert submap.shape[1] == width / 2.
+    assert submap.shape[0] == height / 2.
 
     # Check to see if header was updated
     assert submap.meta['naxis1'] == width / 2.
@@ -868,17 +868,17 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
 
 
-resample_test_data = [('linear', (100, 200) * u.pixel),
-                      ('nearest', (512, 128) * u.pixel),
-                      ('spline', (200, 200) * u.pixel)]
+resample_test_data = [('linear', (100, 200) * u.pix ),
+                      ('nearest', (512, 128) * u.pix ),
+                      ('spline', (200, 200) ) * u.pix]
 
 
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.shape[0] == new_dimensions[0]
-    assert resampled_map.shape[1] == new_dimensions[1]
+    assert resampled_map.shape[1] == new_dimensions[0].value
+    assert resampled_map.shape[0] == new_dimensions[1].value
 
 
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
@@ -1124,16 +1124,16 @@ def test_rotate(aia171_test_map):
             [[0, 0], [1000, 400]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
 
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
-    assert aia171_test_map_crop.data.shape[0] < aia171_test_map_crop.data.shape[1]
-    assert aia171_test_map_crop_rot.data.shape[0] > aia171_test_map_crop_rot.data.shape[1]
+    assert aia171_test_map_crop.shape[0] < aia171_test_map_crop.shape[1]
+    assert aia171_test_map_crop_rot.shape[0] > aia171_test_map_crop_rot.shape[1]
 
     # Same test as above, to test the other direction
     aia171_test_map_crop = aia171_test_map.submap(
         SkyCoord(
             [[0, 0], [400, 1000]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
-    assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
-    assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
+    assert aia171_test_map_crop.shape[0] > aia171_test_map_crop.shape[1]
+    assert aia171_test_map_crop_rot.shape[0] < aia171_test_map_crop_rot.shape[1]
 
 
 def test_rotate_with_incompatible_missing_dtype_error():
@@ -1329,7 +1329,7 @@ def test_more_than_two_dimensions():
                 bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.data.ndim == 2
-    assert_quantity_allclose(bad_map.shape, (5, 3) * u.pix)
+    assert_quantity_allclose(bad_map.shape, (5, 3))
 
 
 def test_missing_metadata_warnings():
@@ -1370,7 +1370,7 @@ def test_non_str_key():
 
 def test_updating_of_naxisi_on_rotate(aia171_test_map):
     aia171_test_map_rotated = aia171_test_map.rotate(45 * u.deg, missing=0)
-    assert aia171_test_map.data.shape == (128, 128)
+    assert aia171_test_map.shape == (128, 128)
     assert aia171_test_map_rotated.meta['NAXIS1'] == 182
     assert aia171_test_map_rotated.meta['NAXIS2'] == 182
 
@@ -1470,7 +1470,7 @@ def test_submap_inputs(generic_map2, coords):
 
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
-        assert u.allclose(smap.shape, (3, 3) * u.pix)
+        assert u.allclose(smap.shape, (3, 3))
 
 
 def test_contour(simple_map):
