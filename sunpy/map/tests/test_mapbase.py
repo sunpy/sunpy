@@ -868,9 +868,9 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
 
 
-resample_test_data = [('linear', (100, 200) * u.pix ),
-                      ('nearest', (512, 128) * u.pix ),
-                      ('spline', (200, 200) ) * u.pix]
+resample_test_data = [('linear', (100, 200) * u.pixel),
+                      ('nearest', (512, 128) * u.pixel),
+                      ('spline', (200, 200) * u.pixel)]
 
 
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
