@@ -750,8 +750,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                                         method, center=True)
         new_data = new_data.T
 
-        scale_factor_x = float(self.dimensions[0] / dimensions[0])
-        scale_factor_y = float(self.dimensions[1] / dimensions[1])
+        scale_factor_x = float(self.shape[0] / dimensions[0])
+        scale_factor_y = float(self.shape[1] / dimensions[1])
 
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
