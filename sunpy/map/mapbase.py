@@ -874,8 +874,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         inv_rmatrix = np.linalg.inv(rmatrix)
 
         # Calculate the shape in pixels to contain all of the image data
-        corners = itertools.product([-0.5, self.data.shape[1]-0.5],
-                                    [-0.5, self.data.shape[0]-0.5])
+        corners = itertools.product([-0.5, self.shape[1]-0.5],
+                                    [-0.5, self.shape[0]-0.5])
         rot_corners = np.vstack([rmatrix @ c for c in corners]) * scale
         extent = np.max(rot_corners, axis=0) - np.min(rot_corners, axis=0)
 
