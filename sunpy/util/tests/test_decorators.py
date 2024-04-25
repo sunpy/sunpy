@@ -2,7 +2,15 @@ import warnings
 
 import pytest
 
-from sunpy.util.decorators import deprecated, get_removal_version
+import astropy.units as u
+
+from sunpy.util.decorators import (
+    active_contexts,
+    deprecate_positional_args_since,
+    deprecated,
+    get_removal_version,
+    sunpycontextmanager,
+)
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 
@@ -38,3 +46,64 @@ def test_deprecated_warning_message(since, pending, warning, message, warning_me
     with pytest.warns(warning, match=warning_message):
         warnings.simplefilter('always')
         foo()
+
+def test_deprecate_positional_args_warns_for_function_version():
+    @deprecate_positional_args_since(since="0.26")
+    def f1(a, *, b):
+        pass
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"From version 0.26 passing these as positional"):
+        f1(1, 2)
+
+def test_deprecate_positional_args_warns_quantity_input():
+    # It has to be this order otherwise, it will not work
+    @deprecate_positional_args_since(since="0.26")
+    @u.quantity_input
+    def f1(a, *, b: u.percent = None):
+        pass
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"From version 0.26 passing these as positional"):
+        f1(1, 2 * u.percent)
+
+
+def test_deprecate_positional_args_warns_for_class():
+
+    class A1:
+        @deprecate_positional_args_since(since="0.26")
+        def __init__(self, a, b, *, c=1, d=1):
+            pass
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass c=3 as keyword args"):
+        A1(1, 2, 3)
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass c=3, d=4 as keyword args"):
+        A1(1, 2, 3, 4)
+    class A2:
+        @deprecate_positional_args_since(since="0.26")
+        def __init__(self, a=1, b=1, *, c=1, d=1):
+            pass
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass c=3 as keyword args"):
+        A2(1, 2, 3)
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass c=3, d=4 as keyword args"):
+        A2(1, 2, 3, 4)
+
+
+@sunpycontextmanager
+def somefunc():
+    print("Entering")
+    yield
+    print("Exiting")
+
+
+def test_somefunc_context():
+    # Check that the context is not active before entering
+    assert not active_contexts.get('somefunc' , False)
+
+    with somefunc():
+        # Check that the context is active while inside
+        assert active_contexts.get('somefunc', False)
+
+    # Check that the context is not active after exiting
+    assert not active_contexts.get('somefunc' , False)

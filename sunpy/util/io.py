@@ -75,11 +75,24 @@ def possibly_a_path(obj):
 
 
 def is_url(obj):
+    """
+    Check if the given object is a valid URL.
+
+    Parameters
+    ----------
+    obj : str
+        The object to check.
+
+    Returns
+    -------
+    bool
+        True if the object is a valid URL, False otherwise.
+    """
     try:
         urllib.request.urlopen(obj)
+        return True
     except Exception:
         return False
-    return True
 
 
 def string_is_float(s):

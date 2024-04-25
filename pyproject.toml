@@ -21,8 +21,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
-authors = [{ name = "The SunPy Community", email = "sunpy@googlegroups.com" }]
-license = { text = "BSD 2-Clause" }
+requires-python = ">=3.10"
+readme = { file = "README.rst", content-type = "text/x-rst" }
+license = { file = "LICENSE.rst", content-type = "text/plain" }
+authors = [
+  { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
+]
+dependencies = [
+  "astropy>=5.2.0",
+  "numpy>=1.23.0",
+  "packaging>=21.3",
+  "parfive[ftp]>=2.0.0",
+  "pyerfa>=2.0",
+  "requests>=2.28.0",
+]
+dynamic = ["version"]
 keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -37,28 +50,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering :: Physics",
 ]
-requires-python = ">=3.10"
-dependencies = [
-  "astropy>=5.2.0",
-  "numpy>=1.23.0",
-  "packaging>=21.3",
-  "parfive[ftp]>=2.0.0",
-  "pyerfa>=2.0",
-  "requests>=2.28.0",
-]
-dynamic = ["version"]
-
-[project.readme]
-file = "README.rst"
-content-type = "text/x-rst"
-
-[project.urls]
-Homepage = "https://sunpy.org"
-Download = "https://pypi.org/project/sunpy/"
-"Source Code" = "https://github.com/sunpy/sunpy/"
-Documentation = "https://docs.sunpy.org/"
-Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
-"Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
 
 [project.optional-dependencies]
 # The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
@@ -69,7 +60,12 @@ image = [
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
   "scipy>=1.8.0,!=1.10.0",
 ]
-jpeg2000 = ["glymur>=0.9.1,!=0.9.5", "lxml>=4.9.0,!=5.0.0"]
+jpeg2000 = [
+  "glymur>=0.9.1,!=0.9.5",
+  # While a direct dependency of glymur, we import it to save JPEG2000 files.
+  # and we had issues with specific versions lxml.
+  "lxml>=4.9.0,!=5.0.0"
+]
 map = [
   "matplotlib>=3.5.0",
   "mpl-animators>=1.0.0",
@@ -130,11 +126,13 @@ docs-gallery = [
 ]
 dev = ["sunpy[all,docs,tests]"]
 
-[project.entry-points."asdf.resource_mappings"]
-sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
-
-[project.entry-points."asdf.extensions"]
-sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
+[project.urls]
+Homepage = "https://sunpy.org"
+Download = "https://pypi.org/project/sunpy/"
+"Source Code" = "https://github.com/sunpy/sunpy/"
+Documentation = "https://docs.sunpy.org/"
+Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
+"Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
 
 [tool.setuptools]
 zip-safe = false
@@ -145,10 +143,15 @@ license-files = ["LICENSE.rst"]
 
 [tool.setuptools.packages.find]
 exclude = ["sunpy._dev"]
-namespaces = false
 
 [tool.setuptools_scm]
 write_to = "sunpy/_version.py"
+
+[project.entry-points."asdf.resource_mappings"]
+sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
+
+[project.entry-points."asdf.extensions"]
+sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.distutils.bdist_wheel]
 # The Py_LIMITED_API version hex in _pyana.c should match the version specified here
@@ -162,74 +165,74 @@ test-command = "pytest -p no:warnings --doctest-rst -m 'not mpl_image_compare' -
 test-extras = ["tests"]
 
 [tool.gilesbot]
-[tool.gilesbot.circleci_artifacts]
-enabled = true
+  [tool.gilesbot.circleci_artifacts]
+  enabled = true
 
-[tool.gilesbot.circleci_artifacts.figure_report]
-url = ".tmp/py312-figure/figure_test_images/fig_comparison.html"
-message = "Click details to see the figure test comparisons, for py312-figure."
-report_on_fail = true
+  [tool.gilesbot.circleci_artifacts.figure_report]
+  url = ".tmp/py312-figure/figure_test_images/fig_comparison.html"
+  message = "Click details to see the figure test comparisons, for py312-figure."
+  report_on_fail = true
 
-[tool.gilesbot.circleci_artifacts.figure_report_devdeps]
-url = ".tmp/py312-figure-devdeps/figure_test_images/fig_comparison.html"
-message = "Click details to see the figure test comparisons for py312-figure-devdeps."
-report_on_fail = true
+  [tool.gilesbot.circleci_artifacts.figure_report_devdeps]
+  url = ".tmp/py312-figure-devdeps/figure_test_images/fig_comparison.html"
+  message = "Click details to see the figure test comparisons for py312-figure-devdeps."
+  report_on_fail = true
 
-[tool.gilesbot.pull_requests]
-enabled = true
+  [tool.gilesbot.pull_requests]
+  enabled = true
 
-[tool.gilesbot.towncrier_changelog]
-enabled = true
-verify_pr_number = true
-changelog_skip_label = "No Changelog Entry Needed"
-help_url = "https://github.com/sunpy/sunpy/blob/main/changelog/README.rst"
+  [tool.gilesbot.towncrier_changelog]
+  enabled = true
+  verify_pr_number = true
+  changelog_skip_label = "No Changelog Entry Needed"
+  help_url = "https://github.com/sunpy/sunpy/blob/main/changelog/README.rst"
 
-changelog_missing_long = "There isn't a changelog file in this pull request. Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)."
+  changelog_missing_long = "There isn't a changelog file in this pull request. Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)."
 
-type_incorrect_long = "The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)"
+  type_incorrect_long = "The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)"
 
-number_incorrect_long = "The number in the changelog file you added does not match the number of this pull request. Please rename the file."
+  number_incorrect_long = "The number in the changelog file you added does not match the number of this pull request. Please rename the file."
 
 # TODO: This should be in towncrier.toml but Giles currently only works looks in
 # pyproject.toml we should move this back when it's fixed.
 [tool.towncrier]
-package = "sunpy"
-filename = "CHANGELOG.rst"
-directory = "changelog/"
-issue_format = "`#{issue} <https://github.com/sunpy/sunpy/pull/{issue}>`__"
-title_format = "{version} ({project_date})"
+  package = "sunpy"
+  filename = "CHANGELOG.rst"
+  directory = "changelog/"
+  issue_format = "`#{issue} <https://github.com/sunpy/sunpy/pull/{issue}>`__"
+  title_format = "{version} ({project_date})"
 
-[[tool.towncrier.type]]
-directory = "breaking"
-name = "Breaking Changes"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "breaking"
+  name = "Breaking Changes"
+  showcontent = true
 
-[[tool.towncrier.type]]
-directory = "deprecation"
-name = "Deprecations"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "deprecation"
+  name = "Deprecations"
+  showcontent = true
 
-[[tool.towncrier.type]]
-directory = "removal"
-name = "Removals"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "removal"
+  name = "Removals"
+  showcontent = true
 
-[[tool.towncrier.type]]
-directory = "feature"
-name = "New Features"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "feature"
+  name = "New Features"
+  showcontent = true
 
-[[tool.towncrier.type]]
-directory = "bugfix"
-name = "Bug Fixes"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "bugfix"
+  name = "Bug Fixes"
+  showcontent = true
 
-[[tool.towncrier.type]]
-directory = "doc"
-name = "Documentation"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "doc"
+  name = "Documentation"
+  showcontent = true
 
-[[tool.towncrier.type]]
-directory = "trivial"
-name = "Internal Changes"
-showcontent = true
+  [[tool.towncrier.type]]
+  directory = "trivial"
+  name = "Internal Changes"
+  showcontent = true
