@@ -95,3 +95,21 @@ py:obj RendererBase
 py:obj RuntimeError
 py:obj text
 py:obj Text
+
+# Super class for Map for which we don't control the API links.
+py:class ndcube.mixins.ndslicing.NDCubeSlicingMixin
+py:class ndcube.ndcube.NDCube
+py:class ndcube.ndcube.NDCubeABC
+py:class ndcube.ndcube.NDCubeBase
+py:meth ndcube.NDCube.axis_world_coords
+py:meth ndcube.NDCube.crop
+py:meth ndcube.NDCube.rebin
+py:obj MatplotlibPlotter
+py:obj ndcube.NDCube
+py:obj ndcube.NDCube.crop
+py:obj ndcube.ndcube.NDCubeABC
+py:obj ndcube.ndcube.NDCubeBase
+py:obj ndcube.NDCube.plotter
+py:obj ndcube.NDCubeABC
+py:obj ndcube.NDCubeSequence
+py:obj ndcube.utils.cube.propagate_rebin_uncertainties
