@@ -1785,6 +1785,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             raise ImportError("This method requires the optional package `reproject`.") from exc
 
         if not isinstance(target_wcs, astropy.wcs.WCS):
+<<<<<<< HEAD
             target_wcs = astropy.wcs.WCS(target_wcs)
 
         # Select the desired reprojection algorithm
@@ -1801,6 +1802,19 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         # Reproject the array
         output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
+=======
+            target_wcs = astropy.wcs.WCS(header=target_wcs)
+        # Check rsun mismatch
+        rsun_target = target_wcs.wcs.aux.rsun_ref * u.m
+        if self.rsun_meters != rsun_target:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} rsun_meters of target WCS."
+                      "This might cause unexpected results during reprojection.")
+        reproject_outputs = super().reproject_to(target_wcs,
+                                                 algorithm=algorithm,
+                                                 return_footprint=return_footprint,
+                                                 **reproject_args)
+>>>>>>> a555e3c3b (Adds unit to Rsun check)
         if return_footprint:
             output_array, footprint = output_array
 
