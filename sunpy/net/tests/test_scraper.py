@@ -294,7 +294,6 @@ def test_files_range_same_directory_local_new_format():
     enddate = parse_time((2010, 1, 20, 20, 30))
     assert len(s.filelist(TimeRange(startdate, enddate))) == 0
 
-
 @pytest.mark.remote_data
 def test_files_range_same_directory_remote():
     with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
