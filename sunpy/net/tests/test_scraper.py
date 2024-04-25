@@ -1,6 +1,5 @@
 import logging
 import datetime
-from pathlib import Path
 from urllib.error import URLError, HTTPError
 from unittest.mock import Mock, patch
 
@@ -14,21 +13,21 @@ from sunpy.time import TimeRange, parse_time
 
 def testDirectoryDatePattern():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
-    testpath = str(Path('2014/03/05/') / '20140305_013000_59.fit.gz')
+    testpath = '2014/03/05/20140305_013000_59.fit.gz'
     d = parse_time((2014, 3, 5, 1, 30))
     assert s.matches(testpath, d)
 
 
 def testDirectoryDatePatternFalse():
     s = Scraper('{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
-    testpath = str(Path('2013/03/05/') / '20140305_013000_59.fit.gz')
+    testpath = '2013/03/05/20140305_013000_59.fit.gz'
     d = parse_time((2014, 3, 5, 1, 30))
     assert not s.matches(testpath, d)
 
 
 def testDirectoryObsPattern():
     s = Scraper('{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
-    testpath = str(Path('140305') / 'SDO_20140305.fits')
+    testpath = '140305/SDO_20140305.fits'
     d = parse_time((2014, 3, 5))
     assert s.matches(testpath, d)
 
@@ -127,7 +126,6 @@ def testFilesRange_sameDirectory_local():
     startdate = parse_time((2010, 1, 10, 20, 30))
     enddate = parse_time((2010, 1, 20, 20, 30))
     assert len(s.filelist(TimeRange(startdate, enddate))) == 0
-
 
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
