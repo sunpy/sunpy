@@ -1738,7 +1738,7 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
 
 
 @pytest.mark.parametrize('value', [
-    10 * u.ct,
+    10 * u.s,
     u.Quantity([10], u.ct),
     u.Quantity(np.random.rand(128), u.ct),
     u.Quantity(np.random.rand(128, 128), u.ct),
