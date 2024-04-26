@@ -43,7 +43,7 @@ from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.util import MetaDict
-from sunpy.util.decorators import add_common_docstring, cached_property_based_on
+from sunpy.util.decorators import add_common_docstring, cached_property_based_on, deprecated
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
@@ -235,8 +235,14 @@ class GenericMap(MapMetaMixin, NDCube):
             self.plotter.plot_settings.update(plot_settings)
 
     @property
+    @deprecated('6.0', alternative='plotter.plot_settings')
     def plot_settings(self):
         return self.plotter.plot_settings
+
+    @plot_settings.setter
+    @deprecated('6.0', alternative='plotter.plot_settings')
+    def plot_settings(self, value):
+        self.plotter.plot_settings = value
 
     def __getitem__(self, key):
         def format_slice(key):
@@ -528,14 +534,6 @@ class GenericMap(MapMetaMixin, NDCube):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
-    def _set_symmetric_vmin_vmax(self):
-        """
-        Set symmetric vmin and vmax about zero
-        """
-        threshold = np.nanmax(abs(self.data))
-        self.plot_settings['norm'].vmin = -threshold
-        self.plot_settings['norm'].vmax = threshold
-
     def _as_mpl_axes(self):
         """
         Compatibility hook for Matplotlib and WCSAxes.
@@ -632,7 +630,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plot_settings)
+        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plotter.plot_settings)
 
         return new_map
 
@@ -822,7 +820,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1015,7 +1013,7 @@ class GenericMap(MapMetaMixin, NDCube):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
 
         return new_map
 
@@ -1189,10 +1187,10 @@ class GenericMap(MapMetaMixin, NDCube):
         if self.mask is not None:
             new_mask = self.mask[arr_slice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings, mask=new_mask)
+            new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
             return new_map
         # Create new map with the modification
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
         return new_map
 
     @seconddispatch
@@ -1342,7 +1340,7 @@ class GenericMap(MapMetaMixin, NDCube):
             new_mask = None
 
         # Create new map with the modified data
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings, mask=new_mask)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
         return new_map
 
     @property
@@ -1524,7 +1522,7 @@ class GenericMap(MapMetaMixin, NDCube):
 
         # Create and return a new GenericMap
         outmap = GenericMap(output_array, meta=target_wcs.to_header(),
-                            plot_settings=self.plot_settings)
+                            plot_settings=self.plotter.plot_settings)
 
         # Check rsun mismatch
         if self.rsun_meters != outmap.rsun_meters:

@@ -39,8 +39,8 @@ class EITMap(GenericMap):
         super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
@@ -110,8 +110,8 @@ class LASCOMap(GenericMap):
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
-        self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property

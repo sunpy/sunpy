@@ -73,8 +73,8 @@ class SUVIMap(GenericMap):
         super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings["cmap"] = self._get_cmap_name()
-        self.plot_settings["norm"] = ImageNormalize(
+        self.plotter.plot_settings["cmap"] = self._get_cmap_name()
+        self.plotter.plot_settings["norm"] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
         )
 

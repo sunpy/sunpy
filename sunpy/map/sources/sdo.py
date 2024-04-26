@@ -49,8 +49,8 @@ class AIAMap(GenericMap):
 
         # Fill in some missing info
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
@@ -112,7 +112,7 @@ class HMIMap(GenericMap):
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Avoid JP2K images not having a norm due to UNIT8 data
             # This means they are not scaled correctly.
-            if self.plot_settings.get('norm') is not None:
+            if self.plotter.plot_settings.get('norm') is not None:
                 # Magnetic field maps, not intensity maps
                 self.plotter._set_symmetric_vmin_vmax()
         self._nickname = self.detector
@@ -159,8 +159,8 @@ class HMISynopticMap(HMIMap):
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
-        self.plot_settings['cmap'] = 'hmimag'
-        self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+        self.plotter.plot_settings['cmap'] = 'hmimag'
+        self.plotter.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
 
     @property
     def spatial_units(self):

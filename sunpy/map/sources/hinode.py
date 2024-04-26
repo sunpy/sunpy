@@ -56,8 +56,8 @@ class XRTMap(GenericMap):
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, meta=meta, **kwargs)
-        self.plot_settings['cmap'] = 'hinodexrt'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = 'hinodexrt'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @property
@@ -166,7 +166,7 @@ class SOTMap(GenericMap):
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
                  }
 
-        self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+        self.plotter.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
 
     @property
     def detector(self):
