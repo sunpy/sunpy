@@ -42,7 +42,6 @@ class MapPlotter:
         self.plot_settings['norm'].vmin = -threshold
         self.plot_settings['norm'].vmax = threshold
 
-
     @property
     def plot_settings(self):
         return self._plot_settings
