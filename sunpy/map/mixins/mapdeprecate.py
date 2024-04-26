@@ -9,10 +9,8 @@ __all__ = ['MapDeprecateMixin']
 
 class MapDeprecateMixin:
     """
-    This class contains the deprecated attributes on map
+    This class contains the deprecated attributes on map.
     """
-
-    # Some numpy extraction
 
     @property
     @deprecated(since="6.1", message=".dimensions will be removed in 6.1. Use sunpy.map.GenericMap.shape instead")
