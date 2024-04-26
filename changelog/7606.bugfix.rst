@@ -1,0 +1,1 @@
+Fix a bug in `~.GenericMap.wcs` where the ``.dateobs`` property of the `~astropy.wcs.WCS` object was being set from the `~.GenericMap.date` property which preferrs the ``DATE-OBS`` header key over the more correct ``DATE-AVG`` if both exist.
