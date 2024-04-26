@@ -249,7 +249,6 @@ class MapPlotter(BasePlotter):
     def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
-
         Parameters
         ----------
         levels : `~astropy.units.Quantity`
@@ -263,13 +262,11 @@ class MapPlotter(BasePlotter):
             Determines the style of the contours:
             - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
             - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
-
         Returns
         -------
         cs : `list`
             The `~matplotlib.contour.QuadContourSet` object, after it has been added to
             ``axes``.
-
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
@@ -279,7 +276,7 @@ class MapPlotter(BasePlotter):
         levels = self.smap._process_levels_arg(levels)
 
         # Pixel indices
-        y, x = np.indices(self.smap.data.shape)
+        y, x = np.indices(self.smap.shape)
 
         # Prepare a local variable in case we need to mask values
         data = self.smap.data
@@ -288,7 +285,11 @@ class MapPlotter(BasePlotter):
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
         if self.smap.wcs is not axes.wcs:
-            transform = axes.get_transform(self.smap.wcs) - axes.transData  # pixel->pixel transform
+            if "transform" in contour_args:
+                transform_orig = contour_args.pop("transform")
+            else:
+                transform_orig = axes.get_transform(self.smap.wcs)
+            transform = transform_orig - axes.transData  # pixel->pixel transform
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
 
@@ -298,7 +299,7 @@ class MapPlotter(BasePlotter):
         if fill:
             # Ensure we have more than one level if fill is True
             if len(levels) == 1:
-                max_val = np.nanmax(self.smap.data)
+                max_val = np.nanmax(data)
                 # Ensure the existing level is less than max_val
                 if levels[0] < max_val:
                     levels = np.append(levels, max_val)
