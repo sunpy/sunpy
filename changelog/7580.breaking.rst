@@ -1,0 +1,1 @@
+Moved all `sunpy.map.Map` plotting functionality to `sunpy.map.Map.plotter`.
