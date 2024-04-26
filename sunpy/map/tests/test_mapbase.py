@@ -280,6 +280,21 @@ def test_date(generic_map, keys, expected_date):
     else:
         assert generic_map.date == expected_date
 
+    # Validate that the WCS date properties reflect the same information as the
+    # map properties
+    if "DATE-AVG" in keys or ("DATE-BEG" in keys and "DATE-END" in keys):
+        assert parse_time(generic_map.wcs.wcs.dateavg) - expected_date < 1*u.s
+        assert not generic_map.wcs.wcs.dateobs
+    else:
+        assert parse_time(generic_map.wcs.wcs.dateobs) - expected_date < 1*u.s
+
+    if "DATE-BEG" in keys:
+        assert generic_map.wcs.wcs.datebeg
+
+    if "DATE-END" in keys:
+        assert generic_map.wcs.wcs.dateend
+
+
 
 def test_date_scale(generic_map):
     # Check that default time scale is UTC
