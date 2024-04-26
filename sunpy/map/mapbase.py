@@ -1216,7 +1216,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         top_left = u.Quantity([top_right[0], bottom_left[1]])
         bottom_right = u.Quantity([bottom_left[0], top_right[1]])
-        # this is a gross way I have done ot
+
         return self.wcs.pixel_to_world(*bottom_left), self.wcs.pixel_to_world(*top_left), self.wcs.pixel_to_world(*top_right), self.wcs.pixel_to_world(*bottom_right)
 
     @_parse_submap_input.register(SkyCoord)
