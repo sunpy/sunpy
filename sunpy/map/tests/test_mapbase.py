@@ -1103,8 +1103,8 @@ def test_rotate(aia171_test_map):
     assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
     assert np.isnan(rotated_map_1.data[0, 0])
     assert np.isnan(rotated_map_2.data[0, 0])
-    np.testing.assert_allclose(aia171_test_map.data.mean(), rotated_map_1.data.mean(), rtol=5e-3)
-    np.testing.assert_allclose(aia171_test_map.data.mean(), rotated_map_2.data.mean(), rtol=5e-3)
+    np.testing.assert_allclose(aia171_test_map.data.mean(), np.nanmean(rotated_map_1.data), rtol=5e-3)
+    np.testing.assert_allclose(aia171_test_map.data.mean(), np.nanmean(rotated_map_2.data), rtol=5e-3)
 
     # A scaled-up map should have the same mean because the output map should be expanded
     rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=0, scale=2)
