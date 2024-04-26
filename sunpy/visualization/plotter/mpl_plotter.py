@@ -17,10 +17,9 @@ from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
-from sunpy.visualization.plotter.base import BasePlotter
 
 
-class MapPlotter(BasePlotter):
+class MapPlotter:
 
     def __init__(self, smap, plot_settings=None):
         self.smap = smap

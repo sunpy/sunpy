@@ -43,7 +43,7 @@ from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.util import MetaDict
-from sunpy.util.decorators import add_common_docstring, cached_property_based_on, deprecated
+from sunpy.util.decorators import add_common_docstring, cached_property_based_on
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
@@ -235,12 +235,12 @@ class GenericMap(MapMetaMixin, NDCube):
             self.plotter.plot_settings.update(plot_settings)
 
     @property
-    @deprecated('6.0', alternative='plotter.plot_settings')
+    # @deprecated('6.0', alternative='plotter.plot_settings')
     def plot_settings(self):
         return self.plotter.plot_settings
 
     @plot_settings.setter
-    @deprecated('6.0', alternative='plotter.plot_settings')
+    # @deprecated('6.0', alternative='plotter.plot_settings')
     def plot_settings(self, value):
         self.plotter.plot_settings = value
 
