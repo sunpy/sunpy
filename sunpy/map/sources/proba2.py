@@ -29,7 +29,7 @@ class SWAPMap(GenericMap):
         super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = 'sdoaia171'
+        self.plotter.plot_settings['cmap'] = 'sdoaia171'
 
     @property
     def observatory(self):
