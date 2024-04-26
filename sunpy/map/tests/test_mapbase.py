@@ -1339,7 +1339,7 @@ def test_missing_metadata_warnings():
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
-    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 5
+    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 4
 
 
 def test_fits_header(aia171_test_map):
