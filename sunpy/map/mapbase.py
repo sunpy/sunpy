@@ -231,6 +231,8 @@ class GenericMap(MapMetaMixin, NDCube):
         self._validate_meta()
 
         self.plotter = MapPlotter
+        if plot_settings:
+            self.plotter.plot_settings.update(plot_settings)
 
     @property
     def plot_settings(self):
