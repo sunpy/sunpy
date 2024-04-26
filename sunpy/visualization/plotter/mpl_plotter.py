@@ -49,7 +49,7 @@ class MapPlotter:
 
     @plot_settings.setter
     def plot_settings(self, value):
-        if self.smap.dtype == np.uint8:
+        if self.smap.data.dtype == np.uint8:
             norm = None
         else:
             # Put import here to reduce sunpy.map import time
