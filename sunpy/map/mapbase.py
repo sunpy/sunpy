@@ -47,10 +47,8 @@ from sunpy.util.decorators import add_common_docstring, cached_property_based_on
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization.plotter.mpl_plotter import MatplotlibPlotter
+from sunpy.visualization.plotter.mpl_plotter import MapPlotter
 from .mixins.mapmeta import MapMetaMixin, PixelPair
-from sunpy.visualization.plotter.mpl_plotter import sunpyPlotter
-from .mixins.mapmeta import MapMetaMixin, MapMetaValidationError, PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -232,7 +230,7 @@ class GenericMap(MapMetaMixin, NDCube):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
-        self.plotter = sunpyPlotter
+        self.plotter = MapPlotter
 
     @property
     def plot_settings(self):
@@ -718,14 +716,6 @@ class GenericMap(MapMetaMixin, NDCube):
                         "Sorry wcslib needs you to do more programming"
                     )
         self.meta.update(MetaDict(changed_header))
-
-# #### Miscellaneous #### #
-    def _get_cmap_name(self):
-        """Build the default color map name."""
-        cmap_string = (self.observatory + self.detector +
-                       str(int(self.wavelength.to('angstrom').value)))
-        return cmap_string.lower()
-
 
     def save(self, filepath, filetype='auto', **kwargs):
         """
@@ -1357,10 +1347,6 @@ class GenericMap(MapMetaMixin, NDCube):
     def cmap(self):
         return self.plotter.cmap
 
-    def _get_cmap_name(self):
-        cmap_string = f"{self.observatory}{self.detector}{self.wavelength.to_value('AA'):.0f}"
-        return cmap_string.lower()
-
     def draw_grid(self, *args, **kwargs):
         return self.plotter.draw_grid(*args, **kwargs)
 
@@ -1370,8 +1356,12 @@ class GenericMap(MapMetaMixin, NDCube):
     def draw_quadrangle(self, *args, **kwargs):
         return self.plotter.draw_quadrangle(*args, **kwargs)
 
+    def _get_cmap_name(self):
+        cmap_string = f"{self.observatory}{self.detector}{self.wavelength.to_value('AA'):.0f}"
+        return cmap_string.lower()
+
     def draw_contours(self, *args, **kwargs):
-        return self.plotter.draw_quadrangle(*args, **kwargs)
+        return self.plotter.draw_contours(*args, **kwargs)
 
     def peek(self, *args, **kwargs):
        return self.plotter.peek(*args, **kwargs)

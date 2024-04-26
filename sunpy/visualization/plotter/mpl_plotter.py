@@ -13,13 +13,14 @@ from astropy.visualization.wcsaxes import Quadrangle
 
 import sunpy.visualization.drawing
 from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 from sunpy.visualization.plotter.base import BasePlotter
 
 
-class sunpyPlotter(BasePlotter):
+class MapPlotter(BasePlotter):
 
     def __init__(self, smap, plot_settings=None):
         self.smap = smap
@@ -41,6 +42,7 @@ class sunpyPlotter(BasePlotter):
         threshold = np.nanmax(abs(self.smap.data))
         self.plot_settings['norm'].vmin = -threshold
         self.plot_settings['norm'].vmax = threshold
+
 
     @property
     def plot_settings(self):
@@ -364,8 +366,9 @@ class sunpyPlotter(BasePlotter):
 
         return figure
 
+    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, * , annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
