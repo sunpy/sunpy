@@ -523,7 +523,9 @@ class GenericMap(MapMetaMixin, NDCube):
             meta = copy.deepcopy(getattr(self, 'meta'))
         if new_unit := kwargs.get('unit', None):
             meta['bunit'] = new_unit.to_string('fits')
-        new_map = super()._new_instance(data=data, meta=meta, **kwargs)
+        # NOTE: wcs=None is explicitly passed here because the wcs of a map is
+        # derived from the information in the metadata.
+        new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
