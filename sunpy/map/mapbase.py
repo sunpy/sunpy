@@ -608,13 +608,23 @@ class GenericMap(NDData):
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
-        w2.wcs.set_pv(self._pv_values)
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
-        w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
+        w2.wcs.set_pv(self._pv_values)
 
+        # If date average exists we should use it.  If it doesn't then we
+        # fallback to dateobs because it can come from many places
+        if self.date_average is not None:
+            w2.wcs.dateavg = self.date_average.isot
+        else:
+            w2.wcs.dateobs = self.date.isot
+        if self.date_start is not None:
+            w2.wcs.datebeg = self.date_start.isot
+        if self.date_end is not None:
+            w2.wcs.dateend = self.date_end.isot
+
+        w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
