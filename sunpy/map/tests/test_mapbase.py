@@ -61,8 +61,15 @@ def test_get_item(generic_map):
         assert generic_map[1:3, 3]
     assert isinstance(generic_map, sunpy.map.mapbase.GenericMap)
     # TODO: complete test once mapbase inherits from NDCube
-    # assert generic_map[0:1, :].shape == 5
+    assert np.allclose(generic_map[0:1, :].data, np.array([[0., 1., 2., 3., 4., 5.]]))
 
+    rotated_map = generic_map.rotate(45 * u.deg, order=0)
+    assert np.allclose(rotated_map.data[5:6, :], np.array([[np.nan, 30., 31., 26., 21., 21., 16., 11.,  5., np.nan]]),
+                       equal_nan=True)
+
+    sliced_meta = generic_map[0:1, :].meta
+    assert sliced_meta['naxis1'] == 6
+    assert sliced_meta['naxis2'] == 1
 
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
