@@ -68,6 +68,7 @@ def test_get_item(generic_map):
                        equal_nan=True)
 
     sliced_meta = generic_map[0:1, :].meta
+    assert sorted(sliced_meta.modified_items.keys()) == ['naxis1', 'naxis2']
     assert sliced_meta['naxis1'] == 6
     assert sliced_meta['naxis2'] == 1
 
