@@ -83,15 +83,22 @@ def test_patterns(eit_fits_directory):
     maps = sunpy.map.Map(os.fspath(eit_fits_directory))
     assert isinstance(maps, list)
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+
     # Test that returned maps are sorted
     files_sorted = sorted(list(eit_fits_directory.glob('*')))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
-    assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
+    assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
     # Pathlib
     path = pathlib.Path(AIA_171_IMAGE)
     aiamap = sunpy.map.Map(path)
+
+    # Generator
+    maps = sunpy.map.Map(eit_fits_directory.glob('*.fits'))
+    assert isinstance(maps, list)
     assert isinstance(aiamap, sunpy.map.GenericMap)
+
+    # A directory
     maps = sunpy.map.Map(eit_fits_directory)
     assert isinstance(maps, list)
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
@@ -101,16 +108,19 @@ def test_patterns(eit_fits_directory):
     maps = sunpy.map.Map(pattern)
     assert isinstance(maps, list)
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+
     # Test that returned maps are sorted
     files_sorted = sorted(list(pathlib.Path(pattern).parent.glob('*')))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
-    assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
+    assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
+
     # Single character wildcard (?)
     pattern = os.path.join(eit_fits_directory, "efz20040301.0?0010_s.fits")
     maps = sunpy.map.Map(pattern)
     assert isinstance(maps, list)
     assert len(maps) == 7
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+
     # Character ranges
     pattern = os.path.join(eit_fits_directory, "efz20040301.0[2-6]0010_s.fits")
     maps = sunpy.map.Map(pattern)

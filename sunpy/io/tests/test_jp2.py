@@ -7,6 +7,7 @@ from sunpy.io.header import FileHeader
 from sunpy.tests.helpers import skip_glymur
 
 AIA_193_JP2 = get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+EUI_174_JP2 = get_test_filepath("2022_04_01__00_00_45__SOLO-EUI-FSI_EUI_FSI_174.jp2")
 TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 
 
@@ -20,8 +21,13 @@ def test_read():
 
 @skip_glymur
 def test_read_header():
-    header = _jp2.get_header(AIA_193_JP2)[0]
+    header = _jp2.get_header(EUI_174_JP2)[0]
     assert isinstance(header, FileHeader)
+    # Check that the header has been parsed correctly
+    # So we expect some FITS keywords, Keycomments and History
+    assert header["KEYCOMMENTS"]['XTENSION'] == "binary table extension"
+    # We check the first line to see if the header has been parsed correctly
+    assert "orkingDirectory /tmp/telemetry_parser --configFile /home/eui/config/conf" in header['HISTORY']
 
 
 @skip_glymur
