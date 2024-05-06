@@ -1,0 +1,66 @@
+diff a/tox.ini b/tox.ini	(rejected hunks)
+@@ -12,7 +12,6 @@ envlist =
+ 
+ [testenv]
+ pypi_filter = https://raw.githubusercontent.com/sunpy/sunpy/main/.test_package_pins.txt
+-
+ # Run the tests in a temporary directory to make sure that we don't import
+ # the package from the source tree
+ change_dir = .tmp/{envname}
+@@ -20,7 +19,6 @@ description =
+     run tests
+     oldestdeps: with the oldest supported version of key dependencies
+     devdeps: with the latest developer version of key dependencies
+-
+ pass_env =
+     # A variable to tell tests we are on a CI system
+     CI
+@@ -30,37 +28,35 @@ pass_env =
+     LOCALE_ARCHIVE
+     # If the user has set a LC override we should follow it
+     LC_ALL
+-
+ set_env =
+     MPLBACKEND = agg
+     devdeps: PIP_EXTRA_INDEX_URL = https://pypi.anaconda.org/astropy/simple https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
+-    # Define the base test command here to allow us to add more flags for each tox factor
+-    PYTEST_COMMAND = pytest -vvv -r fEs --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config={toxinidir}/.coveragerc {toxinidir}/docs
+-
+ deps =
+     # For packages which publish nightly wheels this will pull the latest nightly
+     devdeps: numpy>=0.0.dev0
+     # Packages without nightly wheels will be built from source like this
+     # devdeps: git+https://github.com/ndcube/ndcube
+     oldestdeps: minimum_dependencies
+-    pytest-cov
+-
+ # The following indicates which extras_require will be installed
+ extras =
+     tests
+-
+ commands_pre =
+     oldestdeps: minimum_dependencies sunpy --filename requirements-min.txt
+     oldestdeps: pip install -r requirements-min.txt
+     pip freeze --all --no-input
+-
+ commands =
+-    # To run different commands for different factors exclude the factor from the default command like this
+-    # !online: {env:PYTEST_COMMAND} {posargs}
+-    # Then specify a specific one like this
+-    # online: {env:PYTEST_COMMAND} --remote-data=any {posargs}
++    # To amend the pytest command for different factors you can add a line
++    # which starts with a factor like `online: --remote-data=any \`
+     # If you have no factors which require different commands this is all you need:
+-    {env:PYTEST_COMMAND} {posargs}
++    pytest \
++    -vvv \
++    -r fEs \
++    --pyargs sunpy \
++    --cov-report=xml \
++    --cov=sunpy \
++    --cov-config={toxinidir}/.coveragerc \
++    {toxinidir}/docs \
++    {posargs}
+ 
+ [testenv:codestyle]
+ pypi_filter =

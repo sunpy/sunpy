@@ -1,0 +1,19 @@
+diff a/pytest.ini b/pytest.ini	(rejected hunks)
+@@ -14,9 +14,15 @@ norecursedirs =
+     .history
+     sunpy/extern
+ doctest_plus = enabled
+-doctest_optionflags = NORMALIZE_WHITESPACE FLOAT_CMP ELLIPSIS
++doctest_optionflags =
++    NORMALIZE_WHITESPACE
++    FLOAT_CMP
++    ELLIPSIS
+ text_file_format = rst
+-addopts = --doctest-rst -p no:unraisableexception -p no:threadexception
++addopts =
++    --doctest-rst
++    -p no:unraisableexception
++    -p no:threadexception
+ filterwarnings =
+     # Turn all warnings into errors so they do not pass silently.
+     error
