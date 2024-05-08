@@ -40,8 +40,8 @@ with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
 @pytest.mark.parametrize(("func", "args"), [
     pytest.param("reproject_to", {"wcs": aia_wcs}, marks=pytest.mark.xfail(reason="reproject is not dask aware")),
     pytest.param("resample", {"dimensions": (100, 100)*u.pix}, marks=pytest.mark.xfail()),
-    pytest.param("rotate", {}, marks=pytest.mark.xfail(reason="nanmedian in Dask doesn't support our use")),
-    ("superpixel", {"dimensions": (10, 10)*u.pix}),
+    pytest.param("rotate", {}, marks=pytest.mark.xfail(reason="nanmedian in dask doesn't support our use")),
+    ("rebin", {"dimensions": (10, 10)*u.pix}),
     ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height": 10*u.pixel}),
 ])
 def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func, args):
