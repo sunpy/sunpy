@@ -4,7 +4,7 @@ Resampling Maps
 ===============
 
 How to resample a map using the resample method, which implements interpolation, or
-using superpixels, which combines pixels.
+using rebin, which combines pixels.
 """
 import matplotlib.pyplot as plt
 
@@ -37,19 +37,19 @@ plt.show()
 
 ##############################################################################
 # Another way to reduce the angular resolution of the map is by using the
-# :meth:`~sunpy.map.GenericMap.superpixel` method, which combines pixels.
-# The superpixel dimensions do not need to be square, and the intensity of
-# each superpixel defaults to the sum of the constituent pixels. For example,
+# :meth:`~sunpy.map.GenericMap.rebin` method, which can combine pixels.
+# The rebin dimensions do not need to be square, and the intensity of
+# each rebin defaults to the sum of the constituent pixels. For example,
 # you can reduce the AIA map resolution by a factor of 16 by specifying 16x16
-# superpixels.
+# bin size.
 
-superpixel_size = [16, 16] * u.pixel
-aia_superpixel_map = aia_map.superpixel(superpixel_size)
+rebin_size = [16, 16] * u.pixel
+aia_rebin_map = aia_map.rebin(rebin_size)
 
 ##############################################################################
 # Let's plot the result.
 
 fig = plt.figure()
-ax = fig.add_subplot(projection=aia_superpixel_map)
-aia_superpixel_map.plot(axes=ax)
+ax = fig.add_subplot(projection=aia_rebin_map)
+aia_rebin_map.plot(axes=ax)
 plt.show()

@@ -39,7 +39,7 @@
   "sunpy.map.tests.test_plotting.test_quadrangle_aia17_pix_top_right": "586d82cd41587965becb6793956d2855d96da84a4791acc7de5e52b6f77e6ad0",
   "sunpy.map.tests.test_plotting.test_quadrangle_aia17_pix_top_right_different_axes": "47f6153e288bcc952fc5e0e8600d180550f3f20ef69d7b6090208b511b81eed6",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171": "738b6d265e9a6c534204f44912048566289c59f89aa8d98345969db835f7e834",
-  "sunpy.map.tests.test_plotting.test_plot_aia171_superpixel": "02f8b342f79e2395052ee851cb785fc0f208c10a26bb6a6547e71e4da12d9a6c",
+  "sunpy.map.tests.test_plotting.test_plot_aia171_rebin": "02f8b342f79e2395052ee851cb785fc0f208c10a26bb6a6547e71e4da12d9a6c",
   "sunpy.map.tests.test_plotting.test_plot_resample": "df6313df2fbf65d1f9aaf018677772c05750dcbd3e0098f34ca41cc40e5d8815",
   "sunpy.map.tests.test_plotting.test_plot_superpixel": "45ebdec700a7699f7aaea6e86b22c049c65ed3c457aa2e0f5b53d135b9f54c79",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "854f60a854e0f3166762c94831445b83f5402a8aa70e34013616f7e4074476fe",

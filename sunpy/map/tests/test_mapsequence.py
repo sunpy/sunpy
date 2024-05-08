@@ -50,7 +50,7 @@ def mapsequence_all_the_same_some_have_masks(aia171_test_map, aia171_test_map_wi
 def mapsequence_different(aia171_test_map):
     """ Mapsequence allows that the size of the image data in each map be
     different. This mapsequence contains such maps."""
-    return sunpy.map.Map([aia171_test_map, aia171_test_map.superpixel((4, 4) * u.pix)], sequence=True)
+    return sunpy.map.Map([aia171_test_map, aia171_test_map.rebin((4, 4) * u.pix)], sequence=True)
 
 
 def test_deprecations(mapsequence_all_the_same,
