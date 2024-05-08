@@ -218,9 +218,14 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         params = list(inspect.signature(NDCube).parameters)
         ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        super().__init__(data, wcs=wcs, uncertainty=uncertainty, mask=mask,
+        super().__init__(data, wcs=None, uncertainty=uncertainty, mask=mask,
                          meta=MetaDict(meta), unit=unit, copy=copy,
                          **ndcube_kwargs)
+        # NDData.__init__ sets self.wcs before it sets self.meta as our wcs
+        # setter needs self.meta to exist we call the parent __init__ with
+        # wcs=None and then set self.wcs so that meta is already set before the
+        # wcs setter is run with the "real" wcs.
+        self.wcs = wcs
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
