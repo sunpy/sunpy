@@ -1168,10 +1168,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if ([arg is not None for arg in (top_right, width, height)]
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
-        # parse input arguments
-        pixel_corners = u.Quantity(self._parse_submap_input(
-            bottom_left, top_right, width, height)).T
 
+        # parse input arguments
+        world_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height))
         msg = (
             "The provided input coordinates to ``submap`` when transformed to the target "
             "coordinate frame contain NaN values and cannot be used to crop the map. "
@@ -1180,53 +1179,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
             "such coordinates to be interpreted as 3D coordinates."
         )
-        if np.any(np.isnan(pixel_corners)):
+        if np.any(np.isnan(world_corners)):
             raise ValueError(msg)
-
-        # The pixel corners result is in Cartesian order, so the first index is
-        # columns and the second is rows.
-        bottom = np.min(pixel_corners[1]).to_value(u.pix)
-        top = np.max(pixel_corners[1]).to_value(u.pix)
-        left = np.min(pixel_corners[0]).to_value(u.pix)
-        right = np.max(pixel_corners[0]).to_value(u.pix)
-
-        # Round the lower left pixel to the nearest integer
-        # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
-        bottom = np.floor(bottom + 0.5)
-        left = np.floor(left + 0.5)
-
-        # Round the top right pixel to the nearest integer, then add 1 for array indexing
-        # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
-        top = np.ceil(top - 0.5) + 1
-        right = np.ceil(right - 0.5) + 1
-
-        # Clip pixel values to max of array, prevents negative
-        # indexing
-        bottom = int(np.clip(bottom, 0, self.data.shape[0]))
-        top = int(np.clip(top, 0, self.data.shape[0]))
-        left = int(np.clip(left, 0, self.data.shape[1]))
-        right = int(np.clip(right, 0, self.data.shape[1]))
-
-        arr_slice = np.s_[bottom:top, left:right]
-        # Get ndarray representation of submap
-        new_data = self.data[arr_slice].copy()
-
-        # Make a copy of the header with updated centering information
-        new_meta = self.meta.copy()
-        # Add one to go from zero-based to one-based indexing
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom
-        new_meta['naxis1'] = new_data.shape[1]
-        new_meta['naxis2'] = new_data.shape[0]
-
-        # Create new map instance
-        if self.mask is not None:
-            new_mask = self.mask[arr_slice].copy()
-            # Create new map with the modification
-            new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
-            return new_map
-        # Create new map with the modification
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
+        new_map = self.crop(*world_corners)
         return new_map
 
     @seconddispatch
@@ -1261,7 +1216,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         top_left = u.Quantity([top_right[0], bottom_left[1]])
         bottom_right = u.Quantity([bottom_left[0], top_right[1]])
-        return bottom_left, top_left, top_right, bottom_right
+        # this is a gross way I have done ot
+        return self.wcs.pixel_to_world(*bottom_left), self.wcs.pixel_to_world(*top_left), self.wcs.pixel_to_world(*top_right), self.wcs.pixel_to_world(*bottom_right)
 
     @_parse_submap_input.register(SkyCoord)
     @_parse_submap_input.register(BaseCoordinateFrame)
@@ -1282,7 +1238,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                            [bottom_lat, top_lat, top_lat, bottom_lat],
                            frame=frame)
 
-        return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
+        return corners
 
     @u.quantity_input
     def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
