@@ -1196,8 +1196,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
-# #### Visualization #### #
-
     @property
     def cmap(self):
         return self.plotter.cmap
