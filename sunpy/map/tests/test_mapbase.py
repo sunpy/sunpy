@@ -919,7 +919,7 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     simple_map.meta['crpix1'] = 1.5
     simple_map.meta['crpix2'] = 1.5
     assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
-    # Make the superpixel map
+    # Make the rebin map
     new_dims = (9, 6) * u.pix
     resamp_map = simple_map.resample(new_dims, method=sample_method)
     # Reference pixel should change, but reference coordinate should not
@@ -927,20 +927,20 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
-def test_superpixel_simple_map(simple_map):
+def test_rebin_simple_map(simple_map):
     # Put the reference pixel at the top-right of the bottom-left pixel
     simple_map.meta['crpix1'] = 1.5
     simple_map.meta['crpix2'] = 1.5
     assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
-    # Make the superpixel map
+    # Make the rebin map
     new_dims = (2, 2) * u.pix
-    superpix_map = simple_map.superpixel(new_dims)
+    superpix_map = simple_map.rebin(new_dims)
     # Reference pixel should change, but reference coordinate should not
     assert list(superpix_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
     assert superpix_map.reference_coordinate == simple_map.reference_coordinate
 
     # Check that offset works
-    superpix_map = simple_map.superpixel(new_dims, offset=[1, 2] * u.pix)
+    superpix_map = simple_map.rebin(new_dims, offset=[1, 2] * u.pix)
     # Reference pixel should change, but reference coordinate should not
     assert u.allclose(list(superpix_map.reference_pixel),
                       [-0.5 * u.pix, -1 * u.pix])
@@ -948,9 +948,9 @@ def test_superpixel_simple_map(simple_map):
 
 
 @pytest.mark.parametrize('f', [np.sum, np.mean])
-def test_superpixel_dims_values(aia171_test_map, f):
+def test_rebin_dims_values(aia171_test_map, f):
     dimensions = (2, 2) * u.pix
-    superpix_map = aia171_test_map.superpixel(dimensions, func=f)
+    superpix_map = aia171_test_map.rebin(dimensions, func=f)
 
     # Check dimensions of new map
     old_dims = u.Quantity(aia171_test_map.shape)
@@ -965,8 +965,8 @@ def test_superpixel_dims_values(aia171_test_map, f):
 
 @pytest.mark.parametrize(("f", "dimensions"), [(np.sum, (2, 3)*u.pix),
                                                (np.mean, (3, 2)*u.pix)])
-def test_superpixel_metadata(generic_map, f, dimensions):
-    superpix_map = generic_map.superpixel(dimensions, func=f)
+def test_rebin_metadata(generic_map, f, dimensions):
+    superpix_map = generic_map.rebin(dimensions, func=f)
 
     scale_x, scale_y = dimensions.value
 
@@ -989,48 +989,48 @@ def test_superpixel_metadata(generic_map, f, dimensions):
             assert superpix_map.meta[key] == generic_map.meta[key]
 
 
-def test_superpixel_masked(aia171_test_map_with_mask):
+def test_rebin_masked(aia171_test_map_with_mask):
     input_dims = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
     # Test that the mask is respected
-    superpix_map = aia171_test_map_with_mask.superpixel(dimensions)
+    superpix_map = aia171_test_map_with_mask.rebin(dimensions)
     assert superpix_map.mask is not None
     # Check the shape of the mask
     expected_shape = input_dims * (1 * u.pix / dimensions)
     assert np.all(superpix_map.mask.shape == expected_shape)
 
     # Test that the offset is respected
-    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
+    superpix_map = aia171_test_map_with_mask.rebin(dimensions, offset=(1, 1) * u.pix)
     assert superpix_map.shape[0] == expected_shape[1] - 1 #* u.pix
     assert superpix_map.shape[1] == expected_shape[0] - 1 #* u.pix
 
     dimensions = (7, 9) * u.pix
-    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
+    superpix_map = aia171_test_map_with_mask.rebin(dimensions, offset=(4, 4) * u.pix)
     expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
     assert superpix_map.shape[0] == expected_shape[1] - 1 #* u.pix
     assert superpix_map.shape[1] == expected_shape[0] - 1 #* u.pix
 
 
-def test_superpixel_units(generic_map):
+def test_rebin_units(generic_map):
     new_dims = (2, 2) * u.pix
-    super1 = generic_map.superpixel(new_dims)
-    super2 = generic_map.superpixel(new_dims.to(u.kpix))
+    super1 = generic_map.rebin(new_dims)
+    super2 = generic_map.rebin(new_dims.to(u.kpix))
     assert super1.meta == super2.meta
 
     offset = (1, 2) * u.pix
-    super1 = generic_map.superpixel(new_dims, offset=offset)
-    super2 = generic_map.superpixel(new_dims, offset=offset.to(u.kpix))
+    super1 = generic_map.rebin(new_dims, offset=offset)
+    super2 = generic_map.rebin(new_dims, offset=offset.to(u.kpix))
     assert super1.meta == super2.meta
 
 
-def test_superpixel_fractional_inputs(generic_map):
-    super1 = generic_map.superpixel((2, 3) * u.pix)
-    super2 = generic_map.superpixel((2.2, 3.2) * u.pix)
+def test_rebin_fractional_inputs(generic_map):
+    super1 = generic_map.rebin((2, 3) * u.pix)
+    super2 = generic_map.rebin((2.2, 3.2) * u.pix)
     assert np.all(super1.data == super2.data)
     assert super1.meta == super2.meta
 
 
-@pytest.mark.parametrize('method', ['resample', 'superpixel'])
+@pytest.mark.parametrize('method', ['resample', 'rebin'])
 @settings(
     max_examples=10,
     # Lots of draws can be discarded when checking matrix is non-singular
@@ -1042,7 +1042,7 @@ def test_resample_rotated_map_pc(pc, method):
     smap = make_simple_map()
 
     smap.meta.update(pc)
-    # Check superpixel with a rotated map with unequal resampling
+    # Check rebin with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
@@ -1051,7 +1051,7 @@ def test_resample_rotated_map_pc(pc, method):
         new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
-@pytest.mark.parametrize('method', ['resample', 'superpixel'])
+@pytest.mark.parametrize('method', ['resample', 'rebin'])
 @settings(
     max_examples=10,
     # Lots of draws can be discarded when checking matrix is non-singular
@@ -1065,7 +1065,7 @@ def test_resample_rotated_map_cd(cd, method):
     smap.meta.update(cd)
     for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
         del smap.meta[key]
-    # Check superpixel with a rotated map with unequal resampling
+    # Check rebin with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
@@ -1074,9 +1074,9 @@ def test_resample_rotated_map_cd(cd, method):
         new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
-def test_superpixel_err(generic_map):
+def test_rebin_err(generic_map):
     with pytest.raises(ValueError, match="Offset is strictly non-negative."):
-        generic_map.superpixel((2, 2) * u.pix, offset=(-2, 2) * u.pix)
+        generic_map.rebin((2, 2) * u.pix, offset=(-2, 2) * u.pix)
 
 
 def calc_new_matrix(angle):
@@ -1663,7 +1663,7 @@ def test_rsun_meters_no_warning_for_hgs(heliographic_test_map):
 @figure_test
 def test_rotation_rect_pixelated_data(aia171_test_map):
     aia_map = sunpy.map.Map(aia171_test_map)
-    rect_map = aia_map.superpixel([2, 1] * u.pix, func=np.mean)
+    rect_map = aia_map.rebin([2, 1] * u.pix, func=np.mean)
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
 
@@ -1700,7 +1700,7 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
 @figure_test
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation
-    weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
+    weird_map = aia171_test_map.rotate(30*u.deg).rebin([2, 1]*u.pix)
 
     # De-rotating the map by its PCij matrix should result in a normal-looking map
     derotated_map = weird_map.rotate(method=method)
