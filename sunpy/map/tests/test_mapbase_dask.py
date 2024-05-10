@@ -24,8 +24,9 @@ def aia171_test_dask_map(aia171_test_map):
 
 def test_dask_array_repr(aia171_test_dask_map):
     # Check that _repr_html_ functions for a dask array
-    html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
-    html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
+    with np.errstate(divide='ignore'):
+        html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
+        html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
     assert html_dask_repr != html_computed_repr
 
 
