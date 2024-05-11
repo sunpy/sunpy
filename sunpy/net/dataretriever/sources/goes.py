@@ -228,12 +228,12 @@ class SUVIClient(GenericClient):
     3 Results from the SUVIClient:
     Source: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes
     <BLANKLINE>
-           Start Time               End Time        Instrument ... Level Wavelength
-                                                               ...        Angstrom
-    ----------------------- ----------------------- ---------- ... ----- ----------
-    2020-07-10 00:00:00.000 2020-07-10 00:04:00.000       SUVI ...     2      304.0
-    2020-07-10 00:04:00.000 2020-07-10 00:08:00.000       SUVI ...     2      304.0
-    2020-07-10 00:08:00.000 2020-07-10 00:12:00.000       SUVI ...     2      304.0
+           Start Time               End Time        Instrument Physobs Source Provider SatelliteNumber Level Wavelength
+                                                                                                              Angstrom
+    ----------------------- ----------------------- ---------- ------- ------ -------- --------------- ----- ----------
+    2020-07-10 00:00:00.000 2020-07-10 00:04:00.000       SUVI    flux   GOES     NOAA              16     2      304.0
+    2020-07-10 00:04:00.000 2020-07-10 00:08:00.000       SUVI    flux   GOES     NOAA              16     2      304.0
+    2020-07-10 00:08:00.000 2020-07-10 00:12:00.000       SUVI    flux   GOES     NOAA              16     2      304.0
     <BLANKLINE>
     <BLANKLINE>
     """
