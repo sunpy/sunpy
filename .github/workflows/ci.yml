@@ -28,7 +28,7 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py312-online
+        - linux: py312
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
