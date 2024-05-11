@@ -173,30 +173,29 @@ Data of a given cadence can also be specified using the `a.Sample <sunpy.net.att
     Source: http://vso.stanford.edu/cgi-bin/search
     Total estimated size: 1.695 Gbyte
     <BLANKLINE>
-           Start Time               End Time        Source ... Extent Type   Size
-                                                           ...              Mibyte
-    ----------------------- ----------------------- ------ ... ----------- --------
-    2012-03-04 00:00:00.000 2012-03-04 00:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 02:00:00.000 2012-03-04 02:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 04:00:00.000 2012-03-04 04:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 06:00:00.000 2012-03-04 06:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 08:00:00.000 2012-03-04 08:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 10:00:00.000 2012-03-04 10:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 12:00:00.000 2012-03-04 12:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 14:00:00.000 2012-03-04 14:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 16:00:00.000 2012-03-04 16:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-04 18:00:00.000 2012-03-04 18:00:01.000    SDO ...    FULLDISK 64.64844
-                        ...                     ...    ... ...         ...      ...
-    2012-03-05 06:00:00.000 2012-03-05 06:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 08:00:00.000 2012-03-05 08:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 10:00:00.000 2012-03-05 10:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 12:00:00.000 2012-03-05 12:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 14:00:00.000 2012-03-05 14:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 16:00:00.000 2012-03-05 16:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 18:00:00.000 2012-03-05 18:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 20:00:00.000 2012-03-05 20:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-05 22:00:00.000 2012-03-05 22:00:01.000    SDO ...    FULLDISK 64.64844
-    2012-03-06 00:00:00.000 2012-03-06 00:00:01.000    SDO ...    FULLDISK 64.64844
+           Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs  Wavetype Extent Width Extent Length Extent Type   Size
+                                                                         Angstrom                                                                        Mibyte
+    ----------------------- ----------------------- ------ ---------- -------------- -------- --------- -------- ------------ ------------- ----------- --------
+    2012-03-04 00:00:00.000 2012-03-04 00:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 02:00:00.000 2012-03-04 02:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 04:00:00.000 2012-03-04 04:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 06:00:00.000 2012-03-04 06:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 08:00:00.000 2012-03-04 08:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 10:00:00.000 2012-03-04 10:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 12:00:00.000 2012-03-04 12:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 14:00:00.000 2012-03-04 14:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-04 16:00:00.000 2012-03-04 16:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+                        ...                     ...    ...        ...            ...      ...       ...      ...          ...           ...         ...      ...
+    2012-03-05 06:00:00.000 2012-03-05 06:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 08:00:00.000 2012-03-05 08:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 10:00:00.000 2012-03-05 10:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 12:00:00.000 2012-03-05 12:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 14:00:00.000 2012-03-05 14:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 16:00:00.000 2012-03-05 16:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 18:00:00.000 2012-03-05 18:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 20:00:00.000 2012-03-05 20:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-05 22:00:00.000 2012-03-05 22:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2012-03-06 00:00:00.000 2012-03-06 00:00:01.000    SDO        AIA 171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
     Length = 25 rows
     <BLANKLINE>
     <BLANKLINE>
@@ -214,29 +213,30 @@ In this example we'll search for LYRA or RHESSI data in a given time range:
     2 Results from the LYRAClient:
     Source: http://proba2.oma.be/lyra/data/bsd
     <BLANKLINE>
-           Start Time               End Time        Instrument ... Provider Level
-    ----------------------- ----------------------- ---------- ... -------- -----
-    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     2
-    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA ...      ESA     3
+           Start Time               End Time        Instrument  Physobs   Source Provider Level
+    ----------------------- ----------------------- ---------- ---------- ------ -------- -----
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA irradiance PROBA2      ESA     2
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999       LYRA irradiance PROBA2      ESA     3
     <BLANKLINE>
     1 Results from the RHESSIClient:
     Source: https://hesperia.gsfc.nasa.gov/hessidata
     <BLANKLINE>
-           Start Time               End Time        Instrument ... Source Provider
-    ----------------------- ----------------------- ---------- ... ------ --------
-    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999     RHESSI ... RHESSI     NASA
+           Start Time               End Time        Instrument      Physobs       Source Provider
+    ----------------------- ----------------------- ---------- ------------------ ------ --------
+    2012-03-04 00:00:00.000 2012-03-04 23:59:59.999     RHESSI summary_lightcurve RHESSI     NASA
     <BLANKLINE>
     3 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     <BLANKLINE>
-           Start Time               End Time        Source ... Extent Type   Size
-                                                           ...              Mibyte
-    ----------------------- ----------------------- ------ ... ----------- --------
-    2012-03-03 22:57:40.000 2012-03-04 00:33:20.000 RHESSI ... PARTIAL_SUN -0.00098
-    2012-03-04 00:33:20.000 2012-03-04 01:45:40.000 RHESSI ... PARTIAL_SUN -0.00098
-    2012-03-04 01:45:40.000 2012-03-04 02:09:00.000 RHESSI ... PARTIAL_SUN -0.00098
+           Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs  Extent Type   Size
+                                                                           keV                                       Mibyte
+    ----------------------- ----------------------- ------ ---------- -------------- -------- --------- ----------- --------
+    2012-03-03 22:57:40.000 2012-03-04 00:33:20.000 RHESSI     RHESSI 3.0 .. 17000.0     LSSP intensity PARTIAL_SUN -0.00098
+    2012-03-04 00:33:20.000 2012-03-04 01:45:40.000 RHESSI     RHESSI 3.0 .. 17000.0     LSSP intensity PARTIAL_SUN -0.00098
+    2012-03-04 01:45:40.000 2012-03-04 02:09:00.000 RHESSI     RHESSI 3.0 .. 17000.0     LSSP intensity PARTIAL_SUN -0.00098
     <BLANKLINE>
     <BLANKLINE>
+
 
 Working with Search Results
 ***************************
@@ -259,38 +259,37 @@ For example, the following code returns a response containing LYRA data from the
     2 Results from the LYRAClient:
     Source: http://proba2.oma.be/lyra/data/bsd
     <BLANKLINE>
-           Start Time               End Time        Instrument ... Provider Level
-    ----------------------- ----------------------- ---------- ... -------- -----
-    2012-01-01 00:00:00.000 2012-01-01 23:59:59.999       LYRA ...      ESA     2
-    2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA ...      ESA     2
+           Start Time               End Time        Instrument  Physobs   Source Provider Level
+    ----------------------- ----------------------- ---------- ---------- ------ -------- -----
+    2012-01-01 00:00:00.000 2012-01-01 23:59:59.999       LYRA irradiance PROBA2      ESA     2
+    2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     2
     <BLANKLINE>
     50 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     <BLANKLINE>
-           Start Time               End Time        Source ... Extent Type   Size
-                                                           ...              Mibyte
-    ----------------------- ----------------------- ------ ... ----------- --------
-    2012-01-01 00:00:00.000 2012-01-01 01:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 00:00:00.000 2012-01-01 01:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 01:00:00.000 2012-01-01 02:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 01:00:00.000 2012-01-01 02:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 02:00:00.000 2012-01-01 03:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 02:00:00.000 2012-01-01 03:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 03:00:00.000 2012-01-01 04:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 03:00:00.000 2012-01-01 04:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 04:00:00.000 2012-01-01 05:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 04:00:00.000 2012-01-01 05:00:00.000    SDO ...    FULLDISK -0.00098
-                        ...                     ...    ... ...         ...      ...
-    2012-01-01 20:00:00.000 2012-01-01 21:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 20:00:00.000 2012-01-01 21:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 21:00:00.000 2012-01-01 22:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 21:00:00.000 2012-01-01 22:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 22:00:00.000 2012-01-01 23:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 22:00:00.000 2012-01-01 23:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 23:00:00.000 2012-01-02 00:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-01 23:00:00.000 2012-01-02 00:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-02 00:00:00.000 2012-01-02 01:00:00.000    SDO ...    FULLDISK -0.00098
-    2012-01-02 00:00:00.000 2012-01-02 01:00:00.000    SDO ...    FULLDISK -0.00098
+           Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs   Extent Type   Size
+                                                                         Angstrom                                     Mibyte
+    ----------------------- ----------------------- ------ ---------- -------------- -------- ---------- ----------- --------
+    2012-01-01 00:00:00.000 2012-01-01 01:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 00:00:00.000 2012-01-01 01:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 01:00:00.000 2012-01-01 02:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 01:00:00.000 2012-01-01 02:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 02:00:00.000 2012-01-01 03:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 02:00:00.000 2012-01-01 03:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 03:00:00.000 2012-01-01 04:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 03:00:00.000 2012-01-01 04:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 04:00:00.000 2012-01-01 05:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+                        ...                     ...    ...        ...            ...      ...        ...         ...      ...
+    2012-01-01 20:00:00.000 2012-01-01 21:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 20:00:00.000 2012-01-01 21:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 21:00:00.000 2012-01-01 22:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 21:00:00.000 2012-01-01 22:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 22:00:00.000 2012-01-01 23:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 22:00:00.000 2012-01-01 23:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 23:00:00.000 2012-01-02 00:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-01 23:00:00.000 2012-01-02 00:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-02 00:00:00.000 2012-01-02 01:00:00.000    SDO        EVE 93.0 .. 1033.0     LASP irradiance    FULLDISK -0.00098
+    2012-01-02 00:00:00.000 2012-01-02 01:00:00.000    SDO        EVE 60.0 .. 1060.0     LASP irradiance    FULLDISK -0.00098
     Length = 50 rows
     <BLANKLINE>
     <BLANKLINE>
@@ -332,48 +331,47 @@ For example if we did a query for some AIA and HMI data:
 
     >>> results = Fido.search(a.Time("2020/01/01", "2020/01/01 00:01"), a.Instrument.aia | a.Instrument.hmi)  # doctest: +REMOTE_DATA
     >>> results  # doctest: +REMOTE_DATA
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+   <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
     41 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     Total estimated size: 2.779 Gbyte
     <BLANKLINE>
-           Start Time               End Time        Source ... Extent Type   Size
-                                                           ...              Mibyte
-    ----------------------- ----------------------- ------ ... ----------- --------
-    2020-01-01 00:00:00.000 2020-01-01 00:00:01.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:04.000 2020-01-01 00:00:05.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:05.000 2020-01-01 00:00:06.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:05.000 2020-01-01 00:00:06.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:06.000 2020-01-01 00:00:07.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:09.000 2020-01-01 00:00:10.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:09.000 2020-01-01 00:00:10.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:11.000 2020-01-01 00:00:12.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:12.000 2020-01-01 00:00:13.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:14.000 2020-01-01 00:00:15.000    SDO ...    FULLDISK 64.64844
-                        ...                     ...    ... ...         ...      ...
-    2020-01-01 00:00:47.000 2020-01-01 00:00:48.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:48.000 2020-01-01 00:00:49.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:52.000 2020-01-01 00:00:53.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:52.000 2020-01-01 00:00:53.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:53.000 2020-01-01 00:00:54.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:54.000 2020-01-01 00:00:55.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:57.000 2020-01-01 00:00:58.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:57.000 2020-01-01 00:00:58.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:00:59.000 2020-01-01 00:01:00.000    SDO ...    FULLDISK 64.64844
-    2020-01-01 00:01:00.000 2020-01-01 00:01:01.000    SDO ...    FULLDISK 64.64844
+           Start Time               End Time        Source Instrument    Wavelength    Provider  Physobs  Wavetype Extent Width Extent Length Extent Type   Size
+                                                                          Angstrom                                                                         Mibyte
+    ----------------------- ----------------------- ------ ---------- ---------------- -------- --------- -------- ------------ ------------- ----------- --------
+    2020-01-01 00:00:00.000 2020-01-01 00:00:01.000    SDO        AIA   335.0 .. 335.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:04.000 2020-01-01 00:00:05.000    SDO        AIA   193.0 .. 193.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:05.000 2020-01-01 00:00:06.000    SDO        AIA   304.0 .. 304.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:05.000 2020-01-01 00:00:06.000    SDO        AIA 4500.0 .. 4500.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:06.000 2020-01-01 00:00:07.000    SDO        AIA   131.0 .. 131.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:09.000 2020-01-01 00:00:10.000    SDO        AIA   171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:09.000 2020-01-01 00:00:10.000    SDO        AIA   211.0 .. 211.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:11.000 2020-01-01 00:00:12.000    SDO        AIA     94.0 .. 94.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:12.000 2020-01-01 00:00:13.000    SDO        AIA   335.0 .. 335.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+                        ...                     ...    ...        ...              ...      ...       ...      ...          ...           ...         ...      ...
+    2020-01-01 00:00:47.000 2020-01-01 00:00:48.000    SDO        AIA     94.0 .. 94.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:48.000 2020-01-01 00:00:49.000    SDO        AIA   335.0 .. 335.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:52.000 2020-01-01 00:00:53.000    SDO        AIA 1700.0 .. 1700.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:52.000 2020-01-01 00:00:53.000    SDO        AIA   193.0 .. 193.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:53.000 2020-01-01 00:00:54.000    SDO        AIA   304.0 .. 304.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:54.000 2020-01-01 00:00:55.000    SDO        AIA   131.0 .. 131.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:57.000 2020-01-01 00:00:58.000    SDO        AIA   171.0 .. 171.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:57.000 2020-01-01 00:00:58.000    SDO        AIA   211.0 .. 211.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:00:59.000 2020-01-01 00:01:00.000    SDO        AIA     94.0 .. 94.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
+    2020-01-01 00:01:00.000 2020-01-01 00:01:01.000    SDO        AIA   335.0 .. 335.0     JSOC intensity   NARROW         4096          4096    FULLDISK 64.64844
     Length = 41 rows
     <BLANKLINE>
     3 Results from the VSOClient:
     Source: http://vso.stanford.edu/cgi-bin/search
     <BLANKLINE>
-           Start Time               End Time        Source ... Extent Type   Size
-                                                           ...              Mibyte
-    ----------------------- ----------------------- ------ ... ----------- --------
-    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000    SDO ...    FULLDISK -0.00098
-    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000    SDO ...    FULLDISK -0.00098
-    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000    SDO ...    FULLDISK -0.00098
+           Start Time               End Time        Source Instrument    Wavelength    Provider      Physobs       Wavetype Extent Width Extent Length Extent Type   Size
+                                                                          Angstrom                                                                                  Mibyte
+    ----------------------- ----------------------- ------ ---------- ---------------- -------- ------------------ -------- ------------ ------------- ----------- --------
+    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000    SDO        HMI 6173.0 .. 6174.0     JSOC          intensity   NARROW         4096          4096    FULLDISK -0.00098
+    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000    SDO        HMI 6173.0 .. 6174.0     JSOC LOS_magnetic_field   NARROW         4096          4096    FULLDISK -0.00098
+    2020-01-01 00:00:22.000 2020-01-01 00:00:23.000    SDO        HMI 6173.0 .. 6174.0     JSOC       LOS_velocity   NARROW         4096          4096    FULLDISK -0.00098
     <BLANKLINE>
     <BLANKLINE>
 
@@ -408,7 +406,6 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     2020-01-01 00:00:09.000        AIA intensity   211.0 .. 211.0
     2020-01-01 00:00:11.000        AIA intensity     94.0 .. 94.0
     2020-01-01 00:00:12.000        AIA intensity   335.0 .. 335.0
-    2020-01-01 00:00:14.000        AIA intensity 1600.0 .. 1600.0
                         ...        ...       ...              ...
     2020-01-01 00:00:47.000        AIA intensity     94.0 .. 94.0
     2020-01-01 00:00:48.000        AIA intensity   335.0 .. 335.0
