@@ -15,6 +15,7 @@ sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 # Don't test the two base frames
 sunpy_frames = [frame for frame in sunpy_frames if 'base' not in frame.name]
 
+pytestmark = pytest.mark.filterwarnings("ignore::asdf.exceptions.AsdfManifestURIMismatchWarning")
 
 def assert_round_trip_frame(old):
     new = roundtrip_object(old)
