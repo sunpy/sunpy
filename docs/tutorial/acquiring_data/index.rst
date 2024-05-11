@@ -331,7 +331,7 @@ For example if we did a query for some AIA and HMI data:
 
     >>> results = Fido.search(a.Time("2020/01/01", "2020/01/01 00:01"), a.Instrument.aia | a.Instrument.hmi)  # doctest: +REMOTE_DATA
     >>> results  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
     41 Results from the VSOClient:
