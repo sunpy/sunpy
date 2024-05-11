@@ -24,10 +24,13 @@ def aia171_test_dask_map(aia171_test_map):
 
 def test_dask_array_repr(aia171_test_dask_map):
     # Check that _repr_html_ functions for a dask array
-    with np.errstate(divide='ignore'):
+    # dask raises this, np.errstate does not catch it
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', 'overflow encountered in divide', RuntimeWarning)
         html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
         html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
-    assert html_dask_repr != html_computed_repr
+        assert html_dask_repr != html_computed_repr
 
 
 # This is needed for the reproject_to function
