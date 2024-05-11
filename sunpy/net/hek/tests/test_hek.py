@@ -1,19 +1,16 @@
+import os
 import copy
-
-import pytest
-
 import json
-
 from pathlib import Path
 
-import os
+import pytest
+from regions import PolygonSkyRegion
 
-from astropy.time import Time
 from astropy import units as u
+from astropy.time import Time
 
 from sunpy.net import attr, attrs, hek
 
-from regions import PolygonSkyRegion
 
 @pytest.fixture
 def foostrwrap(request):
@@ -23,19 +20,19 @@ def foostrwrap(request):
 def read_unit_attributes():
     UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "../unit_properties.json"
 
-    with open(UNIT_FILE_PATH, 'r') as unit_file:
+    with open(UNIT_FILE_PATH) as unit_file:
         unit_properties = json.load(unit_file)
 
-    yield unit_properties
+    return unit_properties
 
 @pytest.fixture
 def read_coord_attributes():
     COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "../coord_properties.json"
 
-    with open(COORD_FILE_PATH, 'r') as coord_file:
+    with open(COORD_FILE_PATH) as coord_file:
         coord_properties = json.load(coord_file)
 
-    yield coord_properties
+    return coord_properties
 
 class HEKResult:
     """

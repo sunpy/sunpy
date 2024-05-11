@@ -1,20 +1,21 @@
 """
 Facilities to interface with the Heliophysics Events Knowledgebase.
 """
+import os
+import re
 import json
 import codecs
 import urllib
 import inspect
-from itertools import chain
-import re
 from pathlib import Path
-import os
+from itertools import chain
+
+from regions import PolygonSkyRegion
 
 import astropy.table
-from astropy.table import Row
 from astropy import units as u
-from astropy.coordinates import SkyCoord, CylindricalRepresentation
-from regions import PolygonSkyRegion
+from astropy.coordinates import SkyCoord
+from astropy.table import Row
 
 import sunpy.net._attrs as core_attrs
 from sunpy import log
@@ -24,7 +25,6 @@ from sunpy.net.hek import attrs
 from sunpy.time import parse_time
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
-from sunpy.coordinates import Heliocentric, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
 
@@ -222,11 +222,11 @@ class HEKClient(BaseClient):
 
     @staticmethod
     def _parse_values_to_quantities(table):
-        with open(UNIT_FILE_PATH, 'r') as unit_file:
+        with open(UNIT_FILE_PATH) as unit_file:
             unit_properties = json.load(unit_file)
         unit_attributes = unit_properties["attributes"]
 
-        with open(COORD_FILE_PATH, 'r') as coord_file:
+        with open(COORD_FILE_PATH) as coord_file:
             coord_properties = json.load(coord_file)
         coord_attributes = coord_properties["attributes"]
         table = HEKClient._parse_columns_to_table(table, unit_attributes)
