@@ -15,6 +15,7 @@ sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 # Don't test the two base frames
 sunpy_frames = [frame for frame in sunpy_frames if 'base' not in frame.name]
 
+pytestmark = pytest.mark.filterwarnings("ignore")
 
 def assert_round_trip_frame(old):
     new = roundtrip_object(old)
@@ -49,9 +50,6 @@ def coordframe_array(request):
     return frame(*data, obstime='2018-01-01T00:00:00')
 
 
-# Ignore warnings thrown when trying to load the ASDF in a different
-# astropy version to that with which it was created.
-@pytest.mark.filterwarnings('ignore:.*was created with extension.*')
 @asdf_entry_points
 def test_hgc_100():
     # Test that HeliographicCarrington is populated with Earth as the

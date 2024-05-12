@@ -1,3 +1,33 @@
+5.0.5 (2024-05-11)
+==================
+
+New Features
+------------
+
+- Added a warning message for ``rsun`` mismatch in :meth:`~sunpy.map.GenericMap.reproject_to` method. (`#7370 <https://github.com/sunpy/sunpy/pull/7370>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed the appearance of a double "Notes" heading in `~sunpy.map.Map` subclasses. (`#7376 <https://github.com/sunpy/sunpy/pull/7376>`__)
+- The EVE L0CS client now uses the new URLs for the data from LASP. (`#7483 <https://github.com/sunpy/sunpy/pull/7483>`__)
+- JPEG2000 files are now saved with the correct orientation. Previously they would be vertically flipped when saved. (`#7486 <https://github.com/sunpy/sunpy/pull/7486>`__)
+- Fixed a bug that interfered with :func:`astropy.wcs.utils.celestial_frame_to_wcs` when working with a custom subclass of :class:`~sunpy.coordinates.frames.SunPyBaseCoordinateFrame`. (`#7594 <https://github.com/sunpy/sunpy/pull/7594>`__)
+
+
+Documentation
+-------------
+
+- Fix a VSO doctest due to VSO now returning level one EIT data. (`#7483 <https://github.com/sunpy/sunpy/pull/7483>`__)
+
+
+Internal Changes
+----------------
+
+- Fixed an unnecessary division computation when performing a unsupported division operation using a `~sunpy.map.Map`. (`#7551 <https://github.com/sunpy/sunpy/pull/7551>`__)
+
+
 5.0.4 (2024-04-04)
 ==================
 

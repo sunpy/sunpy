@@ -9,6 +9,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import asdf_entry_points
 from .helpers import roundtrip_object
 
+pytestmark = pytest.mark.filterwarnings("ignore")
 
 def assert_roundtrip_map(old):
     new = roundtrip_object(old)
