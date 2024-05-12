@@ -22,11 +22,11 @@ def aia171_test_dask_map(aia171_test_map):
     )
 
 
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 def test_dask_array_repr(aia171_test_dask_map):
     # Check that _repr_html_ functions for a dask array
-    with np.errstate(divide='ignore'):
-        html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
-        html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
+    html_dask_repr = aia171_test_dask_map._repr_html_(compute_dask=False)
+    html_computed_repr = aia171_test_dask_map._repr_html_(compute_dask=True)
     assert html_dask_repr != html_computed_repr
 
 
