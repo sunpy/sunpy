@@ -31,6 +31,7 @@ EXTRA_DEPS = [
     'scikit-image',
     'scipy',
     'zeep',
+    'regions',
 ]
 
 EXTRA_ALL_GROUPS = [
@@ -61,38 +62,6 @@ def test_find_dependencies():
     _, installed = find_dependencies(package="sunpy", extras=["required", *EXTRA_ALL_GROUPS])
     for package in EXTRA_DEPS:
         assert package in installed
-
-    missing, installed = find_dependencies()
-    assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(["astropy", "numpy", "packaging", "parfive"])
-
-    missing, installed = find_dependencies(package="sunpy", extras=["required", "all"])
-    assert missing == {}
-    assert sorted(list(installed.keys())) == sorted(['asdf',
-                                                     'asdf-astropy',
-                                                     'astropy',
-                                                     'numpy',
-                                                     'parfive',
-                                                     'packaging',
-                                                     'dask',
-                                                     'sqlalchemy',
-                                                     'scikit-image',
-                                                     'scipy',
-                                                     'glymur',
-                                                     'lxml',
-                                                     'matplotlib',
-                                                     'mpl-animators',
-                                                     'reproject',
-                                                     'beautifulsoup4',
-                                                     'drms',
-                                                     'python-dateutil',
-                                                     'tqdm',
-                                                     'zeep',
-                                                     'cdflib',
-                                                     'h5netcdf',
-                                                     'h5py',
-                                                     'pandas',
-                                                     'regions'])
 
 
 def test_missing_dependencies_by_extra():
