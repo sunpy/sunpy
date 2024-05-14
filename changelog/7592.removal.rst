@@ -1,0 +1,1 @@
+Deprecated several data methods on map in favour of ``sunpy.map.GenericMap.data.<method_name>``.

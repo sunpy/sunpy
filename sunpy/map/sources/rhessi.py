@@ -1,6 +1,7 @@
 import astropy.units as u
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 
 __all__ = ['RHESSIMap']
 
@@ -31,10 +32,10 @@ class RHESSIMap(GenericMap):
         Cannot read fits files containing more than one image.
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['cmap'] = 'rhessi'
+        self.plotter.plot_settings['cmap'] = 'rhessi'
 
     def _get_cmap_name(self):
         return "rhessi"

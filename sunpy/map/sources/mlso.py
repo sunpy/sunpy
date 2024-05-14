@@ -39,17 +39,17 @@ class KCorMap(GenericMap):
     # MLSO location per Wikipedia (https://en.wikipedia.org/wiki/Mauna_Loa_Solar_Observatory)
     _earth_location = EarthLocation(-155.576*u.deg, 19.536*u.deg, 3394*u.m)
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
-        self.plot_settings['norm'].vmin = 0.0
+        self.plotter.plot_settings['norm'].vmin = 0.0
 
     def _get_cmap_name(self):
         """Build the default color map name."""

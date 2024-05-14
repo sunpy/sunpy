@@ -356,6 +356,7 @@ def cached_property_based_on(attr_name):
         """
         prop: the property method being decorated
         """
+        return prop
         @wraps(outer)
         def inner(instance):
             """
@@ -379,7 +380,6 @@ def cached_property_based_on(attr_name):
                 # Recompute the property
                 new_val = prop(instance)
                 cache[prop_key] = new_val
-
             return cache[prop_key]
         return inner
     return outer

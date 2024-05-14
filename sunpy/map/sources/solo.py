@@ -30,10 +30,10 @@ class EUIMap(GenericMap):
     * `Instrument Paper <https://doi.org/10.1051/0004-6361/201936663>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property

@@ -1,7 +1,8 @@
 
 import astropy.units as u
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 
 __all__ = ['SJIMap']
 
