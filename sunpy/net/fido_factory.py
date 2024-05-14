@@ -477,9 +477,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         candidate_widget_types = self._check_registered_widgets(*query)
         results = []
         for client in candidate_widget_types:
-            tmpclient = client()
-            results.append(tmpclient.search(*query))
-
+            try:
+                tmpclient = client()
+                results.append(tmpclient.search(*query))
+            except Exception:
+                pass
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.
         return results
