@@ -18,7 +18,7 @@ from packaging.version import Version
 
 from astropy.table import Table
 
-from sunpy import config
+from sunpy import config, log
 from sunpy.net import attr, vso
 from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
@@ -481,7 +481,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 tmpclient = client()
                 results.append(tmpclient.search(*query))
             except Exception:
-                pass
+                log.exception(f"Error while searching for {client}", stack_info=True)
+
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.
         return results
