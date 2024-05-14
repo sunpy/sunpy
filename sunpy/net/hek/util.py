@@ -21,6 +21,7 @@ def freeze(obj):
         return tuple(_freeze(elem) for elem in obj)
     return obj
 
+# NOTE: Needs unit test
 def parse_times(table):
     # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
     time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
@@ -30,6 +31,7 @@ def parse_times(table):
             table[tkey].format = 'iso'
     return table
 
+# NOTE: Needs unit test
 def parse_unit(table, attribute, is_coord_prop = False):
     if attribute.get("is_chaincode", False):
         return table
@@ -44,6 +46,8 @@ def parse_unit(table, attribute, is_coord_prop = False):
             break
     return table
 
+# NOTE: needs to be rewritten
+# NOTE: Needs unit test
 def parse_astropy_unit(str):
     try:
         unit = u.Unit(str)
@@ -56,7 +60,7 @@ def parse_astropy_unit(str):
             except ValueError:
                 units = str.split(" per ")
                 unit = None
-                if len(units) >1:
+                if len(units) > 1:
                     unit = parse_astropy_unit(units[0])
                     for idx in range(1, len(units)):
                         unit = unit/parse_astropy_unit(units[idx])
@@ -65,6 +69,7 @@ def parse_astropy_unit(str):
 
     return unit
 
+# NOTE: Needs unit test
 def get_unit(unit_prop, str, is_coord_prop = False):
     if is_coord_prop:
         coord1_unit, coord2_unit, coord3_unit = None, None, None
@@ -82,6 +87,7 @@ def get_unit(unit_prop, str, is_coord_prop = False):
     else:
         return parse_astropy_unit(str)
 
+# NOTE: Needs unit test
 def parse_chaincode(value, idx, attribute, unit_prop):
     coord1_unit = u.deg
     coord2_unit = u.deg
@@ -106,6 +112,7 @@ def parse_chaincode(value, idx, attribute, unit_prop):
 
     return PolygonSkyRegion(vertices = vertices)
 
+# NOTE: Needs unit test
 def parse_columns_to_table(table, attributes, is_coord_prop = False):
     for attribute in attributes:
         if attribute.get("is_unit_prop", False):
@@ -132,6 +139,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
             del table[attribute["name"]]
     return table
 
+# NOTE: Needs unit test
 def parse_values_to_quantities(table):
     with open(UNIT_FILE_PATH) as unit_file:
         unit_properties = json.load(unit_file)

@@ -211,6 +211,7 @@ class HEKTable(QueryResponseTable):
     Row = HEKRow
 
 
+    '''
 #################################################
 """
 ================================================
@@ -289,3 +290,4 @@ ax.set_title('{:s}\n{:s}'.format(aia_map.name, ch['frm_specificid']))
 plt.colorbar()
 
 plt.show()
+'''
