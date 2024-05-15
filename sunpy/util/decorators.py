@@ -12,9 +12,6 @@ from contextlib import contextmanager
 
 import numpy as np
 
-import astropy.units as u
-from astropy.nddata import NDData
-
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning, warn_deprecated
 
 __all__ = ['deprecated','sunpycontextmanager', 'active_contexts']
@@ -390,6 +387,10 @@ def check_arithmetic_compatibility(func):
     A decorator to check if an arithmetic operation can
     be performed between a map instance and some other operation.
     """
+    # import here to reduce import complexity of `import sunpy`
+    import astropy.units as u
+    from astropy.nddata import NDData
+
     @wraps(func)
     def inner(instance, value):
         # This is explicit because it is expected that users will try to do this. This raises
