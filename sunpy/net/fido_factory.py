@@ -478,11 +478,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         results = []
         for client in candidate_widget_types:
             tmpclient = client()
-            kwargs = dict()
-            # Handle the change in response format in the VSO
-            if isinstance(tmpclient, vso.VSOClient):
-                kwargs = dict(response_format="table")
-            results.append(tmpclient.search(*query, **kwargs))
+            results.append(tmpclient.search(*query))
 
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.

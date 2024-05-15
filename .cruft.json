@@ -1,0 +1,31 @@
+{
+  "template": "https://github.com/sunpy/package-template",
+  "commit": "1eff2ed0ff32c123e64b5faacf7c505362cfbb92",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "package_name": "sunpy",
+      "module_name": "sunpy",
+      "short_description": "SunPy core package: Python for Solar Physics",
+      "author_name": "The SunPy Community",
+      "author_email": "sunpy@googlegroups.com",
+      "project_url": "https://sunpy.org",
+      "license": "BSD 2-Clause",
+      "minimum_python_version": "3.10",
+      "use_compiled_extensions": "y",
+      "enable_dynamic_dev_versions": "y",
+      "include_example_code": "n",
+      "include_cruft_update_github_workflow": "y",
+      "_sphinx_theme": "alabaster",
+      "_parent_project": "",
+      "_install_requires": "",
+      "_copy_without_render": [
+        "docs/_templates",
+        "docs/_static",
+        ".github/workflows/sub_package_update.yml"
+      ],
+      "_template": "https://github.com/sunpy/package-template"
+    }
+  },
+  "directory": null
+}

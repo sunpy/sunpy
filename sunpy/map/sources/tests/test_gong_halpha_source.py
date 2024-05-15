@@ -45,8 +45,8 @@ def test_nickname(gong_halpha):
 
 
 def test_earth_location(gong_halpha):
-    assert_equal(gong_halpha._earth_location.lat, 34.26032998167749*u.deg)
-    assert_equal(gong_halpha._earth_location.lon, -116.92141999386104*u.deg)
+    assert u.isclose(gong_halpha._earth_location.lat, 34.26032998167749*u.deg, rtol=1e-15)
+    assert u.isclose(gong_halpha._earth_location.lon, -116.92141999386104*u.deg, rtol=1e-15)
 
 
 @pytest.mark.filterwarnings("ignore:Tried to get polar motions for times after IERS data is valid.")

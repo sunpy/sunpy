@@ -10,6 +10,7 @@ from base64 import b64encode
 from shutil import get_terminal_size
 from itertools import chain, count
 from collections import UserList
+from collections.abc import Iterator
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
            'expand_list_generator', 'dict_keys_same', 'hash_file', 'get_width',
@@ -92,12 +93,13 @@ def expand_list(inp):
     ----------
     * https://stackoverflow.com/questions/2185822/expanding-elements-in-a-list/2185971#2185971
     """
-    return [item for item in expand_list_generator(inp)]
+    return list(expand_list_generator(inp))
 
 
 def expand_list_generator(inp):
     for item in inp:
-        if isinstance(item, tuple | list | UserList):
+        # parfive.Results are UserList
+        if isinstance(item, (list | tuple | UserList | Iterator)):
             yield from expand_list_generator(item)
         else:
             yield item

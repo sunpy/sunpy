@@ -1,7 +1,6 @@
 """
 This module provides Proba-2 `~sunpy.timeseries.TimeSeries` source.
 """
-import sys
 from collections import OrderedDict
 
 import pandas
@@ -168,11 +167,7 @@ class LYRATimeSeries(GenericTimeSeries):
         table = {}
 
         for i, col in enumerate(fits_record.columns[1:-1]):
-            # temporary patch for big-endian data bug on pandas 0.13
-            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder == 'little':
-                table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
-            else:
-                table[col.name] = fits_record.field(i + 1)
+            table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
         times.precision = 9

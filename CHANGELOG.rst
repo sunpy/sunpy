@@ -1060,7 +1060,7 @@ Bug Fixes
 Added/Improved Documentation
 ----------------------------
 
-- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_plot_rectangle.py`) for drawing rectangles on maps. (`#4528 <https://github.com/sunpy/sunpy/pull/4528>`__)
+- Added a gallery example for drawing rectangles on maps. (`#4528 <https://github.com/sunpy/sunpy/pull/4528>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_plotting_wcsaxes_plotting_example.py`)
   of how pixel and SkyCoords work when plotted with `~astropy.visualization.wcsaxes`. (`#4867 <https://github.com/sunpy/sunpy/pull/4867>`__)
 - Added a gallery example  (:ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py`) on how to create a blank map and mark locations. (`#5077 <https://github.com/sunpy/sunpy/pull/5077>`__)

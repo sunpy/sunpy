@@ -24,6 +24,6 @@ exclude =
     build
     sunpy/data/sample.py
     sunpy/extern/**
-    sunpy/__init__.py,
+    sunpy/__init__.py
 rst-directives =
     plot

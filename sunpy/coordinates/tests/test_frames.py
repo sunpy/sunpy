@@ -224,12 +224,13 @@ def test_hpc_default_observer():
 
 
 def test_hpc_low_precision_float_warning():
-    hpc = Helioprojective(u.Quantity(0, u.deg, dtype=np.float32),
-                          u.Quantity(0, u.arcsec, dtype=np.float16),
-                          observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+    with np.errstate(over='ignore'):
+        hpc = Helioprojective(u.Quantity(0, u.deg, dtype=np.float32),
+                              u.Quantity(0, u.arcsec, dtype=np.float16),
+                              observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
 
-    with pytest.warns(SunpyUserWarning, match="Tx is float32, and Ty is float16"):
-        hpc.make_3d()
+        with pytest.warns(SunpyUserWarning, match="Tx is float32, and Ty is float16"):
+            hpc.make_3d()
 
 
 def test_hpc_obstime_from_observer():

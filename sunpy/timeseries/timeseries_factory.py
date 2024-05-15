@@ -343,7 +343,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Parse a single arg and return a list of timeseries.
         """
-        raise NoMatchError("File not found or invalid input")
+        raise NoMatchError(f"File not found or invalid input with {arg} and {kwargs}")
 
     @_parse_arg.register(GenericTimeSeries)
     def _parse_ts(self, ts, **kwargs):

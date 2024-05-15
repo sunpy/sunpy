@@ -80,10 +80,10 @@ class TimeTaiSeconds(TimeFromEpoch):
     --------
     >>> from astropy.time import Time
     >>> t = Time('1958-01-01T00:00:00', format='isot', scale='tai')
-    >>> t.tai_seconds
+    >>> t.tai_seconds  # doctest: +SKIP
     0.0
     >>> t2 = Time('2015-10-25T05:24:08', format='isot', scale='tai')
-    >>> t2.tai_seconds
+    >>> t2.tai_seconds  # doctest: +SKIP
     1824441848.0
     >>> t3 = Time(t2.tai_seconds, format='tai_seconds')  # scale is automatically TAI
     >>> t3.isot

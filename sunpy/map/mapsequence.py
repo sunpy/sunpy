@@ -13,6 +13,7 @@ import numpy.ma as ma
 import astropy.units as u
 
 from sunpy.map import GenericMap
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import expand_list
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
@@ -250,7 +251,7 @@ class MapSequence:
         raise NotImplementedError("This functionality has not yet been implemented.")
 
     def plot(self, axes=None, resample=None, annotate=True,
-             interval=200, plot_function=None, **kwargs):
+             interval=200, plot_function=None, clip_interval=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapSequence
@@ -271,6 +272,9 @@ class MapSequence:
         plot_function : function
             A function to be called as each map is plotted.
             For more information see `sunpy.visualization.animator.MapSequenceAnimator`.
+        clip_interval : two-element `~astropy.units.Quantity`, optional
+            If provided, the data will be clipped to the percentile interval bounded by the two
+            numbers.
         norm : `matplotlib.colors.Normalize` or `str`
             Normalization used in scaling the plot.
             This will override the predefined value in ``plot_settings['norm']``.
@@ -358,10 +362,15 @@ class MapSequence:
 
             im.set_array(ani_data[i].data)
             im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
-
             norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
-            # The following explicit call is for bugged versions of Astropy's
-            # ImageNormalize
+
+            if clip_interval is not None:
+                vmin, vmax = _clip_interval(ani_data[i].data, clip_interval)
+                norm.vmin=vmin
+                norm.vmax=vmax
+            _handle_norm(norm, kwargs)
+
+            # The following explicit call is for bugged versions of Astropy's ImageNormalize
             norm.autoscale_None(ani_data[i].data)
             im.set_norm(norm)
 

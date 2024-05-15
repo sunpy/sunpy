@@ -1,0 +1,6 @@
+The keyword ``response_format`` in :meth:`sunpy.net.vso.VSOClient.search` has been deprecated.
+This was introduced to preserve legacy behaviour of the VSO client, to return
+``sunpy.net.vso.legacy_response.QueryResponse`` instead of `sunpy.net.vso.table_response.VSOQueryResponseTable` objects.
+This behaviour has been the default for over 4 years and the keyword is no longer needed.
+This keyword and the older ``sunpy.net.vso.legacy_response.QueryResponse`` class will be removed in sunpy 7.0.
+The keyword ``progress`` in :meth:`sunpy.net.hek2vso.H2VClient.full_query` has been deprecated and will be removed in sunpy 7.0.

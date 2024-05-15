@@ -370,3 +370,9 @@ def test_plot_autoalign_pixel_alignment(aia171_test_map):
     ax2.set_ylim(y - 2, y + 2)
 
     return fig
+
+
+def test_plot_unit8(aia171_test_map):
+    # Check that plotting a map with uint8 data does not raise an error
+    aia171_unit8 = sunpy.map.Map(aia171_test_map.data.astype('uint8'), aia171_test_map.meta)
+    aia171_unit8.plot()

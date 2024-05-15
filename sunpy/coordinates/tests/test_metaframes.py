@@ -12,8 +12,8 @@ import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
 from sunpy.coordinates.tests.helpers import assert_longitude_allclose
 from sunpy.coordinates.tests.strategies import latitudes, longitudes, times
-from sunpy.physics.differential_rotation import diff_rot
 from sunpy.sun import constants
+from sunpy.sun.models import differential_rotation
 
 # NorthOffsetFrame is tested in test_offset_frame.py
 
@@ -197,7 +197,7 @@ def test_alternate_rotation_model():
        obstime=times(), rotated_time1=times(), rotated_time2=times())
 @settings(deadline=None, max_examples=10)
 def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_time2):
-    # Tests the transformations (to, from, and loopback) for consistency with `diff_rot` output
+    # Tests the transformations (to, from, and loopback) for consistency with `differential_rotation` output
 
     if hasattr(frame, 'observer'):
         base = frame(lon=lon, lat=lat, observer='earth', obstime=obstime)
@@ -213,7 +213,7 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     rsf1 = RotatedSunFrame(base=base, rotated_time=rotated_time1)
     result1 = rsf1.transform_to(base)
 
-    desired_delta_lon1 = diff_rot((rotated_time1 - obstime).to(u.day), lat)
+    desired_delta_lon1 = differential_rotation((rotated_time1 - obstime).to(u.day), lat)
 
     assert_longitude_allclose(result1.lon, rsf1.lon + desired_delta_lon1, atol=1e-5*u.deg)
     assert_quantity_allclose(base.lat, result1.lat, atol=1e-10*u.deg)
@@ -224,7 +224,7 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     rsf2 = RotatedSunFrame(base=base, rotated_time=rotated_time2)
     result2 = base.transform_to(rsf2)
 
-    desired_delta_lon2 = -diff_rot((rotated_time2 - obstime).to(u.day), lat)
+    desired_delta_lon2 = -differential_rotation((rotated_time2 - obstime).to(u.day), lat)
 
     assert_longitude_allclose(result2.lon, rsf2.lon + desired_delta_lon2, atol=1e-5*u.deg)
     assert_quantity_allclose(base.lat, result2.lat, atol=1e-10*u.deg)

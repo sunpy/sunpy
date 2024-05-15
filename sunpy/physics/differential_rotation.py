@@ -3,9 +3,10 @@ from copy import deepcopy
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.time import TimeDelta
 
+import sunpy.sun.models
 from sunpy.coordinates import (
     Heliocentric,
     HeliographicStonyhurst,
@@ -22,15 +23,16 @@ from sunpy.map import (
     on_disk_bounding_coordinates,
 )
 from sunpy.map.header_helper import get_observer_meta
-from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.time import parse_time
 from sunpy.util import expand_list
+from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import warn_user
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
 
 @u.quantity_input
+@deprecated(since="6.0", alternative="sunpy.sun.models.differential_rotation")
 def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
     r"""
     This function computes the change in longitude over days in degrees.
@@ -84,65 +86,9 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     ----------
     * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
     * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
-
-    Examples
-    --------
-    .. minigallery:: sunpy.physics.differential_rotation.diff_rot
-
-    Default rotation calculation over two days at 30 degrees latitude:
-
-    >>> import numpy as np
-    >>> import astropy.units as u
-    >>> from sunpy.physics.differential_rotation import diff_rot
-    >>> diff_rot(2 * u.day, 30 * u.deg)
-    <Longitude 27.36432679 deg>
-
-    Default rotation over two days for a number of latitudes:
-
-    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
-    <Longitude [22.05449682, 23.03214991, 24.12033958, 25.210281  ,
-                26.21032832, 27.05716463, 27.71932645, 28.19299667,
-                28.49196765, 28.63509765, 28.63509765, 28.49196765,
-                28.19299667, 27.71932645, 27.05716463, 26.21032832,
-                25.210281  , 24.12033958, 23.03214991, 22.05449682] deg>
-
-    With rotation type 'allen':
-
-    >>> diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
-    <Longitude [23.58186667, 24.14800185, 24.82808733, 25.57737945,
-            26.34658134, 27.08508627, 27.74430709, 28.28087284,
-            28.6594822 , 28.85522599, 28.85522599, 28.6594822 ,
-            28.28087284, 27.74430709, 27.08508627, 26.34658134,
-            25.57737945, 24.82808733, 24.14800185, 23.58186667] deg>
     """
 
-    latitude = latitude.to(u.deg)
-
-    sin2l = (np.sin(latitude))**2
-    sin4l = sin2l**2
-
-    rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
-                  'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
-                  'allen': [14.44, -3.0, 0] * u.deg / u.day,
-                  'rigid': sidereal_rotation_rate * [1, 0, 0]
-                  }
-
-    if rot_type not in ['howard', 'allen', 'snodgrass', 'rigid']:
-        raise ValueError("rot_type must equal one of "
-                         "{{ {} }}".format(" , ".join(rot_params.keys())))
-
-    A, B, C = rot_params[rot_type]
-
-    # This calculation of the rotation assumes a sidereal frame time.
-    rotation = (A + B * sin2l + C * sin4l) * duration
-
-    # Applying this correction assumes that the observer is on the Earth,
-    # and that the Earth is at the same distance from the Sun at all times
-    # during the year.
-    if frame_time == 'synodic':
-        rotation -= 0.9856 * u.deg / u.day * duration
-
-    return Longitude(rotation.to(u.deg))
+    return sunpy.sun.models.differential_rotation(duration, latitude, model=rot_type, frame_time=frame_time)
 
 
 def _validate_observer_args(initial_obstime, observer, time):
@@ -247,7 +193,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         interpretable obstime property).
     time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
     **diff_rot_kwargs : `dict`
-        Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
+        Keyword arguments are passed on as keyword arguments to `~sunpy.sun.models.differential_rotation`.
         Note that the keyword "frame_time" is automatically set to the value
         "sidereal".
 
@@ -297,7 +243,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
 
     # Compute the differential rotation
-    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+    drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
     # Rotate the input coordinate as seen by the original observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
@@ -334,7 +280,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     observer : `~astropy.coordinates.SkyCoord`
         The location of the observer.
     **diff_rot_kwargs : None, `~dict`
-        Keyword arguments accepted by `~sunpy.physics.differential_rotation.diff_rot`.
+        Keyword arguments accepted by `~sunpy.sun.models.differential_rotation`.
 
     Returns
     -------
@@ -466,7 +412,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation.
-        drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+        drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
         # The change in longitude is negative because we are mapping from the
         # new coordinates to the old.
