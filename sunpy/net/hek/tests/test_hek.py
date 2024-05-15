@@ -1,5 +1,6 @@
 import copy
 
+import numpy as np
 import pytest
 
 from astropy.time import Time
@@ -218,3 +219,12 @@ def test_query_multiple_operators():
                             attrs.hek.FL.GOESCls > "M1.0",
                             attrs.hek.OBS.Observatory == "GOES")
     assert len(results) == 7
+
+
+@pytest.mark.remote_data
+def test_missing_times():
+    # Check for https://github.com/sunpy/sunpy/pull/7627#issuecomment-2113451964
+    client = hek.HEKClient()
+    results = client.search(attrs.Time('2024-05-10', '2024-05-12'), attrs.hek.AR.NOAANum == 13664)
+    assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
+    assert results["event_peaktime"][1].isot == '2024-05-10T16:08:00.000'

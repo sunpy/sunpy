@@ -7,9 +7,10 @@ import urllib
 import inspect
 from itertools import chain
 
+import numpy.ma
+
 import astropy.table
 from astropy.table import Row
-import numpy.ma
 
 import sunpy.net._attrs as core_attrs
 from sunpy import log
