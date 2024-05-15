@@ -1,5 +1,5 @@
-Input/output (`sunpy.io`)
-*************************
+Input/output (``sunpy.io``)
+***************************
 
 The primary focus of ``sunpy.io`` is to provide a common interface for reading and writing.
 ``sunpy.io`` contains readers for files that are commonly used in solar physics.

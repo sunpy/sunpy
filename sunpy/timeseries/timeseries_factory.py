@@ -91,7 +91,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header)  # doctest: +SKIP
     >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header, units)  # doctest: +SKIP
 
-    * File names for files understood by `sunpy.io` and those not
+    * File names for files understood by the file reader and for those that are not
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits')   # doctest: +SKIP
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', source='lyra')  # doctest: +SKIP
@@ -127,7 +127,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     @staticmethod
     def _read_file(fname, **kwargs):
         """
-        Reading a file with `sunpy.io` for automatic source detection.
+        Reading a file with automatic source detection.
 
         Parameters
         ----------
