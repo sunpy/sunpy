@@ -17,7 +17,6 @@ These include:
   - JPEG2000
   - CDF
 
-However, only the special file readers are documented here as they public API.
 
 The other readers are intended for use by `sunpy.map` and `sunpy.timeseries` and are not intended to be used directly by users.
 
