@@ -7,6 +7,8 @@ import urllib
 import inspect
 from itertools import chain
 
+import numpy.ma
+
 import astropy.table
 from astropy.table import Row
 
@@ -91,9 +93,10 @@ class HEKClient(BaseClient):
         # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
         time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
         for tkey in time_keys:
-            if tkey in table.colnames and not any(time == "" for time in table[tkey]):
-                table[tkey] = parse_time(table[tkey])
-                table[tkey].format = 'iso'
+            if tkey in table.colnames:
+                table[tkey] = [
+                    (parse_time(time, format='iso') if time else numpy.ma.masked) for time in table[tkey]
+                ]
         return table
 
     def search(self, *args, **kwargs):
