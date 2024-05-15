@@ -7,7 +7,7 @@ import os
 import lxml.etree as ET
 import numpy as np
 
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
 
 __all__ = ['read', 'get_header', 'write']

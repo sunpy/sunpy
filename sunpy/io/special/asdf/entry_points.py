@@ -45,7 +45,6 @@ def get_extensions():
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",
     ]
 
-
     return [
         ManifestExtension.from_uri(uri,
                                    converters=sunpy_converters,

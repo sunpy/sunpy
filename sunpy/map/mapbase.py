@@ -1500,7 +1500,7 @@ class GenericMap(NDData):
             The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io.write_file`.
+            `~sunpy.io._file_tools_write_file`.
 
         Notes
         -----
