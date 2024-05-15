@@ -77,7 +77,7 @@ class MapSequenceAnimator(BaseFuncAnimator):
 
         if wcsaxes_compat.is_wcsaxes(im.axes):
             im.axes.reset_wcs(self.mapsequence[i].wcs)
-        # Having this line in means the plot will resize for non-homogenous
+        # Having this line in means the plot will resize for non-homogeneous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.
         # im.set_extent(self.mapsequence[i].xrange + self.mapsequence[i].yrange)

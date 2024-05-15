@@ -257,7 +257,7 @@ Deprecations
 - ``sunpy.data.download_sample_data()`` is now deprecated.
   Use :func:`sunpy.data.sample.download_all` instead. (`#6426 <https://github.com/sunpy/sunpy/pull/6426>`__)
 - The sunpy.database module is no longer actively maintained and has a number of outstanding issues.
-  It is anticiapted that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.
+  It is anticipated that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.
   If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495. (`#6498 <https://github.com/sunpy/sunpy/pull/6498>`__)
 
 
@@ -1187,7 +1187,7 @@ Backwards Incompatible Changes
   For results from the VSO the keys are no longer separated with ``.``, and are
   based on the displayed column names. For results from the ``dataretriever``
   clients the only main change is that the keys are now lower case, where they
-  were capitilized before. You can use the ``.sunpy.net.fido_factory.UnifiedResponse.path_format_keys``
+  were capitalized before. You can use the ``.sunpy.net.fido_factory.UnifiedResponse.path_format_keys``
   method to see all the possible keys for a particular search. (`#4798 <https://github.com/sunpy/sunpy/pull/4798>`__)
 - The time returned from :func:`~sunpy.coordinates.sun.carrington_rotation_number`
   has been changed from the TT scale to the more common UTC scale. To undo this change,
@@ -1286,7 +1286,7 @@ Features
 - Refactoring of `~sunpy.net.dataretriever` which adds these capabilities to `~sunpy.net.dataretriever.QueryResponse`:
 
   - Any ``attr`` shall not be defaulted to a hard-coded value in all subclasses of `~sunpy.net.dataretriever.GenericClient`; thus records for all possible ``attrs`` shall be returned if it is not specified in the query.
-  - `~sunpy.net.dataretriever.QueryResponse` can now show more columns; thus all metadata extractable from matching file URLs shall be shown and for a client, non-spported ``attrs`` shall not be shown in the response tables. (`#4321 <https://github.com/sunpy/sunpy/pull/4321>`__)
+  - `~sunpy.net.dataretriever.QueryResponse` can now show more columns; thus all metadata extractable from matching file URLs shall be shown and for a client, non-supported ``attrs`` shall not be shown in the response tables. (`#4321 <https://github.com/sunpy/sunpy/pull/4321>`__)
 - New class attributes added to `~sunpy.net.dataretriever.GenericClient`:
 
   - ``baseurl`` and ``pattern`` which are required to define a new simple client.

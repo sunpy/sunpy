@@ -93,7 +93,7 @@ Please be aware that this does not mean the issue is "easy", just that you do no
 
 We also tag issues for specific events such as  `Hacktoberfest`_ under the `Hacktoberfest label`_.
 The scope of the issues should be appropriate for that specific event.
-We do particpate in several other events but right now we do not have dedicated labels.
+We do participate in several other events but right now we do not have dedicated labels.
 So please use the above labels for starting issues!
 
 In addition, we have several other repositories that have open issues and you might find these more interesting than the main repository.
