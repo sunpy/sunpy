@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap` will now assign units of DN without a warning or error.
