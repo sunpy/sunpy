@@ -18,6 +18,6 @@ def get_extensions():
             os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c'))))
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         # Squash all warnings
-        cfg['extra_compile_args'].extend(['-Wno'])
+        cfg['extra_compile_args'].extend(['-w'])
         e = Extension('sunpy.io._pyana', py_limited_api=True, **cfg)
         return [e]
