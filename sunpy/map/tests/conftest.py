@@ -140,3 +140,15 @@ def eit_test_map():
     Load SunPy's test EIT image.
     """
     return get_dummy_map_from_header(get_test_filepath("EIT_header/efz20040301.020010_s.header"))
+
+@pytest.fixture
+def sample_171():
+    from sunpy.data.sample import AIA_171_IMAGE
+
+    return sunpy.map.Map(AIA_171_IMAGE)
+
+@pytest.fixture
+def sample_hmi():
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    return sunpy.map.Map(HMI_LOS_IMAGE)

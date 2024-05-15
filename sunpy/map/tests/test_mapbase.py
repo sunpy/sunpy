@@ -10,6 +10,7 @@ import numpy as np
 import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
+from matplotlib.transforms import Affine2D
 from packaging.version import Version
 
 import astropy.units as u
@@ -32,7 +33,7 @@ from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from sunpy.util.util import fix_duplicate_notes
 from .conftest import make_simple_map
@@ -1653,6 +1654,34 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
 
+@pytest.mark.remote_data
+@figure_test
+def test_draw_contours_with_transform(sample_171, sample_hmi):
+    aia_map = sunpy.map.Map(sample_171)
+    hmi_map = sunpy.map.Map(sample_hmi)
+    fig = plt.figure(figsize=(16, 4))
+
+    # Panel 1: Implicit transform
+    ax1 = fig.add_subplot(1, 3, 1, projection=aia_map)
+    aia_map.plot(axes=ax1, clip_interval=(1, 99.99)*u.percent)
+    hmi_map.draw_contours([-10, 10]*u.percent)
+    ax1.set_title('Default, correct behavior')
+
+    # Panel 2: Explicit transform
+    ax2 = fig.add_subplot(1, 3, 2, projection=aia_map)
+    aia_map.plot(axes=ax2, clip_interval=(1, 99.99)*u.percent)
+    hmi_map.draw_contours([-10, 10]*u.percent, transform=ax2.get_transform(hmi_map.wcs))
+    ax2.set_title('Explicitly specifying the correct transform')
+
+    # Panel 3: Explicit transform with wacky rotation
+    ax3 = fig.add_subplot(1, 3, 3, projection=aia_map)
+    rotate_transform = Affine2D().rotate_deg_around(512, 512, 90)
+    composite_transform = rotate_transform + ax3.get_transform(hmi_map.wcs)
+    aia_map.plot(axes=ax3, clip_interval=(1, 99.99)*u.percent)
+    hmi_map.draw_contours([-10, 10]*u.percent, transform=composite_transform)
+    ax3.set_title('Contours rotated by 90 deg CCW')
+
+    return fig
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
@@ -1774,7 +1803,14 @@ def test_only_cd():
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
 
 
-def test_plot_annotate_nonboolean(aia171_test_map):
-    ax = plt.subplot(projection=aia171_test_map)
-    with pytest.raises(TypeError, match="non-boolean value"):
-        aia171_test_map.plot(ax)
+def test_plot_deprecated_positional_args(aia171_test_map):
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
+        aia171_test_map.plot(True)
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
+        with pytest.raises(TypeError, match="non-boolean value"):
+            aia171_test_map.plot('interpolation')
+
+    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
+        with pytest.raises(TypeError, match="non-boolean value"):
+            aia171_test_map.plot('interpolation', True)

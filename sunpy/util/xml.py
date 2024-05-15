@@ -25,19 +25,22 @@ def xml_to_dict(xmlstring):
 
     Returns
     -------
-    `dict`:
+    `dict`
         The string xml input as a dictionary.
 
     Examples
     --------
-    ::
+
+    .. code-block:: xml
 
         <outer>
             <inner>one</inner>
             <inner>two</inner>
         </outer>
 
-    gives you the dict::
+    gives you the dict:
+
+    .. code-block:: python
 
        {u'outer': {u'inner': u'two'}}
 
