@@ -18,7 +18,7 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-from sunpy.util.decorators import active_contexts
+from sunpy.util.decorators import ACTIVE_CONTEXTS
 
 try:
     from dask.array import Array as DaskArray
@@ -2720,7 +2720,7 @@ class GenericMap(NDData):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
-        if active_contexts.get('propagate_with_solar_surface', False) and active_contexts.get('assume_spherical_screen', False):
+        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
             warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
 
         try:
