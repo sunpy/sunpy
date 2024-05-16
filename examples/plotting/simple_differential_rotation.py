@@ -23,7 +23,8 @@ from astropy.time import TimeDelta
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
+from sunpy.physics.differential_rotation import solar_rotate_coordinate
+from sunpy.sun.models import differential_rotation
 
 ##############################################################################
 # Next lets explore solar differential rotation by replicating Figure 1
@@ -31,13 +32,13 @@ from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinat
 
 latitudes = np.arange(0, 90, 1) * u.deg
 dt = 1 * u.day
-rotation_rate = [diff_rot(dt, this_lat) / dt for this_lat in latitudes]
-rotation_period = [360 * u.deg / this_rate for this_rate in rotation_rate]
+rotation_rate = differential_rotation(dt, latitudes) / dt
+rotation_period = 360 * u.deg / rotation_rate
 
 plt.figure()
-plt.plot(np.sin(latitudes), [this_period.value for this_period in rotation_period])
+plt.plot(np.sin(latitudes), rotation_period.value)
 plt.ylim(38, 24)
-plt.ylabel(f'Rotation Period [{rotation_period[0].unit}]')
+plt.ylabel(f'Rotation Period [{rotation_period.unit}]')
 plt.xlabel('Sin(Latitude)')
 plt.title('Solar Differential Rotation Rate')
 

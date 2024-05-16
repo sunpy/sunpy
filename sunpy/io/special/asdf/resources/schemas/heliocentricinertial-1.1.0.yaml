@@ -1,0 +1,32 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/sunpy/schemas/heliocentricinertial-1.1.0"
+
+title: |
+  Represents a Heliocentric Inertial (HCI) coordinate object from SunPy
+
+examples:
+  -
+    - A HeliocentricInertial frame without data
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-1.1.0>
+          frame_attributes: {}
+  -
+    - A HeliocentricInertial frame with an obstime
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-1.1.0>
+          frame_attributes: {obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'}
+
+allOf:
+  - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.1.0"
+  - properties:
+      frame_attributes:
+        type: object
+        properties:
+          obstime:
+            tag: "tag:stsci.edu:asdf/time/time-1.*"
+        additionalProperties: False
+...

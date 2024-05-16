@@ -1,4 +1,10 @@
+import pytest
+
+from astropy.io import fits
+
+from sunpy.data.test import get_test_filepath
 from sunpy.util import util
+from sunpy.util.parfive_helpers import Results
 
 
 def test_unique():
@@ -49,9 +55,21 @@ def test_expand_list():
     assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 
-def test_expand_list_generator():
-    lst = ['a', 'b', [], (['c', 'd']), tuple(), ['e']]
-    assert list(util.expand_list_generator(lst)) == ['a', 'b', 'c', 'd', 'e']
+@pytest.mark.parametrize(('input_data', 'expected_output'), (
+    (['a1234', 'b', [], (['c', 'd']), (), ['e'], b'fghj'], ['a1234', 'b', 'c', 'd', 'e', b'fghj']),
+    (iter(['c', 'd']), ['c', 'd']),
+    (zip(['1', '2'], ['3', '4']), ['1', '3', '2', '4']),
+    (Results(["a", "b", "c"]), ["a", "b", "c"]),
+    ([open(get_test_filepath('aia_171_level1.fits'), 'rb')], open(get_test_filepath('aia_171_level1.fits'), 'rb').readlines())
+))
+def test_expand_list_generator(input_data, expected_output):
+    assert list(util.expand_list_generator(input_data)) == expected_output
+
+
+@pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
+def test_expand_list_generator_map(aia171_test_map):
+    before = after = [aia171_test_map.data, aia171_test_map.wcs, fits.getheader(get_test_filepath('aia_171_level1.fits'))]
+    assert list(util.expand_list_generator(before)) == after
 
 
 def test_partial_key_match():

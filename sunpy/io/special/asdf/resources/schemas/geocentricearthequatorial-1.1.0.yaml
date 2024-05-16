@@ -1,0 +1,42 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/sunpy/schemas/geocentricearthequatorial-1.1.0"
+
+title: |
+  Represents a Geocentric Earth Equatorial (GEI) coordinate object from SunPy
+
+examples:
+  -
+    - A GeocentricEarthEquatorial frame without data
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-1.1.0>
+          frame_attributes:
+            equinox: !time/time-1.2.0
+              scale: tt
+              value: J2000.000
+  -
+    - A GeocentricEarthEquatorial frame with an obstime
+    - asdf-standard-1.6.0
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-1.1.0>
+          frame_attributes:
+            equinox: !time/time-1.2.0
+              scale: tt
+              value: J2000.000
+            obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'
+
+allOf:
+  - $ref: "http://astropy.org/schemas/astropy/coordinates/frames/baseframe-1.1.0"
+  - properties:
+      frame_attributes:
+        type: object
+        properties:
+          equinox:
+            tag: "tag:stsci.edu:asdf/time/time-1.*"
+          obstime:
+            tag: "tag:stsci.edu:asdf/time/time-1.*"
+        required: [equinox]
+        additionalProperties: False
+...

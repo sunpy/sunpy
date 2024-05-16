@@ -1,0 +1,2 @@
+The creation of the series string for a JSOC query was not adding the correct escape characters for  comparison values for keywords.
+This was causing the JSOC to error.

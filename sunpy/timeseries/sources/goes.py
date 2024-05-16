@@ -86,7 +86,7 @@ class XRSTimeSeries(GenericTimeSeries):
         plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
         data = self.to_dataframe()
         for channel in columns:
-            axes.plot_date(
+            axes.plot(
                 data.index, data[channel], "-", label=plot_settings[channel][1], color=plot_settings[channel][0], lw=2, **kwargs
             )
         axes.set_yscale("log")
@@ -192,13 +192,13 @@ class XRSTimeSeries(GenericTimeSeries):
         times = start_time + TimeDelta(seconds_from_start*u.second)
         times.precision = 9
 
-        # remove bad values as defined in header comments
+        # Remove bad values as defined in header comments
         xrsb[xrsb == -99999] = np.nan
         xrsa[xrsa == -99999] = np.nan
 
-        # fix byte ordering
-        newxrsa = xrsa.byteswap().newbyteorder()
-        newxrsb = xrsb.byteswap().newbyteorder()
+        # Fix byte ordering
+        newxrsa = xrsa.view(xrsa.dtype.newbyteorder()).byteswap()
+        newxrsb = xrsb.view(xrsb.dtype.newbyteorder()).byteswap()
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
                          index=times.isot.astype('datetime64'))

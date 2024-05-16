@@ -1,0 +1,1 @@
+`sunpy.net.jsoc.JSOCClient` queries now return the SUMS directory paths as the segment key value in the results table.

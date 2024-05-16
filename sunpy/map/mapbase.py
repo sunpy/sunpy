@@ -18,6 +18,8 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
+from sunpy.util.decorators import ACTIVE_CONTEXTS
+
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
@@ -29,7 +31,7 @@ import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
-from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
+from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
@@ -43,6 +45,7 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
@@ -50,17 +53,18 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecate_positional_args_since,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.util import _figure_to_base64
+from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
-
+_NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
@@ -193,7 +197,7 @@ class GenericMap(NDData):
         if cls.__doc__ is None:
             # Set an empty string, to prevent an error adding None to str in the next line
             cls.__doc__ = ''
-        cls.__doc__ += textwrap.indent(_notes_doc, "    ")
+        cls.__doc__ = fix_duplicate_notes(_notes_doc, cls.__doc__)
 
         if hasattr(cls, 'is_datasource_for'):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
@@ -235,19 +239,14 @@ class GenericMap(NDData):
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
 
-        if self.dtype == np.uint8:
-            norm = None
-        else:
+        self.plot_settings = {'cmap': 'gray',
+                            'interpolation': 'nearest',
+                            'origin': 'lower'
+                            }
+        if self.dtype != np.uint8:
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
-            norm = colors.Normalize()
-
-        # Visualization attributes
-        self.plot_settings = {'cmap': 'gray',
-                              'norm': norm,
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
+            self.plot_settings['norm'] = colors.Normalize()
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
@@ -529,7 +528,7 @@ class GenericMap(NDData):
     @property
     def quantity(self):
         """Unitful representation of the map data."""
-        return u.Quantity(self.data, self.unit, copy=False)
+        return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
     def _new_instance_from_op(self, new_data):
         """
@@ -570,6 +569,7 @@ class GenericMap(NDData):
     def __rmul__(self, value):
         return self.__mul__(value)
 
+    @check_arithmetic_compatibility
     def __truediv__(self, value):
         return self.__mul__(1/value)
 
@@ -1742,6 +1742,8 @@ class GenericMap(NDData):
         new_meta['crval2'] = rotation_center[1].value
         new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
         new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
+        new_meta['NAXIS1'] = new_data.shape[1]
+        new_meta['NAXIS2'] = new_data.shape[0]
 
         # Unpad the array if necessary
         if unpad_x > 0:
@@ -2316,7 +2318,7 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
-    def draw_contours(self, levels, axes=None, **contour_args):
+    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
 
@@ -2329,6 +2331,10 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
             axes.
+        fill : `bool`, optional
+            Determines the style of the contours:
+            - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
+            - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
 
         Returns
         -------
@@ -2339,10 +2345,9 @@ class GenericMap(NDData):
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
-        `~matplotlib.axes.Axes.contour` function.
+        corresponding matplotlib method.
         """
         axes = self._check_axes(axes)
-
         levels = self._process_levels_arg(levels)
 
         # Pixel indices
@@ -2355,14 +2360,31 @@ class GenericMap(NDData):
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
         if self.wcs is not axes.wcs:
-            transform = axes.get_transform(self.wcs) - axes.transData  # pixel->pixel transform
+            if "transform" in contour_args:
+                transform_orig = contour_args.pop("transform")
+            else:
+                transform_orig = axes.get_transform(self.wcs)
+            transform = transform_orig - axes.transData  # pixel->pixel transform
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
 
             # Mask out the data array anywhere the coordinate arrays are not finite
             data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
 
-        cs = axes.contour(x, y, data, levels, **contour_args)
+        if fill:
+            # Ensure we have more than one level if fill is True
+            if len(levels) == 1:
+                max_val = np.nanmax(self.data)
+                # Ensure the existing level is less than max_val
+                if levels[0] < max_val:
+                    levels = np.append(levels, max_val)
+                else:
+                    raise ValueError(
+                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). "
+                        "Contour level must be smaller than the maximum data value to use `fill=True`.")
+            cs = axes.contourf(x, y, data, levels, **contour_args)
+        else:
+            cs = axes.contour(x, y, data, levels, **contour_args)
         return cs
 
     @peek_show
@@ -2420,8 +2442,9 @@ class GenericMap(NDData):
 
         return figure
 
+    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
@@ -2474,6 +2497,7 @@ class GenericMap(NDData):
         :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
         manager may be appropriate.
         """
+        # Todo: remove this when deprecate_positional_args_since is removed
         # Users sometimes assume that the first argument is `axes` instead of `annotate`
         if not isinstance(annotate, bool):
             raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
@@ -2518,28 +2542,12 @@ class GenericMap(NDData):
         imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
-            if len(clip_interval) == 2:
-                clip_percentages = clip_interval.to('%').value
-                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
-            else:
-                raise ValueError("Clip percentile interval must be specified as two numbers.")
-
+            vmin, vmax = _clip_interval(self.data, clip_interval)
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
-        msg = ('Cannot manually specify {0}, as the norm '
-               'already has {0} set. To prevent this error set {0} on '
-               '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-        if imshow_args.get('norm', None) is not None:
-            norm = imshow_args['norm']
-            if 'vmin' in imshow_args:
-                if norm.vmin is not None:
-                    raise ValueError(msg.format('vmin'))
-                norm.vmin = imshow_args.pop('vmin')
-            if 'vmax' in imshow_args:
-                if norm.vmax is not None:
-                    raise ValueError(msg.format('vmax'))
-                norm.vmax = imshow_args.pop('vmax')
+        if (norm := imshow_args.get('norm', None)) is not None:
+            _handle_norm(norm, imshow_args)
 
         if self.mask is None:
             data = self.data
@@ -2711,6 +2719,10 @@ class GenericMap(NDData):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
+        # Check if both context managers are active
+        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
+            warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+
         try:
             import reproject
         except ImportError as exc:
@@ -2739,6 +2751,12 @@ class GenericMap(NDData):
         # Create and return a new GenericMap
         outmap = GenericMap(output_array, target_wcs.to_header(),
                             plot_settings=self.plot_settings)
+
+        # Check rsun mismatch
+        if self.rsun_meters != outmap.rsun_meters:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
 
         if return_footprint:
             return outmap, footprint

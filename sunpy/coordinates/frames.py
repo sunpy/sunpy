@@ -7,7 +7,6 @@ the `astropy.coordinates` module.
 import os
 import re
 import traceback
-from contextlib import contextmanager
 
 import numpy as np
 
@@ -29,7 +28,7 @@ from astropy.utils.data import download_file
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring
+from sunpy.util.decorators import add_common_docstring, sunpycontextmanager
 from sunpy.util.exceptions import warn_user
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
@@ -280,12 +279,12 @@ class HeliographicStonyhurst(BaseHeliographic):
     def _apply_diffrot(self, duration, rotation_model):
         oldrepr = self.spherical
 
-        from sunpy.physics.differential_rotation import diff_rot
+        from sunpy.sun.models import differential_rotation
         log.debug(f"Applying {duration} of solar rotation")
-        newlon = oldrepr.lon + diff_rot(duration,
-                                        oldrepr.lat,
-                                        rot_type=rotation_model,
-                                        frame_time='sidereal')
+        newlon = oldrepr.lon + differential_rotation(duration,
+                                                     oldrepr.lat,
+                                                     model=rotation_model,
+                                                     frame_time='sidereal')
         newrepr = SphericalRepresentation(newlon, oldrepr.lat, oldrepr.distance)
 
         return self.realize_frame(newrepr)
@@ -678,7 +677,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     _spherical_screen = None
 
     @classmethod
-    @contextmanager
+    @sunpycontextmanager
     def assume_spherical_screen(cls, center, only_off_disk=False):
         """
         Context manager to interpret 2D coordinates as being on the inside of a spherical screen.
