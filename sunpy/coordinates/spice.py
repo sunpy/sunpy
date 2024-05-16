@@ -483,19 +483,19 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
         The frame of the input vector field, specified as a frame name, SPICE ID, or Astropy BaseCoordinateFrame.
 
     target_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
-        The frame to which the vector field will be transformed, specified in the same formats as `source_frame`.
+        The frame to which the vector field will be transformed, specified in the same formats as ``source_frame``.
 
     from_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`
-        The time at which the vector field is defined in the source frame, in any format accepted by `parse_time`.
+        The time at which the vector field is defined in the source frame, in any format accepted by :func:`sunpy.time.parse_time`.
 
     to_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`, optional
-        The time at which the vector field should be defined in the target frame. Defaults to `from_time`, resulting in a spatial-only transformation.
+        The time at which the vector field should be defined in the target frame. Defaults to ``from_time``, resulting in a spatial-only transformation.
 
     Returns
     -------
     `~astropy.units.Quantity`
         The components of the vector field in the target frame. This is a 3-element Quantity with the same units
-        as the input `components`.
+        as the input ``components``.
 
     Examples
     --------
