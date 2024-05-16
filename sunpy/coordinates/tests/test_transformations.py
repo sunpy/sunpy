@@ -120,6 +120,45 @@ def test_hpc_hpc_null():
     assert hpc_out.observer == hpc_new.observer
 
 
+def test_hpc_hpc_spherical_screen():
+    D0 = 20*u.R_sun
+    L0 = 67.5*u.deg
+    Tx0 = 45*u.deg
+    observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    # Once our coordinate is placed on the screen, observer_out will be looking
+    # directly along the line containing itself, the coordinate, and the Sun
+    observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=2*D0)
+
+    sc_in = SkyCoord(Tx0, 0*u.deg, observer=observer_in,
+                     frame='helioprojective')
+
+    with Helioprojective.assume_spherical_screen(observer_in):
+        sc_3d = sc_in.make_3d()
+        sc_out = sc_in.transform_to(Helioprojective(observer=observer_out))
+
+    assert quantity_allclose(sc_3d.distance, D0)
+
+    assert quantity_allclose(sc_out.Tx, 0*u.deg, atol=1e-6*u.deg)
+    assert quantity_allclose(sc_out.Ty, 0*u.deg, atol=1e-6*u.deg)
+    # Law of Cosines to compute the coordinate's distance from the Sun, and then
+    # r_expected is the distance from observer_out to the coordinate
+    radius_expected = 2 * D0 - np.sqrt(2 * D0**2 - 2 * D0 * D0 * np.cos(45*u.deg))
+    assert quantity_allclose(sc_out.distance, radius_expected)
+
+    # Now test with a very large screen, letting us approximate the two
+    # observers as being the same (aside from a different zero point for Tx)
+    r_s = 1e9 * u.lightyear
+    with Helioprojective.assume_spherical_screen(observer_in, radius=r_s):
+        sc_3d = sc_in.make_3d()
+        sc_out = sc_in.transform_to(Helioprojective(observer=observer_out))
+
+    assert quantity_allclose(sc_3d.distance, r_s)
+
+    assert quantity_allclose(sc_out.Tx, Tx0 + L0)
+    assert quantity_allclose(sc_out.Ty, 0*u.deg)
+    assert quantity_allclose(sc_out.distance, r_s)
+
+
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
     adate = parse_time('2015/05/01 01:13:00')
