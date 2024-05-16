@@ -47,7 +47,8 @@ def test_level_number(irismap):
 
 def test_units(irismap):
     """Tests the unit property of the SJIMap"""
-    assert irismap.unit == u.ct
+    with pytest.warns(SunpyMetadataWarning, match="Could not parse unit string"):
+        assert irismap.unit == u.Unit("DN")
 
 
 def test_wcs(irismap):
