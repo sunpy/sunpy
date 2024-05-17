@@ -80,6 +80,7 @@ net = [
   "python-dateutil>=2.8.0",
   "tqdm>=4.64.0",
   "zeep>=4.1.0",
+  "regions>=0.8",
 ]
 spice = ["spiceypy>=5.0.0"]
 timeseries = [
