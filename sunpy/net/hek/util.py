@@ -5,8 +5,8 @@ from pathlib import Path
 
 from regions import PolygonSkyRegion
 
-from astropy.coordinates import SkyCoord
 from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 from sunpy.time import parse_time
 

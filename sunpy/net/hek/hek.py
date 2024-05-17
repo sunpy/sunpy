@@ -1,25 +1,20 @@
 """
 Facilities to interface with the Heliophysics Events Knowledgebase.
 """
-import os
 import codecs
 import urllib
 import inspect
-from pathlib import Path
 from itertools import chain
 
-from regions import PolygonSkyRegion
-
 import astropy.table
-from astropy.coordinates import SkyCoord
 from astropy.table import Row
 
-from sunpy.net.hek.util import *
 import sunpy.net._attrs as core_attrs
 from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
+from sunpy.net.hek.util import *
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
