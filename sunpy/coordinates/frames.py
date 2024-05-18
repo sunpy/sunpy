@@ -28,7 +28,7 @@ from astropy.utils.data import download_file
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring, deprecated, sunpycontextmanager
 from sunpy.util.exceptions import warn_user
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
@@ -671,7 +671,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     _assumed_screen = None
 
     @classmethod
-    @contextmanager
+    @sunpycontextmanager
     @deprecated('6.0', alternative='sunpy.coordinates.screens.SphericalScreen')
     def assume_spherical_screen(cls, center, only_off_disk=False):
         try:
