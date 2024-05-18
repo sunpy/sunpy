@@ -66,44 +66,23 @@ def parse_unit(table, attribute, is_coord_prop = False):
             break
     return table
 
-# NOTE: needs to be rewritten
-# NOTE: Needs unit test
-def parse_astropy_unit(str):
-    try:
-        unit = u.Unit(str)
-    except ValueError:
-        try:
-            unit = u.Unit(str.lower())
-        except ValueError:
-            try:
-                unit = u.Unit(str.capitalize())
-            except ValueError:
-                units = str.split(" per ")
-                unit = None
-                if len(units) > 1:
-                    unit = parse_astropy_unit(units[0])
-                    for idx in range(1, len(units)):
-                        unit = unit/parse_astropy_unit(units[idx])
-
-    return unit
-
 # NOTE: Needs unit test
 def get_unit(unit_prop, str, is_coord_prop = False):
     if is_coord_prop:
         coord1_unit, coord2_unit, coord3_unit = None, None, None
         coord_units = re.split(r'[, ]', str)
         if len(coord_units) == 1: # deg
-           coord1_unit = coord2_unit = parse_astropy_unit(coord_units[0])
+           coord1_unit = coord2_unit = u.Unit(coord_units[0])
         elif len(coord_units) == 2:
-            coord1_unit = parse_astropy_unit(coord_units[0])
-            coord2_unit = parse_astropy_unit(coord_units[1])
+            coord1_unit = u.Unit(coord_units[0])
+            coord2_unit = u.Unit(coord_units[1])
         else:
-            coord1_unit = parse_astropy_unit(coord_units[0])
-            coord2_unit = parse_astropy_unit(coord_units[1])
-            coord3_unit = parse_astropy_unit(coord_units[2])
+            coord1_unit = u.Unit(coord_units[0])
+            coord2_unit = u.Unit(coord_units[1])
+            coord3_unit = u.Unit(coord_units[2])
         return locals()[unit_prop]
     else:
-        return parse_astropy_unit(str)
+        return u.Unit(str)
 
 # NOTE: Needs unit test
 def parse_chaincode(value, idx, attribute, unit_prop):
