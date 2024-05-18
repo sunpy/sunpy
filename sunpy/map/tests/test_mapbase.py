@@ -1774,6 +1774,10 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
     ('G', u.G),
     ('DN', u.DN),
     ('DN/s', u.DN/u.s),
+    ('DN/pix', u.DN/u.pixel),
+    ('DN / pix', u.DN/u.pixel),
+    ('DN sr / s', u.DN*u.sr/u.s),
+    ('DN/(pix s)', u.DN/u.pixel/u.s),
     ('counts / pixel', u.ct/u.pix),
 ])
 def test_parse_fits_units(units_string, expected_unit):
