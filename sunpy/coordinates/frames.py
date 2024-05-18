@@ -583,7 +583,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "
                       "because off-disk coordinates need an additional assumption to be mapped to "
                       "calculate distance from the observer. Consider using the context manager "
-                      "`Helioprojective.assume_spherical_screen()`.")
+                      "`SphericalScreen()`.")
 
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,

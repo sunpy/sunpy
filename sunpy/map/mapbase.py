@@ -2505,7 +2505,7 @@ class GenericMap(NDData):
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
         autoscaling of the plot limits.  The plot limits can be set manually.
         To preserve the off-disk parts of the map, using the
-        :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
+        :meth:`~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
         """
         # Todo: remove this when deprecate_positional_args_since is removed
@@ -2731,8 +2731,8 @@ class GenericMap(NDData):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
-        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
-            warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('SphericalScreen', False):
+            warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
 
         try:
             import reproject
