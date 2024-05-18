@@ -732,7 +732,9 @@ class GenericMap(NDData):
         if isinstance(unit, u.UnrecognizedUnit):
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            if 'DN' in str(unit):
+            unit_str_components = unit.to_string().replace('/', ' ').replace('(', '').replace(')', '')
+            unit_str_components = unit_str_components.strip().split()
+            if any(['DN'==component.upper() for component in unit_str_components]):
                 unit = u.Unit(unit_str)
             else:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
