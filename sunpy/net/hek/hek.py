@@ -22,15 +22,6 @@ __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
-u.add_enabled_aliases({"steradian": u.sr, "arcseconds": u.arcsec, "degrees": u.deg, "sec": u.s, "Emx": u.Mx, "Amperes": u.A, "ergs": u.erg})
-
-unit_mapping = {
-    "cubic centimeter": u.cm**3,
-    "square centimeter": u.cm**2,
-    "cubic meter": u.m**3,
-    "square meter": u.m**2
-}
-
 class HEKClient(BaseClient):
     """
     Provides access to the Heliophysics Event Knowledgebase (HEK).

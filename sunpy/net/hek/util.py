@@ -13,6 +13,26 @@ from sunpy.time import parse_time
 UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "unit_properties.json"
 COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "coord_properties.json"
 
+cm2 = u.def_unit("cm2", u.cm**3)
+m2 = u.def_unit("m2", u.m**2)
+m3 = u.def_unit("m3", u.m**3)
+
+u.add_enabled_units([cm2, m2, m3])
+
+u.set_enabled_aliases({
+    "steradian": u.sr,
+    "arcseconds": u.arcsec,
+    "degrees": u.deg,
+    "sec": u.s,
+    "Emx": u.Mx,
+    "Amperes": u.A,
+    "ergs": u.erg,
+    "cubic centimeter": u.ml,
+    "square centimeter": cm2,
+    "cubic meter": m3,
+    "square meter": m2,
+})
+
 def freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
@@ -64,8 +84,6 @@ def parse_astropy_unit(str):
                     unit = parse_astropy_unit(units[0])
                     for idx in range(1, len(units)):
                         unit = unit/parse_astropy_unit(units[idx])
-                else:
-                    unit = unit_mapping[str]
 
     return unit
 
