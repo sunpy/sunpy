@@ -113,7 +113,6 @@ class PlanarScreen(BaseScreen):
 
     The plane goes through Sun center and is perpendicular to the vector between the
     specified vantage point and Sun center.
-
     This replaces the default assumption where 2D coordinates are mapped onto the surface of the
     Sun.
 
@@ -127,6 +126,36 @@ class PlanarScreen(BaseScreen):
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun.  Defaults to `False`.
+
+    Examples
+    --------
+
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import Helioprojective, PlanarScreen
+    >>> h = Helioprojective(range(7)*u.arcsec*319, [0]*7*u.arcsec,
+    ...                     observer='earth', obstime='2020-04-08')
+    >>> print(h.make_3d())
+    <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        [(   0., 0., 0.99660825), ( 319., 0., 0.99687244),
+            ( 638., 0., 0.99778472), ( 957., 0., 1.00103285),
+            (1276., 0.,        nan), (1595., 0.,        nan),
+            (1914., 0.,        nan)]>
+
+    >>> with PlanarScreen(h.observer):
+    ...     print(h.make_3d())
+    <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        [(   0., 0., 1.00125872), ( 319., 0., 1.00125992),
+            ( 638., 0., 1.00126351), ( 957., 0., 1.0012695 ),
+            (1276., 0., 1.00127788), (1595., 0., 1.00128866),
+            (1914., 0., 1.00130183)]>
+
+    >>> with PlanarScreen(h.observer, distance_from_center=1*u.R_sun):
+    ...     print(h.make_3d())
+    <Helioprojective Coordinate (obstime=2020-04-08T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        [(   0., 0., 0.99660825), ( 319., 0., 0.99660944),
+            ( 638., 0., 0.99661302), ( 957., 0., 0.99661898),
+            (1276., 0., 0.99662732), (1595., 0., 0.99663805),
+            (1914., 0., 0.99665116)]>
     """
 
     @u.quantity_input
