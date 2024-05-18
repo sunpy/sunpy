@@ -734,7 +734,7 @@ class GenericMap(NDData):
             # is widely used and is also a recognized astropy unit
             unit_str_components = unit.to_string().replace('/', ' ').replace('(', '').replace(')', '')
             unit_str_components = unit_str_components.strip().split()
-            if any(['DN'==component.upper() for component in unit_str_components]):
+            if any(['DN' in component.upper() for component in unit_str_components]):
                 unit = u.Unit(unit_str)
             else:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
