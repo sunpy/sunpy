@@ -19,7 +19,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import SphericalScreen
 from sunpy.data.sample import AIA_171_IMAGE
 
 ######################################################################
@@ -79,7 +79,7 @@ plt.show()
 # not obvious in this plot due to the relatively small field of view
 # of AIA (compared to, say, a coronagraph).
 
-with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate):
+with SphericalScreen(aia_map.observer_coordinate):
     outmap_screen_all = aia_map.reproject_to(out_header)
 
 fig = plt.figure()
@@ -92,8 +92,7 @@ plt.show()
 # be used for only off-disk parts of the image, and continue to map
 # on-disk parts of the image to the surface of the Sun.
 
-with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate,
-                                             only_off_disk=True):
+with SphericalScreen(aia_map.observer_coordinate, only_off_disk=True):
     outmap_screen_off_disk = aia_map.reproject_to(out_header)
 
 fig = plt.figure()

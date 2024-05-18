@@ -20,7 +20,7 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import SphericalScreen
 
 ##############################################################################
 # Download co-temporal SDO/AIA image STEREO/EUVI images.  The EUVI map does
@@ -57,7 +57,7 @@ def reproject_to_1au(in_map):
         ),
         scale=(2.2, 2.2)*u.arcsec/u.pixel
     )
-    with Helioprojective.assume_spherical_screen(in_map.observer_coordinate):
+    with SphericalScreen(in_map.observer_coordinate):
         return in_map.reproject_to(header)
 
 

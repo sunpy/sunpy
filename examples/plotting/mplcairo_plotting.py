@@ -48,17 +48,17 @@ import astropy.units as u
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import SphericalScreen
 
 ###############################################################################
 # Let's load two maps for blending. We reproject the second map to the
 # coordinate frame of the first map for proper compositing, taking care to use
-# the :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen`
+# the :meth:`~sunpy.coordinates.Helioprojective.Spherical`
 # context manager in order to preserve off-disk data.
 
 a171 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 a131 = sunpy.map.Map(sunpy.data.sample.AIA_131_IMAGE)
-with Helioprojective.assume_spherical_screen(a171.observer_coordinate):
+with SphericalScreen(a171.observer_coordinate):
     a131 = a131.reproject_to(a171.wcs)
 
 ###############################################################################
