@@ -37,7 +37,7 @@ def test_read_file_fits():
     assert isinstance(aia_data, sunpy.io.header.FileHeader)
 
 
-def test_read_file_fits_multple_hdu():
+def test_read_file_fits_multiple_hdu():
     # Aim is to verify that we can read a FITS file with multiple HDUs
     hdulist = sunpy.io.read_file(TEST_RHESSI_IMAGE)
     assert isinstance(hdulist, list)

@@ -103,7 +103,7 @@ class AttrMeta(type):
         Each of which are a list. `name` will be the attribute name, `name_long` is
         the original name passed in and `desc` the description of the object.
         """
-        # Get the revelant entries.
+        # Get the relevant entries.
         registry = self._attr_registry[self]
         # All the attribute names under that type(Attr)
         names = registry.name
