@@ -59,7 +59,6 @@ is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
 
 # We want to make sure all the following warnings fail the build
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
-warnings.filterwarnings("ignore", message="The toplevel space of the io subpackage was never intended", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
 warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)

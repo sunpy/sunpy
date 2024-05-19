@@ -5,9 +5,9 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-import sunpy
 from sunpy.data.test import get_test_filepath
 from sunpy.io._file_tools import read_file, read_file_header, write_file
+from sunpy.io._header import FileHeader
 from sunpy.tests.helpers import skip_ana, skip_glymur
 
 TEST_RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
@@ -27,14 +27,14 @@ def test_read_file_network_fits():
     assert len(hdulist) == 1
     assert len(hdulist[0]) == 2
     assert isinstance(hdulist[0][0], np.ndarray)
-    assert isinstance(hdulist[0][1], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0][1], FileHeader)
 
 
 def test_read_file_fits():
     # Aim is to verify that we can read a FITS file
     aia_header, aia_data = read_file(TEST_AIA_IMAGE)[0]
     assert isinstance(aia_header, np.ndarray)
-    assert isinstance(aia_data, sunpy.io._header.FileHeader)
+    assert isinstance(aia_data, FileHeader)
 
 
 def test_read_file_fits_multiple_hdu():
@@ -44,7 +44,7 @@ def test_read_file_fits_multiple_hdu():
     assert len(hdulist) == 4
     assert all(len(hdupair) == 2 for hdupair in hdulist)
     assert all(isinstance(hdupair[0], np.ndarray) for hdupair in hdulist)
-    assert all(isinstance(hdupair[1], sunpy.io._header.FileHeader) for hdupair in hdulist)
+    assert all(isinstance(hdupair[1], FileHeader) for hdupair in hdulist)
 
 
 @pytest.mark.parametrize('fname',
@@ -57,7 +57,7 @@ def test_read_file_fits_gzip(fname):
     assert len(hdulist) == 1
     assert len(hdulist[0]) == 2
     assert isinstance(hdulist[0][0], np.ndarray)
-    assert isinstance(hdulist[0][1], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0][1], FileHeader)
     assert np.all(hdulist[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
 
@@ -69,7 +69,7 @@ def test_read_file_jp2():
     assert len(hdulist) == 1
     assert len(hdulist[0]) == 2
     assert isinstance(hdulist[0][0], np.ndarray)
-    assert isinstance(hdulist[0][1], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0][1], FileHeader)
 
 
 @skip_glymur
@@ -78,7 +78,7 @@ def test_read_file_header_jp2():
     hdulist = read_file_header(get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
     assert isinstance(hdulist, list)
     assert len(hdulist) == 1
-    assert isinstance(hdulist[0], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0], FileHeader)
 
 
 def test_read_file_header_fits():
@@ -86,7 +86,7 @@ def test_read_file_header_fits():
     hdulist = read_file_header(TEST_AIA_IMAGE)
     assert isinstance(hdulist, list)
     assert len(hdulist) == 1
-    assert isinstance(hdulist[0], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0], FileHeader)
 
 
 @skip_ana
@@ -97,7 +97,7 @@ def test_read_file_ana():
     assert len(hdulist) == 1
     assert len(hdulist[0]) == 2
     assert isinstance(hdulist[0][0], np.ndarray)
-    assert isinstance(hdulist[0][1], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0][1], FileHeader)
 
 
 @skip_ana
@@ -106,7 +106,7 @@ def test_read_file_header_ana():
     hdulist = read_file_header(get_test_filepath("test_ana.fz"))
     assert isinstance(hdulist, list)
     assert len(hdulist) == 1
-    assert isinstance(hdulist[0], sunpy.io._header.FileHeader)
+    assert isinstance(hdulist[0], FileHeader)
 
 
 @skip_ana
