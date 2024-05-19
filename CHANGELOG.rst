@@ -2144,7 +2144,7 @@ Bug Fixes
 - Fix the bug that prevented VSO queries for HMI data from downloading file
   without specifying ``a.Physobs``. (`#2621 <https://github.com/sunpy/sunpy/pull/2621>`__)
 - Fix ``sunpy.map.mapcube.MapCube.plot``. The code had not been updated to support the changes to the wcsaxes helper functions. (`#2627 <https://github.com/sunpy/sunpy/pull/2627>`__)
-- Replace all use of the deprecated ``sunpy.cm.get_cmap`` with `matplotlib.cm.get_cmap` to prevent deprecation warnings being raised. (`#2635 <https://github.com/sunpy/sunpy/pull/2635>`__)
+- Replace all use of the deprecated ``sunpy.cm.get_cmap`` with ``matplotlib.cm.get_cmap`` to prevent deprecation warnings being raised. (`#2635 <https://github.com/sunpy/sunpy/pull/2635>`__)
 - Fix generation of the coordinate transformation graph with Astropy 3.1.dev (`#2636 <https://github.com/sunpy/sunpy/pull/2636>`__)
 - Prevent helioviewer from erroring when downloading file to a directory that
   does not exist. It will now create the directory when required. (`#2642 <https://github.com/sunpy/sunpy/pull/2642>`__)
