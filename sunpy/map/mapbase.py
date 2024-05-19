@@ -2731,7 +2731,7 @@ class GenericMap(NDData):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
-        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('SphericalScreen', False):
+        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
             warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
 
         try:

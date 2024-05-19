@@ -9,6 +9,7 @@ import astropy.units as u
 from astropy.coordinates.representation import CartesianRepresentation, UnitSphericalRepresentation
 
 from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
+from sunpy.util.decorators import ACTIVE_CONTEXTS
 
 __all__ = ['SphericalScreen', 'PlanarScreen']
 
@@ -18,16 +19,23 @@ class BaseScreen(abc.ABC):
     def __init__(self, only_off_disk=False):
         self.only_off_disk = only_off_disk
 
+    @property
+    def _context_name(self):
+        # Used for setting active context
+        return f'assume_{self.screen_type}_screen'
+
     @abc.abstractmethod
     @u.quantity_input
     def calculate_distance(self) -> u.cm:
         ...
 
     def __enter__(self):
+        ACTIVE_CONTEXTS[self._context_name] = True
         self._old_assumed_screen = Helioprojective._assumed_screen  # nominally None
         Helioprojective._assumed_screen = self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
+        ACTIVE_CONTEXTS[self._context_name] = False
         Helioprojective._assumed_screen = self._old_assumed_screen
 
 
@@ -82,6 +90,7 @@ class SphericalScreen(BaseScreen):
             (1276., 0., 1.00125872), (1595., 0., 1.00125872),
             (1914., 0., 1.00125872)]>
     """
+    screen_type = 'spherical'
 
     def __init__(self, center, **kwargs):
         self.center = center
@@ -157,6 +166,7 @@ class PlanarScreen(BaseScreen):
             (1276., 0., 0.99662732), (1595., 0., 0.99663805),
             (1914., 0., 0.99665116)]>
     """
+    screen_type = 'planar'
 
     @u.quantity_input
     def __init__(self, vantage_point, distance_from_center: u.m=0*u.m, **kwargs):
