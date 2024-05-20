@@ -1,0 +1,10 @@
+diff a/.pre-commit-config.yaml b/.pre-commit-config.yaml	(rejected hunks)
+@@ -1,7 +1,7 @@
+ repos:
+     # This should be before any formatting hooks like isort
+   - repo: https://github.com/astral-sh/ruff-pre-commit
+-    rev: "v0.3.7"
++    rev: "v0.4.4"
+     hooks:
+       - id: ruff
+         args: ["--fix"]
