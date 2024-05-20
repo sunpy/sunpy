@@ -14,7 +14,7 @@ from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
-from sunpy.net.hek.util import *
+from sunpy.net.hek.util import freeze, parse_times, parse_values_to_quantities
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
@@ -116,7 +116,7 @@ class HEKClient(BaseClient):
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
-        return list(unique(chain.from_iterable(responses), _freeze))
+        return list(unique(chain.from_iterable(responses), freeze))
 
     def fetch(self, *args, **kwargs):
         """
