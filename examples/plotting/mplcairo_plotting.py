@@ -53,7 +53,7 @@ from sunpy.coordinates import SphericalScreen
 ###############################################################################
 # Let's load two maps for blending. We reproject the second map to the
 # coordinate frame of the first map for proper compositing, taking care to use
-# the :meth:`~sunpy.coordinates.Helioprojective.Spherical`
+# the :class:`~sunpy.coordinates.SphericalScreen`
 # context manager in order to preserve off-disk data.
 
 a171 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)

@@ -11,7 +11,7 @@ from astropy.coordinates.representation import CartesianRepresentation, UnitSphe
 from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
 from sunpy.util.decorators import ACTIVE_CONTEXTS
 
-__all__ = ['SphericalScreen', 'PlanarScreen']
+__all__ = ['BaseScreen', 'SphericalScreen', 'PlanarScreen']
 
 
 class BaseScreen(abc.ABC):
