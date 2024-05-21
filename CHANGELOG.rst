@@ -125,7 +125,7 @@ New Features
 - Adds two tutorials that demonstrate how to use LASCO data in overlaying maps (:ref:`sphx_glr_generated_gallery_plotting_lasco_overlay.py`) and how to create a custom mask for a LASCO C2 image (:ref:`sphx_glr_generated_gallery_map_lasco_mask.py`). (`#6576 <https://github.com/sunpy/sunpy/pull/6576>`__)
 - Able to run the ``sunpy`` tests doing ``python -m sunpy.tests.self_test``. (`#6600 <https://github.com/sunpy/sunpy/pull/6600>`__)
 - Able to detect gzip-compressed FITS files even if they don't have the ``.gz`` extension in the filename.
-  `~sunpy.io.detect_filetype` now looks for the right file signature while checking
+  ``sunpy.io.detect_filetype`` now looks for the right file signature while checking
   for gzipped FITS files. (`#6693 <https://github.com/sunpy/sunpy/pull/6693>`__)
 - Added ``AttrAnd`` and ``AttrOr`` to the namespace in ``sunpy.net.attrs``.
   This allows users to to avoid ``|`` or ``&`` when creating a query a larger query. (`#6708 <https://github.com/sunpy/sunpy/pull/6708>`__)
@@ -850,7 +850,7 @@ Bug Fixes
   location was a fully specified Stonyhurst heliographic coordinate. (`#5584 <https://github.com/sunpy/sunpy/pull/5584>`__)
 - `~sunpy.map.sources.XRTMap` uppercases the ``TIMESYS`` key before checking if the
   key needs to be fixed. (`#5592 <https://github.com/sunpy/sunpy/pull/5592>`__)
-- Fixed passing a URL to :func:`sunpy.io.read_file` on windows. (`#5601 <https://github.com/sunpy/sunpy/pull/5601>`__)
+- Fixed passing a URL to ``sunpy.io.read_file`` on windows. (`#5601 <https://github.com/sunpy/sunpy/pull/5601>`__)
 - Fixed a bug where the ``date`` property on `~sunpy.map.sources.HMISynopticMap` returned ``None``
   if the ``DATE-OBS`` key was present. (`#5648 <https://github.com/sunpy/sunpy/pull/5648>`__)
 
@@ -1718,7 +1718,7 @@ Improved Documentation
   The page :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom. (`#4124 <https://github.com/sunpy/sunpy/pull/4124>`__)
 - Added `sunpy.visualization.colormaps.color_tables` to the docs. (`#4182 <https://github.com/sunpy/sunpy/pull/4182>`__)
 - Made minor improvements to the map histogramming example. (`#4205 <https://github.com/sunpy/sunpy/pull/4205>`__)
-- Add a warning to `sunpy.io` docs to recommend not using it for FITS (`#4208 <https://github.com/sunpy/sunpy/pull/4208>`__)
+- Add a warning to ``sunpy.io`` docs to recommend not using it for FITS (`#4208 <https://github.com/sunpy/sunpy/pull/4208>`__)
 
 
 Trivial/Internal Changes
@@ -1824,7 +1824,7 @@ Features
   objects. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
 - `~sunpy.map.GenericMap` objects now have a ``.cmap`` attribute, which returns the full `~matplotlib.colors.Colormap`.
   object. (`#3412 <https://github.com/sunpy/sunpy/pull/3412>`__)
-- `sunpy.io.write_file()` now accepts `~pathlib.Path` objects as filename inputs. (`#3469 <https://github.com/sunpy/sunpy/pull/3469>`__)
+- ``sunpy.io.write_file`` now accepts `~pathlib.Path` objects as filename inputs. (`#3469 <https://github.com/sunpy/sunpy/pull/3469>`__)
 - :func:`sunpy.map.header_helper.make_fitswcs_header` now accepts a `tuple` representing the shape of an array as well as the actual array as the ``data`` argument. (`#3483 <https://github.com/sunpy/sunpy/pull/3483>`__)
 - Made a couple of module imports lazy to reduce the import time of sunpy.map by
   ~40%. (`#3495 <https://github.com/sunpy/sunpy/pull/3495>`__)
