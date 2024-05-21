@@ -114,6 +114,7 @@ def parse_chaincode(value, idx, attribute, unit_prop):
 
 # NOTE: Needs unit test
 def get_unit(unit_prop, str, is_coord_prop = False):
+    """Converts str into astropy unit."""
     cm2 = u.def_unit("cm2", u.cm**3)
     m2 = u.def_unit("m2", u.m**2)
     m3 = u.def_unit("m3", u.m**3)
