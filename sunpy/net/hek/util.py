@@ -13,32 +13,12 @@ from sunpy.time import parse_time
 UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "unit_properties.json"
 COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "coord_properties.json"
 
-cm2 = u.def_unit("cm2", u.cm**3)
-m2 = u.def_unit("m2", u.m**2)
-m3 = u.def_unit("m3", u.m**3)
-
-u.add_enabled_units([cm2, m2, m3])
-
-u.set_enabled_aliases({
-    "steradian": u.sr,
-    "arcseconds": u.arcsec,
-    "degrees": u.deg,
-    "sec": u.s,
-    "Emx": u.Mx,
-    "Amperes": u.A,
-    "ergs": u.erg,
-    "cubic centimeter": u.ml,
-    "square centimeter": cm2,
-    "cubic meter": m3,
-    "square meter": m2,
-})
-
 def freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in obj.items())
+        return tuple((k, freeze(v)) for k, v in obj.items())
     if isinstance(obj, list):
-        return tuple(_freeze(elem) for elem in obj)
+        return tuple(freeze(elem) for elem in obj)
     return obj
 
 # NOTE: Needs unit test
@@ -68,21 +48,40 @@ def parse_unit(table, attribute, is_coord_prop = False):
 
 # NOTE: Needs unit test
 def get_unit(unit_prop, str, is_coord_prop = False):
-    if is_coord_prop:
-        coord1_unit, coord2_unit, coord3_unit = None, None, None
-        coord_units = re.split(r'[, ]', str)
-        if len(coord_units) == 1: # deg
-           coord1_unit = coord2_unit = u.Unit(coord_units[0])
-        elif len(coord_units) == 2:
-            coord1_unit = u.Unit(coord_units[0])
-            coord2_unit = u.Unit(coord_units[1])
+    cm2 = u.def_unit("cm2", u.cm**3)
+    m2 = u.def_unit("m2", u.m**2)
+    m3 = u.def_unit("m3", u.m**3)
+
+    aliases = {
+        "steradian": u.sr,
+        "arcseconds": u.arcsec,
+        "degrees": u.deg,
+        "sec": u.s,
+        "Emx": u.Mx,
+        "Amperes": u.A,
+        "ergs": u.erg,
+        "cubic centimeter": u.ml,
+        "square centimeter": cm2,
+        "cubic meter": m3,
+        "square meter": m2,
+    }
+
+    with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases):
+        if is_coord_prop:
+            coord1_unit, coord2_unit, coord3_unit = None, None, None
+            coord_units = re.split(r'[, ]', str)
+            if len(coord_units) == 1: # deg
+               coord1_unit = coord2_unit = u.Unit(coord_units[0])
+            elif len(coord_units) == 2:
+                coord1_unit = u.Unit(coord_units[0])
+                coord2_unit = u.Unit(coord_units[1])
+            else:
+                coord1_unit = u.Unit(coord_units[0])
+                coord2_unit = u.Unit(coord_units[1])
+                coord3_unit = u.Unit(coord_units[2])
+            return locals()[unit_prop]
         else:
-            coord1_unit = u.Unit(coord_units[0])
-            coord2_unit = u.Unit(coord_units[1])
-            coord3_unit = u.Unit(coord_units[2])
-        return locals()[unit_prop]
-    else:
-        return u.Unit(str)
+            return u.Unit(str)
 
 # NOTE: Needs unit test
 def parse_chaincode(value, idx, attribute, unit_prop):
