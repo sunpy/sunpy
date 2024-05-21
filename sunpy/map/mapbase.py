@@ -18,8 +18,6 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-from sunpy.util.decorators import ACTIVE_CONTEXTS
-
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
@@ -36,8 +34,6 @@ from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
-import sunpy.io as io
-import sunpy.io._fits
 import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, get_earth, sun
@@ -45,11 +41,14 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.io._file_tools import write_file
+from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import (
+    ACTIVE_CONTEXTS,
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
@@ -953,7 +952,7 @@ class GenericMap(NDData):
         if 'waveunit' in self.meta:
             return u.Unit(self.meta['waveunit'])
         else:
-            wunit = sunpy.io._fits.extract_waveunit(self.meta)
+            wunit = extract_waveunit(self.meta)
             if wunit is not None:
                 return u.Unit(wunit)
 
@@ -1395,7 +1394,7 @@ class GenericMap(NDData):
         """
         A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
         """
-        return sunpy.io._fits.header_to_fits(self.meta)
+        return header_to_fits(self.meta)
 
 # #### Miscellaneous #### #
     def _get_cmap_name(self):
@@ -1516,7 +1515,7 @@ class GenericMap(NDData):
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
-        io.write_file(filepath, self.data, self.meta, filetype=filetype,
+        write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
 
 # #### Image processing routines #### #
