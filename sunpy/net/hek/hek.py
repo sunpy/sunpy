@@ -14,7 +14,7 @@ from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
-from sunpy.net.hek.util import freeze, parse_times, parse_values_to_quantities
+from sunpy.net.hek.utils import freeze, parse_times, parse_values_to_quantities
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
