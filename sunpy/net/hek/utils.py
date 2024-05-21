@@ -64,7 +64,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 elif attribute.get("is_chaincode", False):
                     new_column.append(parse_chaincode(value, idx, attribute, table[attribute["unit_prop"]][idx]))
                 else:
-                    new_column.append(value * get_unit(attribute["unit_prop"], table[unit_attr][idx], is_coord_prop= is_coord_prop))
+                    new_column.append(value * get_unit(attribute["unit_prop"], table[unit_attr][idx], is_coord_prop = is_coord_prop))
             table[attribute["name"]] = new_column
 
     for attribute in attributes:
@@ -83,7 +83,7 @@ def parse_unit(table, attribute, is_coord_prop = False):
         unit_attr = attribute["unit_prop"]
     for row in table:
         if unit_attr in table.colnames and row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
-            table[attribute["name"]].unit = get_unit(attribute["unit_prop"], row[unit_attr], is_coord_prop= is_coord_prop)
+            table[attribute["name"]].unit = get_unit(attribute["unit_prop"], row[unit_attr], is_coord_prop = is_coord_prop)
             break
     return table
 
@@ -106,7 +106,7 @@ def parse_chaincode(value, idx, attribute, unit_prop):
     coord2_list = [float(coord.split()[1]) for coord in coordinates_str.split(',')] * coord2_unit
     vertices = {}
     if attribute["frame"] == "heliocentric":
-       vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list)* u.AU, representation_type="cylindrical" , frame="heliocentric" )
+       vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list)* u.AU, representation_type = "cylindrical", frame = "heliocentric")
     else:
         vertices = SkyCoord(coord1_list, coord2_list, frame=attribute["frame"])
 

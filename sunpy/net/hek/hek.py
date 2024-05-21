@@ -2,6 +2,7 @@
 Facilities to interface with the Heliophysics Events Knowledgebase.
 """
 import codecs
+import json
 import urllib
 import inspect
 from itertools import chain
