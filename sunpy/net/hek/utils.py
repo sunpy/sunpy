@@ -64,6 +64,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 elif attribute.get("is_chaincode", False):
                     new_column.append(parse_chaincode(value, idx, attribute, table[attribute["unit_prop"]][idx]))
                 else:
+                    #print(table[unit_attr][idx])
                     new_column.append(value * get_unit(attribute["unit_prop"], table[unit_attr][idx]))
             table[attribute["name"]] = new_column
 
@@ -113,8 +114,32 @@ def parse_chaincode(value, idx, attribute, unit_prop):
     return PolygonSkyRegion(vertices = vertices)
 
 # NOTE: Needs unit test
-def get_unit(unit_prop, str):
-    """Converts str into astropy unit."""
+def get_unit(unit_prop, unit):
+    """
+    Converts string into astropy unit.
+
+    Parameters
+    ----------
+    unit_prop: str
+        The unit parameter from HEK api.
+    unit: str
+        The targeted unit
+
+    Returns
+    -------
+        unit
+            Astropy unit object (e.g. <class 'astropy.units.core.Unit'> or <class 'astropy.units.core.CompositeUnit'>)
+
+    Raises
+    ------
+    ValueError
+        Because `unit` did not parse as unit.
+
+    Notes
+    ----
+    For the complete list of HEK parameters: https://www.lmsal.com/hek/VOEvent_Spec.html
+
+    """
     cm2 = u.def_unit("cm2", u.cm**3)
     m2 = u.def_unit("m2", u.m**2)
     m3 = u.def_unit("m3", u.m**3)
@@ -136,7 +161,7 @@ def get_unit(unit_prop, str):
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases):
         if unit_prop in ["coord1_unit", "coord2_unit", "coord3_unit", "event_coordunit"]:
             coord1_unit, coord2_unit, coord3_unit = None, None, None
-            coord_units = re.split(r'[, ]', str)
+            coord_units = re.split(r'[, ]', unit)
             if len(coord_units) == 1: # deg
                coord1_unit = coord2_unit = u.Unit(coord_units[0])
             elif len(coord_units) == 2:
@@ -148,4 +173,4 @@ def get_unit(unit_prop, str):
                 coord3_unit = u.Unit(coord_units[2])
             return locals()[unit_prop]
         else:
-            return u.Unit(str)
+            return u.Unit(unit)
