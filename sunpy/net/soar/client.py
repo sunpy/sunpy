@@ -20,7 +20,7 @@ class SOARClient(BaseClient):
     Client to access the Solar Orbiter Archive (SOAR).
     """
 
-    def search(self, *query, **kwargs):
+    def search(self, *query, **kwargs):  # NOQA: ARG002
         query = and_(*query)
         queries = walker.create(query)
 
@@ -58,7 +58,12 @@ class SOARClient(BaseClient):
         url_query["WHERE"] = "+AND+".join(query)
         adql_query = "+".join([f"{item}+{url_query[item]}" for item in url_query])
 
-        return {"REQUEST": "doQuery", "LANG": "ADQL", "FORMAT": "json", "QUERY": adql_query}
+        return {
+            "REQUEST": "doQuery",
+            "LANG": "ADQL",
+            "FORMAT": "json",
+            "QUERY": adql_query,
+        }
 
     @staticmethod
     def _do_search(query):
@@ -111,7 +116,7 @@ class SOARClient(BaseClient):
         result_table.sort("Start time")
         return result_table
 
-    def fetch(self, query_results, *, path, downloader, **kwargs):
+    def fetch(self, query_results, *, path, downloader, **kwargs):  # NOQA: ARG002
         """
         Queue a set of results to be downloaded.
         `sunpy.net.base_client.BaseClient` does the actual downloading, so we

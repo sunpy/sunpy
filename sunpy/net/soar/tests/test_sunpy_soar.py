@@ -98,8 +98,8 @@ def test_registered_attrs():
 def test_registered_instr_attrs():
     # Check if the Solo instruments are registered in a.Instrument
     instr_attr = a.Instrument
-    assert "SOAR" in instr_attr._attr_registry[instr_attr].client
-    assert "stix" in instr_attr._attr_registry[instr_attr].name
+    assert "SOAR" in instr_attr._attr_registry[instr_attr].client  # NOQA: SLF001
+    assert "stix" in instr_attr._attr_registry[instr_attr].name  # NOQA: SLF001
 
 
 def test_registered_soop_names():
@@ -128,7 +128,7 @@ def test_when_soar_provider_passed():
     provider = a.Provider.soar
     res = Fido.search(time & instrument & provider)
     assert len(res) == 1
-    assert "soar" in res.keys()
+    assert res["soar"]
 
 
 def test_when_sdac_provider_passed():
@@ -138,7 +138,7 @@ def test_when_sdac_provider_passed():
     provider = a.Provider.sdac
     res = Fido.search(time & instrument & provider)
     assert len(res) == 1
-    assert "vso" in res.keys()
+    assert res["vso"]
 
 
 def test_when_wrong_provider_passed():

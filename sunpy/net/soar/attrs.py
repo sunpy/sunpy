@@ -36,10 +36,7 @@ def create_or(wlk, tree):
     Loops through the next level down in the tree and appends the
     individual results to a list.
     """
-    results = []
-    for sub in tree.attrs:
-        results.append(wlk.create(sub))
-    return results
+    return [wlk.create(sub) for sub in tree.attrs]
 
 
 @walker.add_creator(AttrAnd, DataAttr)
@@ -90,14 +87,14 @@ params : list[str]
 
 
 @walker.add_applier(a.Time)
-def _(wlk, attr, params):
+def _(wlk, attr, params):  # NOQA: ARG001
     start = attr.start.strftime("%Y-%m-%d+%H:%M:%S")
     end = attr.end.strftime("%Y-%m-%d+%H:%M:%S")
     params.append(f"begin_time>='{start}'+AND+begin_time<='{end}'")
 
 
 @walker.add_applier(a.Level)
-def _(wlk, attr, params):
+def _(wlk, attr, params):  # NOQA: ARG001
     level = attr.value
     if isinstance(level, int):
         level = f"L{level}"
@@ -115,20 +112,20 @@ def _(wlk, attr, params):
 
 
 @walker.add_applier(a.Instrument)
-def _(wlk, attr, params):
+def _(wlk, attr, params):  # NOQA: ARG001
     params.append(f"instrument='{attr.value}'")
 
 
 @walker.add_applier(Product)
-def _(wlk, attr, params):
+def _(wlk, attr, params):  # NOQA: ARG001
     params.append(f"descriptor='{attr.value}'")
 
 
 @walker.add_applier(a.Provider)
-def _(wlk, attr, params):
+def _(wlk, attr, params):  # NOQA: ARG001
     params.append(f"provider='{attr.value}'")
 
 
 @walker.add_applier(SOOP)
-def _(wlk, attr, params):
+def _(wlk, attr, params):  # NOQA: ARG001
     params.append(f"soop_name='{attr.value}'")
