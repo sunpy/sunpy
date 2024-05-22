@@ -113,8 +113,8 @@ def parse_chaincode(value, idx, attribute, unit_prop):
     return PolygonSkyRegion(vertices = vertices)
 
 # NOTE: Needs unit test
-def get_unit(unit_prop, str, is_coord_prop = False):
-    """Converts str into astropy unit."""
+def get_unit(unit_prop, str):
+-   """Converts str into astropy unit."""
     cm2 = u.def_unit("cm2", u.cm**3)
     m2 = u.def_unit("m2", u.m**2)
     m3 = u.def_unit("m3", u.m**3)
@@ -134,7 +134,7 @@ def get_unit(unit_prop, str, is_coord_prop = False):
     }
 
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases):
-        if is_coord_prop:
+        if unit_prop in ["coord1_unit", "coord2_unit", "coord3_unit", "event_coordunit"]:
             coord1_unit, coord2_unit, coord3_unit = None, None, None
             coord_units = re.split(r'[, ]', str)
             if len(coord_units) == 1: # deg
