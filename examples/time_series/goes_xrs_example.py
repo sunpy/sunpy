@@ -49,7 +49,7 @@ print(result)
 # As we can see this now returns six results, two files for each GOES
 # 13, one for GOES 14 and one for GOES 15, which can be identified
 # by the ``SatelliteNumber`` column.
-# The GOES data provided can either be high-cadence (1s/2s/3s based on GOES satellite) or avergaed over 1 minute.
+# The GOES data provided can either be high-cadence (1s/2s/3s based on GOES satellite) or averaged over 1 minute.
 # This can be noted in the ``Resolution`` column, where the ``avg1m`` and ``flx1s`` attributes are the 1 minute average and the high-cadence data, respectively.
 # However, we probably will only want one of these files for our analysis, so we can query by the `sunpy.net.attrs`:
 # `sunpy.net.dataretriever.attrs.goes.SatelliteNumber` to specify what GOES satellite number we want
