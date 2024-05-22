@@ -1,0 +1,24 @@
+default.extend-ignore-identifiers-re = [
+    "ANDed", # ANDed
+    "arange",
+    "iy1",
+    "iy2",
+    "EIS",
+    "eis",
+    "EIT",
+    "eit",
+    "HAE",
+    "hsi",
+    "Hsi",
+    "nd",
+    "NDData",
+    "alog",
+    "alog10",
+    "FOVs",
+    "FOV",
+    # HEK
+    "OT",
+    "ot",
+    # Coords,
+    "pn",
+]

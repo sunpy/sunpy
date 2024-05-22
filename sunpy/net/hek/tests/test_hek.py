@@ -3,6 +3,7 @@ import copy
 import json
 from pathlib import Path
 
+import numpy as np
 import pytest
 from regions import PolygonSkyRegion
 
@@ -271,3 +272,11 @@ def test_chaincode_parsing(read_coord_attributes):
     for attribute in chaincode_properties:
         if attribute["name"] in result.colnames:
             assert all([value in ['', None] or isinstance(value, PolygonSkyRegion) for value in results[attribute['name']]])
+
+@pytest.mark.remote_data
+def test_missing_times():
+    # Check for https://github.com/sunpy/sunpy/pull/7627#issuecomment-2113451964
+    client = hek.HEKClient()
+    results = client.search(attrs.Time('2024-05-10', '2024-05-12'), attrs.hek.AR.NOAANum == 13664)
+    assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
+    assert results["event_peaktime"][1].isot == '2024-05-10T16:08:00.000'

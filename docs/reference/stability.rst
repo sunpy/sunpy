@@ -56,7 +56,7 @@ The classification is as follows:
       </tr>
       <tr>
         <td align='center'><span class="stable"></span></td>
-        <td>Reasonably stable, any significant changes/additions will generally include backwards-compatiblity.</td>
+        <td>Reasonably stable, any significant changes/additions will generally include backwards-compatibility.</td>
       </tr>
       <tr>
         <td align='center'><span class="mature"></span></td>
