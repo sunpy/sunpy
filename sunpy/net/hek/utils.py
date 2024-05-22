@@ -64,7 +64,6 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 elif attribute.get("is_chaincode", False):
                     new_column.append(parse_chaincode(value, idx, attribute, table[attribute["unit_prop"]][idx]))
                 else:
-                    #print(table[unit_attr][idx])
                     new_column.append(value * get_unit(attribute["unit_prop"], table[unit_attr][idx]))
             table[attribute["name"]] = new_column
 
