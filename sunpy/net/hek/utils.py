@@ -158,5 +158,6 @@ def get_unit(unit):
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases):
         # If they are units of coordinates, it will have more than one unit,
         # otherwise it will be just one unit.
+        # NOTE: There is an assumption that coord1_unit, coord2_unit and coord3_unit will be the same.
         units = re.split(r'[, ]', unit)
         return u.Unit(units[0])
