@@ -64,7 +64,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 elif attribute.get("is_chaincode", False):
                     new_column.append(parse_chaincode(value, attribute, table[attribute["unit_prop"]][idx]))
                 else:
-                    unit = get_unit(table[unit_attr][idx], attribute["unit_prop"])
+                    unit = get_unit(table[unit_attr][idx])
                     new_column.append(value * unit)
             table[attribute["name"]] = new_column
 
@@ -84,7 +84,7 @@ def parse_unit(table, attribute, is_coord_prop = False):
         unit_attr = attribute["unit_prop"]
     for row in table:
         if unit_attr in table.colnames and row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
-            table[attribute["name"]].unit = get_unit(row[unit_attr], attribute["unit_prop"])
+            table[attribute["name"]].unit = get_unit(row[unit_attr])
             break
     return table
 
@@ -98,8 +98,8 @@ def parse_chaincode(value, attribute, unit):
     elif attribute["frame"] == "heliocentric":
         coord1_unit = u.R_sun # Nominal solar radius
     elif attribute["frame"] == "icrs":
-        coord1_unit = get_unit(unit, "coord1_unit")
-        coord2_unit = get_unit(unit, "coord2_unit")
+        coord1_unit = get_unit(unit)
+        coord2_unit = get_unit(unit)
 
     coordinates_str = value.split('((')[1].split('))')[0]
     coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')] * coord1_unit
@@ -113,7 +113,7 @@ def parse_chaincode(value, attribute, unit):
     return PolygonSkyRegion(vertices = vertices)
 
 # NOTE: Needs unit test
-def get_unit(unit, unit_prop):
+def get_unit(unit):
     """
     Converts string into astropy unit.
 
@@ -121,8 +121,6 @@ def get_unit(unit, unit_prop):
     ----------
     unit: str
         The targeted unit
-    unit_prop: str
-        The unit parameter from HEK api.
 
     Returns
     -------
@@ -158,18 +156,7 @@ def get_unit(unit, unit_prop):
     }
 
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases):
-        if unit_prop in ["coord1_unit", "coord2_unit", "coord3_unit", "event_coordunit"]:
-            coord1_unit, coord2_unit, coord3_unit = None, None, None
-            coord_units = re.split(r'[, ]', unit)
-            if len(coord_units) == 1: # deg
-               coord1_unit = coord2_unit = u.Unit(coord_units[0])
-            elif len(coord_units) == 2:
-                coord1_unit = u.Unit(coord_units[0])
-                coord2_unit = u.Unit(coord_units[1])
-            else:
-                coord1_unit = u.Unit(coord_units[0])
-                coord2_unit = u.Unit(coord_units[1])
-                coord3_unit = u.Unit(coord_units[2])
-            return locals()[unit_prop]
-        else:
-            return u.Unit(unit)
+        # If they are units of coordinates, it will have more than one unit,
+        # otherwise it will be just one unit.
+        units = re.split(r'[, ]', unit)
+        return u.Unit(units[0])
