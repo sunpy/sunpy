@@ -1,4 +1,4 @@
-from sunpy.net import attrs
+from sunpy.net import attrs as a
 from sunpy.net.fido_factory import Fido
 from sunpy.net.dataretriever import GenericClient
 from sunpy.net.dataretriever.attrs.adapt import *
@@ -57,11 +57,10 @@ class ADAPTClient(GenericClient):
 
     @classmethod
     def register_values(cls):
-        from sunpy.net import attrs as a
 
-        adict ={attrs.Instrument: [('ADAPT', 'ADvanced Adaptive Prediction Technique.')],
-                attrs.Source: [('NSO', 'National Solar Observatory.')],
-                attrs.Provider: [('GONG', 'Global Oscillation Network Group.')],
+        adict ={a.Instrument: [('ADAPT', 'ADvanced Adaptive Prediction Technique.')],
+                a.Source: [('NSO', 'National Solar Observatory.')],
+                a.Provider: [('GONG', 'Global Oscillation Network Group.')],
                 ADAPTFileType: [('4', 'Public')],
                 ADAPTLonType: [('0', 'Carrington Fixed'), ('1', 'Central Meridian'), ('2', 'East Limb')],
                 ADAPTInputSource: [('0', 'All'), ('1', 'KPVT'), ('2', 'VSM'), ('3', 'GONG'), ('4', 'HMI'), ('5', 'MDI'), ('6', 'MWO')],
@@ -72,13 +71,14 @@ class ADAPTClient(GenericClient):
                 ADAPTVersionMonth: [(chr(i+96), f"Code version month -> {i}") for i in range(1, 13)],
                 ADAPTEvolutionMode: [('a', 'Data assimilation step'), ('i', 'Intermediate step'), ('f', 'Forecast step')],
                 ADAPTHelioData: [('n', 'Not added or no data'), ('f', 'Far-side'), ('e', 'Emergence'), ('b', 'Both emergence & far-side')],
-                ADAPTMagData: [('0', 'Not added or no data'), ('1', 'Mag-los'), ('2', 'Mag-vector'), ('3', 'Mag- both los & vector'), ('4', 'Mag- polar avg obs'), ('5', 'Mag- los & polar'), ('6', 'Mag- vector & polar'), ('7', 'Mag- both los and vector & polar')]
+                ADAPTMagData: [('0', 'Not added or no data'), ('1', 'Mag-los'), ('2', 'Mag-vector'), ('3', 'Mag- both los & vector'),
+                                ('4', 'Mag- polar avg obs'), ('5', 'Mag- los & polar'), ('6', 'Mag- vector & polar'), ('7', 'Mag- both los and vector & polar')]
                 }
         return adict
 
     @classmethod
     def _can_handle_query(cls, *query):
-        required = {attrs.Instrument, attrs.Time}
+        required = {a.Instrument, a.Time}
 
         optional = {ADAPTFileType, ADAPTLonType, ADAPTInputSource, ADAPTDataAssimilation,
                     ADAPTResolution, ADAPTVersionYear, ADAPTVersionMonth, ADAPTEvolutionMode,
