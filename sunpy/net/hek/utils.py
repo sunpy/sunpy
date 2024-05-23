@@ -90,6 +90,32 @@ def parse_unit(table, attribute, is_coord_prop = False):
 
 # NOTE: Needs unit test
 def parse_chaincode(value, attribute, unit):
+    """
+    Parses a string representation of coordinates and convert them into a PolygonSkyRegion object
+    using units based on the specified coordinate frame.
+
+    Parameters
+    ----------
+    value: PolygonSkyRegion
+        A polygon defined using vertices in sky coordinates.
+    attribute: dict
+        An object from coord_properties.json
+    unit: str
+        The unit of the coordinates
+
+    Returns
+    -------
+    PolygonSkyRegion
+        A polygon defined using vertices in sky coordinates.
+
+    Raises
+    ------
+    IndexError
+        Because `value` does not contain the expected '((' and '))' substrings.
+    UnitConversionError
+        Because the units set by `coord1_unit` or `coord2_unit` are incompatible with the values being assigned.
+
+    """
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
