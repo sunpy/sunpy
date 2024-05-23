@@ -64,7 +64,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 elif attribute.get("is_chaincode", False):
                     new_column.append(parse_chaincode(value, idx, attribute, table[attribute["unit_prop"]][idx]))
                 else:
-                    new_column.append(value * get_unit(attribute["unit_prop"], table[unit_attr][idx]))
+                    new_column.append(value * get_unit(table[unit_attr][idx], attribute["unit_prop"]))
             table[attribute["name"]] = new_column
 
     for attribute in attributes:
@@ -83,12 +83,12 @@ def parse_unit(table, attribute, is_coord_prop = False):
         unit_attr = attribute["unit_prop"]
     for row in table:
         if unit_attr in table.colnames and row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
-            table[attribute["name"]].unit = get_unit(attribute["unit_prop"], row[unit_attr])
+            table[attribute["name"]].unit = get_unit(row[unit_attr], attribute["unit_prop"])
             break
     return table
 
 # NOTE: Needs unit test
-def parse_chaincode(value, idx, attribute, unit_prop):
+def parse_chaincode(value, idx, attribute, unit):
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
@@ -98,8 +98,8 @@ def parse_chaincode(value, idx, attribute, unit_prop):
         coord1_unit = u.R_sun
         coord2_unit = u.deg
     elif attribute["frame"] == "icrs":
-        coord1_unit = get_unit("coord1_unit", unit_prop)
-        coord2_unit = get_unit("coord2_unit", unit_prop)
+        coord1_unit = get_unit(unit, "coord1_unit")
+        coord2_unit = get_unit(unit, "coord2_unit")
 
     coordinates_str = value.split('((')[1].split('))')[0]
     coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')] * coord1_unit
@@ -113,16 +113,16 @@ def parse_chaincode(value, idx, attribute, unit_prop):
     return PolygonSkyRegion(vertices = vertices)
 
 # NOTE: Needs unit test
-def get_unit(unit_prop, unit):
+def get_unit(unit, unit_prop):
     """
     Converts string into astropy unit.
 
     Parameters
     ----------
-    unit_prop: str
-        The unit parameter from HEK api.
     unit: str
         The targeted unit
+    unit_prop: str
+        The unit parameter from HEK api.
 
     Returns
     -------
