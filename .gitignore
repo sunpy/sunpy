@@ -289,3 +289,4 @@ results
 result_images
 # Save from Map.save example
 aia171.fits
+sunpy/net/dataretriever/sources/tests/test_adapt_naieve.py
