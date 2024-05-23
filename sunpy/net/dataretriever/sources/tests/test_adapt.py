@@ -1,7 +1,7 @@
 import pytest
 from sunpy.net import attrs
 from sunpy.net.dataretriever.sources import adapt as adapt_source
-from sunpy.net.dataretriever.attrs.adapt import ADAPTLngType
+from sunpy.net.dataretriever.attrs.adapt import ADAPTLonType
 import os
 from sunpy.net.fido_factory import Fido
 
@@ -15,7 +15,7 @@ def test_search(CR=2193, frames=1, test=True):
     get_date, get_date_end = adapt_source.carrington_time(CR, frames)
     LngType = '0' # 0 is carrington, 1 is central meridian
     print (f"\n\n\n\n\n\n\nSearching for images from {get_date} to {get_date_end}\n")
-    res = Fido.search(attrs.Instrument('adapt'), attrs.Time(get_date, get_date_end), ADAPTLngType(LngType))
+    res = Fido.search(attrs.Instrument('adapt'), attrs.Time(get_date, get_date_end), ADAPTLonType(LngType))
     print(res)
     global result
     result = res
