@@ -90,6 +90,7 @@ def parse_unit(table, attribute, is_coord_prop = False):
 
 # NOTE: Needs unit test
 def parse_chaincode(value, attribute, unit):
+    print(unit)
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
@@ -146,8 +147,8 @@ def get_unit(unit):
         "arcseconds": u.arcsec,
         "degrees": u.deg,
         "sec": u.s,
-        "Emx": u.Mx,
-        "Amperes": u.A,
+        "emx": u.Mx,
+        "amperes": u.A,
         "ergs": u.erg,
         "cubic centimeter": u.ml,
         "square centimeter": cm2,
@@ -160,4 +161,4 @@ def get_unit(unit):
         # otherwise it will be just one unit.
         # NOTE: There is an assumption that coord1_unit, coord2_unit and coord3_unit will be the same.
         units = re.split(r'[, ]', unit)
-        return u.Unit(units[0])
+        return u.Unit(units[0].lower())
