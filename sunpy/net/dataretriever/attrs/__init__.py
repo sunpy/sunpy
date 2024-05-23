@@ -1,4 +1,3 @@
-from . import goes
-from . import adapt
+from . import adapt, goes
 
-__all__ = ['goes', 'adapt']
+__all__ = ['adapt', 'goes']
