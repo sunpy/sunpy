@@ -1,0 +1,2 @@
+The ANA C code within sunpy has been unmaintained for a long time, and is not compatible with modern versions of numpy or GCC.
+It has been now been deprecated and will be removed in sunpy 6.1.0.
