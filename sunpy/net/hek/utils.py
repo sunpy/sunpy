@@ -90,7 +90,6 @@ def parse_unit(table, attribute, is_coord_prop = False):
 
 # NOTE: Needs unit test
 def parse_chaincode(value, attribute, unit):
-    print(unit)
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
