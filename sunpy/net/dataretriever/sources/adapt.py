@@ -16,14 +16,30 @@ class ADAPTClient(GenericClient):
 
      `Searches data hosted by the NSO <https://gong.nso.edu/adapt/maps/gong/>`__
 
-    Examples
+    Example
     --------
+    >>> # Imports
+    >>> import astropy.units as u
     >>> from sunpy.net import Fido, attrs as a
-    >>> from sunpy.net.datatretriver.sources.adapat import carrington_time
+    >>> from sunpy.coordinates.sun import carrington_rotation_time
+    >>> from sunpy.net.dataretriever.attrs.adapt import ADAPTLngType
 
-    >>> start_datetime, end_datetime = carrington_time(CR, frames)
+    >>> # Define the Carrington Rotation Number and the number of frames
+    >>> CR = 2193
+    >>> frames = 10
+    >>> date_start = carrington_rotation_time(CR)
+    >>> date_end = date_start + frames*(3*1.9999999 * u.hour)
+
+    >>> # Format the Search Dates
+    >>> tstring = r"%Y-%m-%dT%H:%M:%S"
+    >>> get_date_start =date_start.strftime(tstring)
+    >>> get_date_end   =date_end.strftime(tstring)
     >>> longitude_type = '0'
-    >>> res = Fido.search(attrs.Instrument('adapt'), attrs.Time(start_datetime, end_datetime), ADAPTLngType(LngType))
+
+    >>> res = Fido.search(a.Time(get_date_start, get_date_end), a.Instrument('adapt'), ADAPTLngType(longitude_type))
+
+    Output:
+
     <class 'sunpy.net.fido_factory.UnifiedResponse'>
     Results from 1 Provider:
     <BLANKLINE>
@@ -38,7 +54,9 @@ class ADAPTClient(GenericClient):
     """
 
     baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
-    pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLngType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
+    pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLngType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}' + \
+    '_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}' + \
+    '_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
 
     @classmethod
     def register_values(cls):
@@ -71,21 +89,5 @@ class ADAPTClient(GenericClient):
 
         all_attrs = {type(x) for x in query}
         return required.issubset(all_attrs) and all_attrs.issubset(required.union(optional))
-
-def carrington_time(CR=2193, frames=1):
-    """Get the start date for the start of a carrington rotation,
-    and a duration that will retrieve a given number of frames
-
-    Returns:
-        _type_: _description_
-    """
-    date = sunpy.coordinates.sun.carrington_rotation_time(CR)
-    date_end = date + frames*(3*1.9999999 * u.hour)
-
-    # Format the Search Dates
-    tstring = r"%Y-%m-%dT%H:%M:%S"
-    get_date    =date.strftime(tstring)
-    get_date_end=date_end.strftime(tstring)
-    return get_date, get_date_end
 
 
