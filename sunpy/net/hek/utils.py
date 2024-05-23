@@ -62,9 +62,10 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 if value in ["", None]:
                     new_column.append(value)
                 elif attribute.get("is_chaincode", False):
-                    new_column.append(parse_chaincode(value, idx, attribute, table[attribute["unit_prop"]][idx]))
+                    new_column.append(parse_chaincode(value, attribute, table[attribute["unit_prop"]][idx]))
                 else:
-                    new_column.append(value * get_unit(table[unit_attr][idx], attribute["unit_prop"]))
+                    unit = get_unit(table[unit_attr][idx], attribute["unit_prop"])
+                    new_column.append(value * unit)
             table[attribute["name"]] = new_column
 
     for attribute in attributes:
@@ -88,15 +89,14 @@ def parse_unit(table, attribute, is_coord_prop = False):
     return table
 
 # NOTE: Needs unit test
-def parse_chaincode(value, idx, attribute, unit):
+def parse_chaincode(value, attribute, unit):
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
         coord1_unit = u.arcsec
         coord2_unit = u.arcsec
     elif attribute["frame"] == "heliocentric":
-        coord1_unit = u.R_sun
-        coord2_unit = u.deg
+        coord1_unit = u.R_sun # Nominal solar radius
     elif attribute["frame"] == "icrs":
         coord1_unit = get_unit(unit, "coord1_unit")
         coord2_unit = get_unit(unit, "coord2_unit")
@@ -106,7 +106,7 @@ def parse_chaincode(value, idx, attribute, unit):
     coord2_list = [float(coord.split()[1]) for coord in coordinates_str.split(',')] * coord2_unit
     vertices = {}
     if attribute["frame"] == "heliocentric":
-       vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list)* u.AU, representation_type = "cylindrical", frame = "heliocentric")
+        vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list) * u.AU, representation_type="cylindrical", frame="heliocentric")
     else:
         vertices = SkyCoord(coord1_list, coord2_list, frame=attribute["frame"])
 
