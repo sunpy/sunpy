@@ -2,10 +2,7 @@ from sunpy.net import attrs
 from sunpy.net.fido_factory import Fido
 from sunpy.net.dataretriever import GenericClient
 from sunpy.net.dataretriever.attrs.adapt import *
-import sunpy.net.dataretriever.attrs as atrs
-from sunpy.net.attr import SimpleAttr
-import astropy.units as u
-import sunpy.coordinates
+
 
 __all__ = ['ADAPTClient']
 
@@ -22,7 +19,7 @@ class ADAPTClient(GenericClient):
     >>> import astropy.units as u
     >>> from sunpy.net import Fido, attrs as a
     >>> from sunpy.coordinates.sun import carrington_rotation_time
-    >>> from sunpy.net.dataretriever.attrs.adapt import ADAPTLngType
+    >>> from sunpy.net.dataretriever.attrs.adapt import ADAPTLonType
 
     >>> # Define the Carrington Rotation Number and the number of frames
     >>> CR = 2193
@@ -36,7 +33,7 @@ class ADAPTClient(GenericClient):
     >>> get_date_end   =date_end.strftime(tstring)
     >>> longitude_type = '0'
 
-    >>> res = Fido.search(a.Time(get_date_start, get_date_end), a.Instrument('adapt'), ADAPTLngType(longitude_type))
+    >>> res = Fido.search(a.Time(get_date_start, get_date_end), a.Instrument('adapt'), ADAPTLonType(longitude_type))
 
     Output:
 
@@ -54,7 +51,7 @@ class ADAPTClient(GenericClient):
     """
 
     baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
-    pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLngType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}' + \
+    pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLonType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}' + \
     '_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}' + \
     '_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
 
@@ -66,7 +63,7 @@ class ADAPTClient(GenericClient):
                 attrs.Source: [('NSO', 'National Solar Observatory.')],
                 attrs.Provider: [('GONG', 'Global Oscillation Network Group.')],
                 ADAPTFileType: [('4', 'Public')],
-                ADAPTLngType: [('0', 'Carrington Fixed'), ('1', 'Central Meridian'), ('2', 'East Limb')],
+                ADAPTLonType: [('0', 'Carrington Fixed'), ('1', 'Central Meridian'), ('2', 'East Limb')],
                 ADAPTInputSource: [('0', 'All'), ('1', 'KPVT'), ('2', 'VSM'), ('3', 'GONG'), ('4', 'HMI'), ('5', 'MDI'), ('6', 'MWO')],
                 ADAPTDataAssimilation: [('0', 'WH'), ('1', 'enLS'), ('2', 'enkf'), ('3', 'enLAKF')],
                 ADAPTResolution: [('1', '1.0 deg'), ('2', '0.2 deg')],
@@ -83,7 +80,7 @@ class ADAPTClient(GenericClient):
     def _can_handle_query(cls, *query):
         required = {attrs.Instrument, attrs.Time}
 
-        optional = {ADAPTFileType, ADAPTLngType, ADAPTInputSource, ADAPTDataAssimilation,
+        optional = {ADAPTFileType, ADAPTLonType, ADAPTInputSource, ADAPTDataAssimilation,
                     ADAPTResolution, ADAPTVersionYear, ADAPTVersionMonth, ADAPTEvolutionMode,
                     ADAPTHelioData, ADAPTMagData}
 

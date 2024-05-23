@@ -1,6 +1,6 @@
 from sunpy.net.attr import SimpleAttr
 
-__all__ = ['ADAPTFileType', 'ADAPTLngType', 'ADAPTInputSource',
+__all__ = ['ADAPTFileType', 'ADAPTLonType', 'ADAPTInputSource',
            'ADAPTDataAssimilation', 'ADAPTResolution', 'ADAPTVersionYear', 'ADAPTVersionMonth',
            'ADAPTEvolutionMode', 'ADAPTHelioData', 'ADAPTRealizations', 'ADAPTMagData']
 
@@ -15,7 +15,7 @@ class ADAPTFileType(SimpleAttr):
     """
     pass
 
-class ADAPTLngType(SimpleAttr):
+class ADAPTLonType(SimpleAttr):
     """
     ADAPT longitude type: Carrington Fixed, Central Meridian, East Limb.
     """
