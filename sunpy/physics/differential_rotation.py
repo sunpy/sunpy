@@ -256,7 +256,6 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     # for the coordinate system of the input coordinate.  The translational
     # motion of the Sun will be ignored for the transformation.
 
-    # Check if the original frame has the observer attribute.
     if "observer" in coordinate.frame.frame_attributes.keys():
         frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
                                                            obstime=new_observer.obstime)
