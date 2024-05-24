@@ -24,38 +24,38 @@ class ADAPTClient(GenericClient):
 
     `Searches data hosted by the NSO <https://gong.nso.edu/adapt/maps/gong/>`__
 
-    Example
+    Examples
     --------
-    >>> # Imports
     >>> import astropy.units as u
+
     >>> from sunpy.net import Fido, attrs as a
     >>> from sunpy.coordinates.sun import carrington_rotation_time
-    >>> from sunpy.net.dataretriever.attrs.adapt import ADAPTLonType
 
     >>> # Define the Carrington Rotation Number and the number of frames
     >>> CR = 2193
     >>> frames = 10
     >>> date_start = carrington_rotation_time(CR)
     >>> date_end = date_start + frames*(3*1.9999999 * u.hour)
-
-    >>> # Format the Search Dates
-    >>> tstring = r"%Y-%m-%dT%H:%M:%S"
-    >>> get_date_start =date_start.strftime(tstring)
-    >>> get_date_end   =date_end.strftime(tstring)
     >>> longitude_type = '0'
 
-    >>> res = Fido.search(a.Time(get_date_start, get_date_end), a.Instrument('adapt'), ADAPTLonType(longitude_type))
-
-    Output:
-
-    <class 'sunpy.net.fido_factory.UnifiedResponse'>
+    >>> Fido.search(a.Time(date_start, date_end), a.Instrument('adapt'), a.adapt.ADAPTLonType(longitude_type))  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    1 Results from the ADAPTClient:
+    10 Results from the ADAPTClient:
     <BLANKLINE>
-            Start Time              End Time        Instrument Source Provider ADAPTFileType ... seconds_since_last_obs
-    ----------------------- ----------------------- ---------- ------ -------- ------------- ... ----------------------
-    2017-07-20 08:00:00.000 2017-07-20 08:00:59.999      ADAPT    NSO     GONG             4 ...                      0
+           Start Time               End Time        Instrument Provider Source ... ADAPTMagData days_since_last_obs hours_since_last_obs minutes_since_last_obs seconds_since_last_obs
+    ----------------------- ----------------------- ---------- -------- ------ ... ------------ ------------------- -------------------- ---------------------- ----------------------
+    2017-07-20 08:00:00.000 2017-07-20 08:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-20 14:00:00.000 2017-07-20 14:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-20 20:00:00.000 2017-07-20 20:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-21 02:00:00.000 2017-07-21 02:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-21 08:00:00.000 2017-07-21 08:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-21 14:00:00.000 2017-07-21 14:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-21 20:00:00.000 2017-07-21 20:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-22 02:00:00.000 2017-07-22 02:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
+    2017-07-22 08:00:00.000 2017-07-22 08:00:59.999      ADAPT      NSO   GONG ...            1                   0                    4                     36                      0
+    2017-07-22 14:00:00.000 2017-07-22 14:00:59.999      ADAPT      NSO   GONG ...            1                   0                    1                     56                      0
     <BLANKLINE>
     <BLANKLINE>
 
@@ -99,6 +99,6 @@ class ADAPTClient(GenericClient):
         required = {a.Instrument, a.Time}
         optional = {ADAPTFileType, ADAPTLonType, ADAPTInputSource, ADAPTDataAssimilation,
                     ADAPTResolution, ADAPTVersionYear, ADAPTVersionMonth, ADAPTEvolutionMode,
-                    ADAPTHelioData, ADAPTMagData, ADAPTRealizations, a.Provider, a.Source}
+                    ADAPTHelioData, ADAPTMagData, ADAPTRealizations}
         all_attrs = {type(x) for x in query}
         return required.issubset(all_attrs) and all_attrs.issubset(required.union(optional))
