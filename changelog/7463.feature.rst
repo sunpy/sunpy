@@ -1,0 +1,1 @@
+A new client (`sunpy.net.adapt.ADAPTClient`) has been added to search and download `ADAPT <https://gong.nso.edu/adapt/maps/gong/>`__ files.
