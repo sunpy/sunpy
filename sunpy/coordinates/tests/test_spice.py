@@ -218,20 +218,15 @@ def test_to_helioprojective(spice_test):
     assert_quantity_allclose(sunpy_coord.lat, spice_coord.lat, rtol=1e-6)
 
 def test_transform_vector_field(spice_test):
-    # Define input parameters
     components = np.array([1, 0, 0]) * u.T
     source_frame = "J2000"
     target_frame = "Galactic"
     from_time = '2001-01-01T00:00:00'
 
-    # Call the function
     result = spice.transform_vector_field(components, source_frame, target_frame, from_time)
 
-    # Check that the result is an Astropy Quantity
     assert isinstance(result, u.Quantity)
 
-    # Check that the result has the correct shape
     assert result.shape == components.shape
-    # Check the value of the result
     expected_result = np.array([-0.054875539, 0.49410945, -0.86766614])* u.T
     assert_quantity_allclose(result.value, expected_result.value)

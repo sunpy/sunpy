@@ -77,7 +77,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame','transform_vector_field']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame', 'transform_vector_field']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -470,7 +470,7 @@ def get_fov(instrument, time, *, resolution=100):
 
 def transform_vector_field(components, source_frame, target_frame, from_time, to_time=None):
     """
-    Transforms a vector field from ``source_frame`` to ``target_frame`` at a specified
+    Transforms a vector field (``components``) from ``source_frame`` to ``target_frame`` at a specified
     time using the SPICE toolkit, which provides accurate transformations between
     different astronomical frames.
 
@@ -523,17 +523,14 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
         <Quantity [−0.054875539, 0.49410945, −0.86766614]T>
     * transformed_vector is now the input vector expressed in the target frame.
 
-    TODO ? Add an example in the How-To guide
     """
-    # Convert SunPy frames to SPICE strings
+    # Convert sunpy frames to SPICE strings
     source_frame_spice = source_frame.name.upper() if hasattr(source_frame, 'name') else str(source_frame).upper()
     target_frame_spice = target_frame.name.upper() if hasattr(target_frame, 'name') else str(target_frame).upper()
 
-    # Convert times to parse_time()-compatible format
     from_time = parse_time(from_time)
     to_time = parse_time(to_time) if to_time else from_time
 
-    # Convert times to ET
     from_time_et = _convert_to_et(from_time)
     to_time_et = _convert_to_et(to_time)
 
