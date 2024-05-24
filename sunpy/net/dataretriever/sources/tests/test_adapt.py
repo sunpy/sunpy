@@ -32,7 +32,7 @@ def test_can_handle_query(time):
     ans4 = adapt_client._can_handle_query(time)
     assert ans4 is False
     ans5 = adapt_client._can_handle_query(time, a.Instrument.adapt, a.Provider.nso)
-    assert ans5 is False
+    assert ans5 is True
     ans6 = adapt_client._can_handle_query(time, a.Instrument.adapt,
                                          a.adapt.ADAPTLonType('0'))
     assert ans6 is True

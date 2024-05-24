@@ -63,7 +63,10 @@ class ADAPTClient(GenericClient):
     ----------
     `Names and possible attrs values are available <https://gong.nso.edu/adapt/maps/adapt_filename_notes.txt>`__.
     """
-
+    required = {a.Instrument, a.Time}
+    optional = {ADAPTFileType, ADAPTLonType, ADAPTInputSource, ADAPTDataAssimilation,
+                ADAPTResolution, ADAPTVersionYear, ADAPTVersionMonth, ADAPTEvolutionMode,
+                ADAPTHelioData, ADAPTMagData, ADAPTRealizations}
     baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
     pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLonType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}' + \
     '_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}' + \
@@ -93,12 +96,3 @@ class ADAPTClient(GenericClient):
                             ('4', 'Mag- polar avg obs'), ('5', 'Mag- los & polar'), ('6', 'Mag- vector & polar'), ('7', 'Mag- both los and vector & polar')]
         }
         return adict
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        required = {a.Instrument, a.Time}
-        optional = {ADAPTFileType, ADAPTLonType, ADAPTInputSource, ADAPTDataAssimilation,
-                    ADAPTResolution, ADAPTVersionYear, ADAPTVersionMonth, ADAPTEvolutionMode,
-                    ADAPTHelioData, ADAPTMagData, ADAPTRealizations}
-        all_attrs = {type(x) for x in query}
-        return required.issubset(all_attrs) and all_attrs.issubset(required.union(optional))
