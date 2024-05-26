@@ -33,6 +33,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config
+# The next two are not used but are called to register functions with external modules
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.coordinates.wcs_utils import _set_wcs_aux_obs_coord, _sunpy_frame_class_from_ctypes
 from sunpy.image.resample import resample as sunpy_image_resample
