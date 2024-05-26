@@ -17,8 +17,6 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-from sunpy.util.decorators import active_contexts
-
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
@@ -32,20 +30,19 @@ from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
-import sunpy
-# The next two are not used but are called to register functions with external modules
-import sunpy.io as io
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config
 from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.coordinates.wcs_utils import _set_wcs_aux_obs_coord, _sunpy_frame_class_from_ctypes
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
 from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
-from sunpy.util.decorators import add_common_docstring, cached_property_based_on
+from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring, cached_property_based_on
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
@@ -618,7 +615,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
-        sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
+        sunpy_frame = _sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
             # Clear all the aux information that was set earlier. This is to avoid
             # issues with maps that store multiple observer coordinate keywords.
@@ -631,7 +628,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
-            sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
+            _set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Set the shape of the data array
         w2.array_shape = self.data.shape
@@ -686,7 +683,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io.write_file`.
+            `~sunpy.io._file_tools_write_file`.
 
         Notes
         -----
@@ -702,7 +699,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
-        io.write_file(filepath, self.data, self.meta, filetype=filetype,
+        write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
 
 # #### Image processing routines #### #
@@ -1443,7 +1440,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
-        if active_contexts.get('propagate_with_solar_surface', False) and active_contexts.get('assume_spherical_screen', False):
+        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
             warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
 
         try:

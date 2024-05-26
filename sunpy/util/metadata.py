@@ -143,7 +143,7 @@ class MetaDict(OrderedDict):
         if not isinstance(keycomments, dict):
             raise TypeError(
                 "'keycomments' key must have a value of type `dict`. Found "
-                "the following type: %r" % type(keycomments))
+                f"the following type: {type(keycomments)!r}")
 
         if copy:
             keycomments = keycomments.copy()

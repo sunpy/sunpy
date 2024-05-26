@@ -19,7 +19,7 @@ from astropy.utils.decorators import deprecated_renamed_argument
 
 import sunpy
 from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 from sunpy.timeseries.sources import source_names
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import expand_list
@@ -91,7 +91,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header)  # doctest: +SKIP
     >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header, units)  # doctest: +SKIP
 
-    * File names for files understood by `sunpy.io` and those not
+    * File names for files understood by the file reader and for those that are not
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits')   # doctest: +SKIP
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', source='lyra')  # doctest: +SKIP
@@ -127,7 +127,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     @staticmethod
     def _read_file(fname, **kwargs):
         """
-        Reading a file with `sunpy.io` for automatic source detection.
+        Reading a file with automatic source detection.
 
         Parameters
         ----------
@@ -170,7 +170,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Return `True` if ``meta`` is an object that could store metadata.
         """
-        return isinstance(meta, astropy.io.fits.header.Header | sunpy.io.header.FileHeader | dict | sunpy.timeseries.TimeSeriesMetaData)
+        return isinstance(meta, astropy.io.fits.header.Header | sunpy.io._header.FileHeader | dict | sunpy.timeseries.TimeSeriesMetaData)
 
     @staticmethod
     def _is_units(units):
@@ -232,7 +232,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Parse different metadata objects into a MetaDict.
         """
         if isinstance(meta, astropy.io.fits.header.Header):
-            meta = MetaDict(sunpy.io.header.FileHeader(meta))
+            meta = MetaDict(sunpy.io._header.FileHeader(meta))
         if isinstance(meta, sunpy.timeseries.TimeSeriesMetaData):
             new_meta = MetaDict()
             for m in meta.metas:
@@ -404,7 +404,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Make a MetaDict from various input types
         meta = header
         if isinstance(meta, astropy.io.fits.header.Header):
-            meta = sunpy.io.header.FileHeader(meta)
+            meta = sunpy.io._header.FileHeader(meta)
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 

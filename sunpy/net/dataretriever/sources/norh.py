@@ -33,14 +33,13 @@ class NoRHClient(GenericClient):
     2 Results from the NoRHClient:
     Source: https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html
     <BLANKLINE>
-           Start Time               End Time        ... Provider Wavelength
-                                                    ...             GHz
-    ----------------------- ----------------------- ... -------- ----------
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...      NRO       17.0
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...      NRO       17.0
+           Start Time               End Time        Instrument Source Provider Wavelength
+                                                                                  GHz
+    ----------------------- ----------------------- ---------- ------ -------- ----------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       NORH   NAOJ      NRO       17.0
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       NORH   NAOJ      NRO       17.0
     <BLANKLINE>
     <BLANKLINE>
-
     """
     baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
     pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
