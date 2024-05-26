@@ -1995,20 +1995,17 @@ class GenericMap(NDData):
     @_parse_submap_input.register(SkyCoord)
     @_parse_submap_input.register(BaseCoordinateFrame)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
-        # If bottom_left or top_right is a helioprojective coordinate with NaN values,
-        # cannot create meaningful submap
-        if (isinstance(bottom_left, Helioprojective)):
-            values = bottom_left.distance.to_value()
-            if np.isnan(values).any():
-              raise ValueError("The Helioprojective coordinates input to `submap()` contain NaN values."
-                               "It is possible the 2D coordinates are off-disk and were not properly "
-                               "mapped to 3D coordinates. Consider using `Helioprojective.assume_spherical_screen()`.")
-        if (top_right is not None and isinstance(top_right, Helioprojective)):
-            values = top_right.distance.to_value()
-            if np.isnan(values).any():
-              raise ValueError("The Helioprojective coordinates input to `submap()` contain NaN values."
-                               "It is possible the 2D coordinates are off-disk and were not properly "
-                               "mapped to 3D coordinates. Consider using `Helioprojective.assume_spherical_screen()`.")
+        msg = (
+            "The {quadrant} input contains NaN values. "
+            "It is possible the coordinates are off-disk. "
+            "Consider using Helioprojective.assume_spherical_screen"
+        )
+        if isinstance(bottom_left, Helioprojective):
+            if np.isnan(bottom_left.distance.to_value()).any():
+                raise ValueError(msg.format(quadrant="bottom_left"))
+        if top_right is not None and isinstance(top_right, Helioprojective):
+            if np.isnan(top_right.distance.to_value()).any():
+                raise ValueError(msg.format(quadrant="top_right"))
 
         # Use helper function to get top_right as a SkyCoord
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,

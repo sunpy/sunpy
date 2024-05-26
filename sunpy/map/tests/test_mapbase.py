@@ -1822,19 +1822,16 @@ def test_plot_deprecated_positional_args(aia171_test_map):
 
 
 def test_submap_nan_error_bottom_left(aia171_test_map):
-    h = Helioprojective([1,7]*u.arcsec*319, 0*u.arcsec,
-                        observer='earth', obstime='2020-04-08')
+    h = Helioprojective([319, 2,233]*u.arcsec, 0*u.arcsec, observer='earth', obstime='2020-04-08')
     h_3d = h.make_3d()
-    with pytest.raises(ValueError, match="ABC"):
+    with pytest.raises(ValueError, match="The bottom_left input contains NaN values."):
         aia171_test_map.submap(h_3d)
 
 def test_submap_nan_error_top_right(aia171_test_map):
-    h = Helioprojective(1*u.arcsec*319, 0*u.arcsec,
-                        observer='earth', obstime='2020-04-08')
-    h2 = Helioprojective(7*u.arcsec*319, 0*u.arcsec,
-                        observer='earth', obstime='2020-04-08')
+    h = Helioprojective(319*u.arcsec, 0*u.arcsec, observer='earth', obstime='2020-04-08')
+    h2 = Helioprojective(2233*u.arcsec, 0*u.arcsec, observer='earth', obstime='2020-04-08')
     h_3d = h.make_3d()
-    with pytest.warns(SunpyUserWarning):
+    with pytest.warns(SunpyUserWarning, match="The conversion of these 2D helioprojective coordinates to 3D is all NaNs"):
         h2_3d = h2.make_3d()
-    with pytest.raises(ValueError, match="DEF."):
+    with pytest.raises(ValueError, match="The top_right input contains NaN values."):
         aia171_test_map.submap(h_3d, top_right=h2_3d)
