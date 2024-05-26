@@ -6,11 +6,11 @@ from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
 import sunpy.coordinates
-import sunpy.io
 import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.io._file_tools import read_file
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def test_map(request):
 
 @pytest.fixture
 def hmi_test_map():
-    (data, header), = sunpy.io.read_file(get_test_filepath('resampled_hmi.fits'))
+    (data, header), = read_file(get_test_filepath('resampled_hmi.fits'))
 
     # Get rid of the blank keyword to prevent some astropy fits fixing warnings
     header.pop('BLANK')
@@ -31,7 +31,7 @@ def hmi_test_map():
 
 @pytest.fixture
 def aia171_test_map():
-    (data, header), = sunpy.io.read_file(get_test_filepath('aia_171_level1.fits'))
+    (data, header), = read_file(get_test_filepath('aia_171_level1.fits'))
 
     # Get rid of the blank keyword to prevent some astropy fits fixing warnings
     header.pop('BLANK')
@@ -45,7 +45,7 @@ def aia171_roll_map(aia171_test_map):
 
 @pytest.fixture
 def heliographic_test_map():
-    (data, header), = sunpy.io.read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
+    (data, header), = read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
 
     # Fix unit strings to prevent some astropy fits fixing warnings
     header['CUNIT1'] = 'deg'

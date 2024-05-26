@@ -148,10 +148,10 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        if sunpy.io.detect_filetype(filepath) == "hdf5":
+        if sunpy.io._file_tools.detect_filetype(filepath) == "hdf5":
             return cls._parse_netcdf(filepath)
         try:
-            hdus = sunpy.io.read_file(filepath)
+            hdus = sunpy.io._file_tools.read_file(filepath)
         except UnrecognizedFileTypeError:
             raise ValueError(
                 f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
@@ -297,7 +297,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
         if "filepath" in kwargs.keys():
             try:
-                if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
+                if sunpy.io._file_tools.detect_filetype(kwargs["filepath"]) == "hdf5":
                     with h5netcdf.File(kwargs["filepath"], mode="r", **cls._netcdf_read_kw) as f:
                         summary = f.attrs["summary"]
                         if not isinstance(summary, str):
