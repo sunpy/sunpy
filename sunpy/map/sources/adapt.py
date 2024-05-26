@@ -28,7 +28,7 @@ class ADAPTMap(GenericMap):
 
     @property
     def date(self):
-        return Time(self.meta.get('date-obs',self.meta.get('maptime')))
+        return Time(self.meta.get('date-obs') or self.meta.get('maptime') or super().date)
 
 
     @classmethod
