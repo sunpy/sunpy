@@ -31,7 +31,6 @@ if missing_requirements:
 # -- Non stdlib imports --------------------------------------------------------
 from ruamel.yaml import YAML  # NOQA
 from sphinx_gallery.sorting import ExplicitOrder  # NOQA
-from sphinx_gallery.sorting import ExampleTitleSortKey  # NOQA
 
 import sunpy  # NOQA
 from sunpy import __version__  # NOQA
@@ -281,7 +280,7 @@ sphinx_gallery_conf = {
         '../examples/computer_vision_techniques',
         '../examples/showcase',
     ]),
-    'within_subsection_order': ExampleTitleSortKey,
+    'within_subsection_order': "ExampleTitleSortKey",
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.

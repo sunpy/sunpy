@@ -3,7 +3,7 @@ exclude: "\\.asdf$"
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.3.5"
+    rev: "v0.4.5"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -14,7 +14,7 @@ repos:
         args: ["--sp", "setup.cfg"]
         exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
@@ -43,7 +43,7 @@ repos:
         pass_filenames: false
         always_run: true
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         args: ['--config setup.cfg']
