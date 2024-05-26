@@ -31,8 +31,9 @@ if missing_requirements:
     sys.exit(1)
 
 from matplotlib import MatplotlibDeprecationWarning  # NOQA: E402
-from ruamel.yaml import YAML  # NOQA: E402
-from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder  # NOQA: E402
+# -- Non stdlib imports --------------------------------------------------------
+from ruamel.yaml import YAML  # NOQA
+from sphinx_gallery.sorting import ExplicitOrder  # NOQA
 from sunpy_sphinx_theme import PNG_ICON  # NOQA: E402
 
 from astropy.utils.exceptions import AstropyDeprecationWarning  # NOQA: E402
@@ -283,7 +284,7 @@ sphinx_gallery_conf = {
         '../examples/computer_vision_techniques',
         '../examples/showcase',
     ]),
-    'within_subsection_order': ExampleTitleSortKey,
+    'within_subsection_order': "ExampleTitleSortKey",
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
