@@ -1165,10 +1165,11 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         # Check that we have been given a valid combination of inputs
         # [False, False, False] is valid if bottom_left contains the two corner coords
+
+
         if ([arg is not None for arg in (top_right, width, height)]
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
-
         # parse input arguments
         world_corners = u.Quantity(self._parse_submap_input(bottom_left, top_right, width, height))
         msg = (
@@ -1193,6 +1194,10 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
     @_parse_submap_input.register(u.Quantity)
     def _parse_submap_quantity_input(self, bottom_left, top_right, width, height):
+
+        if bottom_left.unit.is_equivalent(u.pix):
+            bottom_left = bottom_left.to(u.pix)
+
         if top_right is None and width is None:
             raise ValueError('Either top_right alone or both width and height must be specified '
                              'when bottom_left is a Quantity')
@@ -1204,6 +1209,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             if not top_right.unit.is_equivalent(u.pix):
                 raise TypeError("When bottom_left is a Quantity, top_right "
                                 "must be a Quantity in units of pixels.")
+            top_right=top_right.to(u.pix)
             # Have bottom_left and top_right in pixels already, so no need to do
             # anything else
         else:
@@ -1212,6 +1218,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                 raise TypeError("When bottom_left is a Quantity, width and height "
                                 "must be a Quantity in units of pixels.")
             # Add width and height to get top_right
+            width = width.to(u.pix)
+            height = height.to(u.pix)
+
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
 
         top_left = u.Quantity([top_right[0], bottom_left[1]])
