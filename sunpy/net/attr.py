@@ -250,7 +250,7 @@ class Attr(metaclass=AttrMeta):
                         name = pair[0]
 
                     # Sanitize part two: remove punctuation and replace it with _
-                    name = re.sub('[%s]' % re.escape(string.punctuation), '_', name)
+                    name = re.sub(f'[{re.escape(string.punctuation)}]', '_', name)
                     # Sanitize name, we remove all special characters
                     name = ''.join(char for char in name
                                    if char.isidentifier() or char.isnumeric())
