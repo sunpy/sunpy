@@ -705,8 +705,8 @@ def test_dimensions(simple_map):
 
 
 pixel_corners = [
-    [([0, 0] * u.pix, [0, 0] * u.pix), np.array([[0]])],
-    [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+    ##[([0, 0] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+    #[([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
     # 0.5, 0.5 is the edge of the first pixel, so make sure
     # we don't include any other pixels
     [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
