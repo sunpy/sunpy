@@ -516,7 +516,7 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
     * The function then multiplies this transformation matrix with the input vector.
     * This is a matrix-vector multiplication, which results in a new vector in the target frame.
 
-    >>> transformed_vector  # doctest: +SKIP
+    >>> transformed_vector
     <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
 
     * transformed_vector is now the input vector expressed in the target frame.
