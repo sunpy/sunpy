@@ -518,7 +518,7 @@ def transform_vector_field(components, source_frame, target_frame, from_time, to
 
     >>> transformed_vector  # doctest: +SKIP
     <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
-    
+
     * transformed_vector is now the input vector expressed in the target frame.
 
     """
