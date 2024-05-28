@@ -39,6 +39,10 @@ def test_scale(gong_halpha):
     assert_equal(gong_halpha.scale.axis2, 1.0794939681708389 * (u.arcsec / u.pix))
 
 
+def test_rsub_obs(gong_halpha):
+    assert gong_halpha.rsun_obs == 971.544571353755 * u.arcsec
+
+
 def test_nickname(gong_halpha):
     """Tests the nickname property of the GONGHalphaMap map."""
     assert gong_halpha.nickname == "NSO-GONG, Big Bear"
