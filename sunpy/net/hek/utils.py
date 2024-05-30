@@ -50,7 +50,6 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
         if attribute.get("is_unit_prop", False):
             pass
         elif attribute["name"] in table.colnames and ("unit_prop" in attribute or attribute.get("is_chaincode", False)):
-            table = parse_unit(table, attribute, is_coord_prop)
             unit_attr = ""
             if is_coord_prop:
                 unit_attr = "event_coordunit"
@@ -71,21 +70,6 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
     for attribute in attributes:
         if attribute.get("is_unit_prop", False) and attribute["name"] in table.colnames:
             del table[attribute["name"]]
-    return table
-
-# NOTE: Needs unit test
-def parse_unit(table, attribute, is_coord_prop = False):
-    if attribute.get("is_chaincode", False):
-        return table
-    unit_attr = ""
-    if is_coord_prop:
-        unit_attr = "event_coordunit"
-    else:
-        unit_attr = attribute["unit_prop"]
-    for row in table:
-        if unit_attr in table.colnames and row[unit_attr] not in ["", None] and table[attribute["name"]].unit is not None:
-            table[attribute["name"]].unit = get_unit(row[unit_attr])
-            break
     return table
 
 # NOTE: Needs unit test
