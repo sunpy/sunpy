@@ -46,6 +46,29 @@ def parse_values_to_quantities(table):
 
 # NOTE: Needs unit test
 def parse_columns_to_table(table, attributes, is_coord_prop = False):
+    """
+    Parses the columns in an Astropy table and convert the values into Astropy objects.
+
+    Parameters
+    ----------
+    table: astropy.table
+        Astropy table.
+    attributes: list
+        A list of HEK unit attributes or coordinate attributes.
+    is_coord_prop: bool
+        To specify if `attributes` is a list of unit attributes or coordinate attributes.
+
+    Returns
+    -------
+    `astropy.table`
+
+    Raises
+    ------
+    TypeError
+        If `table` is not an Astropy table.
+    KeyError
+        If any of the attribute dictionaries are missing required keys (i.e. "name", "unit_prop").
+    """
     for attribute in attributes:
         if attribute["name"] in table.colnames and ("unit_prop" in attribute or attribute.get("is_chaincode", False)) and attribute.get("is_unit_prop", True):
             unit_attr = ""
