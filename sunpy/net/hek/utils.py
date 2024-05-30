@@ -47,9 +47,7 @@ def parse_values_to_quantities(table):
 # NOTE: Needs unit test
 def parse_columns_to_table(table, attributes, is_coord_prop = False):
     for attribute in attributes:
-        if attribute.get("is_unit_prop", False):
-            pass
-        elif attribute["name"] in table.colnames and ("unit_prop" in attribute or attribute.get("is_chaincode", False)):
+        if attribute["name"] in table.colnames and ("unit_prop" in attribute or attribute.get("is_chaincode", False)) and attribute.get("is_unit_prop", True):
             unit_attr = ""
             if is_coord_prop:
                 unit_attr = "event_coordunit"
@@ -58,13 +56,16 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
 
             new_column = []
             for idx, value in enumerate(table[attribute["name"]]):
+                new_value = ""
                 if value in ["", None]:
-                    new_column.append(value)
+                    new_value = value
                 elif attribute.get("is_chaincode", False):
-                    new_column.append(parse_chaincode(value, attribute, table[attribute["unit_prop"]][idx]))
+                    new_value = parse_chaincode(value, attribute, table[attribute["unit_prop"]][idx])
                 else:
                     unit = get_unit(table[unit_attr][idx])
-                    new_column.append(value * unit)
+                    new_value = value * unit
+                new_column.append(new_value)
+
             table[attribute["name"]] = new_column
 
     for attribute in attributes:
