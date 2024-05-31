@@ -6,14 +6,14 @@ from dateutil.relativedelta import relativedelta
 from sunpy.net.scraper_utils import check_timerange, date_floor, extract_timestep, get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time
 
-TIMEPATTERN_EXAMPLES = [
+DT_PATTERN_EXAMPLES = [
     ('%b%y', relativedelta(months=1)),
     ('%m%y', relativedelta(months=1)),
     ('%H%d', relativedelta(hours=1)),
     ('%y%b', relativedelta(months=1)),
 ]
 
-@pytest.mark.parametrize(('pattern', 'mintime'), TIMEPATTERN_EXAMPLES)
+@pytest.mark.parametrize(('pattern', 'mintime'), DT_PATTERN_EXAMPLES)
 def test_extract_timestep(pattern, mintime):
     assert mintime == extract_timestep(pattern)
 
