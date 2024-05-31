@@ -74,22 +74,22 @@ class Scraper:
 
     def __init__(self, pattern, **kwargs):
         pattern = pattern.format(**kwargs)
-        timepattern = pattern
+        dt_pattern = pattern
         for k, v in TIME_CONVERSIONS.items():
-            if k in timepattern:
-                timepattern = timepattern.replace(k,v)
-        self.timepattern = timepattern
+            if k in dt_pattern:
+                dt_pattern = dt_pattern.replace(k,v)
+        self.dt_pattern = dt_pattern
         if "year:4d" in pattern and "year:2d" in pattern:
             pattern = pattern.replace("year:2d", ":2d")
         self.pattern = pattern
         self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
-        milliseconds = re.search(r'\%e', self.timepattern)
+        milliseconds = re.search(r'\%e', self.dt_pattern)
         if not milliseconds:
-            self.now = datetime.now().strftime(self.timepattern)
+            self.now = datetime.now().strftime(self.dt_pattern)
         else:
             now = datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(f'{self.timepattern[0:milliseconds.start()]}{milliseconds_:03d}{self.timepattern[milliseconds.end():]}')
+            self.now = now.strftime(f'{self.dt_pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.dt_pattern[milliseconds.end():]}')
 
     def matches(self, filepath, date):
         """
@@ -108,7 +108,7 @@ class Scraper:
         `bool`
             `True` if the given filepath matches with the calculated one for given date, else `False`.
         """
-        return parse(date.strftime(self.timepattern), filepath) is not None
+        return parse(date.strftime(self.dt_pattern), filepath) is not None
 
     def range(self, timerange):
         """
@@ -126,8 +126,8 @@ class Scraper:
             Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
-        if '/' in self.timepattern:
-            directorypattern = '/'.join(self.timepattern.split('/')[:-1]) + '/'
+        if '/' in self.dt_pattern:
+            directorypattern = '/'.join(self.dt_pattern.split('/')[:-1]) + '/'
         timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
@@ -226,16 +226,16 @@ class Scraper:
         """
         Goes over locally stored archives to return list of files in the given timerange.
         """
-        pattern, timepattern = self.pattern, self.timepattern
-        pattern_temp, timepattern_temp = pattern.replace('file://', ''), timepattern.replace('file://', '')
+        pattern, dt_pattern = self.pattern, self.dt_pattern
+        pattern_temp, dt_pattern_temp = pattern.replace('file://', ''), dt_pattern.replace('file://', '')
         if os.name == 'nt':
             pattern_temp = pattern_temp.replace('\\', '/')
-            timepattern_temp = timepattern_temp.replace('\\', '/')
+            dt_pattern_temp = dt_pattern_temp.replace('\\', '/')
             prefix = 'file:///'
         else:
             prefix = 'file://'
         # Change pattern variables class-wide
-        self.pattern, self.timepattern = pattern_temp, timepattern_temp
+        self.pattern, self.dt_pattern = pattern_temp, dt_pattern_temp
         directories = self.range(timerange)
         filepaths = list()
         for directory in directories:
@@ -246,7 +246,7 @@ class Scraper:
                         filepaths.append(fullpath)
         filepaths = [prefix + path for path in filepaths]
         # Set them back to their original values
-        self.pattern, self.timepattern = pattern, timepattern
+        self.pattern, self.dt_pattern = pattern, dt_pattern
         return filepaths
 
     def _httpfilelist(self, timerange):
