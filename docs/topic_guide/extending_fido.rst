@@ -17,8 +17,8 @@ The main place this is done is when constructing a `~.UnifiedResponse` object, w
 
 .. _sunpy-topic-guide-new-source-for-fido-add-new-scraper-client:
 
-A brief explanation of how "scraper" clients work
-=================================================
+An explanation of how "scraper" clients work
+============================================
 
 A "scraper" Fido client (also sometimes referred to as a "data retriever" client) is a Fido client which uses the URL `~sunpy.net.scraper.Scraper` to find files on remote servers.
 
@@ -27,12 +27,21 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 * A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
-* A class attribute ``pattern``; this is a string used to match the URLs supported by the client and extract metadata from the matched URLs.
-  The time and other metadata attributes for extraction are written using the `~sunpy.extern.parse.parse` format, using double curly-brackets so to differentiate them from ``kwargs`` parameters which are written in single curly-brackets.
+* A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
+  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `~sunpy.extern.parse.parse` format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
 
 Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
 
-1. It takes as input a generalised ``pattern`` of how a desired filepath looks like, following the ``parse`` format. A version of the pattern following the datetime format is also generated, called the ``timepattern``.
+A brief explanation of how the Scraper works is as follows:
+
+1. Drop the filename from the pattern and generate a list of directories to search for files.
+2. For each directory, get a list of files.
+3. For each file, check if it matches the pattern.
+4. For each file that matches the pattern, check if it is in the timerange. If it is, add it to the output.
+
+For a more in-depth explanation on how this is accomplished internally, see the following explanation:
+
+1. A Scraper object takes as input the generalised ``pattern`` of how a desired filepath looks like, in the ``parse`` format. Upon initialisation, a version of the pattern following the datetime format is also internally generated, called the ``dt_pattern``.
 
 .. code-block:: python
 
@@ -40,16 +49,18 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
     >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     >>> s = Scraper(pattern, instrument='swap')
+    >>> s.dt_pattern
+    'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
 
-2. The smallest unit of time / time-step for that directory pattern (the full timepattern minus the filename at the end) is then detected by using :meth:`~sunpy.net.scraper_utils.extract_timestep`.
+The smallest unit of time / time-step for that directory-pattern (the full ``dt_pattern`` except the filename at the end) is then internally detected from ``dt_pattern`` by using the :meth:`~sunpy.net.scraper_utils.extract_timestep` util.
 
 .. code-block:: python
 
     >>> from sunpy.net.scraper_utils import extract_timestep
-    >>> extract_timestep("http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits") # timepattern = 'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
+    >>> extract_timestep(s.dt_pattern)
     relativedelta(seconds=+1)
 
-3. After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in units of the timestep, the time is "floored" according to the pattern via the :meth:`~sunpy.net.scraper_utils.date_floor` method and then the directory pattern is filled with it.
+After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in increments of timestep, the time is first "floored" according to the pattern via :meth:`~sunpy.net.scraper_utils.date_floor` and a corresponding directory-pattern is generated.
 
 .. code-block:: python
 
@@ -60,9 +71,9 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
     'http://proba2.oma.be/swap/data/bsd/2015/01/02/',
     'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
 
-4. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
-5. The name of each file present is then examined to determine if it matches the remaining portion of the pattern using :meth:`~sunpy.extern.parse.parse`.
-6. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper_utils.check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
+2. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
+3. Each filename is then examined to determine if it matches the remaining portion of the pattern using :meth:`~sunpy.extern.parse.parse`.
+4. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper_utils.check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
 
 .. code-block:: python
 
