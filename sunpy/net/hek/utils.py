@@ -10,6 +10,8 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.time import parse_time
 
+__all__ = ['freeze', 'parse_times', 'parse_values_to_quantities']
+
 UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "unit_properties.json"
 COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "coord_properties.json"
 
