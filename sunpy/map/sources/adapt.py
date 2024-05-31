@@ -11,8 +11,11 @@ __all__ = ['ADAPTMap']
 class ADAPTMap(GenericMap):
     """
     ADAPT magnetic flux map
-     
-    The ADAPT (Air Force Data Assimilative Photospheric Flux Transport) flux transport model evolves an ensemble of realizations, using flux transport processes during periods for which there are no observations, and updates the ensemble using the ensemble least-squares (EnLS) data assimilation method to account for model and observational uncertainties. These data products are Carrington maps with an additional third dimension corresponding to the ensemble of models used to produce the ADAPT map.
+
+    The ADAPT (Air Force Data Assimilative Photospheric Flux Transport) flux transport model evolves an ensemble of realizations, using flux transport processes during periods for which there are no observations, and updates the ensemble using the ensemble least-squares (EnLS) data assimilation method to account for model and observational uncertainties.
+    These data products are Carrington maps with an additional third dimension corresponding to the ensemble of models used to produce the ADAPT map.
+
+    The third dimension is ignored and only the first element of the third dimension is used to create the map.
 
     References
     ----------

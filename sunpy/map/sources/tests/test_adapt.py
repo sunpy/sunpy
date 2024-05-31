@@ -14,9 +14,19 @@ def adapt_map():
     return get_dummy_map_from_header(header_file)
 
 
+def test_date(adapt_map):
+    """Tests the date property of the ADAPTMap object."""
+    assert adapt_map.date == "2020-01-01T00:00:00.000"
+
+
+def test_coordinate_system(adapt_map):
+    assert adapt_map.coordinate_system == ('CRLN-CAR', 'CRLT-CAR')
+
+
 def test_fitstoadapt(adapt_map):
     """Tests the creation of ADAPTMap using FITS."""
     assert isinstance(adapt_map, ADAPTMap)
+    assert adapt_map.data.shape == (180, 360)
 
 
 def test_is_datasource_for(adapt_map):
