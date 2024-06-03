@@ -238,11 +238,14 @@ def test_parse_time_ISO():
 
 
 def test_parse_time_tai():
-    dt = Time('2007-05-04T21:08:12', scale='tai')
-    dt2 = parse_time('2007.05.04_21:08:12_TAI')
-
-    assert dt == dt2
-    assert dt.scale == dt2.scale
+    tai_format = Time('2007-05-04T21:08:12', scale='tai')
+    tai_format_micro = Time('2007-05-04T21:08:12.999999', scale='tai')
+    parsed_tai = parse_time('2007.05.04_21:08:12_TAI')
+    parsed_tai_micro = parse_time('2007.05.04_21:08:12.999999_TAI')
+    assert tai_format == parsed_tai
+    assert tai_format.scale == parsed_tai.scale
+    assert tai_format_micro == parsed_tai_micro
+    assert tai_format_micro.scale == parsed_tai_micro.scale
 
 
 def test_parse_time_leap_second():
