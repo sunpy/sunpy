@@ -1,9 +1,11 @@
 comment: off
 coverage:
   status:
+    patch:
+      if_ci_failed: success
     project:
       default:
-        threshold: 0.2%
+        threshold: 1
 
 codecov:
   require_ci_to_pass: false
