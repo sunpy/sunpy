@@ -23,18 +23,6 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
 
 
 @pytest.mark.parametrize(
-    ('fname', 'hdus', 'length'),
-    [(TEST_RHESSI_IMAGE, None, 4),
-     (TEST_RHESSI_IMAGE, 1, 1),
-     (TEST_RHESSI_IMAGE, [1, 2], 2),
-     (TEST_RHESSI_IMAGE, range(0, 2), 2)]
-)
-def test_read_hdus(fname, hdus, length):
-    pairs = _fits.read(fname, hdus=hdus)
-    assert len(pairs) == length
-
-
-@pytest.mark.parametrize(
     ('fname', 'waveunit'),
     [(TEST_RHESSI_IMAGE, None),
      (TEST_EIT_HEADER, None),

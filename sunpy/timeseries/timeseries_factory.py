@@ -18,6 +18,7 @@ from astropy.time import Time
 from astropy.utils.decorators import deprecated_renamed_argument
 
 import sunpy
+from sunpy import log
 from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io._header import FileHeader
 from sunpy.timeseries.sources import source_names
@@ -147,11 +148,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     from sunpy.io._cdf import read_cdf
                     return read_cdf(os.fspath(fname), **kwargs)
             except UnrecognizedFileTypeError:
-                pass
+                log.debug(f"Unrecognized file type: {fname}")
 
             try:
-                pairs = read_file(os.fspath(fname), **kwargs)
-
+                pairs = read_file(os.fspath(fname), timeseries=True, **kwargs)
                 new_pairs = []
                 for pair in pairs:
                     filedata, filemeta = pair
@@ -161,6 +161,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                         new_pairs.append(HDPair(data, meta))
                 return [new_pairs]
             except UnrecognizedFileTypeError:
+                log.debug(f"Unrecognized file type: {fname}")
                 return [fname]
         else:
             return [fname]

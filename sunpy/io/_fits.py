@@ -38,8 +38,9 @@ from sunpy.util.io import HDPair
 
 __all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit', 'format_comments_and_history']
 
+SUPPORTED_FITS_IMAGES_TYPES = (fits.CompImageHDU, fits.PrimaryHDU, fits.ImageHDU)
 
-def read(filepath, hdus=None, memmap=None, **kwargs):
+def read(filepath, hdus=None, memmap=None, timeseries=False, **kwargs):
     """
     Read a fits file.
 
@@ -80,6 +81,8 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         pairs = []
 
         for i, (hdu, header) in enumerate(zip(hdulist, headers)):
+            if not timeseries and not isinstance(hdu, SUPPORTED_FITS_IMAGES_TYPES):
+                continue
             try:
                 pairs.append(HDPair(hdu.data, header))
             except (KeyError, ValueError) as e:

@@ -41,7 +41,7 @@ def test_read_file_fits_multiple_hdu():
     # Aim is to verify that we can read a FITS file with multiple HDUs
     hdulist = read_file(TEST_RHESSI_IMAGE)
     assert isinstance(hdulist, list)
-    assert len(hdulist) == 4
+    assert len(hdulist) == 1
     assert all(len(hdupair) == 2 for hdupair in hdulist)
     assert all(isinstance(hdupair[0], np.ndarray) for hdupair in hdulist)
     assert all(isinstance(hdupair[1], FileHeader) for hdupair in hdulist)
