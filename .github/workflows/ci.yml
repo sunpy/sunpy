@@ -54,6 +54,7 @@ jobs:
       default_python: '3.12'
       submodules: false
       pytest: false
+      coverage: false
       toxdeps: tox-pypi-filter
       cache-path: |
         docs/_build/
@@ -79,6 +80,7 @@ jobs:
       envs: |
         - linux: build_docs-gallery
           pytest: false
+          coverage: false
           cache-path: |
             docs/_build/
             docs/generated/
