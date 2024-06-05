@@ -344,12 +344,10 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
     int *dims = malloc(nd*sizeof(int));
     // Get the dimensions and number of elements
     npy_intp *npy_dims = PyArray_DIMS(anadata_align);
-    //npy_intp npy_nelem = PyArray_SIZE(anadata_align);
 
     if (debug == 1) printf("pyana_fzwrite(): Dimensions: ");
     for (d=0; d<nd; d++) {
         // ANA stores dimensions the other way around?
-        //dims[d] = npy_dims[d];
         dims[d] = npy_dims[nd-1-d];
         if (debug == 1) printf(" %d", dims[d]);
     }
@@ -363,6 +361,5 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
         ana_fzwrite(anadata_bytes, filename, dims, nd, header, type);
 
     free(dims);
-    // If we didn't crash up to here, we're probably ok :P
     return Py_BuildValue("i", 1);
 }
