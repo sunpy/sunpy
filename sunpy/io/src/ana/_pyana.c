@@ -260,7 +260,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
     int compress = 1, debug=0;
     char *header = NULL;
     // Processed data goes here
-    PyObject *anadata_align;
+    PyArrayObject *anadata_align;
     uint8_t *anadata_bytes;
     // ANA file writing
     int	type, d;
@@ -334,7 +334,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
     // Sanitize data, make a new array from the old array and force the
     // NPY_ARRAY_CARRAY_RO requirement which ensures a C-contiguous and aligned
     // array will be made
-    anadata_align = PyArray_FromArray(anadata, PyArray_DESCR(anadata),NPY_ARRAY_CARRAY_RO);
+    anadata_align = (PyArrayObject*) PyArray_FromArray(anadata, PyArray_DESCR(anadata),NPY_ARRAY_CARRAY_RO);
 
     // Get a pointer to the aligned data
     anadata_bytes = (uint8_t*) PyArray_DATA(anadata_align);
