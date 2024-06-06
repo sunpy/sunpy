@@ -74,7 +74,7 @@ class Scraper:
     >>> from sunpy.net import Scraper
     >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}{{second:2d}}.fits')
-    >>> swap = Scraper(pattern, instrument='swap')
+    >>> swap = Scraper(format=pattern, instrument='swap')
     >>> print(swap.pattern)
     http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
     >>> print(swap.now)  # doctest: +SKIP
@@ -212,7 +212,7 @@ class Scraper:
         >>> from sunpy.net import Scraper
         >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
-        >>> swap = Scraper(pattern, instrument='swap')
+        >>> swap = Scraper(format=pattern, instrument='swap')
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-01T00:12:00')
         >>> print(swap.filelist(timerange))  # doctest: +REMOTE_DATA
@@ -224,7 +224,7 @@ class Scraper:
         >>> from sunpy.net import Scraper
         >>> from sunpy.time import TimeRange
         >>> pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
-        >>> lyra = Scraper(pattern)
+        >>> lyra = Scraper(format=pattern)
         >>> timerange = TimeRange('2023-03-06T00:08:00','2023-03-12T00:12:00')
         >>> print(swap.filelist(timerange)) # doctest: +REMOTE_DATA
         ['http://proba2.oma.be/lyra/data/bsd/2023/03/06/lyra_20230306-000000_lev2_std.fits',

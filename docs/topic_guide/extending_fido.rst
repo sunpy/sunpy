@@ -30,6 +30,8 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
 * A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
   The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `~sunpy.extern.parse.parse` format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
 
+Note: The scraper has supported regex-based patterns for a long time, which is what it will still expect by default. However that is in the process of being replaced with parse-style patterns in the future versions of the package. To use the newer parse-style patterns, it's currently required to pass it as the ``format`` argument to the scraper.
+
 Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
 
 A brief explanation of how the Scraper works is as follows:
@@ -48,7 +50,7 @@ For a more in-depth explanation on how this is accomplished internally, see the 
     >>> from sunpy.net import Scraper
     >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
-    >>> s = Scraper(pattern, instrument='swap')
+    >>> s = Scraper(format=pattern, instrument='swap')
     >>> s.dt_pattern
     'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
 

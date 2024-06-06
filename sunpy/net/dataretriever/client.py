@@ -233,7 +233,7 @@ class GenericClient(BaseClient):
         A `QueryResponse` instance containing the query result.
         """
         pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        scraper = Scraper(pattern)
+        scraper = Scraper(format=pattern)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])

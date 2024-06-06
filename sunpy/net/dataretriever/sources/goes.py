@@ -128,7 +128,7 @@ class XRSClient(GenericClient):
         Function to help get list of OrderedDicts.
         """
         metalist = []
-        scraper = Scraper(pattern, **kwargs)
+        scraper = Scraper(format=pattern, **kwargs)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         filemeta = scraper._extract_files_meta(tr, matcher=matchdict)
         for i in filemeta:
@@ -298,7 +298,7 @@ class SUVIClient(GenericClient):
                     # formatting pattern using Level, SatelliteNumber and Wavelength
                     urlpattern = pattern.format(**formdict)
                     urlpattern = urlpattern.replace('{', '{{').replace('}', '}}')
-                    scraper = Scraper(urlpattern)
+                    scraper = Scraper(format=urlpattern)
                     tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
                     filesmeta = scraper._extract_files_meta(tr)
                     for i in filesmeta:
