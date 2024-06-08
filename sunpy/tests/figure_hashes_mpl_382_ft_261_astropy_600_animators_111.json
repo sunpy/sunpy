@@ -8,7 +8,7 @@
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_colors": "4e6310746beab7a9d866aab10d86878aa5797b2f20ae933f8cfdcdf1ce9d461e",
   "sunpy.map.tests.test_compositemap.test_set_alpha_composite_map": "2b2a157405dc296d5c06c74f7d8bc6e03b3cff4512cf9b0e66a773827497f37a",
   "sunpy.map.tests.test_compositemap.test_peek_composite_map": "a21143a11c499d95b3618d2f82a6d6e8a3cbad6291ab52b20b218b3f4a03c45b",
-  "sunpy.map.tests.test_map_factory.test_map_jp2_HMI": "3b731f25ab5777f187def8296fbed88d27809867405e0e97d5e808ca1bb4b42c",
+  "sunpy.map.tests.test_map_factory.test_map_jp2_HMI": "0b92d617cae5712f3c9a131f2712e74e38cacddb16902a19ea26db424e40d1d2",
   "sunpy.map.tests.test_mapbase.test_rotation_rect_pixelated_data": "5b37819c36a50a2a7a26944a2f1481027dd17390e73158f6b5510034102d35bb",
   "sunpy.map.tests.test_mapbase.test_draw_contours_with_transform": "c0c7a13980dd5302e6a365080a9933caa70fab9e313d166c53384490218a2eea",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scipy]": "9168fca9a4e04def3da12624196b29ebe954004ad269faa4bab11276a85366af",
