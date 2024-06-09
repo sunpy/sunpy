@@ -28,7 +28,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
 * A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
-  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `~sunpy.extern.parse.parse` format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
+  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse` format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
 
 Note: The scraper has supported regex-based patterns for a long time, which is what it will still expect by default. However that is in the process of being replaced with parse-style patterns in the future versions of the package. To use the newer parse-style patterns, it's currently required to pass it as the ``format`` argument to the scraper.
 
@@ -75,7 +75,7 @@ After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for
 
 2. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
 3. Each filename is then examined to determine if it matches the remaining portion of the pattern using :meth:`~sunpy.extern.parse.parse`.
-4. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper_utils.check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
+4. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
 
 .. code-block:: python
 
