@@ -1,7 +1,7 @@
 {
     "description": "sunpy is a software library that provides fundamental tools for accessing, loading and interacting with solar physics data in Python",
     "license": "BSD-2-Clause",
-    "title": "sunpy",
+    "title": "SunPy Core Package: All your Heliophysics needs",
     "upload_type": "software",
     "creators": [
         {
