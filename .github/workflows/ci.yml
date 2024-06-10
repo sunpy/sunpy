@@ -21,35 +21,31 @@ concurrency:
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
     with:
       submodules: false
-      coverage: codecov
+      coverage: github
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
         - linux: py312
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
     with:
       submodules: false
-      coverage: codecov
+      coverage: github
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
         - windows: py311
         - macos: py310
         - linux: py310-oldestdeps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
     with:
       default_python: '3.12'
       submodules: false
@@ -69,12 +65,12 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
     with:
       # Due to mplcario, we need to use Python 3.10 for the wheels
       default_python: '3.10'
       submodules: false
-      coverage: codecov
+      coverage: github
       toxdeps: tox-pypi-filter
       envs: |
         - linux: build_docs-gallery
@@ -90,8 +86,6 @@ jobs:
               - graphviz
         - linux: py312-online
           posargs: -n auto --dist loadgroup --color=yes
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   cron:
     if: |
@@ -99,18 +93,16 @@ jobs:
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
     with:
       default_python: '3.12'
       submodules: false
-      coverage: codecov
+      coverage: github
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
         - linux: base_deps
         - linux: py312-devdeps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   sdist_verify:
     if: |
@@ -156,10 +148,6 @@ jobs:
           conda list
           cd /tmp
           pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
-      - uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
 
   publish:
     # Build wheels when pushing to any branch except main
