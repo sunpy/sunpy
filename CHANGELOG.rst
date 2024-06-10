@@ -1,3 +1,13 @@
+v5.0.6 (2024-06-10)
+===================
+
+Bug Fixes
+---------
+
+- Fixed bug where conversion of results from the HEKClient to Astropy Time failed when some values where empty or missing for the values of event_strattime, event_endtime or event_peaktime (`#7627 <https://github.com/sunpy/sunpy/pull/7627>`__)
+- Fix compilation with gcc 14, avoid implicit pointer conversions. (`#7662 <https://github.com/sunpy/sunpy/pull/7662>`__)
+
+
 5.0.5 (2024-05-11)
 ==================
 
