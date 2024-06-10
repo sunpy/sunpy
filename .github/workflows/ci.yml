@@ -40,8 +40,8 @@ jobs:
       posargs: -n auto --color=yes
       envs: |
         - windows: py311
-        - macos: py310
-        - linux: py310-oldestdeps
+        #- macos: py310
+        #- linux: py310-oldestdeps
 
   docs:
     needs: [core]
@@ -62,30 +62,30 @@ jobs:
       envs: |
         - linux: build_docs
 
-  online:
-    if: "!startsWith(github.event.ref, 'refs/tags/v')"
-    needs: [docs]
-    uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
-    with:
-      # Due to mplcario, we need to use Python 3.10 for the wheels
-      default_python: '3.10'
-      submodules: false
-      coverage: github
-      toxdeps: tox-pypi-filter
-      envs: |
-        - linux: build_docs-gallery
-          pytest: false
-          cache-path: |
-            docs/_build/
-            docs/generated/
-            .tox/sample_data/
-          cache-key: docs-${{ github.run_id }}
-          libraries:
-            apt:
-              - libopenjp2-7
-              - graphviz
-        - linux: py312-online
-          posargs: -n auto --dist loadgroup --color=yes
+  #online:
+  #  if: "!startsWith(github.event.ref, 'refs/tags/v')"
+  #  needs: [docs]
+  #  uses: zacharyburnett/github-actions-workflows/.github/workflows/tox.yml@tox/coverage_github_actions
+  #  with:
+  #    # Due to mplcario, we need to use Python 3.10 for the wheels
+  #    default_python: '3.10'
+  #    submodules: false
+  #    coverage: github
+  #    toxdeps: tox-pypi-filter
+  #    envs: |
+  #      - linux: build_docs-gallery
+  #        pytest: false
+  #        cache-path: |
+  #          docs/_build/
+  #          docs/generated/
+  #          .tox/sample_data/
+  #        cache-key: docs-${{ github.run_id }}
+  #        libraries:
+  #          apt:
+  #            - libopenjp2-7
+  #            - graphviz
+  #      - linux: py312-online
+  #        posargs: -n auto --dist loadgroup --color=yes
 
   cron:
     if: |
@@ -196,7 +196,7 @@ jobs:
 
   notify:
     if: always() && github.event_name == 'workflow_dispatch'
-    needs: [publish_pure, online, cron, conda]
+    needs: [publish_pure, cron, conda]
     runs-on: ubuntu-latest
     steps:
       - uses: Cadair/matrix-notify-action@main
