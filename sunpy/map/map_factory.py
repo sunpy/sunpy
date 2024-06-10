@@ -171,10 +171,10 @@ class MapFactory(BasicRegistrationFactory):
                 args.insert(i, (data, header))
                 nargs -= 1
             elif isinstance(arg, str) and is_url(arg):
-                # Repalce URL string with a Request object to dispatch on later
+                # Replace URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif possibly_a_path(arg):
-                # Repalce path strings with Path objects
+                # Replace path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
 
