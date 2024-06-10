@@ -173,7 +173,7 @@ class GenericTimeSeries:
         """
         The time index of the data.
         """
-        warn_deprecated('.index is deprecatd. Use .time instead to get an astropy.time.Time object, '
+        warn_deprecated('.index is deprecated. Use .time instead to get an astropy.time.Time object, '
                         'or ts.to_dataframe().index to get a pandas DateTimeIndex.')
         return self.to_dataframe().index
 
