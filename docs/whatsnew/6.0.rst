@@ -88,3 +88,9 @@ Deprecate positional arguments in :meth:`sunpy.map.GenericMap.plot`
 
 The arguments for :meth:`sunpy.map.GenericMap.plot` have been changed to being keyword only.
 Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.
+
+Support for ADvanced Adaptive Prediction Technique (ADAPT)
+==========================================================
+
+A new map source has been added (``sunpy.map.sources.ADAPTMap``) to support the ADAPT data files.
+In addition, a new client (`sunpy.net.dataretriever.ADAPTClient`) has been added to search and download ADAPT files.

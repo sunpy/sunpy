@@ -15,12 +15,12 @@ specification and a sample cadence using::
 In addition to the core attrs defined here, other sunpy clients also provide
 attrs specific to them, under:
 
-* `a.vso <sunpy.net.vso.attrs>`
-* `a.jsoc <sunpy.net.jsoc.attrs>`
+* `a.adapt <sunpy.net.dataretriever.attrs.adapt>`
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
 * `a.hek <sunpy.net.hek.attrs>`
 * `a.helio <sunpy.net.helio.attrs>`
-
+* `a.jsoc <sunpy.net.jsoc.attrs>`
+* `a.vso <sunpy.net.vso.attrs>`
 """
 from ._attrs import (
     Detector,
