@@ -5,7 +5,7 @@ import pytest
 import astropy.units as u
 from astropy.coordinates import Longitude, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import TimeDelta
+from astropy.time import Time, TimeDelta
 
 import sunpy.map
 from sunpy.coordinates import frames
@@ -171,6 +171,16 @@ def test_solar_rotate_coordinate():
 
         # Test that the SkyCoordinate is Helioprojective
         assert isinstance(d.frame, frames.Helioprojective)
+
+    # Test that the function works correctly with a HGS coordinate.
+    earth_coord = get_earth(Time("2022-03-30"))
+    coord_hpc = SkyCoord(100*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective(observer=earth_coord))
+
+    coord_hgs = coord_hpc.transform_to(frames.HeliographicStonyhurst)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        rotated_coord_hgs = solar_rotate_coordinate(coord_hgs, time=Time("2022-03-31"))
+
+    assert isinstance(rotated_coord_hgs.frame, frames.HeliographicStonyhurst)
 
 
 def test_consistency_with_rotatedsunframe():
