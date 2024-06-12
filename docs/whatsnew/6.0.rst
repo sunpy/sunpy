@@ -92,5 +92,12 @@ Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.
 Support for ADvanced Adaptive Prediction Technique (ADAPT)
 ==========================================================
 
-A new map source has been added (``sunpy.map.sources.ADAPTMap``) to support the ADAPT data files.
+A new map source has been added (`sunpy.map.sources.ADAPTMap`) to support the ADAPT data files.
 In addition, a new client (`sunpy.net.dataretriever.ADAPTClient`) has been added to search and download ADAPT files.
+
+Please note that there are several data arrays within the FITS file and map will try to read them all and fail, so you have to specify the Header Data Pair you want to read.
+In this case, it will always be the first one. You can do this by passing the ``hdus`` argument to the `sunpy.map.Map` call.
+
+.. code-block:: python
+
+    >>> sunpy.map.Map("adapt40311_03k012_202401020800_i00005600n1.fts.gz", hdus=0)  # doctest: +SKIP

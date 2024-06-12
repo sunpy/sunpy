@@ -15,7 +15,17 @@ class ADAPTMap(GenericMap):
     The ADAPT (Air Force Data Assimilative Photospheric Flux Transport) flux transport model evolves an ensemble of realizations, using flux transport processes during periods for which there are no observations, and updates the ensemble using the ensemble least-squares (EnLS) data assimilation method to account for model and observational uncertainties.
     These data products are Carrington maps with an additional third dimension corresponding to the ensemble of models used to produce the ADAPT map.
 
-    The third dimension is ignored and only the first element of the third dimension is used to create the map.
+    The third dimension is ignored and only the first element of the third dimension is used to create the  map.
+
+    .. warning::
+
+        Please note that there are several data arrays within the FITS file and map will try to read them all and fail, so you have to specify the Header Data Pair you want to read.
+        In this case, it will always be the first one.
+        You can do this by passing the ``hdus`` argument to the `sunpy.map.Map` call.
+
+        .. code-block:: python
+
+            >>> sunpy.map.Map("adapt40311_03k012_202401020800_i00005600n1.fts.gz", hdus=0)  # doctest: +SKIP
 
     References
     ----------
@@ -34,7 +44,6 @@ class ADAPTMap(GenericMap):
     @property
     def date(self):
         return Time(self.meta.get('date-obs') or self.meta.get('maptime') or super().date)
-
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
