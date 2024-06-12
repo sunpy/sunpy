@@ -730,13 +730,10 @@ class GenericMap(NDData):
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
+            unit = u.Unit(unit_str, parse_strict='silent')
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            unit_str_components = unit.to_string().replace('/', ' ').replace('(', '').replace(')', '')
-            unit_str_components = unit_str_components.strip().split()
-            if any(['DN' in component.upper() for component in unit_str_components]):
-                unit = u.Unit(unit_str)
-            else:
+            if u.DN not in unit.bases:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                               f'See {_META_FIX_URL} for how to fix metadata before loading it '
                                'with sunpy.map.Map.\n'
@@ -757,7 +754,6 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-
         return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
