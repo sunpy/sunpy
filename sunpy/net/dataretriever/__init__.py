@@ -9,6 +9,7 @@ class, so do not need to be called individually.
 """
 
 from .client import *
+from .sources.adapt import *
 from .sources.eve import *
 from .sources.fermi_gbm import *
 from .sources.goes import *
