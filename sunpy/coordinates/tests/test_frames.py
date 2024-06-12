@@ -538,6 +538,7 @@ def test_assume_spherical_screen_deprecated(off_limb_coord):
         with Helioprojective.assume_spherical_screen(off_limb_coord.observer):
             _ = off_limb_coord.make_3d()
 
+
 @pytest.mark.parametrize(('only_off_disk', 'distance_from_center', 'distance'), [
     (False, 0*u.m, [0.98331616, 0.98329512, 0.98331616]*u.AU),
     (True, 0*u.m, [0.98331616, 0.97910333, 0.98331616]*u.AU),
@@ -545,5 +546,15 @@ def test_assume_spherical_screen_deprecated(off_limb_coord):
 ])
 def test_planar_screen(off_limb_coord, only_off_disk, distance_from_center, distance):
     with PlanarScreen(off_limb_coord.observer, distance_from_center=distance_from_center, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('only_off_disk', 'distance'), [
+    (False, [0.98329304, 0.98329304, 0.98329304]*u.AU),
+    (True, [0.98329304, 0.97910333, 0.98329304]*u.AU),
+])
+def test_spherical_screen(off_limb_coord, only_off_disk, distance):
+    with SphericalScreen(off_limb_coord.observer, only_off_disk=only_off_disk):
         olc_3d = off_limb_coord.make_3d()
     assert u.quantity.allclose(olc_3d.distance, distance)
