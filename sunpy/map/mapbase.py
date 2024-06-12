@@ -1996,9 +1996,13 @@ class GenericMap(NDData):
     @_parse_submap_input.register(BaseCoordinateFrame)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
         msg = (
-            "The {quadrant} input contains NaN values. "
-            "It is possible the coordinates are off-disk. "
-            "Consider using Helioprojective.assume_spherical_screen"
+            "The provided input coordinates for ``{quadrant}`` when transformed to the target "
+            "coordinate frame contain NaN values and are possibly off-disk. "
+            "This means that submap can not crop the map to the desired region, "
+            "as there are no valid pixel coordinates to crop to."
+            "The context manager: Helioprojective.assume_spherical_screen can be used to "
+            "transform the coordinates to a spherical screen where the NaN values are "
+            "transformed as there is a spherical screen where they are valid coordinates."
         )
         if isinstance(bottom_left, Helioprojective):
             if np.isnan(bottom_left.distance.to_value()).any():
