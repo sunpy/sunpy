@@ -96,7 +96,7 @@ def generic_map():
         'detector': 'bar',
         'wavelnth': 10,
         'waveunit': 'm',
-        'bunit': 'ct/s',
+        'bunit': 'DN/s',
     }
     return sunpy.map.Map((data, header))
 
