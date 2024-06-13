@@ -17,8 +17,7 @@ TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
 TEST_EIT_HEADER = get_test_filepath('EIT_header/efz20040301.000010_s.header')
 TEST_SWAP_HEADER = get_test_filepath('SWAP/resampled1_swap.header')
 TEST_GONG_HEADER = get_test_filepath('gong_synoptic.header')
-# Some of the tests images contain an invalid BLANK keyword
-# ignore the warning raised by this
+# Some of the tests images contain an invalid BLANK keyword ignore the warning raised by this
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
 
@@ -133,8 +132,6 @@ def test_write_with_metadict_header_astropy(tmpdir):
 
 # Various warnings are thrown in this test, but we just want to check that the code
 # works without exceptions
-
-
 @pytest.mark.filterwarnings('ignore')
 def test_fitsheader():
     """Test that all test data can be converted back to a FITS header."""
@@ -180,6 +177,7 @@ def test_warn_longkey():
 def test_read_memmap():
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=True)[0]
     assert data.base is not None
+    # Simple check to see if the base is a memory map
     assert isinstance(data.base, mmap.mmap)
 
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]

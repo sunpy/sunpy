@@ -41,7 +41,7 @@ __all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit', 
 
 def read(filepath, hdus=None, memmap=None, **kwargs):
     """
-    Read a fits file.
+    Read a FITS file.
 
     Parameters
     ----------
@@ -49,6 +49,9 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         The fits file to be read.
     hdus : `int` or iterable
         The HDU indexes to read from the file.
+    memmap : `bool`, optional
+        Set to use memory mapping.
+        Default is `None`.
     **kwargs : `dict`, optional
         Passed to `astropy.io.fits.open`.
 
@@ -71,17 +74,16 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                 hdulist = hdulist[hdus]
             elif isinstance(hdus, collections.abc.Iterable):
                 hdulist = [hdulist[i] for i in hdus]
-
         hdulist = fits.hdu.HDUList(hdulist)
         for h in hdulist:
             h.verify('silentfix+warn')
-
-        headers = get_header(hdulist)
         pairs = []
-
-        for i, (hdu, header) in enumerate(zip(hdulist, headers)):
+        for i, hdu in enumerate(hdulist):
             try:
-                pairs.append(HDPair(hdu.data, header))
+                # Access data to force any BSCALE/BZERO scaling to be applied
+                # which will update the keywords in the header.
+                data = hdu.data
+                pairs.append(HDPair(data, get_header(hdu)[-1]))
             except (KeyError, ValueError) as e:
                 message = f"Error when reading HDU {i}. Skipping.\n"
                 for line in traceback.format_tb(sys.exc_info()[2]):
@@ -95,12 +97,12 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
 
 def get_header(afile):
     """
-    Read a fits file and return just the headers for all HDU's.
+    Gets the header from a FITS file or HDUList or individual HDU.
 
     Parameters
     ----------
-    afile : `str` or `astropy.io.fits.HDUList`
-        The file to be read, or HDUList to process.
+    afile : `str` or `astropy.io.fits.HDUList` or `astropy.io.fits.PrimaryHDU`
+        The file to be read or HDUList or PrimaryHDU to process.
 
     Returns
     -------
@@ -110,15 +112,15 @@ def get_header(afile):
     if isinstance(afile, fits.HDUList):
         hdulist = afile
         close = False
+    elif isinstance(afile, (fits.PrimaryHDU | fits.hdu.base.ExtensionHDU)):
+        hdulist = [afile]
+        close = False
     else:
         hdulist = fits.open(afile, ignore_blank=True)
         hdulist.verify('silentfix')
         close = True
-
     try:
-        headers = []
-        for hdu in hdulist:
-            headers.append(format_comments_and_history(hdu.header))
+        headers = [format_comments_and_history(hdu.header) for hdu in hdulist]
     finally:
         if close:
             hdulist.close()
@@ -153,11 +155,11 @@ def format_comments_and_history(input_header):
     header['COMMENT'] = comment
     header['HISTORY'] = history
 
-    # Strip out KEYCOMMENTS to a dict, the hard way
-    keydict = {}
-    for card in input_header.cards:
-        if card.comment != '':
-            keydict.update({card.keyword: card.comment})
+    keydict = {
+        card.keyword: card.comment
+        for card in input_header.cards
+        if card.comment != ''
+    }
     header['KEYCOMMENTS'] = keydict
     waveunit = extract_waveunit(header)
     if waveunit is not None:
