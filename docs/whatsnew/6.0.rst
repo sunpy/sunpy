@@ -45,6 +45,18 @@ The minimum required versions of these optional dependencies has also been updat
 - tqdm >= 4.64.0
 - zeep >= 4.1.0
 
+Overhaul of the extra groups
+============================
+
+The extra groups have been overhauled to make it easier to install sunpy with only the dependencies you need.
+The following extra group have been added:
+
+- "core" - installs only the dependencies that are required to import sunpy or any of its subpackages.
+- "scikit-image" - installs the ``scikit-image`` package used for image processing. This dependency is no longer included in the "image" extra group.
+
+Additionally, the "all" extra group is a meta group that includes all optional dependencies.
+The "dask" extra group has also been removed.
+
 Removal of ``sunpy.database``
 =============================
 
