@@ -6,4 +6,4 @@ This now includes the following packages:
 - glmyur
 - opencv
 - scikit-image
-- spicepy
+- spiceypy

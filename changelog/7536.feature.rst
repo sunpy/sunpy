@@ -1,5 +1,5 @@
 Added a "core" extra group that does not install any truly optional dependencies.
-It only includes the dependencies that are required to import sunpy or any of its subpackages.
+It only includes the dependencies that are required to import sunpy and all subpackages.
 
 This means it will not install:
 
@@ -7,4 +7,4 @@ This means it will not install:
 - glymur
 - opencv
 - scikit-image
-- spicepy
+- spiceypy
