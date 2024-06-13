@@ -52,10 +52,11 @@ The extra groups have been overhauled to make it easier to install sunpy with on
 The following extra group have been added:
 
 - "core" - installs only the dependencies that are required to import sunpy or any of its subpackages.
-- "scikit-image" - installs the `scikit-image` package used for image processing. This dependency is no longer included in the "image" extra group.
+- "scikit-image" - installs the ``scikit-image`` package used for image processing. This dependency is no longer included in the "image" extra group.
 
 Additionally, the "all" extra group is a meta group that includes all optional dependencies.
 The "dask" extra group has also been removed.
+
 Removal of ``sunpy.database``
 =============================
 
