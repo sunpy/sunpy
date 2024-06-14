@@ -22,7 +22,10 @@ UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "unit_properties.json"
 COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "coord_properties.json"
 
 def freeze(obj):
-    """ Create hashable representation of result dict. """
+    """
+    Create a hashable representation of a dict or list.
+    Otherwise returns the original input.
+    """
     if isinstance(obj, dict):
         return tuple((k, freeze(v)) for k, v in obj.items())
     if isinstance(obj, list):
