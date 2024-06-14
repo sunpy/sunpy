@@ -44,6 +44,23 @@ def parse_times(table):
 
 # NOTE: Needs unit test
 def parse_values_to_quantities(table):
+    """
+    Parses the values in an Astropy table into Astropy objects.
+
+    Parameters
+    ----------
+    table: astropy.table
+        Astropy table.
+
+    Returns
+    -------
+    `astropy.table`
+
+    Raises
+    ------
+    TypeError
+        If `table` is not an Astropy table.
+    """
     with open(UNIT_FILE_PATH) as unit_file:
         unit_properties = json.load(unit_file)
     unit_attributes = unit_properties["attributes"]
@@ -52,7 +69,7 @@ def parse_values_to_quantities(table):
         coord_properties = json.load(coord_file)
     coord_attributes = coord_properties["attributes"]
     table = parse_columns_to_table(table, unit_attributes)
-    table = parse_columns_to_table(table, coord_attributes, is_coord_prop= True)
+    table = parse_columns_to_table(table, coord_attributes, is_coord_prop = True)
     return table
 
 # NOTE: Needs unit test
