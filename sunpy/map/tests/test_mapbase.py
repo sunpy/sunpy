@@ -25,7 +25,7 @@ import sunpy
 import sunpy.coordinates
 import sunpy.map
 import sunpy.sun
-from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, Helioprojective, sun
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
@@ -1821,17 +1821,10 @@ def test_plot_deprecated_positional_args(aia171_test_map):
             aia171_test_map.plot('interpolation', True)
 
 
-def test_submap_nan_error_bottom_left(aia171_test_map):
-    h = Helioprojective([319, 2233]*u.arcsec, 0*u.arcsec, observer='earth', obstime='2020-04-08')
-    h_3d = h.make_3d()
-    with pytest.raises(ValueError, match="The provided input coordinates for ``bottom_left``"):
-        aia171_test_map.submap(h_3d)
-
-def test_submap_nan_error_top_right(aia171_test_map):
-    h = Helioprojective(319*u.arcsec, 0*u.arcsec, observer='earth', obstime='2020-04-08')
-    h2 = Helioprojective(2233*u.arcsec, 0*u.arcsec, observer='earth', obstime='2020-04-08')
-    h_3d = h.make_3d()
-    with pytest.warns(SunpyUserWarning, match="The conversion of these 2D helioprojective coordinates to 3D is all NaNs"):
-        h2_3d = h2.make_3d()
-    with pytest.raises(ValueError, match="The provided input coordinates for ``top_right``"):
-        aia171_test_map.submap(h_3d, top_right=h2_3d)
+def test_submap_nan_error(aia171_test_map):
+    # See https://github.com/sunpy/sunpy/pull/7543#issuecomment-2167019208 for more context
+    coord_native = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia171_test_map.coordinate_frame)
+    aia171_test_map.submap(coord_native, width=1000*u.arcsec, height=1000*u.arcsec)
+    coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
+    with pytest.raises(ValueError, match="The provided input coordinates to"):
+        aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)

@@ -36,7 +36,7 @@ from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 import sunpy.coordinates
 import sunpy.visualization.colormaps
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, Helioprojective, get_earth, sun
+from sunpy.coordinates import HeliographicCarrington, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -1912,6 +1912,18 @@ class GenericMap(NDData):
         pixel_corners = u.Quantity(self._parse_submap_input(
             bottom_left, top_right, width, height)).T
 
+        msg = (
+            "The provided input coordinates to ``submap`` when transformed to the target "
+            "coordinate frame contain NaN values and are possibly off-disk. "
+            "This means that submap can not crop the map to the desired region, "
+            "as there are no valid pixel coordinates to crop to."
+            "The context manager: Helioprojective.assume_spherical_screen can be used to "
+            "transform the coordinates to a spherical screen where the NaN values are "
+            "transformed as there is a spherical screen where they are valid coordinates."
+        )
+        if np.any(np.isnan(pixel_corners)):
+            raise ValueError(msg)
+
         # The pixel corners result is in Cartesian order, so the first index is
         # columns and the second is rows.
         bottom = np.min(pixel_corners[1]).to_value(u.pix)
@@ -1995,22 +2007,6 @@ class GenericMap(NDData):
     @_parse_submap_input.register(SkyCoord)
     @_parse_submap_input.register(BaseCoordinateFrame)
     def _parse_submap_coord_input(self, bottom_left, top_right, width, height):
-        msg = (
-            "The provided input coordinates for ``{quadrant}`` when transformed to the target "
-            "coordinate frame contain NaN values and are possibly off-disk. "
-            "This means that submap can not crop the map to the desired region, "
-            "as there are no valid pixel coordinates to crop to."
-            "The context manager: Helioprojective.assume_spherical_screen can be used to "
-            "transform the coordinates to a spherical screen where the NaN values are "
-            "transformed as there is a spherical screen where they are valid coordinates."
-        )
-        if isinstance(bottom_left, Helioprojective):
-            if np.isnan(bottom_left.distance.to_value()).any():
-                raise ValueError(msg.format(quadrant="bottom_left"))
-        if top_right is not None and isinstance(top_right, Helioprojective):
-            if np.isnan(top_right.distance.to_value()).any():
-                raise ValueError(msg.format(quadrant="top_right"))
-
         # Use helper function to get top_right as a SkyCoord
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                            top_right=top_right,
