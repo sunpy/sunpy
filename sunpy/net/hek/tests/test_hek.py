@@ -1,7 +1,5 @@
-import os
 import copy
 import json
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -11,6 +9,7 @@ from astropy import units as u
 from astropy.time import Time
 
 from sunpy.net import attr, attrs, hek
+from sunpy.net.hek.utils import COORD_FILE_PATH, UNIT_FILE_PATH
 
 
 @pytest.fixture
@@ -19,8 +18,6 @@ def foostrwrap(request):
 
 @pytest.fixture
 def read_unit_attributes():
-    UNIT_FILE_PATH = Path(os.path.dirname(__file__)) / "../unit_properties.json"
-
     with open(UNIT_FILE_PATH) as unit_file:
         unit_properties = json.load(unit_file)
 
@@ -28,8 +25,6 @@ def read_unit_attributes():
 
 @pytest.fixture
 def read_coord_attributes():
-    COORD_FILE_PATH = Path(os.path.dirname(__file__)) / "../coord_properties.json"
-
     with open(COORD_FILE_PATH) as coord_file:
         coord_properties = json.load(coord_file)
 
