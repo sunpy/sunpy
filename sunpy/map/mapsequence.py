@@ -3,7 +3,6 @@
 import html
 import textwrap
 import webbrowser
-from copy import deepcopy
 from tempfile import NamedTemporaryFile
 
 import matplotlib.animation
@@ -362,18 +361,15 @@ class MapSequence:
 
             im.set_array(ani_data[i].data)
             im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
-            norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
+            norm = kwargs.get('norm') or ani_data[i].plot_settings["norm"] if "norm" in ani_data[i].plot_settings else None
 
             if clip_interval is not None:
                 vmin, vmax = _clip_interval(ani_data[i].data, clip_interval)
                 norm.vmin=vmin
                 norm.vmax=vmax
-            _handle_norm(norm, kwargs)
-
-            # The following explicit call is for bugged versions of Astropy's ImageNormalize
-            norm.autoscale_None(ani_data[i].data)
-            im.set_norm(norm)
-
+            if norm:
+                _handle_norm(norm, kwargs)
+                im.set_norm(norm)
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(ani_data[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)
