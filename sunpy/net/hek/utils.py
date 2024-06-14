@@ -34,6 +34,18 @@ def freeze(obj):
 
 # NOTE: Needs unit test
 def parse_times(table):
+    """
+    Parses the time values in an Astropy table into `astropy.time.Time`.
+
+    Parameters
+    ----------
+    table: `astropy.table`
+        Astropy table.
+
+    Returns
+    -------
+    `astropy.table`
+    """
     # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
     time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
     for tkey in time_keys:
@@ -49,7 +61,7 @@ def parse_values_to_quantities(table):
 
     Parameters
     ----------
-    table: astropy.table
+    table: `astropy.table`
         Astropy table.
 
     Returns
