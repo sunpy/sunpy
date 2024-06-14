@@ -3,6 +3,7 @@
 import html
 import textwrap
 import webbrowser
+from copy import deepcopy
 from tempfile import NamedTemporaryFile
 
 import matplotlib.animation
@@ -361,7 +362,7 @@ class MapSequence:
 
             im.set_array(ani_data[i].data)
             im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
-            norm = kwargs.get('norm') or ani_data[i].plot_settings["norm"] if "norm" in ani_data[i].plot_settings else None
+            norm = deepcopy(kwargs.get('norm')) or deepcopy(ani_data[i].plot_settings["norm"]) if "norm" in ani_data[i].plot_settings else None
 
             if clip_interval is not None:
                 vmin, vmax = _clip_interval(ani_data[i].data, clip_interval)
