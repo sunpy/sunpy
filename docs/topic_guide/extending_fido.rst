@@ -382,6 +382,7 @@ A simple example, which just checks the type of ``attrs`` and not their values w
         return supported_attrs.issuperset(query_attrs)
 
 Note, that this method is a class method, it gets called without instantiating your client to speed up the dispatching.
+If you are using the `~sunpy.net.dataretriever.client.GenericClient` as a base class, you do not need to implement this method, as it is already implemented in the base class.
 
 Writing a Fetch Method
 ----------------------

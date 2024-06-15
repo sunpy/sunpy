@@ -32,7 +32,7 @@ if missing_requirements:
 
 from matplotlib import MatplotlibDeprecationWarning
 from ruamel.yaml import YAML
-from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder
+from sphinx_gallery.sorting import ExplicitOrder
 from sunpy_sphinx_theme import PNG_ICON
 
 from astropy.utils.exceptions import AstropyDeprecationWarning
@@ -282,7 +282,7 @@ sphinx_gallery_conf = {
         '../examples/computer_vision_techniques',
         '../examples/showcase',
     ]),
-    'within_subsection_order': ExampleTitleSortKey,
+    'within_subsection_order': "ExampleTitleSortKey",
     'gallery_dirs': os.path.join('generated', 'gallery'),
     'matplotlib_animations': True,
     # Comes from the theme.
