@@ -266,7 +266,7 @@ def test_chaincode_parsing(read_coord_attributes):
 
     for attribute in chaincode_properties:
         if attribute["name"] in result.colnames:
-            assert all([value in ['', None] or isinstance(value, PolygonSkyRegion) for value in results[attribute['name']]])
+            assert all([value in ['', None] or isinstance(value, PolygonSkyRegion) for value in result[attribute['name']]])
 
 @pytest.mark.remote_data
 def test_missing_times():

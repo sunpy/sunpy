@@ -1,8 +1,10 @@
 import os
 import re
 import json
+import warnings
 from pathlib import Path
 
+import numpy.ma
 from regions import PolygonSkyRegion
 
 from astropy import units as u
@@ -49,9 +51,10 @@ def parse_times(table):
     # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
     time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
     for tkey in time_keys:
-        if tkey in table.colnames and not any(time == "" for time in table[tkey]):
-            table[tkey] = parse_time(table[tkey])
-            table[tkey].format = 'iso'
+        if tkey in table.colnames:
+            table[tkey] = [
+                (parse_time(time, format='iso') if time else numpy.ma.masked) for time in table[tkey]
+            ]
     return table
 
 # NOTE: Needs unit test
@@ -228,9 +231,9 @@ def get_unit(unit):
         "cubic meter": m3,
         "square meter": m2,
     }
-
-    with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases):
+    with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         # Units for coordinate frames have more than one unit, otherwise it will be just one unit.
         # There is an assumption that coord1_unit, coord2_unit and coord3_unit are the same.
+        warnings.filterwarnings("ignore", category=u.UnitsWarning)
         units = re.split(r'[, ]', unit)
         return u.Unit(units[0].lower())
