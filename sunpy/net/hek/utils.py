@@ -217,6 +217,7 @@ def get_unit(unit):
     cm2 = u.def_unit("cm2", u.cm**3)
     m2 = u.def_unit("m2", u.m**2)
     m3 = u.def_unit("m3", u.m**3)
+    erg_per_cm3 = u.def_unit("ergs/cm^3", u.erg/u.ml)
 
     aliases = {
         "steradian": u.sr,
@@ -230,10 +231,14 @@ def get_unit(unit):
         "square centimeter": cm2,
         "cubic meter": m3,
         "square meter": m2,
+        "ergs per cubic centimeter": erg_per_cm3,
     }
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         # Units for coordinate frames have more than one unit, otherwise it will be just one unit.
         # There is an assumption that coord1_unit, coord2_unit and coord3_unit are the same.
         warnings.filterwarnings("ignore", category=u.UnitsWarning)
-        units = re.split(r'[, ]', unit)
-        return u.Unit(units[0].lower())
+        if unit in aliases:
+            unit = u.Unit(aliases[unit])
+        else:
+            unit = u.Unit(re.split(r'[, ]', unit)[0].lower())
+        return unit
