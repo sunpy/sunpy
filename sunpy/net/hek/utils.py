@@ -189,7 +189,6 @@ def parse_chaincode(value, attribute, unit):
 
     return PolygonSkyRegion(vertices = vertices)
 
-# NOTE: Needs unit test
 def get_unit(unit):
     """
     Converts string into astropy unit.
