@@ -147,7 +147,7 @@ def parse_chaincode(value, attribute, unit):
 
     Parameters
     ----------
-    value: PolygonSkyRegion
+    value: `numpy.string_`
         A polygon defined using vertices in sky coordinates.
     attribute: dict
         An object from coord_properties.json
