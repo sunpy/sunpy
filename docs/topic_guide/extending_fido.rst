@@ -41,7 +41,7 @@ A brief explanation of how the Scraper works is as follows:
 3. For each file, check if it matches the pattern.
 4. For each file that matches the pattern, check if it is in the timerange. If it is, add it to the output.
 
-For a more in-depth explanation on how this is accomplished internally, see the following explanation:
+For a more verbose in-depth explanation on how this is accomplished internally:
 
 1. A Scraper object takes as input the generalised ``pattern`` of how a desired filepath looks like, in the ``parse`` format. Upon initialisation, a version of the pattern following the datetime format is also internally generated, called the ``dt_pattern``.
 
@@ -74,7 +74,7 @@ After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for
     'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
 
 2. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
-3. Each filename is then examined to determine if it matches the remaining portion of the pattern using :meth:`~sunpy.extern.parse.parse`.
+3. Each filename is then parsed against the remaining portion of the pattern to determine if it matches.
 4. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
 
 .. code-block:: python
