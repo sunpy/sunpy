@@ -257,8 +257,8 @@ date_begend = date_dict['DATE-BEG'] + (date_dict['DATE-END'] - date_dict['DATE-B
 
 @pytest.mark.parametrize(("keys", "expected_date"),
                          ([['DATE-AVG', 'DATE-OBS', 'DATE-BEG', 'DATE-END'], date_dict['DATE-OBS']],
-                          [['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-AVG']],
-                          [['DATE-BEG', 'DATE-END'], date_begend],
+                          [['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-BEG']],
+                          [['DATE-BEG', 'DATE-END'], date_dict['DATE-BEG']],
                           [['DATE-BEG'], date_dict['DATE-BEG']],
                           [['DATE-END'], date_dict['DATE-END']],
                           [[], 'now']
