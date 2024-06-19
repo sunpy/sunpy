@@ -299,7 +299,7 @@ def test_detector(wispr_map):
 
 
 def test_unit(wispr_map):
-    assert wispr_map.unit == u.Unit('ct')
+    assert wispr_map.unit == u.Unit('DN')
 
 
 def test_norm_clip(wispr_map):

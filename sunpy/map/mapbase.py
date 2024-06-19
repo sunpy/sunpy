@@ -535,7 +535,7 @@ class GenericMap(NDData):
         operations.
         """
         new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string('fits')
+        new_meta['bunit'] = new_data.unit.to_string()
         return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
 
     def __neg__(self):
@@ -725,19 +725,21 @@ class GenericMap(NDData):
     @staticmethod
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
-                        'dn': 'ct',
-                        'dn/s': 'ct/s',
                         'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
-                          'the FITS unit standards.')
-            unit = None
+            unit = u.Unit(unit_str, parse_strict='silent')
+            # NOTE: Special case DN here as it is not part of the FITS standard, but
+            # is widely used and is also a recognized astropy unit
+            if u.DN not in unit.bases:
+                warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                               'with sunpy.map.Map.\n'
+                               'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                               'the FITS unit standards.')
+                unit = None
         return unit
 
     @property
@@ -752,7 +754,6 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-
         return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
@@ -2617,7 +2618,7 @@ class GenericMap(NDData):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.ct)  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
             <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec

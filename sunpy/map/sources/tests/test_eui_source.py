@@ -49,7 +49,7 @@ def test_level_number(eui_map):
 
 
 def test_unit(eui_map):
-    assert eui_map.unit == u.Unit('ct')
+    assert eui_map.unit == u.Unit('DN')
 
 
 def test_norm_clip(eui_map):
