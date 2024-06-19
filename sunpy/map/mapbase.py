@@ -611,8 +611,15 @@ class GenericMap(NDData):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
+
+        w2.wcs.dateavg = self.reference_date.isot
+        if self._date_obs is not None:
+            w2.wcs.dateobs = self._date_obs.isot
+        if self.date_start is not None:
+            w2.wcs.datebeg = self.date_start.isot
+        if self.date_end is not None:
+            w2.wcs.dateend = self.date_end.isot
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
