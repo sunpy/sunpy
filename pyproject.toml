@@ -94,14 +94,16 @@ timeseries = [
 visualization = ["matplotlib>=3.5.0", "mpl-animators>=1.0.0"]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
-tests = [
-  "sunpy[all]",
+tests_only = [
   "hvpy>=1.1.0",
   "jplephem>=2.14",
   "pytest-astropy>=0.11.0",
   "pytest-mpl>=0.16",
   "pytest-xdist>=3.0.2",
   "pytest>=7.1.0",
+]
+tests = [
+  "sunpy[all,tests_only]",
 ]
 docs = [
   "sunpy[all]",
@@ -158,10 +160,6 @@ py-limited-api = "cp310"
 
 [tool.extension-helpers]
 use_extension_helpers = "true"
-
-[tool.cibuildwheel]
-test-command = "pytest -p no:warnings --doctest-rst -m 'not mpl_image_compare' --pyargs sunpy"
-test-extras = ["tests"]
 
 [tool.gilesbot]
   [tool.gilesbot.circleci_artifacts]
