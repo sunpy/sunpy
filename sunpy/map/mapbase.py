@@ -864,7 +864,7 @@ class GenericMap(NDData):
     @property
     def date(self):
         """
-        Image observation time.
+        'Canonical' observation time.
 
         For different combinations of map metadata this can return either
         the start time, end time, or a time between these. It is recommended
@@ -874,16 +874,18 @@ class GenericMap(NDData):
 
         Taken from, in order of preference:
 
-        1. The DATE-OBS FITS keyword
-        2. `~sunpy.map.GenericMap.date_average`
-        3. `~sunpy.map.GenericMap.date_start`
+        1. `~sunpy.map.GenericMap.date_start`
+        2. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
+        3. `~sunpy.map.GenericMap.date_average`
         4. `~sunpy.map.GenericMap.date_end`
         5. The current time
         """
-        time = self._date_obs
-        time = time or self.date_average
-        time = time or self.date_start
-        time = time or self.date_end
+        time = (
+            self.date_start or
+            self._date_obs or
+            self.date_average or
+            self.date_end
+        )
 
         if time is None:
             if self._default_time is None:

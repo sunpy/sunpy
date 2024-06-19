@@ -1,0 +1,1 @@
+The `.GenericMap.date` key priority order has changed. It now prioritises the FITS 4 ``DATE-BEG`` key over the old unspecified ``DATE-OBS`` key, and falls back to ``DATE-AVG`` and then ``DATE-END``.
