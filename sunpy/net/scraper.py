@@ -54,18 +54,32 @@ class Scraper:
     Parameters
     ----------
     pattern : `str`
-        A string containing the url with the date and other information to be
+        A string containing the url with the date encoded as datetime formats,
+        and any other parameter as ``kwargs`` as a string format.
+        This can also be a uri to a local file patterns. Deprecated in favor of `format`. Default is `None`.
+
+    regex : `bool`
+        Set to `True` if parts of the pattern uses regexp symbols.
+        This only works for the filename part of the pattern rather than the full url.
+        Be careful that periods ``.`` matches any character and therefore it's better to escape them.
+        If regexp is used, other ``kwargs`` are ignored and string replacement is
+        not possible. Default is `False`.
+
+    format : `str`
+        The new version for pattern, a string containing the url with the date and other information to be
         extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
         as a string format, the former represented using double curly-brackets
         to differentiate from the latter.
         The accepted parse representations for datetime values are as given in ``PARSE_TIME_CONVERSIONS``.
-        This can also be a uri to a local file patterns.
+        This can also be a uri to a local file patterns. Default is `None`.
 
 
     Attributes
     ----------
     pattern : `str`
-        A converted string with the kwargs.
+        The pattern with the parse format.
+    dt_pattern : `str`
+        The parse pattern in the datetime format.
     now : `datetime.datetime`
         The pattern with the actual date.
 
@@ -77,6 +91,8 @@ class Scraper:
     >>> swap = Scraper(format=pattern, instrument='swap')
     >>> print(swap.pattern)
     http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
+    >>> print(swap.dt_pattern)
+    http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%m%S.fits
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
 
@@ -504,6 +520,8 @@ class Scraper:
         ----------
         timerange : `~sunpy.time.TimeRange`
             Time interval where to find the directories for a given pattern.
+        extractor : `str`
+            Extractor to extract metadata from URLs if the old format for pattern is used.
         matcher : `dict`
             Dictionary to check if extracted metadata is valid.
 
