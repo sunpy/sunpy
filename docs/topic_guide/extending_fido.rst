@@ -28,12 +28,13 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
 * A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
-  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse <https://github.com/r1chardj0n3s/parse/>`__ format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
+  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse <https://github.com/r1chardj0n3s/parse/>`__ format.
+  Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``.
+  An example of how such a pattern looks like is given in the algorithm explanation below.
 
 Note: The scraper has supported regex-based patterns for a long time, which is what it will still expect by default. However that is in the process of being replaced with parse-style patterns in the future versions of the package. To use the newer parse-style patterns, it's currently required to pass it as the ``format`` argument to the scraper.
 
 Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
-
 A brief explanation of how the Scraper works is as follows:
 
 1. Drop the filename from the pattern and generate a list of directories to search for files.
