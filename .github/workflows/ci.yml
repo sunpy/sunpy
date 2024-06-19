@@ -183,7 +183,7 @@ jobs:
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests'
+      test_extras: 'all,tests-only'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
@@ -215,7 +215,7 @@ jobs:
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests_only'
+      test_extras: 'tests-only'
       # only test ana here to save time as it's the only compiled code
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
       submodules: false

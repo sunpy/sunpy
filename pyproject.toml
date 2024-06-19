@@ -94,7 +94,7 @@ timeseries = [
 visualization = ["matplotlib>=3.5.0", "mpl-animators>=1.0.0"]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
-tests_only = [
+tests-only = [
   "hvpy>=1.1.0",
   "jplephem>=2.14",
   "pytest-astropy>=0.11.0",
@@ -103,7 +103,7 @@ tests_only = [
   "pytest>=7.1.0",
 ]
 tests = [
-  "sunpy[all,tests_only]",
+  "sunpy[all,tests-only]",
 ]
 docs = [
   "sunpy[all]",
