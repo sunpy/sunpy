@@ -1210,7 +1210,7 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             missing_keys = set(keys) - self.meta.keys()
             if not missing_keys:
-                sc = SkyCoord(obstime=self.date, **kwargs)
+                sc = SkyCoord(obstime=self.reference_date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
@@ -1240,7 +1240,7 @@ class GenericMap(NDData):
             warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
                                + warning_message + [""])
             warn_metadata("\n".join(warning_message), stacklevel=3)
-            return get_earth(self.date)
+            return get_earth(self.reference_date)
 
     @property
     def heliographic_latitude(self):
