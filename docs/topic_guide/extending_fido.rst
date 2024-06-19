@@ -28,7 +28,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
 * A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
-  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse` format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
+  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse <https://github.com/r1chardj0n3s/parse/>`__ format. Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``. An example of how such a pattern looks like is given in the algorithm explanation below.
 
 Note: The scraper has supported regex-based patterns for a long time, which is what it will still expect by default. However that is in the process of being replaced with parse-style patterns in the future versions of the package. To use the newer parse-style patterns, it's currently required to pass it as the ``format`` argument to the scraper.
 
@@ -37,7 +37,7 @@ Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query 
 A brief explanation of how the Scraper works is as follows:
 
 1. Drop the filename from the pattern and generate a list of directories to search for files.
-2. For each directory, get a list of files.
+2. For each directory, get a list of files present in it.
 3. For each file, check if it matches the pattern.
 4. For each file that matches the pattern, check if it is in the timerange. If it is, add it to the output.
 
@@ -158,18 +158,11 @@ Examples
 
 Suppose any file of a data archive can be described by this URL ``https://some-domain.com/%Y/%m/%d/satname_{SatelliteNumber}_{Level}_%y%m%d%H%M%S_{any-2-digit-number}.fits``:
 
-``baseurl`` becomes ``r'https://some-domain.com/%Y/%m/%d/satname_(\d){2}_(\d){1}_(\d){12}_(\d){2}\.fits'``.
+The new format ``pattern`` becomes ``r'https://some-domain.com{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
+The date-time values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``. These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
+Note that parts of such attributes can accordingly be omitted to match parts of the filename which are dynamic but not needed to be extracted. For example, ``{{:2d}}`` is used in the above example to match any 2-digit number in the filename. Similarly ``{{}}`` can be used to match a string of any length starting from its position in the filename.
 
-Note all variables in the filename are converted to regex that will match any possible value for it.
-A character enclosed within ``()`` followed by a number enclosed within ``{}`` is used to match the specified number of occurrences of that special sequence.
-For example, ``%y%m%d%H%M%S`` is a twelve digit variable (with 2 digits for each item) and thus represented by ``r'(\d){12}'``.
-Note that ``\`` is used to escape the special character ``.``.
-
-``pattern`` becomes ``'{}/{year:4d}/{month:2d}{day:2d}/satname_{SatelliteNumber:2d}_{Level:1d}_{:6d}{hour:2d}{minute:2d}{second:2d}_{:2d}.fits'``.
-Note the sole purpose of ``pattern`` is to extract the information from matched URL, using `~sunpy.extern.parse.parse`.
-So the desired key names for returned dictionary should be written in the ``pattern`` within ``{}``, and they should match with the ``attr.__name__``.
-
-``register_values()`` can be written as:
+Now, ``register_values()`` can be written as:
 
 .. code-block:: python
 
@@ -187,6 +180,7 @@ So the desired key names for returned dictionary should be written in the ``patt
         }
 
         return adict
+
 
 .. _sunpy-topic-guide-new-source-for-fido-add-new-full-client:
 
