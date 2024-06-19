@@ -90,7 +90,7 @@ def test_read_file_header_fits():
 
 
 @skip_ana
-@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyPendingDeprecationWarning")
 def test_read_file_ana():
     # Aim is to verify that we can read a ANA file
     hdulist = read_file(get_test_filepath("test_ana.fz"))
@@ -102,7 +102,7 @@ def test_read_file_ana():
 
 
 @skip_ana
-@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyPendingDeprecationWarning")
 def test_read_file_header_ana():
     # Aim is to verify that we can read a header from a ANA file
     hdulist = read_file_header(get_test_filepath("test_ana.fz"))
@@ -112,7 +112,7 @@ def test_read_file_header_ana():
 
 
 @skip_ana
-@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyPendingDeprecationWarning")
 def test_write_file_ana(tmpdir):
     # Aim is to verify that we can write a ANA file and read back correctly
     ana_header, ana_data = read_file(get_test_filepath("test_ana.fz"))[0][::-1]
