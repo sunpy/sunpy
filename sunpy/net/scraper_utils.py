@@ -1,10 +1,7 @@
-import re
 import calendar
 from datetime import datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
-
-from astropy.time import Time
 
 from sunpy.time import TimeRange
 
@@ -85,67 +82,6 @@ def date_floor(date, timestep):
         time_tup[-5:] = [1, 1, 0, 0, 0]
 
     return datetime(*time_tup)
-
-def extractDateURL(self, url):
-    """
-    Extracts the date from a particular url following the pattern.
-    """
-    # remove the user and passwd from files if there:
-    url = url.replace("anonymous:data@sunpy.org@", "")
-
-    def url_to_list(txt):
-        # Substitutes '.' and '_' for '/'.
-        return re.sub(r'\.|_', '/', txt).split('/')
-
-    # create a list of all the blocks in times - assuming they are all
-    # separated with either '.', '_' or '/'.
-    pattern_list = url_to_list(self.pattern)
-    url_list = url_to_list(url)
-    time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
-                    '%H', '%I', '%M', '%S', '%e', '%f']
-    final_date = []
-    final_pattern = []
-    # Find in directory and filename
-    for pattern_elem, url_elem in zip(pattern_list, url_list):
-        time_formats = [x for x in time_order if x in pattern_elem]
-        if len(time_formats) > 0:
-            # Find whether there's text that should not be here
-            toremove = re.split('%.', pattern_elem)
-            if len(toremove) > 0:
-                for bit in toremove:
-                    if bit != '':
-                        url_elem = url_elem.replace(bit, '', 1)
-                        pattern_elem = pattern_elem.replace(bit, '', 1)
-            final_date.append(url_elem)
-            final_pattern.append(pattern_elem)
-            for time_bit in time_formats:
-                time_order.remove(time_bit)
-    # Find and remove repeated elements eg: %Y in ['%Y', '%Y%m%d']
-    # Make all as single strings
-    date_together = ''.join(final_date)
-    pattern_together = ''.join(final_pattern)
-    re_together = pattern_together
-    for k, v in TIME_CONVERSIONS.items():
-        re_together = re_together.replace(k, v)
-
-    # Lists to contain the unique elements of the date and the pattern
-    final_date = list()
-    final_pattern = list()
-    re_together = re_together.replace('[A-Z]', '\\[A-Z]')
-    for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
-        if p == 'e':
-            continue
-        regexp = fr'\{r}' if not r.startswith('[') else r
-        pattern = f'%{p}'
-        date_part = re.search(regexp, date_together)
-        date_together = date_together[:date_part.start()] \
-            + date_together[date_part.end():]
-        if pattern not in final_pattern:
-            final_pattern.append(f'%{p}')
-            final_date.append(date_part.group())
-    return Time.strptime(' '.join(final_date),
-                            ' '.join(final_pattern))
-
 
 def get_timerange_from_exdict(exdict):
     """

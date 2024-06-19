@@ -184,12 +184,12 @@ def testExtractDates_usingPattern():
         s = Scraper('data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
         testURL = 'data/2014/05/14/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extractDateURL(testURL) == timeURL
+        assert s._extract_date(testURL) == timeURL
         # Not-full repeated pattern
         s = Scraper('data/%Y/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
         testURL = 'data/2014/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extractDateURL(testURL) == timeURL
+        assert s._extract_date(testURL) == timeURL
 
 
 def testExtractDates_notSeparators():
@@ -197,7 +197,7 @@ def testExtractDates_notSeparators():
         s = Scraper('data/%Y/%m/swap%m%d_%H%M%S')
         testURL = 'data/2014/05/swap0514_200135'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extractDateURL(testURL) == timeURL
+        assert s._extract_date(testURL) == timeURL
 
 
 def testExtractDates_notSeparators_andSimilar():
@@ -205,15 +205,15 @@ def testExtractDates_notSeparators_andSimilar():
         s = Scraper('data/%Y/Jun%b%d_%H%M%S')
         testURL = 'data/2014/JunJun14_200135'
         timeURL = parse_time((2014, 6, 14, 20, 1, 35))
-        assert s._extractDateURL(testURL) == timeURL
+        assert s._extract_date(testURL) == timeURL
         testURL = 'data/2014/JunMay14_200135'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extractDateURL(testURL) == timeURL
+        assert s._extract_date(testURL) == timeURL
         # and testing with the month afterwards
         s = Scraper('data/%Y/%dJun%b_%H%M%S')
         testURL = 'data/2014/14JunJun_200135'
         timeURL = parse_time((2014, 6, 14, 20, 1, 35))
-        assert s._extractDateURL(testURL) == timeURL
+        assert s._extract_date(testURL) == timeURL
 
 
 def testURL():
