@@ -34,7 +34,7 @@ def solar_wcs_frame_mapping(wcs):
     if hasattr(wcs, "coordinate_frame"):
         return wcs.coordinate_frame
 
-    dateobs = wcs.wcs.dateavg or wcs.wcs.dateobs or None
+    dateobs = wcs.wcs.dateavg or wcs.wcs.dateobs or wcs.wcs.datebeg or wcs.wcs.dateend or None
 
     # Get observer coordinate from the WCS auxiliary information
     # Note: the order of the entries is important, as it determines which set
