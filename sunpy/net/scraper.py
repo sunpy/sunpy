@@ -404,7 +404,7 @@ class Scraper:
                 tr = get_timerange_from_exdict(exdict)
                 return tr.intersects(timerange)
             else:
-                datehref = self._extractDateURL(url).to_datetime()
+                datehref = self._extract_date(url).to_datetime()
                 smaller_pattern = extract_timestep(self.pattern)
                 file_timerange = TimeRange(datehref, datehref + smaller_pattern)
                 return file_timerange.intersects(timerange)
@@ -436,7 +436,7 @@ class Scraper:
             return parse(self.pattern, url)
 
 
-    def _extractDateURL(self, url):
+    def _extract_date(self, url):
         """
         Extracts the date from a particular url following the pattern.
         """
