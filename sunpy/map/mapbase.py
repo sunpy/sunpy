@@ -862,6 +862,33 @@ class GenericMap(NDData):
         return time
 
     @property
+    def reference_date(self):
+        """
+        The date used as the reference date for the coordinate system.
+
+        This property is used to define the ``obstime`` of the coordinate frame,
+        most often this is used to define the observer. As the FITS standard
+        isn't explicit about what time should be used for this reference date
+        this property follows a different set of priorities from
+        `.GenericMap.date` and allows sources to override this to the most
+        appropriate date.
+
+        This property is in order of preference:
+        1. The ``DATE-AVG`` key in the meta.
+        2. The ``DATE-OBS`` key in the meta.
+        3. The ``DATE-BEG`` key in the meta.
+        4. The ``DATE-END`` key in the meta.
+        5. The `.GenericMap.date` property as a fallback (which is likely to be the current time).
+        """
+        return (
+            self._get_date('date-avg') or
+            self._get_date('date-obs') or
+            self.date_start or
+            self.date_end or
+            self.date
+        )
+
+    @property
     def date(self):
         """
         'Canonical' observation time.
