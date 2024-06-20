@@ -41,12 +41,12 @@ def parse_times(table):
 
     Parameters
     ----------
-    table: `astropy.table`
+    table : `astropy.table.Table`
         Astropy table.
 
     Returns
     -------
-    `astropy.table`
+    `astropy.table.Table`
     """
     # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
     time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
@@ -64,12 +64,12 @@ def parse_values_to_quantities(table):
 
     Parameters
     ----------
-    table: `astropy.table`
+    table : `astropy.table.Table`
         Astropy table.
 
     Returns
     -------
-    `astropy.table`
+    `astropy.table.Table`
 
     Raises
     ------
@@ -94,21 +94,21 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
 
     Parameters
     ----------
-    table: astropy.table
+    table: `astropy.table.Table`
         Astropy table.
-    attributes: list
+    attributes : list
         A list of HEK unit attributes or coordinate attributes.
-    is_coord_prop: bool
-        To specify if `attributes` is a list of unit attributes or coordinate attributes.
+    is_coord_prop : bool
+        To specify if ``attributes`` is a list of unit attributes or coordinate attributes.
 
     Returns
     -------
-    `astropy.table`
+    `astropy.table.Table`
 
     Raises
     ------
     TypeError
-        If `table` is not an Astropy table.
+        If ``table`` is not an Astropy table.
     KeyError
         If any of the attribute dictionaries are missing required keys (i.e. "name", "unit_prop").
     """
@@ -146,25 +146,24 @@ def parse_chaincode(value, attribute, unit):
 
     Parameters
     ----------
-    value: `numpy.string_`
+    value : str
         A polygon defined using vertices in sky coordinates.
-    attribute: dict
-        An object from coord_properties.json
-    unit: str
+    attribute : dict
+        An object from "coord_properties.json"
+    unit : str
         The unit of the coordinates
 
     Returns
     -------
-    PolygonSkyRegion
+    `PolygonSkyRegion`
         A polygon defined using vertices in sky coordinates.
 
     Raises
     ------
     IndexError
-        Because `value` does not contain the expected '((' and '))' substrings.
+        Because ``value`` does not contain the expected '((' and '))' substrings.
     UnitConversionError
-        Because the units set by `coord1_unit` or `coord2_unit` are incompatible with the values being assigned.
-
+        Because the units set by ``coord1_unit`` or ``coord2_unit`` are incompatible with the values being assigned.
     """
     coord1_unit = u.deg
     coord2_unit = u.deg
@@ -194,7 +193,7 @@ def get_unit(unit):
 
     Parameters
     ----------
-    unit: str
+    unit : str
         The targeted unit
 
     Returns
@@ -205,12 +204,12 @@ def get_unit(unit):
     Raises
     ------
     ValueError
-        Because `unit` did not parse as unit.
+        Because ``unit`` did not parse as unit.
 
     Notes
     ----
-    For the complete list of HEK parameters: https://www.lmsal.com/hek/VOEvent_Spec.html
-
+    `A complete list of HEK parameters.
+    <https://www.lmsal.com/hek/VOEvent_Spec.html>`__
     """
     cm2 = u.def_unit("cm2", u.cm**3)
     m2 = u.def_unit("m2", u.m**2)
