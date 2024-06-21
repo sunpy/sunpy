@@ -14,7 +14,7 @@ from sunpy.time import TimeRange, parse_time
 
 def testDirectoryDatePattern():
     with pytest.deprecated_call():
-        s = Scraper('%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
+        s = Scraper(pattern='%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
         testpath = '2014/03/05/20140305_013000_59.fit.gz'
         d = parse_time((2014, 3, 5, 1, 30))
         assert s.matches(testpath, d)
@@ -29,7 +29,7 @@ def testDirectoryDatePattern_new_format():
 
 def testDirectoryDatePatternFalse():
     with pytest.deprecated_call():
-        s = Scraper('%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
+        s = Scraper(pattern='%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
         testpath = '2013/03/05/20140305_013000_59.fit.gz'
         d = parse_time((2014, 3, 5, 1, 30))
         assert not s.matches(testpath, d)
@@ -44,7 +44,7 @@ def testDirectoryDatePatternFalse_new_format():
 
 def testDirectoryObsPattern():
     with pytest.deprecated_call():
-        s = Scraper('%y%m%d/{observatory}_%Y%m%d.fits', observatory='SDO')
+        s = Scraper(pattern='%y%m%d/{observatory}_%Y%m%d.fits', observatory='SDO')
         testpath = '140305/SDO_20140305.fits'
         d = parse_time((2014, 3, 5))
         assert s.matches(testpath, d)
@@ -59,7 +59,7 @@ def testDirectoryObsPattern_new_format():
 
 def testDirectoryRange():
     with pytest.deprecated_call():
-        s = Scraper('%Y/%m/%d/%Y%m%d_%H.fit.gz')
+        s = Scraper(pattern='%Y/%m/%d/%Y%m%d_%H.fit.gz')
         directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/',
                         '2010/01/02/', '2010/01/03/']
         timerange = TimeRange('2009-12-30', '2010-01-03')
@@ -77,7 +77,7 @@ def testDirectoryRange_new_format():
 def testDirectoryRegex():
     with pytest.deprecated_call():
         # Test for Windows where '\' is a path separator and not part of the regex
-        s = Scraper('scheme://a.url.with/a/few/forward/slashes/andbacklash\\inthename.ext', regex=True)
+        s = Scraper(pattern='scheme://a.url.with/a/few/forward/slashes/andbacklash\\inthename.ext', regex=True)
         timerange = TimeRange('2019-02-01', '2019-02-03')
         directory = s.range(timerange)
         assert directory == ['scheme://a.url.with/a/few/forward/slashes/']
@@ -93,7 +93,7 @@ def testDirectoryRegex_new_format():
 
 def testDirectoryRangeFalse():
     with pytest.deprecated_call():
-        s = Scraper('%Y%m%d/%Y%m%d_%H.fit.gz')
+        s = Scraper(pattern='%Y%m%d/%Y%m%d_%H.fit.gz')
         directory_list = ['20091230/', '20091231/', '20100101/',
                         '20090102/', '20090103/']
         timerange = TimeRange('2009/12/30', '2010/01/03')
@@ -110,7 +110,7 @@ def testDirectoryRangeFalse_new_format():
 
 def testNoDateDirectory():
     with pytest.deprecated_call():
-        s = Scraper('mySpacecraft/myInstrument/xMinutes/aaa%y%b.ext')
+        s = Scraper(pattern='mySpacecraft/myInstrument/xMinutes/aaa%y%b.ext')
         directory_list = ['mySpacecraft/myInstrument/xMinutes/']
         timerange = TimeRange('2009/11/20', '2010/01/03')
         assert s.range(timerange) == directory_list
@@ -125,7 +125,7 @@ def testNoDateDirectory_new_format():
 
 def testDirectoryRangeHours():
     with pytest.deprecated_call():
-        s = Scraper('%Y%m%d_%H/%H%M.csv')
+        s = Scraper(pattern='%Y%m%d_%H/%H%M.csv')
         timerange = TimeRange('2009-12-31T23:40:00', '2010-01-01T01:15:00')
         assert len(s.range(timerange)) == 3  # 3 directories (1 per hour)
 
@@ -138,7 +138,7 @@ def testDirectoryRangeHours_new_format():
 
 def testDirectoryRange_single():
     with pytest.deprecated_call():
-        s = Scraper('%Y%m%d/%H_%M.csv')
+        s = Scraper(pattern='%Y%m%d/%H_%M.csv')
         startdate = parse_time((2010, 10, 10, 5, 0))
         enddate = parse_time((2010, 10, 10, 7, 0))
         timerange = TimeRange(startdate, enddate)
@@ -155,7 +155,7 @@ def testDirectoryRange_single_new_format():
 
 def testDirectoryRange_Month():
     with pytest.deprecated_call():
-        s = Scraper('%Y%m/%d/%j_%H.txt')
+        s = Scraper(pattern='%Y%m/%d/%j_%H.txt')
         startdate = parse_time((2008, 2, 20, 10))
         enddate = parse_time((2008, 3, 2, 5))
         timerange = TimeRange(startdate, enddate)
@@ -181,12 +181,12 @@ def testDirectoryRange_Month_new_format():
 def testExtractDates_usingPattern():
     with pytest.deprecated_call():
         # Standard pattern
-        s = Scraper('data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
+        s = Scraper(pattern='data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
         testURL = 'data/2014/05/14/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
         assert s._extract_date(testURL) == timeURL
         # Not-full repeated pattern
-        s = Scraper('data/%Y/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
+        s = Scraper(pattern='data/%Y/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
         testURL = 'data/2014/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
         assert s._extract_date(testURL) == timeURL
@@ -194,7 +194,7 @@ def testExtractDates_usingPattern():
 
 def testExtractDates_notSeparators():
     with pytest.deprecated_call():
-        s = Scraper('data/%Y/%m/swap%m%d_%H%M%S')
+        s = Scraper(pattern='data/%Y/%m/swap%m%d_%H%M%S')
         testURL = 'data/2014/05/swap0514_200135'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
         assert s._extract_date(testURL) == timeURL
@@ -202,7 +202,7 @@ def testExtractDates_notSeparators():
 
 def testExtractDates_notSeparators_andSimilar():
     with pytest.deprecated_call():
-        s = Scraper('data/%Y/Jun%b%d_%H%M%S')
+        s = Scraper(pattern='data/%Y/Jun%b%d_%H%M%S')
         testURL = 'data/2014/JunJun14_200135'
         timeURL = parse_time((2014, 6, 14, 20, 1, 35))
         assert s._extract_date(testURL) == timeURL
@@ -210,7 +210,7 @@ def testExtractDates_notSeparators_andSimilar():
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
         assert s._extract_date(testURL) == timeURL
         # and testing with the month afterwards
-        s = Scraper('data/%Y/%dJun%b_%H%M%S')
+        s = Scraper(pattern='data/%Y/%dJun%b_%H%M%S')
         testURL = 'data/2014/14JunJun_200135'
         timeURL = parse_time((2014, 6, 14, 20, 1, 35))
         assert s._extract_date(testURL) == timeURL
@@ -226,7 +226,7 @@ def testURL():
 
 def testURL_pattern():
     with pytest.deprecated_call():
-        s = Scraper('fd_%Y%m%d_%H%M%S.fts')
+        s = Scraper(pattern='fd_%Y%m%d_%H%M%S.fts')
         assert s._URL_followsPattern('fd_20130410_231211.fts')
         assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
         assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
@@ -244,7 +244,7 @@ def testURL_pattern_new_format(pattern, filename, metadict):
 
 def testURL_patternMillisecondsGeneric():
     with pytest.deprecated_call():
-        s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+        s = Scraper(pattern='fd_%Y%m%d_%H%M%S_%e.fts')
         assert s._URL_followsPattern('fd_20130410_231211_119.fts')
         assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
         assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
@@ -256,7 +256,7 @@ def testURL_patternMillisecondsZeroPadded():
         # Milliseconds must be zero-padded in order to match URL lengths.
         now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
         with patch('sunpy.net.scraper.datetime', now=now_mock):
-            s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+            s = Scraper(pattern='fd_%Y%m%d_%H%M%S_%e.fts')
         now_mock.assert_called_once()
         assert s.now == 'fd_20190419_000000_004.fts'
 
@@ -273,7 +273,7 @@ def testURL_patternMillisecondsZeroPadded_new_format():
 
 def testFilesRange_sameDirectory_local():
     with pytest.deprecated_call():
-        s = Scraper('/'.join(['file:/', str(rootdir),
+        s = Scraper(pattern='/'.join(['file:/', str(rootdir),
                             'EIT_header', 'efz%Y%m%d.%H%M%S_s.header']))
         startdate = parse_time((2004, 3, 1, 4, 0))
         enddate = parse_time((2004, 3, 1, 6, 30))
@@ -481,7 +481,7 @@ def test_extract_files_meta_new_format():
 
 def testNoDirectory():
     with pytest.deprecated_call():
-        s = Scraper('files/%Y%m%d_%H%M.dat')
+        s = Scraper(pattern='files/%Y%m%d_%H%M.dat')
         startdate = parse_time((2010, 1, 10, 20, 30))
         enddate = parse_time((2010, 1, 20, 20, 30))
         timerange = TimeRange(startdate, enddate)
@@ -589,7 +589,7 @@ def test_http_404_error_debug_message_new_format(caplog):
 
 def test_check_timerange():
     with pytest.deprecated_call():
-        s = Scraper('%Y.fits')
+        s = Scraper(pattern='%Y.fits')
         # Valid time range for 2014.fits is the whole of 2014
         # Test different cases to make sure check_timerange is working as expected
 

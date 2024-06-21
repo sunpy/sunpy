@@ -53,26 +53,23 @@ class Scraper:
 
     Parameters
     ----------
+    format : `str`
+        A string containing the url with the date and other information to be
+        extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
+        as a string format, the former represented using double curly-brackets
+        to differentiate from the latter.
+        The accepted parse representations for datetime values are as given in ``PARSE_TIME_CONVERSIONS``.
+        This can also be a uri to a local file patterns. Default is `None`.
     pattern : `str`
         A string containing the url with the date encoded as datetime formats,
         and any other parameter as ``kwargs`` as a string format.
         This can also be a uri to a local file patterns. Deprecated in favor of `format`. Default is `None`.
-
     regex : `bool`
         Set to `True` if parts of the pattern uses regexp symbols.
         This only works for the filename part of the pattern rather than the full url.
         Be careful that periods ``.`` matches any character and therefore it's better to escape them.
         If regexp is used, other ``kwargs`` are ignored and string replacement is
         not possible. Default is `False`.
-
-    format : `str`
-        The new version for pattern, a string containing the url with the date and other information to be
-        extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
-        as a string format, the former represented using double curly-brackets
-        to differentiate from the latter.
-        The accepted parse representations for datetime values are as given in ``PARSE_TIME_CONVERSIONS``.
-        This can also be a uri to a local file patterns. Default is `None`.
-
 
     Attributes
     ----------
@@ -102,7 +99,7 @@ class Scraper:
     pattern looks with the actual time.
     """
 
-    def __init__(self, pattern=None, regex=False, format=None, **kwargs):
+    def __init__(self, format=None, pattern=None, regex=False, **kwargs):
         if pattern is not None and format is None:
             warnings.warn(
                 "Using 'pattern' for the URL format is deprecated. "
