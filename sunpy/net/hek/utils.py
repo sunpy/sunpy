@@ -198,8 +198,8 @@ def get_unit(unit):
 
     Returns
     -------
-    unit
-        Astropy unit object (e.g. <class 'astropy.units.core.Unit'> or <class 'astropy.units.core.CompositeUnit'>)
+    unit : `~astropy.units.Unit`
+        Astropy unit object (e.g. :`~astropy.units.Unit` or :`~astropy.units.CompositeUnit`)
 
     Raises
     ------
