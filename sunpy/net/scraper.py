@@ -25,28 +25,31 @@ __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
 # added `%e` as for milliseconds `%f/1000`
-TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
-                    '%d': r'\d{2}', '%j': r'\d{3}',
-                    '%H': r'\d{2}', '%I': r'\d{2}',
-                    '%M': r'\d{2}',
-                    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
-
+TIME_CONVERSIONS = {
+    '%Y': r'\d{4}', '%y': r'\d{2}',
+    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
+    '%d': r'\d{2}', '%j': r'\d{3}',
+    '%H': r'\d{2}', '%I': r'\d{2}',
+    '%M': r'\d{2}',
+    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'
+}
 # `parse` expressions to convert into datetime format
-PARSE_TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
-            "{month:2d}": "%m",
-            "{month_name:l}": "%B",
-            "{month_name_abbr:l}": "%b",
-            "{day:2d}": "%d", "{day_of_year:3d}": "%j",
-            "{hour:2d}": "%H",
-            "{minute:2d}": "%M",
-            "{second:2d}": "%S",
-            "{microsecond:6d}": "%f",
-            "{millisecond:3d}": "%e", # added `%e` as for milliseconds `%f/1000`
-            "{week_number:2d}": "%W",
-        }
+PARSE_TIME_CONVERSIONS = {
+    "{year:4d}": "%Y", "{year:2d}": "%y",
+    "{month:2d}": "%m",
+    "{month_name:l}": "%B",
+    "{month_name_abbr:l}": "%b",
+    "{day:2d}": "%d", "{day_of_year:3d}": "%j",
+    "{hour:2d}": "%H",
+    "{minute:2d}": "%M",
+    "{second:2d}": "%S",
+    "{microsecond:6d}": "%f",
+    "{millisecond:3d}": "%e", # added `%e` as for milliseconds `%f/1000`
+    "{week_number:2d}": "%W",
+}
 
-@deprecated_renamed_argument("pattern", None, since="5.1", message="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions.")
+
+@deprecated_renamed_argument("pattern", None, since="6.0", message="Please use ``format`` to pass the new syntax. Current ``pattern`` format was deprecated in 6.0 and will be replaced in future versions.")
 class Scraper:
     """
     A Scraper to scrap web data archives based on dates.
@@ -57,12 +60,14 @@ class Scraper:
         A string containing the url with the date encoded as datetime formats,
         and any other parameter as ``kwargs`` as a string format.
         This can also be a uri to a local file patterns. Deprecated in favor of `format`. Default is `None`.
+        This is now deprecated in favor of ``format``.
     regex : `bool`
         Set to `True` if parts of the pattern uses regexp symbols.
         This only works for the filename part of the pattern rather than the full url.
         Be careful that periods ``.`` matches any character and therefore it's better to escape them.
         If regexp is used, other ``kwargs`` are ignored and string replacement is
         not possible. Default is `False`.
+        This is now deprecated and will be removed in a future release.
     format : `str`
         A string containing the url with the date and other information to be
         extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters

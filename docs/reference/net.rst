@@ -95,4 +95,3 @@ for `sunpy.net.Fido`.
 .. automodapi:: sunpy.net.scraper
 
 .. automodapi:: sunpy.net.scraper_utils
-   

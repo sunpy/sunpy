@@ -5,20 +5,25 @@ from dateutil.relativedelta import relativedelta
 
 from sunpy.time import TimeRange
 
-TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
-                    '%d': r'\d{2}', '%j': r'\d{3}',
-                    '%H': r'\d{2}', '%I': r'\d{2}',
-                    '%M': r'\d{2}',
-                    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
-
-TIME_QUANTITIES = {'day': timedelta(days=1),
-                   'hour': timedelta(hours=1),
-                   'minute': timedelta(minutes=1),
-                   'second': timedelta(seconds=1),
-                   'millisecond': timedelta(milliseconds=1)}
-
 __all__ = ["extract_timestep", "date_floor", "get_timerange_from_exdict"]
+
+
+TIME_CONVERSIONS = {
+    '%Y': r'\d{4}', '%y': r'\d{2}',
+    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
+    '%d': r'\d{2}', '%j': r'\d{3}',
+    '%H': r'\d{2}', '%I': r'\d{2}',
+    '%M': r'\d{2}',
+    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'
+}
+TIME_QUANTITIES = {
+    'day': timedelta(days=1),
+    'hour': timedelta(hours=1),
+    'minute': timedelta(minutes=1),
+    'second': timedelta(seconds=1),
+    'millisecond': timedelta(milliseconds=1)
+}
+
 
 def extract_timestep(directoryPattern):
     """
@@ -48,6 +53,7 @@ def extract_timestep(directoryPattern):
         return relativedelta(years=1)
     else:
         return None
+
 
 def date_floor(date, timestep):
     """
@@ -82,6 +88,7 @@ def date_floor(date, timestep):
         time_tup[-5:] = [1, 1, 0, 0, 0]
 
     return datetime(*time_tup)
+
 
 def get_timerange_from_exdict(exdict):
     """
