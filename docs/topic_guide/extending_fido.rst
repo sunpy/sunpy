@@ -44,7 +44,8 @@ A brief explanation of how the Scraper works is as follows:
 
 For a more verbose in-depth explanation on how this is accomplished internally:
 
-1. A Scraper object takes as input the generalised ``pattern`` of how a desired filepath looks like, in the ``parse`` format. Upon initialisation, a version of the pattern following the datetime format is also internally generated, called the ``dt_pattern``.
+The Scraper takes as input the generalised ``pattern`` of how a desired file path looks like, in the ``parse`` format.
+Upon initialisation, a version of the pattern following the datetime format is also internally generated, called the ``datetime_pattern``.
 
 .. code-block:: python
 
@@ -52,15 +53,15 @@ For a more verbose in-depth explanation on how this is accomplished internally:
     >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     >>> s = Scraper(format=pattern, instrument='swap')
-    >>> s.dt_pattern
+    >>> s.datetime_pattern
     'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
 
-The smallest unit of time / time-step for that directory-pattern (the full ``dt_pattern`` except the filename at the end) is then internally detected from ``dt_pattern`` by using the :meth:`~sunpy.net.scraper_utils.extract_timestep` util.
+The smallest unit of time / time-step for that directory-pattern (the full ``datetime_pattern`` except the filename at the end) is then internally detected from ``datetime_pattern`` by using :meth:`~sunpy.net.scraper_utils.extract_timestep`.
 
 .. code-block:: python
 
     >>> from sunpy.net.scraper_utils import extract_timestep
-    >>> extract_timestep(s.dt_pattern)
+    >>> extract_timestep(s.datetime_pattern)
     relativedelta(seconds=+1)
 
 After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in increments of timestep, the time is first "floored" according to the pattern via :meth:`~sunpy.net.scraper_utils.date_floor` and a corresponding directory-pattern is generated.
@@ -74,9 +75,11 @@ After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for
     'http://proba2.oma.be/swap/data/bsd/2015/01/02/',
     'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
 
-2. The location given by the filled pattern is visited and a list of files at the location is obtained. This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
-3. Each filename is then parsed against the remaining portion of the pattern to determine if it matches.
-4. Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
+The location given by the filled pattern is visited and a list of files at the location is obtained.
+This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
+
+Each filename is then parsed against the remaining portion of the pattern to determine if it matches.
+Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
 
 .. code-block:: python
 
@@ -160,9 +163,11 @@ Examples
 Suppose any file of a data archive can be described by this URL ``https://some-domain.com/%Y/%m/%d/satname_{SatelliteNumber}_{Level}_%y%m%d%H%M%S_{any-2-digit-number}.fits``:
 
 The new format ``pattern`` becomes ``r'https://some-domain.com{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
-The date-time values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``. These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
-Note that parts of such attributes can accordingly be omitted to match parts of the filename which are dynamic but not needed to be extracted. For example, ``{{:2d}}`` is used in the above example to match any 2-digit number in the filename. Similarly ``{{}}`` can be used to match a string of any length starting from its position in the filename.
-
+The datetime values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``.
+These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
+Note that parts of such attributes can accordingly be omitted to match parts of the filename which are dynamic but not needed to be extracted.
+For example, ``{{:2d}}`` is used in the above example to match any 2-digit number in the filename.
+Similarly ``{{}}`` can be used to match a string of any length starting from its position in the filename.
 Now, ``register_values()`` can be written as:
 
 .. code-block:: python
@@ -181,7 +186,6 @@ Now, ``register_values()`` can be written as:
         }
 
         return adict
-
 
 .. _sunpy-topic-guide-new-source-for-fido-add-new-full-client:
 

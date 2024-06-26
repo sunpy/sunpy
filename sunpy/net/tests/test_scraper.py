@@ -10,55 +10,56 @@ from sunpy.extern import parse
 from sunpy.net.scraper import Scraper
 from sunpy.net.scraper_utils import get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
-def testDirectoryDatePattern():
-    with pytest.deprecated_call():
+def test_directory_date_pattern():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
         testpath = '2014/03/05/20140305_013000_59.fit.gz'
         d = parse_time((2014, 3, 5, 1, 30))
         assert s.matches(testpath, d)
 
 
-def testDirectoryDatePattern_new_format():
+def test_directory_date_pattern_new_format():
     s = Scraper(format='{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
     testpath = '2014/03/05/20140305_013000_59.fit.gz'
     d = parse_time((2014, 3, 5, 1, 30))
     assert s.matches(testpath, d)
 
 
-def testDirectoryDatePatternFalse():
-    with pytest.deprecated_call():
+def test_directory_date_pattern_false():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
         testpath = '2013/03/05/20140305_013000_59.fit.gz'
         d = parse_time((2014, 3, 5, 1, 30))
         assert not s.matches(testpath, d)
 
 
-def testDirectoryDatePatternFalse_new_format():
+def test_directory_date_patternFalse_new_format():
     s = Scraper(format='{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_59.fit.gz')
     testpath = '2013/03/05/20140305_013000_59.fit.gz'
     d = parse_time((2014, 3, 5, 1, 30))
     assert not s.matches(testpath, d)
 
 
-def testDirectoryObsPattern():
-    with pytest.deprecated_call():
+def test_directory_obs_pattern():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%y%m%d/{observatory}_%Y%m%d.fits', observatory='SDO')
         testpath = '140305/SDO_20140305.fits'
         d = parse_time((2014, 3, 5))
         assert s.matches(testpath, d)
 
 
-def testDirectoryObsPattern_new_format():
+def test_directory_obs_pattern_new_format():
     s = Scraper(format='{{year:2d}}{{month:2d}}{{day:2d}}/{observatory}_{{year:4d}}{{month:2d}}{{day:2d}}.fits', observatory='SDO')
     testpath = '140305/SDO_20140305.fits'
     d = parse_time((2014, 3, 5))
     assert s.matches(testpath, d)
 
 
-def testDirectoryRange():
-    with pytest.deprecated_call():
+def test_directory_range():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y/%m/%d/%Y%m%d_%H.fit.gz')
         directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/',
                         '2010/01/02/', '2010/01/03/']
@@ -66,7 +67,7 @@ def testDirectoryRange():
         assert s.range(timerange) == directory_list
 
 
-def testDirectoryRange_new_format():
+def test_directory_range_new_format():
     s = Scraper(format='{{year:4d}}/{{month:2d}}/{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}.fit.gz')
     directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/',
                       '2010/01/02/', '2010/01/03/']
@@ -74,8 +75,8 @@ def testDirectoryRange_new_format():
     assert s.range(timerange) == directory_list
 
 
-def testDirectoryRegex():
-    with pytest.deprecated_call():
+def test_directory_regex():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         # Test for Windows where '\' is a path separator and not part of the regex
         s = Scraper(pattern='scheme://a.url.with/a/few/forward/slashes/andbacklash\\inthename.ext', regex=True)
         timerange = TimeRange('2019-02-01', '2019-02-03')
@@ -83,7 +84,7 @@ def testDirectoryRegex():
         assert directory == ['scheme://a.url.with/a/few/forward/slashes/']
 
 
-def testDirectoryRegex_new_format():
+def test_directory_regex_new_format():
     # Test for Windows where '\' is a path separator and not part of the regex
     s = Scraper(format='scheme://a.url.with/a/few/forward/slashes/andbacklash\\inthename.ext')
     timerange = TimeRange('2019-02-01', '2019-02-03')
@@ -91,8 +92,8 @@ def testDirectoryRegex_new_format():
     assert directory == ['scheme://a.url.with/a/few/forward/slashes/']
 
 
-def testDirectoryRangeFalse():
-    with pytest.deprecated_call():
+def test_directory_rangeFalse():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y%m%d/%Y%m%d_%H.fit.gz')
         directory_list = ['20091230/', '20091231/', '20100101/',
                         '20090102/', '20090103/']
@@ -100,7 +101,7 @@ def testDirectoryRangeFalse():
         assert s.range(timerange) != directory_list
 
 
-def testDirectoryRangeFalse_new_format():
+def test_directory_range_false_new_format():
     s = Scraper(format='{{year:4d}}{{month:2d}}{{day:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}.fit.gz')
     directory_list = ['20091230/', '20091231/', '20100101/',
                       '20090102/', '20090103/']
@@ -108,8 +109,8 @@ def testDirectoryRangeFalse_new_format():
     assert s.range(timerange) != directory_list
 
 
-def testNoDateDirectory():
-    with pytest.deprecated_call():
+def test_no_date_directory():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='mySpacecraft/myInstrument/xMinutes/aaa%y%b.ext')
         directory_list = ['mySpacecraft/myInstrument/xMinutes/']
         timerange = TimeRange('2009/11/20', '2010/01/03')
@@ -123,21 +124,21 @@ def testNoDateDirectory_new_format():
     assert s.range(timerange) == directory_list
 
 
-def testDirectoryRangeHours():
-    with pytest.deprecated_call():
+def test_directory_range_hours():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y%m%d_%H/%H%M.csv')
         timerange = TimeRange('2009-12-31T23:40:00', '2010-01-01T01:15:00')
         assert len(s.range(timerange)) == 3  # 3 directories (1 per hour)
 
 
-def testDirectoryRangeHours_new_format():
+def test_directory_range_hours_new_format():
     s = Scraper(format='{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}/{{hour:2d}}{{minute:2d}}.csv')
     timerange = TimeRange('2009-12-31T23:40:00', '2010-01-01T01:15:00')
     assert len(s.range(timerange)) == 3  # 3 directories (1 per hour)
 
 
-def testDirectoryRange_single():
-    with pytest.deprecated_call():
+def test_directory_range_single():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y%m%d/%H_%M.csv')
         startdate = parse_time((2010, 10, 10, 5, 0))
         enddate = parse_time((2010, 10, 10, 7, 0))
@@ -145,7 +146,7 @@ def testDirectoryRange_single():
         assert len(s.range(timerange)) == 1
 
 
-def testDirectoryRange_single_new_format():
+def test_directory_range_single_new_format():
     s = Scraper(format='{{year:4d}}{{month:2d}}{{day:2d}}/{{hour:2d}}_{{minute:2d}}.csv')
     startdate = parse_time((2010, 10, 10, 5, 0))
     enddate = parse_time((2010, 10, 10, 7, 0))
@@ -153,8 +154,8 @@ def testDirectoryRange_single_new_format():
     assert len(s.range(timerange)) == 1
 
 
-def testDirectoryRange_Month():
-    with pytest.deprecated_call():
+def test_directory_range_month():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y%m/%d/%j_%H.txt')
         startdate = parse_time((2008, 2, 20, 10))
         enddate = parse_time((2008, 3, 2, 5))
@@ -166,7 +167,7 @@ def testDirectoryRange_Month():
         assert len(s.range(timerange)) == 11
 
 
-def testDirectoryRange_Month_new_format():
+def test_directory_range_month_new_format():
     s = Scraper(format='{{year:4d}}{{month:2d}}/{{day:2d}}/{{day_of_year:3d}}_{{hour:2d}}.txt')
     startdate = parse_time((2008, 2, 20, 10))
     enddate = parse_time((2008, 3, 2, 5))
@@ -178,58 +179,58 @@ def testDirectoryRange_Month_new_format():
     assert len(s.range(timerange)) == 11
 
 
-def testExtractDates_usingPattern():
-    with pytest.deprecated_call():
+def test_extract_dates_using_pattern():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         # Standard pattern
         s = Scraper(pattern='data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
-        testURL = 'data/2014/05/14/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
+        test_url = 'data/2014/05/14/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extract_date(testURL) == timeURL
+        assert s._extract_date(test_url) == timeURL
         # Not-full repeated pattern
         s = Scraper(pattern='data/%Y/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
-        testURL = 'data/2014/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
+        test_url = 'data/2014/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extract_date(testURL) == timeURL
+        assert s._extract_date(test_url) == timeURL
 
 
-def testExtractDates_notSeparators():
-    with pytest.deprecated_call():
+def test_extract_dates_not_separators():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='data/%Y/%m/swap%m%d_%H%M%S')
-        testURL = 'data/2014/05/swap0514_200135'
+        test_url = 'data/2014/05/swap0514_200135'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extract_date(testURL) == timeURL
+        assert s._extract_date(test_url) == timeURL
 
 
-def testExtractDates_notSeparators_andSimilar():
-    with pytest.deprecated_call():
+def test_extract_dates_not_separators_and_similar():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='data/%Y/Jun%b%d_%H%M%S')
-        testURL = 'data/2014/JunJun14_200135'
+        test_url = 'data/2014/JunJun14_200135'
         timeURL = parse_time((2014, 6, 14, 20, 1, 35))
-        assert s._extract_date(testURL) == timeURL
-        testURL = 'data/2014/JunMay14_200135'
+        assert s._extract_date(test_url) == timeURL
+        test_url = 'data/2014/Jun_may14_200135'
         timeURL = parse_time((2014, 5, 14, 20, 1, 35))
-        assert s._extract_date(testURL) == timeURL
+        assert s._extract_date(test_url) == timeURL
         # and testing with the month afterwards
         s = Scraper(pattern='data/%Y/%dJun%b_%H%M%S')
-        testURL = 'data/2014/14JunJun_200135'
+        test_url = 'data/2014/14JunJun_200135'
         timeURL = parse_time((2014, 6, 14, 20, 1, 35))
-        assert s._extract_date(testURL) == timeURL
+        assert s._extract_date(test_url) == timeURL
 
 
-def testURL():
-    with pytest.deprecated_call():
+def test_url():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='fd_%Y%m%d_%H%M%S.fts')
-        assert s._URL_followsPattern('fd_20130410_231211.fts')
-        assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
-        assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+        assert s._url_follows_pattern('fd_20130410_231211.fts')
+        assert not s._url_follows_pattern('fd_20130410_231211.fts.gz')
+        assert not s._url_follows_pattern('fd_20130410_ar_231211.fts.gz')
 
 
-def testURL_pattern():
-    with pytest.deprecated_call():
+def test_url_pattern():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='fd_%Y%m%d_%H%M%S.fts')
-        assert s._URL_followsPattern('fd_20130410_231211.fts')
-        assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
-        assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+        assert s._url_follows_pattern('fd_20130410_231211.fts')
+        assert not s._url_follows_pattern('fd_20130410_231211.fts.gz')
+        assert not s._url_follows_pattern('fd_20130410_ar_231211.fts.gz')
 
 
 @pytest.mark.parametrize(('pattern', 'filename', 'metadict'), [
@@ -238,20 +239,20 @@ def testURL_pattern():
     ('fd_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}_{{millisecond:3d}}.fts', 'fd_20130410_231211_119.fts',
      {'year': 2013, 'month': 4, 'day': 10, 'hour': 23, 'minute': 12, 'second': 11, 'millisecond': 119})
 ])
-def testURL_pattern_new_format(pattern, filename, metadict):
+def test_url_pattern_new_format(pattern, filename, metadict):
     assert parse(pattern.format(None), filename).named == metadict
 
 
-def testURL_patternMillisecondsGeneric():
-    with pytest.deprecated_call():
+def test_url_pattern_milliseconds_generic():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='fd_%Y%m%d_%H%M%S_%e.fts')
-        assert s._URL_followsPattern('fd_20130410_231211_119.fts')
-        assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
-        assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+        assert s._url_follows_pattern('fd_20130410_231211_119.fts')
+        assert not s._url_follows_pattern('fd_20130410_231211.fts.gz')
+        assert not s._url_follows_pattern('fd_20130410_ar_231211.fts.gz')
 
 
-def testURL_patternMillisecondsZeroPadded():
-    with pytest.deprecated_call():
+def test_url_pattern_milliseconds_zero_padded():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         # Asserts solution to ticket #1954.
         # Milliseconds must be zero-padded in order to match URL lengths.
         now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
@@ -261,7 +262,7 @@ def testURL_patternMillisecondsZeroPadded():
         assert s.now == 'fd_20190419_000000_004.fts'
 
 
-def testURL_patternMillisecondsZeroPadded_new_format():
+def test_url_pattern_milliseconds_zero_padded_new_format():
     # Asserts solution to ticket #1954.
     # Milliseconds must be zero-padded in order to match URL lengths.
     now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
@@ -271,8 +272,8 @@ def testURL_patternMillisecondsZeroPadded_new_format():
     assert s.now == 'fd_20190419_000000_004.fts'
 
 
-def testFilesRange_sameDirectory_local():
-    with pytest.deprecated_call():
+def test_files_range_same_directory_local():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='/'.join(['file:/', str(rootdir),
                             'EIT_header', 'efz%Y%m%d.%H%M%S_s.header']))
         startdate = parse_time((2004, 3, 1, 4, 0))
@@ -283,7 +284,7 @@ def testFilesRange_sameDirectory_local():
         assert len(s.filelist(TimeRange(startdate, enddate))) == 0
 
 
-def testFilesRange_sameDirectory_local_new_format():
+def test_files_range_same_directory_local_new_format():
     s = Scraper(format='/'.join(['file:/', str(rootdir),
                           'EIT_header', 'efz{{year:4d}}{{month:2d}}{{day:2d}}.{{hour:2d}}{{minute:2d}}{{second:2d}}_s.header']))
     startdate = parse_time((2004, 3, 1, 4, 0))
@@ -295,8 +296,8 @@ def testFilesRange_sameDirectory_local_new_format():
 
 
 @pytest.mark.remote_data
-def testFilesRange_sameDirectory_remote():
-    with pytest.deprecated_call():
+def test_files_range_same_directory_remote():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         pattern = ('http://proba2.oma.be/{instrument}/data/bsd/%Y/%m/%d/'
                 '{instrument}_lv1_%Y%m%d_%H%M%S.fits')
         s = Scraper(pattern, instrument='swap')
@@ -311,7 +312,7 @@ def testFilesRange_sameDirectory_remote():
 
 
 @pytest.mark.remote_data
-def testFilesRange_sameDirectory_remote_new_format():
+def test_files_range_same_directory_remote_new_format():
     pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
                '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     s = Scraper(format=pattern, instrument='swap')
@@ -326,8 +327,8 @@ def testFilesRange_sameDirectory_remote_new_format():
 
 
 @pytest.mark.remote_data
-def testFilesRange_sameDirectory_months_remote():
-    with pytest.deprecated_call():
+def test_files_range_same_directory_months_remote():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
                 'Ahead/1minute/AeH%y%b.1m')
         s = Scraper(pattern, spacecraft='STEREO', instrument='HET')
@@ -341,7 +342,7 @@ def testFilesRange_sameDirectory_months_remote():
 
 
 @pytest.mark.remote_data
-def testFilesRange_sameDirectory_months_remote_new_format():
+def test_files_range_same_directory_months_remote_new_format():
     pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH{{year:2d}}{{month_name_abbr:w}}.1m')
     s = Scraper(format=pattern, spacecraft='STEREO', instrument='HET')
@@ -355,7 +356,7 @@ def testFilesRange_sameDirectory_months_remote_new_format():
 
 @pytest.mark.remote_data
 def test_ftp():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/%Y/%m/%Y%m%dSRS.txt'
         s = Scraper(pattern)
         timerange = TimeRange('2024/5/18', '2024/5/20')
@@ -386,7 +387,7 @@ def test_filelist_url_missing_directory_new_format():
 
 @pytest.mark.remote_data
 def test_filelist_url_missing_directory():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         # Asserts solution to ticket #2684.
         # Attempting to access data for the year 1960 results in a 404, so no files are returned.
         pattern = 'http://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/%Y/%j/'
@@ -397,7 +398,7 @@ def test_filelist_url_missing_directory():
 
 @pytest.mark.remote_data
 def test_filelist_relative_hrefs():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         # the url opened by the scraper from below pattern contains some links which don't have hrefs
         pattern = 'http://www.bbso.njit.edu/pub/archive/%Y/%m/%d/bbso_halph_fr_%Y%m%d_%H%M%S.fts'
         s = Scraper(pattern)
@@ -427,25 +428,25 @@ def test_filelist_relative_hrefs_new_format():
     (r'(\d){5}_(\d){2}\.fts', '01122_25.fts'),
     (r'_%Y%m%d__%ec(\d){5}_(\d){2}\s.fts', '_20201535__012c12345_33 .fts')])
 def test_regex(pattern, check_file):
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern, regex=True)
-        assert s._URL_followsPattern(check_file)
+        assert s._url_follows_pattern(check_file)
 
 
 @pytest.mark.remote_data
 def test_regex_data():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         prefix = r'https://gong2.nso.edu/oQR/zqs/'
         pattern = prefix + r'%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
         s = Scraper(pattern, regex=True)
         timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
-        assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
+        assert s._url_follows_pattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
         assert len(s.filelist(timerange)) == 37
 
 
 @pytest.mark.remote_data
 def test_extract_files_meta():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         prefix = r'https://gong2.nso.edu/oQR/zqs/'
         baseurl1 = prefix + r'%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
         extractpattern1 = ('{}/zqs/{year:4d}{month:2d}/mrzqs{:4d}{day:2d}/mrzqs{:6d}t'
@@ -479,15 +480,15 @@ def test_extract_files_meta_new_format():
     assert metalist1[-1]['url'] == urls[-1]
 
 
-def testNoDirectory():
-    with pytest.deprecated_call():
+def test_no_directory():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='files/%Y%m%d_%H%M.dat')
         startdate = parse_time((2010, 1, 10, 20, 30))
         enddate = parse_time((2010, 1, 20, 20, 30))
         timerange = TimeRange(startdate, enddate)
         assert len(s.range(timerange)) == 1
 
-def testNoDirectory_new_format():
+def test_no_directory_new_format():
     s = Scraper(format='files/{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}.dat')
     startdate = parse_time((2010, 1, 10, 20, 30))
     enddate = parse_time((2010, 1, 20, 20, 30))
@@ -517,7 +518,7 @@ def test_parse_pattern_data_new_format():
 
 @pytest.mark.remote_data
 def test_yearly_overlap():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         # Check that a time range that falls within the interval that a file represents
         # returns a single result.
         pattern = "https://www.ngdc.noaa.gov/stp/space-weather/solar-data/solar-features/solar-flares/x-rays/goes/xrs/goes-xrs-report_%Y.txt"
@@ -588,7 +589,7 @@ def test_http_404_error_debug_message_new_format(caplog):
 
 
 def test_check_timerange():
-    with pytest.deprecated_call():
+    with pytest.warns(SunpyDeprecationWarning, match="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions."):
         s = Scraper(pattern='%Y.fits')
         # Valid time range for 2014.fits is the whole of 2014
         # Test different cases to make sure check_timerange is working as expected
