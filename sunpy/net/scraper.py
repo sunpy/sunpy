@@ -3,7 +3,6 @@ This module provides a web scraper.
 """
 import os
 import re
-import warnings
 from time import sleep
 from ftplib import FTP
 from datetime import datetime
@@ -19,6 +18,7 @@ from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.net.scraper_utils import date_floor, extract_timestep, get_timerange_from_exdict
 from sunpy.time.timerange import TimeRange
+from sunpy.util.decorators import deprecated_renamed_argument
 from sunpy.util.exceptions import warn_user
 
 __all__ = ['Scraper']
@@ -46,20 +46,13 @@ PARSE_TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
             "{week_number:2d}": "%W",
         }
 
-
+@deprecated_renamed_argument("pattern", None, since="5.1", message="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions.")
 class Scraper:
     """
     A Scraper to scrap web data archives based on dates.
 
     Parameters
     ----------
-    format : `str`
-        A string containing the url with the date and other information to be
-        extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
-        as a string format, the former represented using double curly-brackets
-        to differentiate from the latter.
-        The accepted parse representations for datetime values are as given in ``PARSE_TIME_CONVERSIONS``.
-        This can also be a uri to a local file patterns. Default is `None`.
     pattern : `str`
         A string containing the url with the date encoded as datetime formats,
         and any other parameter as ``kwargs`` as a string format.
@@ -70,12 +63,19 @@ class Scraper:
         Be careful that periods ``.`` matches any character and therefore it's better to escape them.
         If regexp is used, other ``kwargs`` are ignored and string replacement is
         not possible. Default is `False`.
+    format : `str`
+        A string containing the url with the date and other information to be
+        extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
+        as a string format, the former represented using double curly-brackets
+        to differentiate from the latter.
+        The accepted parse representations for datetime values are as given in ``PARSE_TIME_CONVERSIONS``.
+        This can also be a uri to a local file patterns. Default is `None`.
 
     Attributes
     ----------
     pattern : `str`
         The pattern with the parse format.
-    dt_pattern : `str`
+    datetime_pattern : `str`
         The parse pattern in the datetime format.
     now : `datetime.datetime`
         The pattern with the actual date.
@@ -88,7 +88,7 @@ class Scraper:
     >>> swap = Scraper(format=pattern, instrument='swap')
     >>> print(swap.pattern)
     http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
-    >>> print(swap.dt_pattern)
+    >>> print(swap.datetime_pattern)
     http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%m%S.fits
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
@@ -99,13 +99,8 @@ class Scraper:
     pattern looks with the actual time.
     """
 
-    def __init__(self, format=None, pattern=None, regex=False, **kwargs):
+    def __init__(self, pattern=None, regex=False, *, format=None, **kwargs):
         if pattern is not None and format is None:
-            warnings.warn(
-                "Using 'pattern' for the URL format is deprecated. "
-                "Please use 'format' instead.",
-                DeprecationWarning,
-            )
             self.use_old_format = True
             self.pattern = pattern
         elif pattern is None and format is not None:
@@ -131,23 +126,23 @@ class Scraper:
                 self.now = now.strftime(f'{self.pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.pattern[milliseconds.end():]}')
         else:
             pattern = format.format(**kwargs)
-            dt_pattern = pattern
+            datetime_pattern = pattern
             for k, v in PARSE_TIME_CONVERSIONS.items():
-                if k in dt_pattern:
-                    dt_pattern = dt_pattern.replace(k,v)
-            self.dt_pattern = dt_pattern
+                if k in datetime_pattern:
+                    datetime_pattern = datetime_pattern.replace(k,v)
+            self.datetime_pattern = datetime_pattern
             # so that they don't conflict later on, either one can help in extracting year
             if "year:4d" in pattern and "year:2d" in pattern:
                 pattern = pattern.replace("year:2d", ":2d")
             self.pattern = pattern
             self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
-            milliseconds = re.search(r'\%e', self.dt_pattern)
+            milliseconds = re.search(r'\%e', self.datetime_pattern)
             if not milliseconds:
-                self.now = datetime.now().strftime(self.dt_pattern)
+                self.now = datetime.now().strftime(self.datetime_pattern)
             else:
                 now = datetime.now()
                 milliseconds_ = int(now.microsecond / 1000.)
-                self.now = now.strftime(f'{self.dt_pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.dt_pattern[milliseconds.end():]}')
+                self.now = now.strftime(f'{self.datetime_pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.datetime_pattern[milliseconds.end():]}')
 
     def matches(self, filepath, date):
         """
@@ -169,7 +164,7 @@ class Scraper:
         if self.use_old_format:
             return date.strftime(self.pattern) == filepath
         else:
-            return parse(date.strftime(self.dt_pattern), filepath) is not None
+            return parse(date.strftime(self.datetime_pattern), filepath) is not None
 
     def range(self, timerange):
         """
@@ -191,8 +186,8 @@ class Scraper:
             if '/' in self.pattern:
                 directorypattern = '/'.join(self.pattern.split('/')[:-1]) + '/'
         else:
-            if '/' in self.dt_pattern:
-                directorypattern = '/'.join(self.dt_pattern.split('/')[:-1]) + '/'
+            if '/' in self.datetime_pattern:
+                directorypattern = '/'.join(self.datetime_pattern.split('/')[:-1]) + '/'
         timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
@@ -257,7 +252,7 @@ class Scraper:
             return self._ftpfilelist(timerange)
         elif urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
-        elif urlsplit(directories[0]).scheme == "http" or urlsplit(directories[0]).scheme == "https":
+        elif urlsplit(directories[0]).scheme in ["http", "https"]:
             return self._httpfilelist(timerange)
         else:
             return ValueError("The provided pattern should either be an FTP or a local file-path, or an HTTP address.")
@@ -278,7 +273,7 @@ class Scraper:
                     continue
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
-                    if self._URL_followsPattern(fullpath):
+                    if self._url_follows_pattern(fullpath):
                         if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
@@ -305,34 +300,34 @@ class Scraper:
             for directory in directories:
                 for file_i in os.listdir(directory):
                     fullpath = directory + file_i
-                    if self._URL_followsPattern(fullpath):
+                    if self._url_follows_pattern(fullpath):
                         if self._check_timerange(fullpath, timerange):
                             filepaths.append(fullpath)
             filepaths = [prefix + path for path in filepaths]
             self.pattern = pattern
             return filepaths
         else:
-            pattern, dt_pattern = self.pattern, self.dt_pattern
-            pattern_temp, dt_pattern_temp = pattern.replace('file://', ''), dt_pattern.replace('file://', '')
+            pattern, datetime_pattern = self.pattern, self.datetime_pattern
+            pattern_temp, datetime_pattern_temp = pattern.replace('file://', ''), datetime_pattern.replace('file://', '')
             if os.name == 'nt':
                 pattern_temp = pattern_temp.replace('\\', '/')
-                dt_pattern_temp = dt_pattern_temp.replace('\\', '/')
+                datetime_pattern_temp = datetime_pattern_temp.replace('\\', '/')
                 prefix = 'file:///'
             else:
                 prefix = 'file://'
             # Change pattern variables class-wide
-            self.pattern, self.dt_pattern = pattern_temp, dt_pattern_temp
+            self.pattern, self.datetime_pattern = pattern_temp, datetime_pattern_temp
             directories = self.range(timerange)
             filepaths = list()
             for directory in directories:
                 for file_i in os.listdir(directory):
                     fullpath = directory + file_i
-                    if self._URL_followsPattern(fullpath):
+                    if self._url_follows_pattern(fullpath):
                         if self._check_timerange(fullpath, timerange):
                             filepaths.append(fullpath)
             filepaths = [prefix + path for path in filepaths]
             # Set them back to their original values
-            self.pattern, self.dt_pattern = pattern, dt_pattern
+            self.pattern, self.datetime_pattern = pattern, datetime_pattern
             return filepaths
 
     def _httpfilelist(self, timerange):
@@ -355,7 +350,7 @@ class Scraper:
                                 fullpath = self.domain + href[1:]
                             else:
                                 fullpath = directory + href
-                            if self._URL_followsPattern(fullpath):
+                            if self._url_follows_pattern(fullpath):
                                 if self._check_timerange(fullpath, timerange):
                                     filesurls.append(fullpath)
                 finally:
@@ -433,7 +428,7 @@ class Scraper:
             tr = get_timerange_from_exdict(exdict)
             return tr.intersects(timerange)
 
-    def _URL_followsPattern(self, url):
+    def _url_follows_pattern(self, url):
         """
         Check whether the url provided follows the pattern.
         """
@@ -453,15 +448,15 @@ class Scraper:
         """
         Extracts the date from a particular url following the pattern.
         """
-        # remove the user and passwd from files if there:
+        # Remove the user and password if present
         url = url.replace("anonymous:data@sunpy.org@", "")
 
         def url_to_list(txt):
             # Substitutes '.' and '_' for '/'.
             return re.sub(r'\.|_', '/', txt).split('/')
 
-        # create a list of all the blocks in times - assuming they are all
-        # separated with either '.', '_' or '/'.
+        # Create a list of all the blocks in times
+        # assuming they are all separated with either '.', '_' or '/'
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
