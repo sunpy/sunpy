@@ -21,8 +21,8 @@ extend-ignore = [
   "PT023", # Always use () on pytest decorators
 ]
 
-[flake8-tidy-imports]
-[flake8-tidy-imports.banned-api]
+[lint.flake8-tidy-imports]
+[lint.flake8-tidy-imports.banned-api]
 "warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
 
 [lint.per-file-ignores]

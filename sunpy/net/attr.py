@@ -103,7 +103,7 @@ class AttrMeta(type):
         Each of which are a list. `name` will be the attribute name, `name_long` is
         the original name passed in and `desc` the description of the object.
         """
-        # Get the revelant entries.
+        # Get the relevant entries.
         registry = self._attr_registry[self]
         # All the attribute names under that type(Attr)
         names = registry.name
@@ -250,7 +250,7 @@ class Attr(metaclass=AttrMeta):
                         name = pair[0]
 
                     # Sanitize part two: remove punctuation and replace it with _
-                    name = re.sub('[%s]' % re.escape(string.punctuation), '_', name)
+                    name = re.sub(f'[{re.escape(string.punctuation)}]', '_', name)
                     # Sanitize name, we remove all special characters
                     name = ''.join(char for char in name
                                    if char.isidentifier() or char.isnumeric())

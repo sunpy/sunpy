@@ -1149,7 +1149,7 @@ frame_transform_graph._add_merged_transform(Geomagnetic, ITRS, Geomagnetic)
 @_transformation_debug("MAG->SM")
 def mag_to_sm(magcoord, smframe):
     """
-    Convert from Geomagnetic (MAG) to Solar Magentic (SM)
+    Convert from Geomagnetic (MAG) to Solar Magnetic (SM)
     """
     if magcoord.obstime is None:
         raise ConvertError("To perform this transformation, the coordinate"
@@ -1198,7 +1198,7 @@ frame_transform_graph._add_merged_transform(SolarMagnetic, Geomagnetic, SolarMag
 @_transformation_debug("SM->GSM")
 def sm_to_gsm(smcoord, gsmframe):
     """
-    Convert from Solar Magentic (SM) to Geocentric Solar Magnetospheric (GSM)
+    Convert from Solar Magnetic (SM) to Geocentric Solar Magnetospheric (GSM)
     """
     if smcoord.obstime is None:
         raise ConvertError("To perform this transformation, the coordinate"

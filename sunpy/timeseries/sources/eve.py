@@ -11,6 +11,7 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 import sunpy.io
+import sunpy.io._file_tools
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.exceptions import warn_deprecated
@@ -115,7 +116,7 @@ class ESPTimeSeries(GenericTimeSeries):
         """
         Parses a EVE ESP level 1 data.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod

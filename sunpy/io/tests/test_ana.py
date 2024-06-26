@@ -7,6 +7,8 @@ import pytest
 from sunpy.io import ana
 from sunpy.tests.helpers import skip_ana
 
+pytestmark = pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
+
 img_size = (456, 345)
 img_src = np.arange(np.prod(img_size))
 img_src.shape = img_size

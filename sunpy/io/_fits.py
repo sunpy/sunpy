@@ -1,9 +1,6 @@
 """
 This module provides a FITS file reader for internal use.
 
-We instead recommend users use the `astropy.io.fits` module,
-which provides more generic functionality to read FITS files.
-
 Notes
 -----
 1. FITS files allow comments to be attached to every value in the header.
@@ -35,7 +32,7 @@ import collections.abc
 
 from astropy.io import fits
 
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.io import HDPair
 
@@ -108,7 +105,7 @@ def get_header(afile):
     Returns
     -------
     `list`
-        A list of `sunpy.io.header.FileHeader` headers.
+        A list of `sunpy.io._header.FileHeader` headers.
     """
     if isinstance(afile, fits.HDUList):
         hdulist = afile
@@ -141,7 +138,7 @@ def format_comments_and_history(input_header):
 
     Returns
     -------
-    `sunpy.io.header.FileHeader`
+    `sunpy.io._header.FileHeader`
     """
     try:
         comment = "\n".join(input_header['COMMENT']).strip()
@@ -290,8 +287,8 @@ def extract_waveunit(header):
 
     Parameters
     ----------
-    header : `sunpy.io.header.FileHeader`
-        One `~sunpy.io.header.FileHeader` instance which was created by
+    header : `sunpy.io._header.FileHeader`
+        One `~sunpy.io._header.FileHeader` instance which was created by
         reading a FITS file. For example, `sunpy.io._fits.get_header` returns a list of
         such instances.
 

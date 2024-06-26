@@ -12,7 +12,8 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 """
 import os
 
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
+from sunpy.util.decorators import deprecated
 from sunpy.util.io import HDPair
 
 try:
@@ -24,11 +25,10 @@ ANA_NOT_INSTALLED = (
     "C extension for ANA is missing. For more details see: "
     "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
 )
-
-
 __all__ = ['read', 'get_header', 'write']
 
 
+@deprecated(since="6.0", message="The ANA reader is un-maintained and will be removed in the future. Please contact sunpy if you are using this.", alternative="https://github.com/ITA-Solar/helita has a ANA reader and writer.")
 def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
@@ -62,6 +62,7 @@ def read(filename, debug=False, **kwargs):
     return [HDPair(data['data'], FileHeader(data['header']))]
 
 
+@deprecated(since="6.0", message="The ANA reader is un-maintained and will be removed in the future. Please contact sunpy if you are using this.", alternative="https://github.com/ITA-Solar/helita has a ANA reader and writer.")
 def get_header(filename, debug=False):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
@@ -78,7 +79,7 @@ def get_header(filename, debug=False):
     Returns
     -------
     `list`
-        A list of `~sunpy.io.header.FileHeader` headers.
+        A list of `~sunpy.io._header.FileHeader` headers.
 
     Examples
     --------
@@ -91,6 +92,7 @@ def get_header(filename, debug=False):
     return [FileHeader(data['header'])]
 
 
+@deprecated(since="6.0", message="The ANA reader is un-maintained and will be removed in the future. Please contact sunpy if you are using this.", alternative="https://github.com/ITA-Solar/helita has a ANA reader and writer.")
 def write(filename, data, comments=False, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
@@ -102,7 +104,7 @@ def write(filename, data, comments=False, compress=True, debug=False):
         Name of file to be created.
     data : `numpy.ndarray`
         The data to be stored.
-    comments : `~sunpy.io.header.FileHeader`, optional
+    comments : `~sunpy.io._header.FileHeader`, optional
         The comments to be stored as a header.
     compress : `bool`, optional
         Compress the data with `True` (the default).

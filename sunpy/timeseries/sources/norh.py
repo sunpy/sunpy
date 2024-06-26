@@ -125,7 +125,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod

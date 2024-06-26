@@ -3,7 +3,7 @@ import numpy as np
 
 from sunpy.data.test import get_test_filepath
 from sunpy.io import _fits, _jp2
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 from sunpy.tests.helpers import skip_glymur
 
 AIA_193_JP2 = get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")

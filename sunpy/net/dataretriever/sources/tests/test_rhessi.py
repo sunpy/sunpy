@@ -188,7 +188,7 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'sunpy.net.dataretriever.sources.rhessi.RHESSIClien'
+    assert output[:51] == 'sunpy.net.dataretriever.sources.rhessi.RHESSIClient'
 
 
 def mock_query_object(LCClient):

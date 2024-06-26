@@ -93,7 +93,7 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'sunpy.net.dataretriever.sources.fermi_gbm.GBMClien'
+    assert output[:51] == 'sunpy.net.dataretriever.sources.fermi_gbm.GBMClient'
 
 
 def mock_query_object(LCClient):

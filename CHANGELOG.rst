@@ -125,7 +125,7 @@ New Features
 - Adds two tutorials that demonstrate how to use LASCO data in overlaying maps (:ref:`sphx_glr_generated_gallery_plotting_lasco_overlay.py`) and how to create a custom mask for a LASCO C2 image (:ref:`sphx_glr_generated_gallery_map_lasco_mask.py`). (`#6576 <https://github.com/sunpy/sunpy/pull/6576>`__)
 - Able to run the ``sunpy`` tests doing ``python -m sunpy.tests.self_test``. (`#6600 <https://github.com/sunpy/sunpy/pull/6600>`__)
 - Able to detect gzip-compressed FITS files even if they don't have the ``.gz`` extension in the filename.
-  `~sunpy.io.detect_filetype` now looks for the right file signature while checking
+  ``sunpy.io.detect_filetype`` now looks for the right file signature while checking
   for gzipped FITS files. (`#6693 <https://github.com/sunpy/sunpy/pull/6693>`__)
 - Added ``AttrAnd`` and ``AttrOr`` to the namespace in ``sunpy.net.attrs``.
   This allows users to to avoid ``|`` or ``&`` when creating a query a larger query. (`#6708 <https://github.com/sunpy/sunpy/pull/6708>`__)
@@ -257,7 +257,7 @@ Deprecations
 - ``sunpy.data.download_sample_data()`` is now deprecated.
   Use :func:`sunpy.data.sample.download_all` instead. (`#6426 <https://github.com/sunpy/sunpy/pull/6426>`__)
 - The sunpy.database module is no longer actively maintained and has a number of outstanding issues.
-  It is anticiapted that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.
+  It is anticipated that sunpy.database will be formally deprecated in sunpy 5.0 and removed in sunpy 6.0.
   If you are using sunpy.database and would like to see a replacement, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495. (`#6498 <https://github.com/sunpy/sunpy/pull/6498>`__)
 
 
@@ -850,7 +850,7 @@ Bug Fixes
   location was a fully specified Stonyhurst heliographic coordinate. (`#5584 <https://github.com/sunpy/sunpy/pull/5584>`__)
 - `~sunpy.map.sources.XRTMap` uppercases the ``TIMESYS`` key before checking if the
   key needs to be fixed. (`#5592 <https://github.com/sunpy/sunpy/pull/5592>`__)
-- Fixed passing a URL to :func:`sunpy.io.read_file` on windows. (`#5601 <https://github.com/sunpy/sunpy/pull/5601>`__)
+- Fixed passing a URL to ``sunpy.io.read_file`` on windows. (`#5601 <https://github.com/sunpy/sunpy/pull/5601>`__)
 - Fixed a bug where the ``date`` property on `~sunpy.map.sources.HMISynopticMap` returned ``None``
   if the ``DATE-OBS`` key was present. (`#5648 <https://github.com/sunpy/sunpy/pull/5648>`__)
 
@@ -1187,7 +1187,7 @@ Backwards Incompatible Changes
   For results from the VSO the keys are no longer separated with ``.``, and are
   based on the displayed column names. For results from the ``dataretriever``
   clients the only main change is that the keys are now lower case, where they
-  were capitilized before. You can use the ``.sunpy.net.fido_factory.UnifiedResponse.path_format_keys``
+  were capitalized before. You can use the ``.sunpy.net.fido_factory.UnifiedResponse.path_format_keys``
   method to see all the possible keys for a particular search. (`#4798 <https://github.com/sunpy/sunpy/pull/4798>`__)
 - The time returned from :func:`~sunpy.coordinates.sun.carrington_rotation_number`
   has been changed from the TT scale to the more common UTC scale. To undo this change,
@@ -1286,7 +1286,7 @@ Features
 - Refactoring of `~sunpy.net.dataretriever` which adds these capabilities to `~sunpy.net.dataretriever.QueryResponse`:
 
   - Any ``attr`` shall not be defaulted to a hard-coded value in all subclasses of `~sunpy.net.dataretriever.GenericClient`; thus records for all possible ``attrs`` shall be returned if it is not specified in the query.
-  - `~sunpy.net.dataretriever.QueryResponse` can now show more columns; thus all metadata extractable from matching file URLs shall be shown and for a client, non-spported ``attrs`` shall not be shown in the response tables. (`#4321 <https://github.com/sunpy/sunpy/pull/4321>`__)
+  - `~sunpy.net.dataretriever.QueryResponse` can now show more columns; thus all metadata extractable from matching file URLs shall be shown and for a client, non-supported ``attrs`` shall not be shown in the response tables. (`#4321 <https://github.com/sunpy/sunpy/pull/4321>`__)
 - New class attributes added to `~sunpy.net.dataretriever.GenericClient`:
 
   - ``baseurl`` and ``pattern`` which are required to define a new simple client.
@@ -1718,7 +1718,7 @@ Improved Documentation
   The page :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom. (`#4124 <https://github.com/sunpy/sunpy/pull/4124>`__)
 - Added `sunpy.visualization.colormaps.color_tables` to the docs. (`#4182 <https://github.com/sunpy/sunpy/pull/4182>`__)
 - Made minor improvements to the map histogramming example. (`#4205 <https://github.com/sunpy/sunpy/pull/4205>`__)
-- Add a warning to `sunpy.io` docs to recommend not using it for FITS (`#4208 <https://github.com/sunpy/sunpy/pull/4208>`__)
+- Add a warning to ``sunpy.io`` docs to recommend not using it for FITS (`#4208 <https://github.com/sunpy/sunpy/pull/4208>`__)
 
 
 Trivial/Internal Changes
@@ -1824,7 +1824,7 @@ Features
   objects. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
 - `~sunpy.map.GenericMap` objects now have a ``.cmap`` attribute, which returns the full `~matplotlib.colors.Colormap`.
   object. (`#3412 <https://github.com/sunpy/sunpy/pull/3412>`__)
-- `sunpy.io.write_file()` now accepts `~pathlib.Path` objects as filename inputs. (`#3469 <https://github.com/sunpy/sunpy/pull/3469>`__)
+- ``sunpy.io.write_file`` now accepts `~pathlib.Path` objects as filename inputs. (`#3469 <https://github.com/sunpy/sunpy/pull/3469>`__)
 - :func:`sunpy.map.header_helper.make_fitswcs_header` now accepts a `tuple` representing the shape of an array as well as the actual array as the ``data`` argument. (`#3483 <https://github.com/sunpy/sunpy/pull/3483>`__)
 - Made a couple of module imports lazy to reduce the import time of sunpy.map by
   ~40%. (`#3495 <https://github.com/sunpy/sunpy/pull/3495>`__)
@@ -2083,7 +2083,7 @@ Bug Fixes
 - Fix the bug that prevented VSO queries for HMI data from downloading file
   without specifying ``a.Physobs``. (`#2621 <https://github.com/sunpy/sunpy/pull/2621>`__)
 - Fix ``sunpy.map.mapcube.MapCube.plot``. The code had not been updated to support the changes to the wcsaxes helper functions. (`#2627 <https://github.com/sunpy/sunpy/pull/2627>`__)
-- Replace all use of the deprecated ``sunpy.cm.get_cmap`` with `matplotlib.cm.get_cmap` to prevent deprecation warnings being raised. (`#2635 <https://github.com/sunpy/sunpy/pull/2635>`__)
+- Replace all use of the deprecated ``sunpy.cm.get_cmap`` with ``matplotlib.cm.get_cmap`` to prevent deprecation warnings being raised. (`#2635 <https://github.com/sunpy/sunpy/pull/2635>`__)
 - Fix generation of the coordinate transformation graph with Astropy 3.1.dev (`#2636 <https://github.com/sunpy/sunpy/pull/2636>`__)
 - Prevent helioviewer from erroring when downloading file to a directory that
   does not exist. It will now create the directory when required. (`#2642 <https://github.com/sunpy/sunpy/pull/2642>`__)

@@ -1,0 +1,2 @@
+``sunpy.io.read_file`` and ``sunpy.io.write_file`` are deprecated and will be removed in the future.
+These were intended to be private functions and should not be used.

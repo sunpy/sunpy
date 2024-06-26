@@ -1,8 +1,5 @@
 """
 This module provides a JPEG 2000 file reader for internal use.
-
-It was developed to read JPEG 2000 files created by the Helioviewer Project
-and not as a general JPEG 2000 file reader.
 """
 import os
 
@@ -10,7 +7,7 @@ import os
 import lxml.etree as ET
 import numpy as np
 
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 from sunpy.util.io import HDPair, string_is_float
 
 __all__ = ['read', 'get_header', 'write']

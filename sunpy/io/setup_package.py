@@ -17,11 +17,7 @@ def get_extensions():
         cfg['sources'].extend(sorted(glob(
             os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c'))))
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
-        # Squash some warnings
-        cfg['extra_compile_args'].extend(['-Wno-unused-but-set-variable',
-                                          '-Wno-unused-variable',
-                                          '-Wno-unused-result',
-                                          '-Wno-sign-compare'])
-
+        # Squash all warnings
+        cfg['extra_compile_args'].extend(['-w'])
         e = Extension('sunpy.io._pyana', py_limited_api=True, **cfg)
         return [e]

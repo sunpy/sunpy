@@ -39,6 +39,9 @@ Dataretriever
 .. automodapi:: sunpy.net.dataretriever.attrs.goes
    :headings: ^"
 
+.. automodapi:: sunpy.net.dataretriever.attrs.adapt
+   :headings: ^"
+
 JSOC
 ----
 

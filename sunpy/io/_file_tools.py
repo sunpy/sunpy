@@ -125,7 +125,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file.
 
-    This should always return a instance of `~sunpy.io.header.FileHeader`.
+    This should always return a instance of `~sunpy.io._header.FileHeader`.
 
     Parameters
     ----------

@@ -1,0 +1,10 @@
+Added a "core" extra group that does not install any truly optional dependencies.
+It only includes the dependencies that are required to import sunpy and all subpackages.
+
+This means it will not install:
+
+- asdf
+- glymur
+- opencv
+- scikit-image
+- spiceypy

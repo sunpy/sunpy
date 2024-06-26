@@ -1,0 +1,2 @@
+Added support for JSOC's HMI millisecond TAI time format.
+Previously, it would only work with seconds.

@@ -12,7 +12,7 @@ from astropy.wcs import WCS
 from sunpy import log
 from sunpy.data import cache
 from sunpy.io._file_tools import read_file
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.mapsequence import MapSequence
@@ -170,10 +170,10 @@ class MapFactory(BasicRegistrationFactory):
                 args.insert(i, (data, header))
                 nargs -= 1
             elif isinstance(arg, str) and is_url(arg):
-                # Repalce URL string with a Request object to dispatch on later
+                # Replace URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif possibly_a_path(arg):
-                # Repalce path strings with Path objects
+                # Replace path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
 
@@ -255,8 +255,8 @@ class MapFactory(BasicRegistrationFactory):
 
         Notes
         -----
-        Extra keyword arguments are passed through to `sunpy.io.read_file` such
-        as `memmap` for FITS files.
+        Extra keyword arguments are passed through to `sunpy.io._file_tools.read_file` such as
+        ``memmap`` for FITS files.
         """
         data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
         new_maps = list()

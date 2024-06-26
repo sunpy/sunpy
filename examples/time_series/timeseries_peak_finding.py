@@ -53,7 +53,7 @@ def findpeaks(series, DELTA):
         local maxima points.
     """
     # Set initial values
-    mn, mx = np.Inf, -np.Inf
+    mn, mx = np.inf, -np.inf
     minpeaks = []
     maxpeaks = []
     lookformax = True

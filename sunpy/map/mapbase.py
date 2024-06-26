@@ -18,8 +18,6 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-from sunpy.util.decorators import active_contexts
-
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
@@ -36,8 +34,6 @@ from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
-import sunpy.io as io
-import sunpy.io._fits
 import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates import HeliographicCarrington, get_earth, sun
@@ -45,11 +41,14 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
+from sunpy.io._file_tools import write_file
+from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
 from sunpy.util.decorators import (
+    ACTIVE_CONTEXTS,
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
@@ -536,7 +535,7 @@ class GenericMap(NDData):
         operations.
         """
         new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string('fits')
+        new_meta['bunit'] = new_data.unit.to_string()
         return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
 
     def __neg__(self):
@@ -726,19 +725,21 @@ class GenericMap(NDData):
     @staticmethod
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
-                        'dn': 'ct',
-                        'dn/s': 'ct/s',
                         'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
-                          'the FITS unit standards.')
-            unit = None
+            unit = u.Unit(unit_str, parse_strict='silent')
+            # NOTE: Special case DN here as it is not part of the FITS standard, but
+            # is widely used and is also a recognized astropy unit
+            if u.DN not in unit.bases:
+                warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                               'with sunpy.map.Map.\n'
+                               'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                               'the FITS unit standards.')
+                unit = None
         return unit
 
     @property
@@ -753,7 +754,6 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-
         return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
@@ -953,7 +953,7 @@ class GenericMap(NDData):
         if 'waveunit' in self.meta:
             return u.Unit(self.meta['waveunit'])
         else:
-            wunit = sunpy.io._fits.extract_waveunit(self.meta)
+            wunit = extract_waveunit(self.meta)
             if wunit is not None:
                 return u.Unit(wunit)
 
@@ -1395,7 +1395,7 @@ class GenericMap(NDData):
         """
         A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
         """
-        return sunpy.io._fits.header_to_fits(self.meta)
+        return header_to_fits(self.meta)
 
 # #### Miscellaneous #### #
     def _get_cmap_name(self):
@@ -1500,7 +1500,7 @@ class GenericMap(NDData):
             The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io.write_file`.
+            `~sunpy.io._file_tools_write_file`.
 
         Notes
         -----
@@ -1516,7 +1516,7 @@ class GenericMap(NDData):
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
-        io.write_file(filepath, self.data, self.meta, filetype=filetype,
+        write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
 
 # #### Image processing routines #### #
@@ -2618,7 +2618,7 @@ class GenericMap(NDData):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.ct)  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
             <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
@@ -2720,7 +2720,7 @@ class GenericMap(NDData):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
-        if active_contexts.get('propagate_with_solar_surface', False) and active_contexts.get('assume_spherical_screen', False):
+        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
             warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
 
         try:

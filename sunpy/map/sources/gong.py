@@ -93,12 +93,16 @@ class GONGHalphaMap(GenericMap):
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
                 str(header.get('IMTYPE', '')).startswith('H-ALPHA'))
 
-
     @property
     def scale(self):
         solar_r = self.meta['SOLAR-R'] * u.arcsec
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r/ (self.meta['FNDLMBMA'] * u.pixel))
+
+    @property
+    def rsun_obs(self):
+        # Header contains a radius keyword which seems to have a higher priority but for GONG Ha is in pixels
+        return self.meta['SOLAR-R'] * u.arcsec
 
     @property
     def coordinate_system(self):

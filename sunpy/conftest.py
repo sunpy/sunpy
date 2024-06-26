@@ -128,11 +128,11 @@ def sunpy_test_run(request):
 @pytest.fixture(scope='session', autouse=True)
 def hide_parfive_progress(request):
     """
-    Set the PARFIVE_HIDE_PROGESS to hide the parfive progress bar in tests.
+    Set the PARFIVE_HIDE_PROGRESS to hide the parfive progress bar in tests.
     """
-    os.environ["PARFIVE_HIDE_PROGESS"] = "True"
+    os.environ["PARFIVE_HIDE_PROGRESS"] = "True"
     yield
-    del os.environ["PARFIVE_HIDE_PROGESS"]
+    del os.environ["PARFIVE_HIDE_PROGRESS"]
 
 
 @pytest.fixture(scope='session', autouse=True)

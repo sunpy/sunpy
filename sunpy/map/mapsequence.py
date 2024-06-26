@@ -536,7 +536,7 @@ class MapSequence:
             'auto' or any supported file extension.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io.write_file`.
+            `~sunpy.io._file_tools.write_file`.
 
         Examples
         --------

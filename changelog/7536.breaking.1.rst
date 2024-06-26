@@ -1,0 +1,1 @@
+Removed scikit-image from the "image" extra group and created a new "scikit-image" extra group.

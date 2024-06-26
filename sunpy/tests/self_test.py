@@ -8,6 +8,8 @@ def print_missing_dependencies_report(missing, package="sunpy"):
         for dep in required_missing:
             print(f"* {dep}")
     for extra_name, dependencies in missing.items():
+        if "docs" in extra_name:
+            continue
         if not dependencies:
             continue
         printed = True
@@ -55,7 +57,8 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     if test_missing:
         print("You do not have all the required dependencies installed to run the sunpy test suite.")
         print()
-        print(list(test_missing.keys()))
+        for dep in test_missing:
+            print(f"  * {dep}")
         print()
         print("If are using conda, you will want to run conda install <package name>")
         print('Otherwise you will want run pip install "sunpy[tests]"')

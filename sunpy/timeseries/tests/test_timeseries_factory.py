@@ -166,7 +166,7 @@ def test_meta_from_fits_header():
     data = DataFrame(intensity, index=times, columns=['intensity'])
 
     # Use a FITS file HDU using sunpy.io
-    hdulist = sunpy.io.read_file(goes_filepath)
+    hdulist = sunpy.io._file_tools.read_file(goes_filepath)
     meta = hdulist[0].header
     meta_md = MetaDict(OrderedDict(meta))
     ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
@@ -177,7 +177,7 @@ def test_meta_from_fits_header():
     hdulist = fits.open(goes_filepath)
     meta = hdulist[0].header
     hdulist.close()
-    meta_md = MetaDict(sunpy.io.header.FileHeader(meta))
+    meta_md = MetaDict(sunpy.io._header.FileHeader(meta))
     ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta, units)
     ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md, units)
     assert ts_hdu_meta == ts_md_meta
@@ -425,8 +425,8 @@ def test_validate_meta_basic():
 
 
 def test_validate_meta_astropy_header():
-    # Manually open a goes file for the sunpy.io.header.FileHeader test
-    hdus = sunpy.io.read_file(goes_filepath)
+    # Manually open a goes file for the sunpy.io._header.FileHeader test
+    hdus = sunpy.io._file_tools.read_file(goes_filepath)
     header = hdus[0].header
     assert sunpy.timeseries.TimeSeries._is_metadata(header)
     # Manually open a goes file for the astropy.io.fits.header.Header test

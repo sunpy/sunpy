@@ -144,7 +144,7 @@ class QueryResponseRow(Row):
         allowed in Python identifiers.
         """
         def key_clean(key):
-            key = re.sub('[%s]' % re.escape(string.punctuation), '_', key)
+            key = re.sub(f'[{re.escape(string.punctuation)}]', '_', key)
             key = key.replace(' ', '_')
             key = ''.join(char for char in key
                           if char.isidentifier() or char.isnumeric())
@@ -305,7 +305,7 @@ class QueryResponseTable(QTable):
         # Find the first power of 3 below the total filesize
         power = 10**(np.floor(np.log10(total.to_value(u.byte)) // 3) * 3)
         # Create mapping from prefix value to prefix name
-        prefix_dict = {p[2]: p[0][0] for p in u.si_prefixes}
+        prefix_dict = {p[2]: p[0][0] for p in u.core.si_prefixes}
         prefix_unit = u.Unit(f'{prefix_dict[power]}byte')
         return total.to(prefix_unit).round(3)
 
