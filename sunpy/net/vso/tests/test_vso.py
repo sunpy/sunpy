@@ -474,3 +474,17 @@ def test_fetch_lyra(client, tmp_path):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
     files = client.fetch(res[0:1], path=tmp_path)
     assert len(files) == 1
+
+
+@pytest.mark.remote_data
+def test_client_stereo_extent(client):
+    res = client.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    assert len(res) == 123
+    assert all(res.columns["Extent Type"] == "CORONA")
+
+
+@pytest.mark.remote_data
+def test_fido_stereo_extent_type(client):
+    res = client.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    assert len(res) == 123
+    assert not all(res.columns["Extent Type"] == "CORONA")
