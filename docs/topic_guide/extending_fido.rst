@@ -32,9 +32,16 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``.
   An example of how such a pattern looks like is given in the algorithm explanation below.
 
-Note: The scraper has supported regex-based patterns for a long time, which is what it will still expect by default. However that is in the process of being replaced with parse-style patterns in the future versions of the package. To use the newer parse-style patterns, it's currently required to pass it as the ``format`` argument to the scraper.
+.. warning::
 
-Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method. The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
+    The scraper class has supported regex-based patterns for a long time
+    However, that is in the process of being replaced with parse-style patterns.
+    This is supported by the ``format`` keyword argument to the scraper.
+    The regex-style patterns have be deprecated and will be removed in the future.
+
+Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
+
+The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
 A brief explanation of how the Scraper works is as follows:
 
 1. Drop the filename from the pattern and generate a list of directories to search for files.
@@ -44,8 +51,8 @@ A brief explanation of how the Scraper works is as follows:
 
 For a more verbose in-depth explanation on how this is accomplished internally:
 
-The Scraper takes as input the generalised ``pattern`` of how a desired file path looks like, in the ``parse`` format.
-Upon initialisation, a version of the pattern following the datetime format is also internally generated, called the ``datetime_pattern``.
+The scraper takes as input the generalized ``pattern`` of how a desired file path looks like, in the ``parse`` format.
+Upon initialization, a version of the pattern following the datetime format is also internally generated, called the ``datetime_pattern``.
 
 .. code-block:: python
 
@@ -79,7 +86,8 @@ The location given by the filled pattern is visited and a list of files at the l
 This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
 
 Each filename is then parsed against the remaining portion of the pattern to determine if it matches.
-Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file. The files that satisfy these conditions are then added to the output.
+Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file.
+The files that satisfy these conditions are then added to the output.
 
 .. code-block:: python
 
@@ -91,7 +99,9 @@ Each such file is then checked for lying in the intended timerange using the :me
 
 Writing a new "scraper" client
 ==============================
-The `~sunpy.net.scraper` thus allows us to write Fido clients for a variety of sources. For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
+
+The `~sunpy.net.scraper` thus allows us to write Fido clients for a variety of sources.
+For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 
 A version without documentation strings is reproduced below:
 
@@ -162,13 +172,14 @@ Examples
 
 Suppose any file of a data archive can be described by this URL ``https://some-domain.com/%Y/%m/%d/satname_{SatelliteNumber}_{Level}_%y%m%d%H%M%S_{any-2-digit-number}.fits``:
 
-The new format ``pattern`` becomes ``r'https://some-domain.com{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
+The ``format`` pattern becomes ``r'https://some-domain.com{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
 The datetime values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``.
 These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
 Note that parts of such attributes can accordingly be omitted to match parts of the filename which are dynamic but not needed to be extracted.
 For example, ``{{:2d}}`` is used in the above example to match any 2-digit number in the filename.
 Similarly ``{{}}`` can be used to match a string of any length starting from its position in the filename.
-Now, ``register_values()`` can be written as:
+
+Finally, ``register_values()`` can be written as:
 
 .. code-block:: python
 

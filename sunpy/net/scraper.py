@@ -47,9 +47,37 @@ PARSE_TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
         }
 
 @deprecated_renamed_argument("pattern", None, since="5.1", message="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions.")
+# Regular expressions to convert datetime format
+TIME_CONVERSIONS = {
+    '%Y': r'\d{4}', '%y': r'\d{2}',
+    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
+    '%d': r'\d{2}', '%j': r'\d{3}',
+    '%H': r'\d{2}', '%I': r'\d{2}',
+    '%M': r'\d{2}',
+    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'
+}
+# "parse" expressions to convert into datetime format
+PARSE_TIME_CONVERSIONS = {
+    "{year:4d}": "%Y", "{year:2d}": "%y",
+    "{month:2d}": "%m",
+    "{month_name:l}": "%B",
+    "{month_name_abbr:l}": "%b",
+    "{day:2d}": "%d", "{day_of_year:3d}": "%j",
+    "{hour:2d}": "%H",
+    "{minute:2d}": "%M",
+    "{second:2d}": "%S",
+    "{microsecond:6d}": "%f",
+    "{millisecond:3d}": "%e",
+    "{week_number:2d}": "%W",
+}
+DEPRECATED_MESSAGE = (
+    "pattern has been replaced with the format keyword. "
+    "This comes with a new syntax and there is a migration guide available at "
+    "<ADD URL>."
+)
 class Scraper:
     """
-    A Scraper to scrap web data archives based on dates.
+    A scraper to scrap web data archives based on dates.
 
     Parameters
     ----------
@@ -70,6 +98,9 @@ class Scraper:
         to differentiate from the latter.
         The accepted parse representations for datetime values are as given in ``PARSE_TIME_CONVERSIONS``.
         This can also be a uri to a local file patterns. Default is `None`.
+    kwargs : `dict`
+        A dictionary containing the values to be replaced in the pattern.
+        Will be ignored if ``regex`` is `True`.
 
     Attributes
     ----------
@@ -79,26 +110,26 @@ class Scraper:
         The parse pattern in the datetime format.
     now : `datetime.datetime`
         The pattern with the actual date.
+        This is not checking if there is an existent file, but just how the ``pattern`` looks with the current time.
 
     Examples
     --------
     >>> from sunpy.net import Scraper
+    >>>
     >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}{{second:2d}}.fits')
     >>> swap = Scraper(format=pattern, instrument='swap')
+    >>>
     >>> print(swap.pattern)
     http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
+    >>>
     >>> print(swap.datetime_pattern)
     http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%m%S.fits
+    >>>
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
-
-    Notes
-    -----
-    The ``now`` attribute does not return an existent file, but just how the
-    pattern looks with the actual time.
     """
-
+    @deprecated_renamed_argument("pattern", None, since="6.0", message=DEPRECATED_MESSAGE)
     def __init__(self, pattern=None, regex=False, *, format=None, **kwargs):
         if pattern is not None and format is None:
             self.use_old_format = True
@@ -108,12 +139,11 @@ class Scraper:
             self.pattern = format
         else:
             raise ValueError("Either 'pattern' or 'format' must be provided.")
-
         if self.use_old_format:
             if regex:
                 self.pattern = pattern
                 if kwargs:
-                    warn_user('regexp being used, the extra arguments passed are being ignored')
+                    warn_user('regex is being used, the extra arguments passed are being ignored')
             else:
                 self.pattern = pattern.format(**kwargs)
             self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
