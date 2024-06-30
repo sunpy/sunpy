@@ -8,6 +8,7 @@ import numpy.ma
 from regions import PolygonSkyRegion
 
 from astropy import units as u
+from astropy.table import Column
 from astropy.coordinates import SkyCoord
 
 from sunpy.time import parse_time
@@ -112,6 +113,22 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
     KeyError
         If any of the attribute dictionaries are missing required keys (i.e. "name", "unit_prop").
     """
+    if is_coord_prop:
+        event_coord_col = []
+        for idx in range(len(table['event_coord1'])):
+            unit = get_unit(table['event_coordunit'][idx])
+            coord1 = table['event_coord1'][idx]
+            coord2 = table['event_coord2'][idx]
+            coord3 = table['event_coord3'][idx] or 0
+            frame = 'helioprojective' if unit==u.arcsec else 'icrs'
+            event_coord = SkyCoord(coord1*unit, coord2*unit, coord3*unit, frame=frame)
+            event_coord_col.append(event_coord)
+        event_coord_col = Column(event_coord_col, name='event_coord')
+        del table['event_coord1']
+        del table['event_coord2']
+        del table['event_coord3']
+        table.add_column(event_coord_col)
+
     for attribute in attributes:
         if attribute["name"] in table.colnames and ("unit_prop" in attribute or attribute.get("is_chaincode", False)) and attribute.get("is_unit_prop", True):
             unit_attr = ""
