@@ -8,8 +8,8 @@ import numpy.ma
 from regions import PolygonSkyRegion
 
 from astropy import units as u
-from astropy.table import Column
 from astropy.coordinates import SkyCoord
+from astropy.table import Column
 
 from sunpy.time import parse_time
 
@@ -123,7 +123,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
             frame = 'helioprojective' if unit==u.arcsec else 'icrs'
             event_coord = SkyCoord(coord1*unit, coord2*unit, coord3*unit, frame=frame)
             event_coord_col.append(event_coord)
-        event_coord_col = Column(event_coord_col, name='event_coord')
+        event_coord_col = Column(event_coord_col, dtype=SkyCoord, name='event_coord')
         del table['event_coord1']
         del table['event_coord2']
         del table['event_coord3']
@@ -149,6 +149,8 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                     new_value = value * unit
                 new_column.append(new_value)
 
+            if is_coord_prop and not attribute.get("is_chaincode"):
+                new_column = Column(new_column, name=table[attribute["name"]], dtype=u.Quantity)
             table[attribute["name"]] = new_column
 
     for attribute in attributes:
