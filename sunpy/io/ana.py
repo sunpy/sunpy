@@ -25,10 +25,17 @@ ANA_NOT_INSTALLED = (
     "C extension for ANA is missing. For more details see: "
     "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
 )
+
+ANA_DEPRECATION_MESSAGE = (
+    "The ANA reader may be removed in a future version of sunpy, "
+    "please comment here if you are using this code: "
+    "https://community.openastronomy.org/t/possible-deprecation-of-ana-file-readers-and-writers-in-sunpy"
+)
+
 __all__ = ['read', 'get_header', 'write']
 
 
-@deprecated(since="6.0", message="The ANA reader is un-maintained and will be removed in the future. Please contact sunpy if you are using this.", alternative="https://github.com/ITA-Solar/helita has a ANA reader and writer.")
+@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
 def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
@@ -62,7 +69,7 @@ def read(filename, debug=False, **kwargs):
     return [HDPair(data['data'], FileHeader(data['header']))]
 
 
-@deprecated(since="6.0", message="The ANA reader is un-maintained and will be removed in the future. Please contact sunpy if you are using this.", alternative="https://github.com/ITA-Solar/helita has a ANA reader and writer.")
+@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
 def get_header(filename, debug=False):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
@@ -92,7 +99,7 @@ def get_header(filename, debug=False):
     return [FileHeader(data['header'])]
 
 
-@deprecated(since="6.0", message="The ANA reader is un-maintained and will be removed in the future. Please contact sunpy if you are using this.", alternative="https://github.com/ITA-Solar/helita has a ANA reader and writer.")
+@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
 def write(filename, data, comments=False, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
