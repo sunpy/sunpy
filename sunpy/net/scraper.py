@@ -140,12 +140,9 @@ class Scraper:
         else:
             raise ValueError("Either 'pattern' or 'format' must be provided.")
         if self.use_old_format:
-            if regex:
-                self.pattern = pattern
-                if kwargs:
-                    warn_user('regex is being used, the extra arguments passed are being ignored')
-            else:
-                self.pattern = pattern.format(**kwargs)
+            if regex and kwargs:
+                warn_user('regexp being used, the extra arguments passed are being ignored')
+            self.pattern = pattern.format(**kwargs) if kwargs and not regex else self.pattern
             self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
             milliseconds = re.search(r'\%e', self.pattern)
             if not milliseconds:
