@@ -1,0 +1,1 @@
+Updated the examples for :func:`~sunpy.visualization.colormaps.color_tables.hmi_mag_color_table` that used older styles of plotting
