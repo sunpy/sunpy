@@ -14,7 +14,6 @@ from astropy.utils.data import get_pkg_data_filename
 
 import sunpy
 import sunpy.io._fits as _fits
-import sunpy.map
 
 __all__ = [
     'rootdir',
@@ -110,6 +109,8 @@ def get_dummy_map_from_header(filename):
     The "image" will be random numbers with the correct shape
     as specified by the header.
     """
+    import sunpy.map
+
     filepath = get_test_filepath(filename)
     header = _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
     data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
