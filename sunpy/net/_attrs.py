@@ -13,7 +13,7 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from .attr import Range, SimpleAttr
 
-__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
+__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample', 'ExtentType', 'Physobs',
            'Level', 'Instrument', 'Wavelength', 'Time', 'Source', 'Provider']
 
 

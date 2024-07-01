@@ -495,3 +495,10 @@ def test_path_format_keys():
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
     unif = UnifiedResponse(t1, t2)
     assert unif.path_format_keys() == {'_excite_'}
+
+
+@pytest.mark.remote_data
+def test_fido_stereo_extent_type():
+    res = Fido.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    assert len(res[0]) == 123
+    assert not all(res[0].columns["Extent Type"] == "CORONA")
