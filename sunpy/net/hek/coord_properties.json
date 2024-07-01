@@ -535,6 +535,42 @@
             "frame": "heliocentric"
         },
         {
+            "name": "hgc_coord",
+            "type": "string",
+            "desc": "TBD",
+            "is_chaincode": true,
+            "is_point": true,
+            "unit_prop": "event_coordunit",
+            "frame": "heliographic_carrington"
+        },
+        {
+            "name": "hpc_coord",
+            "type": "string",
+            "desc": "TBD",
+            "is_chaincode": true,
+            "is_point": true,
+            "unit_prop": "event_coordunit",
+            "frame": "helioprojective"
+        },
+        {
+            "name": "hgs_coord",
+            "type": "string",
+            "desc": "TBD",
+            "is_chaincode": true,
+            "is_point": true,
+            "unit_prop": "event_coordunit",
+            "frame": "heliographic_stonyhurst"
+        },
+        {
+            "name": "hrc_coord",
+            "type": "string",
+            "desc": "TBD",
+            "is_chaincode": true,
+            "is_point": true,
+            "unit_prop": "event_coordunit",
+            "frame": "heliocentric"
+        },
+        {
             "name": "event_coordunit",
             "type": "string",
             "AR": "req",

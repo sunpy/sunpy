@@ -5,7 +5,7 @@ import warnings
 from pathlib import Path
 
 import numpy.ma
-from regions import PolygonSkyRegion
+from regions import PointSkyRegion, PolygonSkyRegion
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
@@ -200,6 +200,17 @@ def parse_chaincode(value, attribute, unit):
         coord1_unit = get_unit(unit)
         coord2_unit = get_unit(unit)
 
+    if attribute.get("is_point"):
+        coordinates = value.replace("POINT(", "").replace(")", "").split()
+        coord_list = [float(coordinate) for coordinate in coordinates]
+        coord_list[0] *= coord1_unit
+        coord_list[1] *= coord2_unit
+        if attribute["frame"] == "heliocentric":
+            center_sky = SkyCoord(coord_list[0], coord_list[1], [1]* len(coord_list) * u.AU, representation_type="cylindrical", frame=attribute["frame"])
+            return PolygonSkyRegion(vertices=center_sky)
+        else:
+            center_sky = SkyCoord(coord_list[0], coord_list[1], frame=attribute["frame"])
+        return PointSkyRegion(center=center_sky)
     coordinates_str = value.split('((')[1].split('))')[0]
     coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')] * coord1_unit
     coord2_list = [float(coord.split()[1]) for coord in coordinates_str.split(',')] * coord2_unit
@@ -209,7 +220,7 @@ def parse_chaincode(value, attribute, unit):
     else:
         vertices = SkyCoord(coord1_list, coord2_list, frame=attribute["frame"])
 
-    return PolygonSkyRegion(vertices = vertices)
+    return PolygonSkyRegion(vertices=vertices)
 
 def get_unit(unit):
     """
