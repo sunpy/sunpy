@@ -150,9 +150,11 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 else:
                     unit = get_unit(table[unit_attr][idx])
                     new_value = value * unit
+                    if attribute["name"] == 'obs_meanwavel':
+                        new_value = new_value.to_value(u.angstrom)
                 new_column.append(new_value)
 
-            if is_coord_prop and not attribute.get("is_chaincode"):
+            if not attribute.get("is_chaincode"):
                 new_column = Column(new_column, name=table[attribute["name"]], dtype=u.Quantity)
             table[attribute["name"]] = new_column
 
