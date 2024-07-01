@@ -30,7 +30,7 @@ from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
-from sunpy.tests.helpers import figure_test, skip_numpy2
+from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
@@ -1685,7 +1685,6 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
-@skip_numpy2
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation
     weird_map = aia171_test_map.rotate(30*u.deg).superpixel([2, 1]*u.pix)
