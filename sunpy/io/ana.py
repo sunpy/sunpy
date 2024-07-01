@@ -14,7 +14,6 @@ import os
 
 from sunpy.io._header import FileHeader
 from sunpy.util.decorators import deprecated
-from sunpy.util.exceptions import SunpyPendingDeprecationWarning
 from sunpy.util.io import HDPair
 
 try:
@@ -36,7 +35,7 @@ ANA_DEPRECATION_MESSAGE = (
 __all__ = ['read', 'get_header', 'write']
 
 
-@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE, warning_type=SunpyPendingDeprecationWarning)
+@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
 def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
@@ -70,7 +69,7 @@ def read(filename, debug=False, **kwargs):
     return [HDPair(data['data'], FileHeader(data['header']))]
 
 
-@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE, warning_type=SunpyPendingDeprecationWarning)
+@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
 def get_header(filename, debug=False):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
@@ -100,7 +99,7 @@ def get_header(filename, debug=False):
     return [FileHeader(data['header'])]
 
 
-@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE, warning_type=SunpyPendingDeprecationWarning)
+@deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
 def write(filename, data, comments=False, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
