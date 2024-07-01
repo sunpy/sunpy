@@ -242,3 +242,4 @@ results
 result_images
 # Save from Map.save example
 aia171.fits
+docs/sg_execution_times.rst
