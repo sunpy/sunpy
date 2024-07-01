@@ -23,7 +23,7 @@ from ._transformations import _make_sunpy_graph, propagate_with_solar_surface, t
 from .ephemeris import *
 from .frames import *
 from .metaframes import *
-from .screens import *
+from .screens import PlanarScreen, SphericalScreen
 from .wcs_utils import *
 
 __doc__ += _make_sunpy_graph()

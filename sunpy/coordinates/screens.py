@@ -61,7 +61,7 @@ class SphericalScreen(BaseScreen):
 
     Examples
     --------
-    .. minigallery:: sunpy.coordinates.Helioprojective.SphericalScreen
+    .. minigallery:: sunpy.coordinates.SphericalScreen
 
     >>> import astropy.units as u
     >>> from sunpy.coordinates import Helioprojective, SphericalScreen
