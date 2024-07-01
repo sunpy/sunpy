@@ -183,19 +183,52 @@ jobs:
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests'
+      test_extras: 'all,tests-only'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       targets: |
-        - cp3{10,11,12}-manylinux*_x86_64
+        - cp3{10,11,12}-manylinux_x86_64
         - cp3{10,11,12}-macosx_x86_64
         - cp3{10,11,12}-macosx_arm64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
+  publish_exotic:
+    # Build wheels when pushing to any branch except main
+    # publish.yml will only publish if tagged ^v.*
+    if: |
+      (
+        github.event_name != 'pull_request' && (
+          github.ref_name != 'main' ||
+          github.event_name == 'workflow_dispatch'
+        )
+      ) || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run publish')
+      )
+    needs: [test, docs]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
+    with:
+      upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+      anaconda_user: scientific-python-nightly-wheels
+      anaconda_package: sunpy
+      anaconda_keep_n_latest: 1
+      sdist: false
+      test_extras: 'tests-only'
+      # only test ana here to save time as it's the only compiled code
+      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
+      submodules: false
+      targets: |
+        - cp310-manylinux_aarch64
+        - cp311-manylinux_aarch64
+        - cp312-manylinux_aarch64
+    secrets:
+      pypi_token: ${{ secrets.pypi_token }}
+      anaconda_token: ${{ secrets.anaconda_org_upload_token }}
+
   publish_pure:
-    needs: [publish]
+    needs: [publish, publish_exotic]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
     with:
       python-version: "3.12"
