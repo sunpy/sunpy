@@ -167,7 +167,7 @@ Additionally, there are several methods that provide basic summary statistics of
     >>> my_map.max()  # doctest: +REMOTE_DATA
     192130.17
     >>> my_map.mean()  # doctest: +REMOTE_DATA
-    427.02252
+    np.float32(427.02252)
 
 .. _sunpy-tutorial-map-coordinates-wcs:
 
