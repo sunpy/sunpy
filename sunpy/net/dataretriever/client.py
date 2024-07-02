@@ -60,6 +60,7 @@ class GenericClient(BaseClient):
     """
     # A string which is used to match all files and extract the desired metadata from urls correctly,
     # using ``sunpy.extern.parse.parse``.
+    baseurl = None
     pattern = None
     # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
@@ -119,7 +120,7 @@ class GenericClient(BaseClient):
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
-        return cls.pattern, matchdict
+        return cls.baseurl, cls.pattern, matchdict
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -232,10 +233,11 @@ class GenericClient(BaseClient):
         -------
         A `QueryResponse` instance containing the query result.
         """
-        pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        scraper = Scraper(pattern)
+        # baseurl added for backwards compatibility purposes only
+        baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        scraper = Scraper(pattern=baseurl) if baseurl else Scraper(format=pattern)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
+        filesmeta = scraper._extract_files_meta(tr, extractor=pattern) if baseurl else scraper._extract_files_meta(tr, matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])
         metalist = []
         for i in filesmeta:

@@ -3,20 +3,31 @@ from datetime import datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
 
-from sunpy.extern.parse import parse
 from sunpy.time import TimeRange
 
-TIME_QUANTITIES = {'day': timedelta(days=1),
-                   'hour': timedelta(hours=1),
-                   'minute': timedelta(minutes=1),
-                   'second': timedelta(seconds=1),
-                   'millisecond': timedelta(milliseconds=1)}
+__all__ = ["extract_timestep", "date_floor", "get_timerange_from_exdict"]
 
-__all__ = ["extract_timestep", "date_floor", "check_timerange", "get_timerange_from_exdict"]
+
+TIME_CONVERSIONS = {
+    '%Y': r'\d{4}', '%y': r'\d{2}',
+    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
+    '%d': r'\d{2}', '%j': r'\d{3}',
+    '%H': r'\d{2}', '%I': r'\d{2}',
+    '%M': r'\d{2}',
+    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'
+}
+TIME_QUANTITIES = {
+    'day': timedelta(days=1),
+    'hour': timedelta(hours=1),
+    'minute': timedelta(minutes=1),
+    'second': timedelta(seconds=1),
+    'millisecond': timedelta(milliseconds=1)
+}
+
 
 def extract_timestep(directoryPattern):
     """
-    Obtain the smaller time step for the given pattern.
+    Obtain the smallest time step for the given pattern.
 
     Parameters
     ----------
@@ -42,6 +53,7 @@ def extract_timestep(directoryPattern):
         return relativedelta(years=1)
     else:
         return None
+
 
 def date_floor(date, timestep):
     """
@@ -77,33 +89,6 @@ def date_floor(date, timestep):
 
     return datetime(*time_tup)
 
-def check_timerange(pattern, url, timerange):
-    """
-    Checks whether the time range represented in *url* intersects
-    with the given time range.
-
-    Parameters
-    ----------
-    url : `str`
-        URL of the file.
-    timerange : `~sunpy.time.TimeRange`
-        Time interval for which files were searched.
-
-    Returns
-    -------
-    `bool`
-        `True` if URL's valid time range overlaps the given timerange, else `False`.
-    """
-    exdict = parse(pattern, url).named
-    if exdict['year'] < 100:
-        exdict['year'] = 2000 + exdict['year']
-    if 'month' not in exdict:
-                if 'month_name' in exdict:
-                    exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
-                elif 'month_name_abbr' in exdict:
-                    exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
-    tr = get_timerange_from_exdict(exdict)
-    return tr.intersects(timerange)
 
 def get_timerange_from_exdict(exdict):
     """
