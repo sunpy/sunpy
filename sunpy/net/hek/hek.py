@@ -7,8 +7,6 @@ import urllib
 import inspect
 from itertools import chain
 
-import numpy.ma
-
 import astropy.table
 from astropy.table import Row
 
@@ -17,23 +15,13 @@ from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
-from sunpy.time import parse_time
+from sunpy.net.hek.utils import freeze, parse_times, parse_values_to_quantities
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HEKClient', 'HEKTable', 'HEKRow']
 
 DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
-
-
-def _freeze(obj):
-    """ Create hashable representation of result dict. """
-    if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in obj.items())
-    if isinstance(obj, list):
-        return tuple(_freeze(elem) for elem in obj)
-    return obj
-
 
 class HEKClient(BaseClient):
     """
@@ -82,22 +70,13 @@ class HEKClient(BaseClient):
             if not result['overmax']:
                 if len(results) > 0:
                     table = astropy.table.Table(dict_keys_same(results))
-                    table = self._parse_times(table)
+                    table = parse_times(table)
+                    table = parse_values_to_quantities(table)
                     return table
                 else:
                     return astropy.table.Table()
             page += 1
 
-    @staticmethod
-    def _parse_times(table):
-        # All time columns from https://www.lmsal.com/hek/VOEvent_Spec.html
-        time_keys = ['event_endtime', 'event_starttime', 'event_peaktime']
-        for tkey in time_keys:
-            if tkey in table.colnames:
-                table[tkey] = [
-                    (parse_time(time, format='iso') if time else numpy.ma.masked) for time in table[tkey]
-                ]
-        return table
 
     def search(self, *args, **kwargs):
         """
@@ -130,6 +109,7 @@ class HEKClient(BaseClient):
             new = self.default.copy()
             new.update(elem)
             ndata.append(new)
+
         if len(ndata) == 1:
             return HEKTable(self._download(ndata[0]), client=self)
         else:
@@ -137,7 +117,7 @@ class HEKClient(BaseClient):
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
-        return list(unique(chain.from_iterable(responses), _freeze))
+        return list(unique(chain.from_iterable(responses), freeze))
 
     def fetch(self, *args, **kwargs):
         """
