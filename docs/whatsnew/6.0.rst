@@ -115,3 +115,16 @@ You can specify this by passing the ``hdus`` keyword argument to `~sunpy.map.Map
 .. code-block:: python
 
     >>> sunpy.map.Map("adapt40311_03k012_202401020800_i00005600n1.fts.gz", hdus=0)  # doctest: +SKIP
+
+New `~sunpy.coordinates.PlanarScreen` context manager
+=====================================================
+
+`~sunpy.coordinates.PlanarScreen` provides a context manager for interpreting 2D coordinates as being on the inside of a planar screen.
+The plane goes through Sun center (or some specified distance from Sun center) and is perpendicular to the vector between the specified vantage point and Sun center.
+This replaces the default assumption where 2D coordinates are mapped onto the surface of the Sun and is an alternative to `~sunpy.coordinates.SphericalScreen`.
+
+Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
+======================================================================
+
+:func:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
+Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.
