@@ -2,17 +2,16 @@ from datetime import timedelta
 from unittest import mock
 
 import pytest
-from hypothesis import given, settings
+from hypothesis import given
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
 
 import sunpy.net.dataretriever.sources.norh as norh
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
-from sunpy.net.tests.strategies import range_time, time_attr
+from sunpy.net.tests.strategies import time_attr
 from sunpy.time import parse_time
 
 
@@ -97,22 +96,13 @@ def test_can_handle_query(time):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
-@given(time=range_time(Time('1992-6-1')))
-@settings(max_examples=2, deadline=50000)
+@pytest.mark.parametrize(("time", "wave"), ([a.Time('2007/08/13', '2007/08/14'),a.Wavelength(17*u.GHz)],[a.Time('2007/08/13', '2007/08/14'), a.Wavelength(34*u.GHz)]))
 def test_query(time, wave):
     LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, a.Instrument.norh, wave)
     assert isinstance(qr1, QueryResponse)
-    # Not all hypothesis queries are going to produce results, and
-    if qr1:
-        # There are no observations everyday
-        #  so the results found have to be equal or later than the queried time
-        #  (looking at the date because it may search for milliseconds, but only date is available)
-        assert qr1[0]['Start Time'].strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
-        #  and the end time equal or smaller.
-        # hypothesis can give same start-end, but the query will give you from start to end (so +1)
-        assert qr1[-1]['End Time'] <= time.end + TimeDelta(1*u.day)
+    assert qr1[0]['Start Time'].strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
+    assert qr1[-1]['End Time'].strftime('%Y-%m-%d') == time.end.strftime('%Y-%m-%d')
 
 
 @pytest.mark.parametrize(("time", "instrument", "wave"), [
