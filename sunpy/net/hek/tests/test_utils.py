@@ -1,4 +1,4 @@
-from regions import PolygonSkyRegion
+from regions import PointSkyRegion, PolygonSkyRegion
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
@@ -55,3 +55,15 @@ def test_parse_chaincode_icrs():
 
     assert region == result
     assert result.vertices.separation(region.vertices).max() < 1 * u.deg
+
+def test_parse_chaincode_points():
+    value = "POINT(-107 27)"
+    attribute = {"is_point": True, "frame": "heliographic_carrington"}
+    unit = "deg"
+
+    result = parse_chaincode(value, attribute, unit)
+
+    center_sky = SkyCoord(-107 * u.deg, 27 * u.deg, frame="heliographic_carrington")
+    region = PointSkyRegion(center=center_sky)
+
+    assert region == result
