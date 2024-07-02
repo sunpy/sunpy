@@ -47,11 +47,6 @@ class EUIMap(GenericMap):
             return int(self.meta.get('level')[1:])
 
     @property
-    def date(self):
-        # Prioritize date-average over date-obs
-        return self.date_average or super().date
-
-    @property
     def waveunit(self):
         # EUI JP2000 files do not have the WAVEUNIT key in the metadata.
         # However, the FITS files do.

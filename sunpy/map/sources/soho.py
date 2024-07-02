@@ -196,11 +196,11 @@ class MDIMap(GenericMap):
 
     @property
     def _date_obs(self):
-        if 'T' in self.meta['date-obs']:
+        if 'T' in self.meta.get('date-obs', ''):
             # Helioviewer MDI files have the full date in DATE_OBS, but we still
             # want to let normal FITS files use DATE-OBS
             return parse_time(self.meta['date-obs'])
-        else:
+        elif 'date_obs' in self.meta:
             return parse_time(self.meta['date_obs'])
 
     @property

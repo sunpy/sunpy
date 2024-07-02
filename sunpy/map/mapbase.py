@@ -611,8 +611,15 @@ class GenericMap(NDData):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
+
+        w2.wcs.dateavg = self.reference_date.isot
+        if self._date_obs is not None:
+            w2.wcs.dateobs = self._date_obs.isot
+        if self.date_start is not None:
+            w2.wcs.datebeg = self.date_start.isot
+        if self.date_end is not None:
+            w2.wcs.dateend = self.date_end.isot
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
@@ -862,9 +869,36 @@ class GenericMap(NDData):
         return time
 
     @property
+    def reference_date(self):
+        """
+        The date used as the reference date for the coordinate system.
+
+        This property is used to define the ``obstime`` of the coordinate frame,
+        most often this is used to define the observer. As the FITS standard
+        isn't explicit about what time should be used for this reference date
+        this property follows a different set of priorities from
+        `.GenericMap.date` and allows sources to override this to the most
+        appropriate date.
+
+        This property is in order of preference:
+        1. The ``DATE-AVG`` key in the meta.
+        2. The ``DATE-OBS`` key in the meta.
+        3. The ``DATE-BEG`` key in the meta.
+        4. The ``DATE-END`` key in the meta.
+        5. The `.GenericMap.date` property as a fallback (which is likely to be the current time).
+        """
+        return (
+            self._get_date('date-avg') or
+            self._get_date('date-obs') or
+            self.date_start or
+            self.date_end or
+            self.date
+        )
+
+    @property
     def date(self):
         """
-        Image observation time.
+        'Canonical' observation time.
 
         For different combinations of map metadata this can return either
         the start time, end time, or a time between these. It is recommended
@@ -874,16 +908,18 @@ class GenericMap(NDData):
 
         Taken from, in order of preference:
 
-        1. The DATE-OBS FITS keyword
-        2. `~sunpy.map.GenericMap.date_average`
-        3. `~sunpy.map.GenericMap.date_start`
+        1. `~sunpy.map.GenericMap.date_start`
+        2. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
+        3. `~sunpy.map.GenericMap.date_average`
         4. `~sunpy.map.GenericMap.date_end`
         5. The current time
         """
-        time = self._date_obs
-        time = time or self.date_average
-        time = time or self.date_start
-        time = time or self.date_end
+        time = (
+            self.date_start or
+            self._date_obs or
+            self.date_average or
+            self.date_end
+        )
 
         if time is None:
             if self._default_time is None:
@@ -1181,7 +1217,7 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             missing_keys = set(keys) - self.meta.keys()
             if not missing_keys:
-                sc = SkyCoord(obstime=self.date, **kwargs)
+                sc = SkyCoord(obstime=self.reference_date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
@@ -1211,7 +1247,7 @@ class GenericMap(NDData):
             warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
                                + warning_message + [""])
             warn_metadata("\n".join(warning_message), stacklevel=3)
-            return get_earth(self.date)
+            return get_earth(self.reference_date)
 
     @property
     def heliographic_latitude(self):
