@@ -172,7 +172,7 @@ Examples
 
 Suppose any file of a data archive can be described by this URL ``https://some-domain.com/%Y/%m/%d/satname_{SatelliteNumber}_{Level}_%y%m%d%H%M%S_{any-2-digit-number}.fits``:
 
-The ``format`` pattern becomes ``r'https://some-domain.com{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
+The ``format`` pattern becomes ``r'https://some-domain.com/{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
 The datetime values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``.
 These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
 Note that parts of such attributes can accordingly be omitted to match parts of the filename which are dynamic but not needed to be extracted.

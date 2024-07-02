@@ -23,30 +23,7 @@ from sunpy.util.exceptions import warn_user
 
 __all__ = ['Scraper']
 
-# regular expressions to convert datetime format
-# added `%e` as for milliseconds `%f/1000`
-TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
-                    '%d': r'\d{2}', '%j': r'\d{3}',
-                    '%H': r'\d{2}', '%I': r'\d{2}',
-                    '%M': r'\d{2}',
-                    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
 
-# `parse` expressions to convert into datetime format
-PARSE_TIME_CONVERSIONS = {"{year:4d}": "%Y", "{year:2d}": "%y",
-            "{month:2d}": "%m",
-            "{month_name:l}": "%B",
-            "{month_name_abbr:l}": "%b",
-            "{day:2d}": "%d", "{day_of_year:3d}": "%j",
-            "{hour:2d}": "%H",
-            "{minute:2d}": "%M",
-            "{second:2d}": "%S",
-            "{microsecond:6d}": "%f",
-            "{millisecond:3d}": "%e", # added `%e` as for milliseconds `%f/1000`
-            "{week_number:2d}": "%W",
-        }
-
-@deprecated_renamed_argument("pattern", None, since="5.1", message="Please use `format` to pass the new syntax. Current `pattern` format was deprecated in 5.1 and will be replaced in future versions.")
 # Regular expressions to convert datetime format
 TIME_CONVERSIONS = {
     '%Y': r'\d{4}', '%y': r'\d{2}',
@@ -75,6 +52,7 @@ DEPRECATED_MESSAGE = (
     "This comes with a new syntax and there is a migration guide available at "
     "<ADD URL>."
 )
+
 class Scraper:
     """
     A scraper to scrap web data archives based on dates.
