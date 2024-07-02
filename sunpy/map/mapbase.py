@@ -1914,12 +1914,11 @@ class GenericMap(NDData):
 
         msg = (
             "The provided input coordinates to ``submap`` when transformed to the target "
-            "coordinate frame contain NaN values and are possibly off-disk. "
-            "This means that submap can not crop the map to the desired region, "
-            "as there are no valid pixel coordinates to crop to."
-            "The context manager: Helioprojective.assume_spherical_screen can be used to "
-            "transform the coordinates to a spherical screen where the NaN values are "
-            "transformed as there is a spherical screen where they are valid coordinates."
+            "coordinate frame contain NaN values and cannot be used to crop the map. "
+            "The most common reason for NaN values is transforming off-disk 2D "
+            "coordinates without specifying an assumption (e.g., via the"
+            "`Helioprojective.assume_spherical_screen()` context manager) that allows "
+            "such coordinates to be interpreted as 3D coordinates."
         )
         if np.any(np.isnan(pixel_corners)):
             raise ValueError(msg)
