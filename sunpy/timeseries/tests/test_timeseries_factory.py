@@ -18,7 +18,6 @@ import sunpy.net.attrs as a
 import sunpy.timeseries
 from sunpy.data.test import get_test_data_filenames, get_test_filepath, rootdir
 from sunpy.net import Fido
-from sunpy.tests.helpers import skip_numpy2
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -98,7 +97,7 @@ def test_from_url():
     assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
     assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
 
-@skip_numpy2
+
 def test_read_cdf():
     ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)
     assert len(ts_psp) == 2

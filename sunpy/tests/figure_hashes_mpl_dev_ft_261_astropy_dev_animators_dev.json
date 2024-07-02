@@ -1,4 +1,6 @@
 {
+  "sunpy.image.tests.test_transform.test_clipping": "f36c82068789b048d5855315f295e2404c85b0a63ec77de0e294d58b43c9acaf",
+  "sunpy.image.tests.test_transform.test_nans": "776e5a2c12bbbff9f5f9de647052cd2ad1be03b39586b91502c8ebba08e87c1b",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map": "5776fedee0a8dd3f54d086af229a6af65f98c532e926315941ac82516654e6e5",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_contours": "594b502d051def47a174953cd784414788598264b1237d64998c111aaf8dc021",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map_linewidths": "7df6e02d2517fcec2a283aef7ffdf401e8f6b87a0d4bf3aeae93552f9692b5b2",
@@ -9,6 +11,9 @@
   "sunpy.map.tests.test_map_factory.test_map_jp2_HMI": "a7098f65fd06e81723ab8310f8873d69bcc220100ceafa8edc24dfb07caa937c",
   "sunpy.map.tests.test_mapbase.test_rotation_rect_pixelated_data": "d722cee25ad829b78b9391b7f8f417c27e8e5f14c62b9882728590d2fce5fb11",
   "sunpy.map.tests.test_mapbase.test_draw_contours_with_transform": "cb1bfc0b30651b48df1430782ec43ebde5f2a785b892f99e4b9763abb4758221",
+  "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scipy]": "c15c6c707b3b0e707936988054aeb818eee7b39e2249db5309ca43585d325a51",
+  "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scikit-image]": "911a0442055922f0d31dd48d8f1ede3d1b8b4d11a55f00a3403e8124761c2346",
+  "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[opencv]": "072505693731f65824dcaa7f0843087990f15f34b519285a2bc8965a1fa0ed37",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "2241b65ed7126250eb14ebbcd095ef4a1f696ad737a4e975ff8e66a007667487",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "86f2d19643fbeeaea8bd7097b9002a77da455eeeb46d4ac707bd3c55df15dc22",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot_custom_cmap_norm": "129afdbcb3de6893187f3bbe20e9107316ae5d04ceecb8a1969befe3bb3ff540",
