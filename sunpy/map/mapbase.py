@@ -1912,6 +1912,17 @@ class GenericMap(NDData):
         pixel_corners = u.Quantity(self._parse_submap_input(
             bottom_left, top_right, width, height)).T
 
+        msg = (
+            "The provided input coordinates to ``submap`` when transformed to the target "
+            "coordinate frame contain NaN values and cannot be used to crop the map. "
+            "The most common reason for NaN values is transforming off-disk 2D "
+            "coordinates without specifying an assumption (e.g., via the"
+            "`Helioprojective.assume_spherical_screen()` context manager) that allows "
+            "such coordinates to be interpreted as 3D coordinates."
+        )
+        if np.any(np.isnan(pixel_corners)):
+            raise ValueError(msg)
+
         # The pixel corners result is in Cartesian order, so the first index is
         # columns and the second is rows.
         bottom = np.min(pixel_corners[1]).to_value(u.pix)

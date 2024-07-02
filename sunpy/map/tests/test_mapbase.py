@@ -1819,3 +1819,12 @@ def test_plot_deprecated_positional_args(aia171_test_map):
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
         with pytest.raises(TypeError, match="non-boolean value"):
             aia171_test_map.plot('interpolation', True)
+
+
+def test_submap_nan_error(aia171_test_map):
+    # See https://github.com/sunpy/sunpy/pull/7543#issuecomment-2167019208 for more context
+    coord_native = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia171_test_map.coordinate_frame)
+    aia171_test_map.submap(coord_native, width=1000*u.arcsec, height=1000*u.arcsec)
+    coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
+    with pytest.raises(ValueError, match="The provided input coordinates to"):
+        aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
