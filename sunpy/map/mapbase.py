@@ -1917,7 +1917,7 @@ class GenericMap(NDData):
             "coordinate frame contain NaN values and cannot be used to crop the map. "
             "The most common reason for NaN values is transforming off-disk 2D "
             "coordinates without specifying an assumption (e.g., via the"
-            "`Helioprojective.assume_spherical_screen()` context manager) that allows "
+            "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
             "such coordinates to be interpreted as 3D coordinates."
         )
         if np.any(np.isnan(pixel_corners)):
