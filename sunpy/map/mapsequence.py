@@ -531,12 +531,11 @@ class MapSequence:
         Examples
         --------
         >>> from sunpy.map import Map
-        >>> import sunpy.data.sample # doctest: +REMOTE_DATA
+        >>> import sunpy.data.sample # doctest: +SKIP
         >>> smap = Map(sunpy.data.sample.HMI_LOS_IMAGE,
         ...            sunpy.data.sample.AIA_1600_IMAGE,
-        ...            sequence=True)  # doctest: +REMOTE_DATA
+        ...            sequence=True)  # doctest: +SKIP
         >>> smap.save('map_{index:03}.fits')  # doctest: +SKIP
-
         """
         if filepath.format(index=0) == filepath:
             raise ValueError("'{index}' must be appear in the string")
