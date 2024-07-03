@@ -468,9 +468,11 @@ def get_fov(instrument, time, *, resolution=100):
                    representation_type='unitspherical')
     return fov
 
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     """
-    Computes the rotation matrix that converts vectors from the `source_frame` to the `target_frame`
+    Computes the rotation matrix that converts vectors from the ``source_frame`` to the ``target_frame``
     at the specified time using the SPICE toolkit.
 
     Parameters
@@ -481,10 +483,10 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     target_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
         The frame to which the vector field will be transformed, specified in the same formats as ``source_frame``.
 
-    from_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`
-        The time at which the vector field is defined in the source frame, in any format accepted by ``sunpy.time.parse_time``.
+    from_time : {parse_time_types}
+        The time at which the vector field is defined in the source frame, in any format accepted by `sunpy.time.parse_time`.
 
-    to_time : `str`, `~astropy.time.Time`, `~datetime.datetime`, `~datetime.date`, `~numpy.datetime64`, `~pandas.Series`, `~pandas.DatetimeIndex`, `~pandas.DataFrame`, optional
+    to_time : {parse_time_types}
         The time at which the vector field should be defined in the target frame. Defaults to ``from_time``, resulting in a spatial-only transformation.
 
     Returns
@@ -505,11 +507,16 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     * This rotation matrix is a 3x3 matrix that represents the rotation between the two frames.
 
     >>> rotation_matrix
-    array([[ 0.999, -0.034,  0.002],
-           [ 0.034,  0.999,  0.004],
-           [-0.002, -0.004,  1.000]])
+    array([[-0.05487554, -0.8734371 , -0.48383499],
+           [ 0.49410945, -0.44482959,  0.74698225],
+           [-0.86766614, -0.19807639,  0.45598379]])
 
-    * `rotation_matrix` can now be used with the vector components to transform the field.
+    * ``rotation_matrix`` can now be used with the vector components to transform the field. An example way is shown below.
+
+    >>> vec_components = [1, 0, 0] * u.T
+    >>> transformed_matrix = rotation_matrix @ vec_components
+    >>> transformed_matrix
+    <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
 
     """
     # Convert sunpy frames to SPICE strings

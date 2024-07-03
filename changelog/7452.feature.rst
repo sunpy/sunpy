@@ -1,1 +1,2 @@
-Implemented the `~sunpy.coordinates.spice.transform_vector_field` which takes a vector field in one frame and transforms it to another frame.
+Implemented the `~sunpy.coordinates.spice.get_rotation_matrix` which computes the rotation matrix that converts vectors from the source frame to the target frame
+at the specified time.
