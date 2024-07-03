@@ -217,16 +217,14 @@ def test_to_helioprojective(spice_test):
     assert_quantity_allclose(sunpy_coord.lon, spice_coord.lon, rtol=1e-6)
     assert_quantity_allclose(sunpy_coord.lat, spice_coord.lat, rtol=1e-6)
 
-def test_transform_vector_field(spice_test):
-    components = np.array([1, 0, 0]) * u.T
+def test_get_rotation_matrix(spice_test):
     source_frame = "J2000"
     target_frame = "Galactic"
     from_time = '2001-01-01T00:00:00'
-
-    result = spice.transform_vector_field(components, source_frame, target_frame, from_time)
-
-    assert isinstance(result, u.Quantity)
-
-    assert result.shape == components.shape
-    expected_result = np.array([-0.054875539, 0.49410945, -0.86766614])* u.T
-    assert_quantity_allclose(result.value, expected_result.value)
+    result = spice.get_rotation_matrix(source_frame, target_frame, from_time)
+    assert isinstance(result, np.ndarray)
+    assert result.shape == (3, 3)
+    expected_result = np.array([[ 0.999, -0.034,  0.002],
+                                [ 0.034,  0.999,  0.004],
+                                [-0.002, -0.004,  1.000]])
+    np.testing.assert_allclose(result, expected_result, rtol=1e-5)
