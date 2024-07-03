@@ -59,7 +59,7 @@ jobs:
         docs/_build/
         docs/generated/
         .tox/sample_data/
-      cache-key: docs-${{ github.run_id }}
+      cache-key: docs-${{ hashFiles('examples/**/*.py', '**/*.rst') }}
       libraries: |
         apt:
           - graphviz
