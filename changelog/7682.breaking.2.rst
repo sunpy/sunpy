@@ -1,1 +1,2 @@
-The `.GenericMap.date` key priority order has changed. It now prioritises the FITS 4 ``DATE-BEG`` key over the old unspecified ``DATE-OBS`` key, and falls back to ``DATE-AVG`` and then ``DATE-END``.
+The `.GenericMap.date` key priority order has changed to be consistent with it representing the "canonical" observation time.
+``DATE-OBS`` continues to have the highest priority, but now ``DATE-BEG`` has higher priority than ``DATE-AVG``.

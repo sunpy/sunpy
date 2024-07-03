@@ -1,2 +1,2 @@
-A new property `.GenericMap.reference_date` has been added to resolve the ambiguity about what date is used when constructing the observer location and coordinate frame for a map.
-This new property is now passed through to the map's WCS object as `dateavg` and therefore to `.GenericMap.coordinate_frame` and is used in constructing the `.GenericMap.observer_coordinate`.
+A new property `.GenericMap.reference_date` has been added to decouple the reference date for the coordinate system from the "canonical" observation time.
+This new property is now passed through to the map's WCS object as ``dateavg`` and is the time used for `.GenericMap.coordinate_frame` and `.GenericMap.observer_coordinate`.

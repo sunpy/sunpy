@@ -613,13 +613,12 @@ class GenericMap(NDData):
         w2.wcs.cunit = self.spatial_units
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
-        w2.wcs.dateavg = self.reference_date.isot
-        if self._date_obs is not None:
-            w2.wcs.dateobs = self._date_obs.isot
+        w2.wcs.dateobs = self.date.utc.isot
+        w2.wcs.dateavg = self.reference_date.utc.isot
         if self.date_start is not None:
-            w2.wcs.datebeg = self.date_start.isot
+            w2.wcs.datebeg = self.date_start.utc.isot
         if self.date_end is not None:
-            w2.wcs.dateend = self.date_end.isot
+            w2.wcs.dateend = self.date_end.utc.isot
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
@@ -871,52 +870,68 @@ class GenericMap(NDData):
     @property
     def reference_date(self):
         """
-        The date used as the reference date for the coordinate system.
+        The reference date for the coordinate system.
 
-        This property is used to define the ``obstime`` of the coordinate frame,
-        most often this is used to define the observer. As the FITS standard
-        isn't explicit about what time should be used for this reference date
-        this property follows a different set of priorities from
-        `.GenericMap.date` and allows sources to override this to the most
-        appropriate date.
+        This date is used to define the ``obstime`` of the coordinate frame and often
+        the ``obstime`` of the observer.  Be aware that this date can be different from
+        the "canonical" observation time (see the `.GenericMap.date` property).
 
-        This property is in order of preference:
+        The reference date is determined using this order of preference:
+
         1. The ``DATE-AVG`` key in the meta.
         2. The ``DATE-OBS`` key in the meta.
         3. The ``DATE-BEG`` key in the meta.
         4. The ``DATE-END`` key in the meta.
-        5. The `.GenericMap.date` property as a fallback (which is likely to be the current time).
+        5. The `.GenericMap.date` property as a fallback (which, if not
+           overridden, would be the current time if the above keywords are missing).
+
+        See Also
+        --------
+        date : The observation time.
+        date_start : The start time of the observation.
+        date_end : The end time of the observation.
+        date_average : The average time of the observation.
+
+        Notes
+        -----
+        The FITS standard implies, but does not expressly require, for DATE-AVG keyword
+        to be the reference date.
         """
         return (
             self._get_date('date-avg') or
             self._get_date('date-obs') or
-            self.date_start or
-            self.date_end or
+            self._get_date('date-beg') or
+            self._get_date('date-end') or
             self.date
         )
 
     @property
     def date(self):
         """
-        'Canonical' observation time.
+        The observation time.
 
-        For different combinations of map metadata this can return either
-        the start time, end time, or a time between these. It is recommended
-        to use `~sunpy.map.GenericMap.date_average`,
-        `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
-        instead if you need one of these specific times.
+        This time is the "canonical" way to refer to an observation, which is commonly
+        the start of the observation, but can be a different time.  In comparison, the
+        `.GenericMap.date_start` property is unambigiously the start of the observation.
 
-        Taken from, in order of preference:
+        The observation time is determined using this order of preference:
 
-        1. `~sunpy.map.GenericMap.date_start`
-        2. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
-        3. `~sunpy.map.GenericMap.date_average`
-        4. `~sunpy.map.GenericMap.date_end`
+        1. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
+        2. `.GenericMap.date_start`
+        3. `.GenericMap.date_average`
+        4. `.GenericMap.date_end`
         5. The current time
+
+        See Also
+        --------
+        reference_date : The reference date for the the coordinate system
+        date_start : The start time of the observation.
+        date_end : The end time of the observation.
+        date_average : The average time of the observation.
         """
         time = (
-            self.date_start or
             self._date_obs or
+            self.date_start or
             self.date_average or
             self.date_end
         )
@@ -925,7 +940,7 @@ class GenericMap(NDData):
             if self._default_time is None:
                 warn_metadata("Missing metadata for observation time, "
                               "setting observation time to current time. "
-                              "Set the 'DATE-AVG' FITS keyword to prevent this warning.")
+                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 

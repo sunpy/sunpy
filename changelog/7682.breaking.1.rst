@@ -1,1 +1,1 @@
-The `.EUIMap` class now returns the ``DATE-BEG`` key for `.date` and `DATE-AVG` is used in the coordinate system through the new `.GenericMap.reference_date` property.
+The `.EUIMap` class now returns the ``DATE-BEG`` key for `.GenericMap.date` while continuing to use ``DATE-AVG`` as the reference date for the coordinate system.
