@@ -1917,7 +1917,7 @@ class GenericMap(NDData):
             "coordinate frame contain NaN values and cannot be used to crop the map. "
             "The most common reason for NaN values is transforming off-disk 2D "
             "coordinates without specifying an assumption (e.g., via the"
-            "`Helioprojective.assume_spherical_screen()` context manager) that allows "
+            "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
             "such coordinates to be interpreted as 3D coordinates."
         )
         if np.any(np.isnan(pixel_corners)):
@@ -2505,7 +2505,7 @@ class GenericMap(NDData):
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
         autoscaling of the plot limits.  The plot limits can be set manually.
         To preserve the off-disk parts of the map, using the
-        :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
+        :meth:`~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
         """
         # Todo: remove this when deprecate_positional_args_since is removed
@@ -2732,7 +2732,7 @@ class GenericMap(NDData):
         """
         # Check if both context managers are active
         if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
-            warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+            warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
 
         try:
             import reproject
