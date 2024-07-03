@@ -213,7 +213,7 @@ def test_ftp():
     timerange = TimeRange('2024/5/18', '2024/5/20')
     urls = s.filelist(timerange)
     assert urls[0] == ('ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/2024/05/20240517SRS.txt')
-    assert len(urls) == 3
+    assert len(urls) == 4
 
 
 @pytest.mark.remote_data
