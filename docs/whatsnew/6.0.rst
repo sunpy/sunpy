@@ -126,5 +126,5 @@ This replaces the default assumption where 2D coordinates are mapped onto the su
 Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
 ======================================================================
 
-:func:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
+:meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
 Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.
