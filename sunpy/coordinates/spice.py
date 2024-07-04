@@ -529,7 +529,7 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     form_j2000_to_target = spiceypy.sxform("J2000", target_frame_spice, to_time_et)
 
     # Combine: source -> J2000 -> target
-    combined_transform = spiceypy.mxmg(form_j2000_to_target, form_source_to_j2000, 6, 6, 6)
+    combined_transform = spiceypy.mxmg(form_j2000_to_target, form_source_to_j2000)
 
     # Extract the rotation matrix (upper left 3x3 block)
     rotation_matrix = combined_transform[:3, :3]

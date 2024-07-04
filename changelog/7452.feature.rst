@@ -1,2 +1,2 @@
-Added :func:`sunpy.coordinates.spice.get_rotation_matrix` to obtain the rotation matrix between the orientations of two SPICE frames, which is particularly useful for transforming vector fields
+Added :func:`~sunpy.coordinates.spice.get_rotation_matrix` to obtain the rotation matrix between the orientations of two SPICE frames, which is particularly useful for transforming vector fields
 at the specified time.
