@@ -505,7 +505,7 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
            [ 0.49410945, -0.44482959,  0.74698225],
            [-0.86766614, -0.19807639,  0.45598379]])
 
-    * ``rotation_matrix`` can now be used with the vector components to transform the field. An example way is shown below.
+    * This output can now be used with the vector components to transform the field. An example way is shown below.
 
     >>> vec_components = [1, 0, 0] * u.T
     >>> transformed_matrix = rotation_matrix @ vec_components
@@ -522,10 +522,16 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     from_time_et = _convert_to_et(from_time)
     to_time_et = _convert_to_et(to_time)
 
-    # Compute state transformation matrix using spiceypy
-    state_matrix = spiceypy.sxform(source_frame_spice, target_frame_spice, to_time_et or from_time_et)
+    # First transformation: from source frame at from_time to J2000
+    form_source_to_j2000 = spiceypy.sxform(source_frame_spice, "J2000", from_time_et)
 
-    # The state transformation matrix is a 6x6 matrix. The upper left 3x3 block is the rotation matrix.
-    rotation_matrix = state_matrix[:3, :3]
+    # Second transformation: from J2000 at to_time to target frame
+    form_j2000_to_target = spiceypy.sxform("J2000", target_frame_spice, to_time_et)
+
+    # Combine: source -> J2000 -> target
+    combined_transform = spiceypy.mxmg(form_j2000_to_target, form_source_to_j2000, 6, 6, 6)
+
+    # Extract the rotation matrix (upper left 3x3 block)
+    rotation_matrix = combined_transform[:3, :3]
 
     return rotation_matrix
