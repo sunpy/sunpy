@@ -133,7 +133,7 @@ class PlanarScreen(BaseScreen):
     ----------
     vantage_point : `~astropy.coordinates.SkyCoord`
         The vantage point that defines the orientation of the plane.
-    distance_from_center : `~astropy.units.Quantity`
+    distance_from_center : `~astropy.units.Quantity`, optional
         Distance from Sun center of the planar screen. Defaults to 0 such
         that the plane goes through Sun center
     only_off_disk : `bool`, optional

@@ -1,1 +1,1 @@
-Allow the screen radius to be set when using `~sunpy.coordinates.Helioprojective.SphericalScreen`.
+Allow the screen radius to be set when using `~sunpy.coordinates.SphericalScreen`.
