@@ -47,14 +47,18 @@ class SphericalScreen(BaseScreen):
     This ``center`` does not have to be the same as the observer location for the coordinate
     frame.  If they are the same, then this context manager is equivalent to assuming that the
     helioprojective "zeta" component is zero.
-
     This replaces the default assumption where 2D coordinates are mapped onto the surface of the
     Sun.
+
+    .. note:: This applies only to coordinates in a `~sunpy.coordinates.Helioprojective` frame.
 
     Parameters
     ----------
     center : `~astropy.coordinates.SkyCoord`
         The center of the spherical screen
+    radius : `~astropy.units.Quantity`, optional
+        The radius of the spherical screen. The default sets the radius to the distance from the
+        screen center to the Sun.
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun.  Defaults to `False`.
@@ -92,22 +96,20 @@ class SphericalScreen(BaseScreen):
     """
     screen_type = 'spherical'
 
-    def __init__(self, center, **kwargs):
-        self.center = center
+    @u.quantity_input
+    def __init__(self, center, radius: u.m=None, **kwargs):
+        self._center = center
+        if radius is not None:
+            self._radius = radius
+        else:
+            hgs_frame = HeliographicStonyhurst(obstime=self._center.obstime)
+            center_hgs = self._center.transform_to(hgs_frame)
+            self._radius = center_hgs.radius
         super().__init__(**kwargs)
 
-    @property
-    def center_hgs(self):
-        hgs_frame = HeliographicStonyhurst(obstime=self.center.obstime)
-        return self.center.transform_to(hgs_frame)
-
-    @property
-    def radius(self):
-        return self.center_hgs.radius
-
     def calculate_distance(self, frame):
-        sphere_center = self.center.transform_to(frame).cartesian
-        c = sphere_center.norm()**2 - self.radius**2
+        sphere_center = self._center.transform_to(frame).cartesian
+        c = sphere_center.norm()**2 - self._radius**2
         rep = frame.represent_as(UnitSphericalRepresentation)
         b = -2 * sphere_center.dot(rep)
         # Ignore sqrt of NaNs
@@ -124,6 +126,8 @@ class PlanarScreen(BaseScreen):
     specified vantage point and Sun center.
     This replaces the default assumption where 2D coordinates are mapped onto the surface of the
     Sun.
+
+    .. note:: This applies only to coordinates in a `~sunpy.coordinates.Helioprojective` frame.
 
     Parameters
     ----------
@@ -170,15 +174,15 @@ class PlanarScreen(BaseScreen):
 
     @u.quantity_input
     def __init__(self, vantage_point, distance_from_center: u.m=0*u.m, **kwargs):
-        self.vantage_point = vantage_point
-        self.distance_from_center = distance_from_center
+        self._vantage_point = vantage_point
+        self._distance_from_center = distance_from_center
         super().__init__(**kwargs)
 
     def calculate_distance(self, frame):
-        direction = self.vantage_point.transform_to(frame).cartesian
+        direction = self._vantage_point.transform_to(frame).cartesian
         direction = CartesianRepresentation(1, 0, 0) * frame.observer.radius - direction
         direction /= direction.norm()
-        d_from_plane = (frame.observer.radius - self.distance_from_center) * direction.x
+        d_from_plane = (frame.observer.radius - self._distance_from_center) * direction.x
         rep = frame.represent_as(UnitSphericalRepresentation)
         distance = d_from_plane / rep.dot(direction)
         return distance

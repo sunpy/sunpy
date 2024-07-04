@@ -673,11 +673,11 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     @classmethod
     @sunpycontextmanager
     @deprecated('6.0', alternative='sunpy.coordinates.screens.SphericalScreen')
-    def assume_spherical_screen(cls, center, only_off_disk=False):
+    def assume_spherical_screen(cls, center, radius=None, only_off_disk=False):
         try:
             old_assumed_screen = cls._assumed_screen  # nominally None
             from sunpy.coordinates import SphericalScreen
-            sph_screen = SphericalScreen(center, only_off_disk=only_off_disk)
+            sph_screen = SphericalScreen(center, radius=radius, only_off_disk=only_off_disk)
             cls._assumed_screen = sph_screen
             yield
         finally:
