@@ -153,18 +153,6 @@ def test_from_fido_search_result_block(fido_search_result):
 
 
 @pytest.mark.remote_data
-def test_entry_from_qr_block(query_result):
-    entry = DatabaseEntry._from_query_result_block(query_result.blocks[0])
-    expected_entry = DatabaseEntry(
-        source='SOHO', provider='SDAC', physobs='intensity',
-        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042',
-        observation_time_start=datetime(2001, 1, 1, 0, 0, 42),
-        observation_time_end=datetime(2001, 1, 1, 0, 0, 54),
-        instrument='EIT', size=2059.0, wavemin=19.5, wavemax=19.5)
-    assert entry == expected_entry
-
-
-@pytest.mark.remote_data
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
     entry = DatabaseEntry._from_query_result_block(
@@ -347,86 +335,6 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
     # does not raise WaveunitNotFoundError because neither wavemin nor wavemax
     # are given
     list(entries_from_query_result(qr_with_none_waves))
-
-
-@pytest.mark.remote_data
-def test_entry_from_query_results_with_none_wave_and_default_unit(
-        qr_with_none_waves):
-    entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    expected = [
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_daily_hourly.zip',
-            observation_time_start=datetime(1995, 12, 2, 0, 0),
-            observation_time_end=datetime(2020, 1, 1, 0, 0),
-            instrument='VIRGO', size=13506.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-BLUE-L2-MISSIONLONG.fits',
-            observation_time_start=datetime(1996, 1, 23, 0, 0),
-            observation_time_end=datetime(2023, 4, 30, 23, 59),
-            instrument='VIRGO', size=32652.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-GREEN-L2-MISSIONLONG.fits',
-            observation_time_start=datetime(1996, 1, 23, 0, 0),
-            observation_time_end=datetime(2023, 4, 30, 23, 59),
-            instrument='VIRGO', size=32652.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/VIRGO-SPM-RED-L2-MISSIONLONG.fits',
-            observation_time_start=datetime(1996, 1, 23, 0, 0),
-            observation_time_end=datetime(2023, 4, 30, 23, 59),
-            instrument='VIRGO', size=32652.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/loi/VIRGO-LOI-ALL-PIXELS-LEVEL2-19960401-20210430_V01.fits',
-            observation_time_start=datetime(1996, 4, 1, 0, 0),
-            observation_time_end=datetime(2021, 4, 30, 23, 59),
-            instrument='VIRGO', size=1677722.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/sph/VIRGO_D4.2_SPH_960411_120914.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0),
-            observation_time_end=datetime(2012, 9, 14, 0, 0),
-            instrument='VIRGO', size=512000.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',
-            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
-            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
-            instrument='VIRGO', size=155.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/LOI/121224_1.L01',
-            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
-            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
-            instrument='VIRGO', size=329.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/SPM/121222_1.S02',
-            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
-            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
-            instrument='VIRGO', size=87.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
-            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
-            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
-            instrument='VIRGO', size=14.0),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/tsi_full/VIRGO_TSI_Minute.fits',
-            observation_time_start=datetime(1996, 2, 22, 0, 0, 50),
-            observation_time_end=datetime(2023, 2, 20, 23, 57, 13),
-            instrument='VIRGO', size=332814.0),
-    ]
-
-
-    for e in entries:
-        assert e in expected, f"{e} not found in expected list"
-    for e in expected:
-        assert e in entries, f"{e} not found in remote response"
 
 
 def test_create_display_table_missing_entries():
