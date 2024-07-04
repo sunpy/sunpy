@@ -234,16 +234,18 @@ class Scraper:
          'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001157.fits']
 
         While writing the pattern, we can also leverage parse capabilities by using the ``{{}}`` notation to match parts of the filename that cannot be known beforehand:
+
         >>> from sunpy.net import Scraper
         >>> from sunpy.time import TimeRange
         >>> pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
         >>> lyra = Scraper(format=pattern)
-        >>> timerange = TimeRange('2023-03-06T00:08:00','2023-03-12T00:12:00')
+        >>> timerange = TimeRange('2023-03-06T00:00:00','2023-03-06T00:10:00')
         >>> print(swap.filelist(timerange)) # doctest: +REMOTE_DATA
-        ['http://proba2.oma.be/lyra/data/bsd/2023/03/06/lyra_20230306-000000_lev2_std.fits',
-        'http://proba2.oma.be/lyra/data/bsd/2023/03/06/lyra_20230306-000000_lev3_std.fits',
-        '...',
-        'http://proba2.oma.be/lyra/data/bsd/2023/03/12/lyra_20230312-000000_lev3_std.fits']
+        ['http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000128.fits',
+        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000318.fits',
+        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000508.fits',
+        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000658.fits',
+        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000848.fits']
 
         Notes
         -----

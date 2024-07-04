@@ -368,7 +368,7 @@ def test_ftp():
 def test_ftp_new_format():
     pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt'
     s = Scraper(format=pattern)
-    timerange = TimeRange('2024/5/18 15:28:00', '2024/5/20 16:30:50')
+    timerange = TimeRange('2024/5/18', '2024/5/20')
     urls = s.filelist(timerange)
     assert urls[0] == ('ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/2024/05/20240518SRS.txt')
     assert len(urls) == 3
