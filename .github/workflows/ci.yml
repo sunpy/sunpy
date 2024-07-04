@@ -71,7 +71,7 @@ jobs:
         docs/_build/
         docs/generated/
         .tox/sample_data/
-      cache-key: ${{ needs.compute-cache-key.outputs.cache-key }}
+      cache-key: docs-${{ github.sha }}
       libraries: |
         apt:
           - graphviz
@@ -95,7 +95,7 @@ jobs:
             docs/_build/
             docs/generated/
             .tox/sample_data/
-          cache-key: docs-${{ github.run_id }}
+          cache-key: docs-${{ github.sha }}
           libraries:
             apt:
               - libopenjp2-7
