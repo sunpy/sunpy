@@ -17,6 +17,21 @@ The main place this is done is when constructing a `~.UnifiedResponse` object, w
 
 .. _sunpy-topic-guide-new-source-for-fido-add-new-scraper-client:
 
+A migration guide for working with / adding new scraper clients:
+===============================================================
+The main change in 5.0 is the removal of the old regex-based pattern system in favor of a new parse-based pattern system.
+This change is to make the pattern system more flexible and easier to use. The new pattern system is based on the `parse <https://github.com/r1chardj0n3s/parse/>`__ format.
+Previously, when defining a new FIDO client or working with the Scraper, a regex-based ``baseurl`` and a parse-styled ``pattern`` attributes were required.
+Now only a single parse-based ``pattern`` is required when writing Fido clients.
+During the deprecation period for the old ``pattern``, the new one is to be passed as a ``format`` attribute to the Scraper.
+Instructions for writing the new pattern are:
+1. Much like the baseurl, the single pattern would cover the entire URL from the protocol, domain to the filename.
+2. Instead of conveying time or numerical information in the URL in a datetime or regex format, it is now done in the `parse <https://github.com/r1chardj0n3s/parse/>`__ format for eg. a ``"%Y"`` is now to be replaced with ``{{year:4d}}``. For a full list of the new keywords corresponding to datetime format, the supported time keys (to be used within ``{{}}``!) are: 'year:4d', 'year:2d', 'month:2d'. 'month_name:l', 'month_name_abbr:l', 'day:2d', 'day_of_year:3d', 'hour:2d', 'minute:2d', 'second:2d', 'microsecond:6d', 'millisecond:3d' and 'week_number:2d'.
+3. The metadata attributes for extraction are written within double curly-braces ``{{}}`` for eg. ``{{ADAPTRealizations:3d}}``.
+4. Single curly-braces ``{}`` are used in case of regular placeholders for Python format strings, each respective value being passed as ``kwargs`` to the Scraper.
+A more detailed explanation of the new pattern system is referred to in the topic-guide below.
+
+
 An explanation of how "scraper" clients work
 ============================================
 
@@ -29,7 +44,7 @@ A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericCli
   Each `tuple` contains the "attr" value and its description.
 * A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
   The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse <https://github.com/r1chardj0n3s/parse/>`__ format.
-  Regular placeholders for Python format strings can still be included via single curly braces ``{}`` with their respective parameters passed as the ``kwargs``.
+  Single curly braces ``{}`` are only used for regular placeholders for Python format strings, each respective value passed as ``kwargs`` to the Scraper.
   An example of how such a pattern looks like is given in the algorithm explanation below.
 
 .. warning::
@@ -125,7 +140,7 @@ This client scrapes all the URLs available under the base url ``http://lasp.colo
 `~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``pattern`` specifies where in the URL the time information is located, using `parse <https://github.com/r1chardj0n3s/parse/>`__ notation.
 The ``pattern`` attribute is first filled in with the calculated time-based values, and then used to populate the results table from the URLs matched with the ``pattern``.
 It includes some of the time definitions, as well as names of attrs (in this case "Level").
-The supported time keys are: '{year:4d}', '{year:2d}', '{month:2d}'. '{month_name:l}', '{month_name_abbr:l}', '{day:2d}', '{day_of_year:3d}', '{hour:2d}', '{minute:2d}', '{second:2d}', '{microsecond:6d}', '{millisecond:3d}' and '{week_number:2d}'.
+The supported time keys (to be used within ``{{}}``!) are: 'year:4d', 'year:2d', 'month:2d'. 'month_name:l', 'month_name_abbr:l', 'day:2d', 'day_of_year:3d', 'hour:2d', 'minute:2d', 'second:2d', 'microsecond:6d', 'millisecond:3d' and 'week_number:2d'.
 
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
 This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.
