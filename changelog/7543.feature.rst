@@ -1,0 +1,1 @@
+Updated :meth:`sunpy.map.GenericMap.submap` to check if it is about to work on locations with NaNs now errors and informs the user that they likely want to use :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` so that the off-disk 2D coordinate can be converted to a 3D coordinate.
