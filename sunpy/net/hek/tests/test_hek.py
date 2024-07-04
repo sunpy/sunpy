@@ -6,6 +6,7 @@ import pytest
 from regions import SkyRegion
 
 from astropy import units as u
+from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
 from sunpy.net import attr, attrs, hek
@@ -275,3 +276,17 @@ def test_missing_times():
     results = client.search(attrs.Time('2024-05-10', '2024-05-12'), attrs.hek.AR.NOAANum == 13664)
     assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
     assert results["event_peaktime"][6].isot == "2024-05-10T16:08:00.000"
+
+@pytest.mark.remote_data
+def test_merging_event_coords():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    client = hek.HEKClient()
+    result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
+
+    coord1 = -2.91584*u.arcsec
+    coord2 = 940.667*u.arcsec
+    frame='helioprojective'
+    event_coord = SkyCoord(coord1, coord2, frame=frame)
+
+    assert result['event_coord'][0] == event_coord

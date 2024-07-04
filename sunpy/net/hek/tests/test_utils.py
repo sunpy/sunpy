@@ -3,8 +3,6 @@ from regions import PointSkyRegion, PolygonSkyRegion
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.net import Fido
-from sunpy.net import attrs as a
 from sunpy.net.hek.utils import get_unit, parse_chaincode
 
 
@@ -69,15 +67,3 @@ def test_parse_chaincode_points():
     region = PointSkyRegion(center=center_sky)
 
     assert region == result
-
-def test_merging_event_coords():
-    tstart = '2011/08/09 07:23:56'
-    tend = '2011/08/09 12:40:29'
-    result = Fido.search(a.Time(tstart,tend), a.hek.EventType('CH'))
-
-    coord1 = -2.91584*u.arcsec
-    coord2 = 940.667*u.arcsec
-    frame='helioprojective'
-    event_coord = SkyCoord(coord1, coord2, frame=frame)
-
-    assert result[0]['event_coord'][0] == event_coord
