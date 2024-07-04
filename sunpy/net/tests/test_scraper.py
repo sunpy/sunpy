@@ -366,12 +366,12 @@ def test_ftp():
 
 @pytest.mark.remote_data
 def test_ftp_new_format():
-    pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/%Y/%m/%Y%m%dSRS.txt'
+    pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt'
     s = Scraper(format=pattern)
-    timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
+    timerange = TimeRange('2024/5/18 15:28:00', '2024/5/20 16:30:50')
     urls = s.filelist(timerange)
-    assert urls[0] == ('ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/2024/05/20240517SRS.txt')
-    assert len(urls) == 4
+    assert urls[0] == ('ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/2024/05/20240518SRS.txt')
+    assert len(urls) == 3
 
 
 @pytest.mark.remote_data
