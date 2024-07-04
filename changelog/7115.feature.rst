@@ -1,0 +1,1 @@
+Added `~sunpy.coordinates.PlanarScreen` for realizing 3D versions of coordinates in a Helioprojective frame.
