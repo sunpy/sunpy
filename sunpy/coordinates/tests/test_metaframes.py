@@ -88,7 +88,7 @@ def test_class_creation(indirect_fixture):
     assert base_class.__name__ in rot_class.__name__
 
     # Check that the base class is in fact the specified class
-    assert type(rot_frame.base) == base_class
+    assert type(rot_frame.base) == base_class  # noqa: E721
 
     # Check that the new class does *not* have the `obstime` frame attribute
     assert 'obstime' not in rot_frame.frame_attributes
