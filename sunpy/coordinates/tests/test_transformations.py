@@ -34,6 +34,7 @@ from sunpy.coordinates import (
     HeliographicStonyhurst,
     Helioprojective,
     SolarMagnetic,
+    SphericalScreen,
     propagate_with_solar_surface,
     sun,
     transform_with_sun_center,
@@ -132,7 +133,7 @@ def test_hpc_hpc_spherical_screen():
     sc_in = SkyCoord(Tx0, 0*u.deg, observer=observer_in,
                      frame='helioprojective')
 
-    with Helioprojective.assume_spherical_screen(observer_in):
+    with SphericalScreen(observer_in):
         sc_3d = sc_in.make_3d()
         sc_out = sc_in.transform_to(Helioprojective(observer=observer_out))
 
@@ -148,7 +149,7 @@ def test_hpc_hpc_spherical_screen():
     # Now test with a very large screen, letting us approximate the two
     # observers as being the same (aside from a different zero point for Tx)
     r_s = 1e9 * u.lightyear
-    with Helioprojective.assume_spherical_screen(observer_in, radius=r_s):
+    with SphericalScreen(observer_in, radius=r_s):
         sc_3d = sc_in.make_3d()
         sc_out = sc_in.transform_to(Helioprojective(observer=observer_out))
 
