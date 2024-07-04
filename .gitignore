@@ -5,7 +5,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 tmp/
-/fakedirectory/
 
 # C extensions
 *.so

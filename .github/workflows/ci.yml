@@ -47,20 +47,8 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  hash-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-      - name: Set cache key
-        id: set-cache-key
-        run: |
-          echo "cache-key=docs-${{ hashFiles('examples/**/*.py', '**/*.rst') }}" >> $GITHUB_ENV
-          echo "::set-output name=cache-key::docs-${{ hashFiles('examples/**/*.py', '**/*.rst') }}"
-        shell: bash
-
   docs:
-    needs: [core, hash-docs]
+    needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
       default_python: '3.12'
@@ -71,7 +59,7 @@ jobs:
         docs/_build/
         docs/generated/
         .tox/sample_data/
-      cache-key: ${{ needs.compute-cache-key.outputs.cache-key }}
+      cache-key: docs-${{ github.sha }}
       libraries: |
         apt:
           - graphviz
@@ -95,7 +83,7 @@ jobs:
             docs/_build/
             docs/generated/
             .tox/sample_data/
-          cache-key: docs-${{ github.run_id }}
+          cache-key: docs-${{ github.sha }}
           libraries:
             apt:
               - libopenjp2-7
