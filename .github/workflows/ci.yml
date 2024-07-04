@@ -55,9 +55,19 @@ jobs:
       - name: Set cache key
         id: set-cache-key
         run: |
+          echo "${{ github.run_id }}"
           echo "cache-key=docs-${{ hashFiles('examples/**/*.py', '**/*.rst') }}" >> $GITHUB_ENV
           echo "::set-output name=cache-key::docs-${{ hashFiles('examples/**/*.py', '**/*.rst') }}"
         shell: bash
+
+  test-run-id:
+    needs: [hash-docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: print run id
+        id: set-cache-key
+        run: |
+          echo "${{ github.run_id }}"
 
   docs:
     needs: [core, hash-docs]
