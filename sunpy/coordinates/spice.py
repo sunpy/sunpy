@@ -472,19 +472,18 @@ def get_fov(instrument, time, *, resolution=100):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     """
-    Computes the rotation matrix that converts vectors from the ``source_frame`` to the ``target_frame``
-    at the specified time using the SPICE toolkit.
+    Get the rotation matrix between the orientations of two SPICE frames.
 
     Parameters
     ----------
     source_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
-        The frame of the input vector field, specified as a frame name, SPICE ID, or Astropy BaseCoordinateFrame.
+        The source frame, specified by a frame name, SPICE ID, or Astropy BaseCoordinateFrame.
 
     target_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
-        The frame to which the vector field will be transformed, specified in the same formats as ``source_frame``.
+        The target frame, with the same allowed formats as ``source_frame``.
 
     from_time : {parse_time_types}
-        The time at which the vector field is defined in the source frame, in any format accepted by `sunpy.time.parse_time`.
+        The time of the source frame.
 
     to_time : {parse_time_types}
         The time at which the vector field should be defined in the target frame. Defaults to ``from_time``, resulting in a spatial-only transformation.
@@ -492,7 +491,7 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     Returns
     -------
     `~numpy.ndarray`
-        A 3x3 rotation matrix that represents the rotation between the two frames.
+        A 3x3 rotation matrix for the change in orientation.
 
     Examples
     --------
@@ -500,12 +499,7 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     >>> source_frame = "J2000"
     >>> target_frame = "Galactic"
     >>> from_time = '2001-01-01T00:00:00'
-
     >>> rotation_matrix = get_rotation_matrix(source_frame, target_frame, from_time)
-
-    * The `get_rotation_matrix` function will first determine the rotation matrix that converts vectors from the source frame to the target frame at the specified time.
-    * This rotation matrix is a 3x3 matrix that represents the rotation between the two frames.
-
     >>> rotation_matrix
     array([[-0.05487554, -0.8734371 , -0.48383499],
            [ 0.49410945, -0.44482959,  0.74698225],
@@ -517,7 +511,6 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     >>> transformed_matrix = rotation_matrix @ vec_components
     >>> transformed_matrix
     <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
-
     """
     # Convert sunpy frames to SPICE strings
     source_frame_spice = source_frame.name.upper() if hasattr(source_frame, 'name') else str(source_frame).upper()
