@@ -9,6 +9,7 @@ from sunpy.util.parfive_helpers import Downloader
 _BASE_URLS = (
     'https://github.com/sunpy/data/raw/main/sunpy/v1/',
     'http://data.sunpy.org/sunpy/v1/',
+    'http://www.nowhere.com/',
 )
 
 # Shortcut requirements:
@@ -53,7 +54,8 @@ _SAMPLE_DATA = {
     "STEREO_B_195_JUN2012": "20120601_000530_n4eub.fits",
     "SWAP_LEVEL1_IMAGE": "swap_lv1_20110607_063329.fits",
     "AIA_STEREOSCOPIC_IMAGE": "aia_lev1_171a_2023_07_06t00_05_33_35z_image_lev1.fits",
-    "EUVI_STEREOSCOPIC_IMAGE": "20230706_000525_n4eua.fts"
+    "EUVI_STEREOSCOPIC_IMAGE": "20230706_000525_n4eua.fts",
+    "test":"reference.asdf"
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to
