@@ -357,7 +357,7 @@ def cached_property_based_on(attr_name):
         """
         prop: the property method being decorated
         """
-        @wraps(outer)
+        @wraps(prop)
         def inner(instance):
             """
             Parameters
