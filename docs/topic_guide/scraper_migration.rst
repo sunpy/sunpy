@@ -4,7 +4,7 @@
 Migrating to the new Scraper pattern system in ``sunpy`` 6.0
 ************************************************************
 
-The `~sunpy.net.scarper.Scraper` has undergone a major change in the sunpy 6.0 release.
+The `~sunpy.net.scraper.Scraper` has undergone a major change in the sunpy 6.0 release.
 
 The old pattern system was regex-based, while the new pattern system is based on the `parse <https://github.com/r1chardj0n3s/parse/>`__
 We hope that the new pattern system is more flexible and easier to use.
@@ -13,9 +13,9 @@ We hope that the new pattern system is more flexible and easier to use.
 How to migrate
 ==============
 
-Previously, when defining a new Fido client or working with the `~sunpy.net.scarper.Scraper`, a regex-based ``baseurl`` and a parse-styled ``pattern`` attributes were required.
+Previously, when defining a new Fido client or working with the `~sunpy.net.scraper.Scraper`, a regex-based ``baseurl`` and a parse-styled ``pattern`` attributes were required.
 The new pattern system requires a single pattern string that covers the entire URL, a combination of the ``baseurl`` and ``pattern`` attributes from before.
-This pattern string has to be passed as a ``format`` keyword to the `~sunpy.net.scarper.Scraper`.
+This pattern string has to be passed as a ``format`` keyword to the `~sunpy.net.scraper.Scraper`.
 During the deprecation period, the old ``pattern`` argument will still be accepted, but it is recommended to switch to the new pattern system.
 
 Writing the new pattern
@@ -23,24 +23,25 @@ Writing the new pattern
 
 1. The new pattern covers the entire URL from the protocol, domain to the filename.
 2. Instead of conveying time or numerical information in the URL in a datetime or regex format, it is now done in the `parse <https://github.com/r1chardj0n3s/parse/#format-syntax>`__ format.
- E.g., a ``"%Y"`` is now to be replaced with ``{{year:4d}}``.
- For a full list of the new keywords corresponding to datetime format, the supported time keys (to be used within ``{{}}``) are:
-    * 'year:4d'
-    * 'year:2d'
-    * 'month:2d'
-    * 'month_name:l'
-    * 'month_name_abbr:l'
-    * 'day:2d'
-    * 'day_of_year:3d'
-    * 'hour:2d'
-    * 'minute:2d'
-    * 'second:2d'
-    * 'microsecond:6d'
-    * 'millisecond:3d'
-    * 'week_number:2d'
+   E.g., a ``"%Y"`` is now to be replaced with ``{{year:4d}}``.
+   For a full list of the new keywords corresponding to datetime format, the supported time keys (to be used within ``{{}}``) are:
+
+   * 'year:4d'
+   * 'year:2d'
+   * 'month:2d'
+   * 'month_name:l'
+   * 'month_name_abbr:l'
+   * 'day:2d'
+   * 'day_of_year:3d'
+   * 'hour:2d'
+   * 'minute:2d'
+   * 'second:2d'
+   * 'microsecond:6d'
+   * 'millisecond:3d'
+   * 'week_number:2d'
 
 3. The metadata attributes for extraction are written within double curly-braces ``{{}}`` for eg. ``{{ADAPTRealizations:3d}}``.
-4. Single curly-braces ``{}`` are used in case of regular placeholders for Python format strings, each respective value being passed as ``kwargs`` to the `~sunpy.net.scarper.Scraper`.
+4. Single curly-braces ``{}`` are used in case of regular placeholders for Python format strings, each respective value being passed as ``kwargs`` to the `~sunpy.net.scraper.Scraper`.
 
 Example
 -------
