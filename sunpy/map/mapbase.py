@@ -594,6 +594,25 @@ class GenericMap(NDData):
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
+
+        Notes
+        -----
+        ``dateobs`` is always populated with the "canonical" observation time as
+        provided by the `.date` property.  This will commonly be the DATE-OBS key if it
+        is in the metadata, but see that property for the logic otherwise.
+
+        ``dateavg`` is always populated with the reference date of the coordinate system
+        as provided by the `.reference_date` property.  This will commonly be the
+        DATE-AVG key if it is in the metadata, but see that property for the logic
+        otherwise.
+
+        ``datebeg`` is conditonally populated with the start of the observation period
+        as provided by the `.date_start` property, which normally returns a value only
+        if the DATE-BEG key is in the metadata.
+
+        ``dateend`` is conditonally populated with the end of the observation period as
+        provided by the `.date_end` property, which normally returns a value only if the
+        DATE-END key is in the metadata.
         """
         w2 = astropy.wcs.WCS(naxis=2)
 
@@ -648,6 +667,11 @@ class GenericMap(NDData):
         """
         An `astropy.coordinates.BaseCoordinateFrame` instance created from the coordinate
         information for this Map, or None if the frame cannot be determined.
+
+        Notes
+        -----
+        The ``obstime`` for the coordinate frame uses the `.reference_date` property,
+        which may be different from the `.date` property.
         """
         try:
             return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
@@ -1227,6 +1251,11 @@ class GenericMap(NDData):
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
+
+        Notes
+        -----
+        The ``obstime`` for this coordinate uses the `.reference_date` property, which
+        may be different from the `.date` property.
         """
         warning_message = []
         for keys, kwargs in self._supported_observer_coordinates:
