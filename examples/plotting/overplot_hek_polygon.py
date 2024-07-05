@@ -9,16 +9,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.coordinates import frames
 from sunpy.net import attrs as a
 from sunpy.net import hek
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
-from sunpy.time import parse_time
 
 ###############################################################################
 # We start with the sample data.
