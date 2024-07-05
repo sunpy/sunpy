@@ -2,6 +2,7 @@ from regions import PointSkyRegion, PolygonSkyRegion
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import Time
 
 from sunpy.net.hek.utils import get_unit, parse_chaincode
 
@@ -21,10 +22,11 @@ def test_parse_chaincode_helioprojective():
     value = "POLYGON((10 20, 30 40, 50 60))"
     attribute = {"frame": "helioprojective"}
     unit = "arcsec"
+    time = Time('2011-08-09 12:04:00.000')
 
-    result = parse_chaincode(value, attribute, unit)
+    result = parse_chaincode(value, attribute, unit, time)
 
-    vertices = SkyCoord([10, 30, 50] * u.arcsec, [20, 40, 60] * u.arcsec, frame="helioprojective")
+    vertices = SkyCoord([10, 30, 50] * u.arcsec, [20, 40, 60] * u.arcsec, obstime=time, observer='earth', frame="helioprojective")
     region = PolygonSkyRegion(vertices=vertices)
 
     assert region == result
@@ -34,10 +36,11 @@ def test_parse_chaincode_heliocentric():
     value = "POLYGON((10 20, 30 40, 50 60))"
     attribute = {"frame": "heliocentric"}
     unit = "deg"
+    time = Time('2011-08-09 12:04:00.000')
 
-    result = parse_chaincode(value, attribute, unit)
+    result = parse_chaincode(value, attribute, unit, time)
 
-    vertices = SkyCoord([10, 30, 50] * u.R_sun, [20, 40, 60] * u.deg, [1, 1, 1] * u.AU, representation_type="cylindrical", frame="heliocentric")
+    vertices = SkyCoord([10, 30, 50] * u.R_sun, [20, 40, 60] * u.deg, [1, 1, 1] * u.AU, obstime=time, observer='earth', representation_type="cylindrical", frame="heliocentric")
     region = PolygonSkyRegion(vertices=vertices)
 
     assert region == result
@@ -47,10 +50,11 @@ def test_parse_chaincode_icrs():
     value = "POLYGON((10 20, 30 40, 50 60))"
     attribute = {"frame": "icrs"}
     unit = "deg"
+    time = Time('2011-08-09 12:04:00.000')
 
-    result = parse_chaincode(value, attribute, unit)
+    result = parse_chaincode(value, attribute, unit, time)
 
-    vertices = SkyCoord([10, 30, 50] * u.deg, [20, 40, 60] * u.deg, frame="icrs")
+    vertices = SkyCoord([10, 30, 50] * u.deg, [20, 40, 60] * u.deg, obstime=time, observer='earth', frame="icrs")
     region = PolygonSkyRegion(vertices=vertices)
 
     assert region == result
@@ -60,10 +64,11 @@ def test_parse_chaincode_points():
     value = "POINT(-107 27)"
     attribute = {"is_point": True, "frame": "heliographic_carrington"}
     unit = "deg"
+    time = Time('2011-08-09 12:04:00.000')
 
-    result = parse_chaincode(value, attribute, unit)
+    result = parse_chaincode(value, attribute, unit, time)
 
-    center_sky = SkyCoord(-107 * u.deg, 27 * u.deg, frame="heliographic_carrington")
+    center_sky = SkyCoord(-107 * u.deg, 27 * u.deg, obstime=time, observer='earth', frame="heliographic_carrington")
     region = PointSkyRegion(center=center_sky)
 
     assert region == result

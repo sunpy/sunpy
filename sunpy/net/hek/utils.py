@@ -146,7 +146,9 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                 if value in ["", None]:
                     new_value = value
                 elif attribute.get("is_chaincode", False):
-                    new_value = parse_chaincode(value, attribute, table[attribute["unit_prop"]][idx])
+                    unit = table[attribute["unit_prop"]][idx]
+                    time = table['event_starttime'][idx]
+                    new_value = parse_chaincode(value, attribute, unit, time)
                 else:
                     unit = get_unit(table[unit_attr][idx])
                     new_value = value * unit
@@ -163,7 +165,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
             del table[attribute["name"]]
     return table
 
-def parse_chaincode(value, attribute, unit):
+def parse_chaincode(value, attribute, unit, time):
     """
     Parses a string representation of coordinates and convert them into a PolygonSkyRegion object
     using units based on the specified coordinate frame.
@@ -176,6 +178,8 @@ def parse_chaincode(value, attribute, unit):
         An object from "coord_properties.json"
     unit : str
         The unit of the coordinates
+    time : `~astropy.time.core.Time`
+        An event_starttime row parsed into astropy time.
 
     Returns
     -------
@@ -189,6 +193,7 @@ def parse_chaincode(value, attribute, unit):
     UnitConversionError
         Because the units set by ``coord1_unit`` or ``coord2_unit`` are incompatible with the values being assigned.
     """
+    observer = 'earth'
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
@@ -206,19 +211,19 @@ def parse_chaincode(value, attribute, unit):
         coord_list[0] *= coord1_unit
         coord_list[1] *= coord2_unit
         if attribute["frame"] == "heliocentric":
-            center_sky = SkyCoord(coord_list[0], coord_list[1], [1]* len(coord_list) * u.AU, representation_type="cylindrical", frame=attribute["frame"])
+            center_sky = SkyCoord(coord_list[0], coord_list[1], [1]* len(coord_list) * u.AU, obstime=time, observer=observer, representation_type="cylindrical", frame=attribute["frame"])
             return PolygonSkyRegion(vertices=center_sky)
         else:
-            center_sky = SkyCoord(coord_list[0], coord_list[1], frame=attribute["frame"])
+            center_sky = SkyCoord(coord_list[0], coord_list[1], obstime=time, observer=observer, frame=attribute["frame"])
         return PointSkyRegion(center=center_sky)
     coordinates_str = value.split('((')[1].split('))')[0]
     coord1_list = [float(coord.split()[0]) for coord in coordinates_str.split(',')] * coord1_unit
     coord2_list = [float(coord.split()[1]) for coord in coordinates_str.split(',')] * coord2_unit
     vertices = {}
     if attribute["frame"] == "heliocentric":
-        vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list) * u.AU, representation_type="cylindrical", frame="heliocentric")
+        vertices = SkyCoord(coord1_list, coord2_list, [1]* len(coord1_list) * u.AU, obstime=time, observer=observer, representation_type="cylindrical", frame="heliocentric")
     else:
-        vertices = SkyCoord(coord1_list, coord2_list, frame=attribute["frame"])
+        vertices = SkyCoord(coord1_list, coord2_list, obstime=time, observer=observer, frame=attribute["frame"])
 
     return PolygonSkyRegion(vertices=vertices)
 
