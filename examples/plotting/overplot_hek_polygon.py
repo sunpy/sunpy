@@ -48,19 +48,12 @@ for i, response in enumerate(responses):
 # Next let's get the boundary of the coronal hole.
 
 ch = responses[response_index]
-p1 = ch["hpc_boundcc"][9:-2]
-p2 = p1.split(',')
-p3 = [v.split(" ") for v in p2]
-ch_date = parse_time(ch['event_starttime'])
+ch_boundary = responses[response_index]["hpc_boundcc"].vertices
 
 ##############################################################################
 # The coronal hole was detected at different time than the AIA image was
 # taken so we need to rotate it to the map observation time.
 
-ch_boundary = SkyCoord(
-    [(float(v[0]), float(v[1])) * u.arcsec for v in p3],
-    obstime=ch_date, observer="earth",
-    frame=frames.Helioprojective)
 rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, time=aia_map.date)
 
 ##############################################################################
