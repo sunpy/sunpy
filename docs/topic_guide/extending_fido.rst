@@ -95,7 +95,7 @@ The files that satisfy these conditions are then added to the output.
     ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
     'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
     '...',
-    'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_235947.fits']
+    'http://proba2.oma.be/swap/data/bsd/2015/01/02/swap_lv1_20150102_233313.fits']
 
 Writing a new "scraper" client
 ==============================

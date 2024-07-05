@@ -422,9 +422,9 @@ class Scraper:
                 return tr.intersects(timerange)
             else:
                 datehref = self._extract_date(url).to_datetime()
-                smaller_pattern = extract_timestep(self.pattern)
-                file_timerange = TimeRange(datehref, datehref + smaller_pattern)
-                return file_timerange.intersects(timerange)
+                timestep = extract_timestep(self.pattern)
+                tr = TimeRange(datehref, datehref + timestep)
+                return tr.intersects(timerange)
         else:
             exdict = parse(self.pattern, url).named
             if exdict['year'] < 100:
