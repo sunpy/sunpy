@@ -58,16 +58,16 @@ class XRSClient(GenericClient):
     8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
     16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
-           Start Time               End Time        ... Provider Resolution
-    ----------------------- ----------------------- ... -------- ----------
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      flx1s
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      flx1s
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      avg1m
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      avg1m
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      flx1s
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      flx1s
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...     NOAA      avg1m
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...     NOAA      avg1m
+           Start Time               End Time        Instrument  Physobs   Source Provider Resolution SatelliteNumber filename_res
+    ----------------------- ----------------------- ---------- ---------- ------ -------- ---------- --------------- ------------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS irradiance   GOES     NOAA      irrad              13         gxrs
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS irradiance   GOES     NOAA      irrad              13         gxrs
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              13         xrsf
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              13         xrsf
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS irradiance   GOES     NOAA      irrad              15         gxrs
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS irradiance   GOES     NOAA      irrad              15         gxrs
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              15         xrsf
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              15         xrsf
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -128,7 +128,7 @@ class XRSClient(GenericClient):
         Function to help get list of OrderedDicts.
         """
         metalist = []
-        scraper = Scraper(pattern, **kwargs)
+        scraper = Scraper(format=pattern, **kwargs)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
         filemeta = scraper._extract_files_meta(tr, matcher=matchdict)
         for i in filemeta:
@@ -298,7 +298,7 @@ class SUVIClient(GenericClient):
                     # formatting pattern using Level, SatelliteNumber and Wavelength
                     urlpattern = pattern.format(**formdict)
                     urlpattern = urlpattern.replace('{', '{{').replace('}', '}}')
-                    scraper = Scraper(urlpattern)
+                    scraper = Scraper(format=urlpattern)
                     tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
                     filesmeta = scraper._extract_files_meta(tr)
                     for i in filesmeta:

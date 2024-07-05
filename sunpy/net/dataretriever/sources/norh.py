@@ -70,7 +70,7 @@ class NoRHClient(GenericClient):
             d['Wavelength'].append('tca')
         if 34*u.GHz in req_wave:
             d['Wavelength'].append('tcz')
-        return cls.pattern, d
+        return cls.baseurl, cls.pattern, d
 
     def post_search_hook(self, exdict, matchdict):
         """
