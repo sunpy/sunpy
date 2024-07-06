@@ -476,17 +476,18 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
 
     Parameters
     ----------
-    source_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
-        The source frame, specified by a frame name, SPICE ID, or Astropy BaseCoordinateFrame.
+    source_frame : `str`
+        The source frame specified by SPICE frame name.
 
-    target_frame : `str`, `int`, `~astropy.coordinates.BaseCoordinateFrame`
-        The target frame, with the same allowed formats as ``source_frame``.
+    target_frame : `str`
+        The target frame specified by SPICE frame name.
 
     from_time : {parse_time_types}
         The time of the source frame.
 
     to_time : {parse_time_types}
-        The time at which the vector field should be defined in the target frame. Defaults to ``from_time``, resulting in a spatial-only transformation.
+        The time of the target frame. Defaults to ``None``, which means
+        ``from_time`` is used.
 
     Returns
     -------
@@ -505,16 +506,15 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
            [ 0.49410945, -0.44482959,  0.74698225],
            [-0.86766614, -0.19807639,  0.45598379]])
 
-    * This output can now be used with the vector components to transform the field. An example way is shown below.
+    This rotation matrix can be used to re-orient a vector (field), e.g.:
 
     >>> vec_components = [1, 0, 0] * u.T
     >>> transformed_matrix = rotation_matrix @ vec_components
     >>> transformed_matrix
     <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
     """
-    # Convert sunpy frames to SPICE strings
-    source_frame_spice = source_frame.name.upper() if hasattr(source_frame, 'name') else str(source_frame).upper()
-    target_frame_spice = target_frame.name.upper() if hasattr(target_frame, 'name') else str(target_frame).upper()
+    source_frame_spice = source_frame.upper()
+    target_frame_spice = target_frame.upper()
 
     from_time = parse_time(from_time)
     to_time = parse_time(to_time) if to_time else from_time
@@ -523,13 +523,13 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     to_time_et = _convert_to_et(to_time)
 
     # First transformation: from source frame at from_time to J2000
-    form_source_to_j2000 = spiceypy.sxform(source_frame_spice, "J2000", from_time_et)
+    from_source_to_j2000 = spiceypy.sxform(source_frame_spice, "J2000", from_time_et)
 
     # Second transformation: from J2000 at to_time to target frame
-    form_j2000_to_target = spiceypy.sxform("J2000", target_frame_spice, to_time_et)
+    from_j2000_to_target = spiceypy.sxform("J2000", target_frame_spice, to_time_et)
 
     # Combine: source -> J2000 -> target
-    combined_transform = spiceypy.mxmg(form_j2000_to_target, form_source_to_j2000)
+    combined_transform = spiceypy.mxmg(from_j2000_to_target, from_source_to_j2000)
 
     # Extract the rotation matrix (upper left 3x3 block)
     rotation_matrix = combined_transform[:3, :3]

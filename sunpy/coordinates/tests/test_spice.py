@@ -218,13 +218,14 @@ def test_to_helioprojective(spice_test):
     assert_quantity_allclose(sunpy_coord.lat, spice_coord.lat, rtol=1e-6)
 
 def test_get_rotation_matrix(spice_test):
-    source_frame = "J2000"
-    target_frame = "Galactic"
-    from_time = '2001-01-01T00:00:00'
-    result = spice.get_rotation_matrix(source_frame, target_frame, from_time)
-    assert isinstance(result, np.ndarray)
-    assert result.shape == (3, 3)
-    expected_result = np.array([[-0.05487554, -0.8734371 , -0.48383499],
-                                [ 0.49410945, -0.44482959,  0.74698225],
-                                [-0.86766614, -0.19807639,  0.45598379]])
-    np.testing.assert_allclose(result, expected_result, rtol=1e-5)
+    result1 = spice.get_rotation_matrix('HEEQ', 'J2000', '2024-07-04')
+    expected_result1 = np.array([[ 0.20454304,  0.97118061,  0.12235349],
+                                 [-0.87442558,  0.23746563, -0.42307208],
+                                 [-0.43993415, -0.02045257,  0.8977971]])
+    np.testing.assert_allclose(result1, expected_result1, atol=1e-6)
+
+    result2 = spice.get_rotation_matrix('HEEQ', 'HEEQ', '2024-07-04', '2024-07-18')
+    expected_result2 = np.array([[ 0.97314148,  0.23020788,  0],
+                                 [-0.23020788,  0.97314148, 0],
+                                 [0, 0, 1]])
+    np.testing.assert_allclose(result2, expected_result2, atol=1e-6)    
