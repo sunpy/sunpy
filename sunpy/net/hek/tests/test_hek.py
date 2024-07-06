@@ -252,7 +252,7 @@ def test_astropy_unit_parsing(read_unit_attributes, read_coord_attributes):
 
     for attribute in unit_attributes_with_unit + coord_attributes_with_unit:
         if attribute["name"] in result.colnames:
-            assert all([value in ['', None] or isinstance(value, u.Quantity) or isinstance(value, float) for value in result[attribute['name']]])
+            assert all([value in ['', None] or isinstance(value, u.Quantity) for value in result[attribute['name']]])
 
 
 @pytest.mark.remote_data

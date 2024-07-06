@@ -153,7 +153,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
                     unit = get_unit(table[unit_attr][idx])
                     new_value = value * unit
                     if attribute["name"] == 'obs_meanwavel':
-                        new_value = new_value.to_value(u.angstrom)
+                        new_value = new_value.to(u.angstrom)
                 new_column.append(new_value)
 
             if not attribute.get("is_chaincode"):
