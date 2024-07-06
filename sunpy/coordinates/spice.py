@@ -77,7 +77,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame', 'get_rotation_matrix']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -467,3 +467,71 @@ def get_fov(instrument, time, *, resolution=100):
                    obstime=obstime,
                    representation_type='unitspherical')
     return fov
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
+    """
+    Get the rotation matrix between the orientations of two SPICE frames.
+
+    Parameters
+    ----------
+    source_frame : `str`
+        The source frame specified by SPICE frame name.
+
+    target_frame : `str`
+        The target frame specified by SPICE frame name.
+
+    from_time : {parse_time_types}
+        The time of the source frame.
+
+    to_time : {parse_time_types}
+        The time of the target frame. Defaults to ``None``, which means
+        ``from_time`` is used.
+
+    Returns
+    -------
+    `~numpy.ndarray`
+        A 3x3 rotation matrix for the change in orientation.
+
+    Examples
+    --------
+    >>> from sunpy.coordinates.spice import get_rotation_matrix
+    >>> source_frame = "J2000"
+    >>> target_frame = "Galactic"
+    >>> from_time = '2001-01-01T00:00:00'
+    >>> rotation_matrix = get_rotation_matrix(source_frame, target_frame, from_time)
+    >>> rotation_matrix
+    array([[-0.05487554, -0.8734371 , -0.48383499],
+           [ 0.49410945, -0.44482959,  0.74698225],
+           [-0.86766614, -0.19807639,  0.45598379]])
+
+    This rotation matrix can be used to re-orient a vector (field), e.g.:
+
+    >>> vec_components = [1, 0, 0] * u.T
+    >>> transformed_matrix = rotation_matrix @ vec_components
+    >>> transformed_matrix
+    <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
+    """
+    source_frame_spice = source_frame.upper()
+    target_frame_spice = target_frame.upper()
+
+    from_time = parse_time(from_time)
+    to_time = parse_time(to_time) if to_time else from_time
+
+    from_time_et = _convert_to_et(from_time)
+    to_time_et = _convert_to_et(to_time)
+
+    # First transformation: from source frame at from_time to J2000
+    from_source_to_j2000 = spiceypy.sxform(source_frame_spice, "J2000", from_time_et)
+
+    # Second transformation: from J2000 at to_time to target frame
+    from_j2000_to_target = spiceypy.sxform("J2000", target_frame_spice, to_time_et)
+
+    # Combine: source -> J2000 -> target
+    combined_transform = spiceypy.mxmg(from_j2000_to_target, from_source_to_j2000)
+
+    # Extract the rotation matrix (upper left 3x3 block)
+    rotation_matrix = combined_transform[:3, :3]
+
+    return rotation_matrix
