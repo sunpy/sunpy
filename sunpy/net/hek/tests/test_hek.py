@@ -290,3 +290,13 @@ def test_merging_event_coords():
     event_coord = SkyCoord(coord1, coord2, frame=frame)
 
     assert result['event_coord'][0] == event_coord
+
+@pytest.mark.remote_data
+def test_obs_meanwavel():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    client = hek.HEKClient()
+    result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
+
+    value = 193.0*u.angstrom
+    assert result['obs_meanwavel'][0] == value
