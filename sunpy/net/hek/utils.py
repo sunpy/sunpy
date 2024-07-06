@@ -193,7 +193,7 @@ def parse_chaincode(value, attribute, unit, time):
     UnitConversionError
         Because the units set by ``coord1_unit`` or ``coord2_unit`` are incompatible with the values being assigned.
     """
-    observer = 'earth'
+    observer = 'earth' # There is an assumption that earth is the observer.
     coord1_unit = u.deg
     coord2_unit = u.deg
     if attribute["frame"] == "helioprojective":
