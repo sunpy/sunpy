@@ -58,7 +58,6 @@ def parse_times(table):
             ]
     return table
 
-# NOTE: Needs unit test
 def parse_values_to_quantities(table):
     """
     Parses the values in an Astropy table into Astropy objects.
@@ -88,7 +87,6 @@ def parse_values_to_quantities(table):
     table = parse_columns_to_table(table, coord_attributes, is_coord_prop = True)
     return table
 
-# NOTE: Needs unit test
 def parse_columns_to_table(table, attributes, is_coord_prop = False):
     """
     Parses the columns in an Astropy table and convert the values into Astropy objects.
