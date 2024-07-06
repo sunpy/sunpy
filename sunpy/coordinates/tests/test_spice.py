@@ -228,4 +228,4 @@ def test_get_rotation_matrix(spice_test):
     expected_result2 = np.array([[ 0.97314148,  0.23020788,  0],
                                  [-0.23020788,  0.97314148, 0],
                                  [0, 0, 1]])
-    np.testing.assert_allclose(result2, expected_result2, atol=1e-6)    
+    np.testing.assert_allclose(result2, expected_result2, atol=1e-6)
