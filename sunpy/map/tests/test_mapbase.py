@@ -57,20 +57,20 @@ def test_header_fits_io():
 
 
 def test_get_item(generic_map):
-    with pytest.raises(TypeError, match="It is not possible *"):
+    with pytest.raises(TypeError, match="It is not possible"):
         assert generic_map[1:3, 3]
-    assert isinstance(generic_map, sunpy.map.mapbase.GenericMap)
-    # TODO: complete test once mapbase inherits from NDCube
-    assert np.allclose(generic_map[0:1, :].data, np.array([[0., 1., 2., 3., 4., 5.]]))
+
+    map_slice = generic_map[0:1, :]
+    assert np.allclose(map_slice.data, np.array([[0., 1., 2., 3., 4., 5.]]))
+    assert map_slice.shape == (1, 6)
+    assert sorted(map_slice.meta.modified_items.keys()) == ['cdelt1', 'cdelt2', 'cunit1', 'cunit2', 'dsun_obs', 'naxis2']
+    assert map_slice.meta['naxis1'] == map_slice.shape[1]
+    assert map_slice.meta['naxis2'] == map_slice.shape[0]
 
     rotated_map = generic_map.rotate(45 * u.deg, order=0)
-    assert np.allclose(rotated_map.data[5:6, :], np.array([[np.nan, 30., 31., 26., 21., 21., 16., 11.,  5., np.nan]]),
-                       equal_nan=True)
+    assert np.allclose(rotated_map[5:6, :].data, np.array([[np.nan, 30., 31., 26., 21., 21., 16., 11.,  5., np.nan]]), equal_nan=True)
+    assert sorted(rotated_map.meta.modified_items.keys()) == ['crpix1', 'crpix2', 'naxis1', 'naxis2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']
 
-    sliced_meta = generic_map[0:1, :].meta
-    assert sorted(sliced_meta.modified_items.keys()) == ['naxis1', 'naxis2']
-    assert sliced_meta['naxis1'] == 6
-    assert sliced_meta['naxis2'] == 1
 
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
