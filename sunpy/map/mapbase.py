@@ -1440,23 +1440,20 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(header=target_wcs)
-        # Check rsun mismatch
-        rsun_target = target_wcs.aux.rsun_meters
-        if self.rsun_meters != rsun_target:
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} rsun_meters of target WCS."
-                      "This might cause unexpected results during reprojection.")
         # Check if both context managers are active
         if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
             warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
-
-        reproject_outputs = super().reproject_to(target_wcs,
+        if not isinstance(target_wcs, astropy.wcs.WCS):
+            target_wcs = astropy.wcs.WCS(header=target_wcs)
+        if not np.equal(rsun_target:= target_wcs.wcs.aux.rsun_ref, self.rsun_meters.to_value(u.m)):
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} rsun_meters of target WCS."
+                      "This might cause unexpected results during reprojection.")
+        reprojected_output = super().reproject_to(target_wcs,
                                                  algorithm=algorithm,
                                                  return_footprint=return_footprint,
                                                  **reproject_args)
-        return reproject_outputs
+        return reprojected_output
 
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
