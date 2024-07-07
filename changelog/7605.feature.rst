@@ -1,0 +1,1 @@
+Now `sunpy.map.GenericMap.submap` uses `ndcube.NDCube.crop` underneath.
