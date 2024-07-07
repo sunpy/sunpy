@@ -549,11 +549,11 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         # how far the original and rotated bounding boxes have moved.
         diff_x = [(np.abs(rotated_bl.Tx - bottom_left.Tx)).value,
                   (np.abs(rotated_tr.Tx - top_right.Tx)).value]
-        deltax = int(np.ceil(np.max(diff_x) / smap.scale.axis1).value)
+        deltax = int(np.ceil(np.max(diff_x) / smap.scale.axis1.to(u.arcsec/u.pix)).value)
 
         diff_y = [(np.abs(rotated_bl.Ty - bottom_left.Ty)).value,
                   (np.abs(rotated_tr.Ty - top_right.Ty)).value]
-        deltay = int(np.ceil(np.max(diff_y) / smap.scale.axis2).value)
+        deltay = int(np.ceil(np.max(diff_y) / smap.scale.axis2.to(u.arcsec/u.pix)).value)
 
         # Create a new `smap` with the padding around it
         padded_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)),
@@ -572,7 +572,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         smap_data = np.ma.array(smap.data, mask=smap.mask)
     else:
         smap_data = smap.data
-
     # Create the arguments for the warp function.
     warp_args = {'smap': smap, 'new_observer': new_observer}
     warp_args.update(diff_rot_kwargs)
@@ -604,7 +603,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
             ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-
     outmap = smap._new_instance(out_data, out_meta, smap.plot_settings)
 
     # Update the meta information with the new date and time.
