@@ -1089,17 +1089,13 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         # Check that we have been given a valid combination of inputs
         # [False, False, False] is valid if bottom_left contains the two corner coords
-
-
         if ([arg is not None for arg in (top_right, width, height)]
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
-        # parse input arguments
+        # Parse input arguments
         world_corners = self._parse_submap_input(
             bottom_left, top_right, width, height)
-
-        new_map = self.crop(*world_corners)
-
+        new_map = self.crop(*world_corners, keepdims=True)
         return new_map
 
     @seconddispatch
