@@ -7,7 +7,6 @@ import sys
 
 from tqdm import tqdm
 
-from astropy import units
 from astropy.utils.decorators import deprecated_renamed_argument
 
 from sunpy.net import attrs as a
