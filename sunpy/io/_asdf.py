@@ -4,6 +4,7 @@ import asdf_astropy
 __all__ = ["write"]
 def write(fname, data, header, **kwargs):
     # Create the ASDF file
+    "This function will write a asdf file "
 
     meta = dict(header)
     with asdf.AsdfFile() as af:
