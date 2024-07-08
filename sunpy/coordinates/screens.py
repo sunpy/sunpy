@@ -97,7 +97,7 @@ class SphericalScreen(BaseScreen):
     screen_type = 'spherical'
 
     @u.quantity_input
-    def __init__(self, center, radius: u.m=None, **kwargs):
+    def __init__(self, center, *, radius: u.m=None, **kwargs):
         self._center = center
         if radius is not None:
             self._radius = radius
