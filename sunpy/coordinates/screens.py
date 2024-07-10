@@ -63,6 +63,10 @@ class SphericalScreen(BaseScreen):
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun.  Defaults to `False`.
 
+    See Also
+    --------
+    sunpy.coordinates.PlanarScreen
+
     Examples
     --------
     .. minigallery:: sunpy.coordinates.SphericalScreen
@@ -139,6 +143,10 @@ class PlanarScreen(BaseScreen):
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun.  Defaults to `False`.
+
+    See Also
+    --------
+    sunpy.coordinates.SphericalScreen
 
     Examples
     --------
