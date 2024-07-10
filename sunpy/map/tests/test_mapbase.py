@@ -611,18 +611,18 @@ def test_swapped_ctypes(simple_map):
     # Check that CTYPES different from normal work fine
     simple_map.meta['ctype1'] = 'HPLT-TAN'   # Usually HPLN
     simple_map.meta['ctype2'] = 'HPLN-TAN'   # Usually HPLT
-    assert u.allclose(simple_map.bottom_left_coord.Tx, -1 * u.arcsec)
-    assert u.allclose(simple_map.bottom_left_coord.Ty, -2 * u.arcsec)
-    assert u.allclose(simple_map.top_right_coord.Tx, 1 * u.arcsec)
-    assert u.allclose(simple_map.top_right_coord.Ty, 2 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -4 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -8 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 4 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 8 * u.arcsec)
 
     # Put them back
     simple_map.meta['ctype1'] = 'HPLN-TAN'   # Usually HPLN
     simple_map.meta['ctype2'] = 'HPLT-TAN'   # Usually HPLT
-    assert u.allclose(simple_map.bottom_left_coord.Tx, -2 * u.arcsec)
-    assert u.allclose(simple_map.bottom_left_coord.Ty, -1 * u.arcsec)
-    assert u.allclose(simple_map.top_right_coord.Tx, 2 * u.arcsec)
-    assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -8 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -4 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 8 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 4 * u.arcsec)
 
 
 def test_save(aia171_test_map):
@@ -698,10 +698,10 @@ def test_shift_history(generic_map):
 
 def test_corners(simple_map):
     # These are the centers of the corner pixels
-    assert u.allclose(simple_map.top_right_coord.Tx, 2 * u.arcsec)
-    assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
-    assert u.allclose(simple_map.bottom_left_coord.Tx, -2 * u.arcsec)
-    assert u.allclose(simple_map.bottom_left_coord.Ty, -1 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 8 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 4 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -8 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -4 * u.arcsec)
 
 
 def test_center(simple_map):
@@ -710,8 +710,8 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.dimensions[0] == 3 * u.pix
-    assert simple_map.dimensions[1] == 3 * u.pix
+    assert simple_map.dimensions[0] == 9 * u.pix
+    assert simple_map.dimensions[1] == 9 * u.pix
 
 
 pixel_corners = [
@@ -721,18 +721,14 @@ pixel_corners = [
     # we don't include any other pixels
     [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
     [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
-                                                    [3]])],
+                                                    [9]])],
     [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
     [([0, 0] * u.pix, [0.51, 0.51] * u.pix), np.array([[0, 1],
-                                                       [3, 4]])],
+                                                       [9, 10]])],
     [([0.1, 0.1] * u.pix, [1.6, 1.4] * u.pix), np.array([[0, 1, 2],
-                                                         [3, 4, 5]])],
-    [([0, 0] * u.pix, [20, 20] * u.pix), np.array([[0, 1, 2],
-                                                   [3, 4, 5],
-                                                   [6, 7, 8]])],
+                                                         [9, 10, 11]])],
+    [([0, 0] * u.pix, [20, 20] * u.pix), np.arange(81).reshape((9, 9))],
 ]
-
-
 @pytest.mark.parametrize(("rect", "submap_out"), pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
@@ -828,18 +824,17 @@ def test_submap_data_header(generic_map, unit):
 
 
 def test_reference_coordinate(simple_map):
-    assert simple_map.reference_pixel.x == 1 * u.pix
-    assert simple_map.reference_pixel.y == 1 * u.pix
+    assert simple_map.reference_pixel.x == 4 * u.pix
+    assert simple_map.reference_pixel.y == 4 * u.pix
 
 
-@pytest.mark.parametrize('shape', [[1, 1], [6, 6]])
+@pytest.mark.parametrize('shape', [[1, 1], [3, 3]])
 def test_resample(simple_map, shape):
-    # Test resampling a 2x2 map
     resampled = simple_map.resample(shape * u.pix, method='linear')
     assert np.mean(resampled.data) == np.mean(simple_map.data)
-    # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
     if shape == [1, 1]:
-        assert resampled.data == np.array([[4]])
+        # Should be the mean of [0,1,2,...78,79,80]
+        assert resampled.data == np.array([[40]])
 
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
@@ -849,7 +844,7 @@ def test_resample(simple_map, shape):
 
     resampled_upper_left = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
                                                     (shape[1] - 0.5) * u.pix)
-    original_upper_left = simple_map.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
+    original_upper_left = simple_map.pixel_to_world(8.5 * u.pix, 8.5 * u.pix)
     assert u.allclose(resampled_upper_left.Tx, original_upper_left.Tx)
     assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
 
@@ -909,7 +904,7 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     new_dims = (9, 6) * u.pix
     resamp_map = simple_map.resample(new_dims, method=sample_method)
     # Reference pixel should change, but reference coordinate should not
-    assert list(resamp_map.reference_pixel) == [2.5 * u.pix, 1.5 * u.pix]
+    assert u.allclose(list(resamp_map.reference_pixel), [0.5 * u.pix, 0.16666667 * u.pix])
     assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
@@ -1459,10 +1454,10 @@ def test_submap_inputs(generic_map2, coords):
 
 
 def test_contour(simple_map):
-    data = np.ones((3, 3))
-    data[1, 1] = 2
+    data = np.ones(simple_map.data.shape)
+    data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
-    # 2 is the central pixel of the map, so contour half way between 1 and 2
+    # 4 is the central pixel of the map, so contour half way between 1 and 2
     contours = simple_map.contour(1.5)
     assert len(contours) == 1
     contour = contours[0]
@@ -1502,10 +1497,8 @@ def test_contour_units(simple_map):
 def test_contour_inputs(simple_map):
     with pytest.raises(ValueError, match='Contour levels must be increasing'):
         simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
-
-    with pytest.raises(ValueError, match=r'The provided level \(1000.0\) is not smaller than the maximum data value \(8\)'):
+    with pytest.raises(ValueError, match=re.escape('The provided level (1000.0) is not smaller than the maximum data value (80)')):
         simple_map.draw_contours(1000 * u.dimensionless_unscaled, fill=True)
-
 
     simple_map.meta['bunit'] = 'm'
 
