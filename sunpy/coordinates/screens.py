@@ -173,7 +173,7 @@ class PlanarScreen(BaseScreen):
     screen_type = 'planar'
 
     @u.quantity_input
-     def __init__(self, vantage_point, *, distance_from_center: u.m=0*u.m, **kwargs):
+    def __init__(self, vantage_point, *, distance_from_center: u.m=0*u.m, **kwargs):
         self._vantage_point = vantage_point
         self._distance_from_center = distance_from_center
         super().__init__(**kwargs)
