@@ -287,7 +287,7 @@ class Scraper:
                     soup = BeautifulSoup(opn, "html.parser")
                     for link in soup.find_all("a"):
                         href = link.get("href")
-                        if href is not None and href.endswith(self.pattern.split('.')[-1]):
+                        if href is not None:
                             if href[0] == '/':
                                 fullpath = self.domain + href[1:]
                             else:
