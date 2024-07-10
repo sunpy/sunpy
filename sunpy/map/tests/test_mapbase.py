@@ -1026,7 +1026,6 @@ def test_superpixel_fractional_inputs(generic_map):
 @given(pc=matrix_meta('pc'))
 def test_resample_rotated_map_pc(pc, method):
     smap = make_simple_map()
-
     smap.meta.update(pc)
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
@@ -1047,7 +1046,6 @@ def test_resample_rotated_map_pc(pc, method):
 @given(cd=matrix_meta('cd'))
 def test_resample_rotated_map_cd(cd, method):
     smap = make_simple_map()
-
     smap.meta.update(cd)
     for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
         del smap.meta[key]
@@ -1655,6 +1653,7 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
     rect_rot_map = rect_map.rotate(30 * u.deg)
     rect_rot_map.peek()
 
+
 @pytest.mark.remote_data
 @figure_test
 def test_draw_contours_with_transform(sample_171, sample_hmi):
@@ -1683,6 +1682,15 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
     ax3.set_title('Contours rotated by 90 deg CCW')
 
     return fig
+
+
+@figure_test
+def test_draw_simple_map(simple_map):
+    fig = plt.figure(figsize=(6, 6))
+    ax = fig.add_subplot(1, 1, 1, projection=simple_map)
+    simple_map.plot(axes=ax)
+    return fig
+
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test

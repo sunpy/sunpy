@@ -102,19 +102,17 @@ def generic_map():
 
 
 def make_simple_map():
-    # A 3x3 map, with it's center at (0, 0), and scaled differently in
-    # each direction
-    data = np.arange(9).reshape((3, 3))
+    """
+    A simple 9x9 map, with it's center at (0, 0),
+    and scaled differently in each direction.
+    """
+    data = np.arange(81).reshape((9, 9))
     ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
-                                           frame='heliographic_stonyhurst'))
-    ref_pix = [1, 1] * u.pix
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU, frame='heliographic_stonyhurst'))
+    ref_pix = [4, 4] * u.pix
     scale = [2, 1] * u.arcsec / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
     return sunpy.map.Map(data, header)
-
-
-simple_map = pytest.fixture(make_simple_map)
 
 
 @pytest.fixture
@@ -141,14 +139,19 @@ def eit_test_map():
     """
     return get_dummy_map_from_header(get_test_filepath("EIT_header/efz20040301.020010_s.header"))
 
+
 @pytest.fixture
 def sample_171():
     from sunpy.data.sample import AIA_171_IMAGE
 
     return sunpy.map.Map(AIA_171_IMAGE)
 
+
 @pytest.fixture
 def sample_hmi():
     from sunpy.data.sample import HMI_LOS_IMAGE
 
     return sunpy.map.Map(HMI_LOS_IMAGE)
+
+
+simple_map = pytest.fixture(make_simple_map)
