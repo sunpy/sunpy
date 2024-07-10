@@ -15,7 +15,7 @@ from astropy.wcs.wcs import FITSFixedWarning
 # NOTE: Do not import sunpy subpackages which have optional dependencies here,
 # this module should be importable with no extra dependencies installed.
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_cdf', 'skip_opencv', 'skip_numpy2',
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_cdf', 'skip_opencv',
            'warnings_as_errors', 'asdf_entry_points']
 
 try:
@@ -52,27 +52,21 @@ except ImportError:
 
 import numpy
 
-SKIP_NUMPY2 = numpy.__version__.startswith('2.')
-
 skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
 skip_cdf = pytest.mark.skipif(SKIP_CDF, reason="CDFlib is not available.")
 skip_opencv = pytest.mark.skipif(SKIP_OPENCV, reason="opencv is not available.")
-skip_numpy2 = pytest.mark.skipif(SKIP_NUMPY2, reason="numpy2 breaks this test do to dependency issues.")
 asdf_entry_points = pytest.mark.skipif(
     not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
     reason="No SunPy ASDF entry points.",
 )
-
-
 
 @pytest.fixture
 def warnings_as_errors():
     warnings.simplefilter('error')
     yield
     warnings.resetwarnings()
-
 
 def get_hash_library_name():
     """
@@ -85,7 +79,6 @@ def get_hash_library_name():
     mpl_version = "dev" if (("dev" in mpl.__version__) or ("rc" in mpl.__version__)) else mpl.__version__.replace('.', '')
     astropy_version = "dev" if (("dev" in astropy.__version__) or ("rc" in astropy.__version__)) else astropy.__version__.replace('.', '')
     return f"figure_hashes_mpl_{mpl_version}_ft_{ft2_version}_astropy_{astropy_version}_animators_{animators_version}.json"
-
 
 def figure_test(test_function):
     """
@@ -116,7 +109,6 @@ def figure_test(test_function):
         return ret
     return test_wrapper
 
-
 def no_vso(f):
     """
     Disable the VSO client from returning results via Fido during this test.
@@ -131,7 +123,6 @@ def no_vso(f):
         Fido.registry[VSOClient] = VSOClient._can_handle_query
         return res
     return wrapper
-
 
 def fix_map_wcs(smap):
     import sunpy.map
