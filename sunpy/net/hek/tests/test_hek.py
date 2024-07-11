@@ -300,3 +300,14 @@ def test_obs_meanwavel():
 
     value = 193.0*u.angstrom
     assert result['obs_meanwavel'][0] == value
+
+@pytest.mark.remote_data
+def test_parse_times():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    client = hek.HEKClient()
+    result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
+
+    for idx in range(len(result)):
+        assert isinstance(result['event_starttime'][idx], Time)
+        assert isinstance(result['event_endtime'][idx], Time)
