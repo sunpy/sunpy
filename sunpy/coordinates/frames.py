@@ -570,7 +570,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
         if self._assumed_screen:
-            d_screen = self._assumed_screen._calculate_distance(self)
+            d_screen = self._assumed_screen.calculate_distance(self)
             d = np.fmin(d, d_screen) if self._assumed_screen.only_off_disk else d_screen
 
         # This warning can be triggered in specific draw calls when plt.show() is called

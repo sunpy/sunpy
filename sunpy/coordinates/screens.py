@@ -26,7 +26,7 @@ class BaseScreen(abc.ABC):
 
     @abc.abstractmethod
     @u.quantity_input
-    def _calculate_distance(self) -> u.cm:
+    def calculate_distance(self) -> u.cm:
         ...
 
     def __enter__(self):
@@ -111,7 +111,7 @@ class SphericalScreen(BaseScreen):
             self._radius = center_hgs.radius
         super().__init__(**kwargs)
 
-    def _calculate_distance(self, frame):
+    def calculate_distance(self, frame):
         sphere_center = self._center.transform_to(frame).cartesian
         c = sphere_center.norm()**2 - self._radius**2
         rep = frame.represent_as(UnitSphericalRepresentation)
@@ -186,7 +186,7 @@ class PlanarScreen(BaseScreen):
         self._distance_from_center = distance_from_center
         super().__init__(**kwargs)
 
-    def _calculate_distance(self, frame):
+    def calculate_distance(self, frame):
         direction = self._vantage_point.transform_to(frame).cartesian
         direction = CartesianRepresentation(1, 0, 0) * frame.observer.radius - direction
         direction /= direction.norm()
