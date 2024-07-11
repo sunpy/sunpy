@@ -58,9 +58,8 @@ out_hmi = map_hmi.reproject_to(map_aia.wcs)
 #
 # Note that off-disk HMI data are not retained by default because an
 # additional assumption is required to define the location of the HMI
-# emission in 3D space. We can use
-# :meth:`~sunpy.coordinates.SphericalScreen` to
-# retain the off-disk HMI data. See
+# emission in 3D space. We can use `~sunpy.coordinates.SphericalScreen`
+# to retain the off-disk HMI data. See
 # :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
 # for more reference.
 

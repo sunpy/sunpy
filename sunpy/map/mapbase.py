@@ -2585,7 +2585,7 @@ class GenericMap(NDData):
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
         autoscaling of the plot limits.  The plot limits can be set manually.
         To preserve the off-disk parts of the map, using the
-        :meth:`~sunpy.coordinates.SphericalScreen` context
+        `~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
         """
         # Todo: remove this when deprecate_positional_args_since is removed
