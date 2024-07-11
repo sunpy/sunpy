@@ -1,9 +1,12 @@
-import asdf
-import asdf_astropy
 from pathlib import Path
-import numpy as np 
-from sunpy.io.header import FileHeader
 from collections import OrderedDict
+
+import numpy as np
+
+import asdf
+
+from sunpy.io.header import FileHeader
+
 __all__ = ["write","read","get_header"]
 
 def write(fname, data, header, **kwargs):
@@ -88,4 +91,3 @@ def get_header(fname):
         meta_data = FileHeader(meta_data)
 
         return [meta_data]
-    
