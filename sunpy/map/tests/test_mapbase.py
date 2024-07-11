@@ -36,7 +36,6 @@ from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from sunpy.util.util import fix_duplicate_notes
-from .conftest import make_simple_map
 from .strategies import matrix_meta
 
 
@@ -842,11 +841,11 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_lower_left.Tx, original_lower_left.Tx)
     assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
-    resampled_upper_left = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
+    resampled_upper_right = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
                                                     (shape[1] - 0.5) * u.pix)
-    original_upper_left = simple_map.pixel_to_world(8.5 * u.pix, 8.5 * u.pix)
-    assert u.allclose(resampled_upper_left.Tx, original_upper_left.Tx)
-    assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
+    original_upper_right = simple_map.pixel_to_world(8.5 * u.pix, 8.5 * u.pix)
+    assert u.allclose(resampled_upper_right.Tx, original_upper_right.Tx)
+    assert u.allclose(resampled_upper_right.Ty, original_upper_right.Ty)
 
 
 resample_test_data = [('linear', (100, 200) * u.pixel),
@@ -1019,15 +1018,14 @@ def test_superpixel_fractional_inputs(generic_map):
     deadline=1000,
 )
 @given(pc=matrix_meta('pc'))
-def test_resample_rotated_map_pc(pc, method):
-    smap = make_simple_map()
-    smap.meta.update(pc)
+def test_resample_rotated_map_pc(pc, method, simple_map):
+    simple_map.meta.update(pc)
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
-    new_map = getattr(smap, method)(new_dims)
+    new_map = getattr(simple_map, method)(new_dims)
     # Coordinate of the lower left corner should not change
     ll_pix = [-0.5, -0.5]*u.pix
-    assert smap.pixel_to_world(*ll_pix).separation(
+    assert simple_map.pixel_to_world(*ll_pix).separation(
         new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
@@ -1039,17 +1037,16 @@ def test_resample_rotated_map_pc(pc, method):
     deadline=1000,
 )
 @given(cd=matrix_meta('cd'))
-def test_resample_rotated_map_cd(cd, method):
-    smap = make_simple_map()
-    smap.meta.update(cd)
+def test_resample_rotated_map_cd(cd, method, simple_map):
+    simple_map.meta.update(cd)
     for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
-        del smap.meta[key]
+        del simple_map.meta[key]
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
-    new_map = getattr(smap, method)(new_dims)
+    new_map = getattr(simple_map, method)(new_dims)
     # Coordinate of the lower left corner should not change
     ll_pix = [-0.5, -0.5]*u.pix
-    assert smap.pixel_to_world(*ll_pix).separation(
+    assert simple_map.pixel_to_world(*ll_pix).separation(
         new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
@@ -1682,6 +1679,14 @@ def test_draw_simple_map(simple_map):
     fig = plt.figure(figsize=(6, 6))
     ax = fig.add_subplot(1, 1, 1, projection=simple_map)
     simple_map.plot(axes=ax)
+    return fig
+
+
+@figure_test
+def test_draw_carrington_map(carrington_map):
+    fig = plt.figure(figsize=(6, 6))
+    ax = fig.add_subplot(1, 1, 1, projection=carrington_map)
+    carrington_map.plot(axes=ax)
     return fig
 
 

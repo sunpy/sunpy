@@ -101,9 +101,10 @@ def generic_map():
     return sunpy.map.Map((data, header))
 
 
-def make_simple_map():
+@pytest.fixture
+def simple_map():
     """
-    A simple 9x9 map, with it's center at (0, 0),
+    A simple 9x9 map, with its center at (0, 0),
     and scaled differently in each direction.
     """
     data = np.arange(81).reshape((9, 9))
@@ -113,9 +114,6 @@ def make_simple_map():
     scale = [2, 1] * u.arcsec / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
     return sunpy.map.Map(data, header)
-
-
-simple_map = pytest.fixture(make_simple_map)
 
 
 @pytest.fixture
