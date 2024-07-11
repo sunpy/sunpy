@@ -85,4 +85,3 @@ def get_header(fname):
         meta_data = FileHeader(meta_data)
 
         return [meta_data]
-    
