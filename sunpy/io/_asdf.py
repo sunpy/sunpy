@@ -8,7 +8,7 @@ __all__ = ["write","read","get_header"]
 
 def write(fname, data, header, **kwargs):
     """
-    Take data and header pairs and save it to asdf file 
+    Take data and header pairs and save it to asdf file.
     inspired from https://docs.sunpy.org/en/stable/generated/gallery/saving_and_loading_data/genericmap_in_asdf.html
 
     format:
@@ -24,7 +24,6 @@ def write(fname, data, header, **kwargs):
         n-dimensional data array.
     header : `dict`
         A header dictionary.
-
     """
     map_name = Path(fname)
     map_name = map_name.name
@@ -37,14 +36,19 @@ def write(fname, data, header, **kwargs):
 
 def read(fname,**kwargs):
     """
-    A function to read asdf_file
-    parameters
-    ----------
-    fname : Str
+    Read a asdf file.
 
-    returns : list of (data,meta) 
-    
+    Parameters
+    ----------
+    filepath : `str`
+        The fits file to be read.
+
+    Returns
+    -------
+    `list`
+        A list of (data, header) tuples
     """
+
     with asdf.open(fname) as af:
 
         map_name = Path(fname)
@@ -60,8 +64,17 @@ def read(fname,**kwargs):
         return [(data_array,meta_data)]
 def get_header(fname):
     """
-    read an asdf file and return the meta_data (meta) from the file
-    
+    Read a asdf file and return just the headers for all HDU's.
+
+    Parameters
+    ----------
+    fname : `str`
+        The file to be read.
+
+    Returns
+    -------
+    `list`
+        A list of `sunpy.io._header.FileHeader` headers.
     """
     with asdf.open(fname) as af:
 
