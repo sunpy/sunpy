@@ -19,6 +19,15 @@ from sunpy.util.exceptions import SunpyUserWarning
 # https://github.com/sunpy/sunpy/issues/4401 is fixed
 pytestmark = [pytest.mark.filterwarnings('ignore:Unverified HTTPS request is being made')]
 
+@pytest.fixture(scope="session")
+def client():
+    try:
+        client = HECClient()
+        return client
+    # If no links are found, the client should raise a ValueError
+    except ValueError:
+        pytest.xfail("No HELIO working links found.")
+
 
 def wsdl_endpoints():
     """
@@ -75,7 +84,8 @@ def hec_urls():
 
 
 @pytest.mark.remote_data
-def test_webservice_parser():
+def test_webservice_parser(client):  # NOQA: ARG001
+    # The client is used to check if HELIO is working
     result = webservice_parser()
     assert isinstance(result, list)
 
@@ -258,15 +268,6 @@ def test_ssl_verify_error(mock_webservice, mock_taverna, mock_link, mock_zeep, c
     query = client.search(a.Time('2023/02/03', '2023/02/03'))
     assert len(query) == 0
     assert "Set the 'NO_VERIFY_HELIO_SSL' environment variable disable SSL verification for Helio." in caplog.text
-
-@pytest.fixture(scope="session")
-def client():
-    try:
-        client = HECClient()
-        return client
-    # If no links are found, the client should raise a ValueError
-    except ValueError:
-        pytest.xfail("No HELIO working links found.")
 
 
 @pytest.mark.remote_data
