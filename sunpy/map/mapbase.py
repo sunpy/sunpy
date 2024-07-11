@@ -918,7 +918,7 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The FITS standard implies, but does not expressly require, for DATE-AVG keyword
+        The FITS standard implies that, but does not expressly require, the DATE-AVG keyword
         to be the reference date.
         """
         return (
