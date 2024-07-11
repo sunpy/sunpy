@@ -3,6 +3,7 @@ Test Generic Map
 """
 import re
 import tempfile
+from copy import deepcopy
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -1014,18 +1015,19 @@ def test_superpixel_fractional_inputs(generic_map):
 @settings(
     max_examples=10,
     # Lots of draws can be discarded when checking matrix is non-singular
-    suppress_health_check=[HealthCheck.filter_too_much],
+    suppress_health_check=[HealthCheck.filter_too_much, HealthCheck.function_scoped_fixture],
     deadline=1000,
 )
 @given(pc=matrix_meta('pc'))
 def test_resample_rotated_map_pc(pc, method, simple_map):
-    simple_map.meta.update(pc)
+    smap = deepcopy(simple_map)
+    smap.meta.update(pc)
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
-    new_map = getattr(simple_map, method)(new_dims)
+    new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
     ll_pix = [-0.5, -0.5]*u.pix
-    assert simple_map.pixel_to_world(*ll_pix).separation(
+    assert smap.pixel_to_world(*ll_pix).separation(
         new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
@@ -1033,20 +1035,21 @@ def test_resample_rotated_map_pc(pc, method, simple_map):
 @settings(
     max_examples=10,
     # Lots of draws can be discarded when checking matrix is non-singular
-    suppress_health_check=[HealthCheck.filter_too_much],
+    suppress_health_check=[HealthCheck.filter_too_much, HealthCheck.function_scoped_fixture],
     deadline=1000,
 )
 @given(cd=matrix_meta('cd'))
 def test_resample_rotated_map_cd(cd, method, simple_map):
-    simple_map.meta.update(cd)
+    smap = deepcopy(simple_map)
+    smap.meta.update(cd)
     for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
-        del simple_map.meta[key]
+        del smap.meta[key]
     # Check superpixel with a rotated map with unequal resampling
     new_dims = (1, 2) * u.pix
-    new_map = getattr(simple_map, method)(new_dims)
+    new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
     ll_pix = [-0.5, -0.5]*u.pix
-    assert simple_map.pixel_to_world(*ll_pix).separation(
+    assert smap.pixel_to_world(*ll_pix).separation(
         new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 

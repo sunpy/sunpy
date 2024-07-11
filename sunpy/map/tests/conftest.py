@@ -123,10 +123,8 @@ def carrington_map():
     # coordinates, so is ideal for testing situations where the non-linearity matters
     data = np.arange(20**2).reshape((20, 20))
     obstime = '2020-01-01'
-    observer = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst',
-                        obstime=obstime)
-    ref_coord = SkyCoord(120*u.deg, -70*u.deg, frame='heliographic_carrington',
-                         obstime=obstime, observer=observer)
+    observer = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst', obstime=obstime)
+    ref_coord = SkyCoord(120*u.deg, -70*u.deg, frame='heliographic_carrington', obstime=obstime, observer=observer)
     ref_pix = [0, 0] * u.pix
     scale = [2, 1] * u.deg / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
