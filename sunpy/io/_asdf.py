@@ -61,7 +61,7 @@ def read(fname,**kwargs):
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [(data_array,meta_data)]
-        except:
+        except Exception as e:
             data = af[map_name].data
             data_array = np.asarray(data)
             meta_data = af[map_name].meta
@@ -90,7 +90,7 @@ def get_header(fname):
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [meta_data]
-        except:
+        except Exception as e:
             meta_data = af[map_name].meta
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
