@@ -7,7 +7,7 @@ import asdf
 
 from sunpy.io.header import FileHeader
 
-__all__ = ["write","read","get_header"]
+__all__ = ["write","read","get_header","get_keys_name"]
 
 def write(fname, data, header, **kwargs):
     """
@@ -33,7 +33,7 @@ def write(fname, data, header, **kwargs):
     meta = dict(header)
     with asdf.AsdfFile() as af:
         af.tree={map_name:{"meta":meta,"data":data}}
-        af.write_to(fname)
+        af.write_to(fname,**kwargs)
 
 
 def read(fname,**kwargs):
@@ -43,7 +43,8 @@ def read(fname,**kwargs):
     Parameters
     ----------
     filepath : `str`
-        The fits file to be read.
+        The asdf file to be read.
+
 
     Returns
     -------
@@ -52,24 +53,30 @@ def read(fname,**kwargs):
     """
 
     with asdf.open(fname) as af:
-        map_name = Path(fname)
-        map_name = map_name .name
-        data = af[map_name]["data"].data
-        data_array = np.asarray(data)
-        meta_data= af[map_name]["meta"]
-        meta_data = OrderedDict(meta_data)
-        meta_data = FileHeader(meta_data)
-        return [(data_array,meta_data)]
-
+        map_name = get_keys_name(fname)
+        try:
+            data = af[map_name]["data"].data
+            data_array = np.asarray(data)
+            meta_data= af[map_name]["meta"]
+            meta_data = OrderedDict(meta_data)
+            meta_data = FileHeader(meta_data)
+            return [(data_array,meta_data)]
+        except:
+            data = af[map_name].data
+            data_array = np.asarray(data)
+            meta_data = af[map_name].meta
+            meta_data = OrderedDict(meta_data)
+            meta_data = FileHeader(meta_data)
+            return [(data_array,meta_data)]
 
 def get_header(fname):
     """
-    Read a asdf file and return just the headers for all HDU's.
+    Read a asdf file and return just the headers (meta).
 
     Parameters
     ----------
     fname : `str`
-        The file to be read.
+        The asdf file to be read.
 
     Returns
     -------
@@ -77,11 +84,33 @@ def get_header(fname):
         A list of `sunpy.io._header.FileHeader` headers.
     """
     with asdf.open(fname) as af:
+        map_name = get_keys_name(fname)
+        try:
+            meta_data= af[map_name]["meta"]
+            meta_data = OrderedDict(meta_data)
+            meta_data = FileHeader(meta_data)
+            return [meta_data]
+        except:
+            meta_data = af[map_name].meta
+            meta_data = OrderedDict(meta_data)
+            meta_data = FileHeader(meta_data)
+            return [meta_data]
 
-        map_name = Path(fname)
-        map_name = map_name .name
-        meta_data= af[map_name]["meta"]
-        meta_data = OrderedDict(meta_data)
-        meta_data = FileHeader(meta_data)
 
-        return [meta_data]
+def get_keys_name(fname):
+    """
+    returns the name of primary tree (excluding the info and history).
+    Parameters
+    ----------
+    fname : `str`
+        the asdf file to be read
+
+    Returns
+    -------
+    `str`
+        name of primary tree (excluding asdf and history).
+    """
+    with asdf.open(fname) as af:
+        root_keys = af.tree.keys()
+        main_data_keys = [key for key in root_keys if key not in ['asdf_library', 'history']]
+        return main_data_keys[0]
