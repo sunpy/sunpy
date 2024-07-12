@@ -14,7 +14,47 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 6.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-**PUT STATS HERE**
+This release of ``sunpy`` contains 748 commits in 167 merged pull requests closing 67 issues from 33 people, 15 of which are first-time contributors to ``sunpy``.
+
+* 748 commits have been added since 5.1
+* 67 issues have been closed since 5.1
+* 167 pull requests have been merged since 5.1
+* 33 people have contributed since 5.1
+* 15 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Ahmed Hossam  *
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Aniket Mishra  *
+-  Ansh Dixit
+-  Aritra Sinha
+-  Benjamin Mampaey
+-  Brett J Graham
+-  Chris R. Gilly  *
+-  Clément Robert  *
+-  Daniel Garcia Briseno
+-  Daniel Ryan
+-  David Stansby
+-  Ghaith Kdimati  *
+-  Jayraj Dulange  *
+-  Laura Hayes
+-  Manit Singh  *
+-  Mubin Manasia  *
+-  Nabil Freij
+-  Piyush Sharma  *
+-  Rehan Chalana  *
+-  Samuel Bennett
+-  Samuel J. Van Kooten
+-  Shane Maloney
+-  Sijie Yu  *
+-  Sirjan Hansda  *
+-  Stuart Mumford
+-  Will Barnes
+-  Yash Malik  *
+-  abastola0  *
+-  graham  *
 
 Updates to minimum dependencies
 ===============================
