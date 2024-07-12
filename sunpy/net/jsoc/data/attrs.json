@@ -93,6 +93,10 @@
       "This series contains the 4 polynomial coefficients for the 3rd-order polynomial Doppler velocity correction with the MDI-like algorithm"
     ],
     [
+      "hmi.cont_dcon",
+      "HMI true continuum, scatter light corrected"
+    ],
+    [
       "hmi.eigenfunctions",
       "eigenfuctions for performing inversions"
     ],
@@ -425,6 +429,14 @@
       "Magnetic Activity Index series for 30-deg tiles"
     ],
     [
+      "hmi.rdubinmeanserd_fd05",
+      "Annual means of binned Ui and dUi/dR fits for 5-deg tiles"
+    ],
+    [
+      "hmi.rdubinserd_fd05",
+      "binned means and slopes of Ui parameter fits over Rt ranges for 5-deg tiles"
+    ],
+    [
       "hmi.rdvavgpspec_fd15",
       "Averages of power spectra of 15-deg cubes on ring-diagram synoptic grid over full CR"
     ],
@@ -609,6 +621,10 @@
       "Dopplergrams with a cadence of 45 seconds, constructed with hmi.lev1_dcon"
     ],
     [
+      "hmi.v_45s_nrt",
+      "quick-look Dopplergrams with a cadence of 45 seconds"
+    ],
+    [
       "hmi.v_720s",
       "Dopplergrams with a cadence of 720 seconds"
     ],
@@ -683,6 +699,10 @@
     [
       "hmi.vw_v_45s",
       "vw_V proxy (binned by a factor of 4, convolved with a gaussian with sigma=2.83, subsampled by a factor of 5)"
+    ],
+    [
+      "hmi.vw_v_45s_nrt",
+      "Near Real Time vw_V proxy (binned by a factor of 4, convolved with a gaussian with sigma=2.83, subsampled by a factor of 5)"
     ],
     [
       "hmi.vw_v_sht_2drls",
@@ -1592,6 +1612,10 @@
     ],
     [
       "data",
+      "Means"
+    ],
+    [
+      "data",
       "Remapped Mr converted from Mlos"
     ],
     [
@@ -1865,6 +1889,10 @@
     [
       "lat",
       "Carrington latitude"
+    ],
+    [
+      "lev1_dcon",
+      "true continuum scatter light corrected image fits file"
     ],
     [
       "linedepth",
