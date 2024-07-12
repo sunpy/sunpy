@@ -1,6 +1,6 @@
 Glue - multidimensional data exploration
 
-Copyright (c) 2013-2015, Glue developers
+Copyright (c) 2013-2019, Glue developers
 
 All rights reserved.
 
