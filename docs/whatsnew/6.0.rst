@@ -57,6 +57,15 @@ The following extra group have been added:
 Additionally, the "all" extra group is a meta group that includes all optional dependencies.
 The "dask" extra group has also been removed.
 
+Decoupling dates in `~sunpy.map.Map`
+====================================
+Previously, `~sunpy.map.Map` used the single `~sunpy.map.GenericMap.date` property to serve two, potentially conflicting purposes: the "canonical" observation time and the reference time for the coordinate system.
+In order to properly support map sources where those two times are not the same, there is a new `~sunpy.map.GenericMap.reference_date` property to serve as the reference time for the coordinate system.
+`~sunpy.map.GenericMap.date` continues to serve as the canonical observation time, which is commonly the start of the observation period.
+See the documentation for the respective properties for the logic of parsing the metadata.
+
+An example of a user-facing impact is that, for certain map sources, the time used by the `~sunpy.map.GenericMap.coordinate_frame` and `~sunpy.map.GenericMap.observer_coordinate` properties can be different from the time printed in the default title of plots.
+
 Removal of ``sunpy.database``
 =============================
 
@@ -126,5 +135,5 @@ This replaces the default assumption where 2D coordinates are mapped onto the su
 Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
 ======================================================================
 
-:func:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
+:meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
 Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.

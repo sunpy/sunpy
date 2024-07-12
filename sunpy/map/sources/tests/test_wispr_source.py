@@ -256,7 +256,7 @@ def test_is_datasource_for(wispr_map):
 def test_observer_coordinate(wispr_map):
     obs_coord = wispr_map.observer_coordinate
     assert isinstance(obs_coord, SkyCoord)
-    assert obs_coord.obstime.isot == wispr_map.meta['date-obs']
+    assert obs_coord.obstime.isot == wispr_map.meta['date-avg']
 
 
 def test_observatory(wispr_map):
