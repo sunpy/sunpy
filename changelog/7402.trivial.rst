@@ -1,1 +1,0 @@
-Increased Python minimum version to be >= 3.10.
