@@ -68,7 +68,7 @@ def get_header(fname):
     Parameters
     ----------
     fname : `str`
-        The asdf file to be read.
+        The ASDF file to be read.
 
     Returns
     -------
