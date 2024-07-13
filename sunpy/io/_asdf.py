@@ -63,7 +63,7 @@ def read(fname,**kwargs):
 
 def get_header(fname):
     """
-    Read a asdf file and return just the headers (meta).
+    Read an ASDF file and return just the header(s).
 
     Parameters
     ----------
