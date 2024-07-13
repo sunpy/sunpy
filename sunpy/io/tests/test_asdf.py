@@ -17,7 +17,7 @@ def test_read():
     assert cont[0][0].shape ==  (2,2)
 
 def test_write(tmpdir):
-    data,header = read(AIA_MAP)[0]
+    data, header = read(AIA_MAP)[0]
     outfile = tmpdir / "test.asdf"
     write(str(outfile),data,header)
     assert outfile.exists()
