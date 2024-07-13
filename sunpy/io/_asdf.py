@@ -11,14 +11,7 @@ __all__ = ["write", "read", "get_header", "get_keys_name"]
 
 def write(fname, data, header, **kwargs):
     """
-    Take data and header pairs and save it to asdf file.
-    inspired from https://docs.sunpy.org/en/stable/generated/gallery/saving_and_loading_data/genericmap_in_asdf.html
-
-    format:
-    map_name.asdf (main tree)
-        meta: (header info)
-
-        data : data blocks
+    Take ``(data, header)`` pairs and save it to an ASDF file.
     Parameters
     ----------
     fname : `str`
