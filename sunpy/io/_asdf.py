@@ -42,7 +42,7 @@ def read(fname,**kwargs):
     Returns
     -------
     `list`
-        A list of (data, header) tuples
+        A list of "(data, header)" tuples.
     """
 
     with asdf.open(fname) as af:
