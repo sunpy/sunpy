@@ -1,6 +1,6 @@
 from sunpy.data.test import get_test_filepath
 from sunpy.io._asdf import get_header, read, write
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 
 AIA_MAP = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
 

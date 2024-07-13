@@ -32,7 +32,7 @@ _KNOWN_EXTENSIONS = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
     ('fz', 'f0'): 'ana',
-    ('asdf',"asf"):'_asdf'
+    ('asdf',"asf"): 'asdf'
 }
 
 
@@ -56,7 +56,7 @@ _READERS = Readers({
     'fits': fits,
     'jp2': _jp2,
     'ana': ana,
-    '_asdf':_asdf,
+    'asdf':_asdf,
 })
 
 
