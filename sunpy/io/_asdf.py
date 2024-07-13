@@ -17,7 +17,7 @@ def write(fname, data, header, **kwargs):
     fname : `str`
         File name, with extension.
     data : `numpy.ndarray`
-        n-dimensional data array.
+        N-dimensional data array.
     header : `dict`
         A header dictionary.
     """
