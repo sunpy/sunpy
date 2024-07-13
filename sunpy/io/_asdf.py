@@ -32,7 +32,7 @@ def write(fname, data, header, **kwargs):
 
 def read(fname,**kwargs):
     """
-    Read a asdf file.
+    Read an ASDF file.
 
     Parameters
     ----------
