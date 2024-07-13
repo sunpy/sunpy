@@ -30,6 +30,7 @@ def write(fname, data, header, **kwargs):
     """
     map_name = Path(fname)
     map_name = map_name.name
+    data = data.astype("float64")
     meta = dict(header)
     with asdf.AsdfFile() as af:
         af.tree={map_name:{"meta":meta,"data":data}}
@@ -63,11 +64,10 @@ def read(fname,**kwargs):
             return [(data_array,meta_data)]
         except Exception:
             data = af[map_name].data
-            data_array = np.asarray(data)
             meta_data = af[map_name].meta
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
-            return [(data_array,meta_data)]
+            return [(data,meta_data)]
 
 def get_header(fname):
     """
