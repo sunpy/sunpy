@@ -56,7 +56,7 @@ _READERS = Readers({
     'fits': fits,
     'jp2': _jp2,
     'ana': ana,
-    'asdf':_asdf,
+    'asdf': _asdf,
 })
 
 
