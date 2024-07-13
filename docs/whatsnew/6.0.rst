@@ -106,50 +106,6 @@ See the documentation for the respective properties for the logic of parsing the
 
 An example of a user-facing impact is that, for certain map sources, the time used by the `~sunpy.map.GenericMap.coordinate_frame` and `~sunpy.map.GenericMap.observer_coordinate` properties can be different from the time printed in the default title of plots.
 
-Removal of ``sunpy.database``
-=============================
-
-The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
-It has been deprecated since sunpy 4.1, and since there have been no major objections from the community since then we have completely removed ``sunpy.database`` in sunpy 6.0.
-If you are interested in seeing a replacement for ``sunpy.database``, either inside ``sunpy`` or as a third-party package, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
-
-
-Arguments for :meth:`~sunpy.map.GenericMap.reproject_to`
-========================================================
-
-Arguments for this method have been changed to be keyword only after the target WCS argument.
-This was raising a warning since sunpy 4.1.
-
-Removal of ``sunpy.net.helioviewer.HelioViewerClient``
-======================================================
-
-``sunpy.net.helioviewer`` has been deprecated since sunpy v4.1 and has now been removed.
-Users should instead use the `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ package.
-This package provides a Python wrapper around the Helioviewer API and is maintained by the Helioviewer Project.
-The ``hvpy`` package supersedes the ``sunpy.net.helioviewer`` module.
-
-Arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` are now keywords only
-===================================================================================
-
-The arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` have been changed to be keyword only.
-This means that you must now specify the arguments by name, rather than by position and has been done to make the API more consistent.
-This has been raising a warning since sunpy 4.1 and is now an error.
-
-Fix filename sanitization for downloaded files from the VSO
-===========================================================
-
-The `.VSOClient` has been sanitizing filenames to ensure that they are valid on all platforms.
-However, we have now fixed the sanitization to be more conservative, to follow the NFKC Unicode normalization, which is the recommended normalization for filenames on most platforms.
-This now does not replace periods, does not change letter case and does not leave Unicode characters decomposed.
-One example is that the letter "ä" will now be preserved in the filename.
-Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" will be preserved instead of being replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits".
-
-Deprecate positional arguments in :meth:`sunpy.map.GenericMap.plot`
-===================================================================
-
-The arguments for :meth:`sunpy.map.GenericMap.plot` have been changed to being keyword only.
-Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.
-
 Support for ADvanced Adaptive Prediction Technique (ADAPT)
 ==========================================================
 
@@ -172,8 +128,38 @@ New `~sunpy.coordinates.PlanarScreen` context manager
 The plane goes through Sun center (or some specified distance from Sun center) and is perpendicular to the vector between the specified vantage point and Sun center.
 This replaces the default assumption where 2D coordinates are mapped onto the surface of the Sun and is an alternative to `~sunpy.coordinates.SphericalScreen`.
 
+Fix filename sanitization for downloaded files from the VSO
+===========================================================
+
+The `.VSOClient` has been sanitizing filenames to ensure that they are valid on all platforms.
+However, we have now fixed the sanitization to be more conservative, to follow the NFKC Unicode normalization, which is the recommended normalization for filenames on most platforms.
+This now does not replace periods, does not change letter case and does not leave Unicode characters decomposed.
+One example is that the letter "ä" will now be preserved in the filename.
+Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" will be preserved instead of being replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits".
+
+Arguments for :meth:`~sunpy.map.GenericMap.reproject_to`
+========================================================
+
+Arguments for this method have been changed to be keyword only after the target WCS argument.
+This was raising a warning since sunpy 4.1.
+
 Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
 ======================================================================
 
 :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
 Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.
+
+Removal of ``sunpy.net.helioviewer.HelioViewerClient``
+======================================================
+
+``sunpy.net.helioviewer`` has been deprecated since sunpy v4.1 and has now been removed.
+Users should instead use the `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ package.
+This package provides a Python wrapper around the Helioviewer API and is maintained by the Helioviewer Project.
+The ``hvpy`` package supersedes the ``sunpy.net.helioviewer`` module.
+
+Removal of ``sunpy.database``
+=============================
+
+The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
+It has been deprecated since sunpy 4.1, and since there have been no major objections from the community since then we have completely removed ``sunpy.database`` in sunpy 6.0.
+If you are interested in seeing a replacement for ``sunpy.database``, either inside ``sunpy`` or as a third-party package, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
