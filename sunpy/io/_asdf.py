@@ -39,7 +39,6 @@ def read(fname,**kwargs):
     filepath : `str`
         The ASDF file to be read.
 
-
     Returns
     -------
     `list`
