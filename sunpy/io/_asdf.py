@@ -37,7 +37,7 @@ def read(fname,**kwargs):
     Parameters
     ----------
     filepath : `str`
-        The asdf file to be read.
+        The ASDF file to be read.
 
 
     Returns
