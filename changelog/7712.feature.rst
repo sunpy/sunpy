@@ -1,1 +1,1 @@
-Added support for saving a map in asdf format.And added support for loading a asdf map in mapfactory.
+Added support for saving a `sunpy.map.GenericMap` in ASDF.
