@@ -24,7 +24,7 @@ def test_write(tmpdir):
 
 def test_get_header():
     header = get_header(AIA_MAP)[0]
-    assert isinstance(header,FileHeader)
+    assert isinstance(header, FileHeader)
 
 def test_keys_name():
     with asdf.open(AIA_MAP) as af:
