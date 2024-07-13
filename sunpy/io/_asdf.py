@@ -7,7 +7,7 @@ import asdf
 
 from sunpy.io._header import FileHeader
 
-__all__ = ["write","read","get_header","get_keys_name"]
+__all__ = ["write", "read", "get_header", "get_keys_name"]
 
 def write(fname, data, header, **kwargs):
     """
