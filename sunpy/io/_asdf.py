@@ -23,7 +23,8 @@ def write(fname, data, header, **kwargs):
     """
     map_name = Path(fname)
     map_name = map_name.name
-    data = data.astype("float64")
+    ty = data.dtype
+    data = data.astype(ty)
     meta = dict(header)
     with asdf.AsdfFile() as af:
         af.tree={map_name:{"meta":meta,"data":data}}
@@ -84,7 +85,6 @@ def get_header(fname):
             return [meta_data]
         except Exception:
             meta_data = af[map_name].meta
-            meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [meta_data]
 
