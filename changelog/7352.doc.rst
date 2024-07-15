@@ -1,1 +1,0 @@
-Added explanation text to :ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py` about the offset between "(0, 0)" in helioprojective coordinates and the heliographic equator.

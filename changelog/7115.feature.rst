@@ -1,1 +1,0 @@
-Added `~sunpy.coordinates.PlanarScreen` for interpreting 2D `~sunpy.coordinates.Helioprojective` coordinates as being on the inside of a planar screen.
