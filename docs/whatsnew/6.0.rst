@@ -129,6 +129,29 @@ New `~sunpy.coordinates.PlanarScreen` context manager
 The plane goes through Sun center (or some specified distance from Sun center) and is perpendicular to the vector between the specified vantage point and Sun center.
 This replaces the default assumption where 2D coordinates are mapped onto the surface of the Sun and is an alternative to `~sunpy.coordinates.SphericalScreen`.
 
+Method to compute the rotation matrix between two SPICE frames
+==============================================================
+
+A new function `~sunpy.coordinates.spice.get_rotation_matrix` has been implemented to compute the rotation matrix between two SPICE frames.
+
+.. code-block:: python
+
+    >>> from sunpy.coordinates.spice import get_rotation_matrix
+    >>> import astropy.units as u
+
+    >>> source_frame = "J2000"
+    >>> target_frame = "Galactic"
+    >>> from_time = '2001-01-01T00:00:00'
+    >>> rotation_matrix = get_rotation_matrix(source_frame, target_frame, from_time)
+    >>> rotation_matrix
+    array([[-0.05487554, -0.8734371 , -0.48383499],
+           [ 0.49410945, -0.44482959,  0.74698225],
+           [-0.86766614, -0.19807639,  0.45598379]])
+    >>> vec_components = [1, 0, 0] * u.T
+    >>> transformed_matrix = rotation_matrix @ vec_components
+    >>> transformed_matrix
+    <Quantity [-0.05487554,  0.49410945, -0.86766614] T>
+
 Fix filename sanitization for downloaded files from the VSO
 ===========================================================
 
