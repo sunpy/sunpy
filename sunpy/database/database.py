@@ -219,7 +219,7 @@ class Database:
     ----------
     url : str
         A URL describing the database. This value is simply passed to
-        :func:`sqlalchemy.create_engine`
+        ``sqlalchemy.create_engine``
         If not specified the value will be read from the sunpy config file.
     CacheClass : sunpy.database.caching.BaseCache
         A concrete cache implementation of the abstract class BaseCache.
