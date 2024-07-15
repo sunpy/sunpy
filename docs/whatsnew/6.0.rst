@@ -14,11 +14,11 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 6.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-This release of ``sunpy`` contains 748 commits in 167 merged pull requests closing 67 issues from 33 people, 15 of which are first-time contributors to ``sunpy``.
+This release of ``sunpy`` contains 764 commits in 173 merged pull requests closing 67 issues from 33 people, 15 of which are first-time contributors to ``sunpy``.
 
-* 748 commits have been added since 5.1
+* 764 commits have been added since 5.1
 * 67 issues have been closed since 5.1
-* 167 pull requests have been merged since 5.1
+* 173 pull requests have been merged since 5.1
 * 33 people have contributed since 5.1
 * 15 of which are new contributors
 
@@ -30,12 +30,13 @@ The people who have contributed to the code for this release are:
 -  Aniket Mishra  *
 -  Ansh Dixit
 -  Aritra Sinha
+-  Ashish Bastola  *
 -  Benjamin Mampaey
 -  Brett J Graham
 -  Chris R. Gilly  *
 -  Clément Robert  *
+-  Daniel F. Ryan
 -  Daniel Garcia Briseno
--  Daniel Ryan
 -  David Stansby
 -  Ghaith Kdimati  *
 -  Jayraj Dulange  *
@@ -50,11 +51,12 @@ The people who have contributed to the code for this release are:
 -  Shane Maloney
 -  Sijie Yu  *
 -  Sirjan Hansda  *
--  Stuart Mumford
+-  Stuart J. Mumford
 -  Will Barnes
 -  Yash Malik  *
--  abastola0  *
+-  dependabot[bot]
 -  graham  *
+-  pre-commit-ci[bot]
 
 Updates to minimum dependencies
 ===============================
