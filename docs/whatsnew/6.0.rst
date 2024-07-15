@@ -85,17 +85,18 @@ The minimum required versions of these optional dependencies has also been updat
 - tqdm >= 4.64.0
 - zeep >= 4.1.0
 
-Overhaul of the extra groups
-============================
+Overhaul of optional dependencies
+=================================
 
-The extra groups have been overhauled to make it easier to install sunpy with only the dependencies you need.
+The optional dependencies have been overhauled to make it easier to install ``sunpy`` with only the dependencies you need.
 The following extra group have been added:
 
-- "core" - installs only the dependencies that are required to import sunpy or any of its subpackages.
-- "scikit-image" - installs the ``scikit-image`` package used for image processing. This dependency is no longer included in the "image" extra group.
+- "core" (``pip install "sunpy[core]"``) - installs only the dependencies that are required to import ``sunpy`` or any of its sub-packages.
+- "scikit-image" (``pip install "sunpy[scikit-image]"``) - installs the ``scikit-image`` package used for image processing.
+  This dependency is no longer included in the "image" extra group.
 
-Additionally, the "all" extra group is a meta group that includes all optional dependencies.
-The "dask" extra group has also been removed.
+Additionally, the "all" (``pip install "sunpy[all]"``) install group is now a meta group that includes all optional dependencies.
+The "dask" group has also been removed.
 
 Decoupling dates in `~sunpy.map.Map`
 ====================================
@@ -106,8 +107,8 @@ See the documentation for the respective properties for the logic of parsing the
 
 An example of a user-facing impact is that, for certain map sources, the time used by the `~sunpy.map.GenericMap.coordinate_frame` and `~sunpy.map.GenericMap.observer_coordinate` properties can be different from the time printed in the default title of plots.
 
-Support for ADvanced Adaptive Prediction Technique (ADAPT)
-==========================================================
+Support for ADvanced Adaptive Prediction Technique (ADAPT) data
+===============================================================
 
 A new map source has been added (`sunpy.map.sources.ADAPTMap`) to support the ADAPT data files.
 In addition, a new client (`sunpy.net.dataretriever.ADAPTClient`) has been added to search and download ADAPT files.
@@ -137,11 +138,9 @@ This now does not replace periods, does not change letter case and does not leav
 One example is that the letter "ä" will now be preserved in the filename.
 Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" will be preserved instead of being replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits".
 
-Arguments for :meth:`~sunpy.map.GenericMap.reproject_to`
-========================================================
+.. warning::
 
-Arguments for this method have been changed to be keyword only after the target WCS argument.
-This was raising a warning since sunpy 4.1.
+    This will most likely force a redownload of files from several data providers.
 
 Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
 ======================================================================
