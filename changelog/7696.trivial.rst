@@ -1,1 +1,0 @@
-Updated the internal URL for the `~sunpy.net.dataretriever.sources.norh.NoRHClient` to point to a HTTPS archive of the NoRH data.

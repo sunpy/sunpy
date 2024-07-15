@@ -1,3 +1,31 @@
+5.1.5 (2024-07-15)
+==================
+
+New Features
+------------
+
+- Update ASDF schemas for upcoming ASDF standard 1.6.0. (`#7432 <https://github.com/sunpy/sunpy/pull/7432>`__)
+
+
+Bug Fixes
+---------
+
+- Added a check in `sunpy.physics.differential_rotation.solar_rotate_coordinate` to ensure the input frame has an "observer" attribute before replicating frame
+  attributes, preventing potential issues with frames lacking this attribute. (`#7526 <https://github.com/sunpy/sunpy/pull/7526>`__)
+
+
+Documentation
+-------------
+
+- Updated the examples for :func:`~sunpy.visualization.colormaps.color_tables.hmi_mag_color_table` that used older styles of plotting (`#7692 <https://github.com/sunpy/sunpy/pull/7692>`__)
+
+
+Internal Changes
+----------------
+
+- Updated the internal URL for the `~sunpy.net.dataretriever.sources.norh.NoRHClient` to point to a HTTPS archive of the NoRH data. (`#7696 <https://github.com/sunpy/sunpy/pull/7696>`__)
+
+
 v5.1.4 (2024-06-10)
 ===================
 
