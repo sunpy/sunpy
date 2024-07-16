@@ -5,7 +5,7 @@ import numpy as np
 
 import asdf
 
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 import astropy.units as u
 
 __all__ = ["write", "read", "get_header", "get_keys_name"]
