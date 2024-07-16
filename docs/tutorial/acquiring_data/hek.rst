@@ -64,7 +64,7 @@ The first thing we need to do is access the results from the HEK client, the onl
 
 .. code-block:: python
 
-   >>> len(result)  # doctest: +REMOTE_DATA
+   >>> len(result["hek"])  # doctest: +REMOTE_DATA
    19
 
 This object is an `astropy.table.Table` object with the columns which correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html.
@@ -81,7 +81,7 @@ We can select just this column:
 
 .. code-block:: python
 
-   >>> result["frm_name"]  # doctest: +REMOTE_DATA
+   >>> result["hek"]["frm_name"]  # doctest: +REMOTE_DATA
    <QueryResponseColumn name='frm_name' dtype='str32' length=19>
                              asainz
                              asainz
@@ -233,8 +233,7 @@ and as a check:
 .. code-block:: python
 
    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-       fl_peakflux
-   --------------------
+   <QueryResponseColumn name='fl_peakflux' dtype='object' length=17>
                    None
                    None
                    None
@@ -254,8 +253,7 @@ and as a check:
    1019.83 DN / (pix s)
 
    >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
-                                                       event_coord
-   -------------------------------------------------------------------------------------------------------------------
+   <QueryResponseColumn name='event_coord' dtype='object' length=17>
       <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (51., 151.)>
       <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (51., 151.)>
       <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (51., 151.)>
@@ -285,8 +283,7 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000))  # doctest: +REMOTE_DATA
 
    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-       fl_peakflux
-   --------------------
+   <QueryResponseColumn name='fl_peakflux' dtype='object' length=7>
    2326.86 DN / (pix s)
    1698.83 DN / (pix s)
    2360.49 DN / (pix s)
@@ -295,8 +292,7 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
    6275.98 DN / (pix s)
    1019.83 DN / (pix s)
    >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
-                                                       event_coord
-   -------------------------------------------------------------------------------------------------------------------
+   <QueryResponseColumn name='event_coord' dtype='object' length=7>
    <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
    <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
    <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
