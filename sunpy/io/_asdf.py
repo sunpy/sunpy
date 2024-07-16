@@ -4,9 +4,9 @@ from collections import OrderedDict
 import numpy as np
 
 import asdf
+import astropy.units as u
 
 from sunpy.io._header import FileHeader
-import astropy.units as u
 
 __all__ = ["write", "read", "get_header", "get_keys_name"]
 
@@ -62,7 +62,7 @@ def read(fname,**kwargs):
             return [(data_array,meta_data)]
         except Exception:
             data = af[map_name].data
-            meta_data = af[map_name].meta        
+            meta_data = af[map_name].meta
             unit = af[map_name].unit
             if unit:
                 unit = u.Unit(unit)

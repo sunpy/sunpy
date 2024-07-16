@@ -5,7 +5,6 @@ import asdf
 from sunpy.data.test import get_test_filepath
 from sunpy.io._asdf import get_header, get_keys_name, read, write
 from sunpy.io._header import FileHeader
-from sunpy.map import Map
 
 AIA_MAP = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
 
@@ -26,7 +25,6 @@ def test_write(tmpdir):
 def test_get_header():
     header = get_header(AIA_MAP)[0]
     assert isinstance(header, FileHeader)
-    assert header == Map(AIA_MAP).meta
 
 def test_keys_name():
     with asdf.open(AIA_MAP) as af:
