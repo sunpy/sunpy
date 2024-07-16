@@ -11,6 +11,9 @@ from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
 from sunpy.coordinates import Helioprojective, sun
+from sunpy.util.exceptions import warn_metadata
+
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -50,6 +53,26 @@ def _handle_norm(norm, imshow_args):
         if norm.vmax is not None:
             raise ValueError(msg.format('vmax'))
         norm.vmax = imshow_args.pop('vmax')
+
+
+def _parse_fits_unit(unit_str):
+    replacements = {'gauss': 'G',
+                    'counts / pixel': 'ct/pix',}
+    if unit_str.lower() in replacements:
+        unit_str = replacements[unit_str.lower()]
+    unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+    if isinstance(unit, u.UnrecognizedUnit):
+        unit = u.Unit(unit_str, parse_strict='silent')
+        # NOTE: Special case DN here as it is not part of the FITS standard, but
+        # is widely used and is also a recognized astropy unit
+        if u.DN not in unit.bases:
+            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                            f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                            'with sunpy.map.Map.\n'
+                            'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                            'the FITS unit standards.')
+            unit = None
+    return unit
 
 
 def all_pixel_indices_from_map(smap):

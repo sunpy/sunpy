@@ -6,6 +6,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy import log
 from sunpy.coordinates import frames, sun
+from sunpy.map.maputils import _parse_fits_unit
 from sunpy.util import MetaDict
 
 __all__ = ['make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header']
@@ -280,7 +281,7 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
     if exposure is not None:
         meta_wcs['exptime'] = exposure.to_value(u.s)
     if unit is not None:
-        meta_wcs['bunit'] = u.Unit(unit).to_string("fits")
+        meta_wcs['bunit'] = _parse_fits_unit(unit)
 
     return meta_wcs
 
