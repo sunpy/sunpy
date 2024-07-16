@@ -5,7 +5,8 @@ import numpy as np
 
 import asdf
 
-from sunpy.io._header import FileHeader
+from sunpy.io.header import FileHeader
+import astropy.units as u
 
 __all__ = ["write", "read", "get_header", "get_keys_name"]
 
@@ -54,10 +55,18 @@ def read(fname,**kwargs):
             meta_data= af[map_name]["meta"]
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
+            unit = meta_data['unit']
+            if unit:
+                unit = u.Unit(unit)
+                meta_data['unit'] = unit
             return [(data_array,meta_data)]
         except Exception:
             data = af[map_name].data
-            meta_data = af[map_name].meta
+            meta_data = af[map_name].meta        
+            unit = af[map_name].unit
+            if unit:
+                unit = u.Unit(unit)
+                meta_data['unit'] = unit
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [(data,meta_data)]
