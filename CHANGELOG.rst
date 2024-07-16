@@ -15,6 +15,7 @@ New Features
 - Added a GONG synoptic map class which fixes non-compliant FITS metadata (`#7220 <https://github.com/sunpy/sunpy/pull/7220>`__)
 - Added the module `sunpy.coordinates.spice` to enable the use of the `~astropy.coordinates.SkyCoord` API to perform computations using `SPICE <https://naif.jpl.nasa.gov/naif/>`__ kernels. (`#7237 <https://github.com/sunpy/sunpy/pull/7237>`__)
 - Added three coordinate frames that depend on the orientation of Earth's magnetic dipole: `~sunpy.coordinates.Geomagnetic` (MAG), `~sunpy.coordinates.SolarMagnetic` (SM), and `~sunpy.coordinates.GeocentricSolarMagnetospheric` (GSM). (`#7239 <https://github.com/sunpy/sunpy/pull/7239>`__)
+- Added user-facing documentation for the deprecation policy. This documentation explains why users receive deprecation warnings, what they mean, and how they can prepare for removals. It also includes details on versioning policy, the deprecation process. This new section can be found in the "references" section of the documentation sidebar, just after the changelog.
 
 
 Bug Fixes
