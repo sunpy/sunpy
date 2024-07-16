@@ -1,2 +1,0 @@
-``pyerfa`` is now a new direct dependency.
-It has been an indirect dependency from sunpy 3.1, over two years ago.

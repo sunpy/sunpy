@@ -1,2 +1,0 @@
-`~sunpy.map.Map` with UINT8 data will now not error on plotting due to normalization.
-We now skip adding a normalization.

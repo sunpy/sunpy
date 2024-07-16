@@ -1,1 +1,0 @@
-Add a new map source `~sunpy.map.sources.ADAPTMap` for ADvanced Adaptive Prediction Technique (ADAPT) data files.

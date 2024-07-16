@@ -1,9 +1,0 @@
-The "all" extra group now will install all optional packages.
-
-This now includes the following packages:
-
-- asdf
-- glmyur
-- opencv
-- scikit-image
-- spiceypy

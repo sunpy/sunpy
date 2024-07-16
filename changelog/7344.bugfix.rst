@@ -1,1 +1,0 @@
-When calling :meth:`sunpy.map.GenericMap.rotate` on an integer data array, with ``missing`` set to NaN (the default value), the method will now itself raise an informative error message instead deferring to NumPy to raise the error.
