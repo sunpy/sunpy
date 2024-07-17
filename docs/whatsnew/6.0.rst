@@ -67,8 +67,8 @@ The minimum required versions of core dependencies have been updated:
 
 The minimum required versions of these optional dependencies has also been updated:
 
-- asdf >= 2.12.0
-- asdf-astropy >= 0.2.0
+- asdf >= 2.13.0
+- asdf-astropy >= 0.4.0
 - beautifulsoup4 >= 4.11.0
 - cdflib >= 0.4.4
 - dask >= 2022.5.2
