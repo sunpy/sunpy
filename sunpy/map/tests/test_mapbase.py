@@ -1656,7 +1656,7 @@ def test_rotation_rect_pixelated_data(aia171_test_map):
 
 @pytest.mark.remote_data
 @figure_test
-def test_draw_contours_with_transform(sample_171, sample_hmi):
+def test__contours_with_transform(sample_171, sample_hmi):
     aia_map = sunpy.map.Map(sample_171)
     hmi_map = sunpy.map.Map(sample_hmi)
     fig = plt.figure(figsize=(16, 4))
