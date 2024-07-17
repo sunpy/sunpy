@@ -2,11 +2,17 @@ from pathlib import Path
 from collections import OrderedDict
 
 import numpy as np
+from asdf_astropy.converters.unit.unit import UnitConverter
 
 import asdf
-import astropy.units as u
+import asdf.extension
 
 from sunpy.io._header import FileHeader
+
+extension_name = asdf.extension.ManifestExtension.from_uri(
+    "asdf://astropy.org/astropy/manifests/units-1.0.0",converters = [UnitConverter()]
+)
+asdf.get_config().add_extension(extension_name)
 
 __all__ = ["write", "read", "get_header", "get_keys_name"]
 
@@ -27,9 +33,9 @@ def write(fname, data, header, **kwargs):
     ty = data.dtype
     data = data.astype(ty)
     meta = dict(header)
-    with asdf.AsdfFile() as af:
+    with asdf.AsdfFile(copy_arrays = True) as af:
         af.tree={map_name:{"meta":meta,"data":data}}
-        af.write_to(fname,**kwargs)
+        af.write_to(fname)
 
 
 def read(fname,**kwargs):
@@ -55,18 +61,10 @@ def read(fname,**kwargs):
             meta_data= af[map_name]["meta"]
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
-            unit = meta_data['unit']
-            if unit:
-                unit = u.Unit(unit)
-                meta_data['unit'] = unit
             return [(data_array,meta_data)]
         except Exception:
             data = af[map_name].data
             meta_data = af[map_name].meta
-            unit = af[map_name].unit
-            if unit:
-                unit = u.Unit(unit)
-                meta_data['unit'] = unit
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [(data,meta_data)]
