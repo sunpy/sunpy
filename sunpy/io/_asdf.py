@@ -2,17 +2,15 @@ from pathlib import Path
 from collections import OrderedDict
 
 import numpy as np
-from asdf_astropy.converters.unit.unit import UnitConverter
 
 import asdf
-import asdf.extension
 
 from sunpy.io._header import FileHeader
 
-extension_name = asdf.extension.ManifestExtension.from_uri(
-    "asdf://astropy.org/astropy/manifests/units-1.0.0",converters = [UnitConverter()]
-)
-asdf.get_config().add_extension(extension_name)
+# extension_name = asdf.extension.ManifestExtension.from_uri(
+#     "asdf://astropy.org/astropy/manifests/units-1.0.0",converters = [UnitConverter()]
+# )
+# asdf.get_config().add_extension(extension_name)
 
 __all__ = ["write", "read", "get_header", "get_keys_name"]
 

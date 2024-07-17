@@ -6,7 +6,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.io._asdf import get_header, get_keys_name, read, write
 from sunpy.io._header import FileHeader
 
-AIA_MAP = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
+AIA_MAP = get_test_filepath("aiamap_genericmap.asdf")
 
 
 def test_read():
