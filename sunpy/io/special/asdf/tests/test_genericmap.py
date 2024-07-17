@@ -32,13 +32,11 @@ def aia171_test_map():
 
 
 @asdf_entry_points
-@pytest.mark.xfail(reason="Unit 'DN' is not representable as VOUnit in oldest deps")
 def test_genericmap_basic(aia171_test_map, tmpdir):
     assert_roundtrip_map(aia171_test_map)
 
 
 @asdf_entry_points
-@pytest.mark.xfail(reason="Unit 'DN' is not representable as VOUnit in oldest deps")
 def test_genericmap_mask(aia171_test_map, tmpdir):
     mask = np.zeros_like(aia171_test_map.data)
     mask[10, 10] = 1
@@ -48,7 +46,6 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
 
 
 @asdf_entry_points
-@pytest.mark.xfail(reason="Added DN but no idea how to update asdf file")
 def test_load_100_file_with_shift():
     fname = get_test_filepath("aiamap_shift_genericmap_1.0.0.asdf")
     with asdf.open(fname, copy_arrays=True) as af:
@@ -60,7 +57,6 @@ def test_load_100_file_with_shift():
 
 
 @asdf_entry_points
-@pytest.mark.xfail(reason="Added DN but no idea how to update asdf file")
 def test_load_100_file_with_no_shift():
     fname = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
     with asdf.open(fname, copy_arrays=True) as af:
