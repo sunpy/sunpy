@@ -91,7 +91,7 @@ def get_header(fname):
 
 def get_keys_name(fname):
     """
-    Returns the name of primary tree (excluding the asdf and history trees).
+    Returns the keys of primary tree (excluding the "asdf" and "history" trees).
 
     Parameters
     ----------
