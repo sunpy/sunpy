@@ -63,7 +63,9 @@ The minimum required version of Python has been updated to 3.10.
 
 The minimum required versions of core dependencies have been updated:
 
-- astropy >= 5.2.0
+- astropy >= 5.3.0
+- numpy >= 1.23.5
+- packaging >= 23.0
 
 The minimum required versions of these optional dependencies has also been updated:
 
@@ -72,15 +74,17 @@ The minimum required versions of these optional dependencies has also been updat
 - beautifulsoup4 >= 4.11.0
 - cdflib >= 0.4.4
 - dask >= 2022.5.2
+- glymur >= 0.11.0
 - h5netcdf >= 1.0.0
 - h5py >= 3.7.0
 - lxml >= 4.9.0
 - opencv-python >= 4.6.0.66
 - pandas >= 1.4.0
+- python-dateutil >= 2.8.1
 - reproject >= 0.9.0
 - requests >= 2.28
 - scikit-image >= 0.19.0
-- scipy >= 1.8.0
+- scipy >= 1.9.0
 - spiceypy >= 5.0.0
 - tqdm >= 4.64.0
 - zeep >= 4.1.0
