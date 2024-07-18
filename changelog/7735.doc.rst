@@ -1,0 +1,1 @@
+Added a gallery example showcasing how to track and co-align an active region
