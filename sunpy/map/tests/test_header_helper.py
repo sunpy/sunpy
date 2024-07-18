@@ -220,7 +220,7 @@ def test_unit_as_string(map_data, hpc_coord):
 
 @pytest.mark.parametrize(('input_unit','output_string'),
                          [('DN', 'DN'), (u.DN, 'DN'), ('DN / s', 'DN / s')])
-def test_unit_handles_dn(input_unit, output_string, map_data, hpc_coord):
+def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc_coord):
     header = make_fitswcs_header(map_data, hpc_coord, unit=input_unit)
     assert header['bunit'] == output_string
 
