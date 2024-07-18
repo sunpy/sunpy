@@ -286,8 +286,9 @@ def test_merging_event_coords():
 
     coord1 = -2.91584*u.arcsec
     coord2 = 940.667*u.arcsec
+    time='2011-08-09 06:00:08.000'
     frame='helioprojective'
-    event_coord = SkyCoord(coord1, coord2, frame=frame)
+    event_coord = SkyCoord(coord1, coord2, obstime=time, frame=frame)
 
     assert result['event_coord'][0] == event_coord
 
