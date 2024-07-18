@@ -1,1 +1,0 @@
-`~sunpy.coordinates.Helioprojective.assume_spherical_screen` has been deprecated in favor of `~sunpy.coordinates.SphericalScreen`.

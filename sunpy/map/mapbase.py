@@ -594,6 +594,25 @@ class GenericMap(NDData):
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
+
+        Notes
+        -----
+        ``dateobs`` is always populated with the "canonical" observation time as
+        provided by the `.date` property.  This will commonly be the DATE-OBS key if it
+        is in the metadata, but see that property for the logic otherwise.
+
+        ``dateavg`` is always populated with the reference date of the coordinate system
+        as provided by the `.reference_date` property.  This will commonly be the
+        DATE-AVG key if it is in the metadata, but see that property for the logic
+        otherwise.
+
+        ``datebeg`` is conditonally populated with the start of the observation period
+        as provided by the `.date_start` property, which normally returns a value only
+        if the DATE-BEG key is in the metadata.
+
+        ``dateend`` is conditonally populated with the end of the observation period as
+        provided by the `.date_end` property, which normally returns a value only if the
+        DATE-END key is in the metadata.
         """
         w2 = astropy.wcs.WCS(naxis=2)
 
@@ -611,8 +630,14 @@ class GenericMap(NDData):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
+
+        w2.wcs.dateobs = self.date.utc.isot
+        w2.wcs.dateavg = self.reference_date.utc.isot
+        if self.date_start is not None:
+            w2.wcs.datebeg = self.date_start.utc.isot
+        if self.date_end is not None:
+            w2.wcs.dateend = self.date_end.utc.isot
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
@@ -642,6 +667,11 @@ class GenericMap(NDData):
         """
         An `astropy.coordinates.BaseCoordinateFrame` instance created from the coordinate
         information for this Map, or None if the frame cannot be determined.
+
+        Notes
+        -----
+        The ``obstime`` for the coordinate frame uses the `.reference_date` property,
+        which may be different from the `.date` property.
         """
         try:
             return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
@@ -862,34 +892,79 @@ class GenericMap(NDData):
         return time
 
     @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        This date is used to define the ``obstime`` of the coordinate frame and often
+        the ``obstime`` of the observer.  Be aware that this date can be different from
+        the "canonical" observation time (see the `.GenericMap.date` property).
+
+        The reference date is determined using this order of preference:
+
+        1. The ``DATE-AVG`` key in the meta.
+        2. The ``DATE-OBS`` key in the meta.
+        3. The ``DATE-BEG`` key in the meta.
+        4. The ``DATE-END`` key in the meta.
+        5. The `.GenericMap.date` property as a fallback (which, if not
+           overridden, would be the current time if the above keywords are missing).
+
+        See Also
+        --------
+        date : The observation time.
+        date_start : The start time of the observation.
+        date_end : The end time of the observation.
+        date_average : The average time of the observation.
+
+        Notes
+        -----
+        The FITS standard implies that, but does not expressly require, the DATE-AVG keyword
+        to be the reference date.
+        """
+        return (
+            self._get_date('date-avg') or
+            self._get_date('date-obs') or
+            self._get_date('date-beg') or
+            self._get_date('date-end') or
+            self.date
+        )
+
+    @property
     def date(self):
         """
-        Image observation time.
+        The observation time.
 
-        For different combinations of map metadata this can return either
-        the start time, end time, or a time between these. It is recommended
-        to use `~sunpy.map.GenericMap.date_average`,
-        `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
-        instead if you need one of these specific times.
+        This time is the "canonical" way to refer to an observation, which is commonly
+        the start of the observation, but can be a different time.  In comparison, the
+        `.GenericMap.date_start` property is unambigiously the start of the observation.
 
-        Taken from, in order of preference:
+        The observation time is determined using this order of preference:
 
-        1. The DATE-OBS FITS keyword
-        2. `~sunpy.map.GenericMap.date_average`
-        3. `~sunpy.map.GenericMap.date_start`
-        4. `~sunpy.map.GenericMap.date_end`
+        1. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
+        2. `.GenericMap.date_start`
+        3. `.GenericMap.date_average`
+        4. `.GenericMap.date_end`
         5. The current time
+
+        See Also
+        --------
+        reference_date : The reference date for the the coordinate system
+        date_start : The start time of the observation.
+        date_end : The end time of the observation.
+        date_average : The average time of the observation.
         """
-        time = self._date_obs
-        time = time or self.date_average
-        time = time or self.date_start
-        time = time or self.date_end
+        time = (
+            self._date_obs or
+            self.date_start or
+            self.date_average or
+            self.date_end
+        )
 
         if time is None:
             if self._default_time is None:
                 warn_metadata("Missing metadata for observation time, "
                               "setting observation time to current time. "
-                              "Set the 'DATE-AVG' FITS keyword to prevent this warning.")
+                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 
@@ -1176,12 +1251,17 @@ class GenericMap(NDData):
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
+
+        Notes
+        -----
+        The ``obstime`` for this coordinate uses the `.reference_date` property, which
+        may be different from the `.date` property.
         """
         warning_message = []
         for keys, kwargs in self._supported_observer_coordinates:
             missing_keys = set(keys) - self.meta.keys()
             if not missing_keys:
-                sc = SkyCoord(obstime=self.date, **kwargs)
+                sc = SkyCoord(obstime=self.reference_date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
@@ -1211,7 +1291,7 @@ class GenericMap(NDData):
             warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
                                + warning_message + [""])
             warn_metadata("\n".join(warning_message), stacklevel=3)
-            return get_earth(self.date)
+            return get_earth(self.reference_date)
 
     @property
     def heliographic_latitude(self):
@@ -2505,7 +2585,7 @@ class GenericMap(NDData):
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
         autoscaling of the plot limits.  The plot limits can be set manually.
         To preserve the off-disk parts of the map, using the
-        :meth:`~sunpy.coordinates.SphericalScreen` context
+        `~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
         """
         # Todo: remove this when deprecate_positional_args_since is removed

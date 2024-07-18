@@ -1,2 +1,0 @@
-The ANA C code has been deprecated (`sunpy.io.ana.read`, `sunpy.io.ana.get_header`, `sunpy.io.ana.write`) and may be removed in a future sunpy release.
-Please contact us here: https://community.openastronomy.org/t/possible-deprecation-of-ana-file-readers-and-writers-in-sunpy if you are making use of this code.
