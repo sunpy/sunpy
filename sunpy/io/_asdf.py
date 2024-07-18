@@ -7,17 +7,12 @@ import asdf
 
 from sunpy.io._header import FileHeader
 
-# extension_name = asdf.extension.ManifestExtension.from_uri(
-#     "asdf://astropy.org/astropy/manifests/units-1.0.0",converters = [UnitConverter()]
-# )
-# asdf.get_config().add_extension(extension_name)
-
 __all__ = ["write", "read", "get_header", "get_keys_name"]
 
 def write(fname, data, header, **kwargs):
     """
     Take ``(data, header)`` pairs and save it to an ASDF file.
-    
+
     Parameters
     ----------
     fname : `str`
@@ -54,17 +49,16 @@ def read(fname,**kwargs):
 
     with asdf.open(fname) as af:
         map_name = get_keys_name(fname)
-        try:
+        if isinstance(af[map_name],dict):
             data = af[map_name]["data"].data
             data_array = np.asarray(data)
             meta_data= af[map_name]["meta"]
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [(data_array,meta_data)]
-        except Exception:
+        else:
             data = af[map_name].data
             meta_data = af[map_name].meta
-            meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [(data,meta_data)]
 
@@ -84,12 +78,12 @@ def get_header(fname):
     """
     with asdf.open(fname) as af:
         map_name = get_keys_name(fname)
-        try:
+        if isinstance(af[map_name],dict):
             meta_data= af[map_name]["meta"]
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
             return [meta_data]
-        except Exception:
+        else:
             meta_data = af[map_name].meta
             meta_data = FileHeader(meta_data)
             return [meta_data]
@@ -98,7 +92,7 @@ def get_header(fname):
 def get_keys_name(fname):
     """
     Returns the name of primary tree (excluding the asdf and history trees).
-    
+
     Parameters
     ----------
     fname : `str`
