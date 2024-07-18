@@ -101,7 +101,7 @@ def get_keys_name(fname):
     Returns
     -------
     `str`
-        Name of primary tree (excluding asdf and history).
+        Name of primary tree keys (excluding "asdf" and "history").
     """
     with asdf.open(fname) as af:
         root_keys = af.tree.keys()
