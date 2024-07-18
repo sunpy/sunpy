@@ -20,6 +20,11 @@ def test_write(tmpdir):
     outfile = tmpdir / "test.asdf"
     write(str(outfile), data, header)
     assert outfile.exists()
+    written_data , written_header = read(str(outfile))[0]
+    assert np.array_equal(data,written_data)
+    assert header == written_header
+    assert header == get_header(str(outfile))[0]
+
 
 def test_get_header():
     header = get_header(map_for_asdf)[0]
