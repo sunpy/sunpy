@@ -64,6 +64,7 @@ The minimum required version of Python has been updated to 3.10.
 The minimum required versions of core dependencies have been updated:
 
 - astropy >= 5.2.0
+- numpy >= 1.23.5
 
 The minimum required versions of these optional dependencies has also been updated:
 
