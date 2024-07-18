@@ -66,7 +66,6 @@ SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
-
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
 # class attribute in GenericMap.__init__()
 _meta_doc = """
@@ -766,10 +765,10 @@ class GenericMap(NDData):
             # is widely used and is also a recognized astropy unit
             if u.DN not in unit.bases:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                                f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                                'with sunpy.map.Map.\n'
-                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
-                                'the FITS unit standards.')
+                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                               'with sunpy.map.Map.\n'
+                               'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                               'the FITS unit standards.')
                 unit = None
         return unit
 
