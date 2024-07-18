@@ -43,7 +43,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.io._file_tools import write_file
 from sunpy.io._fits import extract_waveunit, header_to_fits
-from sunpy.map.maputils import _META_FIX_URL, _clip_interval, _handle_norm, _parse_fits_unit
+from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list
@@ -64,6 +64,7 @@ TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
+_META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
@@ -752,6 +753,26 @@ class GenericMap(NDData):
         """
         return np.nanmax(self.data, *args, **kwargs)
 
+    @staticmethod
+    def _parse_fits_unit(unit_str):
+        replacements = {'gauss': 'G',
+                        'counts / pixel': 'ct/pix',}
+        if unit_str.lower() in replacements:
+            unit_str = replacements[unit_str.lower()]
+        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
+        if isinstance(unit, u.UnrecognizedUnit):
+            unit = u.Unit(unit_str, parse_strict='silent')
+            # NOTE: Special case DN here as it is not part of the FITS standard, but
+            # is widely used and is also a recognized astropy unit
+            if u.DN not in unit.bases:
+                warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                                f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                                'with sunpy.map.Map.\n'
+                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                                'the FITS unit standards.')
+                unit = None
+        return unit
+
     @property
     def unit(self):
         """
@@ -764,7 +785,7 @@ class GenericMap(NDData):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-        return _parse_fits_unit(unit_str)
+        return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
 
