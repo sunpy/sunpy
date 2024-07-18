@@ -343,3 +343,11 @@ def test_flares_peak_flux_and_position():
     event_type = 'FL'
     result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.Event.Coord1 > 800, attrs.hek.FL.PeakFlux > 1000)
     assert len(result[0]) == 7
+
+@pytest.mark.remote_data
+def test_flares_pyhton_logical_ops():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), (attrs.hek.Event.Coord1 > 50) and (attrs.hek.FL.PeakFlux > 1000))
+    assert len(result[0]) == 7
