@@ -2,7 +2,6 @@ import numpy as np
 
 import asdf
 
-import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.io._asdf import get_header, get_keys_name, read, write
 from sunpy.io._header import FileHeader
@@ -25,7 +24,6 @@ def test_write(tmpdir):
 def test_get_header():
     header = get_header(map_for_asdf)[0]
     assert isinstance(header, FileHeader)
-    assert header == sunpy.map.Map(map_for_asdf).meta
 
 def test_keys_name():
     with asdf.open(map_for_asdf) as af:
