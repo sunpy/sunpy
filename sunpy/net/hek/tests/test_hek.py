@@ -9,7 +9,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
-from sunpy.net import attr, attrs, hek
+from sunpy.net import Fido, attr, attrs, hek
 from sunpy.net.hek.utils import COORD_FILE_PATH, UNIT_FILE_PATH
 
 
@@ -311,3 +311,35 @@ def test_parse_times():
     for idx in range(len(result)):
         assert isinstance(result['event_starttime'][idx], Time)
         assert isinstance(result['event_endtime'][idx], Time)
+
+@pytest.mark.remote_data
+def test_ssw_latest_events_flares():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FRM.Name == 'SSW Latest Events')
+    assert len(result[0]) == 2
+
+@pytest.mark.remote_data
+def test_not_ssw_latest_events_flares():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FRM.Name != 'SSW Latest Events')
+    assert len(result[0]) == 19
+
+@pytest.mark.remote_data
+def test_flares_peak_flux():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FL.PeakFlux > 4000.0)
+    assert len(result[0]) == 1
+
+@pytest.mark.remote_data
+def test_flares_peak_flux_and_position():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.Event.Coord1 > 800, attrs.hek.FL.PeakFlux > 1000)
+    assert len(result[0]) == 7

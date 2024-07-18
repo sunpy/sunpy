@@ -291,6 +291,7 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
    1375.93 DN / (pix s)
    6275.98 DN / (pix s)
    1019.83 DN / (pix s)
+
    >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
    <QueryResponseColumn name='event_coord' dtype='object' length=7>
    <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
