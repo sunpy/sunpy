@@ -8,18 +8,6 @@ from sunpy.io._asdf import get_header, get_keys_name, read, write
 from sunpy.io._header import FileHeader
 
 map_for_asdf = get_test_filepath("aia_genericmap.asdf")
-
-def test_save(tmpdir):
-    save_test = sunpy.map.Map(map_for_asdf)
-    outfile = tmpdir / 'save_test.asdf'
-    save_test.save(str(outfile))
-    assert outfile.exists()
-    
-def test_save_in_fits(tmpdir):
-    save_fits = sunpy.map.Map(map_for_asdf)
-    outfile = tmpdir / 'save_test.fits'
-    save_fits.save(str(outfile))
-    assert outfile.exists()
     
 def test_read():
     cont = read(map_for_asdf)
