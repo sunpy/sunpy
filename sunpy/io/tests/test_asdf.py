@@ -21,7 +21,7 @@ def test_write_and_verify(tmpdir):
     write(str(outfile), data, header)
     assert outfile.exists()
     written_data , written_header = read(str(outfile))[0]
-    assert np.array_equal(data,written_data)
+    assert np.array_equal(data, written_data)
     assert header == written_header
     assert header == get_header(str(outfile))[0]
 
