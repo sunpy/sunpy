@@ -117,11 +117,12 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
             coord1 = table['event_coord1'][idx]
             coord2 = table['event_coord2'][idx]
             coord3 = table['event_coord3'][idx]
+            time = table['event_starttime'][idx]
             frame = 'helioprojective' if unit==u.arcsec else 'icrs'
             if coord3:
-                event_coord = SkyCoord(coord1*unit, coord2*unit, coord3*unit, frame=frame)
+                event_coord = SkyCoord(coord1*unit, coord2*unit, coord3*unit, obstime=time, frame=frame)
             else:
-                event_coord = SkyCoord(coord1*unit, coord2*unit, frame=frame)
+                event_coord = SkyCoord(coord1*unit, coord2*unit, obstime=time, frame=frame)
             event_coord_col.append(event_coord)
         event_coord_col = Column(event_coord_col, name='event_coord')
         del table['event_coord1']
