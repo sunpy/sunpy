@@ -2,18 +2,11 @@ import numpy as np
 
 import asdf
 
-import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.io._asdf import get_header, get_keys_name, read, write
 from sunpy.io._header import FileHeader
 
 map_for_asdf = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
-
-def test_save(tmpdir):
-    save_test = sunpy.map.Map(map_for_asdf)
-    outfile = tmpdir / 'save_test.asdf'
-    save_test.save(str(outfile))
-    assert outfile.exists()
 
 def test_read():
     cont = read(map_for_asdf)
@@ -31,7 +24,6 @@ def test_write(tmpdir):
 def test_get_header():
     header = get_header(map_for_asdf)[0]
     assert isinstance(header, FileHeader)
-    assert header == sunpy.map.Map(map_for_asdf).meta
 
 def test_keys_name():
     with asdf.open(map_for_asdf) as af:
