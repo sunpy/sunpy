@@ -11,7 +11,7 @@ map_for_asdf = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
 def test_read():
     cont = read(map_for_asdf)
     assert isinstance(cont,list)
-    assert isinstance(cont[0][0],np.ndarray)
+    assert isinstance(cont[0][0], np.ndarray)
     assert isinstance(cont[0][1],FileHeader)
     assert cont[0][0].shape ==  (2,2)
 
