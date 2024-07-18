@@ -48,7 +48,7 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
 @asdf_entry_points
 def test_load_100_file_with_shift():
     fname = get_test_filepath("aiamap_shift_genericmap_1.0.0.asdf")
-    with asdf.open(fname, copy_arrays=True) as af:
+    with asdf.open(fname, memmap=False) as af:
         aiamap = af['object']
         assert isinstance(aiamap, sunpy.map.sources.AIAMap)
         assert "crval1" in aiamap.meta.modified_items
@@ -59,7 +59,7 @@ def test_load_100_file_with_shift():
 @asdf_entry_points
 def test_load_100_file_with_no_shift():
     fname = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
-    with asdf.open(fname, copy_arrays=True) as af:
+    with asdf.open(fname, memmap=False) as af:
         aiamap = af['object']
         assert isinstance(aiamap, sunpy.map.sources.AIAMap)
         assert "crval1" not in aiamap.meta.modified_items
