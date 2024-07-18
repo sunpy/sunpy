@@ -210,6 +210,7 @@ def test_quantity_input(map_data, hpc_coord):
     header = make_fitswcs_header(map_quantity, hpc_coord, unit=override_unit)
     assert header['bunit'] == override_unit.to_string('fits')
 
+
 def test_unit_as_string(map_data, hpc_coord):
     # Test that unit can be passed in as a string
     map_unit = u.Unit('ct / (pix s)')
