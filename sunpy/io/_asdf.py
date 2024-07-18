@@ -96,7 +96,7 @@ def get_keys_name(fname):
     Parameters
     ----------
     fname : `str`
-        the asdf file to be read
+        The ASDF file to be read.
 
     Returns
     -------
