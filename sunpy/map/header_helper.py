@@ -280,91 +280,13 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
     if exposure is not None:
         meta_wcs['exptime'] = exposure.to_value(u.s)
     if unit is not None:
-        meta_wcs['bunit'] = u.Unit(unit).to_string("fits")
-
+        _unit = u.Unit(unit)
+        # NOTE: This conditional is because 'DN' is not part of the
+        # FITS standard and thus cannot be serialized to a string
+        # using the FITS format
+        unit_format = 'generic' if u.DN in _unit.bases else 'fits'
+        meta_wcs['bunit'] = _unit.to_string(format=unit_format)
     return meta_wcs
-
-
-_map_meta_keywords = {
-    'cunit1':
-    'Units of the coordinate increments along naxis1 e.g. arcsec **required',
-    'cunit2':
-    'Units of the coordinate increments along naxis2 e.g. arcsec **required',
-    'crval1':
-    'Coordinate value at reference point on naxis1 **required',
-    'crval2':
-    'Coordinate value at reference point on naxis2 **required',
-    'cdelt1':
-    'Spatial scale of pixels for naxis1, i.e. coordinate increment at reference point',
-    'cdelt2':
-    'Spatial scale of pixels for naxis2, i.e. coordinate increment at reference point',
-    'crpix1':
-    'Pixel coordinate at reference point naxis1',
-    'crpix2':
-    'Pixel coordinate at reference point naxis2',
-    'ctype1':
-    'Coordinate type projection along naxis1 of data e.g. HPLT-TAN',
-    'ctype2':
-    'Coordinate type projection along naxis2 of data e.g. HPLN-TAN',
-    'hgln_obs':
-    'Heliographic longitude of observation',
-    'hglt_obs':
-    'Heliographic latitude of observation',
-    'dsun_obs':
-    'distance to Sun from observation in metres',
-    'rsun_obs':
-    'radius of Sun in meters from observation',
-    'date-obs':
-    'date of observation e.g. 2013-10-28 00:00',
-    'date_obs':
-    'date of observation e.g. 2013-10-28 00:00',
-    'rsun_ref':
-    'reference radius of Sun in meters',
-    'solar_r':
-    'radius of Sun in meters from observation',
-    'radius':
-    'radius of Sun in meters from observation',
-    'crln_obs':
-    'Carrington longitude of observation',
-    'crlt_obs':
-    'Heliographic latitude of observation',
-    'solar_b0':
-    'Solar B0 angle',
-    'detector':
-    'name of detector e.g. AIA',
-    'exptime':
-    'exposure time of observation, in seconds e.g 2',
-    'instrume':
-    'name of instrument',
-    'wavelnth':
-    'wavelength of observation',
-    'waveunit':
-    'unit for which observation is taken e.g. angstom',
-    'obsrvtry':
-    'name of observatory of observation',
-    'telescop':
-    'name of telescope of observation',
-    'lvl_num':
-    'FITS processing level',
-    'crota2':
-    'Rotation of the horizontal and vertical axes in degrees',
-    'PC1_1':
-    'Matrix element PCi_j describing the rotation required to align solar North with the top of the image.',
-    'PC1_2':
-    'Matrix element PCi_j describing the rotation required to align solar North with the top of the image.',
-    'PC2_1':
-    'Matrix element PCi_j describing the rotation required to align solar North with the top of the image.',
-    'PC2_2':
-    'Matrix element PCi_j describing the rotation required to align solar North with the top of the image.',
-    'CD1_1':
-    'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.',
-    'CD1_2':
-    'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.',
-    'CD2_1':
-    'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.',
-    'CD2_2':
-    'Matrix element CDi_j describing the rotation required to align solar North with the top of the image.'
-}
 
 
 @u.quantity_input
