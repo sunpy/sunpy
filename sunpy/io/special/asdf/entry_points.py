@@ -41,6 +41,7 @@ def get_extensions():
     # extension, start with the newest
     _manifest_uris = [
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.2.0",
+        "asdf://sunpy.org/sunpy/manifests/sunpy-1.1.1",
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.1.0",
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",
     ]
