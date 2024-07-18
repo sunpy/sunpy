@@ -32,7 +32,7 @@ def write(fname, data, header, **kwargs):
         af.write_to(fname)
 
 
-def read(fname,**kwargs):
+def read(fname, **kwargs):
     """
     Read an ASDF file.
 
