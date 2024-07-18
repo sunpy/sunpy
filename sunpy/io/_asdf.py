@@ -78,7 +78,7 @@ def get_header(fname):
     """
     with asdf.open(fname) as af:
         map_name = get_keys_name(fname)
-        if isinstance(af[map_name],dict):
+        if isinstance(af[map_name], dict):
             meta_data= af[map_name]["meta"]
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
