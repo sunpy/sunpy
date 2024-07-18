@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-  "setuptools>=62.1",
+  "setuptools>=62.1,!=71.0.1",
   "setuptools_scm[toml]>=6.2",
   "wheel",
   "extension-helpers",
