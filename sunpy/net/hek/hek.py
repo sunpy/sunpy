@@ -38,7 +38,6 @@ class HEKClient(BaseClient):
     References
     ----------
     * `Heliophysics Knowledge Base Feature/Event Types definitions <https://www.lmsal.com/hek/VOEvent_Spec.html>`__
-
     """
     # FIXME: Expose fields in .attrs with the right types
     # that is, not all StringParamWrapper!
