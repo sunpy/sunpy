@@ -12,7 +12,7 @@ def test_read():
     cont = read(map_for_asdf)
     assert isinstance(cont,list)
     assert isinstance(cont[0][0], np.ndarray)
-    assert isinstance(cont[0][1],FileHeader)
+    assert isinstance(cont[0][1], FileHeader)
     assert cont[0][0].shape ==  (2,2)
 
 def test_write(tmpdir):
