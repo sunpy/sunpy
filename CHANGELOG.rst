@@ -16,6 +16,7 @@ New Features
 - Added the module `sunpy.coordinates.spice` to enable the use of the `~astropy.coordinates.SkyCoord` API to perform computations using `SPICE <https://naif.jpl.nasa.gov/naif/>`__ kernels. (`#7237 <https://github.com/sunpy/sunpy/pull/7237>`__)
 - Added three coordinate frames that depend on the orientation of Earth's magnetic dipole: `~sunpy.coordinates.Geomagnetic` (MAG), `~sunpy.coordinates.SolarMagnetic` (SM), and `~sunpy.coordinates.GeocentricSolarMagnetospheric` (GSM). (`#7239 <https://github.com/sunpy/sunpy/pull/7239>`__)
 
+
 Bug Fixes
 ---------
 
