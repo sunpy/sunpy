@@ -1,0 +1,2 @@
+Fixed a bug where "DN" was not able to be parsed by `~sunpy.map.header_helper.make_fitswcs_header` due to strict checking
+against the FITS standard. This is now consistent with how unit strings are parsed in `~sunpy.map.GenericMap`.
