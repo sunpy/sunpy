@@ -15,7 +15,7 @@ def test_read():
     assert isinstance(cont[0][1], FileHeader)
     assert cont[0][0].shape ==  (2,2)
 
-def test_write(tmpdir):
+def test_write_and_verify(tmpdir):
     data, header = read(map_for_asdf)[0]
     outfile = tmpdir / "test.asdf"
     write(str(outfile), data, header)
