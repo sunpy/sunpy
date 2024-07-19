@@ -27,9 +27,7 @@ def write(fname, data, header, **kwargs):
     ty = data.dtype
     data = data.astype(ty)
     meta = dict(header)
-    with asdf.AsdfFile(copy_arrays = True) as af:
-        af.tree={map_name:{"meta":meta,"data":data}}
-        af.write_to(fname)
+    asdf.AsdfFile({map_name : {"meta" : meta, "data" : data}},lazy_load=False,**kwargs).write_to(fname)
 
 
 def read(fname,**kwargs):
