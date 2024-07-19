@@ -3,7 +3,7 @@ from collections import OrderedDict
 import numpy as np
 
 import asdf
-from asdf.tags.core import ANDArrayType
+from asdf.tags.core import NDArrayType
 from astropy.utils.introspection import minversion
 
 from sunpy.io._header import FileHeader
@@ -89,7 +89,7 @@ def _read_obj(fname, **kwargs):
         if not isinstance(meta,dict):
             raise TypeError(f"meta must be a dictionary not {type(meta)}")
         # - is data a asdf.tags.core.ANDArrayType or ndarray?
-        if not isinstance(data,(ANDArrayType, np.ndarray)):
+        if not isinstance(data,(NDArrayType, np.ndarray)):
             raise TypeError(f"data must be a ANDArrayType or numpy ndarray not {type(data)}")
         #   (ANDArrayType is an asdf-specific type used for arrays).
         return obj
