@@ -1,1 +1,0 @@
-Fixed the appearance of a double "Notes" heading in `~sunpy.map.Map` subclasses.

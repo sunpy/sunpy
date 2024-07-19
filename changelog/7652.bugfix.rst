@@ -1,1 +1,0 @@
-Fix the `~sunpy.map.sources.gong.GONGHalphaMap.rsun_obs` to use correct header information ``solar-r`` keyword.

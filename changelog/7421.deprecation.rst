@@ -1,2 +1,0 @@
-Deprecated all positional arguments in :meth:`sunpy.map.GenericMap.plot` method.
-The ``annotate``, ``axes``, ``title``, ``clip_interval`` arguments should be passed as keyword arguments (e.g., ``..., title=True, ...``) instead.

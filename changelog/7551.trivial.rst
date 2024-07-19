@@ -1,1 +1,0 @@
-Fixed an unnecessary division computation when performing a unsupported division operation using a `~sunpy.map.Map`.

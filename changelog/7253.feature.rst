@@ -1,1 +1,0 @@
-Added the ability to pass ``clip_interval`` to :meth:`sunpy.map.mapsequence.MapSequence.plot`.

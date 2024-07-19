@@ -1,1 +1,0 @@
-The :meth:`~sunpy.map.GenericMap.rotate` function now correctly updates the NAXISi.
