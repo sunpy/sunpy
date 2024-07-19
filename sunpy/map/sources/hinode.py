@@ -105,10 +105,10 @@ class XRTMap(GenericMap):
         # See Table 1.1 and Section 2.11 of the XRT Analysis Guide.
         unit = super().unit
         if not unit:
-            unit = u.ct
+            unit = u.DN
             history = self.meta.get('HISTORY', '')
             if "xrt_renormalize" in history.lower():
-                unit = u.ct / u.second
+                unit = u.DN / u.second
         return unit
 
     @classmethod
