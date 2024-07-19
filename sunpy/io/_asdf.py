@@ -1,40 +1,43 @@
-from pathlib import Path
 from collections import OrderedDict
 
-import numpy as np
-
 import asdf
+from astropy.utils.introspection import minversion
 
 from sunpy.io._header import FileHeader
 
-__all__ = ["write", "read", "get_header", "get_keys_name"]
+__all__ = ["write", "read", "get_header"]
 
-def write(fname, data, header, **kwargs):
+# use memmap for and after asdf 3.1.0 to avoid a warning
+# for the deprecated copy_arrays
+if minversion(asdf, "3.1.0"):
+    _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
+else:
+    _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
+
+
+def write(filepath, data, header, **kwargs):
     """
     Take ``(data, header)`` pairs and save it to an ASDF file.
 
     Parameters
     ----------
-    fname : `str`
+    filepath : pathlib.Path, str
         File name, with extension.
     data : `numpy.ndarray`
         N-dimensional data array.
     header : `dict`
         A header dictionary.
     """
-    dt = data.dtype
-    data = data.astype(dt)
-    asdf.AsdfFile({Path(fname).name
-: {"meta" : dict(header), "data" : data.astype(data.dtype)}}, lazy_load=False, **kwargs).write_to(fname)
+    asdf.AsdfFile({"object": {"meta": OrderedDict(header), "data": data}}).write_to(str(filepath), **kwargs)
 
 
-def read(fname, **kwargs):
+def read(filepath, **kwargs):
     """
     Read an ASDF file.
 
     Parameters
     ----------
-    filepath : `str`
+    filepath : pathlib.Path, `str`
         The ASDF file to be read.
 
     Returns
@@ -42,29 +45,20 @@ def read(fname, **kwargs):
     `list`
         A list of ``(data, header)`` tuples.
     """
+    # Provide the required options to prevent asdf from memory mapping
+    # or lazy loading the data as the file will be closed at the end of
+    # _read_obj.
+    obj = _read_obj(str(filepath), **_NO_MEMMAP_KWARGS)
+    return [(obj["data"][:], FileHeader(obj["meta"]))]
 
-    with asdf.open(fname) as af:
-        map_name = get_keys_name(fname)
-        if isinstance(af[map_name], dict):
-            data = af[map_name]["data"].data
-            data_array = np.asarray(data)
-            meta_data= af[map_name]["meta"]
-            meta_data = OrderedDict(meta_data)
-            meta_data = FileHeader(meta_data)
-            return [(data_array,meta_data)]
-        else:
-            data = af[map_name].data
-            meta_data = af[map_name].meta
-            meta_data = FileHeader(meta_data)
-            return [(data,meta_data)]
 
-def get_header(fname):
+def get_header(filepath):
     """
     Read an ASDF file and return just the header(s).
 
     Parameters
     ----------
-    fname : `str`
+    filepath : pathlib.Path, str
         The ASDF file to be read.
 
     Returns
@@ -72,34 +66,16 @@ def get_header(fname):
     `list`
         A list of `sunpy.io._header.FileHeader` headers.
     """
-    with asdf.open(fname) as af:
-        map_name = get_keys_name(fname)
-        if isinstance(af[map_name], dict):
-            meta_data= af[map_name]["meta"]
-            meta_data = OrderedDict(meta_data)
-            meta_data = FileHeader(meta_data)
-            return [meta_data]
-        else:
-            meta_data = af[map_name].meta
-            meta_data = FileHeader(meta_data)
-            return [meta_data]
+    return [FileHeader(_read_obj(str(filepath))["meta"])]
 
 
-def get_keys_name(fname):
-    """
-    Returns the keys of primary tree (excluding the "asdf" and "history" trees).
-
-    Parameters
-    ----------
-    fname : `str`
-        The ASDF file to be read.
-
-    Returns
-    -------
-    `str`
-        Name of primary tree keys (excluding "asdf" and "history").
-    """
-    with asdf.open(fname) as af:
-        root_keys = af.tree.keys()
-        main_data_keys = [key for key in root_keys if key not in ['asdf_library', 'history']]
-        return main_data_keys[0]
+def _read_obj(fname, **kwargs):
+    with asdf.open(fname, **kwargs) as af:
+        # TODO as asdf files can be structured in many ways some tests
+        # of the structure and appropriate errors are needed
+        # - does the file contain an "object" key?
+        # - does "object" contain "meta" and "data"?
+        # - is meta a dict?
+        # - is data a asdf.tags.core.NDArrayType or ndarray?
+        #   (NDArrayType is an asdf-specific type used for arrays).
+        return af["object"]
