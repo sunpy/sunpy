@@ -249,7 +249,7 @@ def get_unit(unit):
     `A complete list of HEK parameters.
     <https://www.lmsal.com/hek/VOEvent_Spec.html>`__
     """
-    cm2 = u.def_unit("cm2", u.cm**3)
+    cm2 = u.def_unit("cm2", u.cm**2)
     m2 = u.def_unit("m2", u.m**2)
     m3 = u.def_unit("m3", u.m**3)
     erg_per_cm3 = u.def_unit("ergs/cm^3", u.erg/u.ml)
