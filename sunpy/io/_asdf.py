@@ -1,6 +1,9 @@
 from collections import OrderedDict
 
+import numpy as np
+
 import asdf
+from asdf.tags.core import ANDArrayType
 from astropy.utils.introspection import minversion
 
 from sunpy.io._header import FileHeader
@@ -74,8 +77,19 @@ def _read_obj(fname, **kwargs):
         # TODO as asdf files can be structured in many ways some tests
         # of the structure and appropriate errors are needed
         # - does the file contain an "object" key?
+        if "object" not in af.tree:
+            raise KeyError("The ASDF does not contain 'object' key")
+        obj = af.tree["object"]
         # - does "object" contain "meta" and "data"?
+        if 'meta' not in obj or 'data' not in obj:
+            raise("The object does not have any meta and data")
+        meta = obj["meta"]
+        data = obj["data"]
         # - is meta a dict?
+        if not isinstance(meta,dict):
+            raise TypeError(f"meta must be a dictionary not {type(meta)}")
         # - is data a asdf.tags.core.ANDArrayType or ndarray?
+        if not isinstance(data,(ANDArrayType, np.ndarray)):
+            raise TypeError(f"data must be a ANDArrayType or numpy ndarray not {type(data)}")
         #   (ANDArrayType is an asdf-specific type used for arrays).
-        return af["object"]
+        return obj
