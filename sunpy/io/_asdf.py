@@ -47,7 +47,7 @@ def read(fname, **kwargs):
 
     with asdf.open(fname) as af:
         map_name = get_keys_name(fname)
-        if isinstance(af[map_name],dict):
+        if isinstance(af[map_name], dict):
             data = af[map_name]["data"].data
             data_array = np.asarray(data)
             meta_data= af[map_name]["meta"]
