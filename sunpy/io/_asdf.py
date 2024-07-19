@@ -30,7 +30,7 @@ def write(fname, data, header, **kwargs):
     asdf.AsdfFile({map_name : {"meta" : meta, "data" : data}},lazy_load=False,**kwargs).write_to(fname)
 
 
-def read(fname,**kwargs):
+def read(fname, **kwargs):
     """
     Read an ASDF file.
 
@@ -42,7 +42,7 @@ def read(fname,**kwargs):
     Returns
     -------
     `list`
-        A list of "(data, header)" tuples.
+        A list of ``(data, header)`` tuples.
     """
 
     with asdf.open(fname) as af:
@@ -76,7 +76,7 @@ def get_header(fname):
     """
     with asdf.open(fname) as af:
         map_name = get_keys_name(fname)
-        if isinstance(af[map_name],dict):
+        if isinstance(af[map_name], dict):
             meta_data= af[map_name]["meta"]
             meta_data = OrderedDict(meta_data)
             meta_data = FileHeader(meta_data)
@@ -89,17 +89,17 @@ def get_header(fname):
 
 def get_keys_name(fname):
     """
-    Returns the name of primary tree (excluding the asdf and history trees).
+    Returns the keys of primary tree (excluding the "asdf" and "history" trees).
 
     Parameters
     ----------
     fname : `str`
-        the asdf file to be read
+        The ASDF file to be read.
 
     Returns
     -------
     `str`
-        Name of primary tree (excluding asdf and history).
+        Name of primary tree keys (excluding "asdf" and "history").
     """
     with asdf.open(fname) as af:
         root_keys = af.tree.keys()
