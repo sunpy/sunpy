@@ -6,7 +6,7 @@ import asdf
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.io._asdf import get_header, get_keys_name, read, write
-from sunpy.io.header import FileHeader
+from sunpy.io._header import FileHeader
 
 
 @pytest.fixture
