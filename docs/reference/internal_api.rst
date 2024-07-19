@@ -1,10 +1,11 @@
-.. _sunpy-dev-guide-internal-api:
+.. _sunpy-reference-internal-api:
 
 **************************
 Internal API Documentation
 **************************
 
 This page contains the documentation for the internal API of `sunpy`.
+This is not intended for general use and is subject to change without notice.
 
 .. automodapi:: sunpy.io._file_tools
 
