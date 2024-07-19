@@ -32,7 +32,7 @@ _KNOWN_EXTENSIONS = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
     ('fz', 'f0'): 'ana',
-    ('asdf', "asf"): 'asdf'
+    ('asdf', ): 'asdf'
 }
 
 
