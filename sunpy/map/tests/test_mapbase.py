@@ -1499,6 +1499,7 @@ def test_contour_units(simple_map):
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
+
 @pytest.mark.skipif(Version(matplotlib.__version__) < Version("3.6.0"), reason="Fails on old MPL versions, the first with block raises a different error")
 def test_contour_inputs(simple_map):
     with pytest.raises(ValueError, match='Contour levels must be increasing'):

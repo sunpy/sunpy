@@ -1,3 +1,2 @@
 # This file is used to pin test packages across sunpy coordinated packages
 # Do not remove, even if it's empty!
-setuptools!=71.0.1
