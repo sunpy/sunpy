@@ -46,5 +46,3 @@ def test_save(tmpdir, example_map):
     map_obj_asdf = sunpy.map.Map(outpath)
     assert dict(map_obj_asdf.meta) == dict(example_map.meta)
     assert np.array_equal(map_obj_asdf.data, example_map.data)
-
-

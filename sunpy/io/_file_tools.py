@@ -245,7 +245,7 @@ def detect_filetype(filepath):
 
     if cdf_magic_number in ['cdf30001', 'cdf26002', '0000ffff']:
         return 'cdf'
-        
+
     # ASDF files
     if first_5bytes == b"#ASDF":
         return "asdf"

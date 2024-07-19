@@ -76,6 +76,6 @@ def _read_obj(fname, **kwargs):
         # - does the file contain an "object" key?
         # - does "object" contain "meta" and "data"?
         # - is meta a dict?
-        # - is data a asdf.tags.core.NDArrayType or ndarray?
-        #   (NDArrayType is an asdf-specific type used for arrays).
+        # - is data a asdf.tags.core.ANDArrayType or ndarray?
+        #   (ANDArrayType is an asdf-specific type used for arrays).
         return af["object"]
