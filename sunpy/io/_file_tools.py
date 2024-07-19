@@ -211,7 +211,7 @@ def detect_filetype(filepath):
         # First 4 bytes of CDF
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
-        #First 5 bytes for ASDF detection
+        # First 5 bytes for ASDF detection
         fp.seek(0)
         first_5bytes = fp.read(5)
 
