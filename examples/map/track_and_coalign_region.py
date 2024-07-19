@@ -39,10 +39,14 @@ m_seq = sunpy.map.Map(files, sequence=True)
 # Plot the sequence of maps.
 
 
-fig = plt.figure(figsize=(16, 4))
+fig = plt.figure(figsize=(24, 8))
 for i, m in enumerate(m_seq):
     ax = fig.add_subplot(1, len(m_seq), i+1, projection=m)
     m.plot(axes=ax)
+    ax.set_xlabel(' ')
+    ax.set_ylabel(' ')
+plt.subplots_adjust(wspace=0.3)
+
 
 # The above images are the result of the query: 4 images at 6-hour intervals.
 
@@ -66,10 +70,13 @@ plt.show()
 # Track and co-align the region across the sequence of maps using solar rotation.
 
 
-fig = plt.figure(figsize=(16, 4))
+fig = plt.figure(figsize=(24, 8))
 for i, m in enumerate(m_seq):
     ax = fig.add_subplot(1, len(m_seq), i+1, projection=m)
     m.plot(axes=ax)
+    ax.set_xlabel(' ')
+    ax.set_ylabel(' ')
+    plt.subplots_adjust(wspace=0.3)
     with propagate_with_solar_surface():
         blc = m_cutout.bottom_left_coord.transform_to(m.coordinate_frame)
         trc = m_cutout.top_right_coord.transform_to(m.coordinate_frame)
@@ -87,10 +94,12 @@ with propagate_with_solar_surface():
 # aligning all images to the same reference frame.
 
 # Plot the aligned sequence of maps.
-fig = plt.figure(figsize=(16, 4))
+fig = plt.figure(figsize=(24, 8))
 for i, m in enumerate(m_seq_aligned):
     ax = fig.add_subplot(1, len(m_seq_aligned), i+1, projection=m)
     m.plot(axes=ax, cmap='sdoaia171', title=m_seq[i].date)
-
+    ax.set_xlabel(' ')
+    ax.set_ylabel(' ')
+plt.subplots_adjust(wspace=0.3)
 # This code aligns a sequence of solar images to a common reference frame, taking into account solar rotation,
 # and then plots them side by side in a single figure. Each subplot shows one map from the aligned sequence.
