@@ -22,12 +22,8 @@ def write(fname, data, header, **kwargs):
     header : `dict`
         A header dictionary.
     """
-    map_name = Path(fname)
-    map_name = map_name.name
-    ty = data.dtype
-    data = data.astype(ty)
-    meta = dict(header)
-    asdf.AsdfFile({map_name : {"meta" : meta, "data" : data}},lazy_load=False,**kwargs).write_to(fname)
+    asdf.AsdfFile({Path(fname).name
+: {"meta" : dict(header), "data" : data}}, lazy_load=False, **kwargs).write_to(fname)
 
 
 def read(fname, **kwargs):
