@@ -1,6 +1,7 @@
 import json
 import pathlib
 import re
+from json.decoder import JSONDecodeError
 
 import astropy.table
 import astropy.units as u
@@ -170,12 +171,17 @@ class SOARClient(BaseClient):
         r = requests.get(f"{tap_endpoint}/sync", params=payload)
         log.debug(f"Sent query: {r.url}")
         r.raise_for_status()
+        try:
+            response_json = r.json()
+        except JSONDecodeError as err:
+            msg = "The SOAR server returned an invalid JSON response. It may be down or not functioning correctly."
+            raise RuntimeError(msg) from err
 
         # Do some list/dict wrangling
-        names = [m["name"] for m in r.json()["metadata"]]
+        names = [m["name"] for m in response_json["metadata"]]
         info = {name: [] for name in names}
 
-        for entry in r.json()["data"]:
+        for entry in response_json["data"]:
             for i, name in enumerate(names):
                 info[name].append(entry[i])
 

@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import astropy.units as u
+import pytest
+import responses
 import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
@@ -268,3 +270,25 @@ def test_join_low_latency_query():
         "+WHERE+h1.instrument='EUI'+AND+h1.begin_time>='2021-02-01+00:00:00'+AND+h1.begin_time<='2021-02-02+00:00:00'"
         "+AND+h2.dimension_index='1'+AND+h1.level='LL01'+AND+h1.descriptor='eui-fsi174-image'"
     )
+
+
+@responses.activate
+def test_soar_server_down():
+    # As the SOAR server is expected to be down in this test, a JSONDecodeError is expected
+    # to be raised due to the absence of a valid JSON response.
+    TAP_ENDPOINT = (
+        "http://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT+*+FROM+v_ll_data_item+"
+        "WHERE+begin_time%3E='2020-11-13+00:00:00'+AND+begin_time%3C='2020-11-14+00:00:00'+AND+level='LL02'+AND+descriptor='mag'"
+    )
+    # We do not give any json data similar to the condition when the server is down.
+    responses.add(responses.GET, TAP_ENDPOINT, body="Invalid JSON response", status=200)
+
+    time = a.Time("2020-11-13", "2020-11-14")
+    level = a.Level("LL02")
+    product = a.soar.Product("mag")
+
+    with pytest.raises(
+        RuntimeError,
+        match=("The SOAR server returned an invalid JSON response. " "It may be down or not functioning correctly."),
+    ):
+        Fido.search(time, level, product)
