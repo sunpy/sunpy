@@ -1,0 +1,1 @@
+Fixed a bug where `~sunpy.map.sources.XRTMap` was still defaulting to counts rather than DN.
