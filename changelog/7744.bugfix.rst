@@ -1,2 +1,1 @@
-Fixed a bug where `~sunpy.map.sources.XRTMap` was still defaulting to `~astropy.units.ct` rather than
-`~astropy.units.DN`.
+Fixed a bug where `~sunpy.map.sources.XRTMap` was still defaulting to counts rather than DN.
