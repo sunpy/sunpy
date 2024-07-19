@@ -1,6 +1,8 @@
 """
 Test cases for HINODE XRTMap subclass.
 """
+import copy
+
 import pytest
 
 import astropy.units as u
@@ -40,8 +42,16 @@ def test_measurement(xrt_map):
 
 def test_unit(xrt_map):
     """Tests the unit property of the XRTMap object."""
-    assert xrt_map.unit == u.ct / u.second
+    assert xrt_map.unit == u.DN / u.second
 
+def test_unit_no_renormalize(xrt_map):
+    """
+    Tests that the unit defaults ot DN if the history key does not say it has
+    been normalized
+    """
+    new_xrt_map = copy.deepcopy(xrt_map)
+    new_xrt_map.meta.pop('history')
+    assert new_xrt_map.unit == u.DN
 
 def test_level_number(xrt_map):
     assert xrt_map.processing_level == 1
