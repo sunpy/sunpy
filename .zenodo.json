@@ -647,7 +647,8 @@
             "affiliation": "Sapienza University of Rome"
         },
         {
-            "name": "Zach Burnett"
+            "name": "Zach Burnett",
+            "affiliation": "Space Telescope Science Institute"
         },
         {
             "name": "Abigail L. Stevens",
@@ -825,7 +826,6 @@
         },
         {
             "name": "Rehan Chalana",
-            "orcid": "0009-0005-1579-5787",
             "affiliation": "Chitkara University, Punjab"
         },
         {
