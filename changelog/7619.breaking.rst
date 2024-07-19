@@ -1,0 +1,1 @@
+In `~sunpy.net.hek` the columns ``event_Coord1`` ``event_Coord2`` and ``event_Coord3`` are megred into one `astropy.coordinates.SkyCoord` object called ``event_coord``.
