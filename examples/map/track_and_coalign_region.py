@@ -18,30 +18,25 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
-# `sunpy.net.Fido` is the primary interface for searching and downloading data.
-# The following code performs a search for solar data using the Fido client from the sunpy.net module.
+# As we require a series of images, we will need to download them using `sunpy.net.Fido`.
+# For this example, we will acquire 4 images at 6-hour intervals.
+
 query = Fido.search(a.Time('2012/3/4', '2012/3/5'),
                     a.Instrument.aia,
                     a.Wavelength(171*u.angstrom),
                     a.Sample(360*u.minute))
 print(query)
-
-###############################################################################
-# Let's inspect the results and download the files.
 files = Fido.fetch(query)
-print(files)
 
 ###############################################################################
-# Create a sequence of maps from the downloaded files.
+# Now we have a set of images, we can create a sequence of maps.
 
-m_seq = sunpy.map.Map(files, sequence=True)
-
-# Plot the sequence of maps.
+aia_sequence = sunpy.map.Map(files, sequence=True)
 
 
 fig = plt.figure(figsize=(24, 8))
-for i, m in enumerate(m_seq):
-    ax = fig.add_subplot(1, len(m_seq), i+1, projection=m)
+for i, m in enumerate(aia_sequence):
+    ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)
     m.plot(axes=ax)
     ax.set_xlabel(' ')
     ax.set_ylabel(' ')
@@ -49,37 +44,32 @@ plt.subplots_adjust(wspace=0.3)
 
 
 # The above images are the result of the query: 4 images at 6-hour intervals.
-
 ###############################################################################
-# Define the region of interest using a SkyCoord.
 
+# Now, let us crop into an interesting region.
+corner = SkyCoord(Tx=-375*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
 
-corner = SkyCoord(Tx=-375*u.arcsec, Ty=0*u.arcsec, frame=m_seq[0].coordinate_frame)
-print(m_seq[0].world_to_pixel(corner))
+# Create a cutout out from the bottom left corner.
+cutout_map = aia_sequence[0].submap(corner, width=500*u.arcsec, height=500*u.arcsec)
 
-# Create a cutout around the defined region.
-m_cutout = m_seq[0].submap(corner, width=500*u.arcsec, height=500*u.arcsec)
-
-# Plot the cutout region.
 fig = plt.figure()
-ax = fig.add_subplot(projection=m_cutout)
-m_cutout.plot(axes=ax)
-plt.show()
+ax = fig.add_subplot(projection=cutout_map)
+
+cutout_map.plot(axes=ax)
 
 ###############################################################################
 # Track and co-align the region across the sequence of maps using solar rotation.
 
-
 fig = plt.figure(figsize=(24, 8))
-for i, m in enumerate(m_seq):
-    ax = fig.add_subplot(1, len(m_seq), i+1, projection=m)
+for i, m in enumerate(aia_sequence):
+    ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)
     m.plot(axes=ax)
     ax.set_xlabel(' ')
     ax.set_ylabel(' ')
     plt.subplots_adjust(wspace=0.3)
     with propagate_with_solar_surface():
-        blc = m_cutout.bottom_left_coord.transform_to(m.coordinate_frame)
-        trc = m_cutout.top_right_coord.transform_to(m.coordinate_frame)
+        blc = cutout_map.bottom_left_coord.transform_to(m.coordinate_frame)
+        trc = cutout_map.top_right_coord.transform_to(m.coordinate_frame)
         m.draw_quadrangle(blc, top_right=trc)
 
 ###############################################################################
@@ -88,16 +78,16 @@ for i, m in enumerate(m_seq):
 # ensuring that regions on the Sun's surface remain in the correct position as the Sun rotates.
 
 with propagate_with_solar_surface():
-    m_seq_aligned = sunpy.map.Map([m.reproject_to(m_cutout.wcs) for m in m_seq], sequence=True)
+    aia_sequence_aligned = sunpy.map.Map([m.reproject_to(cutout_map.wcs) for m in aia_sequence], sequence=True)
 
 # `reproject_to` reprojects each map in the sequence to the WCS of the cutout map,
 # aligning all images to the same reference frame.
 
 # Plot the aligned sequence of maps.
 fig = plt.figure(figsize=(24, 8))
-for i, m in enumerate(m_seq_aligned):
-    ax = fig.add_subplot(1, len(m_seq_aligned), i+1, projection=m)
-    m.plot(axes=ax, cmap='sdoaia171', title=m_seq[i].date)
+for i, m in enumerate(aia_sequence_aligned):
+    ax = fig.add_subplot(1, len(aia_sequence_aligned), i+1, projection=m)
+    m.plot(axes=ax, cmap='sdoaia171', title=aia_sequence[i].date)
     ax.set_xlabel(' ')
     ax.set_ylabel(' ')
 plt.subplots_adjust(wspace=0.3)
