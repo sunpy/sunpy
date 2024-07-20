@@ -42,10 +42,7 @@ for i, m in enumerate(aia_sequence):
     ax.set_ylabel(' ')
 plt.subplots_adjust(wspace=0.3)
 
-
-# The above images are the result of the query: 4 images at 6-hour intervals.
 ###############################################################################
-
 # Now, let us crop into an interesting region.
 corner = SkyCoord(Tx=-375*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
 
@@ -59,7 +56,6 @@ cutout_map.plot(axes=ax)
 
 ###############################################################################
 # Track and co-align the region across the sequence of maps using solar rotation.
-
 fig = plt.figure(figsize=(24, 8))
 for i, m in enumerate(aia_sequence):
     ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)
