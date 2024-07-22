@@ -11,12 +11,14 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy.visualization import ImageNormalize, SqrtStretch
 
 import sunpy.map
 from sunpy.coordinates import propagate_with_solar_surface
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+
+# from astropy.visualization import ImageNormalize, SqrtStretch
+
 
 ###############################################################################
 # As we require a series of images, we will need to download them using `sunpy.net.Fido`.
@@ -34,11 +36,19 @@ files = Fido.fetch(query)
 
 aia_sequence = sunpy.map.Map(files, sequence=True)
 
-fig = plt.figure()
-ax = fig.add_subplot(projection=aia_sequence.maps[0])
-ani = aia_sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+# fig = plt.figure()
+# ax = fig.add_subplot(projection=aia_sequence.maps[0])
+# ani = aia_sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
 
-plt.show()
+# plt.show()
+
+fig = plt.figure(figsize=(24, 8))
+for i, m in enumerate(aia_sequence):
+    ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)
+    m.plot(axes=ax)
+    ax.set_xlabel(' ')
+    ax.set_ylabel(' ')
+plt.subplots_adjust(wspace=0.3)
 
 ###############################################################################
 # Now, let us crop into an interesting region.
