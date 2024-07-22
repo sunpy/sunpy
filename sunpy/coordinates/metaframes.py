@@ -6,6 +6,7 @@ import astropy.units as u
 from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
+from astropy.time import TimeDelta
 
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
@@ -185,6 +186,16 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
             rotated_time = parse_time(kwargs['rotated_time'])
             kwargs['duration'] = (rotated_time - kwargs['base'].obstime).to('day')
             kwargs.pop('rotated_time')
+
+        if 'duration' in kwargs:
+            duration = kwargs['duration']
+            if isinstance(duration, TimeDelta):
+                kwargs['duration'] = duration.to(u.day)
+            elif isinstance(duration, u.Quantity):
+                if duration.unit != u.day:
+                    kwargs['duration'] = duration.to(u.day)
+            else:
+                raise ValueError("`duration` must be a `TimeDelta` or `Quantity` object.")
 
         super().__init__(*args, **kwargs)
 
