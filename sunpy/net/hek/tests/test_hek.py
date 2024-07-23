@@ -28,7 +28,6 @@ def read_unit_attributes():
 def read_coord_attributes():
     with open(COORD_FILE_PATH) as coord_file:
         coord_properties = json.load(coord_file)
-
     return coord_properties
 
 class HEKResult:
