@@ -302,7 +302,7 @@ def test_obs_meanwavel():
     client = hek.HEKClient()
     result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
 
-     assert result['obs_meanwavel'][0] == 193.0*u.angstrom
+    assert result['obs_meanwavel'][0] == 193.0*u.angstrom
 
 
 @pytest.mark.remote_data
