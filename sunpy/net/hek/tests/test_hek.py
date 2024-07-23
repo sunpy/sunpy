@@ -277,6 +277,7 @@ def test_missing_times():
     assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
     assert results["event_peaktime"][6].isot == "2024-05-10T16:08:00.000"
 
+
 @pytest.mark.remote_data
 def test_merging_event_coords():
     tstart = '2011/08/09 07:23:56'
