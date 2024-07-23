@@ -60,7 +60,7 @@ def test_read_obj_no_meta_data(tmp_path, example_map):
     file_path = tmp_path / "map_no_meta_data.asdf"
     af = asdf.AsdfFile({"object": {"wrong_meta": dict(example_map.meta), "wrong_data": example_map.data}})
     af.write_to(str(file_path))
-    with pytest.raises(ValueError, match="The object does not have any meta and data"):
+    with pytest.raises(TypeError, match="The object does not have any meta and data"):
         read(file_path)
 
 def test_read_obj_meta_not_dict(tmp_path, example_map):
@@ -74,5 +74,5 @@ def test_read_obj_data_not_ndarray(tmp_path, example_map):
     file_path = tmp_path / "map_data_not_ndarray.asdf"
     af = asdf.AsdfFile({"object": {"meta": dict(example_map.meta), "data": "not_an_ndarray"}})
     af.write_to(str(file_path))
-    with pytest.raises(TypeError, match="data must be a ANDArrayType or numpy ndarray not <class 'str'>"):
+    with pytest.raises(TypeError, match="data must be a NDArrayType or numpy ndarray not <class 'str'>"):
         read(file_path)
