@@ -51,8 +51,8 @@ class HEKClient(BaseClient):
 
     Notes
     -----
-    The columns ``event_Coord1``, ``event_Coord2`` and ``event_Coord3``
-    are megred into one `astropy.coordinates.SkyCoord` object called ``event_coord``.
+    The columns ``event_coord1``, ``event_coord2`` and ``event_coord3``
+    are megred into one `astropy.coordinates.SkyCoord` object under the column ``event_coord``.
 
     References
     ----------
