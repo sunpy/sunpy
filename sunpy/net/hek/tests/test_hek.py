@@ -352,6 +352,7 @@ def test_flares_peak_flux_and_position():
     result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.Event.Coord1 > 800, attrs.hek.FL.PeakFlux > 1000)
     assert len(result[0]) == 7
 
+
 @pytest.mark.remote_data
 def test_flares_python_logical_ops():
     tstart = '2011/08/09 07:23:56'
