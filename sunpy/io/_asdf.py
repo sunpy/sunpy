@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 import numpy as np
+import os 
 
 import asdf
 from asdf.tags.core import NDArrayType
@@ -18,7 +19,7 @@ else:
     _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
 
 
-def write(filepath, data, header, **kwargs):
+def write(filepath, data, header, overwrite=False, **kwargs):
     """
     Take ``(data, header)`` pairs and save it to an ASDF file.
 
@@ -30,7 +31,12 @@ def write(filepath, data, header, **kwargs):
         N-dimensional data array.
     header : `dict`
         A header dictionary.
+    overwrite : bool, optional
+        If True, overwrite the file if it already exists. Default is False.
     """
+    if os.path.exists(filepath) and not overwrite:
+        raise FileExistsError(f"The file '{filepath}' already exists. Set 'overwrite=True' to overwrite it.")
+
     asdf.AsdfFile({"object": {"meta": OrderedDict(header), "data": data}}).write_to(str(filepath), **kwargs)
 
 
@@ -82,14 +88,13 @@ def _read_obj(fname, **kwargs):
         obj = af.tree["object"]
         # - does "object" contain "meta" and "data"?
         if 'meta' not in obj or 'data' not in obj:
-            raise("The object does not have any meta and data")
+            raise TypeError("The object does not have any meta and data")
         meta = obj["meta"]
         data = obj["data"]
         # - is meta a dict?
-        if not isinstance(meta,dict):
+        if not isinstance(meta, dict):
             raise TypeError(f"meta must be a dictionary not {type(meta)}")
         # - is data a asdf.tags.core.ANDArrayType or ndarray?
-        if not isinstance(data,(NDArrayType, np.ndarray)):
-            raise TypeError(f"data must be a ANDArrayType or numpy ndarray not {type(data)}")
-        #   (ANDArrayType is an asdf-specific type used for arrays).
+        if not isinstance(data, (NDArrayType| np.ndarray)):
+            raise TypeError(f"data must be a NDArrayType or numpy ndarray not {type(data)}")
         return obj
