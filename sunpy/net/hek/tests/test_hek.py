@@ -17,6 +17,7 @@ from sunpy.net.hek.utils import COORD_FILE_PATH, UNIT_FILE_PATH
 def foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
 
+
 @pytest.fixture
 def read_unit_attributes():
     with open(UNIT_FILE_PATH) as unit_file:
