@@ -316,6 +316,7 @@ def test_parse_times():
         assert isinstance(result['event_starttime'][idx], Time)
         assert isinstance(result['event_endtime'][idx], Time)
 
+
 @pytest.mark.remote_data
 def test_ssw_latest_events_flares():
     tstart = '2011/08/09 07:23:56'
