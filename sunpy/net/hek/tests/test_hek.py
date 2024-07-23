@@ -304,6 +304,7 @@ def test_obs_meanwavel():
     value = 193.0*u.angstrom
     assert result['obs_meanwavel'][0] == value
 
+
 @pytest.mark.remote_data
 def test_parse_times():
     tstart = '2011/08/09 07:23:56'
