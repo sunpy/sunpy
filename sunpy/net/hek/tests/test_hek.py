@@ -269,6 +269,7 @@ def test_chaincode_parsing(read_coord_attributes):
         if attribute["name"] in result.colnames:
             assert all([value in ['', None] or isinstance(value, SkyRegion) for value in result[attribute['name']]])
 
+
 @pytest.mark.remote_data
 def test_missing_times():
     # Check for https://github.com/sunpy/sunpy/pull/7627#issuecomment-2113451964
