@@ -342,6 +342,8 @@ def test_flares_peak_flux():
     event_type = 'FL'
     result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FL.PeakFlux > 4000.0)
     assert len(result[0]) == 1
+    for row in result[0]['fl_peakflux']:
+        assert row.value > 4000.0
 
 
 @pytest.mark.remote_data
@@ -352,6 +354,12 @@ def test_flares_peak_flux_and_position():
     result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.Event.Coord1 > 800, attrs.hek.FL.PeakFlux > 1000)
     assert len(result[0]) == 7
 
+    for row in result[0]['event_coord']:
+        assert row.Tx > 800*u.arcsec
+
+    for row in result[0]['fl_peakflux']:
+        assert row.value > 1000.0
+
 
 @pytest.mark.remote_data
 def test_flares_python_logical_ops():
@@ -360,3 +368,9 @@ def test_flares_python_logical_ops():
     event_type = 'FL'
     result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), (attrs.hek.Event.Coord1 > 50) and (attrs.hek.FL.PeakFlux > 1000))
     assert len(result[0]) == 7
+
+    for row in result[0]['event_coord']:
+        assert row.Tx > 50*u.arcsec
+
+    for row in result[0]['fl_peakflux']:
+        assert row.value > 1000.0
