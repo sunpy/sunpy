@@ -39,7 +39,6 @@ class HEKClient(BaseClient):
     >>> event_type = 'FL'
     >>> client = hek.HEKClient()
     >>> result = client.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000))  # doctest: +REMOTE_DATA
-
     >>> result['fl_peakflux']  # doctest: +REMOTE_DATA
     <QueryResponseColumn name='fl_peakflux' dtype='object' length=7>
     2326.86 DN / (pix s)
