@@ -334,6 +334,7 @@ def test_not_ssw_latest_events_flares():
     result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FRM.Name != 'SSW Latest Events')
     assert len(result[0]) == 19
 
+
 @pytest.mark.remote_data
 def test_flares_peak_flux():
     tstart = '2011/08/09 07:23:56'
