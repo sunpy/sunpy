@@ -24,6 +24,7 @@ def read_unit_attributes():
         unit_properties = json.load(unit_file)
     return unit_properties
 
+
 @pytest.fixture
 def read_coord_attributes():
     with open(COORD_FILE_PATH) as coord_file:
