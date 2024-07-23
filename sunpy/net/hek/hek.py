@@ -54,6 +54,47 @@ class HEKClient(BaseClient):
     The columns ``event_coord1``, ``event_coord2`` and ``event_coord3``
     are megred into one `astropy.coordinates.SkyCoord` object under the column ``event_coord``.
 
+
+    This list describes the coordinate systems corresponding to each coordinate attribute.
+
+    * `~astropy.coordinates.ICRS`.
+
+        * ``bound_chaincode``: Provides coordinates in the ICRS frame using boundary chaincode.
+
+        * ``skel_chaincode``: Provides coordinates in the ICRS frame using skeleton chaincode.
+
+    * `~sunpy.coordinates.frames.HeliographicCarrington`.
+
+        * ``hgc_bbox``: Represents the bounding box coordinates in the Heliographic Carrington (HGC) coordinate system.
+
+        * ``hgc_coord``: Provides specific coordinates in the HGC coordinate system.
+
+        * ``hgc_boundcc``: Uses boundary chaincode to provide coordinates in the HGC coordinate system.
+
+    * `~sunpy.coordinates.Helioprojective`.
+
+        * ``hpc_bbox``: Provides bounding box coordinates in the Helioprojective coordinate system (HPC).
+
+        * ``hpc_coord``: Specifies coordinates in the HPC frame.
+
+        * ``hpc_boundcc``: Uses boundary chaincode to specify coordinates in the HPC coordinate system.
+
+    * `~sunpy.coordinates.HeliographicStonyhurst`.
+
+        * ``hgs_bbox``: Represents the bounding box coordinates in the Heliographic Stonyhurst (HGS) coordinate system.
+
+        * ``hgs_coord``: Provides specific coordinates in the HGS coordinate system.
+
+        * ``hgs_boundcc``: Uses boundary chaincode to provide coordinates in the HGS coordinate system.
+
+    * `~sunpy.coordinates.Heliocentric`.
+
+        * ``hrc_bbox``: Represents the bounding box coordinates in the Heliocentric coordinate system (HRC).
+
+        * ``hrc_coord``: Specifies coordinates in the HRC frame.
+
+        * ``hrc_boundcc``: Uses boundary chaincode to specify coordinates in the HRC coordinate system.
+
     References
     ----------
     * `Heliophysics Knowledge Base Feature/Event Types definitions <https://www.lmsal.com/hek/VOEvent_Spec.html>`__
