@@ -21,7 +21,6 @@ def foostrwrap(request):
 def read_unit_attributes():
     with open(UNIT_FILE_PATH) as unit_file:
         unit_properties = json.load(unit_file)
-
     return unit_properties
 
 @pytest.fixture
