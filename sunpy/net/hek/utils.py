@@ -253,6 +253,7 @@ def get_unit(unit):
     m2 = u.def_unit("m2", u.m**2)
     m3 = u.def_unit("m3", u.m**3)
     erg_per_cm3 = u.def_unit("ergs/cm^3", u.erg/u.ml)
+    hmi_pixel = u.def_unit("HMI pixel", (0.5*u.arcsec)/u.pixel)
 
     aliases = {
         "steradian": u.sr,
@@ -267,6 +268,8 @@ def get_unit(unit):
         "cubic meter": m3,
         "square meter": m2,
         "ergs per cubic centimeter": erg_per_cm3,
+        "HMI pixels": hmi_pixel,
+        "radians": u.rad
     }
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         # Units for coordinate frames have more than one unit, otherwise it will be just one unit.
