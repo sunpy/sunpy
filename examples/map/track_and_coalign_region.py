@@ -89,5 +89,6 @@ for i, m in enumerate(aia_sequence_aligned):
     ax.set_xlabel(' ')
     ax.set_ylabel(' ')
 plt.subplots_adjust(wspace=0.3)
+plt.show()
 # This code aligns a sequence of solar images to a common reference frame, taking into account solar rotation,
 # and then plots them side by side in a single figure. Each subplot shows one map from the aligned sequence.
