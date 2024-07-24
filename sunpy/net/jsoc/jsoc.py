@@ -329,8 +329,8 @@ class JSOCClient(BaseClient):
 
         Returns
         -------
-        requests : `~drms.client.ExportRequest` object or
-                   a list of  `~drms.client.ExportRequest` objects
+        requests : `~drms.ExportRequest` object or
+                   a list of  `~drms.ExportRequest` objects
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
         """
@@ -449,8 +449,8 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        requests : `~drms.client.ExportRequest`, `str`, `list`
-            `~drms.client.ExportRequest` objects or `str` request IDs or lists
+        requests : `~drms.ExportRequest`, `str`, `list`
+            `~drms.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
         path : `str`
             Path to save data to, defaults to SunPy download dir.
