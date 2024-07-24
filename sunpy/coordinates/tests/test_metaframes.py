@@ -1,4 +1,5 @@
 import pickle
+from datetime import timedelta
 
 import pytest
 from hypothesis import given, settings
@@ -144,6 +145,16 @@ def test_rotated_time_to_duration():
     r2 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'),
                          rotated_time='2001-01-01')
     assert_quantity_allclose(r2.duration, -1*u.day)
+
+
+def test_duration_from_timedelta():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    duration_timedelta = timedelta(days=4)
+    r = RotatedSunFrame(base=base_frame, duration=duration_timedelta)
+
+    # Verify that the duration is correctly converted to a quantity in days
+    assert_quantity_allclose(r.duration, 4 * u.day)
 
 
 def test_rotated_time_property():
