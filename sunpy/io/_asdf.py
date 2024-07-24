@@ -1,7 +1,7 @@
+import os
 from collections import OrderedDict
 
 import numpy as np
-import os 
 
 import asdf
 from asdf.tags.core import NDArrayType
