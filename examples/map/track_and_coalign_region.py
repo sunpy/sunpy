@@ -73,14 +73,13 @@ for i, m in enumerate(aia_sequence):
 
 ###############################################################################
 # Aligns all images to the World Coordinate System (WCS) of the cutout.
-# `propagate_with_solar_surface` is a context manager that adjusts for solar rotation,
+# `sunpy.coordinates.propagate_with_solar_surface` is a context manager that adjusts for solar rotation,
 # ensuring that regions on the Sun's surface remain in the correct position as the Sun rotates.
 
 with propagate_with_solar_surface():
+    # reproject_to reprojects each map in the sequence to the WCS of the cutout map,
+    # aligning all images to the same reference frame.
     aia_sequence_aligned = sunpy.map.Map([m.reproject_to(cutout_map.wcs) for m in aia_sequence], sequence=True)
-
-# `reproject_to` reprojects each map in the sequence to the WCS of the cutout map,
-# aligning all images to the same reference frame.
 
 # Plot the aligned sequence of maps.
 fig = plt.figure(figsize=(24, 8))
