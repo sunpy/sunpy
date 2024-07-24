@@ -7,7 +7,7 @@ from skimage import transform as tf
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
 from sunpy.image.transform import _rotation_registry, affine_transform
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, skip_windows
 from sunpy.util import SunpyUserWarning
 
 # Tolerance for tests
@@ -245,6 +245,7 @@ def test_float32(identity):
     assert np.issubdtype(out_arr.dtype, np.float32)
 
 
+@skip_windows
 def test_reproducible_matrix_multiplication():
     # Test whether matrix multiplication involving a large matrix always gives the same answer
     # This indirectly tests whichever BLAS/LAPACK libraries that NumPy is linking to (if any)
