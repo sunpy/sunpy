@@ -382,4 +382,4 @@ def test_event_types():
 
     for event_type in events:
         # Just to make sure there is no errors happens
-        result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type))
+        Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type))
