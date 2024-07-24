@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.visualization import ImageNormalize, SqrtStretch
 
 import sunpy.map
 from sunpy.coordinates import propagate_with_solar_surface
@@ -36,28 +37,28 @@ files = Fido.fetch(query)
 
 aia_sequence = sunpy.map.Map(files, sequence=True)
 
-fig = plt.figure(figsize=(24, 8))
-for i, m in enumerate(aia_sequence):
-    ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)
-    m.plot(axes=ax)
-    ax.set_xlabel(' ')
-    ax.set_ylabel(' ')
-plt.subplots_adjust(wspace=0.3)
+fig = plt.figure()
+ax = fig.add_subplot(projection=aia_sequence.maps[0])
+ani = aia_sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+
+plt.show()
 
 ###############################################################################
 # Now, let us crop into an interesting region.
-corner = SkyCoord(Tx=-375*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
+
+corner = SkyCoord(Tx=280*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
 
 # Create a cutout out from the bottom left corner.
 cutout_map = aia_sequence[0].submap(corner, width=500*u.arcsec, height=500*u.arcsec)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=cutout_map)
+
 cutout_map.plot(axes=ax)
-plt.show()
 
 ###############################################################################
 # Track and co-align the region across the sequence of maps using solar rotation.
+
 fig = plt.figure(figsize=(24, 8))
 for i, m in enumerate(aia_sequence):
     ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)

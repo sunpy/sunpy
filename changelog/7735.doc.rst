@@ -1,1 +1,1 @@
-Added a gallery example showcasing how to track and co-align an active region (:ref:`track_and_coalign_region.py`). (`#7735 <https://github.com/sunpy/sunpy/pull/7735>`__)
+Added a gallery example showcasing how to track and co-align an active region (:ref:`track_and_coalign_region.py`)
