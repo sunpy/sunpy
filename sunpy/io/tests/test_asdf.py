@@ -52,6 +52,7 @@ def test_save(tmpdir, example_map):
     assert dict(map_obj_asdf.meta) == dict(example_map.meta)
     assert np.array_equal(map_obj_asdf.data, example_map.data)
 
+
 def test_read_obj_no_object_key(tmp_path, example_map):
     file_path = tmp_path / "map_no_object_key.asdf"
     af = asdf.AsdfFile({"wrong_key": {"meta": dict(example_map.meta), "data": example_map.data}})
