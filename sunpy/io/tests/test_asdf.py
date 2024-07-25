@@ -68,6 +68,7 @@ def test_read_obj_no_meta_data(tmp_path, example_map):
     with pytest.raises(TypeError, match="The object does not have any meta and data"):
         read(file_path)
 
+
 def test_read_obj_meta_not_dict(tmp_path, example_map):
     file_path = tmp_path / "map_meta_not_dict.asdf"
     af = asdf.AsdfFile({"object": {"meta": "not_a_dict", "data": example_map.data}})
