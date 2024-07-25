@@ -94,7 +94,7 @@ def _read_obj(fname, **kwargs):
         # - is meta a dict?
         if not isinstance(meta, dict):
             raise TypeError(f"meta must be a dict not {type(meta)}")
-        # - is data a asdf.tags.core.ANDArrayType or ndarray?
+        # - is data a asdf.tags.core.NDArrayType or ndarray?
         if not isinstance(data, (NDArrayType| np.ndarray)):
             raise TypeError(f"data must be a NDArrayType or numpy ndarray not {type(data)}")
         return obj
