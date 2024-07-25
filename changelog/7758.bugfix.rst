@@ -1,0 +1,1 @@
+Fixed incorrect ``reference_date`` for SDO/AIA and SDO/HMI data to use the ``T_OBS`` keyword instead of the ``DATE-OBS`` keyword.
