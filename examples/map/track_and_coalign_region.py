@@ -18,9 +18,6 @@ from sunpy.coordinates import propagate_with_solar_surface
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-# from astropy.visualization import ImageNormalize, SqrtStretch
-
-
 ###############################################################################
 # As we require a series of images, we will need to download them using `sunpy.net.Fido`.
 # For this example, we will acquire 4 images at 6-hour intervals.
@@ -89,6 +86,5 @@ for i, m in enumerate(aia_sequence_aligned):
     ax.set_xlabel(' ')
     ax.set_ylabel(' ')
 plt.subplots_adjust(wspace=0.3)
+
 plt.show()
-# This code aligns a sequence of solar images to a common reference frame, taking into account solar rotation,
-# and then plots them side by side in a single figure. Each subplot shows one map from the aligned sequence.

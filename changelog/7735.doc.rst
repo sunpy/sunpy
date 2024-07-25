@@ -1,1 +1,1 @@
-Added a gallery example showcasing how to track and co-align an active region (:ref:`track_and_coalign_region.py`)
+Added a gallery example showcasing how to track and co-align an active region (:ref:`examples.map.track_and_coalign_region.py`)
