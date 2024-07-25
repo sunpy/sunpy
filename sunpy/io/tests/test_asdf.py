@@ -60,6 +60,7 @@ def test_read_obj_no_object_key(tmp_path, example_map):
     with pytest.raises(KeyError, match="The ASDF does not contain 'object' key"):
         read(file_path)
 
+
 def test_read_obj_no_meta_data(tmp_path, example_map):
     file_path = tmp_path / "map_no_meta_data.asdf"
     af = asdf.AsdfFile({"object": {"wrong_meta": dict(example_map.meta), "wrong_data": example_map.data}})
