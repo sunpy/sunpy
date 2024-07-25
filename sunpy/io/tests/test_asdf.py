@@ -71,6 +71,7 @@ def test_read_obj_meta_not_dict(tmp_path, example_map):
     with pytest.raises(TypeError, match="meta must be a dict not <class 'str'>"):
         read(file_path)
 
+
 def test_read_obj_data_not_ndarray(tmp_path, example_map):
     file_path = tmp_path / "map_data_not_ndarray.asdf"
     af = asdf.AsdfFile({"object": {"meta": dict(example_map.meta), "data": "not_an_ndarray"}})
