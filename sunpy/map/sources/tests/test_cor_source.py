@@ -17,9 +17,17 @@ def cor_map():
     return get_dummy_map_from_header(header_file)
 
 
-def test_fitstoCOR(cor_map):
+def test_fits_to_cor(cor_map):
     """Tests the creation of CORMap using FITS."""
     assert isinstance(cor_map, CORMap)
+
+
+def test_reference_date(cor_map):
+    assert cor_map.reference_date.isot == "2009-06-15T00:05:00.855"
+
+
+def test_date(cor_map):
+    assert cor_map.reference_date.isot == "2009-06-15T00:05:00.855"
 
 
 def test_is_datasource_for(cor_map):

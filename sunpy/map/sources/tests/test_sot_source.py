@@ -35,6 +35,14 @@ def test_detector(sot):
     assert sot.detector == "SOT"
 
 
+def test_reference_date(sot):
+    assert sot.reference_date.isot == "2015-10-13T23:13:44.601"
+
+
+def test_date(sot):
+    assert sot.date.isot == "2015-10-13T23:13:44.601"
+
+
 def test_measurement(sot):
     """Tests the measurement property of the SOTMap object."""
     assert sot.measurement is None

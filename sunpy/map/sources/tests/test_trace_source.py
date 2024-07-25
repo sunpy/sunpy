@@ -24,6 +24,14 @@ def test_is_datasource_for(trace_map):
     assert trace_map.is_datasource_for(trace_map.data, trace_map.meta)
 
 
+def test_reference_date(trace_map):
+    assert trace_map.reference_date.isot == "2001-01-30T02:58:23.429"
+
+
+def test_date(trace_map):
+    assert trace_map.date.isot == "2001-01-30T02:58:23.429"
+
+
 def test_measurement(trace_map):
     """Tests the measurement property of the TRACEMap object."""
     assert int(trace_map.measurement) == 171

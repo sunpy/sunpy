@@ -5,23 +5,30 @@ import pytest
 
 import astropy.units as u
 
-from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath
+import sunpy.map
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.soho import EITMap
-
-header_list = [f for f in get_test_data_filenames() if 'efz' in f.name and '.header' in f.name]
 
 __author__ = "Pritish C. (VaticanCameos)"
 
 
-@pytest.fixture(scope="module", params=header_list)
-def eit_map(request):
+@pytest.fixture()
+def eit_map():
     """Creates an EITMap from a FITS file."""
-    return get_dummy_map_from_header(request.param)
+    return sunpy.map.Map(get_test_filepath("EIT/efz20040301.000010_s.fits"))
 
 
 def test_fitstoEIT(eit_map):
     """Tests the creation of EITMap using FITS."""
     assert isinstance(eit_map, EITMap)
+
+
+def test_reference_date(eit_map):
+    assert eit_map.reference_date.isot == "2004-03-01T00:00:10.515"
+
+
+def test_date(eit_map):
+    assert eit_map.date.isot == "2004-03-01T00:00:10.515"
 
 
 def test_is_datasource_for(eit_map):

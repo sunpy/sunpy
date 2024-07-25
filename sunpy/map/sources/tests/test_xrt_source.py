@@ -30,6 +30,14 @@ def test_is_datasource_for(xrt_map):
     assert xrt_map.is_datasource_for(xrt_map.data, xrt_map.meta)
 
 
+def test_reference_date(xrt_map):
+    assert xrt_map.reference_date.isot == "2006-11-11T00:00:19.141"
+
+
+def test_date(xrt_map):
+    assert xrt_map.date.isot == "2006-11-11T00:00:19.141"
+
+
 def test_observatory(xrt_map):
     """Tests the observatory property of the XRTMap object."""
     assert xrt_map.observatory == "Hinode"

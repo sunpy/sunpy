@@ -40,6 +40,14 @@ def test_observatory(mdi):
     assert mdi.observatory == "SOHO"
 
 
+def test_reference_date(mdi):
+    assert mdi.reference_date.isot == "2010-10-15T23:00:11.000"
+
+
+def test_date(mdi):
+    assert mdi.date.isot == "2010-10-15T23:00:11.000"
+
+
 def test_instrument(mdi):
     """Tests the instrument property of the MDIMap object."""
     assert mdi.instrument == "MDI"

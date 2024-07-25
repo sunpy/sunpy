@@ -263,6 +263,14 @@ def test_observatory(wispr_map):
     assert wispr_map.observatory == "Parker Solar Probe"
 
 
+def test_reference_date(wispr_map):
+    assert wispr_map.reference_date.isot == "2020-01-25T00:08:20.842"
+
+
+def test_date(wispr_map):
+    assert wispr_map.date.isot == "2020-01-25T00:02:29.618"
+
+
 def test_measurement(wispr_map):
     assert wispr_map.measurement is None
 

@@ -29,6 +29,14 @@ def test_observatory(rhessi_map):
     assert rhessi_map.observatory == "RHESSI"
 
 
+def test_reference_date(rhessi_map):
+    assert rhessi_map.reference_date.isot == "2010-10-16T19:12:18.000"
+
+
+def test_date(rhessi_map):
+    assert rhessi_map.date.isot == "2010-10-16T19:12:18.000"
+
+
 def test_measurement(rhessi_map):
     """Tests the measurement property of the RHESSIMap object."""
     assert all(rhessi_map.measurement == [12, 25] * u.keV)

@@ -22,6 +22,14 @@ def test_EUIMap(eui_map):
     assert isinstance(eui_map, EUIMap)
 
 
+def test_reference_date(eui_map):
+    assert eui_map.reference_date.isot == "2020-10-21T14:55:13.206"
+
+
+def test_date(eui_map):
+    assert eui_map.date.isot == "2020-10-21T14:55:10.206"
+
+
 def test_is_datasource_for(eui_map):
     assert eui_map.is_datasource_for(eui_map.data, eui_map.meta)
 

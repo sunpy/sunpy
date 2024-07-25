@@ -35,9 +35,12 @@ def test_measurement(hmi_synoptic):
     assert hmi_synoptic.measurement == "carrington"
 
 
+def test_reference_date(hmi_synoptic):
+    assert hmi_synoptic.reference_date.isot == "2018-11-09T12:30:52.000"
+
+
 def test_date(hmi_synoptic):
-    """Check that accessing the date doesn't raise a warning."""
-    hmi_synoptic.date
+    assert hmi_synoptic.date.isot == "2018-10-26T00:00:00.000"
 
 
 def test_date_uses_date_obs(hmi_synoptic):

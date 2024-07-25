@@ -207,21 +207,15 @@ class HMISynopticMap(HMIMap):
     def date(self):
         """
         Image observation time.
-
-        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        date = self._get_date('DATE-OBS')
-        if date is None:
-            return self._get_date('T_OBS')
-        else:
-            return date
+        return self._get_date('IMG_FRST')
 
     @property
     def reference_date(self):
         """
         The reference date for the coordinate system.
         """
-        return self._get_date('T_REC')
+        return self._get_date('T_OBS')
 
     @property
     def unit(self):

@@ -28,6 +28,14 @@ def test_is_datasource_for(sxt_map):
     assert sxt_map.is_datasource_for(sxt_map.data, sxt_map.meta)
 
 
+def test_reference_date(sxt_map):
+    assert sxt_map.reference_date.isot == "1991-11-05T11:10:24.018"
+
+
+def test_date(sxt_map):
+    assert sxt_map.date.isot == "1991-11-05T11:10:24.018"
+
+
 def test_observatory(sxt_map):
     """Tests the observatory property of the SXTMap object."""
     assert sxt_map.observatory == "Yohkoh"

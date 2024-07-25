@@ -21,6 +21,14 @@ def test_suvimap_creation(suvi):
     assert isinstance(suvi, SUVIMap)
 
 
+def test_reference_date(suvi):
+    assert suvi.reference_date.isot == "2019-04-03T09:32:33.340"
+
+
+def test_date(suvi):
+    assert suvi.date.isot == "2019-04-03T09:32:33.340"
+
+
 def test_is_datasource_for(suvi):
     """Test the is_datasource_for method of SUVIMap.
     Note that header data to be provided as an argument

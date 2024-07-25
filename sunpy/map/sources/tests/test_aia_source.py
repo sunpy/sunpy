@@ -24,9 +24,17 @@ def aia_map(request):
     return Map(request.param)
 
 
-def test_AIAMap(aia_map):
+def test_aia_map(aia_map):
     """Tests the creation of AIAMap"""
     assert isinstance(aia_map, AIAMap)
+
+
+def test_reference_date(aia_map):
+    assert aia_map.reference_date.isot in ["2011-02-15T00:00:01.340", "2013-06-24T17:31:31.840"]
+
+
+def test_date(aia_map):
+    assert aia_map.date.isot in ["2011-02-15T00:00:00.340", "2013-06-24T17:31:30.840"]
 
 
 def test_is_datasource_for(aia_map):

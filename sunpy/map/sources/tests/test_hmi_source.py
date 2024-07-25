@@ -30,6 +30,14 @@ def test_is_datasource_for(hmi_map):
     assert hmi_map.is_datasource_for(hmi_map.data, hmi_map.meta)
 
 
+def test_reference_date(hmi_map):
+    assert hmi_map.reference_date.isot == "2014-03-01T00:01:25.000"
+
+
+def test_date(hmi_map):
+    assert hmi_map.date.isot == "2014-03-01T00:00:27.900"
+
+
 def test_observatory(hmi_map):
     """Tests the observatory property of the HMIMap object."""
     assert hmi_map.observatory == "SDO"
