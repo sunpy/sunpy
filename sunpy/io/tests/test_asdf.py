@@ -43,6 +43,7 @@ def test_get_header(example_map_path):
     header = get_header(example_map_path)[0]
     assert isinstance(header, FileHeader)
 
+
 def test_save(tmpdir, example_map):
     outpath = tmpdir / "fits_map_in_asdf.asdf"
     example_map.save(outpath)
