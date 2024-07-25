@@ -80,7 +80,7 @@ def get_header(filepath):
 
 def _read_obj(fname, **kwargs):
     with asdf.open(fname, **kwargs) as af:
-        # TODO as asdf files can be structured in many ways some tests
+        # As ASDF files can be structured in many ways some tests
         # of the structure and appropriate errors are needed
         # - does the file contain an "object" key?
         if "object" not in af.tree:
