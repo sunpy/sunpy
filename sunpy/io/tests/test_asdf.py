@@ -28,6 +28,7 @@ def test_read(tmp_path, example_map, example_map_path):
     assert isinstance(cont[0][1], FileHeader)
     assert cont[0][0].shape == example_map.data.shape
 
+
 def test_write(tmp_path, example_map):
     outfile = tmp_path / "test.asdf"
     write(outfile, example_map.data, example_map.meta)
