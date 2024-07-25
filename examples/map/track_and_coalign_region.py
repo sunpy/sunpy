@@ -69,6 +69,7 @@ for i, m in enumerate(aia_sequence):
         m.draw_quadrangle(blc, top_right=trc)
 
 ###############################################################################
+
 # Aligns all images to the World Coordinate System (WCS) of the cutout.
 # `sunpy.coordinates.propagate_with_solar_surface` is a context manager that adjusts for solar rotation,
 # ensuring that regions on the Sun's surface remain in the correct position as the Sun rotates.
