@@ -69,6 +69,16 @@ class AIAMap(GenericMap):
         """
         return self.meta.get('telescop', '').split('/')[0]
 
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS')
+
     @property
     def detector(self):
         return self.meta.get("detector", "AIA")
@@ -129,6 +139,15 @@ class HMIMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS')
 
     @property
     def detector(self):
@@ -196,6 +215,13 @@ class HMISynopticMap(HMIMap):
             return self._get_date('T_OBS')
         else:
             return date
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+        """
+        return self._get_date('T_REC')
 
     @property
     def unit(self):
