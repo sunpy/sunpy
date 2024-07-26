@@ -39,6 +39,12 @@ def test_write(tmp_path, example_map):
     assert example_map.meta == get_header(outfile)[0]
 
 
+def test_file_error(example_map):
+    write(str(example_map_path),example_map.data,example_map.meta)
+    with pytest.raises(FileExistsError,match=f"The file '{str(example_map_path)}' already exists. Set 'overwrite=True' to overwrite it."):
+          write(str(example_map_path),example_map.data,example_map.meta)
+
+
 def test_get_header(example_map_path):
     header = get_header(example_map_path)[0]
     assert isinstance(header, FileHeader)
