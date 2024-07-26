@@ -1,5 +1,4 @@
 import pickle
-from datetime import timedelta
 
 import pytest
 from hypothesis import given, settings
@@ -7,7 +6,7 @@ from hypothesis import given, settings
 import astropy.units as u
 from astropy.coordinates import HeliocentricMeanEcliptic, SkyCoord, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
@@ -150,7 +149,7 @@ def test_rotated_time_to_duration():
 def test_duration_from_timedelta():
     base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
 
-    duration_timedelta = timedelta(4 * u.day)
+    duration_timedelta = TimeDelta(4 * u.day)
     r = RotatedSunFrame(base=base_frame, duration=duration_timedelta)
 
     # Verify that the duration is correctly converted to a quantity in days
