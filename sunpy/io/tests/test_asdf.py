@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 import pytest
 
@@ -40,7 +42,10 @@ def test_write(tmp_path, example_map):
 
 
 def test_file_error(tmp_path, example_map, example_map_path):
-    with pytest.raises(FileExistsError, match=f"The file '{str(example_map_path)}' already exists. Set 'overwrite=True' to overwrite it."):
+    escaped_path = re.escape(str(example_map_path))
+    expected_message = f"The file '{escaped_path}' already exists. Set 'overwrite=True' to overwrite it."
+    print(escaped_path)
+    with pytest.raises(FileExistsError, match=expected_message):
         write(example_map_path, example_map.data, example_map.meta)
 
 
