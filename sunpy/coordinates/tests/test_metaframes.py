@@ -157,6 +157,23 @@ def test_duration_from_timedelta():
     assert_quantity_allclose(r.duration, 4 * u.day)
 
 
+def test_duration_with_quantity_hours():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    # Testing with Quantity in hours (conversion needed)
+    duration_quantity = 96 * u.hour  # 4 days in hours
+    r = RotatedSunFrame(base=base_frame, duration=duration_quantity)
+    assert_quantity_allclose(r.duration, 4 * u.day)
+
+
+def test_duration_invalid_type():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    # Testing with invalid type
+    with pytest.raises(ValueError, match="`duration` must be a `TimeDelta` or `Quantity` object."):
+        RotatedSunFrame(base=base_frame, duration=4)
+
+
 def test_rotated_time_property():
     r1 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'), duration=1*u.day)
     assert r1.rotated_time == Time('2001-01-03')
