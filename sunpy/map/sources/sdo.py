@@ -9,6 +9,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
 
@@ -78,6 +79,9 @@ class AIAMap(GenericMap):
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
         return self._get_date('T_OBS')
+
+    def _set_reference_date(self, date):
+        self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -149,6 +153,9 @@ class HMIMap(GenericMap):
         """
         return self._get_date('T_OBS')
 
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
+
     @property
     def detector(self):
         return self.meta.get("detector", "HMI")
@@ -210,12 +217,18 @@ class HMISynopticMap(HMIMap):
         """
         return self._get_date('IMG_FRST')
 
+    def _set_date(self, date):
+        self.meta['IMG_FRST'] = parse_time(date).utc.isot
+
     @property
     def reference_date(self):
         """
         The reference date for the coordinate system.
         """
         return self._get_date('T_OBS')
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def unit(self):
