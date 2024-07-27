@@ -8,6 +8,7 @@ import astropy.units as u
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
+from . import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -36,6 +37,10 @@ def test_reference_date(hmi_map):
 
 def test_date(hmi_map):
     assert hmi_map.date.isot == "2014-03-01T00:00:27.900"
+
+
+def test_private_date_setters(hmi_map):
+    _test_private_date_setters(hmi_map)
 
 
 def test_observatory(hmi_map):

@@ -5,6 +5,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.sdo import HMISynopticMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from . import _test_private_date_setters
 
 
 @pytest.fixture
@@ -41,6 +42,10 @@ def test_reference_date(hmi_synoptic):
 
 def test_date(hmi_synoptic):
     assert hmi_synoptic.date.isot == "2018-10-26T00:00:00.000"
+
+
+def test_private_date_setters(hmi_synoptic):
+    _test_private_date_setters(hmi_synoptic)
 
 
 def test_date_uses_date_obs(hmi_synoptic):

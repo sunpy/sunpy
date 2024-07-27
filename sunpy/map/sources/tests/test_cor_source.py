@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import CORMap
+from . import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -28,6 +29,10 @@ def test_reference_date(cor_map):
 
 def test_date(cor_map):
     assert cor_map.reference_date.isot == "2009-06-15T00:05:00.855"
+
+
+def test_private_date_setters(cor_map):
+    _test_private_date_setters(cor_map)
 
 
 def test_is_datasource_for(cor_map):

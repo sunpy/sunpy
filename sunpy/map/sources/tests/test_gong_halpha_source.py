@@ -5,6 +5,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import GONGHalphaMap
+from . import _test_private_date_setters
 
 
 @pytest.fixture
@@ -33,6 +34,11 @@ def test_reference_date(gong_halpha):
 
 def test_date(gong_halpha):
     assert gong_halpha.date.isot == "2024-02-16T00:00:02.000"
+
+
+def test_private_date_setters(gong_halpha):
+    _test_private_date_setters(gong_halpha)
+
 
 def test_scale(gong_halpha):
     """Tests the scale property of the GONGHalphaMap map."""

@@ -8,6 +8,7 @@ import astropy.units as u
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.soho import EITMap
+from . import _test_private_date_setters
 
 __author__ = "Pritish C. (VaticanCameos)"
 
@@ -29,6 +30,10 @@ def test_reference_date(eit_map):
 
 def test_date(eit_map):
     assert eit_map.date.isot == "2004-03-01T00:00:10.515"
+
+
+def test_private_date_setters(eit_map):
+    _test_private_date_setters(eit_map)
 
 
 def test_is_datasource_for(eit_map):

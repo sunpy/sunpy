@@ -11,6 +11,7 @@ from sunpy.coordinates import sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.sun import constants
+from . import _test_private_date_setters
 
 __all__ = "Pritish C. (VaticanCameos)"
 
@@ -31,6 +32,10 @@ def test_reference_date(euvi_map):
 
 def test_date(euvi_map):
     assert euvi_map.date.isot == "2009-06-15T00:09:00.006"
+
+
+def test_private_date_setters(euvi_map):
+    _test_private_date_setters(euvi_map)
 
 
 def test_is_datasource_for(euvi_map):

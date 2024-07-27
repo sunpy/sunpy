@@ -6,6 +6,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import SOTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from . import _test_private_date_setters
 
 
 @pytest.fixture
@@ -41,6 +42,10 @@ def test_reference_date(sot):
 
 def test_date(sot):
     assert sot.date.isot == "2015-10-13T23:13:44.601"
+
+
+def test_private_date_setters(sot):
+    _test_private_date_setters(sot)
 
 
 def test_measurement(sot):

@@ -5,6 +5,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.trace import TRACEMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from . import _test_private_date_setters
 
 
 @pytest.fixture(scope="module")
@@ -30,6 +31,10 @@ def test_reference_date(trace_map):
 
 def test_date(trace_map):
     assert trace_map.date.isot == "2001-01-30T02:58:23.429"
+
+
+def test_private_date_setters(trace_map):
+    _test_private_date_setters(trace_map)
 
 
 def test_measurement(trace_map):

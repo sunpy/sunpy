@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import HIMap
+from . import _test_private_date_setters
 
 
 @pytest.fixture
@@ -26,13 +27,16 @@ def test_is_datasource_for(hi_map):
     assert hi_map.is_datasource_for(hi_map.data, hi_map.meta)
 
 
-
 def test_reference_date(hi_map):
     assert hi_map.reference_date.isot == "2011-09-10T11:47:46.004"
 
 
 def test_date(hi_map):
     assert hi_map.date.isot == "2011-09-10T11:47:21.005"
+
+
+def test_private_date_setters(hi_map):
+    _test_private_date_setters(hi_map)
 
 
 def test_measurement(hi_map):

@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.proba2 import SWAPMap
+from . import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -22,6 +23,10 @@ def test_reference_date(swap_map):
 
 def test_date(swap_map):
     assert swap_map.date.isot == "2011-10-04T23:56:41.222"
+
+
+def test_private_date_setters(swap_map):
+    _test_private_date_setters(swap_map)
 
 
 def test_fitstoSWAP(swap_map):

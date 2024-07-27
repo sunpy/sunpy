@@ -11,6 +11,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.tests.helpers import SKIP_GLYMUR
+from . import _test_private_date_setters
 
 params = [get_test_filepath("aia_171_level1.fits")]
 if not SKIP_GLYMUR:
@@ -35,6 +36,10 @@ def test_reference_date(aia_map):
 
 def test_date(aia_map):
     assert aia_map.date.isot in ["2011-02-15T00:00:00.340", "2013-06-24T17:31:30.840"]
+
+
+def test_private_date_setters(aia_map):
+    _test_private_date_setters(aia_map)
 
 
 def test_is_datasource_for(aia_map):
