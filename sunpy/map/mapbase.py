@@ -2736,10 +2736,16 @@ class GenericMap(NDData):
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
-            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
-        ...
+         (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+         (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+         (713.14112796, -361.95311455), (714.76598031, -363.53013567),
+         (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+         (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+         (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+         (719.59798458, -352.60839064)]>
 
         See Also
         --------
