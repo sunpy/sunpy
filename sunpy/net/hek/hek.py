@@ -32,8 +32,14 @@ class HEKClient(BaseClient):
 
     Notes
     -----
-    The columns ``event_coord1``, ``event_coord2`` and ``event_coord3``
-    are megred into one `astropy.coordinates.SkyCoord` object under the column ``event_coord``.
+
+    It is important to be aware that the client transforms the raw outputs from the HEK.
+    This means that it will add units to values, or return astropy Time instead of string.
+
+    That entails the merging or removal of columns that have no purpose anymore.
+    For example, columns ``event_coord1``, ``event_coord2`` and ``event_coord3``
+    are merged into one new column called ``event_coord`` and returns a
+    `~astropy.coordinates.SkyCoord`. 
 
     Furthermore, we create following coordinate systems corresponding to each the following columns:
 
