@@ -127,7 +127,6 @@ Setting up a development environment
 
 The instructions in this following section are based upon three resources:
 
-* `Astropy Dev Workflow <https://kbarbary-astropy.readthedocs.io/en/latest/development/workflow/development_workflow.html>`_
 * `Astropy Dev environment <https://docs.astropy.org/en/latest/development/quickstart.html>`_
 * `Astropy Pull Request Example <https://docs.astropy.org/en/latest/development/git_edit_workflow_examples.html>`_
 
