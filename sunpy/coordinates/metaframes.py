@@ -182,20 +182,25 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         if kwargs['base'].obstime is None:
             raise ValueError("The base coordinate frame must have a defined `obstime`.")
 
-        if 'rotated_time' in kwargs:
-            rotated_time = parse_time(kwargs['rotated_time'])
-            kwargs['duration'] = (rotated_time - kwargs['base'].obstime).to('day')
-            kwargs.pop('rotated_time')
+        base_frame = kwargs['base']
 
+        # Handle 'duration' if it's a TimeDelta
         if 'duration' in kwargs:
             duration = kwargs['duration']
             if isinstance(duration, TimeDelta):
                 kwargs['duration'] = duration.to(u.day)
+                kwargs['rotated_time'] = base_frame.obstime + duration
             elif isinstance(duration, u.Quantity):
                 if duration.unit != u.day:
                     kwargs['duration'] = duration.to(u.day)
             else:
                 raise ValueError("`duration` must be a `TimeDelta` or `Quantity` object.")
+
+        # Handle 'rotated_time' to calculate 'duration'
+        if 'rotated_time' in kwargs:
+            rotated_time = parse_time(kwargs['rotated_time'])
+            kwargs['duration'] = (rotated_time - base_frame.obstime).to('day')
+            kwargs.pop('rotated_time')
 
         super().__init__(*args, **kwargs)
 
