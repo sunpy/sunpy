@@ -35,6 +35,7 @@ def freeze(obj):
         return tuple(freeze(elem) for elem in obj)
     return obj
 
+
 def parse_times(table):
     """
     Parses the time values in an Astropy table into `astropy.time.Time`.
