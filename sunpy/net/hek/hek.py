@@ -40,7 +40,6 @@ class HEKClient(BaseClient):
     * `~astropy.coordinates.ICRS`.
 
         * ``bound_chaincode``: Provides coordinates in the ICRS frame using boundary chaincode.
-
         * ``skel_chaincode``: Provides coordinates in the ICRS frame using skeleton chaincode.
 
     * `~sunpy.coordinates.frames.HeliographicCarrington`.
