@@ -76,7 +76,7 @@ def parse_values_to_quantities(table):
     Raises
     ------
     TypeError
-        If `table` is not an Astropy table.
+        If ``table`` is not an Astropy table.
     """
     with open(UNIT_FILE_PATH) as unit_file:
         unit_properties = json.load(unit_file)
