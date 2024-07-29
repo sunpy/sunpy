@@ -35,7 +35,6 @@ class HEKClient(BaseClient):
     The columns ``event_coord1``, ``event_coord2`` and ``event_coord3``
     are megred into one `astropy.coordinates.SkyCoord` object under the column ``event_coord``.
 
-
     This list describes the coordinate systems corresponding to each coordinate attribute.
 
     * `~astropy.coordinates.ICRS`.
