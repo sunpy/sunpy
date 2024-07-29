@@ -58,6 +58,7 @@ def parse_times(table):
             ]
     return table
 
+
 def parse_values_to_quantities(table):
     """
     Parses the values in an Astropy table into Astropy objects.
