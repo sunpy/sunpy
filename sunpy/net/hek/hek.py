@@ -63,9 +63,7 @@ class HEKClient(BaseClient):
     * `~sunpy.coordinates.HeliographicStonyhurst`.
 
         * ``hgs_bbox``: Represents the bounding box coordinates in the Heliographic Stonyhurst (HGS) coordinate system.
-
         * ``hgs_coord``: Provides specific coordinates in the HGS coordinate system.
-
         * ``hgs_boundcc``: Uses boundary chaincode to provide coordinates in the HGS coordinate system.
 
     * `~sunpy.coordinates.Heliocentric`.
