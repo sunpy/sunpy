@@ -45,9 +45,7 @@ class HEKClient(BaseClient):
     * `~sunpy.coordinates.frames.HeliographicCarrington`.
 
         * ``hgc_bbox``: Represents the bounding box coordinates in the Heliographic Carrington (HGC) coordinate system.
-
         * ``hgc_coord``: Provides specific coordinates in the HGC coordinate system.
-
         * ``hgc_boundcc``: Uses boundary chaincode to provide coordinates in the HGC coordinate system.
 
     * `~sunpy.coordinates.Helioprojective`.
