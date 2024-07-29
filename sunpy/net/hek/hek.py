@@ -39,7 +39,7 @@ class HEKClient(BaseClient):
     That entails the merging or removal of columns that have no purpose anymore.
     For example, columns ``event_coord1``, ``event_coord2`` and ``event_coord3``
     are merged into one new column called ``event_coord`` and returns a
-    `~astropy.coordinates.SkyCoord`. 
+    `~astropy.coordinates.SkyCoord`.
 
     Furthermore, we create following coordinate systems corresponding to each the following columns:
 
