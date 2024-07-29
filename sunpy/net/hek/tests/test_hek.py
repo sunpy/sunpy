@@ -365,11 +365,10 @@ def test_flares_python_logical_ops():
     for row in result[0]['fl_peakflux']:
         assert row.value > 1000.0
 
-def test_event_types():
+@pytest.mark.parametrize("event_type", ['AR', 'CE', 'CD', 'CW', 'FI', 'FE', 'FA', 'LP', 'OS', 'SS', 'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO', 'HY', 'BU', 'EE', 'PB', 'PT'])
+def test_event_types(event_type):
     tstart = '2017/09/06 11:59:04'
     tend = '2017/09/06 17:05:04'
-    events = ['AR', 'CE', 'CD', 'CW', 'FI', 'FE', 'FA', 'LP', 'OS', 'SS', 'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO', 'HY', 'BU', 'EE', 'PB', 'PT']
 
-    for event_type in events:
-        # Just to make sure there is no errors happens
-        Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type))
+    # Just to make sure there is no errors happens
+    Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type))
