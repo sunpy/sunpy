@@ -155,7 +155,6 @@ class HEKClient(BaseClient):
             new = self.default.copy()
             new.update(elem)
             ndata.append(new)
-
         if len(ndata) == 1:
             return HEKTable(self._download(ndata[0]), client=self)
         else:
