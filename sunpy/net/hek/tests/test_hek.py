@@ -239,35 +239,25 @@ def test_query_multiple_operators():
     assert len(results) == 7
 
 @pytest.mark.remote_data
-def test_astropy_unit_parsing(read_unit_attributes, read_coord_attributes):
-    client = hek.HEKClient()
-    tstart = '2014/10/24 20:50'
-    tend = '2014/10/25 00:14'
-    event_type = 'FL'
-    result = client.search(attrs.Time(tstart, tend), attrs.hek.EventType(event_type))
+def test_astropy_unit_parsing(hek_result, read_unit_attributes, read_coord_attributes):
     unit_properties = read_unit_attributes
     coord_properties = read_coord_attributes
     unit_attributes_with_unit = [prop for prop in unit_properties["attributes"] if prop.get("unit_prop") is not None]
     coord_attributes_with_unit = [prop for prop in coord_properties["attributes"] if not prop.get("is_chaincode", False) and not prop.get("is_unit_prop" ,False)]
 
     for attribute in unit_attributes_with_unit + coord_attributes_with_unit:
-        if attribute["name"] in result.colnames:
-            assert all([value in ['', None] or isinstance(value, u.Quantity) for value in result[attribute['name']]])
+        if attribute["name"] in hek_result.colnames:
+            assert all([value in ['', None] or isinstance(value, u.Quantity) for value in hek_result[attribute['name']]])
 
 
 @pytest.mark.remote_data
-def test_chaincode_parsing(read_coord_attributes):
-    client = hek.HEKClient()
-    tstart = '2014/10/24 20:50'
-    tend = '2014/10/25 00:14'
-    event_type = 'FL'
-    result = client.search(attrs.Time(tstart, tend), attrs.hek.EventType(event_type))
+def test_chaincode_parsing(hek_result, read_coord_attributes):
     coord_properties = read_coord_attributes
     chaincode_properties = [prop for prop in coord_properties["attributes"] if prop.get("is_chaincode", False)]
 
     for attribute in chaincode_properties:
-        if attribute["name"] in result.colnames:
-            assert all([value in ['', None] or isinstance(value, SkyRegion) for value in result[attribute['name']]])
+        if attribute["name"] in hek_result.colnames:
+            assert all([value in ['', None] or isinstance(value, SkyRegion) for value in hek_result[attribute['name']]])
 
 
 @pytest.mark.remote_data
