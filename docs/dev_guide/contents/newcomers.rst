@@ -127,9 +127,9 @@ Setting up a development environment
 
 The instructions in this following section are based upon three resources:
 
-* `Astropy Dev Workflow <https://docs.astropy.org/en/latest/development/workflow/development_workflow.html>`_
-* `Astropy Dev environment <https://docs.astropy.org/en/latest/development/workflow/get_devel_version.html#get-devel>`_
-* `Astropy Pull Request Example <https://docs.astropy.org/en/latest/development/workflow/git_edit_workflow_examples.html#astropy-fix-example>`_
+* `Astropy Dev Workflow <https://kbarbary-astropy.readthedocs.io/en/latest/development/workflow/development_workflow.html>`_
+* `Astropy Dev environment <https://docs.astropy.org/en/latest/development/quickstart.html>`_
+* `Astropy Pull Request Example <https://docs.astropy.org/en/latest/development/git_edit_workflow_examples.html>`_
 
 **We strongly recommend that you read these links.**
 These links are more in-depth than this guide but you will need to replace ``astropy`` with ``sunpy``.
@@ -185,7 +185,7 @@ Ideally, when you start making changes you want to create a git branch:
 You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
-.. _Anaconda: https://www.anaconda.com/distribution/
+.. _Anaconda: https://docs.anaconda.com/anaconda/
 .. _miniconda: https://conda.io/en/latest/miniconda.html
 .. _instructions are here: https://conda.io/projects/conda/en/latest/user-guide/install/index.html#installation
 .. _conda-forge: https://conda-forge.org/
