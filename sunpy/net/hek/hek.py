@@ -57,9 +57,7 @@ class HEKClient(BaseClient):
     * `~sunpy.coordinates.Helioprojective`.
 
         * ``hpc_bbox``: Provides bounding box coordinates in the Helioprojective coordinate system (HPC).
-
         * ``hpc_coord``: Specifies coordinates in the HPC frame.
-
         * ``hpc_boundcc``: Uses boundary chaincode to specify coordinates in the HPC coordinate system.
 
     * `~sunpy.coordinates.HeliographicStonyhurst`.
