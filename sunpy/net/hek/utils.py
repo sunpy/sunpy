@@ -164,6 +164,7 @@ def parse_columns_to_table(table, attributes, is_coord_prop = False):
             del table[attribute["name"]]
     return table
 
+
 def parse_chaincode(value, attribute, unit, time):
     """
     Parses a string representation of coordinates and convert them into a PolygonSkyRegion object
