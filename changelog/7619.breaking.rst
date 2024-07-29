@@ -1,1 +1,1 @@
-The `~sunpy.net.hek.HEKClient` merges columns ``event_coord1``, ``event_coord2`` and ``event_coord3`` into a new column called ``event_coord` that returns a `astropy.coordinates.SkyCoord` object.
+The `~sunpy.net.hek.HEKClient` now merges columns ``event_coord1``, ``event_coord2`` and ``event_coord3`` into a new column called ``event_coord` that returns a `astropy.coordinates.SkyCoord` object.
