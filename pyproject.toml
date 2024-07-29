@@ -23,7 +23,11 @@ name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
 requires-python = ">=3.10"
 readme = { file = "README.rst", content-type = "text/x-rst" }
+<<<<<<<
 license = { file = "LICENSE.rst", content-type = "text/plain" }
+=======
+license = { file = "licenses/LICENSE.rst" }
+>>>>>>>
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
