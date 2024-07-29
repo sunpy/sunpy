@@ -69,9 +69,7 @@ class HEKClient(BaseClient):
     * `~sunpy.coordinates.Heliocentric`.
 
         * ``hrc_bbox``: Represents the bounding box coordinates in the Heliocentric coordinate system (HRC).
-
         * ``hrc_coord``: Specifies coordinates in the HRC frame.
-
         * ``hrc_boundcc``: Uses boundary chaincode to specify coordinates in the HRC coordinate system.
 
     References
