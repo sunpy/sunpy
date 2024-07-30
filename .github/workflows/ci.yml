@@ -109,6 +109,7 @@ jobs:
       envs: |
         - linux: py312-devdeps
         - linux: core_deps
+        - linux: py312-linkcheck
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
