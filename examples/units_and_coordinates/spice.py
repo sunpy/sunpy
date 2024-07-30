@@ -12,7 +12,7 @@ spacecraft and the time-varying orientations of reference frames.  Here are two
 examples of mission SPICE kernels:
 
 * `Solar Orbiter <https://www.cosmos.esa.int/web/spice/solar_orbiter>`__
-* `Parker Solar Probe <https://sppgway.jhuapl.edu/ancil_products>`__
+* `Parker Solar Probe <https://psp-gateway.jhuapl.edu/>`__
 
 The `sunpy.coordinates.spice` module enables the use of the
 `~astropy.coordinates.SkyCoord` API to perform SPICE computations such as the
