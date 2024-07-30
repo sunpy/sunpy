@@ -79,6 +79,7 @@ jobs:
       envs: |
         - linux: build_docs-gallery
           pytest: false
+          coverage: ''
           cache-path: |
             docs/_build/
             docs/generated/
@@ -103,15 +104,13 @@ jobs:
     with:
       default_python: '3.12'
       submodules: false
-      coverage: codecov
+      coverage: ''
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
         - linux: py312-devdeps
         - linux: core_deps
-        - linux: py312-linkcheck
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        - linux: linkcheck
+          pytest: false
 
   sdist_verify:
     if: |
