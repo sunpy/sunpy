@@ -8,7 +8,7 @@ This page is for maintainers who can merge our own or other peoples' changes int
 
 Seeing as how you're a maintainer, you should be completely on top of the basic git workflow in :ref:`newcomers` and Astropy's `git workflow`_.
 
-.. _git workflow: https://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow
+.. _git workflow: https://docs.astropy.org/en/latest/development/maintainers/maintainer_workflow.html
 
 Integrating changes via the web interface (recommended)
 =======================================================

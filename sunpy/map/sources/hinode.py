@@ -36,12 +36,12 @@ class XRTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`_
-    * `XRT Instrument Page <http://xrt.cfa.harvard.edu>`_
-    * `Fits header reference <http://hinode.nao.ac.jp/uploads/2016/04/22/SB_MW_Key13.pdf>`_
-    * `Hinode User Guide <http://hinode.nao.ac.jp/en/for-researchers/analysis-guide/>`_
-    * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
-    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/abs/1011.2867>`_
+    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`__
+    * `XRT Instrument Page <https://xrt.cfa.harvard.edu/>`__
+    * `Fits header reference <https://hinode.nao.ac.jp/uploads/2016/04/22/SB_MW_Key13.pdf>`__
+    * `Hinode User Guide <https://hinode.nao.ac.jp/en/for-researchers/analysis-guide/>`__
+    * `XRT Analysis Guide <https://xrt.cfa.harvard.edu/science/tutorials.php>`__
+    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/abs/1011.2867>`__
     """
     filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
                                   "Be_thin", "C_poly", "Open"]

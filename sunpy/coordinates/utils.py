@@ -61,8 +61,7 @@ class GreatArc:
 
     References
     ----------
-    [1] https://www.mathworks.com/matlabcentral/newsreader/view_thread/277881
-    [2] https://en.wikipedia.org/wiki/Great-circle_distance#Vector_version
+    https://en.wikipedia.org/wiki/Great-circle_distance#Vector_version
 
     Example
     -------
