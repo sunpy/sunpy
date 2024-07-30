@@ -386,7 +386,7 @@ def test_coordinate_frame(aia171_test_map):
 def test_heliographic_longitude_crln(hmi_test_map):
     assert_quantity_allclose(hmi_test_map.heliographic_longitude,
                              hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.reference_date),
-                             rtol=0.1)  # A tolerance is needed because L0 is for Earth, not SDO
+                             rtol=1e-3)  # A tolerance is needed because L0 is for Earth, not SDO
 
 
 def test_observer_hgln_crln_priority():
