@@ -1,6 +1,5 @@
 default.extend-ignore-identifiers-re = [
     "ANDed",
-    "FRST", # IMG_FRST keyword
     "arange",
     "iy1",
     "iy2",

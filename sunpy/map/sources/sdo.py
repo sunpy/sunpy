@@ -215,10 +215,10 @@ class HMISynopticMap(HMIMap):
         """
         Image observation time.
         """
-        return self._get_date('IMG_FRST')
+        return self._get_date('T_OBS')
 
     def _set_date(self, date):
-        self.meta['IMG_FRST'] = parse_time(date).utc.isot
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def reference_date(self):

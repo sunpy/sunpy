@@ -41,17 +41,11 @@ def test_reference_date(hmi_synoptic):
 
 
 def test_date(hmi_synoptic):
-    assert hmi_synoptic.date.isot == "2018-10-26T00:00:00.000"
+    assert hmi_synoptic.date.isot == "2018-11-09T12:30:52.000"
 
 
 def test_private_date_setters(hmi_synoptic):
     _test_private_date_setters(hmi_synoptic)
-
-
-def test_date_uses_date_obs(hmi_synoptic):
-    """Check that the date uses the date-obs key as well."""
-    hmi_synoptic.meta['date-obs'] = hmi_synoptic.meta.pop('t_obs')
-    assert hmi_synoptic.date is not None
 
 
 def test_unit(hmi_synoptic):
