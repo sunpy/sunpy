@@ -184,7 +184,7 @@ Ideally, when you start making changes you want to create a git branch:
 You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
-.. _miniconda: https://conda.io/en/latest/miniconda.html
+.. _miniforge: hhttps://github.com/conda-forge/miniforge?tab=readme-ov-file#download
 .. _instructions are here: https://conda.io/projects/conda/en/latest/user-guide/install/index.html#installation
 .. _conda-forge: https://conda-forge.org/
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
