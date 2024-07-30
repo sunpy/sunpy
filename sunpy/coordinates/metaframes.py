@@ -183,8 +183,6 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
             raise ValueError("The base coordinate frame must have a defined `obstime`.")
 
         base_frame = kwargs['base']
-
-        # Handle 'duration' if it's a TimeDelta
         if 'duration' in kwargs:
             duration = kwargs['duration']
             if isinstance(duration, TimeDelta):
