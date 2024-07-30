@@ -199,7 +199,11 @@ class GenericMap(NDData):
         cls.__doc__ = fix_duplicate_notes(_notes_doc, cls.__doc__)
 
         if hasattr(cls, 'is_datasource_for'):
-            cls._registry[cls] = cls.is_datasource_for
+            # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
+            # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
+            # See https://github.com/sunpy/sunpy/issues/7294 for more information.
+            if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
+                cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
