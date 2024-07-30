@@ -133,7 +133,7 @@ The instructions in this following section are based upon three resources:
 **We strongly recommend that you read these links.**
 These links are more in-depth than this guide but you will need to replace ``astropy`` with ``sunpy``.
 
-In order to start coding you will need a local Python environment and we would recommend using `Anaconda`_ or `miniconda`_ (shortened to conda from here on).
+In order to start coding you will need a local Python environment and we would recommend using Anaconda or `miniconda`_ (shortened to conda from here on).
 This method will bypass your operating system Python packages and makes the entire process easier.
 
 The first step is to install the version of conda that corresponds to your operating system and `instructions are here`_.
@@ -184,7 +184,6 @@ Ideally, when you start making changes you want to create a git branch:
 You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
-.. _Anaconda: https://docs.anaconda.com/anaconda/
 .. _miniconda: https://conda.io/en/latest/miniconda.html
 .. _instructions are here: https://conda.io/projects/conda/en/latest/user-guide/install/index.html#installation
 .. _conda-forge: https://conda-forge.org/
