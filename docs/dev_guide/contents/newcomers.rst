@@ -127,8 +127,8 @@ Setting up a development environment
 
 The instructions in this following section are based upon three resources:
 
-* `Astropy Contributing Quickstart <https://docs.astropy.org/en/latest/development/quickstart.html>`_
-* `Astropy Contribution Example <https://docs.astropy.org/en/latest/development/git_edit_workflow_examples.html>`_
+* `Astropy Contributing Quickstart <https://docs.astropy.org/en/latest/development/quickstart.html>`__
+* `Astropy Contribution Example <https://docs.astropy.org/en/latest/development/git_edit_workflow_examples.html>`__
 
 **We strongly recommend that you read these links.**
 These links are more in-depth than this guide but you will need to replace ``astropy`` with ``sunpy``.
