@@ -79,7 +79,6 @@ jobs:
       envs: |
         - linux: build_docs-gallery
           pytest: false
-          coverage: ''
           cache-path: |
             docs/_build/
             docs/generated/
