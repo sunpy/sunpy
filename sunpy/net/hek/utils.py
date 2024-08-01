@@ -279,7 +279,7 @@ def get_unit(unit):
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         # Units for coordinate frames have more than one unit, otherwise it will be just one unit.
         # There is an assumption that coord1_unit, coord2_unit and coord3_unit are the same.
-        warnings.filterwarnings("ignore", category=u.UnitsWarning)
+        warnings.filterwarnings("ignore", category=u.UnitsWarning, message='.*contains multiple slashes*')
         if unit in aliases:
             unit = u.Unit(aliases[unit])
         else:
