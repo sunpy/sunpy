@@ -181,13 +181,6 @@ def test_duration_calculation():
     expected_duration = (rotated_time.utc - base_time).to('day')
     assert r.duration == expected_duration
 
-def test_duration_invalid_type():
-    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
-
-    # Testing with invalid type
-    with pytest.raises(ValueError, match="`duration` must be a `TimeDelta` or `Quantity` object."):
-        RotatedSunFrame(base=base_frame, duration=4)
-
 
 def test_rotated_time_property():
     r1 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'), duration=1*u.day)

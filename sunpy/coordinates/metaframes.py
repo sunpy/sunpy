@@ -6,7 +6,6 @@ import astropy.units as u
 from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
-from astropy.time import TimeDelta
 
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
@@ -189,17 +188,11 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         if duration is not None and rotated_time is not None:
             raise ValueError("Specify either `duration` or `rotated_time`, not both.")
 
-        if not isinstance(duration, TimeDelta) and not isinstance(duration, u.Quantity) and duration is not None:
-            raise ValueError("`duration` must be a `TimeDelta` or `Quantity` object.")
+        if duration is not None:
+            rotated_time = base_frame.obstime + duration
 
         if rotated_time is not None:
-            rotated_time = parse_time(rotated_time)
-        elif duration is not None:
-            rotated_time=parse_time(base_frame.obstime + duration)
-        else:
-            rotated_time = base_frame.obstime   # This sets `duration = 0 * u.days` if duration and rotated_time both aren't provided
-
-        kwargs['duration'] = (rotated_time - base_frame.obstime).to('day')
+            kwargs['duration'] = (parse_time(rotated_time) - base_frame.obstime).to('day')
 
         super().__init__(*args, **kwargs)
 
