@@ -1,1 +1,1 @@
-The `~sunpy.coordinates.RotatedSunFrame` class now accepts an `~astropy.time.TimeDelta` object for the duration parameter in `sunpy.coordinates.metaframes`
+The `~sunpy.coordinates.RotatedSunFrame` class now accepts an `~astropy.time.TimeDelta` object for the ``duration`` parameter.

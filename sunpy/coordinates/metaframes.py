@@ -120,8 +120,8 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         A representation object or ``None`` to have no data.  Alternatively, use coordinate
         component keyword arguments, which depend on the base frame.
     base : `~astropy.coordinates.SkyCoord` or low-level coordinate object.
-        The coordinate which specifies the base coordinate frame.  The frame must be a SunPy frame.
-    duration : `~astropy.units.Quantity`
+        The coordinate which specifies the base coordinate frame. The frame must be a SunPy frame.
+    duration : `~astropy.units.Quantity` or `~astropy.time.TimeDelta`
         The duration of solar rotation (defaults to zero days).
     rotated_time : {parse_time_types}
         The time to rotate the Sun to.  If provided, ``duration`` will be set to the difference
