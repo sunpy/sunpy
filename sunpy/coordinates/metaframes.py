@@ -155,7 +155,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     def __new__(cls, *args, **kwargs):
         # We don't want to call this method if we've already set up
-        # an rotated-Sun frame for this class.
+        # a rotated-Sun frame for this class.
         if not (issubclass(cls, RotatedSunFrame) and cls is not RotatedSunFrame):
             # We get the base argument, and handle it here.
             base_frame = kwargs.get('base', None)
@@ -179,26 +179,27 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     def __init__(self, *args, **kwargs):
         # Validate inputs
-        if kwargs['base'].obstime is None:
+        base_frame = kwargs.get('base')
+        if base_frame is None or base_frame.obstime is None:
             raise ValueError("The base coordinate frame must have a defined `obstime`.")
 
-        base_frame = kwargs['base']
-        if 'duration' in kwargs:
-            duration = kwargs['duration']
-            if isinstance(duration, TimeDelta):
-                kwargs['duration'] = duration.to(u.day)
-                kwargs['rotated_time'] = base_frame.obstime + duration
-            elif isinstance(duration, u.Quantity):
-                if duration.unit != u.day:
-                    kwargs['duration'] = duration.to(u.day)
-            else:
-                raise ValueError("`duration` must be a `TimeDelta` or `Quantity` object.")
+        duration = kwargs.pop('duration', None)
+        rotated_time = kwargs.pop('rotated_time', None)
 
-        # Handle 'rotated_time' to calculate 'duration'
-        if 'rotated_time' in kwargs:
-            rotated_time = parse_time(kwargs['rotated_time'])
-            kwargs['duration'] = (rotated_time - base_frame.obstime).to('day')
-            kwargs.pop('rotated_time')
+        if duration is not None and rotated_time is not None:
+            raise ValueError("Specify either `duration` or `rotated_time`, not both.")
+
+        if not isinstance(duration, TimeDelta) and not isinstance(duration, u.Quantity) and duration is not None:
+            raise ValueError("`duration` must be a `TimeDelta` or `Quantity` object.")
+
+        if rotated_time is not None:
+            rotated_time = parse_time(rotated_time)
+        elif duration is not None:
+            rotated_time=parse_time(base_frame.obstime + duration)
+        else:
+            rotated_time = base_frame.obstime   # This sets `duration = 0 * u.days` if duration and rotated_time both aren't provided
+
+        kwargs['duration'] = (rotated_time - base_frame.obstime).to('day')
 
         super().__init__(*args, **kwargs)
 

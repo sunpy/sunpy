@@ -165,6 +165,22 @@ def test_duration_with_quantity_hours():
     assert_quantity_allclose(r.duration, 4 * u.day)
 
 
+def test_both_duration_and_rotated_time_provided():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    with pytest.raises(ValueError, match="Specify either `duration` or `rotated_time`, not both."):
+        RotatedSunFrame(base=base_frame, duration=TimeDelta(1*u.day), rotated_time=Time('2001-01-02'))
+
+
+def test_duration_calculation():
+
+    base_time = Time('2001-01-01')
+    base_frame = f.HeliographicStonyhurst(obstime=base_time)
+    rotated_time = Time('2001-01-02')
+    r = RotatedSunFrame(base=base_frame, rotated_time=rotated_time)
+    expected_duration = (rotated_time.utc - base_time).to('day')
+    assert r.duration == expected_duration
+
 def test_duration_invalid_type():
     base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
 
