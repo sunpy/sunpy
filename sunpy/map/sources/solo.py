@@ -26,7 +26,7 @@ class EUIMap(GenericMap):
     References
     ----------
     * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`__
-    * `EUI Instrument Page <hthttps://www.sidc.be/EUI/about/instrument>`__
+    * `EUI Instrument Page <https://www.sidc.be/EUI/about/instrument>`__
     * `Instrument Paper <https://doi.org/10.1051/0004-6361/201936663>`__
     """
 
