@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-  "setuptools>=62.1",
+  "setuptools>=62.1,!=71.0.1",
   "setuptools_scm[toml]>=6.2",
   "wheel",
   "extension-helpers",
@@ -23,14 +23,14 @@ name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
 requires-python = ">=3.10"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = { file = "LICENSE.rst", content-type = "text/plain" }
+license = { file = "LICENSE.rst" }
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
 dependencies = [
-  "astropy>=5.2.0",
-  "numpy>=1.23.0",
-  "packaging>=21.3",
+  "astropy>=5.3.0",
+  "numpy>=1.23.5",
+  "packaging>=23.0",
   "parfive[ftp]>=2.0.0",
   "pyerfa>=2.0",
   "requests>=2.28.0",
@@ -60,10 +60,10 @@ asdf = [
 dask = ["dask[array]>=2022.5.2"]
 image = [
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
-  "scipy>=1.8.0,!=1.10.0",
+  "scipy>=1.9.0,!=1.10.0",
 ]
 jpeg2000 = [
-  "glymur>=0.9.1,!=0.9.5",
+  "glymur>=0.11.0",
   # While a direct dependency of glymur, we import it to save JPEG2000 files.
   # and we had issues with specific versions lxml.
   "lxml>=4.9.0,!=5.0.0",
@@ -73,13 +73,13 @@ map = [
   "mpl-animators>=1.0.0",
   "reproject>=0.9.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
-  "scipy>=1.8.0,!=1.10.0",
+  "scipy>=1.9.0,!=1.10.0",
 ]
 opencv = ["opencv-python>=4.6.0.66"]
 net = [
   "beautifulsoup4>=4.11.0",
   "drms>=0.7.1",
-  "python-dateutil>=2.8.0",
+  "python-dateutil>=2.8.1",
   "tqdm>=4.64.0",
   "zeep>=4.1.0",
   "regions>=0.8",
@@ -95,7 +95,10 @@ timeseries = [
   "matplotlib>=3.5.0",
   "pandas>=1.4.0",
 ]
-visualization = ["matplotlib>=3.5.0", "mpl-animators>=1.0.0"]
+visualization = [
+  "matplotlib>=3.5.0",
+  "mpl-animators>=1.0.0",
+]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
 tests-only = [
