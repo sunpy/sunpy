@@ -8,7 +8,7 @@ import astropy.units as u
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 

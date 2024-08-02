@@ -11,7 +11,7 @@ from sunpy.coordinates import sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.sun import constants
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 __all__ = "Pritish C. (VaticanCameos)"
 

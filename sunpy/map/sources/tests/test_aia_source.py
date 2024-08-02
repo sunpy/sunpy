@@ -11,7 +11,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.tests.helpers import SKIP_GLYMUR
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 params = [get_test_filepath("aia_171_level1.fits")]
 if not SKIP_GLYMUR:

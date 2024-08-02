@@ -11,7 +11,7 @@ from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
 from sunpy.util.exceptions import SunpyMetadataWarning
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 header_list = [
     "lasco_c2_25299383_s.header",

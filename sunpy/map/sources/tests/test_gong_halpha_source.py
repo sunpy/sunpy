@@ -5,7 +5,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import GONGHalphaMap
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture

@@ -10,7 +10,7 @@ from astropy.io import fits
 
 from sunpy.map import Map
 from sunpy.map.sources import WISPRMap
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture

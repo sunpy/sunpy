@@ -6,7 +6,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.adapt import ADAPTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture

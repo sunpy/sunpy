@@ -7,7 +7,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import EUIMap
-from . import _test_private_date_setters
+from .helpers import _test_private_date_setters
 
 header_list = [
     get_test_filepath('solo_L1_eui-fsi304-image_20201021T145510206_V03.header'),
