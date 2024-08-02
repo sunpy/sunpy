@@ -27,7 +27,7 @@ __all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 _KNOWN_EXTENSIONS = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
-    ('fz', 'f0'): 'ana',
+    ('fz', 'f0'): 'ana'
 }
 
 
@@ -50,7 +50,7 @@ class Readers(dict):
 _READERS = Readers({
     'fits': fits,
     'jp2': _jp2,
-    'ana': ana,
+    'ana': ana
 })
 
 
