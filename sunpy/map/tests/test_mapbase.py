@@ -637,7 +637,11 @@ def test_save(aia171_test_map):
     for k in aiamap.meta:
         assert loaded_save.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save.data, aiamap.data)
+
+
+def test_save_asdf(aia171_test_map):
     #test for asdf files
+    aiamap = aia171_test_map
     asdf_file = tempfile.NamedTemporaryFile(suffix='asdf').name
     aiamap.save(asdf_file)
     loaded_save_asdf = sunpy.map.Map(asdf_file)
@@ -647,7 +651,7 @@ def test_save(aia171_test_map):
     for k in aiamap.meta:
         assert loaded_save_asdf.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save_asdf.data, aiamap.data)
-
+    plt.close('all')
 
 def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
