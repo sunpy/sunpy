@@ -5,6 +5,7 @@ from urllib.request import Request
 
 import numpy as np
 
+import asdf
 import astropy.io.fits
 from astropy.utils.decorators import deprecated_renamed_argument
 from astropy.wcs import WCS
@@ -95,7 +96,12 @@ class MapFactory(BasicRegistrationFactory):
         # This can be removed once read_file supports pathlib.Path
         log.debug(f'Reading {fname}')
         try:
-            pairs = read_file(os.fspath(fname), **kwargs)
+            if str(fname).endswith("asdf"):
+                with asdf.open(fname,lazy_load=False) as af:
+                    obj = af.tree.get('object')
+                    pairs = [(obj.data,FileHeader(obj.meta))]
+            else:
+                pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}\n{e}"
             if kwargs.get("silence_errors") or kwargs.get("allow_errors"):

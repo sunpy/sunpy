@@ -1,5 +1,4 @@
 default.extend-ignore-identifiers-re = [
-    "NDArrayType",
     "ANDed", # ANDed
     "arange",
     "iy1",
