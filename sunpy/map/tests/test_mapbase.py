@@ -131,6 +131,17 @@ def test_notes_combined_no_notes_no_references():
     assert updated_documentation2.strip() == expected_result.strip()
 
 
+def test_save_asdf_and_verify(tmpdir):
+    AIA_MAP = get_test_filepath('aia_171_level1.fits')
+    mp = sunpy.map.Map(AIA_MAP)
+    outfile = tmpdir/'test.asdf'
+    mp.save(outfile)
+    assert outfile.exists()
+    mp_asdf = sunpy.map.Map(str(outfile))
+    assert dict(mp_asdf.meta) == dict(mp.meta)
+    assert np.array_equal(mp.data,mp_asdf.data)
+
+
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
