@@ -51,9 +51,9 @@ def test_two_map_inputs(args1, args2):
         assert isinstance(out, sunpy.map.GenericMap)
 
 def test_read_asdf_and_verify(tmpdir):
-    mp = sunpy.map.Map(AIA_ASDF)
-    assert isinstance(mp.data,np.ndarray)
-    assert isinstance(mp.meta,dict)
+    loaded_asdf_map = sunpy.map.Map(AIA_ASDF)
+    assert isinstance(loaded_asdf_map.data, np.ndarray)
+    assert isinstance(loaded_asdf_map.meta, dict)
 
 def test_mapsequence(eit_fits_directory):
     # Test making a MapSequence
