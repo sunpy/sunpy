@@ -131,16 +131,6 @@ def test_notes_combined_no_notes_no_references():
     assert updated_documentation2.strip() == expected_result.strip()
 
 
-def test_save_asdf_(tmpdir):
-    AIA_MAP = get_test_filepath('aia_171_level1.fits')
-    mp = sunpy.map.Map(AIA_MAP)
-    assert isinstance(mp.data,np.ndarray)
-    assert isinstance(mp.meta,sunpy.util.metadata.MetaDict)
-    outfile = tmpdir/'test.asdf'
-    mp.save(outfile)
-    assert outfile.exists()
-
-
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same when read with astropy.io.fits and sunpy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
@@ -647,6 +637,16 @@ def test_save(aia171_test_map):
     for k in aiamap.meta:
         assert loaded_save.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save.data, aiamap.data)
+    #test for asdf files
+    asdf_file = tempfile.NamedTemporaryFile(suffix='asdf').name
+    aiamap.save(asdf_file)
+    loaded_save_asdf = sunpy.map.Map(asdf_file)
+    assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
+    # Compare metadata without considering ordering of keys
+    assert loaded_save_asdf.meta.keys() == aiamap.meta.keys()
+    for k in aiamap.meta:
+        assert loaded_save_asdf.meta[k] == aiamap.meta[k]
+    assert_quantity_allclose(loaded_save_asdf.data, aiamap.data)
 
 
 def test_save_compressed(aia171_test_map):
