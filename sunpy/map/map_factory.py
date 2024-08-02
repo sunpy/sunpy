@@ -8,6 +8,7 @@ import numpy as np
 import asdf
 import astropy.io.fits
 from astropy.utils.decorators import deprecated_renamed_argument
+from astropy.utils.introspection import minversion
 from astropy.wcs import WCS
 
 from sunpy import log
@@ -97,7 +98,11 @@ class MapFactory(BasicRegistrationFactory):
         log.debug(f'Reading {fname}')
         try:
             if str(fname).endswith("asdf"):
-                with asdf.open(fname,lazy_load=False) as af:
+                if minversion(asdf, "3.1.0"):
+                    _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
+                else:
+                    _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
+                with asdf.open(fname,_NO_MEMMAP_KWARGS) as af:
                     obj = af.tree.get('object')
                     pairs = [(obj.data,FileHeader(obj.meta))]
             else:
