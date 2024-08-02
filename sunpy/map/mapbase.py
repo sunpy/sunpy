@@ -1601,8 +1601,7 @@ class GenericMap(NDData):
         if str(filepath).endswith("asdf"):
             asdf.AsdfFile({'object':self}).write_to(str(filepath))
         else:
-            write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+            write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
 # #### Image processing routines #### #
 
