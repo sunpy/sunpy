@@ -650,7 +650,6 @@ def test_save_asdf(aia171_test_map):
     for k in aiamap.meta:
         assert loaded_save_asdf.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save_asdf.data, aiamap.data)
-    plt.close('all')
 
 def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
