@@ -640,7 +640,6 @@ def test_save(aia171_test_map):
 
 
 def test_save_asdf(aia171_test_map):
-    #test for asdf files
     aiamap = aia171_test_map
     asdf_file = tempfile.NamedTemporaryFile(suffix='asdf').name
     aiamap.save(asdf_file)
