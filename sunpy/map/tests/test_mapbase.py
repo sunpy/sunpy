@@ -131,15 +131,14 @@ def test_notes_combined_no_notes_no_references():
     assert updated_documentation2.strip() == expected_result.strip()
 
 
-def test_save_asdf_and_verify(tmpdir):
+def test_save_asdf_(tmpdir):
     AIA_MAP = get_test_filepath('aia_171_level1.fits')
     mp = sunpy.map.Map(AIA_MAP)
+    assert isinstance(mp.data,np.ndarray)
+    assert isinstance(mp.meta,sunpy.util.metadata.MetaDict)
     outfile = tmpdir/'test.asdf'
     mp.save(outfile)
     assert outfile.exists()
-    mp_asdf = sunpy.map.Map(str(outfile))
-    assert dict(mp_asdf.meta) == dict(mp.meta)
-    assert np.array_equal(mp.data,mp_asdf.data)
 
 
 def test_fits_data_comparison(aia171_test_map):

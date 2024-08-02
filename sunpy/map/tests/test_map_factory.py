@@ -26,7 +26,6 @@ AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
 RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 AIA_193_JP2 = get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
 HMI_LOS_JP2 = get_test_filepath("2023_01_31__03_39_23_200__SDO_HMI_HMI_continuum.jp2")
-AIA_ASDF = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
 AIA_MAP = sunpy.map.Map(AIA_171_IMAGE)
 VALID_MAP_INPUTS = [
     (AIA_171_IMAGE, ),
@@ -50,10 +49,15 @@ def test_two_map_inputs(args1, args2):
     else:
         assert isinstance(out, sunpy.map.GenericMap)
 
-def test_read_asdf(tmpdir):
-    map_asdf = sunpy.map.Map(AIA_ASDF)
-    assert isinstance(map_asdf.data,np.ndarray)
-    assert isinstance(map_asdf.meta,sunpy.util.metadata.MetaDict)
+def test_read_asdf_and_verify(tmpdir):
+    mp = sunpy.map.Map(AIA_171_IMAGE)
+    outfile = tmpdir/'test.asdf'
+    mp.save(outfile)
+    assert outfile.exists()
+    mp_asdf = sunpy.map.Map(str(outfile))
+    assert dict(mp_asdf.meta) == dict(mp.meta)
+    assert np.array_equal(mp.data,mp_asdf.data)
+
 
 def test_mapsequence(eit_fits_directory):
     # Test making a MapSequence
