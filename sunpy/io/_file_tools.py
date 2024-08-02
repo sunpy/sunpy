@@ -1,4 +1,3 @@
-
 """
 This module provides a generic file reader for internal use.
 """
