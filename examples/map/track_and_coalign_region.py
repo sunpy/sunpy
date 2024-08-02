@@ -44,7 +44,6 @@ def update_map(i):
     ax.set_title(files)
 
 ani = FuncAnimation(fig, update_map, frames=len(aia_sequence), interval=200)
-plt.show()
 
 ###############################################################################
 # Now, let us crop into an interesting region.
@@ -70,10 +69,8 @@ def update_quadrangle(i):
         blc = cutout_map.bottom_left_coord.transform_to(m.coordinate_frame)
         trc = cutout_map.top_right_coord.transform_to(m.coordinate_frame)
         m.draw_quadrangle(blc, top_right=trc)
-    ax.set_title(files)
 
 quad_ani = FuncAnimation(fig, update_quadrangle, frames=len(aia_sequence), interval=200)
-plt.show()
 
 ###############################################################################
 # Aligns all images to the World Coordinate System (WCS) of the cutout.
@@ -91,7 +88,6 @@ aligned_im = aia_sequence_aligned[0].plot(axes=ax, cmap='sdoaia171')
 
 def update_aligned(i):
     aligned_im.set_array(aia_sequence_aligned[i].data)
-    ax.set_title(files)
 
 aligned_ani = FuncAnimation(fig, update_aligned, frames=len(aia_sequence_aligned), interval=200)
 plt.show()
