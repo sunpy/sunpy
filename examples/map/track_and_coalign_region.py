@@ -8,6 +8,7 @@ create a cutout around that region, and align it at each time step to get an ali
 """
 
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -34,10 +35,15 @@ files = Fido.fetch(query)
 
 aia_sequence = sunpy.map.Map(files, sequence=True)
 
-fig = plt.figure()
-ax = fig.add_subplot(projection=aia_sequence.maps[0])
-ani = aia_sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+# Create an animation for the sequence of maps
+fig, ax = plt.subplots(subplot_kw={'projection': aia_sequence[0]})
+im = aia_sequence[0].plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
 
+def update_map(i):
+    im.set_array(aia_sequence[i].data)
+    ax.set_title(files)
+
+ani = FuncAnimation(fig, update_map, frames=len(aia_sequence), interval=200)
 plt.show()
 
 ###############################################################################
@@ -56,20 +62,20 @@ cutout_map.plot(axes=ax)
 ###############################################################################
 # Track and co-align the region across the sequence of maps using solar rotation.
 
-fig = plt.figure(figsize=(24, 8))
-for i, m in enumerate(aia_sequence):
-    ax = fig.add_subplot(1, len(aia_sequence), i+1, projection=m)
-    m.plot(axes=ax)
-    ax.set_xlabel(' ')
-    ax.set_ylabel(' ')
-    plt.subplots_adjust(wspace=0.3)
+def update_quadrangle(i):
+    ax.clear()  # Clear the axis to avoid overlapping plots
+    m = aia_sequence[i]
+    m.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()), autoalign=True)
     with propagate_with_solar_surface():
         blc = cutout_map.bottom_left_coord.transform_to(m.coordinate_frame)
         trc = cutout_map.top_right_coord.transform_to(m.coordinate_frame)
         m.draw_quadrangle(blc, top_right=trc)
+    ax.set_title(files)
+
+quad_ani = FuncAnimation(fig, update_quadrangle, frames=len(aia_sequence), interval=200)
+plt.show()
 
 ###############################################################################
-
 # Aligns all images to the World Coordinate System (WCS) of the cutout.
 # `sunpy.coordinates.propagate_with_solar_surface` is a context manager that adjusts for solar rotation,
 # ensuring that regions on the Sun's surface remain in the correct position as the Sun rotates.
@@ -79,13 +85,13 @@ with propagate_with_solar_surface():
     # aligning all images to the same reference frame.
     aia_sequence_aligned = sunpy.map.Map([m.reproject_to(cutout_map.wcs) for m in aia_sequence], sequence=True)
 
-# Plot the aligned sequence of maps.
-fig = plt.figure(figsize=(24, 8))
-for i, m in enumerate(aia_sequence_aligned):
-    ax = fig.add_subplot(1, len(aia_sequence_aligned), i+1, projection=m)
-    m.plot(axes=ax, cmap='sdoaia171', title=aia_sequence[i].date)
-    ax.set_xlabel(' ')
-    ax.set_ylabel(' ')
-plt.subplots_adjust(wspace=0.3)
+# Create an animation for the aligned sequence of maps
+fig, ax = plt.subplots(subplot_kw={'projection': aia_sequence_aligned[0]})
+aligned_im = aia_sequence_aligned[0].plot(axes=ax, cmap='sdoaia171')
 
+def update_aligned(i):
+    aligned_im.set_array(aia_sequence_aligned[i].data)
+    ax.set_title(files)
+
+aligned_ani = FuncAnimation(fig, update_aligned, frames=len(aia_sequence_aligned), interval=200)
 plt.show()
