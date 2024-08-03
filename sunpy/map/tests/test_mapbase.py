@@ -647,7 +647,7 @@ def test_save_asdf(aia171_test_map):
     assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
    #Compare metadata without considering ordering of keys
     assert dict(loaded_save_asdf.meta) == dict(aiamap.meta)
-    assert_quantity_allclose(loaded_save_asdf.data, aiamap.data)
+    assert np.array_equal(loaded_save_asdf.data, aiamap.data)
 
 def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
