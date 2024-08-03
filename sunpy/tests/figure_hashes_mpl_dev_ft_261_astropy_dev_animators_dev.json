@@ -11,6 +11,8 @@
   "sunpy.map.tests.test_map_factory.test_map_jp2_HMI": "a7098f65fd06e81723ab8310f8873d69bcc220100ceafa8edc24dfb07caa937c",
   "sunpy.map.tests.test_mapbase.test_rotation_rect_pixelated_data": "d722cee25ad829b78b9391b7f8f417c27e8e5f14c62b9882728590d2fce5fb11",
   "sunpy.map.tests.test_mapbase.test_draw_contours_with_transform": "1dc9786938b352ed6561683e8091549aff3b8d4c3c27734b0940e01353786239",
+  "sunpy.map.tests.test_mapbase.test_draw_simple_map": "2f4032dd840abdef6fcf36c37931b94079964e05529ef6d656171041d795c331",
+  "sunpy.map.tests.test_mapbase.test_draw_carrington_map": "cc9e66c8928c9dea753c2b2d5894873a199c3e5137df2387b1c0427e69a66833",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scipy]": "c15c6c707b3b0e707936988054aeb818eee7b39e2249db5309ca43585d325a51",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scikit-image]": "911a0442055922f0d31dd48d8f1ede3d1b8b4d11a55f00a3403e8124761c2346",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[opencv]": "072505693731f65824dcaa7f0843087990f15f34b519285a2bc8965a1fa0ed37",
