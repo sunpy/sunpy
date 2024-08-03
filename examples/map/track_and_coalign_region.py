@@ -41,7 +41,6 @@ im = aia_sequence[0].plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch
 
 def update_map(i):
     im.set_array(aia_sequence[i].data)
-    ax.set_title(files)
 
 ani = FuncAnimation(fig, update_map, frames=len(aia_sequence), interval=200)
 
@@ -62,7 +61,6 @@ cutout_map.plot(axes=ax)
 # Track and co-align the region across the sequence of maps using solar rotation.
 
 def update_quadrangle(i):
-    ax.clear()  # Clear the axis to avoid overlapping plots
     m = aia_sequence[i]
     m.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()), autoalign=True)
     with propagate_with_solar_surface():
@@ -90,4 +88,5 @@ def update_aligned(i):
     aligned_im.set_array(aia_sequence_aligned[i].data)
 
 aligned_ani = FuncAnimation(fig, update_aligned, frames=len(aia_sequence_aligned), interval=200)
+
 plt.show()
