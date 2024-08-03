@@ -645,10 +645,8 @@ def test_save_asdf(aia171_test_map):
     aiamap.save(asdf_file)
     loaded_save_asdf = sunpy.map.Map(asdf_file)
     assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
-    # Compare metadata without considering ordering of keys
-    assert loaded_save_asdf.meta.keys() == aiamap.meta.keys()
-    for k in aiamap.meta:
-        assert loaded_save_asdf.meta[k] == aiamap.meta[k]
+   #Compare metadata without considering ordering of keys
+    assert dict(loaded_save_asdf.meta) == dict(aiamap.meta)
     assert_quantity_allclose(loaded_save_asdf.data, aiamap.data)
 
 def test_save_compressed(aia171_test_map):
