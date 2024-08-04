@@ -2687,7 +2687,7 @@ class GenericMap(NDData):
         """
         Returns coordinates of the contours for a given level value.
 
-        For details of the contouring algorithm see `skimage.measure.find_contours`.
+        For details of the contouring algorithm, see `contourpy.contour_generator`.
 
         Parameters
         ----------
@@ -2696,7 +2696,7 @@ class GenericMap(NDData):
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
         kwargs :
-            Additional keyword arguments are passed to `skimage.measure.find_contours`.
+            Additional keyword arguments are passed to `contourpy.contour_generator`.
 
         Returns
         -------
@@ -2718,9 +2718,9 @@ class GenericMap(NDData):
 
         See Also
         --------
-        skimage.measure.find_contours
+        contourpy.contour_generator
         """
-        from skimage import measure
+        from contourpy import contour_generator
 
         level = self._process_levels_arg(level)
         if level.size != 1:
@@ -2730,8 +2730,9 @@ class GenericMap(NDData):
             # find_contours expects a scalar below
             level = level[0]
 
-        contours = measure.find_contours(self.data, level=level, **kwargs)
-        contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        gen = contour_generator(z=self.data, **kwargs)
+        contours = gen.lines(level)
+        contours = [self.wcs.array_index_to_world(c[:, 1], c[:, 0]) for c in contours]
         return contours
 
     def _check_axes(self, axes, warn_different_wcs=False):

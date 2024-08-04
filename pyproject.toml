@@ -69,7 +69,8 @@ jpeg2000 = [
   "lxml>=4.9.0,!=5.0.0",
 ]
 map = [
-  "matplotlib>=3.5.0",
+  "contourpy>=1.0.1"
+  "matplotlib>=3.6.0",
   "mpl-animators>=1.0.0",
   "reproject>=0.9.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
@@ -91,11 +92,11 @@ timeseries = [
   # While a not direct dependency
   # We need to raise this to ensure the goes netcdf files open.
   "h5py>=3.7.0",
-  "matplotlib>=3.5.0",
+  "matplotlib>=3.6.0",
   "pandas>=1.4.0",
 ]
 visualization = [
-  "matplotlib>=3.5.0",
+  "matplotlib>=3.6.0",
   "mpl-animators>=1.0.0",
 ]
 core = ["sunpy[image,map,net,timeseries,visualization]"]

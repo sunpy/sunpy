@@ -12,7 +12,6 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from matplotlib.transforms import Affine2D
-from packaging.version import Version
 
 import astropy.units as u
 import astropy.wcs
@@ -1493,7 +1492,6 @@ def test_contour_units(simple_map):
         assert np.all(c1 == c2)
 
 
-@pytest.mark.skipif(Version(matplotlib.__version__) < Version("3.6.0"), reason="Fails on old MPL versions, the first with block raises a different error")
 def test_contour_inputs(simple_map):
     with pytest.raises(ValueError, match='Contour levels must be increasing'):
         simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
