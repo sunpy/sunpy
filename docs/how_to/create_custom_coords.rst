@@ -12,11 +12,14 @@ It is possible to specify an observer other than Earth by providing a `SkyCoord`
     >>> from sunpy.coordinates import frames
     >>> import astropy.units as u
 
-    # Define the observer's position in Heliocentric coordinates
-    >>>obserevr_coord = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame=frames.Helioprojective)
-    >>>obserevr_coord= SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
-    >>>obserevr_coord = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
-    >>>obserevr_coord
+Define the observer's position in Heliocentric coordinates
+
+.. code-block:: python
+
+    >>> obserevr_coord = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame=frames.Helioprojective)
+    >>> obserevr_coord= SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
+    >>> obserevr_coord = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
+    >>> obserevr_coord
     <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
         (70., -30.)>
 
