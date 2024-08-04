@@ -1,10 +1,10 @@
 .. _sunpy-how-to-create-custom-coordinate-objects:
 
-*************************
-Create Coordinate Objects
-*************************
+**********************************************
+Create Coordinate Objects with Custom Observer
+**********************************************
 
-It is possible to specify an observer other than Earth by providing a `SkyCoord` object representing the observer's location. This can be useful when working with data from instruments located at specific points in space, such as spacecraft.
+It is possible to specify an observer other than Earth by providing a `~astropy.coordinates.SkyCoord` object representing the observer's location. This can be useful when working with data from instruments located at specific points in space, such as spacecraft.
 
 .. code-block:: python
 
@@ -16,10 +16,10 @@ Define the observer's position in Heliocentric coordinates
 
 .. code-block:: python
 
-    >>> obserevr_coord = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame=frames.Helioprojective)
-    >>> obserevr_coord= SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
-    >>> obserevr_coord = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
-    >>> obserevr_coord
+    >>> observer_coord = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame=frames.Helioprojective)
+    >>> observer_coord= SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
+    >>> observer_coord = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
+    >>> observer_coord
     <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
         (70., -30.)>
 
@@ -33,4 +33,4 @@ Create a coordinate in Helioprojective with the custom observer
         (70., -30., 695700.)>): (Tx, Ty) in arcsec
         (100., 200.)>
 
-In this example, we define the observer's position at -100*u.arcsec along the x-axis and 500*u.arcsec along y-axis in Heliocentric coordinates. This observer coordinate is then used to create a `SkyCoord` object in the `Helioprojective` frame.
+In this example, we define the observer's position at -100*u.arcsec along the x-axis and 500*u.arcsec along y-axis in Heliocentric coordinates. This observer coordinate is then used to create a `~astropy.coordinates.SkyCoord` object in the `Helioprojective` frame.
