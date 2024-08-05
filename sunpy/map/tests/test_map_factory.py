@@ -56,6 +56,7 @@ def test_read_asdf_and_verify(tmpdir):
     assert isinstance(loaded_asdf_map.data, np.ndarray)
     assert isinstance(loaded_asdf_map.meta, dict)
 
+
 def test_mapsequence(eit_fits_directory):
     # Test making a MapSequence
     sequence = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')), sequence=True)
