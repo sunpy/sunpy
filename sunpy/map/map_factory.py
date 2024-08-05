@@ -95,8 +95,8 @@ class MapFactory(BasicRegistrationFactory):
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
         log.debug(f'Reading {fname}')
-        filetype = detect_filetype(fname)
         try:
+            filetype = detect_filetype(fname)
             if filetype == "asdf":
                 with asdf.open(fname) as af:
                     pairs = [value for value in af.tree.values() if isinstance(value,GenericMap)]

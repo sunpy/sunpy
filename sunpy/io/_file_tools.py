@@ -206,6 +206,10 @@ def detect_filetype(filepath):
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
 
+    # for asdf files
+    if first80.startswith(b"#ASDF"):
+        return "asdf"
+
     # FITS
     # Checks for gzip signature.
     # If found, decompresses first few bytes and checks for FITS
@@ -236,9 +240,6 @@ def detect_filetype(filepath):
 
     if cdf_magic_number in ['cdf30001', 'cdf26002', '0000ffff']:
         return 'cdf'
-
-    if first80.startswith(b'#ASDF'):
-        return "asdf"
 
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
