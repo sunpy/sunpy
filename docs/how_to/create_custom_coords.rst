@@ -33,4 +33,4 @@ Create a coordinate in Helioprojective with the custom observer
         (70., -30., 695700.)>): (Tx, Ty) in arcsec
         (100., 200.)>
 
-In this example, we define the observer's position at -100*u.arcsec along the x-axis and 500*u.arcsec along y-axis in Heliocentric coordinates. This observer coordinate is then used to create a `~astropy.coordinates.SkyCoord` object in the `Helioprojective` frame.
+In this example, we define the observer's position at -100*u.arcsec along the x-axis and 500*u.arcsec along y-axis in Heliocentric coordinates. This observer coordinate is then used to create a `~astropy.coordinates.SkyCoord` object in the ``Helioprojective`` frame.
