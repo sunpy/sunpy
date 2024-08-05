@@ -104,7 +104,7 @@ class MapFactory(BasicRegistrationFactory):
                     _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
                 with asdf.open(fname, _NO_MEMMAP_KWARGS) as af:
                     pairs = [obj for obj in af.tree.values() if isinstance(obj, GenericMap]
-                    pairs = [(obj.data, FileHeader(obj.meta))]
+                    pairs = [obj]
             else:
                 pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
