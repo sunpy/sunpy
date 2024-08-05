@@ -47,9 +47,7 @@ class NoRHClient(GenericClient):
     * `NoRH Data Archive <https://solar.nro.nao.ac.jp/norh/data/tcx>`__
     * `NoRH User Guide <https://solar.nro.nao.ac.jp/norh/doc/manuale/>`__
     """
-    # The dot at the end is there to prevent the scraper from failing to check the file extension.
-    baseurl = r'https://solar.nro.nao.ac.jp/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
-    pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
+    pattern = r'https://solar.nro.nao.ac.jp/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{Wavelength:3l}}{{:4d}}{{day:2d}}'
 
     @property
     def info_url(self):

@@ -131,12 +131,12 @@ In the past, ``sunpy`` only provided a search over the high-cadence data.
     8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
     16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
-           Start Time               End Time        ... Provider Resolution
-    ----------------------- ----------------------- ... -------- ----------
-    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      flx1s
-    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
-    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      flx1s
-    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
+           Start Time               End Time        Instrument  Physobs   Source Provider Resolution SatelliteNumber
+    ----------------------- ----------------------- ---------- ---------- ------ -------- ---------- ---------------
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS irradiance   GOES     NOAA      flx1s              16
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              16
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS irradiance   GOES     NOAA      flx1s              17
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              17
     <BLANKLINE>
     <BLANKLINE>
 
@@ -156,10 +156,10 @@ If you want the 1s resolution data, you would instead pass ``a.Resolution("flx1s
     8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
     16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
-           Start Time               End Time        ... Provider Resolution
-    ----------------------- ----------------------- ... -------- ----------
-    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
-    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999 ...     NOAA      avg1m
+           Start Time               End Time        Instrument  Physobs   Source Provider Resolution SatelliteNumber
+    ----------------------- ----------------------- ---------- ---------- ------ -------- ---------- ---------------
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              16
+    2022-02-15 00:00:00.000 2022-02-15 23:59:59.999        XRS irradiance   GOES     NOAA      avg1m              17
     <BLANKLINE>
     <BLANKLINE>
 
