@@ -50,6 +50,7 @@ def test_two_map_inputs(args1, args2):
     else:
         assert isinstance(out, sunpy.map.GenericMap)
 
+
 def test_read_asdf_and_verify(tmpdir):
     loaded_asdf_map = sunpy.map.Map(AIA_ASDF)
     assert isinstance(loaded_asdf_map.data, np.ndarray)
