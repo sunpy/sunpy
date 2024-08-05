@@ -35,6 +35,9 @@ class GONGSynopticMap(GenericMap):
     array of 242×256 pixels covering the solar disk. These magnetograms are used to derive
     synoptic maps which show a full-surface picture of the solar magnetic field.
 
+    Notes
+    -----
+    If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`_
@@ -56,7 +59,7 @@ class GONGSynopticMap(GenericMap):
         return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
 
     def _set_date(self, date):
-        self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.iso.split(' ')
+        self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.isot.split('T')
 
     @property
     def reference_date(self):
