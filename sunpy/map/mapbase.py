@@ -2730,7 +2730,7 @@ class GenericMap(NDData):
             # find_contours expects a scalar below
             level = level[0]
 
-        gen = contour_generator(z=self.data, **kwargs)
+        gen = contour_generator(z=self.data,name="threaded", **kwargs)
         contours = gen.lines(level)
         contours = [self.wcs.array_index_to_world(c[:, 1], c[:, 0]) for c in contours]
         return contours
