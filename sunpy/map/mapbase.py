@@ -18,8 +18,6 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-import asdf
-
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
@@ -1599,6 +1597,7 @@ class GenericMap(NDData):
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
         if str(filepath).endswith("asdf"):
+            import asdf
             asdf.AsdfFile({'sunpymap':self}).write_to(str(filepath))
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)

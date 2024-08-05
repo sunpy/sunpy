@@ -8,12 +8,11 @@ import numpy as np
 import asdf
 import astropy.io.fits
 from astropy.utils.decorators import deprecated_renamed_argument
-from astropy.utils.introspection import minversion
 from astropy.wcs import WCS
 
 from sunpy import log
 from sunpy.data import cache
-from sunpy.io._file_tools import read_file
+from sunpy.io._file_tools import detect_filetype, read_file
 from sunpy.io._header import FileHeader
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
@@ -96,17 +95,14 @@ class MapFactory(BasicRegistrationFactory):
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
         log.debug(f'Reading {fname}')
+        filetype = detect_filetype(fname)
         try:
-            if str(fname).endswith("asdf"):
-                if minversion(asdf, "3.1.0"):
-                    _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
-                else:
-                    _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
-                with asdf.open(fname, _NO_MEMMAP_KWARGS) as af:
-                    pairs = [obj for obj in af.tree.values() if isinstance(obj, GenericMap]
-                    pairs = [obj]
+            if filetype == "asdf":
+                with asdf.open(fname) as af:
+                    pairs = [value for value in af.tree.values() if isinstance(value,GenericMap)]
+                    return pairs
             else:
-                pairs = read_file(os.fspath(fname), **kwargs)
+                pairs = read_file(os.fspath(fname),filetype=filetype, **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}\n{e}"
             if kwargs.get("silence_errors") or kwargs.get("allow_errors"):
