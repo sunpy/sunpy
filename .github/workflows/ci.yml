@@ -103,7 +103,6 @@ jobs:
     with:
       default_python: '3.12'
       submodules: false
-      coverage: ''
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py312-devdeps
