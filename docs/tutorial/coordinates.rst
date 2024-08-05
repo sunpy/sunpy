@@ -105,8 +105,8 @@ Using Coordinates with Maps
 
     >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> amap.coordinate_frame  # doctest: +REMOTE_DATA
-    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
+    <Helioprojective Frame (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>)>
 
    This can be used when creating a `~astropy.coordinates.SkyCoord` object to set the coordinate system to that image:
 
@@ -114,8 +114,8 @@ Using Coordinates with Maps
 
     >>> coord = SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=amap.coordinate_frame)  # doctest: +REMOTE_DATA
     >>> coord  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (100., 10.)>
 
    The `~astropy.coordinates.SkyCoord` object can be converted to a pair of pixels using :meth:`GenericMap.wcs.world_to_pixel <astropy.wcs.WCS.world_to_pixel>`:

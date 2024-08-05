@@ -5,6 +5,7 @@ ADAPT Map subclass definitions
 from astropy.time import Time
 
 from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.time import parse_time
 
 __all__ = ['ADAPTMap']
 
@@ -45,6 +46,11 @@ class ADAPTMap(GenericMap):
     @property
     def date(self):
         return Time(self.meta.get('date-obs') or self.meta.get('maptime') or super().date)
+
+    def _set_date(self, date):
+        self.meta['date-obs'] = parse_time(date).utc.isot
+        if 'maptime' in self.meta:
+            del self.meta['maptime']
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

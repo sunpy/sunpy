@@ -4,6 +4,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.gong import GONGSynopticMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -31,9 +32,16 @@ def test_measurement(gong_synoptic):
     assert gong_synoptic.measurement == 676.8 * u.nm
 
 
+def test_reference_date(gong_synoptic):
+    assert gong_synoptic.reference_date.isot == "2023-09-30T06:44:00.000"
+
+
 def test_date(gong_synoptic):
-    """Check that accessing the date doesn't raise a warning."""
-    gong_synoptic.date
+    assert gong_synoptic.date.isot == "2023-09-30T06:44:00.000"
+
+
+def test_private_date_setters(gong_synoptic):
+    _test_private_date_setters(gong_synoptic)
 
 
 def test_unit(gong_synoptic):

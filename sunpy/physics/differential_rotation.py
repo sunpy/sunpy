@@ -585,11 +585,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     out_data = transform.warp(smap_data, inverse_map=_warp_sun_coordinates,
                               map_args=warp_args, preserve_range=True, cval=np.nan)
 
-    # Update the meta information with the new date and time.
     out_meta = deepcopy(smap.meta)
-    if out_meta.get('date_obs', False):
-        del out_meta['date_obs']
-    out_meta['date-obs'] = new_observer.obstime.isot
 
     # Need to update the observer location for the output map.
     # Remove all the possible observer keys
@@ -612,6 +608,13 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
             ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-        return smap._new_instance(out_data, out_meta, smap.plot_settings).submap(rotated_bl, top_right=rotated_tr)
-    else:
-        return smap._new_instance(out_data, out_meta, smap.plot_settings)
+
+    outmap = smap._new_instance(out_data, out_meta, smap.plot_settings)
+
+    # Update the meta information with the new date and time.
+    outmap._set_date(new_observer.obstime)
+    outmap._set_reference_date(new_observer.obstime)
+
+    if is_sub_full_disk:
+        return outmap.submap(rotated_bl, top_right=rotated_tr)
+    return outmap

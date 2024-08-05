@@ -9,6 +9,7 @@ from astropy.coordinates import Angle
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -38,6 +39,18 @@ def test_is_datasource_for(mdi):
 def test_observatory(mdi):
     """Tests the observatory property of the MDIMap object."""
     assert mdi.observatory == "SOHO"
+
+
+def test_reference_date(mdi):
+    assert mdi.reference_date.isot == "2010-10-15T23:00:11.000"
+
+
+def test_date(mdi):
+    assert mdi.date.isot == "2010-10-15T23:00:11.000"
+
+
+def test_private_date_setters(mdi):
+    _test_private_date_setters(mdi)
 
 
 def test_instrument(mdi):

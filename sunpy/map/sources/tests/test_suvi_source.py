@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suvi import SUVIMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture()
@@ -19,6 +20,18 @@ def suvi():
 def test_suvimap_creation(suvi):
     """Tests the creation of SUVIMap using FITS."""
     assert isinstance(suvi, SUVIMap)
+
+
+def test_reference_date(suvi):
+    assert suvi.reference_date.isot == "2019-04-03T09:32:33.340"
+
+
+def test_date(suvi):
+    assert suvi.date.isot == "2019-04-03T09:32:33.340"
+
+
+def test_private_date_setters(suvi):
+    _test_private_date_setters(suvi)
 
 
 def test_is_datasource_for(suvi):

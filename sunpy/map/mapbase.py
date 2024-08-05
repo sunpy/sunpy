@@ -929,6 +929,19 @@ class GenericMap(NDData):
             self.date
         )
 
+    def _set_reference_date(self, date):
+        """
+        Set the reference date using the same priority as `.GenericMap.reference_date`.
+
+        If a source subclass overrides `.GenericMap.reference_date`, it should override
+        this private method as well.
+        """
+        for keyword in ['date-avg', 'date-obs', 'date-beg', 'date-end']:
+            if keyword in self.meta:
+                self.meta[keyword] = parse_time(date).utc.isot
+                return
+        self._set_date(date)
+
     @property
     def date(self):
         """
@@ -969,6 +982,22 @@ class GenericMap(NDData):
             time = self._default_time
 
         return time
+
+    def _set_date(self, date):
+        """
+        Set the observation time by setting DATE-OBS.
+
+        If a source subclass overrides `.GenericMap.date`, it should override
+        this private method as well.
+
+        Notes
+        -----
+        This method will additionally always remove DATE_OBS (note the underscore),
+        if present.
+        """
+        if 'date_obs' in self.meta:
+            del self.meta['date_obs']
+        self.meta['date-obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -1306,14 +1335,14 @@ class GenericMap(NDData):
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lon
 
@@ -2251,7 +2280,7 @@ class GenericMap(NDData):
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
-                                                           obstime=self.date,
+                                                           obstime=self.reference_date,
                                                            rsun=self.rsun_meters,
                                                            observer=self.observer_coordinate,
                                                            system=system,
@@ -2711,10 +2740,16 @@ class GenericMap(NDData):
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
-            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
-        ...
+         (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+         (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+         (713.14112796, -361.95311455), (714.76598031, -363.53013567),
+         (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+         (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+         (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+         (719.59798458, -352.60839064)]>
 
         See Also
         --------

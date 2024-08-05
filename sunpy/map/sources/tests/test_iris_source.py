@@ -8,6 +8,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.iris import SJIMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -21,6 +22,10 @@ def irismap():
 def test_fitstoIRIS(irismap):
     """Tests the creation of SJIMap using FITS."""
     assert (isinstance(irismap, SJIMap))
+
+
+def test_private_date_setters(irismap):
+    _test_private_date_setters(irismap)
 
 
 def test_is_datasource_for(irismap):
