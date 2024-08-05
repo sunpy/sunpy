@@ -75,7 +75,7 @@ sunpy.data.sample.download_all()
 sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
-linkcheck_exclude_documents = ["reference/stability.rst"]
+linkcheck_exclude_documents = ["stability.rst"]
 linkcheck_ignore = [r"https://doi.org/\d+",
                     r"https://element.io/\d+",
                     r"https://github.com/\d+",
