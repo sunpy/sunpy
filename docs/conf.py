@@ -204,6 +204,7 @@ intersphinx_mapping = {
     "sunkit_image": ("https://docs.sunpy.org/projects/sunkit-image/en/stable/", None),
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
+    "contourpy": ("https://contourpy.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for hoverxref -----------------------------------------------------
