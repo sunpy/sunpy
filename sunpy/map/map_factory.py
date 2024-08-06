@@ -5,11 +5,11 @@ from urllib.request import Request
 
 import numpy as np
 
-import asdf
 import astropy.io.fits
 from astropy.utils.decorators import deprecated_renamed_argument
-from astropy.wcs import WCS
 from astropy.utils.introspection import minversion
+from astropy.wcs import WCS
+
 from sunpy import log
 from sunpy.data import cache
 from sunpy.io._file_tools import detect_filetype, read_file
@@ -98,6 +98,7 @@ class MapFactory(BasicRegistrationFactory):
         try:
             filetype = detect_filetype(fname)
             if filetype == "asdf":
+                import asdf
                 if minversion(asdf, "3.1.0"):
                     _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
                 else:
