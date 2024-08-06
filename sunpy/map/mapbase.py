@@ -1596,8 +1596,11 @@ class GenericMap(NDData):
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
-        write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        if str(filepath).endswith("asdf"):
+            import asdf
+            asdf.AsdfFile({'sunpymap':self}).write_to(str(filepath))
+        else:
+            write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
 # #### Image processing routines #### #
 

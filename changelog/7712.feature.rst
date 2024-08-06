@@ -1,0 +1,1 @@
+Added support for saving a `sunpy.map.GenericMap` in ASDF.
