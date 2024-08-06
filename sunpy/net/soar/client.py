@@ -1,6 +1,12 @@
+"""
+This file defines the SOARClient class which is used to access the Solar
+Orbiter Archive (SOAR).
+"""
+
 import json
 import pathlib
 import re
+from copy import copy
 from json.decoder import JSONDecodeError
 
 import astropy.table
@@ -19,10 +25,30 @@ __all__ = ["SOARClient"]
 
 class SOARClient(BaseClient):
     """
-    Client to access the Solar Orbiter Archive (SOAR).
+    Provides access to Solar Orbiter Archive (SOAR) which provides data for
+    Solar Orbiter.
+
+    References
+    ----------
+    * `SOAR <https://soar.esac.esa.int/soar/>`__
     """
 
     def search(self, *query, **kwargs):  # NOQA: ARG002
+        r"""
+        Query this client for a list of results.
+
+        Parameters
+        ----------
+        *args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
+        **kwargs: `dict`
+            Any extra keywords to refine the search.
+            Unused by this client.
+
+        Returns
+        -------
+        A ``QueryResponseTable`` instance containing the query result.
+        """
         query = and_(*query)
         queries = walker.create(query)
 
@@ -37,6 +63,7 @@ class SOARClient(BaseClient):
         qrt.hide_keys = ["Data item ID", "Filename"]
         return qrt
 
+    @staticmethod
     def add_join_to_query(query: list[str], data_table: str, instrument_table: str):
         """
         Construct the WHERE, FROM, and SELECT parts of the ADQL query.
@@ -59,7 +86,8 @@ class SOARClient(BaseClient):
         # Extract wavemin and wavemax individually
         wavemin_pattern = re.compile(r"Wavemin='(\d+\.\d+)'")
         wavemax_pattern = re.compile(r"Wavemax='(\d+\.\d+)'")
-        for parameter in query:
+        for current_parameter in query:
+            parameter = copy(current_parameter)
             wavemin_match = wavemin_pattern.search(parameter)
             wavemax_match = wavemax_pattern.search(parameter)
             # If the wavemin and wavemax are same that means only one wavelength is given in query.
@@ -168,7 +196,7 @@ class SOARClient(BaseClient):
         # Need to force requests to not form-encode the parameters
         payload = "&".join([f"{key}={val}" for key, val in payload.items()])
         # Get request info
-        r = requests.get(f"{tap_endpoint}/sync", params=payload)
+        r = requests.get(f"{tap_endpoint}/sync", params=payload, timeout=60)
         log.debug(f"Sent query: {r.url}")
         r.raise_for_status()
         try:
@@ -209,7 +237,7 @@ class SOARClient(BaseClient):
         result_table.sort("Start time")
         return result_table
 
-    def fetch(self, query_results, *, path, downloader, **kwargs):  # NOQA: ARG002
+    def fetch(self, query_results, *, path, downloader, **kwargs) -> None:  # NOQA: ARG002
         """
         Queue a set of results to be downloaded.
         `sunpy.net.base_client.BaseClient` does the actual downloading, so we
@@ -242,7 +270,7 @@ class SOARClient(BaseClient):
             downloader.enqueue_file(url, filename=filepath)
 
     @classmethod
-    def _can_handle_query(cls, *query):
+    def _can_handle_query(cls, *query) -> bool:
         """
         Check if this client can handle a given Fido query. Checks to see if a
         SOAR instrument or product is provided in the query.
@@ -273,10 +301,26 @@ class SOARClient(BaseClient):
 
     @classmethod
     def register_values(cls):
+        """
+        Register the SOAR specific attributes with Fido.
+
+        Returns
+        -------
+        dict
+            The dictionary containing the values formed into attributes.
+        """
         return cls.load_dataset_values()
 
     @staticmethod
     def load_dataset_values():
+        """
+        Loads the net attribute values from the JSON file.
+
+        Returns
+        -------
+        dict
+            The dictionary containing the values formed into attributes.
+        """
         # Instrument attrs
         attrs_path = pathlib.Path(__file__).parent / "data" / "attrs.json"
         with attrs_path.open() as attrs_file:
