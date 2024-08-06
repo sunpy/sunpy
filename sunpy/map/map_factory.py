@@ -100,7 +100,7 @@ class MapFactory(BasicRegistrationFactory):
             if filetype == "asdf":
                 import asdf
                 if minversion(asdf, "3.1.0"):
-                    _NO_MEMMAP_KWARGS = {"lazy_load": False}
+                    _NO_MEMMAP_KWARGS = {"memmap" False, "lazy_load": False}
                 else:
                     _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
                 with asdf.open(fname,** _NO_MEMMAP_KWARGS) as af:
