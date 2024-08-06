@@ -206,7 +206,7 @@ def detect_filetype(filepath):
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
 
-    # for asdf files
+    # For ASDF files
     if first80.startswith(b"#ASDF"):
         return "asdf"
 
