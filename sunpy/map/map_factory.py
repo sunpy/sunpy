@@ -9,7 +9,7 @@ import asdf
 import astropy.io.fits
 from astropy.utils.decorators import deprecated_renamed_argument
 from astropy.wcs import WCS
-
+from astropy.utils.introspection import minversion
 from sunpy import log
 from sunpy.data import cache
 from sunpy.io._file_tools import detect_filetype, read_file
@@ -98,7 +98,11 @@ class MapFactory(BasicRegistrationFactory):
         try:
             filetype = detect_filetype(fname)
             if filetype == "asdf":
-                with asdf.open(fname) as af:
+                if minversion(asdf, "3.1.0"):
+                    _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
+                else:
+                    _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
+                with asdf.open(fname,** _NO_MEMMAP_KWARGS) as af:
                     pairs = [value for value in af.tree.values() if isinstance(value,GenericMap)]
                     return pairs
             else:

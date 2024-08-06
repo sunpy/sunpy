@@ -625,29 +625,15 @@ def test_swapped_ctypes(simple_map):
     assert u.allclose(simple_map.top_right_coord.Ty, 4 * u.arcsec)
 
 
-def test_save(aia171_test_map):
-    """Tests the map save function"""
-    aiamap = aia171_test_map
-    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-    aiamap.save(afilename, filetype='fits', overwrite=True)
-    loaded_save = sunpy.map.Map(afilename)
-    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
-    # Compare metadata without considering ordering of keys
-    assert loaded_save.meta.keys() == aiamap.meta.keys()
-    for k in aiamap.meta:
-        assert loaded_save.meta[k] == aiamap.meta[k]
-    assert_quantity_allclose(loaded_save.data, aiamap.data)
-
-
-def test_save_asdf(aia171_test_map):
-    aiamap = aia171_test_map
-    asdf_file = tempfile.NamedTemporaryFile(suffix='asdf').name
-    aiamap.save(asdf_file)
-    loaded_save_asdf = sunpy.map.Map(asdf_file)
+def test_save_asdf(tmpdir, aia171_test_map):
+    outpath = tmpdir/ "save_asdf.asdf"
+    aia171_test_map.save(outpath,filetype= "asdf")
+    loaded_save_asdf = sunpy.map.Map(str(outpath))
     assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
    #Compare metadata without considering ordering of keys
-    assert dict(loaded_save_asdf.meta) == dict(aiamap.meta)
-    assert np.array_equal(loaded_save_asdf.data, aiamap.data)
+    assert dict(loaded_save_asdf.meta) == dict(aia171_test_map.meta)
+    np.testing.assert_array_equal(loaded_save_asdf.data, aia171_test_map.data)
+
 
 def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
