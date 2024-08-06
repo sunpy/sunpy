@@ -625,6 +625,20 @@ def test_swapped_ctypes(simple_map):
     assert u.allclose(simple_map.top_right_coord.Ty, 4 * u.arcsec)
 
 
+def test_save(aia171_test_map):
+    """Tests the map save function"""
+    aiamap = aia171_test_map
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    aiamap.save(afilename, filetype='fits', overwrite=True)
+    loaded_save = sunpy.map.Map(afilename)
+    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
+    # Compare metadata without considering ordering of keys
+    assert loaded_save.meta.keys() == aiamap.meta.keys()
+    for k in aiamap.meta:
+        assert loaded_save.meta[k] == aiamap.meta[k]
+    assert_quantity_allclose(loaded_save.data, aiamap.data)
+
+
 def test_save_asdf(tmpdir, aia171_test_map):
     outpath = tmpdir/ "save_asdf.asdf"
     aia171_test_map.save(outpath,filetype= "asdf")
