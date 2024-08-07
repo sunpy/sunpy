@@ -79,9 +79,10 @@ linkcheck_exclude_documents = [
     r".*stability.*"
 ]
 linkcheck_ignore = [r"https://doi.org/\d+",
-                    r"https://element.io/\d+",
-                    r"https://github.com/\d+",
-                    r"https://docs.sunpy.org/\d+"]
+                    r"https://\w\.element\.io/",
+                    # Checking all the PR URLs in the changelog takes a very long time
+                    r"https://github.com/sunpy/sunpy/pull/\d+",
+                    r"https://docs\.sunpy\.org"]
 linkcheck_anchors = False
 
 # -- General configuration ---------------------------------------------------
