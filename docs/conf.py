@@ -75,14 +75,15 @@ sunpy.data.sample.download_all()
 sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
-linkcheck_exclude_documents = [
-    r".*stability.*"
+linkcheck_ignore = [
+    r"https://doi.org/\d+",
+    r"https://\w\.element\.io/",
+    # Checking all the PR URLs in the changelog takes a very long time
+    r"https://github.com/sunpy/sunpy/pull/\d+",
+    r"https://docs\.sunpy\.org",
+    r"https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf",
+    r"https://xrt.cfa.harvard.edu/",
 ]
-linkcheck_ignore = [r"https://doi.org/\d+",
-                    r"https://\w\.element\.io/",
-                    # Checking all the PR URLs in the changelog takes a very long time
-                    r"https://github.com/sunpy/sunpy/pull/\d+",
-                    r"https://docs\.sunpy\.org"]
 linkcheck_anchors = False
 
 # -- General configuration ---------------------------------------------------
@@ -246,7 +247,6 @@ hoverxref_role_types = {
 # -- Options for HTML output ---------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-
 html_theme = "sunpy"
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -366,7 +366,21 @@ def rstjinja(app, docname, source):
         source[0] = rendered
 
 
+def lol(app, docname, source):
+    """
+    lol
+    """
+    if app.builder.format == 'html':
+        return
+    files_to_remove = ["reference/stability", "dev_guide/index"]
+    for file in files_to_remove:
+        docname.found_docs.remove(file)
+        source.remove(file)
+
+
 # -- Sphinx setup --------------------------------------------------------------
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)
+    # lol
+    app.connect("env-before-read-docs", lol)
