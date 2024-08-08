@@ -14,8 +14,7 @@ New classes and functions should adhere to the SunPy project's `quantity and uni
 This document sets out SunPy's reasons and requirements for the usage of quantities and units.
 Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`_ is that *all user-facing function/object arguments which accept physical quantities as input **MUST** accept astropy quantities, and **ONLY** astropy quantities*.
 
-Developers should consult the `Astropy Quantities and Units page <https://docs.astropy.org/en/stable/units/index.html>`_ for the latest updates on using quantities and units.  The `astropy tutorial on quantities and units <https://www.astropy.org/astropy-tutorials/Quantities.html>`_ also provides useful examples on their
-capabilities.
+Developers should consult the `Astropy Quantities and Units page <https://docs.astropy.org/en/stable/units/index.html>`_ for the latest updates on using quantities and units.
 
 Astropy provides the decorator `~astropy.units.quantity_input` that checks the units of the input arguments to a function against the expected units of the argument.
 We recommend using this decorator to perform function argument unit checks.
