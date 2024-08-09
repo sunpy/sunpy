@@ -2557,10 +2557,14 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle).
+            - If ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
+            instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
+            is equivalent to specifying ``pcolormesh``.
+            - If ``reproject``, the map's data will be automatically reprojected to match the
+            WCS of the target axes using the :meth:`reproject_to` method, ensuring proper
+            alignment across different coordinate systems.
+
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
