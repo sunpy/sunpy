@@ -2557,10 +2557,14 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle).
+            - If ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
+            instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
+            is equivalent to specifying ``pcolormesh``.
+            - If ``reproject``, the map's data will be automatically reprojected to match the
+            WCS of the target axes using the :meth:`reproject_to` method, ensuring proper
+            alignment across different coordinate systems.
+
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
@@ -2595,7 +2599,7 @@ class GenericMap(NDData):
                             "If you are specifying the axes, use `axes=...` to pass it in.")
 
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
+        if autoalign not in [False, True, 'pcolormesh', 'reproject']:
             raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
@@ -2644,6 +2648,11 @@ class GenericMap(NDData):
             data = self.data
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
+
+        if autoalign == 'reproject':
+                target_wcs = axes.wcs
+                reprojected_map = self.reproject_to(target_wcs)
+                data = reprojected_map.data
 
         if autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
