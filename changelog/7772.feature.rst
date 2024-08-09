@@ -1,0 +1,1 @@
+Added a new option `autoalign='reproject'` to the ``plot`` method of ``GenericMap``. This option allows for automatic reprojection of a map's data to match the WCS of the target axes, using the ``reproject_to`` method.
