@@ -4,7 +4,8 @@
 Create Coordinate Objects with Custom Observer
 **********************************************
 
-It is possible to specify an observer other than Earth by providing a `~astropy.coordinates.SkyCoord` object representing the observer's location. This can be useful when working with data from instruments located at specific points in space, such as spacecraft.
+It is possible to specify an observer other than Earth by providing a `~astropy.coordinates.SkyCoord` object representing the observer's location.
+This can be useful when working with data from instruments located at specific points in space, such as spacecraft.
 
 .. code-block:: python
 
@@ -33,4 +34,5 @@ Create a coordinate in Helioprojective with the custom observer
         (70., -30., 695700.)>): (Tx, Ty) in arcsec
         (100., 200.)>
 
-In this example, we define the observer's position at -100*u.arcsec along the x-axis and 500*u.arcsec along y-axis in Heliocentric coordinates. This observer coordinate is then used to create a `~astropy.coordinates.SkyCoord` object in the ``Helioprojective`` frame.
+In this example, we define the observer's position at ``-100*u.arcsec`` along the x-axis and ``500*u.arcsec`` along y-axis in Heliocentric coordinates.
+This observer coordinate is then used to create a `~astropy.coordinates.SkyCoord` object in the ``Helioprojective`` frame.
