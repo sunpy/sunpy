@@ -2595,7 +2595,7 @@ class GenericMap(NDData):
                             "If you are specifying the axes, use `axes=...` to pass it in.")
 
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
+        if autoalign not in [False, True, 'pcolormesh', 'reproject']:
             raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
@@ -2644,6 +2644,11 @@ class GenericMap(NDData):
             data = self.data
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
+
+        if autoalign == 'reproject':
+                target_wcs = axes.wcs
+                reprojected_map = self.reproject_to(target_wcs)
+                data = reprojected_map.data
 
         if autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
