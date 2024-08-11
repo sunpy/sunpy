@@ -2562,8 +2562,8 @@ class GenericMap(NDData):
             instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
             is equivalent to specifying ``pcolormesh``.
             - If ``reproject``, the map's data will be automatically reprojected to match the
-            WCS of the target axes using the :meth:`reproject_to` method, ensuring proper
-            alignment across different coordinate systems.
+            WCS of the target axes using the :meth:`~sunpy.map.GenericMap.reproject_to` method,
+            ensuring proper
 
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
