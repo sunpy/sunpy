@@ -2600,7 +2600,7 @@ class GenericMap(NDData):
 
         # Set the default approach to autoalignment
         if autoalign not in [False, True, 'pcolormesh', 'reproject']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+            raise ValueError("The value for `autoalign` must be False, True, 'pcolormesh' or 'reproject'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
 
