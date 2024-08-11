@@ -22,6 +22,7 @@
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot_clip_interval": "33bcd1f8416ff92deffad5482bf76ad620c2cb6c7a69f91eacfa5a2e508d34f0",
   "sunpy.map.tests.test_plotting.test_plot_aia171": "86f2d19643fbeeaea8bd7097b9002a77da455eeeb46d4ac707bd3c55df15dc22",
   "sunpy.map.tests.test_plotting.test_plot_rotated_aia171": "982363a267e12a380c48c02ab73a98bbadae4ce54f4b621898f815aac2daf040",
+  "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject": "35e38fe096b62dcb19ad0ac3232582ccc41b1047e02fe7ce2c9411bf989fb1e5",
   "sunpy.map.tests.test_plotting.test_plot_aia171_clip": "29b93bbe004670248aed9ddde8c5f8e6eda2d975d6c046f05a9c4a5f144caf2c",
   "sunpy.map.tests.test_plotting.test_peek_aia171": "c79e2f18baab464e013a21904e69660530f653bf43af1758d29e0d95f21c5ba6",
   "sunpy.map.tests.test_plotting.test_peek_grid_aia171": "629018de38020936e4cb7fd02f64738c3dab18db819373d2d67f0abfa2789298",
