@@ -55,11 +55,17 @@ class GONGSynopticMap(GenericMap):
     @property
     def date(self):
         # The FITS file has a date that is made from the date-obs and time-obs keywords
-        # Which is not what date-obs is supposed to be
-        return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
+        # Which is not what date-obs is supposed to be.
+        if 'time-obs' in self.meta:
+            return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
+        else:
+            return Time(self.meta.get('date-obs'))
 
     def _set_date(self, date):
-        self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.isot.split('T')
+        if 'time-obs' in self.meta:
+            self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta['date-obs'] = parse_time(date).utc.isot
 
     @property
     def reference_date(self):
