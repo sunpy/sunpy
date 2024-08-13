@@ -9,6 +9,7 @@ from astropy.time import Time
 
 from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
+from sunpy.time import parse_time
 
 __all__ = ['GONGSynopticMap', 'GONGHalphaMap']
 
@@ -37,7 +38,6 @@ class GONGSynopticMap(GenericMap):
     Notes
     -----
     If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
-
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`_
@@ -54,7 +54,25 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def date(self):
-        return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
+        # The FITS file has a date that is made from the date-obs and time-obs keywords
+        # Which is not what date-obs is supposed to be.
+        if 'time-obs' in self.meta:
+            return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
+        else:
+            return Time(self.meta.get('date-obs'))
+
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta['date-obs'] = parse_time(date).utc.isot
+
+    @property
+    def reference_date(self):
+        return self.date
+
+    def _set_reference_date(self, date):
+        self._set_date(date)
 
     @property
     def scale(self):
