@@ -145,10 +145,16 @@ class LASCOMap(GenericMap):
 
     def _set_date(self, date):
         if 'time-obs' in self.meta:
+            time_key = 'time-obs'
             del self.meta['time-obs']
         if 'time_obs' in self.meta:
+            time_key = 'time_obs'
             del self.meta['time_obs']
-        super()._set_date(date)
+        date_key = 'date-obs' if 'date-obs' in self.meta else 'date_obs'
+        if time_key in self.meta:
+            self.meta[date_key], self.meta[time_key] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta[date_key] = parse_time(date).utc.isot
 
     @property
     def nickname(self):

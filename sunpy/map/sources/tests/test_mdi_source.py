@@ -95,3 +95,7 @@ def test_unit_synoptic(mdi_synoptic):
     assert mdi_synoptic.unit == u.G
     assert mdi_synoptic.unit == u.Unit("Mx/cm^2")
     assert mdi_synoptic.unit.to_string() == 'Mx / cm2'
+
+
+def test_private_date_setters_synoptic(mdi_synoptic):
+    _test_private_date_setters(mdi_synoptic)
