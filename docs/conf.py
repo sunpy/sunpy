@@ -372,10 +372,13 @@ def lol(app, docname, source):
     """
     if app.builder.format == 'html':
         return
-    files_to_remove = ["reference/stability", "dev_guide/index"]
-    for file in files_to_remove:
-        docname.found_docs.remove(file)
-        source.remove(file)
+    if docname == "dev_guide/index":
+        # We only need to remove the small jinja blocks
+        for to_replace in ["{% if is_development %}", "{%else%}", "{% endif %}"]:
+            source[0] = source[0].replace(to_replace, "")
+    if docname == "reference/stability":
+        # We remove the entire jinja block
+        source[0] = source[0].split("{")[0]
 
 
 # -- Sphinx setup --------------------------------------------------------------
@@ -383,4 +386,4 @@ def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)
     # lol
-    app.connect("env-before-read-docs", lol)
+    app.connect("source-read", lol)
