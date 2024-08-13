@@ -1,2 +1,2 @@
-`sunpy.map.GenericMap.contour` now internally uses ContourPy instead of scikit-image for improved performance.
+`sunpy.map.GenericMap.contour` now uses ContourPy instead of scikit-image for faster performance and consistency with `draw_contour`, reducing reliance on scikit-image.
 The API for the method has not changed, but as before, additional keyword arguments are passed through to the underlying function, so some such keyword arguments may no longer be supported.
