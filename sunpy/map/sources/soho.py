@@ -278,6 +278,7 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
+
     @property
     def date(self):
         """
@@ -285,9 +286,7 @@ class MDISynopticMap(MDIMap):
 
         This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        time = self._get_date('date-obs')
-        if time is None:
-            return self._get_date('t_obs')
+        return self._get_date('date-obs') or self._get_date('t_obs')
 
     def _set_date(self, date):
         self.meta['date-obs'] = self.meta['t_obs'] = parse_time(date).utc.isot
