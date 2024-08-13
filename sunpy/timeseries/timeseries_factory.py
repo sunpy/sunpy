@@ -7,6 +7,7 @@ import pathlib
 from collections import OrderedDict
 from urllib.request import Request
 
+import fsspec as fs
 import numpy as np
 import pandas as pd
 
@@ -32,7 +33,7 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import HDPair, is_url, parse_path, possibly_a_path
+from sunpy.util.io import HDPair, is_url, parse_path, possibly_a_path, is_uri, parse_uri
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 
@@ -289,8 +290,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             elif isinstance(arg, str) and is_url(arg):
                 args[i] = Request(arg)
-            elif possibly_a_path(arg):
+            elif possibly_a_path(arg) and not is_uri(arg):
                 args[i] = pathlib.Path(arg)
+            elif is_uri(arg):
+                args[i] = fs.open_files(arg)
             i += 1
 
         return args
@@ -338,6 +341,46 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 raise type(e)(msg) from e
         return all_ts
 
+    def _parse_ts_results(self, r, **kwargs):
+        """
+        Prepare parsed result from into correct format for _parse_args.
+        r can be TimeSeries, path, or a data, header pair
+        """
+        if isinstance(r, GenericTimeSeries):
+            return [r]#all_ts += [r]
+        elif isinstance(r, pathlib.Path):
+            return [self._check_registered_widgets(filepath=r, **kwargs)]#all_ts += [self._check_registered_widgets(filepath=r, **kwargs)]
+        else:
+            pairs = r
+            # Pairs may be x long where x is the number of HDUs in the file.
+            headers = [pair.header for pair in pairs]
+
+            types = []
+            for header in headers:
+                try:
+                    match = self._get_matching_widget(meta=header, **kwargs)
+                    if not match == GenericTimeSeries:
+                        types.append(match)
+                except (MultipleMatchError, NoMatchError):
+                    continue
+
+            if not types:
+                # If no specific classes have been found we can read the data
+                # if we only have one data header pair:
+                if len(pairs) == 1:
+                    return [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
+                    
+                else:
+                    raise NoMatchError("Input read by sunpy.io can not find a "
+                                        "matching class for reading multiple HDUs")
+            if len(set(types)) > 1:
+                raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
+
+            cls = types[0]
+
+            data_header_unit_tuple = cls._parse_hdus(pairs)
+            return [self._parse_arg(data_header_unit_tuple)]
+
     @seconddispatch
     def _parse_arg(self, arg, **kwargs):
         """
@@ -358,44 +401,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     def _parse_path(self, path, **kwargs):
         results = parse_path(path, self._read_file)
         all_ts = []
-
-        # r can be either a TimeSeries, path, or a data, header pair
         for r in results:
-            if isinstance(r, GenericTimeSeries):
-                all_ts += [r]
-            elif isinstance(r, pathlib.Path):
-                all_ts += [self._check_registered_widgets(filepath=r, **kwargs)]
-            else:
-                pairs = r
-                # Pairs may be x long where x is the number of HDUs in the file.
-                headers = [pair.header for pair in pairs]
-
-                types = []
-                for header in headers:
-                    try:
-                        match = self._get_matching_widget(meta=header, **kwargs)
-                        if not match == GenericTimeSeries:
-                            types.append(match)
-                    except (MultipleMatchError, NoMatchError):
-                        continue
-
-                if not types:
-                    # If no specific classes have been found we can read the data
-                    # if we only have one data header pair:
-                    if len(pairs) == 1:
-                        all_ts += [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
-                        continue
-                    else:
-                        raise NoMatchError("Input read by sunpy.io can not find a "
-                                           "matching class for reading multiple HDUs")
-                if len(set(types)) > 1:
-                    raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
-
-                cls = types[0]
-
-                data_header_unit_tuple = cls._parse_hdus(pairs)
-                all_ts += self._parse_arg(data_header_unit_tuple)
-
+            all_ts += self._parse_ts_results(r)
         return all_ts
 
     @_parse_arg.register(tuple)
@@ -407,6 +414,14 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = sunpy.io._header.FileHeader(meta)
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
+
+    @_parse_arg.register(list)
+    def _parse_uri(self, obj_list, **kwargs):
+        results = parse_uri(obj_list, self._read_file)
+        all_ts = []
+        for r in results:
+            all_ts += self._parse_ts_results(r)
+        return all_ts
 
     @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
     def __call__(self, *args, silence_errors=False, allow_errors=False, **kwargs):

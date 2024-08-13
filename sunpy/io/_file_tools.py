@@ -4,6 +4,8 @@ This module provides a generic file reader for internal use.
 import re
 import gzip
 import pathlib
+import fsspec
+from sunpy.util.io import is_uri
 
 try:
     from . import _fits as fits
@@ -192,8 +194,13 @@ def detect_filetype(filepath):
     """
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
-
-    with open(filepath, 'rb') as fp:
+    if is_uri(filepath):
+        fileobj = fsspec.open(filepath, 'rb').open()
+    elif isinstance(filepath, fsspec.core.OpenFile):
+        fileobj = filepath.open('rb')
+    else:
+        fileobj = open(filepath, 'rb')
+    with fileobj as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.

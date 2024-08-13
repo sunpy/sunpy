@@ -3,8 +3,40 @@ import glob
 import pathlib
 import collections
 import urllib.request
+import re
 
 HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+
+def parse_uri(obj_list, f, **kwargs):
+    """
+    Read in a series of fsspec OpenFile objects using the function *f*
+    
+    Parameters
+    ----------
+    obj_list : list of fsspec.core.OpenFile objects
+    f : callable
+        Must return a list of read-in data.
+    kwargs :
+        Additional keyword arguments are handed to ``f``.
+
+    Returns
+    -------
+    list
+        List of files read in by ``f``.
+    """
+    read_files = []
+    for obj in obj_list:
+        fs = obj.fs
+        path = obj.path
+        if fs.isfile(path):
+            uri = fs.unstrip_protocol(path)
+            read_files += f(uri, **kwargs)
+        elif fs.isdir(path):
+            read_files = []
+            for afile in sorted(fs.glob(path+'/*')):
+                uri = fs.unstrip_protocol(afile)
+                read_files += f(uri, **kwargs)
+    return read_files
 
 
 def parse_path(path, f, **kwargs):
@@ -94,6 +126,28 @@ def is_url(obj):
     except Exception:
         return False
 
+def is_uri(obj):
+    """
+    Check if the given object is a valid URI.
+
+    Parameters
+    ----------
+    obj : str
+        The object to check.
+
+    Returns
+    -------
+    bool
+        True if the object is a valid URI, False otherwise.
+    """
+    try:
+        _RFC3896_ = re.compile(r"^[A-Za-z][A-Za-z0-9+\-+.]*://")
+        return (
+                bool(_RFC3896_.match(obj))
+                and not obj.startswith(('http://', 'https://'))
+        )
+    except Exception:
+        return False
 
 def string_is_float(s):
     try:
