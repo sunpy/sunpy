@@ -2567,7 +2567,7 @@ class GenericMap(NDData):
             WCS of the target axes using the :meth:`~sunpy.map.GenericMap.reproject_to` method,
             ensuring proper alignment.
 
-            - If `False`, no auto-alignment is performed, and the map is plotted using the
+            - If ``False``, no auto-alignment is performed, and the map is plotted using the
             default method without any adjustments.
 
         **imshow_kwargs : `dict`
