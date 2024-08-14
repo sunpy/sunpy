@@ -1,12 +1,15 @@
 """
 Test cases for HINODE XRTMap subclass.
 """
+import copy
+
 import pytest
 
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.hinode import XRTMap
+from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -28,6 +31,18 @@ def test_is_datasource_for(xrt_map):
     assert xrt_map.is_datasource_for(xrt_map.data, xrt_map.meta)
 
 
+def test_reference_date(xrt_map):
+    assert xrt_map.reference_date.isot == "2006-11-11T00:00:19.141"
+
+
+def test_date(xrt_map):
+    assert xrt_map.date.isot == "2006-11-11T00:00:19.141"
+
+
+def test_private_date_setters(xrt_map):
+    _test_private_date_setters(xrt_map)
+
+
 def test_observatory(xrt_map):
     """Tests the observatory property of the XRTMap object."""
     assert xrt_map.observatory == "Hinode"
@@ -40,8 +55,16 @@ def test_measurement(xrt_map):
 
 def test_unit(xrt_map):
     """Tests the unit property of the XRTMap object."""
-    assert xrt_map.unit == u.ct / u.second
+    assert xrt_map.unit == u.DN / u.second
 
+def test_unit_no_renormalize(xrt_map):
+    """
+    Tests that the unit defaults ot DN if the history key does not say it has
+    been normalized
+    """
+    new_xrt_map = copy.deepcopy(xrt_map)
+    new_xrt_map.meta.pop('history')
+    assert new_xrt_map.unit == u.DN
 
 def test_level_number(xrt_map):
     assert xrt_map.processing_level == 1

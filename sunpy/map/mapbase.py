@@ -1096,6 +1096,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         pixel_corners = u.Quantity(self._parse_submap_input(
             bottom_left, top_right, width, height)).T
 
+        msg = (
+            "The provided input coordinates to ``submap`` when transformed to the target "
+            "coordinate frame contain NaN values and cannot be used to crop the map. "
+            "The most common reason for NaN values is transforming off-disk 2D "
+            "coordinates without specifying an assumption (e.g., via the"
+            "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
+            "such coordinates to be interpreted as 3D coordinates."
+        )
+        if np.any(np.isnan(pixel_corners)):
+            raise ValueError(msg)
+
         # The pixel corners result is in Cartesian order, so the first index is
         # columns and the second is rows.
         bottom = np.min(pixel_corners[1]).to_value(u.pix)
@@ -1369,12 +1380,18 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.ct)  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
-            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
-        ...
+         (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+         (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+         (713.14112796, -361.95311455), (714.76598031, -363.53013567),
+         (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+         (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+         (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+         (719.59798458, -352.60839064)]>
 
         See Also
         --------
@@ -1442,7 +1459,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         # Check if both context managers are active
         if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
-            warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+            warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
 
         try:
             import reproject

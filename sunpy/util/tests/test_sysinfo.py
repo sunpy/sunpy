@@ -14,7 +14,6 @@ EXTRA_DEPS = [
     'astropy',
     'beautifulsoup4',
     'cdflib',
-    'dask',
     'drms',
     'h5netcdf',
     'h5py',
@@ -28,7 +27,6 @@ EXTRA_DEPS = [
     'pyerfa',
     'python-dateutil',
     'reproject',
-    'scikit-image',
     'scipy',
     'zeep',
 ]
@@ -36,7 +34,6 @@ EXTRA_DEPS = [
 EXTRA_ALL_GROUPS = [
     'all',
     'asdf',
-    'dask',
     'dev',
     'docs-gallery',
     'docs',

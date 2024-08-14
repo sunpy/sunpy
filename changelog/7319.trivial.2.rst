@@ -1,2 +1,0 @@
-The ``requests`` package is a now formally a core dependency.
-``requests`` was already commonly installed as an implied dependency of `sunpy.net` or for building documentation.

@@ -98,7 +98,6 @@ see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
 and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
 (and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
 
-
 Reference/API
 =============
 
@@ -122,10 +121,11 @@ The parts of the following modules that are useful to a typical user are already
 
 .. automodapi:: sunpy.coordinates.frames
 
+.. automodapi:: sunpy.coordinates.screens
+
 .. automodapi:: sunpy.coordinates.metaframes
 
 .. automodapi:: sunpy.coordinates.wcs_utils
-
 
 Attribution
 ===========

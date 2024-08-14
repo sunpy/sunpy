@@ -1,1 +1,0 @@
-The EVE L0CS client now uses the new URLs for the data from LASP.

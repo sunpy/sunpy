@@ -1,1 +1,0 @@
-``sunpy.database`` has been removed.

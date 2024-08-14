@@ -6,6 +6,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.rhessi import RHESSIMap
+from .helpers import _test_private_date_setters
 
 pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
@@ -27,6 +28,18 @@ def test_is_datasource_for(rhessi_map):
 def test_observatory(rhessi_map):
     """Tests the observatory property of the RHESSIMap object."""
     assert rhessi_map.observatory == "RHESSI"
+
+
+def test_reference_date(rhessi_map):
+    assert rhessi_map.reference_date.isot == "2010-10-16T19:12:18.000"
+
+
+def test_date(rhessi_map):
+    assert rhessi_map.date.isot == "2010-10-16T19:12:18.000"
+
+
+def test_private_date_setters(rhessi_map):
+    _test_private_date_setters(rhessi_map)
 
 
 def test_measurement(rhessi_map):

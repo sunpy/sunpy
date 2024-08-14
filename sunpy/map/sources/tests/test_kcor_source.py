@@ -8,6 +8,7 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.mlso import KCorMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture()
@@ -41,6 +42,18 @@ def test_observatory(kcor):
 def test_norm_clip(kcor):
     # Tests that the default normalizer has clipping disabled
     assert not kcor.plot_settings['norm'].clip
+
+
+def test_reference_date(kcor):
+    assert kcor.reference_date.isot == "2018-12-09T18:03:05.000"
+
+
+def test_date(kcor):
+    assert kcor.date.isot == "2018-12-09T18:03:05.000"
+
+
+def test_private_date_setters(kcor):
+    _test_private_date_setters(kcor)
 
 
 def test_wcs(kcor):

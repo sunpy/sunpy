@@ -144,7 +144,7 @@ For example, to get the 0th element in the array:
 .. code-block:: python
 
     >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
-    -95.92475
+    np.float32(-95.92475)
 
 The first index corresponds to the y direction and the second to the x direction in the two-dimensional pixel coordinate system.
 For more information about indexing, please refer to the `numpy documentation <https://numpy.org/doc/stable/user/basics.indexing.html#indexing-on-ndarrays>`__.
@@ -163,11 +163,11 @@ Additionally, there are several methods that provide basic summary statistics of
 .. code-block:: python
 
     >>> my_map.min()  # doctest: +REMOTE_DATA
-    -129.78036
+    np.float32(-129.78036)
     >>> my_map.max()  # doctest: +REMOTE_DATA
-    192130.17
+    np.float32(192130.17)
     >>> my_map.mean()  # doctest: +REMOTE_DATA
-    427.02252
+    np.float32(427.02252)
 
 .. _sunpy-tutorial-map-coordinates-wcs:
 
@@ -180,8 +180,8 @@ The coordinate frame of a Map is provided as an attribute,
 .. code-block:: python
 
     >>> my_map.coordinate_frame  # doctest: +REMOTE_DATA
-    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
+    <Helioprojective Frame (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>)>
 
 This tells us that the coordinate system of the image is Helioprojective (HPC) and that it is defined by an observer at a particular location.
 This observer coordinate is also provided as an attribute,
@@ -189,8 +189,8 @@ This observer coordinate is also provided as an attribute,
 .. code-block:: python
 
     >>> my_map.observer_coordinate  # doctest: +REMOTE_DATA
-    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>
 
 This tells us the location of the spacecraft, in this case SDO, when it recorded this particular observation, as derived from the FITS metadata.
 
@@ -199,16 +199,16 @@ Map has several additional coordinate-related attributes that provide the coordi
 .. code-block:: python
 
     >>> my_map.center  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (3.22309951, 1.38578135)>
     >>> my_map.bottom_left_coord  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (-1228.76466158, -1224.62447509)>
     >>> my_map.top_right_coord  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (1235.21095899, 1227.39598836)>
 
 But what if we wanted to know what pixel these physical coordinates correspond to?
@@ -221,12 +221,12 @@ The WCS is accessible as an attribute:
     WCS Keywords
     <BLANKLINE>
     Number of WCS axes: 2
-    CTYPE : 'HPLN-TAN'  'HPLT-TAN'
-    CRVAL : 0.00089530541880571  0.00038493926472939
-    CRPIX : 512.5  512.5
-    PC1_1 PC1_2  : 0.99999706448085  0.0024230207763071
-    PC2_1 PC2_2  : -0.0024230207763071  0.99999706448085
-    CDELT : 0.00066744222222222  0.00066744222222222
+    CTYPE : 'HPLN-TAN' 'HPLT-TAN'
+    CRVAL : np.float64(0.00089530541880571) np.float64(0.00038493926472939)
+    CRPIX : np.float64(512.5) np.float64(512.5)
+    PC1_1 PC1_2  : np.float64(0.99999706448085) np.float64(0.0024230207763071)
+    PC2_1 PC2_2  : np.float64(-0.0024230207763071) np.float64(0.99999706448085)
+    CDELT : np.float64(0.00066744222222222) np.float64(0.00066744222222222)
     NAXIS : 1024  1024
 
 WCS is a fairly complex topic, but all we need to know for now is that the WCS provides the transformation between the pixel coordinates of the image and physical or "world" coordinates.
@@ -245,8 +245,8 @@ The corresponding pixel-to-world transformation should then give us back our cen
 .. code-block:: python
 
     >>> my_map.wcs.pixel_to_world(center_pixel[0], center_pixel[1])  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (3.22309951, 1.38578135)>
 
 As another example, if we transform the center of the lower-left pixel to a world coordinate, it should correspond to bottom left coordinate from above,
@@ -254,8 +254,8 @@ As another example, if we transform the center of the lower-left pixel to a worl
 .. code-block:: python
 
     >>> my_map.wcs.pixel_to_world(0, 0)  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (-1228.76466158, -1224.62447509)>
 
 These two methods are extremely useful when trying to understand which pixels correspond to which physical coordinates or when trying to locate the same physical location in images taken by separate spacecraft.
@@ -536,7 +536,7 @@ To test if all the maps in a `~sunpy.map.MapSequence` have the same shape:
 .. code-block:: python
 
     >>> map_seq.all_maps_same_shape()  # doctest: +REMOTE_DATA
-    True
+    np.True_
 
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
