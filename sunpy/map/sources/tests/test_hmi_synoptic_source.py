@@ -5,6 +5,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.sdo import HMISynopticMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -35,15 +36,16 @@ def test_measurement(hmi_synoptic):
     assert hmi_synoptic.measurement == "carrington"
 
 
+def test_reference_date(hmi_synoptic):
+    assert hmi_synoptic.reference_date.isot == "2018-11-09T12:30:52.000"
+
+
 def test_date(hmi_synoptic):
-    """Check that accessing the date doesn't raise a warning."""
-    hmi_synoptic.date
+    assert hmi_synoptic.date.isot == "2018-11-09T12:30:52.000"
 
 
-def test_date_uses_date_obs(hmi_synoptic):
-    """Check that the date uses the date-obs key as well."""
-    hmi_synoptic.meta['date-obs'] = hmi_synoptic.meta.pop('t_obs')
-    assert hmi_synoptic.date is not None
+def test_private_date_setters(hmi_synoptic):
+    _test_private_date_setters(hmi_synoptic)
 
 
 def test_unit(hmi_synoptic):
