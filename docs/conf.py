@@ -367,7 +367,7 @@ def jinja_to_rst(app, docname, source):
                 source[0], app.config.html_context
             )
             source[0] = rendered
-    elif app.builder.format == 'linkcheck':
+    else:
         if docname == "dev_guide/index":
             # This page only has a single jinja block that renders if the docs are
             # being built in development mode. We can simply  remove this block.
