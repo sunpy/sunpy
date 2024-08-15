@@ -135,7 +135,7 @@ def _resample_spline(orig, dimensions, offset, m1):
 
 def reshape_image_to_4d_superpixel(img, dimensions, offset):
     """
-    Re-shape the two dimension input image into a four dimensional array
+    Re-shape the two-dimensional input image into a four-dimensional array
     whose first and third dimensions express the number of original pixels in
     the "x" and "y" directions that form one superpixel. The reshaping makes it
     very easy to perform operations on superpixels.

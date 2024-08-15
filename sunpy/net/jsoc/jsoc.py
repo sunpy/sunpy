@@ -68,7 +68,7 @@ class JSOCClient(BaseClient):
 
     Notes
     -----
-    The full list of ``Series`` is available through this `site <http://jsoc.stanford.edu>`__.
+    The full list of ``Series`` is available via ` this page <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
 
     JSOC requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
