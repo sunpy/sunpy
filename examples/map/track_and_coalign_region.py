@@ -21,12 +21,12 @@ from sunpy.net import attrs as a
 ###############################################################################
 # First, let's download a series of images in time using `~sunpy.net.Fido`.
 # In this example, we will download a series of AIA 171 Å images observed over the course
-# of one day at a cadence of 1 image every 6 hours.
+# of one day at a cadence of 1 image every 3 hours.
 
-query = Fido.search(a.Time('2012/3/4', '2012/3/5'),
+query = Fido.search(a.Time('2018-05-29 18:00:00', '2018-05-31 06:00:00'),
                     a.Instrument.aia,
                     a.Wavelength(171*u.angstrom),
-                    a.Sample(6*u.h))
+                    a.Sample(3*u.h))
 print(query)
 files = Fido.fetch(query)
 
