@@ -34,3 +34,4 @@ Now we can create a coordinate in helioprojective coordinates (`~sunpy.coordinat
     >>> coord
     <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=None, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (70., -30., 1.)>): (Tx, Ty) in arcsec
+        (100., 200.)>
