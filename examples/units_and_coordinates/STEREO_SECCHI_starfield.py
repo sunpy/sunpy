@@ -6,7 +6,7 @@ Identifying stars in a STEREO/SECCHI COR2 coronagraph image
 Since the field of view in SECCHI COR2 images can span 2 to 15 solar radii,
 we often observe stars in these image data. In this example, we will use the
 `Astroquery package <https://astroquery.readthedocs.io/en/latest/>`__ to query the
-`VizieR star catalog <http://vizier.u-strasbg.fr/viz-bin/VizieR>`__ for stars observed
+`VizieR star catalog <https://vizier.cds.unistra.fr/viz-bin/VizieR>`__ for stars observed
 by the `Gaia satellite <https://www.esa.int/Science_Exploration/Space_Science/Gaia>`__ within
 the SECCHI COR2 field of view. Then we will use the coordinates framework in SunPy and AstroPy
 to transform the coordinates returned by VizieR into SECCHI COR2 image coordinates.
