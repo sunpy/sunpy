@@ -929,6 +929,19 @@ class GenericMap(NDData):
             self.date
         )
 
+    def _set_reference_date(self, date):
+        """
+        Set the reference date using the same priority as `.GenericMap.reference_date`.
+
+        If a source subclass overrides `.GenericMap.reference_date`, it should override
+        this private method as well.
+        """
+        for keyword in ['date-avg', 'date-obs', 'date-beg', 'date-end']:
+            if keyword in self.meta:
+                self.meta[keyword] = parse_time(date).utc.isot
+                return
+        self._set_date(date)
+
     @property
     def date(self):
         """
@@ -969,6 +982,22 @@ class GenericMap(NDData):
             time = self._default_time
 
         return time
+
+    def _set_date(self, date):
+        """
+        Set the observation time by setting DATE-OBS.
+
+        If a source subclass overrides `.GenericMap.date`, it should override
+        this private method as well.
+
+        Notes
+        -----
+        This method will additionally always remove DATE_OBS (note the underscore),
+        if present.
+        """
+        if 'date_obs' in self.meta:
+            del self.meta['date_obs']
+        self.meta['date-obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -1306,14 +1335,14 @@ class GenericMap(NDData):
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lon
 
@@ -2251,7 +2280,7 @@ class GenericMap(NDData):
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
-                                                           obstime=self.date,
+                                                           obstime=self.reference_date,
                                                            rsun=self.rsun_meters,
                                                            observer=self.observer_coordinate,
                                                            system=system,

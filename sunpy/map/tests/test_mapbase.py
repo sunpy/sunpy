@@ -379,12 +379,12 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lat == aia171_test_map.observer_coordinate.frame.lat
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
-    assert frame.obstime == aia171_test_map.date
+    assert frame.obstime == aia171_test_map.reference_date
 
 
 def test_heliographic_longitude_crln(hmi_test_map):
     assert_quantity_allclose(hmi_test_map.heliographic_longitude,
-                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.date),
+                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.reference_date),
                              rtol=1e-3)  # A tolerance is needed because L0 is for Earth, not SDO
 
 
