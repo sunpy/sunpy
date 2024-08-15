@@ -2687,7 +2687,7 @@ class GenericMap(NDData):
         """
         Returns coordinates of the contours for a given level value.
 
-        For details of the contouring algorithm, see `contourpy.contour_generator`.
+        For details of the contouring algorithm, see :func:`contourpy.contour_generator`.
 
         Parameters
         ----------
@@ -2696,7 +2696,7 @@ class GenericMap(NDData):
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
         kwargs :
-            Additional keyword arguments are passed to `contourpy.contour_generator`.
+            Additional keyword arguments are passed to :func:`contourpy.contour_generator`.
 
         Returns
         -------
