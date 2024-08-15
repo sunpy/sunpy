@@ -1,3 +1,12 @@
+"""
+=========================================
+Tracking and Co-aligning an Active Region
+=========================================
+
+This example demonstrates how to track a particular region as a function of time,
+create a cutout around that region, and align it at each time step to get an aligned datacube.
+"""
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
