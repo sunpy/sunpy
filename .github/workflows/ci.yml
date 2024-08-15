@@ -103,14 +103,12 @@ jobs:
     with:
       default_python: '3.12'
       submodules: false
-      coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
         - linux: py312-devdeps
         - linux: core_deps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        - linux: linkcheck
+          pytest: false
 
   sdist_verify:
     if: |
