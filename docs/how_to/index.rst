@@ -14,6 +14,7 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    coord_components
    create_a_map
    create_coords
+   observer_by_coordinate
    create_custom_map
    create_custom_timeseries
    create_rectangle_on_map

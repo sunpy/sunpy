@@ -31,7 +31,7 @@ aia_smap.plot()
 # Let's create a histogram of the data in this submap.
 
 num_bins = 50
-bins = np.linspace(aia_smap.min(), aia_smap.max(), num_bins)
+bins = np.linspace(aia_smap.data.min(), aia_smap.data.max(), num_bins)
 hist, bin_edges = np.histogram(aia_smap.data, bins=bins)
 
 ###############################################################################
@@ -43,8 +43,8 @@ fig, ax = plt.subplots()
 # row in the array as a different dataset to histogram.
 ax.hist(aia_smap.data.ravel(), bins=bins, label='Histogram', histtype='step')
 ax.set_xlabel('Intensity')
-ax.axvline(aia_smap.min(), label=f'Data min={aia_smap.min():.2f}', color='black')
-ax.axvline(aia_smap.max(), label=f'Data max={aia_smap.max():.2f}', color='black')
+ax.axvline(aia_smap.data.min(), label=f'Data min={aia_smap.data.min():.2f}', color='black')
+ax.axvline(aia_smap.data.max(), label=f'Data max={aia_smap.data.max():.2f}', color='black')
 ax.axvline(aia_smap.data.mean(),
            label=f'mean={aia_smap.data.mean():.2f}', color='green')
 one_sigma = np.array([aia_smap.data.mean() - aia_smap.data.std(),
@@ -62,6 +62,6 @@ ax.legend(loc=9)
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_smap)
 aia_smap.plot(axes=ax)
-levels = one_sigma / aia_smap.max() * u.percent * 100
+levels = one_sigma / aia_smap.data.max() * u.percent * 100
 aia_smap.draw_contours(axes=ax, levels=levels, colors=['blue'])
 plt.show()
