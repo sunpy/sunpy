@@ -21,12 +21,12 @@ from sunpy.net import attrs as a
 ###############################################################################
 # First, let's download a series of images in time using `~sunpy.net.Fido`.
 # In this example, we will download a series of AIA 171 Å images observed over the course
-# of one day at a cadence of 1 image every 3 hours.
+# of half of a day at a cadence of 1 image every 1 hour.
 
-query = Fido.search(a.Time('2018-05-29 18:00:00', '2018-05-31 06:00:00'),
+query = Fido.search(a.Time('2018-05-30 00:00:00', '2018-05-30 12:00:00'),
                     a.Instrument.aia,
                     a.Wavelength(171*u.angstrom),
-                    a.Sample(3*u.h))
+                    a.Sample(1*u.h))
 print(query)
 files = Fido.fetch(query)
 
@@ -38,13 +38,14 @@ aia_sequence = sunpy.map.Map(files, sequence=True)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_sequence[0])
-ani = aia_sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+norm = norm=ImageNormalize(vmin=0, vmax=3e3, stretch=SqrtStretch())
+ani = aia_sequence.plot(axes=ax, norm=norm)
 
 ###############################################################################
 # Next, let's crop one of the maps in our sequence to the active region of interest.
 
-corner = SkyCoord(Tx=-400*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
-cutout_map = aia_sequence[0].submap(corner, width=500*u.arcsec, height=500*u.arcsec)
+corner = SkyCoord(Tx=-250*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[6].coordinate_frame)
+cutout_map = aia_sequence[6].submap(corner, width=500*u.arcsec, height=500*u.arcsec)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=cutout_map)
@@ -64,6 +65,6 @@ with propagate_with_solar_surface():
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_sequence_aligned[0])
-ani = aia_sequence_aligned.plot(axes=ax, cmap='sdoaia171', norm=ImageNormalize(vmin=0, vmax=5e3, stretch=SqrtStretch()))
+ani = aia_sequence_aligned.plot(axes=ax, cmap='sdoaia171', norm=norm)
 
 plt.show()
