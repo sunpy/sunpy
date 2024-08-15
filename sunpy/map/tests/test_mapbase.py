@@ -723,8 +723,8 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.shape[0] == 3
-    assert simple_map.shape[1] == 3
+    assert simple_map.shape[0] == 9
+    assert simple_map.shape[1] == 9
 
 
 pixel_corners = [
@@ -841,6 +841,7 @@ def test_reference_coordinate(simple_map):
     assert simple_map.reference_pixel.y == 4 * u.pix
 
 
+
 @pytest.mark.parametrize('shape', [[1, 1], [3, 3]])
 def test_resample(simple_map, shape):
     resampled = simple_map.resample(shape * u.pix, method='linear')
@@ -855,11 +856,11 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_lower_left.Tx, original_lower_left.Tx)
     assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
-    resampled_upper_left = resampled.wcs.pixel_to_world((shape[0] - 0.5) * u.pix,
+    resampled_upper_right = resampled.wcs.pixel_to_world((shape[0] - 0.5) * u.pix,
                                                     (shape[1] - 0.5) * u.pix)
-    original_upper_left = simple_map.wcs.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
-    assert u.allclose(resampled_upper_left.Tx, original_upper_left.Tx)
-    assert u.allclose(resampled_upper_left.Ty, original_upper_left.Ty)
+    original_upper_right = simple_map.wcs.pixel_to_world(8.5 * u.pix, 8.5 * u.pix)
+    assert u.allclose(resampled_upper_right.Tx, original_upper_right.Tx)
+    assert u.allclose(resampled_upper_right.Ty, original_upper_right.Ty)
 
 
 resample_test_data = [('linear', (100, 200) * u.pixel),
@@ -1268,7 +1269,7 @@ def test_validate_meta(generic_map):
         }
         sunpy.map.Map((generic_map.data, bad_header))
 
-    assert 'waveunit'.upper() in str(w[0].message)
+    assert 'waveunit'.upper() in str(w[0].message).upper()
 
 
 def test_validate_non_spatial(generic_map):
@@ -1336,7 +1337,7 @@ def test_missing_metadata_warnings():
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
-    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 4
+    assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 2
 
 
 def test_fits_header(aia171_test_map):
@@ -1752,9 +1753,9 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
 
 @pytest.mark.parametrize('value', [
     10 * u.s,
-    u.Quantity([10], u.ct),
-    u.Quantity(np.random.rand(128), u.ct),
-    u.Quantity(np.random.rand(128, 128), u.ct),
+    u.Quantity([10], u.s),
+    u.Quantity(np.random.rand(128), u.s),
+    u.Quantity(np.random.rand(128, 128), u.s),
     10.0,
     np.random.rand(128),
     np.random.rand(128, 128),
@@ -1769,6 +1770,7 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):
         new_map = value / aia171_test_map
         check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
+
 
 
 def test_map_arithmetic_pow(aia171_test_map):

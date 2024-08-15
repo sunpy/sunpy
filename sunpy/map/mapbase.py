@@ -30,12 +30,12 @@ from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
+import sunpy.coordinates.wcs_utils
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config
 # The next two are not used but are called to register functions with external modules
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.coordinates.wcs_utils import _set_wcs_aux_obs_coord, _sunpy_frame_class_from_ctypes
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
@@ -43,7 +43,7 @@ from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
 from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
-from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring, cached_property_based_on
+from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
@@ -282,6 +282,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
                    Observation Date:\t {date}
+                   Reference Date:\t\t {ref_date}
                    Exposure Time:\t\t {dt}
                    Pixel Dimensions:\t\t {dim}
                    Coordinate System:\t {coord}
@@ -291,6 +292,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
+                               ref_date=self.reference_date.strftime(TIME_FORMAT),
                                dt=dt,
                                dim=u.Quantity(self.shape[::-1]),
                                scale=u.Quantity(self.scale),
@@ -508,7 +510,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if meta is None:
             meta = copy.deepcopy(getattr(self, 'meta'))
         if new_unit := kwargs.get('unit', None):
-            meta['bunit'] = new_unit.to_string('fits')
+            meta['bunit'] = self._parse_fits_unit(new_unit).to_string()
         # NOTE: wcs=None is explicitly passed here because the wcs of a map is
         # derived from the information in the metadata.
         new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
@@ -589,13 +591,32 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return new_map
 
     @property
-    @cached_property_based_on('_meta_hash')
+    # TODO FIX THIS
+    #@cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
+
+        Notes
+        -----
+        ``dateobs`` is always populated with the "canonical" observation time as
+        provided by the `.date` property.  This will commonly be the DATE-OBS key if it
+        is in the metadata, but see that property for the logic otherwise.
+
+        ``dateavg`` is always populated with the reference date of the coordinate system
+        as provided by the `.reference_date` property.  This will commonly be the
+        DATE-AVG key if it is in the metadata, but see that property for the logic
+        otherwise.
+
+        ``datebeg`` is conditonally populated with the start of the observation period
+        as provided by the `.date_start` property, which normally returns a value only
+        if the DATE-BEG key is in the metadata.
+
+        ``dateend`` is conditonally populated with the end of the observation period as
+        provided by the `.date_end` property, which normally returns a value only if the
+        DATE-END key is in the metadata.
         """
         self._validate_meta()
-
         w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
@@ -612,11 +633,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
+        w2.wcs.dateobs = self.date.utc.isot
+        w2.wcs.dateavg = self.reference_date.utc.isot
+        if self.date_start is not None:
+            w2.wcs.datebeg = self.date_start.utc.isot
+        if self.date_end is not None:
+            w2.wcs.dateend = self.date_end.utc.isot
+
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
-        sunpy_frame = _sunpy_frame_class_from_ctypes(w2.wcs.ctype)
+        sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
             # Clear all the aux information that was set earlier. This is to avoid
             # issues with maps that store multiple observer coordinate keywords.
@@ -629,7 +656,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
-            _set_wcs_aux_obs_coord(w2, obs_coord)
+            sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Set the shape of the data array
         w2.array_shape = self.data.shape

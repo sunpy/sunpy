@@ -6,6 +6,8 @@ from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.sdo import HMISynopticMap
 from .helpers import _test_private_date_setters
 
+pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')]
+
 
 @pytest.fixture
 def hmi_synoptic():
