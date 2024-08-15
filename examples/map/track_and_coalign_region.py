@@ -43,7 +43,7 @@ ani = aia_sequence.plot(axes=ax, norm=ImageNormalize(vmin=0, vmax=5e3, stretch=S
 ###############################################################################
 # Next, let's crop one of the maps in our sequence to the active region of interest.
 
-corner = SkyCoord(Tx=280*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
+corner = SkyCoord(Tx=-400*u.arcsec, Ty=0*u.arcsec, frame=aia_sequence[0].coordinate_frame)
 cutout_map = aia_sequence[0].submap(corner, width=500*u.arcsec, height=500*u.arcsec)
 
 fig = plt.figure()
