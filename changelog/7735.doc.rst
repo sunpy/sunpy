@@ -1,1 +1,1 @@
-Added a gallery example (:ref:`sphx_glr_generated_gallery_map_track_and_coalign_region.py`) showcasing how to track and co-align an active region
+Added a gallery example (:ref:`sphx_glr_generated_gallery_map_track_active_region.py`) showcasing how to track and co-align an active region
