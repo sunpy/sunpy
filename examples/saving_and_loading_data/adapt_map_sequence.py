@@ -1,8 +1,8 @@
 """
-Parsing ADAPT Ensemble FITS file
-================================
+Reading ADAPT FITS Files
+====================
 
-This example demonstrates how to parse an ADAPT FITS file into a `sunpy.map.MapSequence`.
+This example demonstrates how to load data from the Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model into a `sunpy.map.MapSequence`.
 """
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -16,46 +16,38 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
-# First we will acquire a ADAPT fits file.
-#
-# To do this we will use the `sunpy.net.Fido` search interface to search for
-# ADAPT data. We will search for ADAPT data for Carrington Rotation 2193, and
-# request the ADAPT data for the first longitude type (0). This will return a
-# list of results, each of which is a realization of the ADAPT data. We will
-# then download the first result.
+# First we will download an ADAPT FITS file. To do this we will use the `sunpy.net.Fido` search interface to search for
+# ADAPT data for Carrington Rotation 2193, and the first longitude type (0). This will return a
+# list of results, each of which is a realization of the ADAPT data.
 
 date_start = carrington_rotation_time(2193)
-date_end = date_start + (3*2 * u.hour)
+date_end = date_start + 6*u.h
 print(date_start, date_end)
 result = Fido.search(a.Time(date_start, date_end), a.Instrument('adapt'), a.adapt.ADAPTLonType("0"))
+print(result)
 downloaded_file = Fido.fetch(result)
 
 ###############################################################################
-# ADAPT synoptic magnetograms contain 12 realizations of synoptic magnetograms
-# output as a result of varying model assumptions. `This is explained in detail by a talk
-# from 2012 <https://www.swpc.noaa.gov/sites/default/files/images/u33/SWW_2012_Talk_04_27_2012_Arge.pdf>`__.
-#
-# Because the FITS data is 3D, it cannot be passed directly to `sunpy.map.Map`,
-# because this will take the first slice only and the other realizations are
-# lost. We want to end up with a `sunpy.map.MapSequence` containing all these
-# realizations as individual maps. These maps can then be individually accessed
-# and PFSS solutions generated from them.
-#
-# Now we will open the FITS file:
+# ADAPT FITS files contain 12 realizations of synoptic magnetogram
+# output as a result of varying model assumptions. `This is explained in detail in this talk
+# <https://www.swpc.noaa.gov/sites/default/files/images/u33/SWW_2012_Talk_04_27_2012_Arge.pdf>`__.
+# Because the array in the FITS file is 3D, it cannot be passed directly to `sunpy.map.Map`,
+# as this will take the first slice only, ignoring the other realizations.
+# Instead, we'll open the FITS file with `astropy.io.fits` and manually pull out each
+# model realization.
 
 adapt_fits = fits.open(downloaded_file[0])
 
 ###############################################################################
-# ``adapt_fits`` is a list of ``HDPair`` objects. The first of these contains
-# the 12 realizations data and a header with sufficient information to build
-# the `~sunpy.map.MapSequence`. We unpack this ``HDPair`` into a list of
+# ``adapt_fits`` is a list of ``HDU`` objects. The first of these contains
+# the 12 realizations of the data and a header with sufficient information to build
+# the `~sunpy.map.MapSequence`. We unpack this infomration into a list of
 # ``(data, header)`` tuples where ``data`` are the different adapt realizations.
 
 data_header_pairs = [(map_slice, adapt_fits[0].header) for map_slice in adapt_fits[0].data]
 
 ###############################################################################
-# Next, pass this list of tuples as the argument to `sunpy.map.Map` to create
-# the map sequence:
+# Next, pass this list of tuples to `sunpy.map.Map` to make the map sequence:
 
 adapt_sequence = sunpy.map.Map(data_header_pairs, sequence=True)
 
