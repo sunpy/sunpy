@@ -14,7 +14,9 @@ There are many ways to install Python, but even if you have Python installed som
 That's because we will create a new Python environment.
 As well as containing a Python installation, this environment provides an isolated place to install Python packages (like ``sunpy``) without affecting any other current Python installation.
 If you already have Python and ``conda`` working you can skip the next section.
-However, if you are using Anaconda, we recommend you still install miniforge as described below.
+
+`If you are using Anaconda, we recommend that you uninstall it as it has a restrictive license which means you might not be able to use it for free <https://sunpy.org/posts/2024/2024-08-09-anaconda/>`__.
+Instead, we recommend that you use miniforge which is a minimal installer for conda which is free to use. If you are using miniforge, you can skip the next section
 
 Installing miniforge
 --------------------
