@@ -2163,10 +2163,6 @@ class GenericMap(NDData):
         -------
         out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
-
-        References
-        ----------
-        | `Summarizing blocks of an array using a moving window <https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when

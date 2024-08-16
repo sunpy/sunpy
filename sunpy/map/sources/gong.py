@@ -40,11 +40,11 @@ class GONGSynopticMap(GenericMap):
     If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
     References
     ----------
-    * `GONG Page <https://gong.nso.edu/>`_
-    * `Magnetogram Synoptic Map Images Page <https://gong.nso.edu/data/magmap/>`_
-    * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`_
-    * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`_
-    * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`_
+    * `GONG Page <https://gong.nso.edu/>`__
+    * `Magnetogram Synoptic Map Images Page <https://gong.nso.edu/data/magmap/>`__
+    * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`__
+    * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
+    * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
 
     @classmethod
