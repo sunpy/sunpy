@@ -16,7 +16,8 @@ As well as containing a Python installation, this environment provides an isolat
 If you already have Python and ``conda`` working you can skip the next section.
 
 `If you are using Anaconda, we recommend that you uninstall it as it has a restrictive license which means you might not be able to use it for free <https://sunpy.org/posts/2024/2024-08-09-anaconda/>`__.
-Instead, we recommend that you use miniforge which is a minimal installer for conda which is free to use. If you are using miniforge, you can skip the next section
+Instead, we recommend that you use miniforge which is a minimal installer that setups conda with the conda-forge channel, which is free to use for everyone.
+If you are using miniforge, you can skip the next section
 
 Installing miniforge
 --------------------
