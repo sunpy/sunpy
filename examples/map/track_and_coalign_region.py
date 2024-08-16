@@ -1,7 +1,7 @@
 """
-=========================================
-Tracking and Co-aligning an Active Region
-=========================================
+===============================================
+Tracking an Active Region Across the Solar Disk
+===============================================
 
 This example demonstrates how to track an active region as it rotates across the solar disk
 and make cutouts around that active region at each time step to build an aligned datacube.
