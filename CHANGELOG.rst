@@ -1,3 +1,22 @@
+6.0.1 (2024-08-15)
+==================
+
+Bug Fixes
+---------
+
+- Fixed incorrect ``reference_date`` for GONG Synoptic maps. (`#7758 <https://github.com/sunpy/sunpy/pull/7758>`__)
+- Fix :func:`sunpy.physics.differential_rotation.differential_rotate` to update the ``reference_date`` attribute of the input map instead of the ``date``. (`#7758 <https://github.com/sunpy/sunpy/pull/7758>`__)
+- Fixed incorrect ``reference_date`` for SDO/AIA and SDO/HMI data to use the ``T_OBS`` keyword instead of the ``DATE-OBS`` keyword.
+
+  For AIA images, the location of SDO has been shifted up to a second in time, which corresponds to a shift in Heliographic Longitude by only 4 milliarcseconds. (`#7758 <https://github.com/sunpy/sunpy/pull/7758>`__)
+
+
+Documentation
+-------------
+
+- Fixed a bunch of broken links in the documentation. (`#7766 <https://github.com/sunpy/sunpy/pull/7766>`__)
+
+
 6.0.0 (2024-07-19)
 ==================
 
