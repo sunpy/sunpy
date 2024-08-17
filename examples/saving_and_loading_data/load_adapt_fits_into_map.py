@@ -4,7 +4,7 @@ Reading ADAPT FITS Files
 ========================
 
 This example demonstrates how to load data from the
-Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model into a list of `sunpy.map.Map`.
+Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model into a list of `sunpy.map.Map` objects.
 """
 import matplotlib.pyplot as plt
 
