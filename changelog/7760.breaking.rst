@@ -1,3 +1,3 @@
-:meth:`sunpy.map.GenericMap.contour` now uses ContourPy instead of scikit-image for improved performance and consistency with :meth:`sunpy.map.GenericMap.draw_contours`.
-
-This does mean that both that the returned contours may differ in order and values compared to the scikit-image version and as that additional keyword arguments are passed through to the underlying function, specific keyword arguments may no longer be supported with ContourPy.
+ContourPy is added to :meth:`sunpy.map.GenericMap.contour` for improved performance and consistency with :meth:`sunpy.map.GenericMap.draw_contours`.
+You can now choose between ContourPy and scikit-image using the ``library`` keyword argument.
+Note that ContourPy may produce different contour results and may not support all scikit-image keyword arguments.

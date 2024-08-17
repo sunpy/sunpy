@@ -1452,12 +1452,12 @@ def test_submap_inputs(generic_map2, coords):
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
 
 
-def test_contour(simple_map):
+def test_contour_contourpy(simple_map):
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
     # 4 is the central pixel of the map, so contour half way between 1 and 2
-    contours = simple_map.contour(1.5)
+    contours = simple_map.contour(1.5, library='contourpy')
     assert len(contours) == 1
     contour = contours[0]
     assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
@@ -1467,6 +1467,28 @@ def test_contour(simple_map):
     assert u.allclose(contour.Ty, [ 0, -0.5, 0, 0.5, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     with pytest.raises(ValueError, match='level must be a single scalar value'):
         simple_map.contour([1.5, 2.5])
+
+
+def test_contour_skimage(simple_map):
+    data = np.ones(simple_map.data.shape)
+    data[4, 4] = 2
+    simple_map = sunpy.map.Map(data, simple_map.meta)
+    # 4 is the central pixel of the map, so contour half way between 1 and 2
+    contours = simple_map.contour(1.5, library='skimage')
+    assert len(contours) == 1
+    contour = contours[0]
+    assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
+    assert contour.observer.lon == simple_map.observer_coordinate.frame.lon
+    assert contour.obstime == simple_map.date
+    assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
+    assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+    with pytest.raises(ValueError, match='level must be a single scalar value'):
+        simple_map.contour([1.5, 2.5])
+
+
+def test_contour_invalid_library(simple_map):
+    with pytest.raises(ValueError, match="Unknown library 'invalid_lib'. Use 'contourpy' or 'skimage'."):
+        simple_map.contour(1.5, library='invalid_lib')
 
 
 def test_contour_units(simple_map):
