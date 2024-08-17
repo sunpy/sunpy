@@ -20,7 +20,7 @@ from sunpy.net import attrs as a
 # First we will download an ADAPT FITS file.
 # To do this we will use the `sunpy.net.Fido` search interface to search for
 # ADAPT data for Carrington Rotation 2193, and the first longitude type (0)
-# which means the data will be in a Carrington centered coordinate frame.
+# which means the data will be in a Carrington coordinate frame.
 
 date_start = carrington_rotation_time(2193)
 date_end = date_start + 6*u.h
