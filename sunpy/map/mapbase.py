@@ -2708,11 +2708,11 @@ class GenericMap(NDData):
 
         return ret
 
-    def contour(self, level, **kwargs):
+    def contour(self, level, method='skimage', **kwargs):
         """
         Returns coordinates of the contours for a given level value.
 
-        For details of the contouring algorithm, see :func:`contourpy.contour_generator` and :func:`contourpy.contour_generator`.
+        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`contourpy.contour_generator`.
 
         Parameters
         ----------
@@ -2720,11 +2720,11 @@ class GenericMap(NDData):
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
-        kwargs :
-            The `library` keyword determines which contouring library is used and should
+        method : The `method` keyword determines which contouring method is used and should
             be specified as either 'contourpy' or 'skimage'.
+        kwargs :
             Additional keyword arguments passed to either :func:`contourpy.contour_generator`
-            or :func:`skimage.measure.find_contours`, depending on the value of the `library` argument.
+            or :func:`skimage.measure.find_contours`, depending on the value of the `method` argument.
 
         Returns
         -------
@@ -2737,7 +2737,7 @@ class GenericMap(NDData):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.DN, library='contourpy')  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
         <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
             (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
@@ -2756,9 +2756,6 @@ class GenericMap(NDData):
         --------
         contourpy.contour_generator and skimage.measure.find_contours
         """
-        from contourpy import contour_generator
-        from skimage import measure
-
         level = self._process_levels_arg(level)
         if level.size != 1:
             raise ValueError("level must be a single scalar value")
@@ -2767,18 +2764,17 @@ class GenericMap(NDData):
             # find_contours expects a scalar below
             level = level[0]
 
-        # Sets default library to skimage
-        library = kwargs.pop('library', 'skimage')
-
-        if library == 'contourpy':
+        if method == 'contourpy':
+            from contourpy import contour_generator
             gen = contour_generator(z=self.data, **kwargs)
             contours = gen.lines(level)
             contours = [self.wcs.array_index_to_world(c[:, 1], c[:, 0]) for c in contours]
-        elif library == 'skimage':
+        elif method == 'skimage':
+            from skimage import measure
             contours = measure.find_contours(self.data, level=level, **kwargs)
             contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         else:
-            raise ValueError(f"Unknown library '{library}'. Use 'contourpy' or 'skimage'.")
+            raise ValueError(f"Unknown method '{method}'. Use 'contourpy' or 'skimage'.")
 
         return contours
 

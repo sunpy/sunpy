@@ -1457,7 +1457,7 @@ def test_contour_contourpy(simple_map):
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
     # 4 is the central pixel of the map, so contour half way between 1 and 2
-    contours = simple_map.contour(1.5, library='contourpy')
+    contours = simple_map.contour(1.5, method='contourpy')
     assert len(contours) == 1
     contour = contours[0]
     assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
@@ -1474,7 +1474,7 @@ def test_contour_skimage(simple_map):
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
     # 4 is the central pixel of the map, so contour half way between 1 and 2
-    contours = simple_map.contour(1.5, library='skimage')
+    contours = simple_map.contour(1.5, method='skimage')
     assert len(contours) == 1
     contour = contours[0]
     assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
@@ -1487,8 +1487,8 @@ def test_contour_skimage(simple_map):
 
 
 def test_contour_invalid_library(simple_map):
-    with pytest.raises(ValueError, match="Unknown library 'invalid_lib'. Use 'contourpy' or 'skimage'."):
-        simple_map.contour(1.5, library='invalid_lib')
+    with pytest.raises(ValueError, match="Unknown library 'invalid_method'. Use 'contourpy' or 'skimage'."):
+        simple_map.contour(1.5, method='invalid_method')
 
 
 def test_contour_units(simple_map):
