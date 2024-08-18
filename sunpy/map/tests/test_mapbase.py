@@ -1487,7 +1487,7 @@ def test_contour_skimage(simple_map):
 
 
 def test_contour_invalid_library(simple_map):
-    with pytest.raises(ValueError, match="Unknown library 'invalid_method'. Use 'contourpy' or 'skimage'."):
+    with pytest.raises(ValueError, match="Unknown method 'invalid_method'. Use 'contourpy' or 'skimage'."):
         simple_map.contour(1.5, method='invalid_method')
 
 

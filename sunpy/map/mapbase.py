@@ -2754,7 +2754,7 @@ class GenericMap(NDData):
 
         See Also
         --------
-        contourpy.contour_generator and skimage.measure.find_contours
+        :func:`contourpy.contour_generator` and :func:`skimage.measure.find_contours`
         """
         level = self._process_levels_arg(level)
         if level.size != 1:
