@@ -4,8 +4,10 @@ import astropy.units as u
 import pytest
 import responses
 import sunpy.map
+from requests.exceptions import HTTPError
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.util.exceptions import SunpyUserWarning
 
 from sunpy.net.soar.client import SOARClient
 
@@ -272,6 +274,85 @@ def test_join_low_latency_query() -> None:
     )
 
 
+def test_distance_query():
+    result = SOARClient._construct_payload(  # NOQA: SLF001
+        [
+            "instrument='RPW'",
+            "DISTANCE(0.28,0.30)",
+            "level='L2'",
+        ]
+    )
+
+    assert result["QUERY"] == ("SELECT+*+FROM+v_sc_data_item+WHERE+instrument='RPW'+AND+level='L2'&DISTANCE(0.28,0.30)")
+
+
+def test_distance_join_query():
+    result = SOARClient._construct_payload(  # NOQA: SLF001
+        [
+            "instrument='EUI'",
+            "DISTANCE(0.28,0.30)",
+            "level='L2'",
+            "descriptor='eui-fsi174-image'",
+        ]
+    )
+
+    assert result["QUERY"] == (
+        "SELECT+h1.instrument, h1.descriptor, h1.level, h1.begin_time, h1.end_time, "
+        "h1.data_item_id, h1.filesize, h1.filename, h1.soop_name, h2.detector, h2.wavelength, "
+        "h2.dimension_index+FROM+v_sc_data_item AS h1 JOIN v_eui_sc_fits AS h2 USING (data_item_oid)"
+        "+WHERE+h1.instrument='EUI'+AND+h1.level='L2'+AND+h1.descriptor='eui-fsi174-image'&DISTANCE(0.28,0.30)"
+    )
+
+
+def test_distance_search_remote_sensing():
+    instrument = a.Instrument("RPW")
+    product = a.soar.Product("rpw-tnr-surv")
+    level = a.Level(2)
+    distance = a.soar.Distance(0.28 * u.AU, 0.30 * u.AU)
+    res = Fido.search(distance & instrument & product & level)
+    assert res.file_num == 21
+
+
+def test_distance_search_insitu():
+    instrument = a.Instrument("METIS")
+    level = a.Level(2)
+    product = a.soar.Product("metis-vl-pol-angle")
+    distance = a.soar.Distance(0.45 * u.AU, 0.46 * u.AU)
+    res = Fido.search(distance & instrument & product & level)
+    assert res.file_num == 172
+
+
+def test_distance_time_search():
+    instrument = a.Instrument("EUI")
+    time = a.Time("2023-04-27", "2023-04-28")
+    level = a.Level(2)
+    product = a.soar.Product("eui-fsi174-image")
+    distance = a.soar.Distance(0.45 * u.AU, 0.46 * u.AU)
+    res = Fido.search(instrument & product & level & time)
+    assert res.file_num == 96
+    # To check if we get different value when distance parameter is added in search.
+    res = Fido.search(distance & instrument & product & level & time)
+    assert res.file_num == 48
+
+
+def test_distance_out_of_bounds_warning(recwarn):
+    instrument = a.Instrument("EUI")
+    time = a.Time("2023-04-27", "2023-04-28")
+    level = a.Level(2)
+    product = a.soar.Product("eui-fsi174-image")
+    distance = a.soar.Distance(0.45 * u.AU, 1.2 * u.AU)
+    # Run the search and ensure it raises an HTTPError
+    with pytest.raises(HTTPError):
+        Fido.search(distance & instrument & product & level & time)
+    # Check if the warning was raised
+    warnings_list = recwarn.list
+    assert any(
+        warning.message.args[0] == "Distance values must be within the range 0.28 AU to 1.0 AU."
+        and issubclass(warning.category, SunpyUserWarning)
+        for warning in warnings_list
+    )
+
+
 @responses.activate
 def test_soar_server_down() -> None:
     # As the SOAR server is expected to be down in this test, a JSONDecodeError is expected
@@ -289,6 +370,6 @@ def test_soar_server_down() -> None:
 
     with pytest.raises(
         RuntimeError,
-        match=("The SOAR server returned an invalid JSON response. " "It may be down or not functioning correctly."),
+        match=("The SOAR server returned an invalid JSON response. It may be down or not functioning correctly."),
     ):
         Fido.search(time, level, product)

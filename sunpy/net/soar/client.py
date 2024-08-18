@@ -18,7 +18,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.time import parse_time
 
-from sunpy.net.soar.attrs import SOOP, Product, walker
+from sunpy.net.soar.attrs import SOOP, Distance, Product, walker
 
 __all__ = ["SOARClient"]
 
@@ -139,6 +139,7 @@ class SOARClient(BaseClient):
         # Default data table
         data_table = "v_sc_data_item"
         instrument_table = None
+        query_method = "doQuery"
         # Mapping is established between the SOAR instrument names and its corresponding SOAR instrument table alias.
         instrument_mapping = {
             "SOLOHI": "SHI",
@@ -150,12 +151,24 @@ class SOARClient(BaseClient):
         }
 
         instrument_name = None
-        for q in query:
-            if q.startswith("instrument") or q.startswith("descriptor") and not instrument_name:
-                instrument_name = q.split("=")[1][1:-1].split("-")[0].upper()
-            elif q.startswith("level") and q.split("=")[1][1:3] == "LL":
-                data_table = "v_ll_data_item"
+        distance_parameter = []
+        non_distance_parameters = []
+        query_method = "doQuery"
+        instrument_name = None
 
+        for q in query:
+            if "DISTANCE" in str(q):
+                distance_parameter.append(q)
+            else:
+                non_distance_parameters.append(q)
+                if q.startswith("instrument") or (q.startswith("descriptor") and not instrument_name):
+                    instrument_name = q.split("=")[1][1:-1].split("-")[0].upper()
+                elif q.startswith("level") and q.split("=")[1][1:3] == "LL":
+                    data_table = "v_ll_data_item"
+
+        query = non_distance_parameters + distance_parameter
+        if distance_parameter:
+            query_method = "doQueryFilteredByDistance"
         if instrument_name:
             if instrument_name in instrument_mapping:
                 instrument_name = instrument_mapping[instrument_name]
@@ -172,9 +185,12 @@ class SOARClient(BaseClient):
             where_part = "+AND+".join(query)
 
         adql_query = {"SELECT": select_part, "FROM": from_part, "WHERE": where_part}
-
         adql_query_str = "+".join([f"{key}+{value}" for key, value in adql_query.items()])
-        return {"REQUEST": "doQuery", "LANG": "ADQL", "FORMAT": "json", "QUERY": adql_query_str}
+        if query_method == "doQueryFilteredByDistance":
+            adql_query_str = adql_query_str.replace("+AND+h1.DISTANCE", "&DISTANCE").replace(
+                "+AND+DISTANCE", "&DISTANCE"
+            )
+        return {"REQUEST": query_method, "LANG": "ADQL", "FORMAT": "json", "QUERY": adql_query_str}
 
     @staticmethod
     def _do_search(query):
@@ -199,13 +215,13 @@ class SOARClient(BaseClient):
         r = requests.get(f"{tap_endpoint}/sync", params=payload, timeout=60)
         log.debug(f"Sent query: {r.url}")
         r.raise_for_status()
+
         try:
             response_json = r.json()
         except JSONDecodeError as err:
             msg = "The SOAR server returned an invalid JSON response. It may be down or not functioning correctly."
             raise RuntimeError(msg) from err
 
-        # Do some list/dict wrangling
         names = [m["name"] for m in response_json["metadata"]]
         info = {name: [] for name in names}
 
@@ -280,8 +296,9 @@ class SOARClient(BaseClient):
         bool
             True if this client can handle the given query.
         """
-        required = {a.Time}
-        optional = {a.Instrument, a.Detector, a.Wavelength, a.Level, a.Provider, Product, SOOP}
+        required = {Distance} if any(isinstance(q, Distance) for q in query) else {a.Time}
+
+        optional = {a.Instrument, a.Detector, a.Wavelength, a.Level, a.Provider, Product, SOOP, Distance, a.Time}
         if not cls.check_attr_types_in_query(query, required, optional):
             return False
         # check to make sure the instrument attr passed is one provided by the SOAR.

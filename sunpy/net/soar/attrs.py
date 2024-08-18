@@ -4,8 +4,10 @@ This file defines the net attributes that can be used to search the SOAR.
 
 import warnings
 
+import astropy.units as u
 import sunpy.net.attrs as a
-from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from astropy.units import quantity_input
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, Range, SimpleAttr
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ["Product", "SOOP"]
@@ -27,6 +29,43 @@ class SOOP(SimpleAttr):
     """
     The SOOP name to search for.
     """
+
+
+class Distance(Range):
+    type_name = "distance"
+
+    @quantity_input(dist_min=u.m, dist_max=u.m)
+    def __init__(self, dist_min: u.Quantity, dist_max: u.Quantity):  # NOQA: ANN204
+        """
+        Specifies the distance range.
+
+        Parameters
+        ----------
+        dist_min : `~astropy.units.Quantity`
+            The lower bound of the range.
+        dist_max : `~astropy.units.Quantity`
+            The upper bound of the range.
+
+        Notes
+        -----
+        The valid units for distance are AU, km, and mm. Any unit directly
+        convertible to these units is valid input. This class filters the query
+        by solar distance without relying on a specific distance column.
+        """
+        # Ensure both dist_min and dist_max are scalar values
+        if not all([dist_min.isscalar, dist_max.isscalar]):
+            msg = "Both dist_min and dist_max must be scalar values."
+            raise ValueError(msg)
+
+        target_unit = u.AU
+        # Convert both dist_min and dist_max to the target unit
+        dist_min = dist_min.to(target_unit)
+        dist_max = dist_max.to(target_unit)
+
+        super().__init__(dist_min, dist_max)
+
+    def collides(self, other):
+        return isinstance(other, self.__class__)
 
 
 walker = AttrWalker()
@@ -145,3 +184,22 @@ def _(wlk, attr, params) -> None:  # NOQA: ARG001
     wavemin = attr.min.value
     wavemax = attr.max.value
     params.append(f"Wavemin='{wavemin}'+AND+Wavemax='{wavemax}'")
+
+
+@walker.add_applier(Distance)
+def _(wlk, attr, params):  # NOQA: ARG001
+    # The `Distance` attribute is used to filter the query by solar distance
+    # without relying on a specific distance column. It is commonly used
+    # to filter the query without time consideration.
+    dmin = attr.min.value
+    dmax = attr.max.value
+    min_possible = 0.28
+    max_possible = 1.0
+
+    if not (min_possible <= dmin <= max_possible) or not (min_possible <= dmax <= max_possible):
+        warnings.warn(
+            "Distance values must be within the range 0.28 AU to 1.0 AU.",
+            SunpyUserWarning,
+            stacklevel=2,
+        )
+    params.append(f"DISTANCE({dmin},{dmax})")
