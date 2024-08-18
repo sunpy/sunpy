@@ -149,7 +149,11 @@ provides = ["sunpy"]
 license-files = ["LICENSE.rst"]
 
 [tool.setuptools.packages.find]
+include = ["sunpy*"]
 exclude = ["sunpy._dev"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["*.c", "*.h"]
 
 [tool.setuptools_scm]
 write_to = "sunpy/_version.py"
