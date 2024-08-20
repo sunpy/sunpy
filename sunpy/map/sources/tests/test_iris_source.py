@@ -7,10 +7,9 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.iris import SJIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
-__author__ = 'Pritish C. (VaticanCameos)'
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture
@@ -57,5 +56,4 @@ def test_units(irismap):
 
 def test_wcs(irismap):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        irismap.pixel_to_world(0*u.pix, 0*u.pix)
+    irismap.wcs.pixel_to_world(0*u.pix, 0*u.pix)

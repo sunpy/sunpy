@@ -53,4 +53,4 @@ def test_measurement(swap_map):
 
 def test_wcs(swap_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    swap_map.pixel_to_world(0*u.pix, 0*u.pix)
+    swap_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

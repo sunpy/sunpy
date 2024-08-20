@@ -56,4 +56,4 @@ def test_norm_clip(hi_map):
 
 def test_wcs(hi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    hi_map.pixel_to_world(0*u.pix, 0*u.pix)
+    hi_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

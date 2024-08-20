@@ -62,4 +62,4 @@ def test_norm_clip(suvi):
 @pytest.mark.remote_data
 def test_wcs(suvi):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    suvi.pixel_to_world(0*u.pix, 0*u.pix)
+    suvi.wcs.pixel_to_world(0*u.pix, 0*u.pix)

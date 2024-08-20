@@ -347,7 +347,7 @@ class MapSequence:
 
         if resample:
             if self.all_maps_same_shape():
-                resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
+                resample = u.Quantity(self.maps[0].shape) * np.array(resample)
                 ani_data = [amap.resample(resample) for amap in self.maps]
             else:
                 raise ValueError('Maps in mapsequence do not all have the same shape.')
@@ -465,7 +465,7 @@ class MapSequence:
         if resample:
             if self.all_maps_same_shape():
                 plot_sequence = MapSequence()
-                resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
+                resample = u.Quantity(self.maps[0].shape) * np.array(resample)
                 for amap in self.maps:
                     plot_sequence.maps.append(amap.resample(resample))
             else:

@@ -97,3 +97,6 @@ py:obj RendererBase
 py:obj RuntimeError
 py:obj text
 py:obj Text
+
+# ndcube
+py:obj MatplotlibPlotter

@@ -12,6 +12,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
+from sunpy.map.mixins import MapMetaValidationError
 from sunpy.tests.helpers import figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
@@ -62,16 +63,14 @@ def test_mapsequence_sortby(eit_fits_directory):
     assert isinstance(sequence, sunpy.map.MapSequence)
 
 
-def test_composite():
-    # Test making a CompositeMap
-    comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
+def test_creation_of_composite_maps():
+    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
+        comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
     assert isinstance(comp, sunpy.map.CompositeMap)
 
-# Want to check that patterns work, so ignore this warning that comes from
-# the AIA test data
 
-
-@pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
+@pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header",
+                            "ignore:Missing metadata for")
 def test_patterns(eit_fits_directory):
     # Test different Map pattern matching
 
@@ -208,7 +207,7 @@ def test_errors(tmpdir):
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('silence', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
-                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                          (False, MapMetaValidationError,
                            'Image coordinate units for axis 1 not present in metadata.')])
 def test_silence_errors(silence, error, match):
     # Check that the correct errors are raised depending on silence_errors value
@@ -220,7 +219,7 @@ def test_silence_errors(silence, error, match):
 @pytest.mark.filterwarnings("ignore:One of the data, header pairs failed to validate")
 @pytest.mark.parametrize(('allow_errors', 'error', 'match'),
                          [(True, RuntimeError, 'No maps loaded'),
-                          (False, sunpy.map.mapbase.MapMetaValidationError,
+                          (False, MapMetaValidationError,
                            'Image coordinate units for axis 1 not present in metadata.')])
 def test_allow_errors(allow_errors, error, match):
     # Check that the correct errors are raised depending on allow_errors value
@@ -264,7 +263,7 @@ def test_map_list_urls_cache():
     sunpy.map.Map(urls)
 
 
-@pytest.mark.filterwarnings('ignore:File may have been truncated')
+@pytest.mark.filterwarnings('ignore:File may have been truncated', 'ignore:Missing metadata for')
 @pytest.mark.parametrize(('file', 'mapcls'), [
     ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
     ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],

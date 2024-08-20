@@ -71,6 +71,8 @@ jpeg2000 = [
 map = [
   "matplotlib>=3.5.0",
   "mpl-animators>=1.0.0",
+  # "ndcube>=2.2.0",
+  "ndcube@git+https://github.com/sunpy/ndcube@main",
   "reproject>=0.9.0",
   # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
   "scipy>=1.9.0,!=1.10.0",

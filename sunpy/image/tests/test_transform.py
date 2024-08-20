@@ -7,7 +7,7 @@ from skimage import transform as tf
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
 from sunpy.image.transform import _rotation_registry, affine_transform
-from sunpy.tests.helpers import figure_test, skip_windows
+from sunpy.tests.helpers import figure_test, skip_numpy2, skip_windows
 from sunpy.util import SunpyUserWarning
 
 # Tolerance for tests
@@ -266,6 +266,7 @@ def test_reproducible_matrix_multiplication():
 
 
 @figure_test
+@skip_numpy2
 def test_clipping(rot30):
     # Generates a plot to test the clipping the output image to the range of the input image
     image = np.ones((20, 20))
@@ -299,6 +300,7 @@ def test_clipping(rot30):
 
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
 @figure_test
+@skip_numpy2
 def test_nans(rot30):
     # Generates a plot to test the preservation and expansions of NaNs by the rotation
     image_with_nans = np.ones((23, 23))
