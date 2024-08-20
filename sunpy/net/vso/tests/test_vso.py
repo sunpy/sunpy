@@ -322,7 +322,9 @@ def test_fallback_if_cgi_offline(mocker):
     with pytest.warns(SunpyConnectionWarning,
                       match=f"Connection to {cgi_url} failed with error .* Retrying with different url and port"):
         mirror = get_online_vso_url()
-    assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
+    # This guards us if the fallback URL is also down
+    if mirror is not None:
+        assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
 
 
 def test_get_online_vso_url(mocker):
