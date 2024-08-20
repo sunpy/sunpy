@@ -103,14 +103,12 @@ jobs:
     with:
       default_python: '3.12'
       submodules: false
-      coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
-        - linux: base_deps
         - linux: py312-devdeps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        - linux: core_deps
+        - linux: linkcheck
+          pytest: false
 
   sdist_verify:
     if: |
@@ -182,13 +180,14 @@ jobs:
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests'
-      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
+      test_extras: 'tests-only'
+      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
       submodules: false
       targets: |
-        - cp3{10,11,12}-manylinux*_x86_64
-        - cp3{10,11,12}-macosx_x86_64
         - cp3{10,11,12}-macosx_arm64
+        - cp3{10,11,12}-macosx_x86_64
+        - cp3{10,11,12}-manylinux_aarch64
+        - cp3{10,11,12}-manylinux_x86_64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}

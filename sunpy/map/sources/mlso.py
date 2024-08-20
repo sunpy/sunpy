@@ -73,7 +73,7 @@ class KCorMap(GenericMap):
 
     @property
     def _default_observer_coordinate(self):
-        return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
+        return SkyCoord(self._earth_location.get_itrs(self.reference_date)).heliographic_stonyhurst
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

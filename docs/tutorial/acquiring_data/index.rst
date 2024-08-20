@@ -44,9 +44,10 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     For details of using `~sunpy.net.Fido` see :ref:`sunpy-tutorial-acquiring-data-index`.
     <BLANKLINE>
     <BLANKLINE>
-          Client                                                    Description
-    ----------------- -------------------------------------------------------------------------------------------------------
+          Client                                                            Description
+    ----------------- -----------------------------------------------------------------------------------------------------------------------
     CDAWEBClient      Provides access to query and download from the Coordinated Data Analysis Web (CDAWeb).
+    ADAPTClient       Provides access to the ADvanced Adaptive Prediction Technique (ADAPT) products of the National Solar Observatory (NSO).
     EVEClient         Provides access to Level 0CS Extreme ultraviolet Variability Experiment (EVE) data.
     GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
     XRSClient         Provides access to several GOES XRS files archive.
@@ -94,17 +95,17 @@ As an example:
     <BLANKLINE>
     Specifies the Instrument name for the search.
     <BLANKLINE>
-           Attribute Name          Client          Full Name                                           Description
-    --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
-    aia                         VSO         AIA                      Atmospheric Imaging Assembly
-    bcs                         VSO         BCS                      Bragg Crystal Spectrometer
-    be_continuum                VSO         BE-Continuum             INAF-OACT Barra Equatoriale Continuum Instrument
-    be_halpha                   VSO         BE-Halpha                INAF-OACT Barra Equatoriale Hα Instrument
-    bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
-    caii                        VSO         CAII                     Kanzelhöhe Ca II k Instrument
-    cds                         VSO         CDS                      Coronal Diagnostic Spectrometer
-    celias                      VSO         CELIAS                   Charge, Element, and Isotope Analysis System
+           Attribute Name          Client   ...                                   Description
+    --------------------------- ----------- ... --------------------------------------------------------------------------------
+    adapt                       ADAPT       ... ADvanced Adaptive Prediction Technique.
+    aia                         VSO         ... Atmospheric Imaging Assembly
+    bcs                         VSO         ... Bragg Crystal Spectrometer
+    be_continuum                VSO         ... INAF-OACT Barra Equatoriale Continuum Instrument
+    be_halpha                   VSO         ... INAF-OACT Barra Equatoriale Hα Instrument
+    bigbear                     VSO         ... Big Bear Solar Observatory, California TON and GONG+ sites
     ...
+    xrs                         XRS         ... GOES X-ray Sensor
+    xrt                         VSO         ... X-Ray Telescope
 
 This is a full list of known values, a description, and which clients support those values (if you want to search using a specific data source).
 Printing attributes like this is supported for most attributes, including  client specific ones.

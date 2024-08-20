@@ -1,1 +1,0 @@
-The function :func:`~sunpy.coordinates.get_horizons_coord` no longer calls the ``astroquery`` package, so ``astroquery`` is no longer a dependency.

@@ -30,12 +30,12 @@ from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
+import sunpy.coordinates.wcs_utils
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config
 # The next two are not used but are called to register functions with external modules
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.coordinates.wcs_utils import _set_wcs_aux_obs_coord, _sunpy_frame_class_from_ctypes
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
@@ -43,7 +43,7 @@ from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
 from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
-from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring, cached_property_based_on
+from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
@@ -129,8 +129,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     Measurement:                 171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
+    Reference Date:              2011-06-07 06:33:02
     Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
+    Pixel Dimensions:            [1024. 1024.]
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix
@@ -282,6 +283,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
                    Observation Date:\t {date}
+                   Reference Date:\t\t {ref_date}
                    Exposure Time:\t\t {dt}
                    Pixel Dimensions:\t\t {dim}
                    Coordinate System:\t {coord}
@@ -291,6 +293,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
+                               ref_date=self.reference_date.strftime(TIME_FORMAT),
                                dt=dt,
                                dim=u.Quantity(self.shape[::-1]),
                                scale=u.Quantity(self.scale),
@@ -508,7 +511,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if meta is None:
             meta = copy.deepcopy(getattr(self, 'meta'))
         if new_unit := kwargs.get('unit', None):
-            meta['bunit'] = new_unit.to_string('fits')
+            meta['bunit'] = self._parse_fits_unit(new_unit).to_string()
         # NOTE: wcs=None is explicitly passed here because the wcs of a map is
         # derived from the information in the metadata.
         new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
@@ -589,13 +592,32 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return new_map
 
     @property
-    @cached_property_based_on('_meta_hash')
+    # TODO FIX THIS
+    #@cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
+
+        Notes
+        -----
+        ``dateobs`` is always populated with the "canonical" observation time as
+        provided by the `.date` property.  This will commonly be the DATE-OBS key if it
+        is in the metadata, but see that property for the logic otherwise.
+
+        ``dateavg`` is always populated with the reference date of the coordinate system
+        as provided by the `.reference_date` property.  This will commonly be the
+        DATE-AVG key if it is in the metadata, but see that property for the logic
+        otherwise.
+
+        ``datebeg`` is conditonally populated with the start of the observation period
+        as provided by the `.date_start` property, which normally returns a value only
+        if the DATE-BEG key is in the metadata.
+
+        ``dateend`` is conditonally populated with the end of the observation period as
+        provided by the `.date_end` property, which normally returns a value only if the
+        DATE-END key is in the metadata.
         """
         self._validate_meta()
-
         w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
@@ -612,11 +634,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
+        w2.wcs.dateobs = self.date.utc.isot
+        w2.wcs.dateavg = self.reference_date.utc.isot
+        if self.date_start is not None:
+            w2.wcs.datebeg = self.date_start.utc.isot
+        if self.date_end is not None:
+            w2.wcs.dateend = self.date_end.utc.isot
+
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
-        sunpy_frame = _sunpy_frame_class_from_ctypes(w2.wcs.ctype)
+        sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
             # Clear all the aux information that was set earlier. This is to avoid
             # issues with maps that store multiple observer coordinate keywords.
@@ -629,7 +657,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
-            _set_wcs_aux_obs_coord(w2, obs_coord)
+            sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
         # Set the shape of the data array
         w2.array_shape = self.data.shape
@@ -1016,76 +1044,117 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [335. 335.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [335. 335.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [126.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        ...
-
+        array([[ 450.4546 ,  565.81494,  585.0416 , ..., 1005.28284,  977.8161 ,
+                1005.28284],
+            [ 474.20004,  516.1865 ,  555.7032 , ..., 1010.1449 , 1010.1449 ,
+                1121.2855 ],
+            [ 548.1609 ,  620.9256 ,  620.9256 , ..., 1074.4924 , 1108.4492 ,
+                1069.6414 ],
+            ...,
+            [ 206.00058,  212.1806 ,  232.78065, ...,  622.12177,  537.6615 ,
+                574.74164],
+            [ 229.32516,  236.07002,  222.5803 , ...,  586.8026 ,  591.2992 ,
+                728.44464],
+            [ 184.20439,  187.92569,  225.1387 , ...,  649.367  ,  686.58   ,
+                673.5554 ]], dtype=float32)
         >>> aia.submap([0,0]*u.pixel, top_right=[5,5]*u.pixel)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [6. 6.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [6. 6.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [511.5 511.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        ...
-
+        array([[-95.92475   ,   7.076416  ,  -1.9656711 ,  -2.9485066 ,
+                -0.98283553,  -6.0935802 ],
+            [-96.97533   ,  -5.1167884 ,   0.        ,   0.        ,
+                0.9746264 ,   3.8985057 ],
+            [-93.99607   ,   1.0189276 ,  -4.0757103 ,   2.0378551 ,
+                -2.0378551 ,  -7.896689  ],
+            [-96.97533   ,  -8.040668  ,  -2.9238791 ,  -5.1167884 ,
+                -0.9746264 ,  -8.040668  ],
+            [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
+                -3.9313421 ,  -1.0483578 ],
+            [-95.103004  ,   0.        ,  -4.993475  ,   0.        ,
+                -4.0855703 ,  -7.03626   ]], dtype=float32)
         >>> width = 10 * u.arcsec
         >>> height = 10 * u.arcsec
         >>> aia.submap(bl, width=width, height=height)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [5. 5.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [5. 5.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [125.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        ...
-
+        array([[565.81494, 585.0416 , 656.4552 , 670.18854, 678.4286 ],
+            [516.1865 , 555.7032 , 634.7365 , 661.90424, 587.8105 ],
+            [620.9256 , 620.9256 , 654.8825 , 596.6707 , 531.18243],
+            [667.5083 , 560.52094, 651.22766, 530.28534, 495.39816],
+            [570.15643, 694.5542 , 653.0883 , 699.7374 , 583.11456]],
+            dtype=float32)
         >>> bottom_left_vector = SkyCoord([0, 10]  * u.deg, [0, 10] * u.deg, frame='heliographic_stonyhurst')
         >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [70. 69.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [70. 69.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [1.5 0.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        ...
+        array([[209.89908, 213.9748 , 256.76974, ..., 560.41016, 497.23666,
+                584.86444],
+                [237.85315, 223.74321, 258.0102 , ..., 578.5072 , 643.00977,
+                560.3659 ],
+                [252.67189, 219.53459, 242.31648, ..., 623.3954 , 666.8881 ,
+                625.4665 ],
+                ...,
+                [662.12573, 690.3013 , 702.04114, ..., 464.8968 , 561.1633 ,
+                676.2135 ],
+                [489.49503, 542.75616, 563.0461 , ..., 667.0321 , 748.1919 ,
+                748.1919 ],
+                [435.59155, 455.9701 , 496.7272 , ..., 855.8992 , 789.6689 ,
+                687.7761 ]], dtype=float32)
         """
         # Check that we have been given a valid combination of inputs
         # [False, False, False] is valid if bottom_left contains the two corner coords
@@ -1095,6 +1164,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # parse input arguments
         pixel_corners = u.Quantity(self._parse_submap_input(
             bottom_left, top_right, width, height)).T
+
+        msg = (
+            "The provided input coordinates to ``submap`` when transformed to the target "
+            "coordinate frame contain NaN values and cannot be used to crop the map. "
+            "The most common reason for NaN values is transforming off-disk 2D "
+            "coordinates without specifying an assumption (e.g., via the"
+            "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
+            "such coordinates to be interpreted as 3D coordinates."
+        )
+        if np.any(np.isnan(pixel_corners)):
+            raise ValueError(msg)
 
         # The pixel corners result is in Cartesian order, so the first index is
         # columns and the second is rows.
@@ -1227,10 +1307,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         -------
         out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
-
-        References
-        ----------
-        | `Summarizing blocks of an array using a moving window <https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -1369,12 +1445,18 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.ct)  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
         >>> print(contours[0])  # doctest: +REMOTE_DATA
-            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
-        ...
+         (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+         (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+         (713.14112796, -361.95311455), (714.76598031, -363.53013567),
+         (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+         (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+         (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+         (719.59798458, -352.60839064)]>
 
         See Also
         --------
@@ -1442,7 +1524,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         # Check if both context managers are active
         if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
-            warn_user("Using propagate_with_solar_surface and assume_spherical_screen together result in loss of off-disk data.")
+            warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
 
         try:
             import reproject

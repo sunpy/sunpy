@@ -14,6 +14,7 @@ py:class function
 py:class path-like
 py:class str-like
 py:class time-like
+py:class Unit
 py:class Unit('%')
 py:class Unit('Angstrom')
 py:class Unit('arcsec / pix')
@@ -22,6 +23,7 @@ py:class Unit('deg')
 py:class Unit('pix')
 py:class Unit('s')
 py:class Unit('W / m2')
+py:class Unit('m')
 py:obj function
 py:obj iterable
 py:obj parfive

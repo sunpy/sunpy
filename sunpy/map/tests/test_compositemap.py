@@ -20,6 +20,7 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')
 def composite_test_map(aia171_test_map, hmi_test_map):
     # The test maps have wildly different observation times, which throws off compositing
     hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
+    hmi_test_map.meta['t_obs'] = aia171_test_map.meta['t_obs']
     # Also set the HMI observer location to be the same as the AIA observer location
     del hmi_test_map.meta['crln_obs']
     del hmi_test_map.meta['crlt_obs']

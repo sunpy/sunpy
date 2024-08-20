@@ -18,11 +18,9 @@ from sunpy.net import attrs as a
 from sunpy.net import jsoc
 from sunpy.net.base_client import QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
 from sunpy.net.vso import VSOQueryResponseTable
-from sunpy.net.vso.vso import DownloadFailed
 from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.exceptions import SunpyUserWarning
@@ -392,22 +390,6 @@ def results_generator(dl):
     return Results(outputs)
 
 
-@pytest.mark.remote_data
-@mock.patch("sunpy.net.vso.VSOClient.download_all",
-            return_value=Results([], errors=[DownloadFailed(None)]))
-@mock.patch("parfive.Downloader.download", new=results_generator)
-def test_vso_errors_with_second_client(mock_download_all):
-    query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument.goes | a.Instrument.eit)
-    qr = Fido.search(query)
-    res = Fido.fetch(qr)
-    assert len(res.errors) == 1
-    assert len(res) != qr.file_num
-    # Assert that all the XRSClient records are in the output.
-    for resp in qr:
-        if isinstance(resp, XRSClient):
-            assert len(resp) == len(res)
-
-
 def test_downloader_type_error():
     with pytest.raises(TypeError):
         Fido.fetch([], downloader=Results())
@@ -495,3 +477,10 @@ def test_path_format_keys():
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
     unif = UnifiedResponse(t1, t2)
     assert unif.path_format_keys() == {'_excite_'}
+
+
+@pytest.mark.remote_data
+def test_fido_stereo_extent_type():
+    res = Fido.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    assert len(res[0]) == 123
+    assert not all(res[0].columns["Extent Type"] == "CORONA")

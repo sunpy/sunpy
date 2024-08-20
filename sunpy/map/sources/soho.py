@@ -44,6 +44,11 @@ class EITMap(GenericMap):
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
+    def reference_date(self):
+        # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
+        return self._get_date('date_obs') or super().date
+
+    @property
     def date(self):
         # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
         return self._get_date('date_obs') or super().date
@@ -144,6 +149,19 @@ class LASCOMap(GenericMap):
         time = self.meta.get('time-obs', self.meta.get('time_obs'))
         return parse_time(f"{date}T{time}")
 
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            time_key = 'time-obs'
+            del self.meta['time-obs']
+        if 'time_obs' in self.meta:
+            time_key = 'time_obs'
+            del self.meta['time_obs']
+        date_key = 'date-obs' if 'date-obs' in self.meta else 'date_obs'
+        if time_key in self.meta:
+            self.meta[date_key], self.meta[time_key] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta[date_key] = parse_time(date).utc.isot
+
     @property
     def nickname(self):
         filter = self.meta.get('filter', '')
@@ -197,11 +215,11 @@ class MDIMap(GenericMap):
 
     @property
     def _date_obs(self):
-        if 'T' in self.meta['date-obs']:
+        if 'T' in self.meta.get('date-obs', ''):
             # Helioviewer MDI files have the full date in DATE_OBS, but we still
             # want to let normal FITS files use DATE-OBS
             return parse_time(self.meta['date-obs'])
-        else:
+        elif 'date_obs' in self.meta:
             return parse_time(self.meta['date_obs'])
 
     @property
@@ -266,6 +284,7 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
+
     @property
     def date(self):
         """
@@ -273,9 +292,10 @@ class MDISynopticMap(MDIMap):
 
         This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        time = self._get_date('date-obs')
-        if time is None:
-            return self._get_date('t_obs')
+        return self._get_date('date-obs') or self._get_date('t_obs')
+
+    def _set_date(self, date):
+        self.meta['date-obs'] = self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def spatial_units(self):

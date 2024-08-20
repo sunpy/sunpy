@@ -22,4 +22,5 @@ default.extend-ignore-identifiers-re = [
     "ot",
     # Coords,
     "pn",
+    "lightyear",
 ]

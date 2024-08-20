@@ -215,7 +215,14 @@ def test_unit_as_string(map_data, hpc_coord):
     # Test that unit can be passed in as a string
     map_unit = u.Unit('ct / (pix s)')
     header = make_fitswcs_header(map_data, hpc_coord, unit=map_unit.to_string())
-    assert header['bunit'] == map_unit.to_string('fits')
+    assert header['bunit'] == map_unit.to_string(format='fits')
+
+
+@pytest.mark.parametrize(('input_unit','output_string'),
+                         [('DN', 'DN'), (u.DN, 'DN'), ('DN / s', 'DN / s')])
+def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc_coord):
+    header = make_fitswcs_header(map_data, hpc_coord, unit=input_unit)
+    assert header['bunit'] == output_string
 
 
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):

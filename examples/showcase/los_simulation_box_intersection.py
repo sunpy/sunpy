@@ -157,8 +157,8 @@ for i,edge in enumerate(edge_coords):
 for i,los in enumerate(lines_of_sight):
     ax.plot_coord(los[0], color='C0', marker='.', label='LOS' if i==0 else None, markersize=1)
 # Plot the edges of the pixel grid
-xpix_edges = np.array(range(int(instrument_map.dimensions.x.value)+1))-0.5
-ypix_edges = np.array(range(int(instrument_map.dimensions.y.value)+1))-0.5
+xpix_edges = np.array(range(int(instrument_map.shape[1])+1))-0.5
+ypix_edges = np.array(range(int(instrument_map.shape[0])+1))-0.5
 ax.vlines(x=xpix_edges,
           ymin=ypix_edges[0],
           ymax=ypix_edges[-1],

@@ -98,6 +98,7 @@ def test_from_url():
     assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
     assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
 
+
 @skip_numpy2
 def test_read_cdf():
     ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)

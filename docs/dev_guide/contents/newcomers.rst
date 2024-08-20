@@ -82,9 +82,9 @@ If you find an issue you'd like to work on, please make sure to add a comment to
     sunpy is Free and open-source software (FOSS), under the BSD-2 license. By contributing you are stating that you have the right to and agree to have your work distributed under the terms of this license.
 
     This applies to everyone who wants to contribute during work time no matter who their employer is.
-    You should start by checking if there is a Open Source Software Policy (e.g., `Standford's policy <https://otl.stanford.edu/open-source-stanford>`__) for your work place.
-    If not, `OSS-Watch <http://oss-watch.ac.uk/resources/contributing>`__ summaries what you will need to check and who to ask, however this resource is aimed at a UK readers.
-    As an example, `Standford's guidance <https://otl.stanford.edu/sites/g/files/sbiybj10286/f/otlcopyrightguide.pdf>`__ allows someone to contribute and open source their code.
+    You should start by checking if there is a Open Source Software Policy (e.g., `Stanford's policy <https://otl.stanford.edu/open-source-stanford>`__) for your work place.
+    If not, `OSS-Watch <http://oss-watch.ac.uk/resources/contributing>`__ summarises what you will need to check and who to ask, however this resource is aimed at a UK readers.
+    As an example, `Stanford's guidance <https://otl.stanford.edu/software>`__ allows someone to contribute and open source their code.
     If you are unsure if your university or institution allows you to contribute under the BSD-2 license, you should contact the relevant department or administrator that deals with copyright at your institution.
 
 If you are unsure where to start we suggest the `Good First Issue label`_.
@@ -127,14 +127,13 @@ Setting up a development environment
 
 The instructions in this following section are based upon three resources:
 
-* `Astropy Dev Workflow <https://docs.astropy.org/en/latest/development/workflow/development_workflow.html>`_
-* `Astropy Dev environment <https://docs.astropy.org/en/latest/development/workflow/get_devel_version.html#get-devel>`_
-* `Astropy Pull Request Example <https://docs.astropy.org/en/latest/development/workflow/git_edit_workflow_examples.html#astropy-fix-example>`_
+* `Astropy Contributing Quickstart <https://docs.astropy.org/en/latest/development/quickstart.html>`__
+* `Astropy Contribution Example <https://docs.astropy.org/en/latest/development/git_edit_workflow_examples.html>`__
 
 **We strongly recommend that you read these links.**
 These links are more in-depth than this guide but you will need to replace ``astropy`` with ``sunpy``.
 
-In order to start coding you will need a local Python environment and we would recommend using `Anaconda`_ or `miniconda`_ (shortened to conda from here on).
+In order to start coding you will need a local Python environment and we would recommend using `miniforge`_ (shortened to conda from here on).
 This method will bypass your operating system Python packages and makes the entire process easier.
 
 The first step is to install the version of conda that corresponds to your operating system and `instructions are here`_.
@@ -173,7 +172,7 @@ This will make submitting changes easier in the long term for you:
 
 .. note::
     If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
-    Getting the compiler either from your system package manager, XCode or Anaconda should address this.
+    Getting the compiler either from your system package manager, XCode or conda-forge should address this.
 
 Now you have the latest version of sunpy installed and are ready to work on it using your favorite editor!
 Ideally, when you start making changes you want to create a git branch:
@@ -185,8 +184,7 @@ Ideally, when you start making changes you want to create a git branch:
 You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
-.. _Anaconda: https://www.anaconda.com/distribution/
-.. _miniconda: https://conda.io/en/latest/miniconda.html
+.. _miniforge: hhttps://github.com/conda-forge/miniforge?tab=readme-ov-file#download
 .. _instructions are here: https://conda.io/projects/conda/en/latest/user-guide/install/index.html#installation
 .. _conda-forge: https://conda-forge.org/
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
