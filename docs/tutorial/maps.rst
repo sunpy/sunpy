@@ -470,7 +470,7 @@ For example, we can combine 4 pixels in each dimension such that our new superpi
     :include-source:
     :context: close-figs
 
-    my_super_submap = my_submap.superpixel((5,5)*u.pixel)
+    my_super_submap = my_submap.rebin((5,5)*u.pixel)
 
     fig = plt.figure()
     ax = fig.add_subplot(projection=my_super_submap)
