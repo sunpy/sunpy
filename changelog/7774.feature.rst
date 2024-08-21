@@ -1,1 +1,1 @@
-Added support for quering SPICE kernel using `sunpy.net`
+Added support for querying SPICE kernel using `sunpy.net`

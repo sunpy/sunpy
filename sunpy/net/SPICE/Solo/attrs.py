@@ -1,4 +1,6 @@
 from sunpy.net.attr import SimpleAttr
+from sunpy.time import parse_time
+
 
 class Kernel_type(SimpleAttr):
     """
@@ -19,8 +21,28 @@ class Instrument(SimpleAttr):
     """
     Instrument for kernels
     """
-
 class link(SimpleAttr):
     """
-    kernel links
+    name of link for spice kernels
+
     """
+class Version(SimpleAttr):
+    """
+    version number for kernels
+    """
+class Time(SimpleAttr):
+    """
+    Time attribute for kernel
+    """
+
+    def __init__(self,start,end = None):
+        self.start = parse_time(start)
+        self.end = parse_time(end) if end is not None else None
+
+
+class Readme(SimpleAttr):
+    def __init__(self,value):
+
+        if not isinstance(value,bool):
+            raise ValueError(f"value must be boolean not {type(value)}")
+        self.value = value

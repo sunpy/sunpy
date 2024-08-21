@@ -1,28 +1,20 @@
 import os
-import warnings
 import urllib.request
 
 from bs4 import BeautifulSoup
-from sunpy.net.base_client import BaseClient,QueryResponseTable
+
 from astropy.time import Time
-import sunpy.net._attrs as a
-from sunpy.net.SPICE import attrs as sa
+
+from sunpy.net.base_client import BaseClient, QueryResponseTable
+from sunpy.net.SPICE.Solo import attrs as sa
+from sunpy.util.parfive_helpers import Downloader
+
 BASE_URL = "https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/{}"
 
-KERNEL_TYPES = ["ck", "fk", "ik", "lsk", "pck", "sclk", "spk","mk"]
-
 class SoloKernel:
-    def __init__(self, kernel_type,instrument = None,start = None,end = None,**kwargs):
-        self.kernel_type = kernel_type
-        self.instrument = instrument
-        self.kernel_type = kernel_type
-        self.start = start
-        self.end = end
-
-        if kernel_type not in KERNEL_TYPES:
-            raise ValueError(f"Kernel type not recognized '{kernel_type}'. Recognized ones: {KERNEL_TYPES}")
-
+    def __init__(self, kernel_type):
         self.kernel_urls = BASE_URL.format(kernel_type)
+        self.kernel_type = kernel_type
 
 
 
@@ -69,42 +61,40 @@ class SoloKernel:
             mapped[index] = link
         return mapped
 
-    def download_by_index(self,*args,destination = "Downloads"):
+    def download_by_index(self, downloader = None,*args, destination="Downloads"):
         """
-        allows downloading links with its corresponding index.
-        args being index
+        Allows downloading links with their corresponding index.
+        Args being index.
         """
-        if self.kernel_type == "mk":
-            warnings.warn("Note you are currently downloading meta kernels")
-        else:
-            print(f"current kerenel {self.kernel_type}")
-        print("Note  aareadme.txt provide description for kernel")
+        print("Note: aareadme.txt provides description for kernel")
         links_mapped = self.get_link_by_index()
         num_links = len(links_mapped.keys())
-        print(f"number of kernels {num_links}")
+        print(f"Number of kernels: {num_links}")
+
+        # Create a downloader instance
+        downloader = Downloader()
 
         for index in args:
             if 0 <= index < num_links:
                 file_url = self.kernel_urls + "/" + links_mapped[index]
                 if not index:
-                    file_name = os.path.join(destination, f"for_{self.kernel_type} " +links_mapped[index])
+                    file_name = os.path.join(destination, f"for_{self.kernel_type}_" + links_mapped[index])
                 else:
                     file_name = os.path.join(destination, links_mapped[index])
-                try:
-                    urllib.request.urlretrieve(file_url,file_name)
-                    print(f"Downloaded:{index} -- {file_name}")
 
-                except Exception as e:
-                    print(f"error downloading {file_name} :{e}")
+                # Add the download job to the downloader queue
+                downloader.enqueue_file(file_url, path=destination, filename=file_name)
+                print(f"Queued for download: {index} -- {file_name}")
 
+            else:
+                raise ValueError(f"Index '{index}' must be valid between 0 and {num_links - 1}")
 
-            else :
-                raise ValueError(f"index '{index}' must valid between 0 and {num_links-1}")
-    def search(self):
-        pass
+        # Start downloading files
+        downloader.download()
 
+        print("Downloads complete.")
 
-    def filter_kernels(self, logic="and", get_all = False,get_readme = False,**kwargs):
+    def filter_kernels(self,get_readme = False,**kwargs):
         """
         Filter kernels based on search terms using specified boolean logic.
         Parameters:
@@ -120,24 +110,19 @@ class SoloKernel:
         if get_readme:
             filtered_kernel[0] = self.get_readme()
             return filtered_kernel
-        if get_all:
-            return original_links
         if 'start' in kwargs:
             kwargs['start'] = Time(kwargs['start']).tdb.strftime('%Y%m%d')
-        if 'end' in kwargs:
+            print(kwargs['start'])
+        if 'end' in kwargs and kwargs["end"] is not None:
             kwargs['end'] = Time(kwargs['end']).tdb.strftime('%Y%m%d')
             print(kwargs["end"])
+        if "version" in kwargs:
+            kwargs["version"] = "V" + str(kwargs["version"])
         for index, link in original_links.items():
             match = None
 
-            if logic == "and":
-                match = all(value in link for value in kwargs.values())
-            elif logic == "or":
-                match = any(value in link for value in kwargs.values())
-            elif logic == "not":
-                match = all(value not in link for value in kwargs.values())
-            else:
-                raise ValueError("Invalid logic type. Choose 'and', 'or', or 'not'.")
+
+            match = all(value in link for value in kwargs.values())
 
             if match:
                 filtered_kernel[index] = link
@@ -146,79 +131,80 @@ class SoloKernel:
 
         return filtered_kernel
 
+class SoloResponseTable(QueryResponseTable):
+    """
+    A table for storing spice kerenels
+    """
+
 class SoloClient(BaseClient):
+    @property
+    def info_url(self):
+        return "https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/"
 
-    def __init__(self, mission,kernel_type):
-        self.mission = mission.upper()
-        self.kernel_type = kernel_type
-
-    def search(self,*query,**kwargs):
+    def search(self, *query):
         """
         Search for SPICE kernels based on mission and other criteria.
-
-        Parameters:
-        - kernel: Type of kernel to search for (e.g., "ck", "ik", "sclk").
-        - instrument: Specific instrument for instrument kernels.
-        - version: Version of the kernel.
-        - start: Start date.
-        - end: End date.
-        - link: exact name of kernel
-
-        Returns:
-        - QueryResponseTable with matching kernels.
         """
         results = []
+        query_params = {}
+        kernel_type = None
 
-        if self.mission == "SOLO":
-            solo_kernel = SoloKernel(self.kernel_type)
-            if isinstance(query,a.Time):
-                pass
-            if isinstance(query,sa.sensor):
-                pass
-            if isinstance(query,sa.Instrument):
-                pass
-            if isinstance(query,sa.link):
-                pass
-            filtered_kernels = solo_kernel.filter_kernels(**kwargs)
+        for q in query:
+            if isinstance(q, sa.Kernel_type):
+                kernel_type = q.value
+            if isinstance(q, sa.Time):
+                query_params['start'] = q.start
+                query_params['end'] = q.end
+            if isinstance(q, sa.Instrument):
+                query_params['instrument'] = q.value
+            if isinstance(q, sa.link):
+                query_params['link'] = q.value
+            if isinstance(q,sa.sensor):
+                query_params["sensor"] = q.value
+            if isinstance(q,sa.Version):
+                query_params["version"] = q.value
+            if isinstance(q,sa.Readme):
+                if q.value:
+                    query_params["get_readme"] = True
+                else:
+                    continue
 
-            for index, link in filtered_kernels.items():
-                results.append({
-                    'Mission': self.mission,
-                    'Kernel': self.kernel_type,
-                    'Link': link,
-                    'Index': index
-                })
 
-        return QueryResponseTable(results)
+        if not kernel_type:
+            raise ValueError("Kernel type must be specified in the query.")
 
+        solo_kernel = SoloKernel(kernel_type)
+        filtered_kernels = solo_kernel.filter_kernels(**query_params)
+
+        for index, link in filtered_kernels.items():
+            results.append({
+                'Mission': "solo",
+                'Kernel': kernel_type,
+                'Link': link,
+                'Index': index
+            })
+
+        return SoloResponseTable(results,client=self)
     def fetch(self, query_results, path=None, **kwargs):
         """
         Fetch the selected kernels.
-
-        Parameters:
-        - query_results: Results returned from the search method.
-        - path: Destination path for downloaded files.
-
-        Returns:
-        - List of paths to downloaded files.
         """
         if path is None:
-            path = './{file}'
+            path = './Downloads'
 
         downloaded_files = []
 
         for result in query_results:
             kernel_type = result['Kernel']
+            index = result['Index']
 
             solo_kernel = SoloKernel(kernel_type)
-            index = result['Index']
-            downloaded_files.append(solo_kernel.download_by_index(index, destination=path))
+            solo_kernel.download_by_index(index, destination=path)
+            downloaded_files.append(os.path.join(path, solo_kernel.get_link_by_index()[index]))
 
         return downloaded_files
 
     @staticmethod
     def _can_handle_query(*query):
-        """
-        Check if this client can handle the given query.
-        """
-        return True
+        """Check if this client can handle the given query."""
+        return any(isinstance(q, sa.Kernel_type) for q in query)
