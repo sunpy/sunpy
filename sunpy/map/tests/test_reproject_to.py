@@ -120,7 +120,7 @@ def test_return_footprint(aia171_test_map, hpc_header):
 
 
 def test_invalid_inputs(aia171_test_map, hpc_header):
-    with pytest.raises(ValueError, match="The specified algorithm must be one of"):
+    with pytest.raises(ValueError, match="algorithm='something' is not valid, it must be one of interpolation, adaptive, exact."):
         aia171_test_map.reproject_to(hpc_header, algorithm='something')
 
 
@@ -128,7 +128,6 @@ def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
     with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
         # Modifying the `hpc_header` rsun value to create a mismatch
         hpc_header["rsun_ref"] += 1
-
         # Reproject with the mismatched rsun
         aia171_test_map.reproject_to(hpc_header)
 
