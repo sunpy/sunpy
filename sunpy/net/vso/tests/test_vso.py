@@ -3,6 +3,7 @@ from xml.etree import ElementTree
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
+import numpy as np
 import pytest
 from parfive import Results
 
@@ -25,6 +26,13 @@ from sunpy.net.vso.vso import (
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyConnectionWarning, SunpyDeprecationWarning, SunpyUserWarning
+
+
+@pytest.fixture(scope="session")
+def check_vso_alive():
+    status = [check_connection(url["url"]) for url in DEFAULT_URL_PORT]
+    if not np.all(status):
+        pytest.xfail("No working VSO links found.")
 
 
 class MockQRRecord:
@@ -299,7 +307,7 @@ def fail_to_open_nso_cgi(disallowed_url, url, **kwargs):
 
 
 @pytest.mark.remote_data
-def test_fallback_if_cgi_offline(mocker):
+def test_fallback_if_cgi_offline(check_vso_alive, mocker):  # NOQA: ARG001
     """
     This test takes the cgi endpoint URL out of the WDSL, and then disables it,
     forcing the `get_online_vso_url` function to fallback to a secondary mirror.
@@ -322,9 +330,7 @@ def test_fallback_if_cgi_offline(mocker):
     with pytest.warns(SunpyConnectionWarning,
                       match=f"Connection to {cgi_url} failed with error .* Retrying with different url and port"):
         mirror = get_online_vso_url()
-    # This guards us if the fallback URL is also down
-    if mirror is not None:
-        assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
+    assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
 
 
 def test_get_online_vso_url(mocker):
