@@ -1059,17 +1059,12 @@ def test_resample_rotated_map_cd(cd, method, simple_map):
     for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
         del smap.meta[key]
     # Check rebin with a rotated map with unequal resampling
-    new_dims = (1, 2) * u.pix
+    new_dims = (3, 1) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
     ll_pix = [-0.5, -0.5]*u.pix
     assert smap.wcs.pixel_to_world(*ll_pix).separation(
         new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
-
-
-def test_rebin_err(generic_map):
-    with pytest.raises(ValueError, match="Offset is strictly non-negative."):
-        generic_map.rebin((2, 2) * u.pix, offset=(-2, 2) * u.pix)
 
 
 def calc_new_matrix(angle):

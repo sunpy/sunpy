@@ -13,7 +13,6 @@ from sunpy.coordinates import HeliographicCarrington, get_earth, sun
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
-from sunpy.util.decorators import cached_property_based_on
 from sunpy.util.exceptions import warn_metadata, warn_user
 
 __all__ = ['MapMetaValidationError', 'MapMetaMixin', 'PixelPair', 'SpatialPair']
@@ -514,7 +513,7 @@ class MapMetaMixin:
             self.meta.pop(key)
 
     @property
-    @cached_property_based_on('_meta_hash')
+    #@cached_property_based_on('_meta_hash')
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
