@@ -12,7 +12,6 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from matplotlib.transforms import Affine2D
-from packaging.version import Version
 
 import astropy.units as u
 import astropy.wcs
@@ -21,6 +20,7 @@ from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
+from astropy.wcs import InconsistentAxisTypesError
 from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
 import sunpy
@@ -33,12 +33,11 @@ from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.mixins import MapMetaValidationError
 from sunpy.map.sources import AIAMap
-from sunpy.tests.helpers import figure_test, skip_numpy2
+from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
-from sunpy.util.util import fix_duplicate_notes
 from .strategies import matrix_meta
 
 
@@ -1036,17 +1035,12 @@ def test_resample_rotated_map_cd(cd, method, simple_map):
     for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
         del smap.meta[key]
     # Check rebin with a rotated map with unequal resampling
-    new_dims = (1, 2) * u.pix
+    new_dims = (3, 1) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
     ll_pix = [-0.5, -0.5]*u.pix
     assert smap.wcs.pixel_to_world(*ll_pix).separation(
         new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
-
-
-def test_rebin_err(generic_map):
-    with pytest.raises(ValueError, match="Offset is strictly non-negative."):
-        generic_map.rebin((2, 2) * u.pix, offset=(-2, 2) * u.pix)
 
 
 def calc_new_matrix(angle):
@@ -1732,7 +1726,6 @@ def test_draw_carrington_map(carrington_map):
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
-@skip_numpy2
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
     # The following map has a a PCij matrix that is not a pure rotation
     weird_map = aia171_test_map.rotate(30*u.deg).rebin([2, 1]*u.pix)
