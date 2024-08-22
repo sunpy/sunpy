@@ -7,7 +7,7 @@ from astropy.time import Time
 
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.SPICE.Solo import attrs as sa
-from sunpy.util.parfive_helpers import Downloader
+from sunpy.util.parfive_helpers import Downloader, Results
 
 BASE_URL = "https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/{}"
 
@@ -61,38 +61,44 @@ class SoloKernel:
             mapped[index] = link
         return mapped
 
-    def download_by_index(self, downloader = None,*args, destination="Downloads"):
+    def download_by_index(self,ind,overwrite = False,progress = True,wait = True,downloader = None, destination="Downloads",):
         """
         Allows downloading links with their corresponding index.
         Args being index.
         """
         print("Note: aareadme.txt provides description for kernel")
-        links_mapped = self.get_link_by_index()
+        links_mapped = self.filter_kernels()
         num_links = len(links_mapped.keys())
         print(f"Number of kernels: {num_links}")
 
         # Create a downloader instance
-        downloader = Downloader()
+        downloader = Downloader(progress = progress,overwrite= overwrite)
+        index = ind.tolist()
 
-        for index in args:
-            if 0 <= index < num_links:
-                file_url = self.kernel_urls + "/" + links_mapped[index]
-                if not index:
-                    file_name = os.path.join(destination, f"for_{self.kernel_type}_" + links_mapped[index])
-                else:
-                    file_name = os.path.join(destination, links_mapped[index])
+        if 0 <= index < num_links:
+            file_url = self.kernel_urls + "/" + links_mapped[index]
+            if not index:
+                file_name = os.path.join(destination, f"for_{self.kernel_type}_" + links_mapped[index])
+            else:
+                file_name = os.path.join(destination, links_mapped[index])
 
                 # Add the download job to the downloader queue
+            if not os.path.exists(file_name) and not overwrite:
                 downloader.enqueue_file(file_url, path=destination, filename=file_name)
                 print(f"Queued for download: {index} -- {file_name}")
+                print(file_name)
 
-            else:
-                raise ValueError(f"Index '{index}' must be valid between 0 and {num_links - 1}")
+
+        else:
+            raise ValueError(f"Index '{index}' must be valid between 0 and {num_links - 1}")
 
         # Start downloading files
-        downloader.download()
+        if not wait:
+            return Results()
 
-        print("Downloads complete.")
+        results =  downloader.download()
+        return results
+
 
     def filter_kernels(self,get_readme = False,**kwargs):
         """
@@ -185,24 +191,20 @@ class SoloClient(BaseClient):
             })
 
         return SoloResponseTable(results,client=self)
-    def fetch(self, query_results, path=None, **kwargs):
+    def fetch(self, query_results,path=None, **kwargs):
         """
         Fetch the selected kernels.
         """
         if path is None:
             path = './Downloads'
-
-        downloaded_files = []
-
         for result in query_results:
             kernel_type = result['Kernel']
             index = result['Index']
 
-            solo_kernel = SoloKernel(kernel_type)
-            solo_kernel.download_by_index(index, destination=path)
-            downloaded_files.append(os.path.join(path, solo_kernel.get_link_by_index()[index]))
 
-        return downloaded_files
+            solo_kernel = SoloKernel(kernel_type)
+            solo_kernel.download_by_index(index,overwrite = False,progress = True,wait = True,destination=path)
+            return
 
     @staticmethod
     def _can_handle_query(*query):
