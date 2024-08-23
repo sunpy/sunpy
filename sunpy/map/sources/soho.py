@@ -143,6 +143,19 @@ class LASCOMap(GenericMap):
         time = self.meta.get('time-obs', self.meta.get('time_obs'))
         return parse_time(f"{date}T{time}")
 
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            time_key = 'time-obs'
+            del self.meta['time-obs']
+        if 'time_obs' in self.meta:
+            time_key = 'time_obs'
+            del self.meta['time_obs']
+        date_key = 'date-obs' if 'date-obs' in self.meta else 'date_obs'
+        if time_key in self.meta:
+            self.meta[date_key], self.meta[time_key] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta[date_key] = parse_time(date).utc.isot
+
     @property
     def nickname(self):
         filter = self.meta.get('filter', '')
@@ -265,6 +278,7 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
+
     @property
     def date(self):
         """
@@ -272,9 +286,10 @@ class MDISynopticMap(MDIMap):
 
         This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        time = self._get_date('date-obs')
-        if time is None:
-            return self._get_date('t_obs')
+        return self._get_date('date-obs') or self._get_date('t_obs')
+
+    def _set_date(self, date):
+        self.meta['date-obs'] = self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def spatial_units(self):
