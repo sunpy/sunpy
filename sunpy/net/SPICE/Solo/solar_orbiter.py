@@ -1,5 +1,6 @@
 import os
 import urllib.request
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 
@@ -61,36 +62,37 @@ class SoloKernel:
             mapped[index] = link
         return mapped
 
-    def download_by_index(self,ind,overwrite = False,progress = True,wait = True,downloader = None, destination="Downloads",):
+    def download_by_index(self,ind,overwrite = False,progress = True,wait = True,downloader = None, path = None,):
         """
         Allows downloading links with their corresponding index.
         Args being index.
         """
-        print("Note: aareadme.txt provides description for kernel")
         links_mapped = self.filter_kernels()
-        num_links = len(links_mapped.keys())
-        print(f"Number of kernels: {num_links}")
+
 
         # Create a downloader instance
         downloader = Downloader(progress = progress,overwrite= overwrite)
         index = ind.tolist()
+        file_url = self.kernel_urls + "/" + links_mapped[index]
 
-        if 0 <= index < num_links:
-            file_url = self.kernel_urls + "/" + links_mapped[index]
-            if not index:
-                file_name = os.path.join(destination, f"for_{self.kernel_type}_" + links_mapped[index])
-            else:
-                file_name = os.path.join(destination, links_mapped[index])
+        if path is None:
+            default_dir = "Downloads" + f"_{self.kernel_type}"
+            path = os.path.join(default_dir,'{file}')
 
-                # Add the download job to the downloader queue
-            if not os.path.exists(file_name) and not overwrite:
-                downloader.enqueue_file(file_url, path=destination, filename=file_name)
-                print(f"Queued for download: {index} -- {file_name}")
-                print(file_name)
+        elif isinstance(path,Path):
+            path = str(path)
+        if isinstance(path,str) and '{file}' not in path:
+            path = os.path.join(path,'{file}')
 
-
+        if not index:
+            file_name = path.format(file = f"for {self.kernel_type} {links_mapped[index]}")
         else:
-            raise ValueError(f"Index '{index}' must be valid between 0 and {num_links - 1}")
+            file_name = path.format(file = links_mapped[index])
+        downloader.enqueue_file(file_url, path=file_name, filename=file_name)
+        print(f"Queued for download: {index} -- {file_name}")
+        print(file_name)
+
+
 
         # Start downloading files
         if not wait:
@@ -103,10 +105,6 @@ class SoloKernel:
     def filter_kernels(self,get_readme = False,**kwargs):
         """
         Filter kernels based on search terms using specified boolean logic.
-        Parameters:
-        - logic: "and" (default), "or", or "not" to determine filtering behavior.
-        - kwargs: key-value pairs to filter by.
-
         Returns:
         - A dictionary with the filtered kernels retaining the original indices.
         """
@@ -143,6 +141,9 @@ class SoloResponseTable(QueryResponseTable):
     """
 
 class SoloClient(BaseClient):
+    """
+    this is for solo client (will add more in future )
+    """
     @property
     def info_url(self):
         return "https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/"
@@ -191,20 +192,18 @@ class SoloClient(BaseClient):
             })
 
         return SoloResponseTable(results,client=self)
+
     def fetch(self, query_results,path=None, **kwargs):
         """
         Fetch the selected kernels.
         """
-        if path is None:
-            path = './Downloads'
         for result in query_results:
             kernel_type = result['Kernel']
             index = result['Index']
 
 
             solo_kernel = SoloKernel(kernel_type)
-            solo_kernel.download_by_index(index,overwrite = False,progress = True,wait = True,destination=path)
-            return
+            solo_kernel.download_by_index(index,overwrite = False,progress = True,wait = True,path=path)
 
     @staticmethod
     def _can_handle_query(*query):
