@@ -32,7 +32,6 @@ def parse_uri(obj_list, f, **kwargs):
             uri = fs.unstrip_protocol(path)
             read_files += f(uri, **kwargs)
         elif fs.isdir(path):
-            read_files = []
             for afile in sorted(fs.glob(path+'/*')):
                 uri = fs.unstrip_protocol(afile)
                 read_files += f(uri, **kwargs)

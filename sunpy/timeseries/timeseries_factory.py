@@ -142,7 +142,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         if 'source' not in kwargs.keys() or not kwargs['source']:
             try:
-                if detect_filetype(fname) == 'cdf':
+                if detect_filetype(fname, **kwargs) == 'cdf':
                     # Put import here to ensure there is no import dependency
                     # on cdflib for TimeSeries
                     from sunpy.io._cdf import read_cdf
@@ -241,7 +241,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = new_meta
         return meta
 
-    def _sanitise_args(self, args):
+    def _sanitise_args(self, args, **kwargs):
         """
         Sanitise a list of args so that a single argument corresponds to either:
 
@@ -292,10 +292,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 args[i] = Request(arg)
             elif possibly_a_path(arg) and not is_uri(arg):
                 args[i] = pathlib.Path(arg)
-            elif is_uri(arg):
-                args[i] = fs.open_files(arg)
+            elif is_uri(arg):  
+                if 'fsspec_kwargs' in kwargs:
+                    fsspec_kw = kwargs['fsspec_kwargs']
+                else:
+                    fsspec_kw = {}
+                args[i] = fs.open_files(arg, **fsspec_kw)
             i += 1
-
         return args
 
     def _parse_args(self, *args, **kwargs):
@@ -323,7 +326,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
-        args = self._sanitise_args(args)
+        args = self._sanitise_args(args, **kwargs)
         all_ts = []
         for arg in args:
             try:
@@ -347,9 +350,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         r can be TimeSeries, path, or a data, header pair
         """
         if isinstance(r, GenericTimeSeries):
-            return [r]#all_ts += [r]
+            return [r]
         elif isinstance(r, pathlib.Path):
-            return [self._check_registered_widgets(filepath=r, **kwargs)]#all_ts += [self._check_registered_widgets(filepath=r, **kwargs)]
+            return [self._check_registered_widgets(filepath=r, **kwargs)]
         else:
             pairs = r
             # Pairs may be x long where x is the number of HDUs in the file.
@@ -399,7 +402,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, path, **kwargs):
-        results = parse_path(path, self._read_file)
+        results = parse_path(path, self._read_file, **kwargs)
         all_ts = []
         for r in results:
             all_ts += self._parse_ts_results(r)
@@ -417,7 +420,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(list)
     def _parse_uri(self, obj_list, **kwargs):
-        results = parse_uri(obj_list, self._read_file)
+        results = parse_uri(obj_list, self._read_file, **kwargs)
         all_ts = []
         for r in results:
             all_ts += self._parse_ts_results(r)

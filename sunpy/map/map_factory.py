@@ -178,7 +178,11 @@ class MapFactory(BasicRegistrationFactory):
                 args[i] = pathlib.Path(arg)
             elif is_uri(arg):
                 # Replace uri string with list of fsspec OpenFile objects
-                args[i] = fs.open_files(arg)
+                if 'fsspec_kwargs' in kwargs:
+                    fsspec_kw = kwargs['fsspec_kwargs']
+                else:
+                    fsspec_kw = {}
+                args[i] = fs.open_files(arg, **fsspec_kw)
             i += 1
 
         # Parse the arguments

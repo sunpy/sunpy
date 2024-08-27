@@ -178,7 +178,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
 
-def detect_filetype(filepath):
+def detect_filetype(filepath, **kwargs):
     """
     Attempts to determine the type of file a given filepath is.
 
@@ -195,9 +195,19 @@ def detect_filetype(filepath):
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
     if is_uri(filepath):
-        fileobj = fsspec.open(filepath, 'rb').open()
+        if 'fsspec_kwargs' in kwargs:
+            fsspec_kw = kwargs['fsspec_kwargs']
+        else:
+            fsspec_kw = {}
+        try:
+            fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
+        except Exception:
+            return None
     elif isinstance(filepath, fsspec.core.OpenFile):
-        fileobj = filepath.open('rb')
+        try:
+            fileobj = filepath.open()
+        except Exception:
+            return None
     else:
         fileobj = open(filepath, 'rb')
     with fileobj as fp:
