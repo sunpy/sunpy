@@ -86,7 +86,6 @@ def _read(filepath, function_name, filetype=None, **kwargs):
         readername = detect_filetype(filepath)
         if readername in _READERS.keys():
             return getattr(_READERS[readername], function_name)(filepath, **kwargs)
-        
         readername = None
     except UnrecognizedFileTypeError:
         readername = None
