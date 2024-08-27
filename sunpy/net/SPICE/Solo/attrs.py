@@ -46,3 +46,8 @@ class Readme(SimpleAttr):
         if not isinstance(value,bool):
             raise ValueError(f"value must be boolean not {type(value)}")
         self.value = value
+
+class Voem(SimpleAttr):
+    """
+    Voem : reference to the source OEM file version 
+    """

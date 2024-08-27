@@ -23,10 +23,10 @@ def test_get_all_links(solo_kernel):
     assert links == ["aareadme.txt", "naif0012.tls"]
 
 @pytest.mark.remote_data
-def test_get_readme(solo_kernel):
-    readme = solo_kernel.get_readme()
-    assert "aareadme.txt" in readme
-
+def test_get_readme(client):
+    readme = client.search(sa.Kernel_type("ik"),sa.Readme(True))
+    assert "aareadme.txt" in readme["Link"]
+    
 @pytest.mark.remote_data
 def test_get_link_by_index(solo_kernel):
     links_by_index = solo_kernel.get_link_by_index()
@@ -98,3 +98,26 @@ def test_None_kernel(client):
 def test_invalid_kernel(client):
     with pytest.raises(ValueError, match="Kernel type not recognized 'ok'"):
         client.search(sa.Kernel_type("ok"))
+
+def test_invalid_data_readme(client):
+    value = 3
+    with pytest.raises(ValueError, match = f"value must be boolean not {type(value)}"):
+        client.search(sa.Kernel_type("lsk"),sa.Readme(value))
+
+def test_info_url(client):
+    assert client.info_url == "https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/"
+
+@pytest.mark.remote_data
+def test_time_and_voem_for_ck(client):
+    urls = client.search(sa.Kernel_type("ck"),sa.Time("2020-02-10","2030-11-20"),sa.Version("01"),sa.Voem("00229"))
+    assert "solo_ANC_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc" in urls["Link"]
+
+@pytest.mark.remote_data
+def test_sensor(client):
+    urls = client.search(sa.Kernel_type("ck"),sa.sensor("boom"),sa.Time("2018-09-30","2100-01-01"),sa.Version("01"))
+    assert "solo_ANC_soc-sc-iboom-ck_20180930-21000101_V01.bc" in urls["Link"]
+
+@pytest.mark.remote_data
+def test_direct_link(client):
+    url = client.search(sa.Kernel_type("ck"),sa.link("solo_ANC_soc-sc-fof-ck_20180930-21000101_V01.bc"))
+    assert "solo_ANC_soc-sc-fof-ck_20180930-21000101_V01.bc" in url["Link"]
