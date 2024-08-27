@@ -26,7 +26,7 @@ def test_get_all_links(solo_kernel):
 def test_get_readme(client):
     readme = client.search(sa.Kernel_type("ik"),sa.Readme(True))
     assert "aareadme.txt" in readme["Link"]
-    
+
 @pytest.mark.remote_data
 def test_get_link_by_index(solo_kernel):
     links_by_index = solo_kernel.get_link_by_index()
@@ -110,14 +110,14 @@ def test_info_url(client):
 @pytest.mark.remote_data
 def test_time_and_voem_for_ck(client):
     urls = client.search(sa.Kernel_type("ck"),sa.Time("2020-02-10","2030-11-20"),sa.Version("01"),sa.Voem("00229"))
-    assert "solo_ANC_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc" in urls["Link"]
+    assert "solo_AND_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc" in urls["Link"]
 
 @pytest.mark.remote_data
 def test_sensor(client):
     urls = client.search(sa.Kernel_type("ck"),sa.sensor("boom"),sa.Time("2018-09-30","2100-01-01"),sa.Version("01"))
-    assert "solo_ANC_soc-sc-iboom-ck_20180930-21000101_V01.bc" in urls["Link"]
+    assert "solo_AND_soc-sc-iboom-ck_20180930-21000101_V01.bc" in urls["Link"]
 
 @pytest.mark.remote_data
 def test_direct_link(client):
-    url = client.search(sa.Kernel_type("ck"),sa.link("solo_ANC_soc-sc-fof-ck_20180930-21000101_V01.bc"))
-    assert "solo_ANC_soc-sc-fof-ck_20180930-21000101_V01.bc" in url["Link"]
+    url = client.search(sa.Kernel_type("ck"),sa.link("solo_AND_soc-sc-for-ck_20180930-21000101_V01.bc"))
+    assert "solo_AND_soc-sc-for-ck_20180930-21000101_V01.bc" in url["Link"]

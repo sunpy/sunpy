@@ -49,5 +49,5 @@ class Readme(SimpleAttr):
 
 class Voem(SimpleAttr):
     """
-    Voem : reference to the source OEM file version 
+    Voem : reference to the source OEM file version
     """

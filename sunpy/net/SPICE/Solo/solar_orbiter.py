@@ -119,7 +119,7 @@ class SoloKernel:
         if "version" in kwargs:
             kwargs["version"] = "V" + str(kwargs["version"])
 
-            
+
         for index, link in original_links.items():
             match = None
 
@@ -223,8 +223,8 @@ class SoloClient(BaseClient):
     >>> print(result)   # doctest: +REMOTE_DATA
         Mission Kernel            Link            Index
         ------- ------ -------------------------- -----
-            solo     ik solo_ANC_soc-eui-ik_V00.ti     5
-            solo     ik solo_ANC_soc-eui-ik_V01.ti     6
+            solo     ik solo_AND_soc-eui-ik_V00.ti     5
+            solo     ik solo_AND_soc-eui-ik_V01.ti     6
 
 
     Example of fetching and downloading the searched kernels:
