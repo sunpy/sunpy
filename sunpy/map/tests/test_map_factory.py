@@ -277,7 +277,7 @@ def test_map_list_uri():
     """
     uri_list = ['s3://gov-nasa-hdrl-data1/sdo/aia/20100513/0094/sdo_aia_h2_20100513T000000_0094_v1.fits',
             's3://gov-nasa-hdrl-data1/sdo/aia/20100513/0131/sdo_aia_h2_20100513T000400_0131_v1.fits']
-    sunpy.map.Map(uri_list)
+    sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize(('file', 'mapcls'), [

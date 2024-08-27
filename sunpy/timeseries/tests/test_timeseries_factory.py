@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from pandas import DataFrame
 import fsspec
+from botocore.exceptions import ClientError, NoCredentialsError
 
 import astropy.units as u
 from astropy.io import fits
@@ -108,9 +109,8 @@ def test_from_uri():
         ts = sunpy.timeseries.TimeSeries(uri)
         assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
         assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
-    except Exception:
-        # something went wrong (usually permissions), skipping
-        assert 0==0
+    except (NoCredentialsError, ClientError, PermissionError):
+        pytest.skip("S3 credentials are incorrect or expired. Skipping.")
 
 @skip_numpy2
 def test_read_cdf():

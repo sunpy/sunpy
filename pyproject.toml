@@ -108,6 +108,7 @@ tests-only = [
   "pytest-mpl>=0.16",
   "pytest-xdist>=3.0.2",
   "pytest>=7.1.0",
+  "s3fs>=2024.6.1"
 ]
 tests = [
   "sunpy[all,tests-only]",
