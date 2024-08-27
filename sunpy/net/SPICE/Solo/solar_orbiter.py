@@ -221,10 +221,10 @@ class SoloClient(BaseClient):
     >>> query = sa.Instrument('eui'), sa.Kernel_type('ik')  # doctest: +REMOTE_DATA
     >>> result = solo_client.search(*query) # doctest: +REMOTE_DATA
     >>> print(result)   # doctest: +REMOTE_DATA
-        Mission Kernel            Link            Index
-        ------- ------ -------------------------- -----
-            solo     ik solo_AND_soc-eui-ik_V00.ti     5
-            solo     ik solo_AND_soc-eui-ik_V01.ti     6
+                Mission Kernel            Link            Index
+                ------- ------ -------------------------- -----
+                    solo     ik solo_AND_soc-eui-ik_V00.ti     5
+                    solo     ik solo_AND_soc-eui-ik_V01.ti     6
 
 
     Example of fetching and downloading the searched kernels:
@@ -250,9 +250,9 @@ class SoloClient(BaseClient):
                 query_params['end'] = q.end
             if isinstance(q, sa.Instrument):
                 query_params['instrument'] = q.value
-            if isinstance(q, sa.link):
+            if isinstance(q, sa.Link):
                 query_params['link'] = q.value
-            if isinstance(q,sa.sensor):
+            if isinstance(q,sa.Sensor):
                 query_params["sensor"] = q.value
             if isinstance(q,sa.Version):
                 query_params["version"] = q.value

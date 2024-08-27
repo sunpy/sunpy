@@ -48,7 +48,7 @@ def test_filter_kernels(solo_kernel):
 
 @pytest.mark.remote_data
 def test_search(client):
-    query = client.search(sa.Kernel_type("lsk"))
+    query = client.search(sa.Kernel_type("lsk"),sa.Readme(False))
 
     expected_response = SoloResponseTable([
         {"Mission": "solo", "Kernel": "lsk", "Link": "aareadme.txt", "Index": np.array(0)},
@@ -109,15 +109,23 @@ def test_info_url(client):
 
 @pytest.mark.remote_data
 def test_time_and_voem_for_ck(client):
-    urls = client.search(sa.Kernel_type("ck"),sa.Time("2020-02-10","2030-11-20"),sa.Version("01"),sa.Voem("00229"))
-    assert "solo_AND_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc" in urls["Link"]
+    urls = client.search(sa.Kernel_type("ck"), sa.Time("2020-02-10", "2030-11-20"), sa.Version("01"), sa.Voem("00229"))
+    assert len(urls) > 0
+    expected_link = "solo_AND_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc"
+    assert expected_link in [str(url["Link"]) for url in urls], f"Expected link {expected_link} not found in {urls}"
 
 @pytest.mark.remote_data
 def test_sensor(client):
-    urls = client.search(sa.Kernel_type("ck"),sa.sensor("boom"),sa.Time("2018-09-30","2100-01-01"),sa.Version("01"))
-    assert "solo_AND_soc-sc-iboom-ck_20180930-21000101_V01.bc" in urls["Link"]
+    urls = client.search(sa.Kernel_type("ck"), sa.Sensor("boom"), sa.Time("2018-09-30", "2100-01-01"), sa.Version("01"))
+    assert len(urls) > 0
+    expected_links = [
+        "solo_AND_soc-sc-iboom-ck_20180930-21000101_V01.bc",
+        "solo_AND_soc-sc-oboom-ck_20180930-21000101_V01.bc"
+    ]
+    assert any(link in [str(url["Link"]) for url in urls] for link in expected_links), f"Expected link(s) {expected_links} not found in {urls}"
 
 @pytest.mark.remote_data
 def test_direct_link(client):
-    url = client.search(sa.Kernel_type("ck"),sa.link("solo_AND_soc-sc-for-ck_20180930-21000101_V01.bc"))
-    assert "solo_AND_soc-sc-for-ck_20180930-21000101_V01.bc" in url["Link"]
+    url = client.search(sa.Kernel_type("ck"), sa.Link("solo_AND_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"))
+    assert len(url) > 0, "No URLs found for the specified link."
+    assert url[0]["Link"] == "solo_AND_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"

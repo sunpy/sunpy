@@ -13,7 +13,7 @@ class Kernel_type(SimpleAttr):
         if value not in ["ck", "fk", "ik", "lsk", "pck", "sclk", "spk","mk"]:
             raise ValueError(f"Kernel type not recognized '{value}'")
 
-class sensor(SimpleAttr):
+class Sensor(SimpleAttr):
     """
     sensor for kernels
     """
@@ -21,7 +21,7 @@ class Instrument(SimpleAttr):
     """
     Instrument for kernels
     """
-class link(SimpleAttr):
+class Link(SimpleAttr):
     """
     name of link for spice kernels
 
