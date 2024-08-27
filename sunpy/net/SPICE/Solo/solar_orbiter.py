@@ -65,7 +65,7 @@ class SoloKernel:
     def download_by_index(self,ind,overwrite = False,progress = True,wait = True,downloader = None, path = None,):
         """
         Allows downloading links with their corresponding index.
-        Args being index.
+        ind being index.
         """
         links_mapped = self.filter_kernels()
 
@@ -94,7 +94,6 @@ class SoloKernel:
 
 
 
-        # Start downloading files
         if not wait:
             return Results()
 
@@ -116,10 +115,8 @@ class SoloKernel:
             return filtered_kernel
         if 'start' in kwargs:
             kwargs['start'] = Time(kwargs['start']).tdb.strftime('%Y%m%d')
-            print(kwargs['start'])
         if 'end' in kwargs and kwargs["end"] is not None:
             kwargs['end'] = Time(kwargs['end']).tdb.strftime('%Y%m%d')
-            print(kwargs["end"])
         if "version" in kwargs:
             kwargs["version"] = "V" + str(kwargs["version"])
         for index, link in original_links.items():
@@ -142,7 +139,95 @@ class SoloResponseTable(QueryResponseTable):
 
 class SoloClient(BaseClient):
     """
-    this is for solo client (will add more in future )
+    Provides access to SPICE Kernels of the Solar Orbiter (SOLO) mission.
+
+    This client interacts with the SPICE kernels hosted by ESA (European Space Agency)
+    for the Solar Orbiter mission. It provides methods to search for specific kernels
+    based on various criteria, as well as to fetch and download these kernels.
+
+    The kernels are retrieved from the following URL:
+    <https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/>
+
+    Methods
+    -------
+    info_url : str
+        Returns the URL where the SPICE kernels for the Solar Orbiter mission are hosted.
+
+    search(*query)
+        Searches for SPICE kernels based on mission-specific criteria such as kernel type,
+        time range, instrument, sensor, and version. The search method returns a response
+        table containing links to the filtered kernels.
+
+        Parameters
+        ----------
+        query : variable length argument list
+            Accepts various query parameters:
+            - sa.Kernel_type: The type of SPICE kernel (e.g., SPK, CK, etc.).
+            - sa.Time: The time range for which kernels are needed.
+            - sa.Instrument: The specific instrument associated with the kernels.
+            - sa.link: A specific name of the kernel (eg solo_AND_soc-sc-fk_V05.tf).
+            - sa.sensor: A specific sensor associated with the kernels.
+            - sa.Version: The version of the kernel to search for.
+            - sa.Readme: Boolean value indicating whether to include just readme file.
+
+        Returns
+        -------
+        SoloResponseTable
+            A table containing the results of the search, including mission name, kernel type,
+            link to the kernel file, and index information.
+
+        Raises
+        ------
+        ValueError
+            If the kernel type is not specified in the query.
+
+    fetch(query_results, path=None, **kwargs)
+        Fetches the selected kernels from the search results and downloads them to the specified path.
+
+        Parameters
+        ----------
+        query_results : list of dict
+            The results obtained from the `search` method that specify which kernels to download.
+        path : str, optional
+            The directory path where the kernels should be downloaded. If not specified, the
+            current working directory is used.
+
+        Returns
+        -------
+        None
+
+    _can_handle_query(*query) : bool
+        Determines if this client can handle the given query.
+
+        Parameters
+        ----------
+        query : variable length argument list
+            Accepts a variety of query parameters.
+
+        Returns
+        -------
+        bool
+            True if the client can handle the given query, otherwise False.
+
+    Examples
+    --------
+    Example of searching for iK kernels for a specific Instrument:
+
+    >>> from sunpy.net.SPICE.Solo import attrs as sa
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net.SPICE.Solo.solar_orbiter import SoloClient
+    >>> solo_client = SoloClient()  # doctest: +REMOTE_DATA
+    >>> query = sa.Instrument('eui'), sa.Kernel_type('ik')  # doctest: +REMOTE_DATA
+    >>> result = solo_client.search(*query) # doctest: +REMOTE_DATA
+    >>> print(result)   # doctest: +REMOTE_DATA
+        Mission Kernel            Link            Index
+        ------- ------ -------------------------- -----
+            solo     ik solo_AND_soc-eui-ik_V00.ti     5
+            solo     ik solo_AND_soc-eui-ik_V01.ti     6
+
+
+    Example of fetching and downloading the searched kernels:
+    >>> data = solo_client.fetch(result)    # doctest: +SKIP
     """
     @property
     def info_url(self):

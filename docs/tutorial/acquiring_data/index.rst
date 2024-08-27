@@ -63,6 +63,7 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     HECClient         Provides access to the HELIO webservices.
     JSOCClient        Provides access to the JSOC Data Export service.
     VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).
+    SoloClient        Provides access to SPICE Kernels of the Solar Orbiter (SOLO) mission.
 
 Searching for Data
 ******************
