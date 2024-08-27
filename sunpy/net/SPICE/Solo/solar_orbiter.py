@@ -62,7 +62,7 @@ class SoloKernel:
             mapped[index] = link
         return mapped
 
-    def download_by_index(self,ind,overwrite = False,progress = True,wait = True,downloader = None, path = None,):
+    def download_by_index(self,index,overwrite = False,progress = True,wait = True,downloader = None, path = None,):
         """
         Allows downloading links with their corresponding index.
         ind being index.
@@ -72,7 +72,6 @@ class SoloKernel:
 
         # Create a downloader instance
         downloader = Downloader(progress = progress,overwrite= overwrite)
-        index = ind.tolist()
         file_url = self.kernel_urls + "/" + links_mapped[index]
 
         if path is None:
@@ -224,6 +223,7 @@ class SoloClient(BaseClient):
         ------- ------ -------------------------- -----
             solo     ik solo_AND_soc-eui-ik_V00.ti     5
             solo     ik solo_AND_soc-eui-ik_V01.ti     6
+
 
 
     Example of fetching and downloading the searched kernels:
