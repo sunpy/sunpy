@@ -84,8 +84,9 @@ def _read(filepath, function_name, filetype=None, **kwargs):
         return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
         readername = detect_filetype(filepath)
-        if readername not in _READERS.keys():
-            readername = None
+        if readername in _READERS.keys():
+            return getattr(_READERS[readername], function_name)(filepath, **kwargs)
+        readername = None
     except UnrecognizedFileTypeError:
         readername = None
     for extension, name in _KNOWN_EXTENSIONS.items():
