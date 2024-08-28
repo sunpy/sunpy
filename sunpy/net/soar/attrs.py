@@ -131,9 +131,9 @@ params : list[str]
 
 @walker.add_applier(a.Time)
 def _(wlk, attr, params) -> None:  # NOQA: ARG001
-    start = attr.start.strftime("%Y-%m-%d+%H:%M:%S")
-    end = attr.end.strftime("%Y-%m-%d+%H:%M:%S")
-    params.append(f"begin_time>='{start}'+AND+begin_time<='{end}'")
+    start = attr.start.strftime("%Y-%m-%d %H:%M:%S")
+    end = attr.end.strftime("%Y-%m-%d %H:%M:%S")
+    params.append(f"begin_time>='{start}' AND begin_time<='{end}'")
 
 
 @walker.add_applier(a.Level)
@@ -183,7 +183,7 @@ def _(wlk, attr, params) -> None:  # NOQA: ARG001
 def _(wlk, attr, params) -> None:  # NOQA: ARG001
     wavemin = attr.min.value
     wavemax = attr.max.value
-    params.append(f"Wavemin='{wavemin}'+AND+Wavemax='{wavemax}'")
+    params.append(f"Wavemin='{wavemin}' AND Wavemax='{wavemax}'")
 
 
 @walker.add_applier(Distance)

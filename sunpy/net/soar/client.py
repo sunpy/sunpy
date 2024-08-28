@@ -98,17 +98,17 @@ class SOARClient(BaseClient):
                 # To make sure this data is not misleading to the user we do not return any values for PHI AND SPICE.
                 parameter = f"Wavelength='{wavemin_match.group(1)}'"
             elif wavemin_match and wavemax_match:
-                parameter = f"Wavemin='{wavemin_match.group(1)}'+AND+h2.Wavemax='{wavemax_match.group(1)}'"
+                parameter = f"Wavemin='{wavemin_match.group(1)}' AND h2.Wavemax='{wavemax_match.group(1)}'"
             prefix = "h1." if not parameter.startswith("Detector") and not parameter.startswith("Wave") else "h2."
             if parameter.startswith("begin_time"):
-                time_list = parameter.split("+AND+")
-                final_query += f"h1.{time_list[0]}+AND+h1.{time_list[1]}+AND+"
+                time_list = parameter.split(" AND ")
+                final_query += f"h1.{time_list[0]} AND h1.{time_list[1]} AND "
                 # As there are no dimensions in STIX, the dimension index need not be included in the query for STIX.
                 if "stx" not in instrument_table:
                     # To avoid duplicate rows in the output table, the dimension index is set to 1.
-                    final_query += "h2.dimension_index='1'+AND+"
+                    final_query += "h2.dimension_index='1' AND "
             else:
-                final_query += f"{prefix}{parameter}+AND+"
+                final_query += f"{prefix}{parameter} AND "
 
         where_part = final_query[:-5]
         from_part = f"{data_table} AS h1"
@@ -182,13 +182,13 @@ class SOARClient(BaseClient):
         else:
             from_part = data_table
             select_part = "*"
-            where_part = "+AND+".join(query)
+            where_part = " AND ".join(query)
 
         adql_query = {"SELECT": select_part, "FROM": from_part, "WHERE": where_part}
-        adql_query_str = "+".join([f"{key}+{value}" for key, value in adql_query.items()])
+        adql_query_str = " ".join([f"{key} {value}" for key, value in adql_query.items()])
         if query_method == "doQueryFilteredByDistance":
-            adql_query_str = adql_query_str.replace("+AND+h1.DISTANCE", "&DISTANCE").replace(
-                "+AND+DISTANCE", "&DISTANCE"
+            adql_query_str = adql_query_str.replace(" AND h1.DISTANCE", "&DISTANCE").replace(
+                " AND DISTANCE", "&DISTANCE"
             )
         return {"REQUEST": query_method, "LANG": "ADQL", "FORMAT": "json", "QUERY": adql_query_str}
 
