@@ -7,7 +7,7 @@ import pathlib
 from collections import OrderedDict
 from urllib.request import Request
 
-import fsspec as fs
+import fsspec
 import numpy as np
 import pandas as pd
 
@@ -297,7 +297,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     fsspec_kw = kwargs['fsspec_kwargs']
                 else:
                     fsspec_kw = {}
-                args[i] = fs.open_files(arg, **fsspec_kw)
+                args[i] = fsspec.open_files(arg, **fsspec_kw)
             i += 1
         return args
 
