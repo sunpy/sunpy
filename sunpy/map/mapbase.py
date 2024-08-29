@@ -2779,8 +2779,10 @@ class GenericMap(NDData):
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
-        method : The `method` keyword determines which contouring method is used and should
+        method : {'contourpy', 'skimage'}
+            Determines which contouring method is used and should
             be specified as either 'contourpy' or 'skimage'.
+            Defaults to 'skimage'.
         kwargs :
             Additional keyword arguments passed to either :func:`contourpy.contour_generator`
             or :func:`skimage.measure.find_contours`, depending on the value of the `method` argument.
