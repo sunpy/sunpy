@@ -21,27 +21,29 @@ class SoloKernel:
 
     def get_all_links(self):
         """
-        see all the available kernels for specific kernel type
+        See all the available kernels for a specific kernel type.
         """
         try:
             start = False
-            links =[]
+            links = []
             with urllib.request.urlopen(self.kernel_urls) as response:
                 soup = BeautifulSoup(response, "html.parser")
-                for link in soup.find_all("a",href = True):
-                  if link.get_text() =="aareadme.txt":
-                      start = True
+                for link in soup.find_all("a", href=True):
+                    if link.get_text() == "aareadme.txt":
+                        start = True
 
-                  if link.get_text().endswith("/"):
-                      continue
+                    if link.get_text().endswith("/"):
+                        continue
 
-                  if start:
-                      links.append(link.get_text())
+                    if start:
+                        links.append(link.get_text())
 
             return links
 
+
         except Exception as e:
-            print(e)
+            print(f"An unexpected error occurred: {e}")
+
 
 
 
@@ -214,21 +216,22 @@ class SoloClient(BaseClient):
     --------
     Example of searching for iK kernels for a specific Instrument:
 
-    >>> from sunpy.net.SPICE.Solo import attrs as sa
-    >>> from sunpy.net import Fido
-    >>> from sunpy.net.SPICE.Solo.solar_orbiter import SoloClient
-    >>> solo_client = SoloClient()  # doctest: +REMOTE_DATA
-    >>> query = sa.Instrument('eui'), sa.Kernel_type('ik')  # doctest: +REMOTE_DATA
-    >>> result = solo_client.search(*query) # doctest: +REMOTE_DATA
-    >>> print(result)   # doctest: +REMOTE_DATA
-                Mission Kernel            Link            Index
-                ------- ------ -------------------------- -----
-                    solo     ik solo_AND_soc-eui-ik_V00.ti     5
-                    solo     ik solo_AND_soc-eui-ik_V01.ti     6
+        >>> from sunpy.net.SPICE.Solo import attrs as sa
+        >>> from sunpy.net import Fido
+        >>> from sunpy.net.SPICE.Solo.solar_orbiter import SoloClient
+        >>> solo_client = SoloClient()      #doctest: +REMOTE_DATA
+        >>> query = sa.Instrument('eui'), sa.Kernel_type('ik')      #doctest: +REMOTE_DATA
+        >>> result = solo_client.search(*query)     #doctest: +REMOTE_DATA
+        >>> print(result)   #doctest: +REMOTE_DATA
+        Mission Kernel            Link            Index
+        ------- ------ -------------------------- -----
+        solo     ik solo_ANC_soc-eui-ik_V00.ti     5
+        solo     ik solo_ANC_soc-eui-ik_V01.ti     6
+
 
 
     Example of fetching and downloading the searched kernels:
-    >>> data = solo_client.fetch(result)    # doctest: +SKIP
+        >>> data = solo_client.fetch(result)    # doctest: +SKIP
     """
     @property
     def info_url(self):

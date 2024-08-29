@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 from astropy.time import Time
-
 from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.Solo.solar_orbiter import SoloClient, SoloKernel, SoloResponseTable
 
@@ -111,21 +110,21 @@ def test_info_url(client):
 def test_time_and_voem_for_ck(client):
     urls = client.search(sa.Kernel_type("ck"), sa.Time("2020-02-10", "2030-11-20"), sa.Version("01"), sa.Voem("00229"))
     assert len(urls) > 0
-    expected_link = "solo_AND_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc"
-    assert expected_link in [str(url["Link"]) for url in urls], f"Expected link {expected_link} not found in {urls}"
+    expected_link = "solo_ANC_soc-default-att-stp_20200210-20301120_247_V1_00229_V01.bc"
+    assert expected_link in [str(url["Link"]) for url in urls]
 
 @pytest.mark.remote_data
 def test_sensor(client):
     urls = client.search(sa.Kernel_type("ck"), sa.Sensor("boom"), sa.Time("2018-09-30", "2100-01-01"), sa.Version("01"))
     assert len(urls) > 0
     expected_links = [
-        "solo_AND_soc-sc-iboom-ck_20180930-21000101_V01.bc",
-        "solo_AND_soc-sc-oboom-ck_20180930-21000101_V01.bc"
+        "solo_ANC_soc-sc-iboom-ck_20180930-21000101_V01.bc",
+        "solo_ANC_soc-sc-oboom-ck_20180930-21000101_V01.bc"
     ]
-    assert any(link in [str(url["Link"]) for url in urls] for link in expected_links), f"Expected link(s) {expected_links} not found in {urls}"
+    assert any(link in [str(url["Link"]) for url in urls] for link in expected_links)
 
 @pytest.mark.remote_data
 def test_direct_link(client):
-    url = client.search(sa.Kernel_type("ck"), sa.Link("solo_AND_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"))
-    assert len(url) > 0, "No URLs found for the specified link."
-    assert url[0]["Link"] == "solo_AND_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"
+    url = client.search(sa.Kernel_type("ck"), sa.Link("solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"))
+    assert len(url) > 0
+    assert "solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc" in str(url[0]["Link"])
