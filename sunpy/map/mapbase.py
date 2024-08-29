@@ -53,6 +53,7 @@ from sunpy.util.decorators import (
     cached_property_based_on,
     check_arithmetic_compatibility,
     deprecate_positional_args_since,
+    deprecated,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -2708,6 +2709,7 @@ class GenericMap(NDData):
 
         return ret
 
+    @deprecated(since="6.0", message="The 'contour' method is deprecated and will be removed in a future release. Please use 'get_contours' instead.", alternative="sunpy.map.GenericMap.get_contours")
     def contour(self, level, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
@@ -2765,7 +2767,7 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def get_contours(self, level, method='skimage', **kwargs):
+    def get_contours(self, level, method='contourpy', **kwargs):
         """
         Returns coordinates of the contours for a given level value.
 
