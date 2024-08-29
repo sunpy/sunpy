@@ -1466,7 +1466,7 @@ def test_get_contours_contourpy(simple_map):
     assert u.allclose(contour.Tx, [-1, 0, 1, 0, -1] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [ 0, -0.5, 0, 0.5, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     with pytest.raises(ValueError, match='level must be a single scalar value'):
-        simple_map.contour([1.5, 2.5])
+        simple_map.get_contours([1.5, 2.5])
 
 
 def test_get_contours_skimage(simple_map):
