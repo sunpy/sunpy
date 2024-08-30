@@ -1,0 +1,4 @@
+A new method, :meth:`sunpy.map.GenericMap.get_contours`, has been added for drawing contours.
+This method includes a "method" keyword, which defaults to ContourPy for improved performance and consistency with :meth:`sunpy.map.GenericMap.draw_contours`. The skimage option is also supported.
+
+Note that ContourPy may produce different contour results and may not support all scikit-image keyword arguments.
