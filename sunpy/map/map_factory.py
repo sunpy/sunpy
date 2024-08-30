@@ -3,6 +3,7 @@ import pathlib
 from collections import OrderedDict
 from urllib.request import Request
 
+import fsspec
 import numpy as np
 
 import astropy.io.fits
@@ -25,7 +26,7 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import NoMapsInFileError, SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import is_url, parse_path, possibly_a_path
+from sunpy.util.io import is_url, parse_path, possibly_a_path, is_uri, parse_uri
 from sunpy.util.metadata import MetaDict
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
@@ -172,9 +173,16 @@ class MapFactory(BasicRegistrationFactory):
             elif isinstance(arg, str) and is_url(arg):
                 # Replace URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
-            elif possibly_a_path(arg):
+            elif possibly_a_path(arg) and not is_uri(arg):
                 # Replace path strings with Path objects
                 args[i] = pathlib.Path(arg)
+            elif is_uri(arg):
+                # Replace uri string with list of fsspec OpenFile objects
+                if 'fsspec_kwargs' in kwargs:
+                    fsspec_kw = kwargs['fsspec_kwargs']
+                else:
+                    fsspec_kw = {}
+                args[i] = fsspec.open_files(arg, **fsspec_kw)
             i += 1
 
         # Parse the arguments
@@ -225,6 +233,10 @@ class MapFactory(BasicRegistrationFactory):
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, arg, **kwargs):
         return parse_path(arg, self._read_file, **kwargs)
+    
+    @_parse_arg.register(list)
+    def _parse_uri(self, arg, **kwargs):
+        return parse_uri(arg, self._read_file, **kwargs)
 
     @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):
