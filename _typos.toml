@@ -1,4 +1,5 @@
 default.extend-ignore-identifiers-re = [
+    "ANC",
     "ANDed",
     "arange",
     "iy1",

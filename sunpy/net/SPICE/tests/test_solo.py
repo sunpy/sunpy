@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from astropy.time import Time
+
 from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.Solo.solar_orbiter import SoloClient, SoloKernel, SoloResponseTable
 
