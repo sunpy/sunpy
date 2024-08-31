@@ -2733,6 +2733,12 @@ class GenericMap(NDData):
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
+        area : bool, optional
+            If `True`, the contour level is interpreted as the fraction of
+            the total area of the map data. The contour is drawn at the value
+            that corresponds to the specified fraction of area. If `False`,
+            the contour is drawn at the specified level value.
+            Defaults to `False`.
         kwargs :
             Additional keyword arguments are passed to `skimage.measure.find_contours`.
 
@@ -2760,12 +2766,20 @@ class GenericMap(NDData):
          (719.58811599, -356.68119768), (721.29217122, -354.76448374),
          (719.59798458, -352.60839064)]>
 
+        >>> contours = aia.contour(0.99*u.DN, area=True)  # doctest: +REMOTE_DATA
+        >>> print(contours[0])  # doctest: +REMOTE_DATA
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        [(100.16572879, -1143.25308903), ( 99.68139649, -1143.76979777),
+         (100.159315  , -1145.90002049), (100.68236775, -1143.77222046),
+         (100.16572879, -1143.25308903)]>
+    
         See Also
         --------
         skimage.measure.find_contours
         """
         from skimage import measure
-
+        
         level = self._process_levels_arg(level)
         if level.size != 1:
             raise ValueError("level must be a single scalar value")
@@ -2773,6 +2787,21 @@ class GenericMap(NDData):
             # _process_levels_arg converts level to a 1D array, but
             # find_contours expects a scalar below
             level = level[0]
+        if area:
+            if not 0 <= level <= 1:
+                # print(level)
+                raise ValueError('level must be between 0 and 1 when area is set to True.')
+            # Sort pixels by value, then find the value that corresponds to the
+            # specified area fraction.
+            flattened_data = self.data.flatten()
+            sorted_values = np.sort(flattened_data)[::-1]
+            cumulative_sum = np.cumsum(sorted_values)
+            cumulative_sum /= cumulative_sum.max()
+            # Threshold values for the desired percentages and draw contours
+            index = np.searchsorted(cumulative_sum, level)
+            # print(index)
+            index = min(index, len(sorted_values) - 1)
+            level = sorted_values[index]
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]

@@ -1501,6 +1501,12 @@ def test_get_contours_skimage(simple_map):
     with pytest.raises(ValueError, match='level must be a single scalar value'):
         simple_map.get_contours([1.5, 2.5])
 
+    # Area
+    contours_area = simple_map.contour(0.5 * u.DN, area=True)
+    assert len(contours_area) == 1
+    assert u.allclose(contours_area[0].Tx, [0.5, 7.5, 7.5, 0.5, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+    assert u.allclose(contours_area[0].Ty, [0.5, 0.5, 7.5, 7.5, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
+
 
 def test_get_contours_invalid_library(simple_map):
     with pytest.raises(ValueError, match="Unknown method 'invalid_method'. Use 'contourpy' or 'skimage'."):
@@ -1546,6 +1552,9 @@ def test_get_contours_inputs(simple_map):
         simple_map.draw_contours(1.5 * u.s)
     with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
         simple_map.get_contours(1.5 * u.s)
+
+    with pytest.raises(ValueError, match='level must be between 0 and 1'):
+        simple_map.contour(1.2 * u.DN, area=True)
 
     # With no units, check that dimensionless works
     simple_map.meta.pop('bunit')
