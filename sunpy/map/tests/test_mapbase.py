@@ -1454,7 +1454,8 @@ def test_submap_inputs(generic_map2, coords):
 def test_contour_deprecation_warning(simple_map):
 
     with pytest.warns(SunpyDeprecationWarning, match="The 'contour' method is deprecated and will be removed in a future release. Please use 'get_contours' instead."):
-        simple_map.contour(50000 * u.DN)
+        simple_map.contour([1.5, 2.5])
+
 
 def test_get_contours_contourpy(simple_map):
     data = np.ones(simple_map.data.shape)

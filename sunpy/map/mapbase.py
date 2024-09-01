@@ -2709,7 +2709,7 @@ class GenericMap(NDData):
 
         return ret
 
-    @deprecated(since="6.0", message="The 'contour' method is deprecated and will be removed in a future release. Please use 'get_contours' instead.", alternative="sunpy.map.GenericMap.get_contours")
+    @deprecated(since="6.1", message="The 'contour' method is deprecated and will be removed in a future release. Please use 'get_contours'.", alternative="sunpy.map.GenericMap.get_contours")
     def contour(self, level, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
