@@ -2782,10 +2782,10 @@ class GenericMap(NDData):
         method : {'contourpy', 'skimage'}
             Determines which contouring method is used and should
             be specified as either 'contourpy' or 'skimage'.
-            Defaults to 'skimage'.
+            Defaults to 'contourpy'.
         kwargs :
             Additional keyword arguments passed to either :func:`contourpy.contour_generator`
-            or :func:`skimage.measure.find_contours`, depending on the value of the `method` argument.
+            or :func:`skimage.measure.find_contours`, depending on the value of the ``method`` argument.
 
         Returns
         -------
