@@ -641,7 +641,7 @@ def test_save(aia171_test_map):
 
 def test_save_asdf(tmpdir, aia171_test_map):
     outpath = tmpdir/ "save_asdf.asdf"
-    aia171_test_map.save(outpath,filetype= "asdf")
+    aia171_test_map.save(outpath, filetype= "asdf")
     loaded_save_asdf = sunpy.map.Map(str(outpath))
     assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
    #Compare metadata without considering ordering of keys
