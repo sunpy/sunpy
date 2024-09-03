@@ -5,30 +5,32 @@ Read an ASDF file into a Map
 ****************************
 
 `ASDF <https://asdf-standard.readthedocs.io/en/latest/>`__ is a modern file format designed to meet the needs of the astronomy community [citation needed].
-It has deep integration with Python, sunpy, and Astropy, as well as implementations in other languages.
-It can be used to store known Python objects in a portable, well defined file format.
-It is primarily useful for storing complex Astropy and sunpy objects in a way that can be loaded back into the same form as they were saved.
-It is designed to be an archive file format, with human readable metadata and a simple on-disk layout.
+It has deep integration with Python, SunPy, and Astropy, as well as implementations in other languages.
+It can be used to store known Python objects in a portable, well-defined file format.
+It is primarily useful for storing complex Astropy and SunPy objects in a way that can be loaded back into the same form as they were saved.
+It is designed to be an archive file format, with human-readable metadata and a simple on-disk layout.
 
-sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and `coordinate frame <sunpy.coordinates.frames>` objects into asdf files.
-As asdf tightly integrates into Python, saving a map to an asdf file will save the metadata, data and mask.
+SunPy currently implements support for saving `Map <sunpy.map.GenericMap>` and `coordinate frame <sunpy.coordinates.frames>` objects into ASDF files.
+As ASDF tightly integrates into Python, saving a map to an ASDF file will save the metadata, data, and mask.
 In comparison, the mask is not currently saved to FITS.
 
-The following code shows to to save and load a sunpy Map to an asdf file:
+The following code shows how to save and load a SunPy Map to an ASDF file:
 
 .. code-block:: python
 
-    >>> import asdf
-
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+    >>> from sunpy.io import read_file, write_file
 
     >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> tree = {'amap': aiamap}  # doctest: +REMOTE_DATA
-    >>> with asdf.AsdfFile(tree) as asdf_file:  # doctest: +REMOTE_DATA
-    ...     asdf_file.write_to("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-    >>> input_asdf = asdf.open("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-    >>> input_asdf['amap']  # doctest: +REMOTE_DATA
+
+    # Save the map to an ASDF file
+    >>> aiamap.save("aia171.asdf")  # doctest: +REMOTE_DATA
+
+    # Read the ASDF file back into a map object
+    >>> aiamap_asdf = sunpy.map('aia171.asdf')  # doctest: +REMOTE_DATA
+
+    >>> aiamap_asdf  # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
@@ -57,11 +59,10 @@ The following code shows to to save and load a sunpy Map to an asdf file:
                 -127.899666 , -127.899666 ],
             [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
                 -128.03072  , -128.03072  ]], dtype=float32)
-    >>> input_asdf.close()  # doctest: +REMOTE_DATA
 
 When saving a Map to ASDF, all maps are saved as a `.GenericMap` and not a specific source class.
 This comes with some trade-offs.
-If you are using custom map sources defined outside of the `sunpy` core package, and these sources are imported after asdf has been invoked for the first time (used, not just imported), then they will not be registered with the asdf converter.
-Also if the custom map subclass is not registered with `sunpy.map.Map` upon loading of the map, it will be returned as a `.GenericMap`.
-This approach has been chosen despite these limitations so that once a map is saved to an ASDF file it can always be loaded back into a map rather than the asdf library returning it as a Python dictionary.
-It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialized and the way meta data is handled depends solely on the contents of the ``.meta`` attribute.
+If you are using custom map sources defined outside of the `SunPy` core package, and these sources are imported after ASDF has been invoked for the first time (used, not just imported), then they will not be registered with the ASDF converter.
+Also, if the custom map subclass is not registered with `sunpy.map.Map` upon loading of the map, it will be returned as a `.GenericMap`.
+This approach has been chosen despite these limitations so that once a map is saved to an ASDF file, it can always be loaded back into a map rather than the ASDF library returning it as a Python dictionary.
+It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialized, and the way metadata is handled depends solely on the contents of the ``.meta`` attribute.
