@@ -1603,8 +1603,8 @@ def save(self, filepath, filetype='auto', **kwargs):
         The file format to save the map in. Defaults to ``"auto"`` which infers
         the format from the file extension. Supported formats include FITS, JP2, and ASDF.
     hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
-        For FITS files, this specifies the type of HDU to write. By default, the map is saved 
-        in the primary HDU. If an HDU type or instance is provided, the map data and header will 
+        For FITS files, this specifies the type of HDU to write. By default, the map is saved
+        in the primary HDU. If an HDU type or instance is provided, the map data and header will
         be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
     kwargs :
         Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`.
