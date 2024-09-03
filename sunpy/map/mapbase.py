@@ -1627,7 +1627,7 @@ class GenericMap(NDData):
         """
         if str(filepath).endswith("asdf"):
             import asdf
-            asdf.AsdfFile({'sunpymap':self}).write_to(str(filepath))
+            asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath))
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
