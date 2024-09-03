@@ -107,7 +107,7 @@ class MapFactory(BasicRegistrationFactory):
                     pairs = [value for value in af.tree.values() if isinstance(value, GenericMap)]
                     return pairs
             else:
-                pairs = read_file(os.fspath(fname),filetype=filetype, **kwargs)
+                pairs = read_file(os.fspath(fname), filetype=filetype, **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}\n{e}"
             if kwargs.get("silence_errors") or kwargs.get("allow_errors"):
