@@ -644,7 +644,7 @@ def test_save_asdf(tmpdir, aia171_test_map):
     aia171_test_map.save(outpath, filetype= "asdf")
     loaded_save_asdf = sunpy.map.Map(str(outpath))
     assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
-   #Compare metadata without considering ordering of keys
+    # Compare metadata without considering ordering of keys
     assert dict(loaded_save_asdf.meta) == dict(aia171_test_map.meta)
     np.testing.assert_array_equal(loaded_save_asdf.data, aia171_test_map.data)
 
