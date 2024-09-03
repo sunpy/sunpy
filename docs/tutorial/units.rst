@@ -32,7 +32,7 @@ We can create a `~astropy.units.Quantity` by multiplying a number by a unit:
 
 A `~astropy.units.Quantity` can be decomposed into its unit and numerical value using the ``.unit`` and ``.value`` attributes:
 
-.. code-block:: python
+.. doctest-requires:: numpy>=2.0.0
 
    >>> length.value
    np.float64(10.0)
@@ -124,7 +124,7 @@ Not every package in the scientific Python ecosystem understands units.
 As such, it is sometimes necessary to drop the units before passing `~astropy.units.Quantity` to such functions.
 As shown above, you can retrieve the just the numerical value of a `~astropy.units.Quantity`:
 
-.. code-block:: python
+.. doctest-requires:: numpy>=2.0.0
 
    >>> length.to_value()
    np.float64(10.0)
