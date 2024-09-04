@@ -62,7 +62,7 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
 
 When saving a Map to ASDF, all maps are saved as a `.GenericMap` and not a specific source class.
 This comes with some trade-offs.
-If you are using custom map sources defined outside of the `SunPy` core package, and these sources are imported after ASDF has been invoked for the first time (used, not just imported), then they will not be registered with the ASDF converter.
+If you are using custom map sources defined outside of the sunpy core package, and these sources are imported after ASDF has been invoked for the first time (used, not just imported), then they will not be registered with the ASDF converter.
 Also, if the custom map subclass is not registered with `sunpy.map.Map` upon loading of the map, it will be returned as a `.GenericMap`.
 This approach has been chosen despite these limitations so that once a map is saved to an ASDF file, it can always be loaded back into a map rather than the ASDF library returning it as a Python dictionary.
 It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialized, and the way metadata is handled depends solely on the contents of the ``.meta`` attribute.
