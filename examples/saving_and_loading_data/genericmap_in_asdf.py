@@ -40,7 +40,7 @@ aia_map.save("sunpy_map.asdf")
 
 ################################################################################
 # This ASDF file is a portable file and can be safely loaded by anyone with
-# Astropy, SunPy, and ASDF installed. We can reload it using the `sunpy.map`:
+# astropy, sunpy, and asdf installed. We can reload it using the `sunpy.map`:
 
 # Load the ASDF file
 pairs = sunpy.map("sunpy_map.asdf")
