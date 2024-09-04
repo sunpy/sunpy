@@ -28,7 +28,7 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
     >>> aiamap.save("aia171.asdf")  # doctest: +REMOTE_DATA
 
     # Read the ASDF file back into a map object
-    >>> aiamap_asdf = sunpy.map('aia171.asdf')  # doctest: +REMOTE_DATA
+    >>> aiamap_asdf = sunpy.map.Map('aia171.asdf')  # doctest: +REMOTE_DATA
 
     >>> aiamap_asdf  # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
