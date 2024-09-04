@@ -1615,6 +1615,7 @@ class GenericMap(NDData):
         Notes
         -----
         - Saving with the ``.jp2`` extension will cast the data to uint8 values to support the JPEG2000 format.
+
         - Saving with the ``.asdf`` extension will save the map as an ASDF file, storing the map's attributes
         under the key ``'sunpymap'`` in the ASDF tree.
 
