@@ -1591,45 +1591,45 @@ class GenericMap(NDData):
 
 # #### I/O routines #### #
 
-def save(self, filepath, filetype='auto', **kwargs):
-    """
-    Save a map to a file.
+    def save(self, filepath, filetype='auto', **kwargs):
+        """
+        Save a map to a file.
 
-    Parameters
-    ----------
-    filepath : `str`
-        Location to save the file to. The file extension determines the format.
-    filetype : `str`, optional
-        The file format to save the map in. Defaults to ``"auto"`` which infers
-        the format from the file extension. Supported formats include FITS, JP2, and ASDF.
-    hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
-        For FITS files, this specifies the type of HDU to write. By default, the map is saved
-        in the primary HDU. If an HDU type or instance is provided, the map data and header will
-        be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
-    kwargs :
-        Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`.
+        Parameters
+        ----------
+        filepath : `str`
+            Location to save the file to. The file extension determines the format.
+        filetype : `str`, optional
+            The file format to save the map in. Defaults to ``"auto"`` which infers
+            the format from the file extension. Supported formats include FITS, JP2, and ASDF.
+        hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
+            For FITS files, this specifies the type of HDU to write. By default, the map is saved
+            in the primary HDU. If an HDU type or instance is provided, the map data and header will
+            be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
+        kwargs :
+            Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`.
 
-    Notes
-    -----
-    - Saving with the `.jp2` extension will cast the data to uint8 values to support the JPEG2000 format.
-    - Saving with the `.asdf` extension will save the map as an ASDF file, storing the map's data and metadata
-      under the key ``'sunpymap'``.
+        Notes
+        -----
+        - Saving with the `.jp2` extension will cast the data to uint8 values to support the JPEG2000 format.
+        - Saving with the `.asdf` extension will save the map as an ASDF file, storing the map's data and metadata
+        under the key ``'sunpymap'``.
 
-    Examples
-    --------
-    >>> from astropy.io.fits import CompImageHDU
-    >>> from sunpy.map import Map
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
+        Examples
+        --------
+        >>> from astropy.io.fits import CompImageHDU
+        >>> from sunpy.map import Map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
 
-    >>> aia_map.save("aia171.asdf")  # Save as ASDF file
-    """
-    if str(filepath).endswith("asdf"):
-        import asdf
-        asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath))
-    else:
-        write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
+        >>> aia_map.save("aia171.asdf")  # doctest: +REMOTE_DATA
+        """
+        if str(filepath).endswith("asdf"):
+            import asdf
+            asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath))
+        else:
+            write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
 # #### Image processing routines #### #
 
