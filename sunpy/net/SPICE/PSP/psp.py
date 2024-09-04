@@ -20,6 +20,42 @@ cheat_sheet = {
     "ltpek":"Long_Term_Predicted_Ephemeris/",
 }
 
+FILE_CONVENTIONS = {
+"sclk" : """ File Naming Convention	spp_sclk_NNNN.tsc (where NNNN is the number of times the file has been updated since launch)
+Description	The SCLK is a daily produced kernel that supports time conversions between spacecraft clock and Barycentric Dynamical Time (TDB). The kernel is produced by the PSP mission.
+""",
+
+"ltpek" :""" File Naming Convention	spp_nom_yyyymmdd_yyyymmdd_vNNN_###.bsp (where the yyyymmdd pair defines the time span of the file, the NNN is the version number and ### further describes the content of the file)
+Description	This kernel contains a nominal PSP trajectory long term predicted ephemeris for the PSP spacecraft. The kernel is produced by the PSP mission.
+""",
+
+"reck" :""" File Naming Convention	spp_recon_yyyymmdd_yyyymmdd_vNNN.bsp (where the yyyymmdd pair defines the time span of the file, and the NNN is the version number)
+Description	This kernel contains the reconstructed ephemeris for the PSP spacecraft. The kernel is produced by the PSP mission.
+""",
+"lsk" :""" File Naming Convention	naifNNNN.tls (where NNNN is the NAIF assigned version number)
+Description	The kernel is used for Coordinated Universal Time (UTC) to TDB time conversions. It contains a tabulation of all leap seconds that have occurred. It is a generic SPICE kernel, independent of flight project. The kernel is produced by NAIF and is only updated as needed.
+""",
+
+"fk" :""" File Naming Convention	spp_vNNN.tf (where NNNN is the PSP assigned version number)
+Description	The kernel contains definitions of and specification of relationships between reference frames. This frame kernel contains the current set of coordinate frame definitions for the Parker Solar Probe spacecraft, structures, and science instruments. The kernel is produced by the PSP mission.
+""",
+
+"yak":""" File Naming Convention	spp_nom_yyyymmdd_yyyymmdd_vNNN_###_ yyyymmdd_yyyymmdd.bc (where the yyyymmdd pair defines the time span of the file, and the NNN is the version number)
+Description	This kernel contains the long-term attitude for the PSP spacecraft. The kernel is produced by the PSP mission.
+""",
+"ah" :""" File Naming Convention	spp_nom_yyyymmdd_yyyymmdd_vNNN_###_ yyyymmdd_yyyymmdd.bc (where the yyyymmdd pair defines the time span of the file, and the NNN is the version number)
+Description	This kernel contains the long-term attitude for the PSP spacecraft. The kernel is produced by the PSP mission.
+""",
+"pck":""" File Naming Convention	pckNNNNN.tpc (where NNNN is the NAIF assigned version number)
+Description	The kernel is used to obtain celestial body orientation, size, shape and other constants. It is a generic SPICE kernel, independent of flight project. The kernel is produced by NAIF.
+""",
+
+"pek":""" File Naming Convention	spp_yyyy_doy_NN.ah.bc (where yyyy_doy defines the time span of the data in the file and NN is the version number)
+Description	This kernel contains the daily attitude history for the PSP spacecraft. The kernel is produced by the PSP mission.
+"""
+
+
+}
 
 BASE_URL = "https://spdf.gsfc.nasa.gov/pub/data/psp/ephemeris/spice/{}"
 
@@ -37,7 +73,6 @@ class PSPKernel:
                 for link in soup.find_all("a", href=True):
                     href = link.get("href")
                     link_text = link.get_text()
-                    # Check that href is valid and not a directory
                     if href and not href.endswith("/") and all(x not in link_text for x in ["Name", "Last modified", "Size"]):
                         links.append(link_text)
 
@@ -61,7 +96,6 @@ class PSPKernel:
         links_mapped = self.filter_kernels()
 
 
-        # Create a downloader instance
         downloader = Downloader(progress = progress,overwrite= overwrite)
         file_url = self.kernel_urls + "/" + links_mapped[index]
 
