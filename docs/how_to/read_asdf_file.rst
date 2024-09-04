@@ -10,7 +10,7 @@ It can be used to store known Python objects in a portable, well-defined file fo
 It is primarily useful for storing complex Astropy and SunPy objects in a way that can be loaded back into the same form as they were saved.
 It is designed to be an archive file format, with human-readable metadata and a simple on-disk layout.
 
-SunPy currently implements support for saving `Map <sunpy.map.GenericMap>` and `coordinate frame <sunpy.coordinates.frames>` objects into ASDF files.
+sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and `coordinate frame <sunpy.coordinates.frames>` objects into ASDF files.
 As ASDF tightly integrates into Python, saving a map to an ASDF file will save the metadata, data, and mask.
 In comparison, the mask is not currently saved to FITS.
 
