@@ -1633,7 +1633,7 @@ class GenericMap(NDData):
             asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
-            
+
 # #### Image processing routines #### #
 
     @u.quantity_input
