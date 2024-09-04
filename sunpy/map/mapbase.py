@@ -1609,7 +1609,8 @@ class GenericMap(NDData):
             in the primary HDU. If an HDU type or instance is provided, the map data and header will
             be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
         kwargs :
-            Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file` or `asdf.AsdfFile.write_to`.
+            Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`
+            or `asdf.AsdfFile.write_to`.
 
         Notes
         -----
@@ -1632,6 +1633,8 @@ class GenericMap(NDData):
             asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
+
+
 
 # #### Image processing routines #### #
 
