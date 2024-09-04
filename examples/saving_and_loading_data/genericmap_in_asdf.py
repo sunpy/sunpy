@@ -1,6 +1,6 @@
 """
 =======================================
-Saving and loading SunPy Maps with ASDF
+Saving and loading sunpy Maps with ASDF
 =======================================
 
 In this example, we are going to look at how we can save and load a
