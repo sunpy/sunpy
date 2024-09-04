@@ -1603,7 +1603,7 @@ class GenericMap(NDData):
         filetype : `str`, optional
             The file format to save the map in. Defaults to ``"auto"`` which infers
             the format from the file extension. Supported formats include FITS, JP2, and ASDF.
-            Note: Saving to ASDF is only supported if `filepath` ends with ".asdf".
+            Note: Saving to ASDF is only supported if ``filepath`` ends with ".asdf".
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
             For FITS files, this specifies the type of HDU to write. By default, the map is saved
             in the primary HDU. If an HDU type or instance is provided, the map data and header will
