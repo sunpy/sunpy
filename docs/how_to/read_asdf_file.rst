@@ -14,7 +14,7 @@ sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and `
 As ASDF tightly integrates into Python, saving a map to an ASDF file will save the metadata, data, and mask.
 In comparison, the mask is not currently saved to FITS.
 
-The following code shows how to save and load a SunPy Map to an ASDF file:
+The following code shows how to save and load a sunpy Map to an ASDF file:
 
 .. code-block:: python
 
