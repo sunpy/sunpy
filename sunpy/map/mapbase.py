@@ -1598,7 +1598,8 @@ class GenericMap(NDData):
         Parameters
         ----------
         filepath : `str`
-            Location to save the file to. The file extension determines the format.
+            Location to save the file to.
+            If `filepath` ends with ".asdf" an ASDF file will be created, if `filetype="auto"`.
         filetype : `str`, optional
             The file format to save the map in. Defaults to ``"auto"`` which infers
             the format from the file extension. Supported formats include FITS, JP2, and ASDF.
