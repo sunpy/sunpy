@@ -32,7 +32,7 @@ aia_map.peek(clip_interval=(1, 99.99) * u.percent)
 ################################################################################
 # We can now save this object to an ASDF file to use later. Saving it like this
 # allows us to preserve all of the metadata of the object along with the actual
-# array data. When we load the ASDF again, we get an identical
+# array data. When we load the ASDF file again, we get an identical
 # `~sunpy.map.sources.sdo.AIAMap` object.
 
 # Save the map to an ASDF file
