@@ -2833,6 +2833,7 @@ class GenericMap(NDData):
             contours = [self.wcs.array_index_to_world(c[:, 1], c[:, 0]) for c in contours]
         elif method == 'skimage':
             from skimage import measure
+
             contours = measure.find_contours(self.data, level=level, **kwargs)
             contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         else:
