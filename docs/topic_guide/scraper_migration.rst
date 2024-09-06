@@ -1,13 +1,13 @@
 .. _sunpy-topic-guide-scraper-migration:
 
 ************************************************************
-Migrating to the new Scraper pattern system in ``sunpy`` 6.0
+Migrating to the new Scraper pattern system in ``sunpy`` 6.1
 ************************************************************
 
-The `~sunpy.net.scraper.Scraper` has undergone a major change in the sunpy 6.0 release.
+The `~sunpy.net.scraper.Scraper` has undergone a major change in the sunpy 6.1 release.
 
 The old pattern system was regex-based, while the new pattern system is based on the `parse <https://github.com/r1chardj0n3s/parse/>`__
-We hope that the new pattern system is more flexible and easier to use.
+We hope this new system will be more flexible and easier to use.
 `The readme of parse library provides a good overview of the syntax. <https://github.com/r1chardj0n3s/parse/#format-syntax>`__
 
 How to migrate
@@ -24,7 +24,7 @@ Writing the new pattern
 1. The new pattern covers the entire URL from the protocol, domain to the filename.
 2. Instead of conveying time or numerical information in the URL in a datetime or regex format, it is now done in the `parse <https://github.com/r1chardj0n3s/parse/#format-syntax>`__ format.
    E.g., a ``"%Y"`` is now to be replaced with ``{{year:4d}}``.
-   For a full list of the new keywords corresponding to datetime format, the supported time keys (to be used within ``{{}}``) are:
+   The keywords corresponding to the datetime format (the supported time keys - to be used within ``{{}}``) are:
 
    * 'year:4d'
    * 'year:2d'
@@ -41,7 +41,7 @@ Writing the new pattern
    * 'week_number:2d'
 
 3. The metadata attributes for extraction are written within double curly-braces ``{{}}`` for eg. ``{{ADAPTRealizations:3d}}``.
-4. Single curly-braces ``{}`` are used in case of regular placeholders for Python format strings, each respective value being passed as ``kwargs`` to the `~sunpy.net.scraper.Scraper`.
+4. Single curly-braces ``{}`` are used in case of regular placeholders for Python format strings, with their respective values being passed as ``kwargs`` to `~sunpy.net.scraper.Scraper`.
 
 Example
 -------

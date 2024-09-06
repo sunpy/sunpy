@@ -82,12 +82,12 @@ After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for
     'http://proba2.oma.be/swap/data/bsd/2015/01/02/',
     'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
 
-The location given by the filled pattern is visited and a list of files at the location is obtained.
+These locations, provided by the filled pattern, are visited and a list of files at each location is obtained.
 This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
 
 Each filename is then parsed against the remaining portion of the pattern to determine if it matches.
 Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file.
-The files that satisfy these conditions are then added to the output.
+Files that meet these criteria are added to the output.
 
 .. code-block:: python
 
@@ -100,7 +100,7 @@ The files that satisfy these conditions are then added to the output.
 Writing a new "scraper" client
 ==============================
 
-The `~sunpy.net.scraper` thus allows us to write Fido clients for a variety of sources.
+The `~sunpy.net.scraper` allows us to write Fido clients for a variety of sources.
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
 
 A version without documentation strings is reproduced below:
@@ -124,7 +124,7 @@ A version without documentation strings is reproduced below:
 This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
 `~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``pattern`` specifies where in the URL the time information is located, using `parse <https://github.com/r1chardj0n3s/parse/>`__ notation.
 The ``pattern`` attribute is first filled in with the calculated time-based values, and then used to populate the results table from the URLs matched with the ``pattern``.
-It includes some of the time definitions, as well as names of attrs (in this case "Level").
+It includes some of the time definitions, as well as the name of any other attrs which appear in the URL (in this case "Level").
 The supported time keys (to be used within ``{{}}``!) are: 'year:4d', 'year:2d', 'month:2d'. 'month_name:l', 'month_name_abbr:l', 'day:2d', 'day_of_year:3d', 'hour:2d', 'minute:2d', 'second:2d', 'microsecond:6d', 'millisecond:3d' and 'week_number:2d'.
 
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
@@ -175,7 +175,7 @@ Suppose any file of a data archive can be described by this URL ``https://some-d
 The ``format`` pattern becomes ``r'https://some-domain.com/{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
 The datetime values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``.
 These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
-Note that parts of such attributes can accordingly be omitted to match parts of the filename which are dynamic but not needed to be extracted.
+Note that the pattern can be used to omit parts of the filename which are dynamic but are not needed to be extracted.
 For example, ``{{:2d}}`` is used in the above example to match any 2-digit number in the filename.
 Similarly ``{{}}`` can be used to match a string of any length starting from its position in the filename.
 

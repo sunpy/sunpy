@@ -108,8 +108,8 @@ class Scraper:
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
     """
-    @deprecated_renamed_argument("pattern", None, since="6.0", message=DEPRECATED_MESSAGE)
-    @deprecated_renamed_argument("regex", None, since="6.0", message=DEPRECATED_MESSAGE)
+    @deprecated_renamed_argument("pattern", None, since="6.1", message=DEPRECATED_MESSAGE)
+    @deprecated_renamed_argument("regex", None, since="6.1", message=DEPRECATED_MESSAGE)
     def __init__(self, pattern=None, regex=False, *, format=None, **kwargs):
         if pattern is not None and format is None:
             self.use_old_format = True
