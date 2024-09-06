@@ -7,7 +7,7 @@ class GONGClient(GenericClient):
     """
     Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
 
-    Searches data hosted by the `National Solar Observatory <gong2.nso.edu/oQR/zqs/>`__
+    Searches data hosted by the `National Solar Observatory <https://gong2.nso.edu/oQR/zqs>`__
 
     Examples
     --------

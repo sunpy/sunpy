@@ -1,1 +1,0 @@
-The maximum records in `~sunpy.net.helio.HECClient` now are 20000.

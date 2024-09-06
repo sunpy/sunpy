@@ -68,14 +68,14 @@ class JSOCClient(BaseClient):
 
     Notes
     -----
-    The full list of ``Series`` is available through this `site <http://jsoc.stanford.edu>`_.
+    The full list of ``Series`` is available via ` this page <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
 
     JSOC requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
+    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`__.
 
-    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`_.
-    The tutorials can be `found here <https://docs.sunpy.org/projects/en/stable/tutorial.html>`_.
+    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`__.
+    The tutorials can be :ref:`found here <sunpy-tutorial-acquiring-data-jsoc>`.
     This can be used to build complex queries, by directly inputting the query string.
 
     Examples
@@ -329,8 +329,8 @@ class JSOCClient(BaseClient):
 
         Returns
         -------
-        requests : `~drms.client.ExportRequest` object or
-                   a list of  `~drms.client.ExportRequest` objects
+        requests : `~drms.ExportRequest` object or
+                   a list of  `~drms.ExportRequest` objects
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
         """
@@ -449,8 +449,8 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        requests : `~drms.client.ExportRequest`, `str`, `list`
-            `~drms.client.ExportRequest` objects or `str` request IDs or lists
+        requests : `~drms.ExportRequest`, `str`, `list`
+            `~drms.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
         path : `str`
             Path to save data to, defaults to SunPy download dir.

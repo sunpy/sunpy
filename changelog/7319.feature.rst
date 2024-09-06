@@ -1,1 +1,0 @@
-:func:`~sunpy.coordinates.get_horizons_coord` now supports time arrays with up to 10,000 elements.

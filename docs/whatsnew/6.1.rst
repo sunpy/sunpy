@@ -1,0 +1,34 @@
+.. _whatsnew-6.1:
+
+************************
+What's New in sunpy 6.1?
+************************
+
+The SunPy Project is pleased to announce the 6.1 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 6.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+*Add release stats here.*
+
+Updates to minimum dependencies
+===============================
+
+The minimum required versions of the following packages have been updated:
+
+- matplotlib>=3.6.0
+
+Additional new map dependency
+=============================
+
+With the addition of the ``contourpy`` package, the following new dependency has been added:
+
+- contourpy>=1.0.1
+
+This unifies the contour plotting within `sunpy.map.GenericMap`, :meth`sunpy.map.GenericMap.contour` to be the same as :meth`sunpy.map.GenericMap.draw_contours`.
+This is package is already a dependency of ``matplotlib``, so no additional installation steps are required.

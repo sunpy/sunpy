@@ -1,2 +1,0 @@
-The ``delim_whitespace`` keyword in `pandas.read_csv` is deprecated and was updated with ``sep='\s+'``.
-This should have no affect on the output of the code.

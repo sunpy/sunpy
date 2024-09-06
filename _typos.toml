@@ -1,5 +1,5 @@
 default.extend-ignore-identifiers-re = [
-    "ANDed", # ANDed
+    "ANDed",
     "arange",
     "iy1",
     "iy2",
@@ -21,4 +21,5 @@ default.extend-ignore-identifiers-re = [
     "ot",
     # Coords,
     "pn",
+    "lightyear",
 ]

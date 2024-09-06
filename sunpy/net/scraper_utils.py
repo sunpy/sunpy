@@ -47,14 +47,15 @@ def extract_timestep(directoryPattern):
 
 def date_floor(date, timestep):
     """
-    Return the "floor" of the given date and time step.
+    Return the "floor" of the given date and timestep.
 
     Parameters
     ----------
     datetime : `datetime.datetime` or `astropy.time.Time`
-        The date to floor
+        The date to floor.
     timestep : `dateutil.relativedelta.relativedelta`
-        The smallest time step to floor
+        The smallest timestep to floor.
+
     Returns
     -------
     `datetime.datetime`
