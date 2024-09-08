@@ -1598,24 +1598,23 @@ class GenericMap(NDData):
         Parameters
         ----------
         filepath : `str`
-            Location to save file to.
+            Location to save the file.
         filetype : `str`, optional
             Any supported file extension, defaults to ``"auto"``.
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
             By default, a FITS file is written with the map in its primary HDU.
             If a type is given, a new HDU of this type will be created.
-            If a HDU instance is given, its data and header will be updated from the map.
+            If an HDU instance is given, its data and header will be updated from the map.
             Then that HDU instance will be written to the file.
             The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io._file_tools_write_file`.
+            `~sunpy.io._file_tools.write_file`.
 
         Notes
         -----
-        Saving with the jp2 extension will write a modified version
-        of the given data casted to uint8 values in order to support
-        the JPEG2000 format.
+        Saving with the jp2 extension will write a modified version of the data
+        cast to uint8 values in order to support the JPEG2000 format.
 
         Examples
         --------
@@ -1625,8 +1624,8 @@ class GenericMap(NDData):
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         """
-        write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
+
 
 # #### Image processing routines #### #
 
