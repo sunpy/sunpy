@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.util.parfive_helpers import Downloader, Results
+from sunpy.net.SPICE.PSP import attrs as ps
 
 cheat_sheet = {
     "fk":"PSP_Frame_Kernels/",
@@ -18,6 +19,7 @@ cheat_sheet = {
     "pek":"Planetary_Ephemerides/",
     "ltapk":"Long_Term_Attitude_Predict_Kernels/",
     "ltpek":"Long_Term_Predicted_Ephemeris/",
+    "ik":"PSP_Frame_Kernels/"
 }
 
 FILE_CONVENTIONS = {
@@ -74,7 +76,10 @@ class PSPKernel:
                     href = link.get("href")
                     link_text = link.get_text()
                     if href and not href.endswith("/") and all(x not in link_text for x in ["Name", "Last modified", "Size"]):
-                        links.append(link_text)
+                        if self.kernel_type == "ik" and link_text.endswith("ti"):
+                            links.append(link_text)
+                        else:
+                            links.append(link_text)
 
             return links
         except Exception as e:
@@ -125,7 +130,9 @@ class PSPKernel:
         return results
 
     def filter_kernels(self,**kwargs):
-        pass
+        if isinstance(kwargs.keys(),ps.Analysis):
+            pass
+            
 
 
 class PSPResponseTable(QueryResponseTable):
