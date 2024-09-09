@@ -83,8 +83,7 @@ HELIO
 Internal Classes and Functions
 ==============================
 
-These classes and functions are designed to be used to help develop new clients
-for `sunpy.net.Fido`.
+These classes and functions are designed to be used to help develop new clients for `sunpy.net.Fido`.
 
 .. automodapi:: sunpy.net.base_client
 
