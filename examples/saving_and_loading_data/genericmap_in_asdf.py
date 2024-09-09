@@ -43,6 +43,6 @@ aia_map.save("sunpy_map.asdf")
 # astropy, sunpy, and asdf installed. We can reload it using the `sunpy.map`:
 
 # Load the ASDF file
-pairs = sunpy.map("sunpy_map.asdf")
+pairs = sunpy.map.Map("sunpy_map.asdf")
 
 pairs.peek(clip_interval=(1, 99.99) * u.percent)
