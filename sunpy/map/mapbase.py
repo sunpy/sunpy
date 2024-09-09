@@ -1614,10 +1614,11 @@ class GenericMap(NDData):
 
         Notes
         -----
-        * Saving with the ``.jp2`` extension will cast the data to uint8 values to support
+        Saving with the jp2 extension will write a modified version
+        of the given data casted to uint8 values in order to support
         the JPEG2000 format.
 
-        * Saving with the ``.asdf`` extension will save the map as an ASDF file, storing the map's
+        Saving with the ``.asdf`` extension will save the map as an ASDF file, storing the map's
         attributes under the key ``'sunpymap'`` in the ASDF tree.
 
         Examples
@@ -1627,7 +1628,6 @@ class GenericMap(NDData):
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
-
         >>> aia_map.save("aia171.asdf")  # doctest: +REMOTE_DATA
         """
         if filetype.lower() == "asdf" or (filetype.lower() == "auto" and str(filepath).endswith(".asdf")):
