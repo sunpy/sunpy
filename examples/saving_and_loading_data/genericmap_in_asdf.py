@@ -45,4 +45,6 @@ aia_map.save("sunpy_map.asdf")
 # Load the ASDF file
 pairs = sunpy.map.Map("sunpy_map.asdf")
 
-pairs.peek(clip_interval=(1, 99.99) * u.percent)
+pairs.plot(clip_interval=(1, 99.99) * u.percent)
+
+plt.show()
