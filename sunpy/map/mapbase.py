@@ -1629,7 +1629,7 @@ class GenericMap(NDData):
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.asdf")  # doctest: +REMOTE_DATA
         """
-        if filetype.lower() == "asdf" or (filetype.lower() == "auto" and str(filepath).endswith(".asdf")):
+        if filetype.lower() == "asdf" or (filetype.lower() == "auto" and str(filepath).lower().endswith(".asdf")):
             import asdf
             asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
         else:
