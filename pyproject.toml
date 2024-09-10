@@ -233,3 +233,13 @@ use_extension_helpers = "true"
   directory = "bugfix"
   name = "Bug Fixes"
   showcontent = true
+
+  [[tool.towncrier.type]]
+  directory = "doc"
+  name = "Documentation"
+  showcontent = true
+
+  [[tool.towncrier.type]]
+  directory = "trivial"
+  name = "Internal Changes"
+  showcontent = true
