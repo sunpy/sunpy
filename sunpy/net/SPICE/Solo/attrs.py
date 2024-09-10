@@ -51,3 +51,10 @@ class Voem(SimpleAttr):
     """
     Voem : reference to the source OEM file version
     """
+
+class Index(SimpleAttr):
+    """
+    index of data to be downloaded 
+    """
+    def __init__(self,*value):
+        self.value = value

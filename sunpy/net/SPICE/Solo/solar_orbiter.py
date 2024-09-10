@@ -110,7 +110,11 @@ class SoloKernel:
         """
         filtered_kernel = {}
         original_links = self.get_link_by_index()
-
+        
+        if "index" in kwargs:
+            for i,j in enumerate(kwargs["index"]):
+                filtered_kernel[j] = original_links[j]
+            return filtered_kernel
         if get_readme:
             filtered_kernel[0] = self.get_readme()
             return filtered_kernel
@@ -261,6 +265,8 @@ class SoloClient(BaseClient):
                 query_params["version"] = q.value
             if isinstance(q,sa.Voem):
                 query_params["Voem"] = q.value
+            if isinstance(q,sa.Index):
+                query_params["index"] = q.value
             if isinstance(q,sa.Readme):
                 if q.value:
                     query_params["get_readme"] = True

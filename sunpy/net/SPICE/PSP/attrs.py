@@ -7,7 +7,7 @@ class Kernel_type(SimpleAttr):
     kernel type
     """
 
-class Analysis(SimpleAttr):
+class Analysis_fk(SimpleAttr):
     """
     to get analysis frame kernel
     """

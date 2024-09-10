@@ -130,9 +130,9 @@ class PSPKernel:
         return results
 
     def filter_kernels(self,**kwargs):
-        if isinstance(kwargs.keys(),ps.Analysis):
-            pass
-            
+        if kwargs["Analysis"]:
+            kwargs["Analysis"] = "spp_dyn"
+             
 
 
 class PSPResponseTable(QueryResponseTable):
