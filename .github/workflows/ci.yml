@@ -125,7 +125,6 @@ jobs:
       - run: python -m pip install -U --user build
       - run: python -m build . --sdist
       - run: python -m pip install -U --user twine
-<<<<<<<
       - run: python -m twine check dist/*
 
   conda:
@@ -136,16 +135,6 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
-=======
-    needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
-    with:
-      default_python: '3.12'
-      submodules: false
-      pytest: false
-      toxdeps: tox-pypi-filter
->>>>>>>
-<<<<<<<
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -156,15 +145,6 @@ jobs:
           environment-file: sunpy-dev-env.yml
           python-version: "3.12"
       - name: Install sunpy
-=======
-      )
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
-    with:
-      default_python: '3.12'
-      submodules: false
-      coverage: codecov
-      toxdeps: tox-pypi-filter
->>>>>>>
         shell: bash -el {0}
         run: |
           pip install --no-deps --no-build-isolation .
@@ -180,14 +160,9 @@ jobs:
           files: ./coverage.xml
 
   publish:
-<<<<<<<
-    # Build wheels when pushing to any branch except main
-    # publish.yml will only publish if tagged ^v.*
-=======
     needs: [test, docs]
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
     # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
->>>>>>>
     if: |
       github.event_name != 'pull_request' ||
       (
