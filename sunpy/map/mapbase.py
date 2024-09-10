@@ -202,7 +202,8 @@ class GenericMap(NDData):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
             # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
             # See https://github.com/sunpy/sunpy/issues/7294 for more information.
-            if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
+            # This also applies to older versions of sunkit-magex with ADAPTMap.
+            if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
