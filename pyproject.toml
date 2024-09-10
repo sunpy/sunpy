@@ -15,6 +15,13 @@ requires = [
   #   3. The <2.3 upper bound is for matching the numpy deprecation policy,
   #      it should not be loosened.
   "numpy>=2.0.0rc1,<2.3",
+<<<<<<<
+=======
+  "wheel",
+  "extension-helpers",
+  "numpy>=1.25",
+  "cython",
+>>>>>>>
 ]
 build-backend = "setuptools.build_meta"
 
@@ -230,12 +237,26 @@ use_extension_helpers = "true"
   name = "Bug Fixes"
   showcontent = true
 
+<<<<<<<
   [[tool.towncrier.type]]
   directory = "doc"
   name = "Documentation"
   showcontent = true
+=======
+[tool.setuptools.packages.find]
+include = ["sunpy*"]
+exclude = ["sunpy._dev*"]
+>>>>>>>
 
+<<<<<<<
   [[tool.towncrier.type]]
   directory = "trivial"
   name = "Internal Changes"
   showcontent = true
+=======
+[tool.setuptools.exclude-package-data]
+"*" = ["*.c", "*.h"]
+
+[tool.setuptools_scm]
+write_to = "sunpy/_version.py"
+>>>>>>>
