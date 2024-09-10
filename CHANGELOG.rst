@@ -1,3 +1,14 @@
+6.0.2 (2024-09-10)
+==================
+
+Bug Fixes
+---------
+
+- Fix filetype detection to use the detected filetype if a known reader is registered. (`#7788 <https://github.com/sunpy/sunpy/pull/7788>`__)
+- Fixed loading of `~sunpy.map.sources.ADAPTMap` if sunkit-magex v1.0.0 is installed. (`#7798 <https://github.com/sunpy/sunpy/pull/7798>`__)
+- Fixed loading of GOES XRS files with newer versions of numpy
+
+
 6.0.1 (2024-08-15)
 ==================
 
