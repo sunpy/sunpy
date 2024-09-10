@@ -1,1 +1,1 @@
-Added support for saving a `sunpy.map.GenericMap` in ASDF.
+Added support for saving a sunpy Map in an ASDF file using `sunpy.map.GenericMap.save` and loading a map stored in an ASDF file with `sunpy.map.Map`.

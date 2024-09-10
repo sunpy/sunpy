@@ -55,7 +55,7 @@ def test_read_asdf_and_verify(tmpdir):
     loaded_asdf_map = sunpy.map.Map(AIA_ASDF)
     assert isinstance(loaded_asdf_map.data, np.ndarray)
     assert isinstance(loaded_asdf_map.meta, dict)
-    assert isinstance(loaded_asdf_map, sunpy.map.GenericMap)
+    assert isinstance(loaded_asdf_map, sunpy.map.sources.AIAMap)
 
 
 def test_mapsequence(eit_fits_directory):
