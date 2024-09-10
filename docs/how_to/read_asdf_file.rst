@@ -5,9 +5,9 @@ Read an ASDF file into a Map
 ****************************
 
 `ASDF <https://asdf-standard.readthedocs.io/en/latest/>`__ is a modern file format designed to meet the needs of the astronomy community [citation needed].
-It has deep integration with Python, SunPy, and Astropy, as well as implementations in other languages.
+It has deep integration with Python, sunpy, and Astropy, as well as implementations in other languages.
 It can be used to store known Python objects in a portable, well-defined file format.
-It is primarily useful for storing complex Astropy and SunPy objects in a way that can be loaded back into the same form as they were saved.
+It is primarily useful for storing complex Astropy and sunpy objects in a way that can be loaded back into the same form as they were saved.
 It is designed to be an archive file format, with human-readable metadata and a simple on-disk layout.
 
 sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and `coordinate frame <sunpy.coordinates.frames>` objects into ASDF files.
