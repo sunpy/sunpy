@@ -18,6 +18,7 @@ specifically, the process can be extended to any `~sunpy.map.GenericMap`,
 including ones created using custom FITS files.
 """
 import matplotlib.pyplot as plt
+
 import astropy.units as u
 
 import sunpy.data.sample
