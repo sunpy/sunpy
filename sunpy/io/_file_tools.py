@@ -75,6 +75,8 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     filetype : {'jp2' | 'fits' | 'ana'}, optional
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
+    **kwargs : `dict`
+        Additional keyword arguments are handed to file specific reader.
 
     Returns
     -------
@@ -186,6 +188,8 @@ def detect_filetype(filepath, **kwargs):
     ----------
     filepath : `str`, `pathlib.Path`
         Where the file is.
+    **kwargs : `dict`
+        Additional keyword arguments are handed to ``fsspec.open``.
 
     Returns
     -------
