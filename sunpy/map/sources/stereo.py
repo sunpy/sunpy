@@ -25,7 +25,7 @@ class EUVIMap(GenericMap):
     References
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`_
     * `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
     """
 
@@ -77,9 +77,9 @@ class CORMap(GenericMap):
     References
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`_
     * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`_
-    * `COR2 Instrument Page <http://secchi.nrl.navy.mil/index.php?p=cor2>`_
+    * `COR2 Instrument Page <https://secchi.nrl.navy.mil//index.php?p=cor2>`_
     * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`_
     """
 
