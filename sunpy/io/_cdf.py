@@ -24,6 +24,8 @@ def read_cdf(fname, **kwargs):
     ----------
     fname : path-like
         Location of single CDF file to read.
+    **kwargs : dict
+        Additional keyword arguments are handed to ``cdflib.CDF`` reader.
 
     Returns
     -------

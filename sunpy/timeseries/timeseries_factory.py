@@ -348,6 +348,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Prepare parsed result from into correct format for _parse_args.
         r can be TimeSeries, path, or a data, header pair
+        **kwargs get passed to `_get_matching_widget` and `_check_registered_widgets`
         """
         if isinstance(r, GenericTimeSeries):
             return [r]
