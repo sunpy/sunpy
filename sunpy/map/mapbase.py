@@ -203,7 +203,8 @@ class GenericMap(NDData):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
             # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
             # See https://github.com/sunpy/sunpy/issues/7294 for more information.
-            if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
+            # This also applies to older versions of sunkit-magex with ADAPTMap.
+            if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
@@ -1599,24 +1600,27 @@ class GenericMap(NDData):
         Parameters
         ----------
         filepath : `str`
-            Location to save file to.
+            Location to save the file to.
+            If ``filepath`` ends with ".asdf" and ``filetype="auto"``, an ASDF file will be created.
         filetype : `str`, optional
-            Any supported file extension, defaults to ``"auto"``.
+            The file format to save the map in. Defaults to ``"auto"`` which infers
+            the format from the file extension. Supported formats include FITS, JP2, and ASDF.
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
-            By default, a FITS file is written with the map in its primary HDU.
-            If a type is given, a new HDU of this type will be created.
-            If a HDU instance is given, its data and header will be updated from the map.
-            Then that HDU instance will be written to the file.
-            The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
+            For FITS files, this specifies the type of HDU to write. By default, the map is saved
+            in the primary HDU. If an HDU type or instance is provided, the map data and header will
+            be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
         kwargs :
-            Any additional keyword arguments are passed to
-            `~sunpy.io._file_tools_write_file`.
+            Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`
+            or `asdf.AsdfFile.write_to`.
 
         Notes
         -----
         Saving with the jp2 extension will write a modified version
         of the given data casted to uint8 values in order to support
         the JPEG2000 format.
+
+        Saving with the ``.asdf`` extension will save the map as an ASDF file, storing the map's
+        attributes under the key ``'sunpymap'`` in the ASDF tree.
 
         Examples
         --------
@@ -1625,9 +1629,16 @@ class GenericMap(NDData):
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
+        >>> aia_map.save("aia171.asdf")  # doctest: +REMOTE_DATA
         """
-        write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        if filetype.lower() == "asdf" or (filetype.lower() == "auto" and str(filepath).lower().endswith(".asdf")):
+            import asdf
+            asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
+        else:
+            write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
+
+
+
 
 # #### Image processing routines #### #
 

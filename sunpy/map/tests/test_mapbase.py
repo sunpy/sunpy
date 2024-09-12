@@ -638,6 +638,16 @@ def test_save(aia171_test_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
+def test_save_asdf(tmpdir, aia171_test_map):
+    outpath = tmpdir/ "save_asdf.asdf"
+    aia171_test_map.save(outpath, filetype= "asdf")
+    loaded_save_asdf = sunpy.map.Map(str(outpath))
+    assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
+    # Compare metadata without considering ordering of keys
+    assert dict(loaded_save_asdf.meta) == dict(aia171_test_map.meta)
+    np.testing.assert_array_equal(loaded_save_asdf.data, aia171_test_map.data)
+
+
 def test_save_compressed(aia171_test_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
