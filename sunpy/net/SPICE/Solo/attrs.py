@@ -54,7 +54,7 @@ class Voem(SimpleAttr):
 
 class Index(SimpleAttr):
     """
-    index of data to be downloaded 
+    index of link to be downloaded 
     """
     def __init__(self,*value):
         self.value = value

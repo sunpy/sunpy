@@ -33,3 +33,21 @@ class Numupdates(SimpleAttr):
     """
     Number of times file has been updated since launch
     """
+
+class Instrument(SimpleAttr):
+    """
+    Name of instrument for instrument kerenel
+    """
+
+class Link(SimpleAttr):
+    """
+    Name of the kernel file 
+    """
+
+class Index(SimpleAttr):
+    """
+    Index of link to be downloaded
+    """
+    def __init__(self,*value):
+        self.value = value
+

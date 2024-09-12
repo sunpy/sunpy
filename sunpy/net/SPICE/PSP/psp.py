@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.util.parfive_helpers import Downloader, Results
 from sunpy.net.SPICE.PSP import attrs as ps
+from astropy.time import Time
 
 cheat_sheet = {
     "fk":"PSP_Frame_Kernels/",
@@ -20,43 +21,6 @@ cheat_sheet = {
     "ltapk":"Long_Term_Attitude_Predict_Kernels/",
     "ltpek":"Long_Term_Predicted_Ephemeris/",
     "ik":"PSP_Frame_Kernels/"
-}
-
-FILE_CONVENTIONS = {
-"sclk" : """ File Naming Convention	spp_sclk_NNNN.tsc (where NNNN is the number of times the file has been updated since launch)
-Description	The SCLK is a daily produced kernel that supports time conversions between spacecraft clock and Barycentric Dynamical Time (TDB). The kernel is produced by the PSP mission.
-""",
-
-"ltpek" :""" File Naming Convention	spp_nom_yyyymmdd_yyyymmdd_vNNN_###.bsp (where the yyyymmdd pair defines the time span of the file, the NNN is the version number and ### further describes the content of the file)
-Description	This kernel contains a nominal PSP trajectory long term predicted ephemeris for the PSP spacecraft. The kernel is produced by the PSP mission.
-""",
-
-"reck" :""" File Naming Convention	spp_recon_yyyymmdd_yyyymmdd_vNNN.bsp (where the yyyymmdd pair defines the time span of the file, and the NNN is the version number)
-Description	This kernel contains the reconstructed ephemeris for the PSP spacecraft. The kernel is produced by the PSP mission.
-""",
-"lsk" :""" File Naming Convention	naifNNNN.tls (where NNNN is the NAIF assigned version number)
-Description	The kernel is used for Coordinated Universal Time (UTC) to TDB time conversions. It contains a tabulation of all leap seconds that have occurred. It is a generic SPICE kernel, independent of flight project. The kernel is produced by NAIF and is only updated as needed.
-""",
-
-"fk" :""" File Naming Convention	spp_vNNN.tf (where NNNN is the PSP assigned version number)
-Description	The kernel contains definitions of and specification of relationships between reference frames. This frame kernel contains the current set of coordinate frame definitions for the Parker Solar Probe spacecraft, structures, and science instruments. The kernel is produced by the PSP mission.
-""",
-
-"yak":""" File Naming Convention	spp_nom_yyyymmdd_yyyymmdd_vNNN_###_ yyyymmdd_yyyymmdd.bc (where the yyyymmdd pair defines the time span of the file, and the NNN is the version number)
-Description	This kernel contains the long-term attitude for the PSP spacecraft. The kernel is produced by the PSP mission.
-""",
-"ah" :""" File Naming Convention	spp_nom_yyyymmdd_yyyymmdd_vNNN_###_ yyyymmdd_yyyymmdd.bc (where the yyyymmdd pair defines the time span of the file, and the NNN is the version number)
-Description	This kernel contains the long-term attitude for the PSP spacecraft. The kernel is produced by the PSP mission.
-""",
-"pck":""" File Naming Convention	pckNNNNN.tpc (where NNNN is the NAIF assigned version number)
-Description	The kernel is used to obtain celestial body orientation, size, shape and other constants. It is a generic SPICE kernel, independent of flight project. The kernel is produced by NAIF.
-""",
-
-"pek":""" File Naming Convention	spp_yyyy_doy_NN.ah.bc (where yyyy_doy defines the time span of the data in the file and NN is the version number)
-Description	This kernel contains the daily attitude history for the PSP spacecraft. The kernel is produced by the PSP mission.
-"""
-
-
 }
 
 BASE_URL = "https://spdf.gsfc.nasa.gov/pub/data/psp/ephemeris/spice/{}"
@@ -130,17 +94,108 @@ class PSPKernel:
         return results
 
     def filter_kernels(self,**kwargs):
+
+
+        filtered_kernel = {}
+        original_links = self.get_link_by_index()
+
         if kwargs["Analysis"]:
             kwargs["Analysis"] = "spp_dyn"
-             
+        if "index" in kwargs:
+            for i,j in enumerate(kwargs["index"]):
+                filtered_kernel[j] = original_links[j]
+            return filtered_kernel
+        if 'start' in kwargs:
+            kwargs['start'] = Time(kwargs['start']).tdb.strftime('%Y%m%d')
+        if 'end' in kwargs and kwargs["end"] is not None:
+            kwargs['end'] = Time(kwargs['end']).tdb.strftime('%Y%m%d')
+        if "version" in kwargs:
+            kwargs["version"] = "V" + str(kwargs["version"])
+
+
+        for index, link in original_links.items():
+            match = None
+
+
+            match = all(value in link for value in kwargs.values())
+
+            if match:
+                filtered_kernel[index] = link
+        if not len(filtered_kernel):
+            print("no match found for the search terms!")
+
+        return filtered_kernel   
 
 
 class PSPResponseTable(QueryResponseTable):
     """
     A table for storing psp spice kernels
     """
-
+ 
 class PSPClient(BaseClient):
     """
     PASS
     """
+    def search(self, *query):
+        """
+        Search for SPICE kernels based on mission and other criteria.
+        """
+        results = []
+        query_params = {}
+        kernel_type = None
+
+        for q in query:
+            if isinstance(q, ps.Kernel_type):
+                kernel_type = q.value
+            if isinstance(q, ps.Time):
+                query_params['start'] = q.start
+                query_params['end'] = q.end
+            if isinstance(q, ps.Instrument):
+                query_params['instrument'] = q.value
+            if isinstance(q, ps.Link):
+                query_params['link'] = q.value
+            if isinstance(q,ps.Version):
+                query_params["version"] = q.value
+            if isinstance(q,ps.Numupdates):
+                query_params["Numupdates"] = q.value
+            if isinstance(q,ps.Index):
+                query_params["index"] = q.value
+            if isinstance(q,ps.Analysis_fk):
+                if q.value:
+                    query_params["Analysis"] = True
+                else:
+                    continue
+
+
+        if not kernel_type:
+            raise ValueError("Kernel type must be specified in the query.")
+
+        solo_kernel = PSPKernel(kernel_type)
+        filtered_kernels = solo_kernel.filter_kernels(**query_params)
+
+        for index, link in filtered_kernels.items():
+            results.append({
+                'Mission': "PSP",
+                'Kernel': kernel_type,
+                'Link': link,
+                'Index': index
+            })
+
+        return PSPResponseTable(results,client=self)
+
+    def fetch(self, query_results,path=None, **kwargs):
+        """
+        Fetch the selected kernels.
+        """
+        for result in query_results:
+            kernel_type = result['Kernel']
+            index = result['Index']
+
+
+            solo_kernel = PSPKernel(kernel_type)
+            solo_kernel.download_by_index(index,overwrite = False,progress = True,wait = True,path=path)
+
+    @staticmethod
+    def _can_handle_query(*query):
+        """Check if this client can handle the given query."""
+        return any(isinstance(q, ps.Kernel_type) for q in query)
