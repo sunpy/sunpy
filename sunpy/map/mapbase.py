@@ -2718,7 +2718,7 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        level : float, astropy.units.Quantity
+        level : float, `~astropy.units.Quantity`
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
@@ -2815,7 +2815,8 @@ class GenericMap(NDData):
 
         See Also
         --------
-        :func:`contourpy.contour_generator` and :func:`skimage.measure.find_contours`
+        :func:`contourpy.contour_generator`
+        :func:`skimage.measure.find_contours`
         """
         level = self._process_levels_arg(level)
         if level.size != 1:
