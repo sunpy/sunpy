@@ -67,6 +67,10 @@ Supported Coordinate Systems
      - HPC
      - `~sunpy.coordinates.frames.Helioprojective`
      -
+   * - Helioprojective Radial
+     - HPR
+     - `~sunpy.coordinates.frames.HelioprojectiveRadial`
+     - Uses declination (-90 deg at disk center) rather than impact angle (0 deg at disk center)
    * - Geocentric Earth Equatorial (Mean)
      - GEI
      - `~sunpy.coordinates.frames.GeocentricEarthEquatorial`
