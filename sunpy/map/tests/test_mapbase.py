@@ -1461,9 +1461,10 @@ def test_submap_inputs(generic_map2, coords):
         smap = generic_map2.submap(*args, **kwargs)
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
 
+
 def test_contour_deprecation_warning(simple_map):
 
-    with pytest.warns(SunpyDeprecationWarning, match="The 'contour' method is deprecated and will be removed in a future release. Please use 'get_contours'."):
+    with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.get_contours instead."):
         simple_map.contour(1.5)
 
 
