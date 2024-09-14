@@ -461,6 +461,8 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
     ('pc2_1': '0.0')
     ('pc2_2': '1.0')
     ('rsun_obs': '954.1164393469891')])
+
+    .. minigallery:: sunpy.map.make_hpr_header
     """
     # The reference coord must be on the equator (delta = 0 deg)
     reference_coord = SkyCoord(

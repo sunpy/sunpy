@@ -749,6 +749,8 @@ class HelioprojectiveRadial(SunPyBaseCoordinateFrame):
         (296.56505118, -89.91435897, 1.49598038e+08)>
     >>> sc.theta
     <Angle 308.30772022 arcsec>
+
+    .. minigallery:: sunpy.coordinates.HelioprojectiveRadial
     """
     _wrap_angle = 360*u.deg
 

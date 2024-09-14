@@ -82,6 +82,10 @@ def show_hpr_impact_angle(declination_axis):
     See Also
     --------
     sunpy.coordinates.HelioprojectiveRadial
+
+    Examples
+    --------
+    .. minigallery:: sunpy.visualization.show_hpr_impact_angle
     """
     if not isinstance(declination_axis, CoordinateHelper):
         raise TypeError("The input should be one of the WCSAxes coordinate axes.")
