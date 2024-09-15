@@ -9,17 +9,17 @@ from astropy.time import Time
 from sunpy.util.parfive_helpers import Downloader, Results
 
 cheat_sheet = {
-    "fk":"PSP_Frame_Kernels/",
-    "lsk":"Leap_Second_Kernel/",
-    "sclk":"SCLK_files/",
-    "reck":"Reconstructed_Ephemerides/",
-    "pck":"Planetary_Constant_Kernel/",
-    "ahk":"Attitude_History_Kernels/",
-    "stapk":"Short_Term_Attitude_Predict_Kernels/",
-    "pek":"Planetary_Ephemerides/",
-    "ltapk":"Long_Term_Attitude_Predict_Kernels/",
-    "ltpek":"Long_Term_Predicted_Ephemeris/",
-    "ik":"PSP_Frame_Kernels/"
+    "fk":"PSP_Frame_Kernels",
+    "lsk":"Leap_Second_Kernel",
+    "sclk":"SCLK_files",
+    "reck":"Reconstructed_Ephemerides",
+    "pck":"Planetary_Constant_Kernel",
+    "ahk":"Attitude_History_Kernels",
+    "stapk":"Short_Term_Attitude_Predict_Kernels",
+    "pek":"Planetary_Ephemerides",
+    "ltapk":"Long_Term_Attitude_Predict_Kernels",
+    "ltpek":"Long_Term_Predicted_Ephemeris",
+    "ik":"PSP_Frame_Kernels"
 }
 
 BASE_URL = "https://spdf.gsfc.nasa.gov/pub/data/psp/ephemeris/spice/{}"

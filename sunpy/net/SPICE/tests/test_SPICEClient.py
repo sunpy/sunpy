@@ -5,6 +5,7 @@ from astropy.time import Time
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.SPICE import attrs as a
+from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.SPICEClient import SPICEClient
 
 
@@ -49,3 +50,29 @@ def test_no_url_found(client):
 def test_no_kernel(client):
     with pytest.raises(ValueError, match="Kernel type must be specified in the query."):
         client.search(a.Time("2024-01-01"))
+
+@pytest.mark.remote_data
+def test_response_type(client):
+    query = [
+        a.Kernel_type("ck"),
+        a.Instrument("eui"),
+        a.Version("01"),
+        sa.Readme(True),
+    ]
+    response = client.search(*query)
+    assert isinstance(response,QueryResponseTable)
+
+@pytest.mark.remote_data
+def test_fetch(client, tmp_path):
+    query = client.search(a.Kernel_type("lsk"),a.Mission("Solo"))
+    client.fetch(query[:1], path=tmp_path)
+
+    downloaded_files = list(tmp_path.glob("*"))
+    assert len(downloaded_files) > 0
+    assert any("lsk" in str(file) for file in downloaded_files)
+
+@pytest.mark.remote_data
+def test_direct_link(client):
+    url = client.search(a.Kernel_type("ck"), a.Link("solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"))
+    assert len(url) > 0
+    assert "solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc" in str(url[0]["Link"])

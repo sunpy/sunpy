@@ -9,9 +9,40 @@ __all__ = ['SPICEClient']
 
 class SPICEClient(BaseClient):
     """
-    A centralized SPICE client to handle both PSP and Solo kernel data.
-    """
+    Provides access to  SPICE data of both PSP and Solar Orbiter (Solo).
 
+    The `SPICEClient` provides methods to search for and download SPICE kernels from both
+    the Parker Solar Probe (PSP) and Solar Orbiter (Solo) missions.
+
+    Attributes
+    ----------
+    kernel_classes : dict
+        A dictionary mapping mission names ('PSP', 'Solo') to their respective kernel classes.
+
+    Methods
+    -------
+    search(*query, missions=None):
+        Search for SPICE kernels based on mission and other query criteria.
+    fetch(query_results, path=None, **kwargs):
+        Download selected SPICE kernels based on search results.
+    _can_handle_query(*query):
+        Check if this client can handle the given query.
+
+    Examples
+    --------
+    >>> from sunpy.net.SPICE import attrs as a
+    >>> from sunpy.net.SPICE.SPICEClient import SPICEClient
+    >>> from astropy.time import Time
+    >>> client = SPICEClient()  # doctest: +REMOTE_DATA
+    >>> query = [a.Mission('Solo'), a.Kernel_type('lsk')]   # doctest: +REMOTE_DATA
+    >>> results = client.search(*query) # doctest: +REMOTE_DATA
+    >>> print(results) # doctest: +REMOTE_DATA
+    Mission Kernel     Link     Index
+    ------- ------ ------------ -----
+       Solo    lsk aareadme.txt     0
+       Solo    lsk naif0012.tls     1
+
+    """
     kernel_classes = {
         'PSP': PSPKernel,
         'Solo': SoloKernel
@@ -21,9 +52,35 @@ class SPICEClient(BaseClient):
         """
         Search for SPICE kernels based on mission and other criteria.
 
-        Parameters:
-        - query: search parameters for kernel type, time range, instrument, etc.
-        - missions: list of missions to search for, defaults to ['PSP', 'Solo'] if not specified.
+        Parameters
+        ----------
+        *query : `sunpy.net.attr`
+            Search parameters such as kernel type, time range, instrument, etc.
+        missions : tuple, optional
+            A list of missions to search for. Defaults to both 'PSP' and 'Solo'.
+
+        Returns
+        -------
+        `sunpy.net.base_client.QueryResponseTable`
+            A table containing the search results.
+
+        Raises
+        ------
+        ValueError
+            If no kernel type is specified in the query, or if an unsupported mission is provided.
+
+        Examples
+        --------
+        >>> from sunpy.net.SPICE import attrs as a
+        >>> from sunpy.net.SPICE.SPICEClient import SPICEClient
+        >>> from astropy.time import Time
+        >>> client = SPICEClient()  # doctest: +REMOTE_DATA
+        >>> query = [a.Mission('PSP'), a.Kernel_type('lsk')]    # doctest: +REMOTE_DATA
+        >>> results = client.search(*query) # doctest: +REMOTE_DATA
+        >>> print(results)  # doctest: +REMOTE_DATA
+        Mission Kernel     Link     Index
+        ------- ------ ------------ -----
+            PSP    lsk naif0012.tls     0
         """
         if missions is None:
             missions = ('PSP', 'Solo')
@@ -31,8 +88,6 @@ class SPICEClient(BaseClient):
         results = []
         query_params = {}
         kernel_type = None
-
-        # Extract query parameters
 
         for q in query:
             if isinstance(q,a.Mission):
@@ -81,12 +136,25 @@ class SPICEClient(BaseClient):
                     'Index': index
                 })
 
-        # Combine results into a single QueryResponseTable
         return QueryResponseTable(results, client=self)
 
     def fetch(self, query_results, path=None, **kwargs):
         """
-        Fetch the selected kernels from both PSP and Solo if required.
+        Fetch the selected kernels from both PSP and Solo missions based on the search results.
+
+        Parameters
+        ----------
+        query_results : list
+            A list of query result entries returned by the `search` method.
+        path : str, optional
+            The directory path where the kernels will be downloaded. Defaults to the current directory.
+        **kwargs : dict
+            Additional download options.
+
+        Raises
+        ------
+        ValueError
+            If the mission is not supported.
         """
         for result in query_results:
             mission = result['Mission']
@@ -101,5 +169,16 @@ class SPICEClient(BaseClient):
 
     @staticmethod
     def _can_handle_query(*query):
-        """Check if this client can handle the given query."""
+        """
+        Check if this client can handle the given query.
+
+        Parameters
+        ----------
+        *query : `sunpy.net.attr`
+            The query parameters provided to the client.
+
+        Returns
+        -------
+        bool
+        """
         return any(isinstance(q, a.Kernel_type) for q in query)
