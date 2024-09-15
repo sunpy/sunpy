@@ -53,6 +53,7 @@ from sunpy.util.decorators import (
     cached_property_based_on,
     check_arithmetic_compatibility,
     deprecate_positional_args_since,
+    deprecated,
 )
 from sunpy.util.exceptions import warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
@@ -2719,6 +2720,7 @@ class GenericMap(NDData):
 
         return ret
 
+    @deprecated(since="6.1", alternative="sunpy.map.GenericMap.get_contours")
     def contour(self, level, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
@@ -2727,7 +2729,7 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        level : float, astropy.units.Quantity
+        level : float, `~astropy.units.Quantity`
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
@@ -2745,8 +2747,8 @@ class GenericMap(NDData):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
-        >>> print(contours[0])  # doctest: +REMOTE_DATA
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> contours[0]  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
@@ -2774,6 +2776,81 @@ class GenericMap(NDData):
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        return contours
+
+    def get_contours(self, level, method='contourpy', **kwargs):
+        """
+        Returns coordinates of the contours for a given level value.
+
+        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`contourpy.contour_generator`.
+
+        Parameters
+        ----------
+        level : float, astropy.units.Quantity
+            Value along which to find contours in the array. If the map unit attribute
+            is not `None`, this must be a `~astropy.units.Quantity` with units
+            equivalent to the map data units.
+        method : {'contourpy', 'skimage'}
+            Determines which contouring method is used and should
+            be specified as either 'contourpy' or 'skimage'.
+            Defaults to 'contourpy'.
+        kwargs :
+            Additional keyword arguments passed to either :func:`contourpy.contour_generator`
+            or :func:`skimage.measure.find_contours`, depending on the value of the ``method`` argument.
+
+        Returns
+        -------
+        contours: list of (n,2) `~astropy.coordinates.SkyCoord`
+            Coordinates of each contour.
+
+        Examples
+        --------
+        >>> import astropy.units as u
+        >>> import sunpy.map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> contours = aia.get_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
+        >>> contours[0]  # doctest: +REMOTE_DATA
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+            (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+            [(713.14112796, -361.95311455), (714.76598031, -363.53013567),
+             (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+             (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+             (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+             (722.00110323, -352.46446792), (722.08933899, -352.36363319),
+             (722.00223989, -351.99536019), (721.67724425, -352.36263712),
+             (719.59798458, -352.60839064), (717.19243987, -353.75348121),
+             (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+             (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+             (713.14112796, -361.95311455)]>
+
+        See Also
+        --------
+        :func:`contourpy.contour_generator`
+        :func:`skimage.measure.find_contours`
+        """
+        level = self._process_levels_arg(level)
+        if level.size != 1:
+            raise ValueError("level must be a single scalar value")
+        else:
+            # _process_levels_arg converts level to a 1D array, but
+            # find_contours expects a scalar below
+            level = level[0]
+
+        if method == 'contourpy':
+            from contourpy import contour_generator
+
+            gen = contour_generator(z=self.data, **kwargs)
+            contours = gen.lines(level)
+            contours = [self.wcs.array_index_to_world(c[:, 1], c[:, 0]) for c in contours]
+        elif method == 'skimage':
+            from skimage import measure
+
+            contours = measure.find_contours(self.data, level=level, **kwargs)
+            contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        else:
+            raise ValueError(f"Unknown method '{method}'. Use 'contourpy' or 'skimage'.")
+
         return contours
 
     def _check_axes(self, axes, warn_different_wcs=False):
