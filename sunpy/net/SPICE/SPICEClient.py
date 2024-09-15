@@ -82,8 +82,7 @@ class SPICEClient(BaseClient):
         ------- ------ ------------ -----
             PSP    lsk naif0012.tls     0
         """
-        if missions is None:
-            missions = ('PSP', 'Solo')
+
 
         results = []
         query_params = {}
@@ -103,14 +102,15 @@ class SPICEClient(BaseClient):
                 query_params['link'] = q.value
             if isinstance(q, a.Version):
                 query_params['version'] = q.value
-            if isinstance(q,sa.Readme) and q.value and missions == ("Solo",):
-                query_params["get_readme"] = True
+            if isinstance(q,sa.Readme):
+                query_params["get_readme"] = q.value
             if isinstance(q,a.Index):
                 query_params["index"] = q.value
-            if isinstance(q,ps.Analysis_fk) and missions == ("PSP",):
+            if isinstance(q,ps.Analysis_fk):
                 if q.value:
                     query_params["Analysis_fk"] = True
-
+        if missions is None:
+            missions = ('PSP', 'Solo')
         if not kernel_type:
             raise ValueError("Kernel type must be specified in the query.")
 

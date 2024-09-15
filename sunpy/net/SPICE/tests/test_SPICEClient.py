@@ -85,3 +85,37 @@ def test_fetch(client,tmp_path):
     downloaded_files = list(tmp_path.glob("*"))
     assert len(downloaded_files) > 0
     assert any("pck" in str(file) for file in downloaded_files)
+
+@pytest.mark.remote_data
+def test_index(client):
+    query = [a.Kernel_type("ik"),a.Index(1)]
+    response = client.search(*query)
+    expected_response = QueryResponseTable([
+        {"Mission": "PSP", "Kernel": "ik", "Link": "spp_epilo_v100.ti", "Index": np.array(1)},
+        {"Mission": "Solo","Kernel": "ik","Link": "solo_ANC_soc-epd-ik_V00.ti","Index": np.array(1)}
+    ])
+    for q, expected in zip(response, expected_response):
+        assert q["Mission"] == expected["Mission"]
+        assert q["Kernel"] == expected["Kernel"]
+        assert q["Link"] == expected["Link"]
+        assert np.array_equal(q["Index"], expected["Index"])
+    assert isinstance(response,QueryResponseTable)
+
+@pytest.mark.remote_data
+def test_get_readme(client):
+    query = [a.Kernel_type("ik"),sa.Readme(True),a.Mission("Solo")]
+    response = client.search(*query)
+
+    expected_response = QueryResponseTable([
+        {"Mission": "Solo","Kernel": "ik","Link": "aareadme.txt","Index": np.array(0)}
+    ])
+    for q, expected in zip(response, expected_response):
+        assert q["Mission"] == expected["Mission"]
+        assert q["Kernel"] == expected["Kernel"]
+        assert q["Link"] == expected["Link"]
+        assert np.array_equal(q["Index"], expected["Index"])
+    assert isinstance(response,QueryResponseTable)
+
+def test_invalid_kernel():
+    with pytest.raises(ValueError,match="kernel type is required"):
+        a.Kernel_type(None)

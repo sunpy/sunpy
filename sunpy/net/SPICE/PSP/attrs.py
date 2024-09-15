@@ -1,11 +1,6 @@
 from sunpy.net.attr import SimpleAttr
 
 
-class Kernel_type(SimpleAttr):
-    """
-    kernel type
-    """
-
 class Analysis_fk(SimpleAttr):
     """
     to get analysis frame kernel
