@@ -1,1 +1,1 @@
-from sunpy.net.SPICE import Solo
+from sunpy.net.SPICE import PSP, Solo, SPICEClient, attrs

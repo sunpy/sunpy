@@ -4,10 +4,9 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from sunpy.net.base_client import BaseClient, QueryResponseTable
-from sunpy.util.parfive_helpers import Downloader, Results
-from sunpy.net.SPICE.PSP import attrs as ps
 from astropy.time import Time
+
+from sunpy.util.parfive_helpers import Downloader, Results
 
 cheat_sheet = {
     "fk":"PSP_Frame_Kernels/",
@@ -27,9 +26,8 @@ BASE_URL = "https://spdf.gsfc.nasa.gov/pub/data/psp/ephemeris/spice/{}"
 
 class PSPKernel:
     def __init__(self, kernel_type):
-        self.kernel_type = cheat_sheet[kernel_type]
-        self.kernel_urls = BASE_URL.format(self.kernel_type)
-        print(self.kernel_urls)
+        self.kernel_type = kernel_type
+        self.kernel_urls = BASE_URL.format(cheat_sheet[self.kernel_type])
 
     def get_all_links(self):
         try:
@@ -39,11 +37,15 @@ class PSPKernel:
                 for link in soup.find_all("a", href=True):
                     href = link.get("href")
                     link_text = link.get_text()
+
+                    # Check for valid href and ensure it's not a directory or unwanted text
                     if href and not href.endswith("/") and all(x not in link_text for x in ["Name", "Last modified", "Size"]):
-                        if self.kernel_type == "ik" and link_text.endswith("ti"):
-                            links.append(link_text)
+                        # Special condition for kernel_type "ik"
+                        if self.kernel_type == "ik":
+                            if link_text.endswith("ti"):
+                                links.append(link_text)
                         else:
-                            links.append(link_text)
+                            links.append(link_text)  # Append link in all other cases
 
             return links
         except Exception as e:
@@ -93,14 +95,14 @@ class PSPKernel:
         results =  downloader.download()
         return results
 
-    def filter_kernels(self,**kwargs):
+    def filter_kernels(self,Analysis_fk = False,**kwargs):
 
 
         filtered_kernel = {}
         original_links = self.get_link_by_index()
 
-        if kwargs["Analysis"]:
-            kwargs["Analysis"] = "spp_dyn"
+        if Analysis_fk:
+            kwargs['Analysis'] = "spp_dyn"
         if "index" in kwargs:
             for i,j in enumerate(kwargs["index"]):
                 filtered_kernel[j] = original_links[j]
@@ -124,78 +126,4 @@ class PSPKernel:
         if not len(filtered_kernel):
             print("no match found for the search terms!")
 
-        return filtered_kernel   
-
-
-class PSPResponseTable(QueryResponseTable):
-    """
-    A table for storing psp spice kernels
-    """
- 
-class PSPClient(BaseClient):
-    """
-    PASS
-    """
-    def search(self, *query):
-        """
-        Search for SPICE kernels based on mission and other criteria.
-        """
-        results = []
-        query_params = {}
-        kernel_type = None
-
-        for q in query:
-            if isinstance(q, ps.Kernel_type):
-                kernel_type = q.value
-            if isinstance(q, ps.Time):
-                query_params['start'] = q.start
-                query_params['end'] = q.end
-            if isinstance(q, ps.Instrument):
-                query_params['instrument'] = q.value
-            if isinstance(q, ps.Link):
-                query_params['link'] = q.value
-            if isinstance(q,ps.Version):
-                query_params["version"] = q.value
-            if isinstance(q,ps.Numupdates):
-                query_params["Numupdates"] = q.value
-            if isinstance(q,ps.Index):
-                query_params["index"] = q.value
-            if isinstance(q,ps.Analysis_fk):
-                if q.value:
-                    query_params["Analysis"] = True
-                else:
-                    continue
-
-
-        if not kernel_type:
-            raise ValueError("Kernel type must be specified in the query.")
-
-        solo_kernel = PSPKernel(kernel_type)
-        filtered_kernels = solo_kernel.filter_kernels(**query_params)
-
-        for index, link in filtered_kernels.items():
-            results.append({
-                'Mission': "PSP",
-                'Kernel': kernel_type,
-                'Link': link,
-                'Index': index
-            })
-
-        return PSPResponseTable(results,client=self)
-
-    def fetch(self, query_results,path=None, **kwargs):
-        """
-        Fetch the selected kernels.
-        """
-        for result in query_results:
-            kernel_type = result['Kernel']
-            index = result['Index']
-
-
-            solo_kernel = PSPKernel(kernel_type)
-            solo_kernel.download_by_index(index,overwrite = False,progress = True,wait = True,path=path)
-
-    @staticmethod
-    def _can_handle_query(*query):
-        """Check if this client can handle the given query."""
-        return any(isinstance(q, ps.Kernel_type) for q in query)
+        return filtered_kernel
