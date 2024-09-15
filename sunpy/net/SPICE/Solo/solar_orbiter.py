@@ -108,6 +108,7 @@ class SoloKernel:
         if "index" in kwargs:
             for _,j in enumerate(kwargs["index"]):
                 filtered_kernel[j] = original_links[j]
+                print(filtered_kernel[j])
             return filtered_kernel
         if get_readme:
             filtered_kernel[0] = self.get_readme()

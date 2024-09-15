@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 import pytest
 
@@ -63,16 +65,23 @@ def test_response_type(client):
     assert isinstance(response,QueryResponseTable)
 
 @pytest.mark.remote_data
-def test_fetch(client, tmp_path):
-    query = client.search(a.Kernel_type("lsk"),a.Mission("Solo"))
-    client.fetch(query[:1], path=tmp_path)
-
-    downloaded_files = list(tmp_path.glob("*"))
-    assert len(downloaded_files) > 0
-    assert any("lsk" in str(file) for file in downloaded_files)
-
-@pytest.mark.remote_data
 def test_direct_link(client):
     url = client.search(a.Kernel_type("ck"), a.Link("solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"))
     assert len(url) > 0
     assert "solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc" in str(url[0]["Link"])
+
+def test_wrong_mission(client):
+    query = [
+        a.Kernel_type("ik"),
+        a.Mission("OHNO"),
+    ]
+    with pytest.raises(ValueError , match =re.escape("Unsupported mission: OHNO. Supported missions: ['PSP', 'Solo']")):
+        client.search(*query)
+
+@pytest.mark.remote_data
+def test_fetch(client,tmp_path):
+    query = client.search(a.Kernel_type("pck"))
+    client.fetch(query[:1],path = tmp_path)
+    downloaded_files = list(tmp_path.glob("*"))
+    assert len(downloaded_files) > 0
+    assert any("pck" in str(file) for file in downloaded_files)
