@@ -2,15 +2,11 @@ import pytest
 
 from sunpy.net.SPICE.PSP import attrs as ps
 from sunpy.net.SPICE.PSP.psp import PSPKernel
-from sunpy.net.SPICE.SPICEClient import SPICEClient
 
 
 @pytest.fixture
 def PSP():
     return PSPKernel("lsk")
-@pytest.fixture
-def client():
-    return SPICEClient()
 
 @pytest.mark.remote_data
 def test_all_links(PSP):

@@ -112,7 +112,7 @@ class PSPKernel:
         if 'end' in kwargs and kwargs["end"] is not None:
             kwargs['end'] = Time(kwargs['end']).tdb.strftime('%Y%m%d')
         if "version" in kwargs:
-            kwargs["version"] = "V" + str(kwargs["version"])
+            kwargs["version"] = "v" + str(kwargs["version"])
 
 
         for index, link in original_links.items():

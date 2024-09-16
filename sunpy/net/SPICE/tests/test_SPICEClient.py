@@ -7,6 +7,7 @@ from astropy.time import Time
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.SPICE import attrs as a
+from sunpy.net.SPICE.PSP import attrs as ps
 from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.SPICEClient import SPICEClient
 
@@ -119,3 +120,39 @@ def test_get_readme(client):
 def test_invalid_kernel():
     with pytest.raises(ValueError,match="kernel type is required"):
         a.Kernel_type(None)
+
+@pytest.mark.remote_data
+def test_get_Analysis_fk(client):
+    query = [
+        a.Kernel_type("fk"),
+        a.Mission("PSP"),
+        ps.Analysis_fk(True),
+        a.Version("200")
+    ]
+    response = client.search(*query)
+    expected_response = QueryResponseTable([
+        {"Mission": "PSP","Kernel": "fk","Link": "spp_dyn_v200.tf","Index": np.array(4)}
+    ])
+    for q, expected in zip(response, expected_response):
+        assert q["Mission"] == expected["Mission"]
+        assert q["Kernel"] == expected["Kernel"]
+        assert q["Link"] == expected["Link"]
+        assert np.array_equal(q["Index"], expected["Index"])
+    assert isinstance(response,QueryResponseTable)
+
+@pytest.mark.remote_data
+def test_get_pe(client):
+    query = [
+        a.Kernel_type("pek"),
+    ]
+
+    response = client.search(*query)
+    expected_response = QueryResponseTable([
+        {"Mission": "PSP","Kernel": "pek","Link": "de430.bsp","Index": np.array(0)}
+    ])
+    for q, expected in zip(response, expected_response):
+        assert q["Mission"] == expected["Mission"]
+        assert q["Kernel"] == expected["Kernel"]
+        assert q["Link"] == expected["Link"]
+        assert np.array_equal(q["Index"], expected["Index"])
+    assert isinstance(response,QueryResponseTable)

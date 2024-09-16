@@ -150,20 +150,11 @@ class SPICEClient(BaseClient):
             The directory path where the kernels will be downloaded. Defaults to the current directory.
         **kwargs : dict
             Additional download options.
-
-        Raises
-        ------
-        ValueError
-            If the mission is not supported.
         """
         for result in query_results:
             mission = result['Mission']
             kernel_type = result['Kernel']
             index = result['Index']
-
-            if mission not in self.kernel_classes:
-                raise ValueError(f"Unsupported mission: {mission}. Supported missions: {list(self.kernel_classes.keys())}")
-
             kernel_class = self.kernel_classes[mission](kernel_type)
             kernel_class.download_by_index(index, overwrite=False, progress=True, wait=True, path=path)
 
