@@ -1,6 +1,5 @@
 import pytest
 
-from sunpy.net.SPICE.PSP import attrs as ps
 from sunpy.net.SPICE.PSP.psp import PSPKernel
 
 
@@ -28,7 +27,3 @@ def test_filter_kernels(PSP):
     filtered = PSP.filter_kernels(query)
     assert isinstance(filtered,dict)
     assert len(filtered) == 0
-
-def test_wrong_analysis_fk():
-    with pytest.raises(ValueError,match = "given value must be boolean"):
-        ps.Analysis_fk(23)

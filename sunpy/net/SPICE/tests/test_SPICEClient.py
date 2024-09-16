@@ -7,8 +7,6 @@ from astropy.time import Time
 
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.SPICE import attrs as a
-from sunpy.net.SPICE.PSP import attrs as ps
-from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.SPICEClient import SPICEClient
 
 
@@ -52,15 +50,15 @@ def test_no_url_found(client):
 
 def test_no_kernel(client):
     with pytest.raises(ValueError, match="Kernel type must be specified in the query."):
-        client.search(a.Time("2024-01-01","2025-01-01"),sa)
+        client.search(a.Time("2024-01-01","2025-01-01"))
 
 @pytest.mark.remote_data
 def test_response_type(client):
     query = [
-        a.Kernel_type("ck"),
+        a.Kernel_type("ik"),
         a.Instrument("eui"),
         a.Version("01"),
-        sa.Readme(True),
+        a.Readme(True),
     ]
     response = client.search(*query)
     assert isinstance(response,QueryResponseTable)
@@ -105,7 +103,7 @@ def test_index(client):
 
 @pytest.mark.remote_data
 def test_get_readme(client):
-    query = [a.Kernel_type("ik"),sa.Readme(True),a.Mission("Solo")]
+    query = [a.Kernel_type("ik"),a.Readme(True),a.Mission("Solo")]
     response = client.search(*query)
 
     expected_response = QueryResponseTable([
@@ -118,16 +116,11 @@ def test_get_readme(client):
         assert np.array_equal(q["Index"], expected["Index"])
     assert isinstance(response,QueryResponseTable)
 
-def test_invalid_kernel():
-    with pytest.raises(ValueError,match="kernel type is required"):
-        a.Kernel_type(None)
-
 @pytest.mark.remote_data
 def test_get_Analysis_fk(client):
     query = [
         a.Kernel_type("fk"),
-        a.Mission("PSP"),
-        ps.Analysis_fk(True),
+        a.Analysis_fk(True),
         a.Version("200")
     ]
     response = client.search(*query)

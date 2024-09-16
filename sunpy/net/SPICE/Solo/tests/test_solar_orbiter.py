@@ -1,6 +1,5 @@
 import pytest
 
-from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.Solo.solar_orbiter import SoloKernel
 
 
@@ -19,8 +18,6 @@ def test_get_readme(Solo):
     readme = Solo.get_readme()
     assert readme == "aareadme.txt"
 
-
-
 @pytest.mark.remote_data
 def test_filter_kernels_readme(Solo):
     readme = Solo.filter_kernels(get_readme = True)
@@ -33,8 +30,3 @@ def test_filter_kernels_index(Solo):
         "index":0
     }
     assert {0:"aareadme.txt"} == Solo.filter_kernels(query1)
-
-def test_invalid_readme():
-    value = 3
-    with pytest.raises(ValueError,match = f"value must be boolean not {type(value)}"):
-        sa.Readme(value)

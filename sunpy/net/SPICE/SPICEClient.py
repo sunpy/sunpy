@@ -1,8 +1,6 @@
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.SPICE import attrs as a
-from sunpy.net.SPICE.PSP import attrs as ps
 from sunpy.net.SPICE.PSP.psp import PSPKernel
-from sunpy.net.SPICE.Solo import attrs as sa
 from sunpy.net.SPICE.Solo.solar_orbiter import SoloKernel
 
 __all__ = ['SPICEClient']
@@ -102,24 +100,35 @@ class SPICEClient(BaseClient):
                 query_params['link'] = q.value
             if isinstance(q, a.Version):
                 query_params['version'] = q.value
-            if isinstance(q,sa.Readme):
+            if isinstance(q,a.Readme):
                 query_params["get_readme"] = q.value
             if isinstance(q,a.Index):
                 query_params["index"] = q.value
-            if isinstance(q,ps.Analysis_fk):
-                if q.value:
-                    query_params["Analysis_fk"] = True
+            if isinstance(q,a.Analysis_fk):
+                query_params["Analysis_fk"] = q.value
+            if isinstance(q,a.Numupdates):
+                query_params["numupdates"] = q.value
+            if isinstance(q,a.Sensor):
+                query_params["sensor"] = q.value
+            if isinstance(q,a.Voem):
+                query_params["voem"] = q.value
+
         if missions is None:
             missions = ('PSP', 'Solo')
         if kernel_type is None:
             raise ValueError("Kernel type must be specified in the query.")
 
-        # Search for kernels in each specified mission
         psp_recognized = ["fk","lsk","sclk","pck","ahk","pek","ltapk","ik"]
         solo_recognized = ["ck", "fk", "ik", "lsk", "pck", "sclk", "spk","mk"]
+
         if "PSP" in missions and kernel_type not in psp_recognized:
             missions = ("Solo",)
         elif "Solo" in missions and kernel_type not in solo_recognized:
+            missions = ("PSP",)
+
+        if any(param in query_params for param in ["get_readme", "voem", "sensor"]):
+            missions = ("Solo",)
+        elif any(param in query_params for param in ["Analysis_fk", "numupdates"]):
             missions = ("PSP",)
 
         for mission in missions:

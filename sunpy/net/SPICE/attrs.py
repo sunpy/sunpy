@@ -2,6 +2,40 @@ from sunpy.net.attr import SimpleAttr
 from sunpy.time import parse_time
 
 
+#PSP SPECIFIC
+class Analysis_fk(SimpleAttr):
+    """
+    to get analysis frame kernel
+    """
+    def __init__(self,value):
+        self.value = value
+        if not isinstance(value,bool):
+            raise ValueError("given value must be boolean")
+
+class Numupdates(SimpleAttr):
+    """
+    Number of times file has been updated since launch
+    """
+
+#Solo SPECIFIC
+class Voem(SimpleAttr):
+    """
+    Voem : reference to the source OEM file version
+    """
+
+class Readme(SimpleAttr):
+    def __init__(self,value):
+
+        if not isinstance(value,bool):
+            raise ValueError(f"value must be boolean not {type(value)}")
+        self.value = value
+
+class Sensor(SimpleAttr):
+    """
+    sensor for kernels
+    """
+
+#general
 class Kernel_type(SimpleAttr):
     """
     kernel type
