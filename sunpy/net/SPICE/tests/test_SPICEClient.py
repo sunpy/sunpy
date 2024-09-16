@@ -52,7 +52,7 @@ def test_no_url_found(client):
 
 def test_no_kernel(client):
     with pytest.raises(ValueError, match="Kernel type must be specified in the query."):
-        client.search(a.Time("2024-01-01"))
+        client.search(a.Time("2024-01-01","2025-01-01"),sa)
 
 @pytest.mark.remote_data
 def test_response_type(client):
@@ -67,8 +67,8 @@ def test_response_type(client):
 
 @pytest.mark.remote_data
 def test_direct_link(client):
-    url = client.search(a.Kernel_type("ck"), a.Link("solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"))
-    assert len(url) > 0
+    url = client.search(a.Kernel_type("ck"), a.Link("solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc"),a.Version("01"))
+    assert len(url) == 1
     assert "solo_ANC_soc-default-att-stp_20200210-20301120_272_V1_00276_V01.bc" in str(url[0]["Link"])
 
 def test_wrong_mission(client):
@@ -82,7 +82,8 @@ def test_wrong_mission(client):
 @pytest.mark.remote_data
 def test_fetch(client,tmp_path):
     query = client.search(a.Kernel_type("pck"))
-    client.fetch(query[:1],path = tmp_path)
+
+    client.fetch(query,path = tmp_path)
     downloaded_files = list(tmp_path.glob("*"))
     assert len(downloaded_files) > 0
     assert any("pck" in str(file) for file in downloaded_files)

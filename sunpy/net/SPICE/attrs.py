@@ -7,7 +7,7 @@ class Kernel_type(SimpleAttr):
     kernel type
     """
     def __init__(self, value):
-        super().__init__(value)
+        self.value = value
         if value is None:
             raise ValueError ("kernel type is required")
 

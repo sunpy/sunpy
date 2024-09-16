@@ -111,7 +111,7 @@ class SPICEClient(BaseClient):
                     query_params["Analysis_fk"] = True
         if missions is None:
             missions = ('PSP', 'Solo')
-        if not kernel_type:
+        if kernel_type is None:
             raise ValueError("Kernel type must be specified in the query.")
 
         # Search for kernels in each specified mission

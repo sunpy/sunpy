@@ -79,10 +79,8 @@ class PSPKernel:
         if isinstance(path,str) and '{file}' not in path:
             path = os.path.join(path,'{file}')
 
-        if not index:
-            file_name = path.format(file = f"for {self.kernel_type} {links_mapped[index]}")
-        else:
-            file_name = path.format(file = links_mapped[index])
+
+        file_name = path.format(file = links_mapped[index])
         downloader.enqueue_file(file_url, path=file_name, filename=file_name)
         print(f"Queued for download: {index} -- {file_name}")
         print(file_name)
