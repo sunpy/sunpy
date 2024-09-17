@@ -23,6 +23,16 @@ The minimum required versions of the following packages have been updated:
 
 - matplotlib>=3.6.0
 
+Support for helioprojective radial coordinates and maps
+=======================================================
+
+Helioprojective radial (HPR) coordinates are now supported using the `~sunpy.coordinates.HelioprojectiveRadial` coordinate frame, and HPR FITS files are also supported.
+Per the FITS WCS machinery, the impact-angle component (``theta``) is replaced by the a declination component (``delta``) by subtracting 90 degrees from ``theta``.
+An HPR coordinate has a ``theta`` property to quickly obtain the impact angle, and there is a visualization helper function (:func:`~sunpy.visualization.show_hpr_impact_angle`) to modify a plot axis.
+Finally, there is a helper function (:func:`~sunpy.map.make_hpr_header`) to create HPR FITS headers.
+
+.. minigallery:: sunpy.coordinates.HelioprojectiveRadial
+
 Additional new map dependency
 =============================
 
