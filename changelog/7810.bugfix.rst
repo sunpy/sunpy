@@ -1,0 +1,2 @@
+Fall back to `sunpy.map.GenericMap.reference_date` in `~sunpy.map.sources.AIAMap` if the ``T_OBS``
+key is missing from the metadata instead of returning None.
