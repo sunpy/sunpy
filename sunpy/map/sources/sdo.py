@@ -78,7 +78,7 @@ class AIAMap(GenericMap):
 
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().reference_date
 
     def _set_reference_date(self, date):
         self.meta['t_obs'] = parse_time(date).utc.isot
