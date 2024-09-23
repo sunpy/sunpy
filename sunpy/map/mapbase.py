@@ -2870,7 +2870,6 @@ class GenericMap(NDData):
             cumulative_sum /= cumulative_sum.max()
             # Threshold values for the desired percentages and draw contours
             index = np.searchsorted(cumulative_sum, level)
-            # print(index)
             index = min(index, len(sorted_values) - 1)
             level = sorted_values[index]
 

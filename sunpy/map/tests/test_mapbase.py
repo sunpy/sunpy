@@ -1484,7 +1484,7 @@ def test_get_contours_contourpy(simple_map):
     with pytest.raises(ValueError, match='level must be a single scalar value'):
         simple_map.get_contours([1.5, 2.5])
     # Area
-    contours_area = simple_map.get_contours(0.5 * u.DN, method='contourpy', area=True)
+    contours_area = simple_map.get_contours(0.5, method='contourpy', area=True)
     assert len(contours_area) == 1
     assert u.allclose(contours_area[0].Tx, [0.5, 7.5, 7.5, 0.5, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contours_area[0].Ty, [0.5, 0.5, 7.5, 7.5, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
@@ -1506,7 +1506,7 @@ def test_get_contours_skimage(simple_map):
     with pytest.raises(ValueError, match='level must be a single scalar value'):
         simple_map.get_contours([1.5, 2.5])
     # Area
-    contours_area = simple_map.get_contours(0.5 * u.DN, method='skimage', area=True)
+    contours_area = simple_map.get_contours(0.5, method='skimage', area=True)
     assert len(contours_area) == 1
     assert u.allclose(contours_area[0].Tx, [0.5, 7.5, 7.5, 0.5, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contours_area[0].Ty, [0.5, 0.5, 7.5, 7.5, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
@@ -1557,7 +1557,7 @@ def test_get_contours_inputs(simple_map):
         simple_map.get_contours(1.5 * u.s)
 
     with pytest.raises(ValueError, match='level must be between 0 and 1'):
-        simple_map.get_contours(1.2 * u.DN, area=True)
+        simple_map.get_contours(1.2 * u.dimensionless_unscaled, area=True)
 
     # With no units, check that dimensionless works
     simple_map.meta.pop('bunit')
