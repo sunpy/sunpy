@@ -2778,7 +2778,7 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def get_contours(self, level, method='contourpy', **kwargs):
+    def get_contours(self, level, method='contourpy', area=False, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
 
@@ -2794,6 +2794,12 @@ class GenericMap(NDData):
             Determines which contouring method is used and should
             be specified as either 'contourpy' or 'skimage'.
             Defaults to 'contourpy'.
+        area : bool, optional
+            If `True`, the contour level is interpreted as the fraction of
+            the total area of the map data. The contour is drawn at the value
+            that corresponds to the specified fraction of area. If `False`,
+            the contour is drawn at the specified level value.
+            Defaults to `False`.
         kwargs :
             Additional keyword arguments passed to either :func:`contourpy.contour_generator`
             or :func:`skimage.measure.find_contours`, depending on the value of the ``method`` argument.
@@ -2812,17 +2818,32 @@ class GenericMap(NDData):
         >>> contours = aia.get_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
         >>> contours[0]  # doctest: +REMOTE_DATA
         <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-            (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
-            [(713.14112796, -361.95311455), (714.76598031, -363.53013567),
-             (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
-             (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
-             (719.58811599, -356.68119768), (721.29217122, -354.76448374),
-             (722.00110323, -352.46446792), (722.08933899, -352.36363319),
-             (722.00223989, -351.99536019), (721.67724425, -352.36263712),
-             (719.59798458, -352.60839064), (717.19243987, -353.75348121),
-             (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
-             (712.68209174, -357.14645009), (712.68639008, -359.54923801),
-             (713.14112796, -361.95311455)]>
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        [(713.14112796, -361.95311455), (714.76598031, -363.53013567),
+        (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+        (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+        (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+        (722.00110323, -352.46446792), (722.08933899, -352.36363319),
+        (722.00223989, -351.99536019), (721.67724425, -352.36263712),
+        (719.59798458, -352.60839064), (717.19243987, -353.75348121),
+        (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+        (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+        (713.14112796, -361.95311455)]>
+        ...
+
+        >>> contours = aia.contour(0.9*u.DN, method='contourpy' area=True)  # doctest: +REMOTE_DATA
+        >>> print(contours[0])  # doctest: +REMOTE_DATA
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        [(722.15935137, -482.11362443), (724.08881175, -482.49135075),
+        (724.62427811, -482.1195769 ), (724.09317813, -480.68933083),
+        (723.19944954, -479.71336486), (721.69575059, -478.48459673),
+        (719.29476814, -477.7469086 ), (717.99015074, -477.29801309),
+        (716.89461946, -476.66503709), (715.95560513, -477.29309961),
+        (714.48560588, -479.24165673), (714.37258124, -479.69204831),
+        (714.48440508, -479.73722851), (716.886972  , -479.82116551),
+        (719.28704152, -480.93570827), (721.68798464, -481.68963172),
+        (722.15935137, -482.11362443)]>
 
         See Also
         --------
@@ -2836,6 +2857,22 @@ class GenericMap(NDData):
             # _process_levels_arg converts level to a 1D array, but
             # find_contours expects a scalar below
             level = level[0]
+
+        if area:
+            if not 0 <= level <= 1:
+                # print(level)
+                raise ValueError('level must be between 0 and 1 when area is set to True.')
+            # Sort pixels by value, then find the value that corresponds to the
+            # specified area fraction.
+            flattened_data = self.data.flatten()
+            sorted_values = np.sort(flattened_data)[::-1]
+            cumulative_sum = np.cumsum(sorted_values)
+            cumulative_sum /= cumulative_sum.max()
+            # Threshold values for the desired percentages and draw contours
+            index = np.searchsorted(cumulative_sum, level)
+            # print(index)
+            index = min(index, len(sorted_values) - 1)
+            level = sorted_values[index]
 
         if method == 'contourpy':
             from contourpy import contour_generator
