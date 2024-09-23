@@ -151,7 +151,7 @@ class HMIMap(GenericMap):
 
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().reference_date
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
@@ -215,7 +215,7 @@ class HMISynopticMap(HMIMap):
         """
         Image observation time.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().date
 
     def _set_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
@@ -225,7 +225,7 @@ class HMISynopticMap(HMIMap):
         """
         The reference date for the coordinate system.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().reference_date
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot

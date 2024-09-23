@@ -136,12 +136,11 @@ class LASCOMap(GenericMap):
     @property
     def date(self):
         date = self.meta.get('date-obs', self.meta.get('date_obs'))
-        # In case someone fixes the header
-        if 'T' in date:
-            return parse_time(date)
-
-        time = self.meta.get('time-obs', self.meta.get('time_obs'))
-        return parse_time(f"{date}T{time}")
+        # If the header has already been fixed, no need to concatenate
+        if 'T' not in date:
+            time = self.meta.get('time-obs', self.meta.get('time_obs'))
+            date = f"{date}T{time}"
+        return parse_time(date) or super().date
 
     def _set_date(self, date):
         if 'time-obs' in self.meta:
@@ -286,7 +285,7 @@ class MDISynopticMap(MDIMap):
 
         This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        return self._get_date('date-obs') or self._get_date('t_obs')
+        return self._get_date('date-obs') or self._get_date('t_obs') or super().date
 
     def _set_date(self, date):
         self.meta['date-obs'] = self.meta['t_obs'] = parse_time(date).utc.isot
