@@ -1,2 +1,3 @@
-Fall back to `sunpy.map.GenericMap.reference_date` in `~sunpy.map.sources.AIAMap` if the ``T_OBS``
-key is missing from the metadata instead of returning None.
+All map sources that override ``date`` or ``reference_date`` now fall back to
+`sunpy.map.GenericMap.date` if the needed source-specific metadata for these
+properties cannot be found.
