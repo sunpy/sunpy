@@ -1,0 +1,1 @@
+Removed ``mplcairo`` as a dependency for building the documentation.

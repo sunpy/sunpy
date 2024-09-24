@@ -160,15 +160,11 @@ jobs:
           files: ./coverage.xml
 
   publish:
-    # Build wheels when pushing to any branch except main
-    # publish.yml will only publish if tagged ^v.*
+    # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
+    # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
     if: |
+      github.event_name != 'pull_request' ||
       (
-        github.event_name != 'pull_request' && (
-          github.ref_name != 'main' ||
-          github.event_name == 'workflow_dispatch'
-        )
-      ) || (
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
