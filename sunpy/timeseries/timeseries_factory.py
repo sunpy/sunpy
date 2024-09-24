@@ -152,7 +152,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             try:
                 pairs = read_file(os.fspath(fname), **kwargs)
-                print(pairs)
+
                 new_pairs = []
                 for pair in pairs:
                     filedata, filemeta = pair
@@ -383,7 +383,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             cls = types[0]
 
             data_header_unit_tuple = cls._parse_hdus(pairs)
-            return [self._parse_arg(data_header_unit_tuple)]
+            return self._parse_arg(data_header_unit_tuple)
 
     @seconddispatch
     def _parse_arg(self, arg, **kwargs):
