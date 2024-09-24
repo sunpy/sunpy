@@ -152,7 +152,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             try:
                 pairs = read_file(os.fspath(fname), **kwargs)
-
+                print(pairs)
                 new_pairs = []
                 for pair in pairs:
                     filedata, filemeta = pair
@@ -406,7 +406,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         results = parse_path(path, self._read_file, **kwargs)
         all_ts = []
         for r in results:
-            all_ts += self._parse_ts_results(r)
+            all_ts += self._parse_ts_results(r, **kwargs)
         return all_ts
 
     @_parse_arg.register(tuple)
@@ -424,7 +424,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         results = parse_uri(obj_list, self._read_file, **kwargs)
         all_ts = []
         for r in results:
-            all_ts += self._parse_ts_results(r)
+            all_ts += self._parse_ts_results(r, **kwargs)
         return all_ts
 
     @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
