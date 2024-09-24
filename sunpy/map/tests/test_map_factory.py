@@ -275,8 +275,8 @@ def test_map_list_uri():
     """
     Test for reading from URI (AWS S3).
     """
-    uri_list = ['s3://gov-nasa-hdrl-data1/sdo/aia/20100513/0094/sdo_aia_h2_20100513T000000_0094_v1.fits',
-            's3://gov-nasa-hdrl-data1/sdo/aia/20100513/0131/sdo_aia_h2_20100513T000400_0131_v1.fits']
+    uri_list = ["s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits",
+            's3://data.sunpy.org/sunpy/aia_lev1_1600a_2012_06_06t04_07_29_12z_image_lev1_lowres.fits']
     sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
