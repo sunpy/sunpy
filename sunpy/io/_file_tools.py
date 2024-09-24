@@ -200,10 +200,7 @@ def detect_filetype(filepath, **kwargs):
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
     if is_uri(filepath):
-        if 'fsspec_kwargs' in kwargs:
-            fsspec_kw = kwargs['fsspec_kwargs']
-        else:
-            fsspec_kw = {}
+        fsspec_kw = kwargs.get("fsspec_kwargs", {})
         try:
             fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
         except Exception:
