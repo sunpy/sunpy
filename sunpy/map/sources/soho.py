@@ -137,7 +137,7 @@ class LASCOMap(GenericMap):
     def date(self):
         if date := self.meta.get('date-obs', self.meta.get('date_obs')):
             # If the header has already been fixed, no need to concatenate
-            if time := self.meta.get('time-obs', self.meta.get('time_obs')) and 'T' not in date:
+            if (time := self.meta.get('time-obs', self.meta.get('time_obs'))) and 'T' not in date:
                 date = f"{date}T{time}"
             date = parse_time(date)
         return date or super().date
