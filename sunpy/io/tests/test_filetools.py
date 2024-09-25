@@ -12,7 +12,7 @@ from sunpy.tests.helpers import skip_ana, skip_glymur
 
 TEST_RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
-TEST_AIA_IMAGE_URI = "s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits"
+TEST_AIA_IMAGE_URI = "s3://gov-nasa-hdrl-data1/sdo/aia/20100513/0131/sdo_aia_h2_20100513T000400_0131_v1.fits"
 
 # Some of the tests images contain an invalid BLANK keyword;
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
