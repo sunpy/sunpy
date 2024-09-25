@@ -4,7 +4,9 @@ This module provides a generic file reader for internal use.
 import re
 import gzip
 import pathlib
+
 import fsspec
+
 from sunpy.util.io import is_uri
 
 try:

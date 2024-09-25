@@ -26,17 +26,18 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import NoMapsInFileError, SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import is_url, parse_path, possibly_a_path, is_uri, parse_uri
+from sunpy.util.io import is_uri, is_url, parse_path, parse_uri, possibly_a_path
 from sunpy.util.metadata import MetaDict
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
     import dask.array
+
     SUPPORTED_ARRAY_TYPES += (dask.array.Array,)
 except ImportError:
     pass
 
-__all__ = ['Map', 'MapFactory']
+__all__ = ["Map", "MapFactory"]
 
 
 class MapFactory(BasicRegistrationFactory):
@@ -94,7 +95,7 @@ class MapFactory(BasicRegistrationFactory):
         # call a fits file or a jpeg2k file, etc
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
-        log.debug(f'Reading {fname}')
+        log.debug(f"Reading {fname}")
         try:
             pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
@@ -187,7 +188,9 @@ class MapFactory(BasicRegistrationFactory):
         data_header_pairs = []
         for arg in args:
             try:
-                data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
+                data_header_pairs += self._parse_arg(
+                    arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs
+                )
             except NoMapsInFileError as e:
                 if not (silence_errors or allow_errors):
                     raise
@@ -230,14 +233,18 @@ class MapFactory(BasicRegistrationFactory):
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, arg, **kwargs):
         return parse_path(arg, self._read_file, **kwargs)
-    
+
     @_parse_arg.register(list)
     def _parse_uri(self, arg, **kwargs):
         return parse_uri(arg, self._read_file, **kwargs)
 
-    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
-    def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):
-        """ Method for running the factory. Takes arbitrary arguments and
+    @deprecated_renamed_argument(
+        "silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning
+    )
+    def __call__(
+        self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs
+    ):
+        """Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
 
@@ -267,7 +274,9 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io._file_tools.read_file` such as
         ``memmap`` for FITS files.
         """
-        data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
+        data_header_pairs = self._parse_args(
+            *args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs
+        )
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
@@ -282,14 +291,13 @@ class MapFactory(BasicRegistrationFactory):
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
                 new_maps.append(new_map)
-            except (NoMatchError, MultipleMatchError,
-                    ValidationFunctionError, MapMetaValidationError) as e:
+            except (NoMatchError, MultipleMatchError, ValidationFunctionError, MapMetaValidationError) as e:
                 if not (silence_errors or allow_errors):
                     raise
                 warn_user(f"One of the data, header pairs failed to validate with: {e}")
 
         if not len(new_maps):
-            raise RuntimeError('No maps loaded')
+            raise RuntimeError("No maps loaded")
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:
@@ -305,11 +313,9 @@ class MapFactory(BasicRegistrationFactory):
         return new_maps
 
     def _check_registered_widgets(self, data, meta, **kwargs):
-
         candidate_widget_types = list()
 
         for key in self.registry:
-
             # Call the registered validation function for each registered class
             if self.registry[key](data, meta, **kwargs):
                 candidate_widget_types.append(key)
@@ -322,10 +328,12 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified "
-                                     f"({candidate_widget_types}). "
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.")
+            raise MultipleMatchError(
+                "Too many candidate types identified "
+                f"({candidate_widget_types}). "
+                "Specify enough keywords to guarantee unique type "
+                "identification."
+            )
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -339,14 +347,15 @@ class InvalidMapInput(ValueError):
 
 
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with Map
-    """
+    """Exception to raise when an invalid type of map is requested with Map"""
 
 
 class NoMapsFound(ValueError):
-    """Exception to raise when input does not point to any valid maps or files
-    """
+    """Exception to raise when input does not point to any valid maps or files"""
 
 
-Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,
-                 additional_validation_functions=['is_datasource_for'])
+Map = MapFactory(
+    registry=GenericMap._registry,
+    default_widget_type=GenericMap,
+    additional_validation_functions=["is_datasource_for"],
+)

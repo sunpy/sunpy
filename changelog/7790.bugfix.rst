@@ -1,0 +1,1 @@
+Fixed incorrect URI handling in `map_factory`` and `timeseries_factory`.

@@ -1,12 +1,13 @@
 """
 This module provides a CDF file reader for internal use.
 """
+import inspect
+
 import cdflib
 import numpy as np
 import pandas as pd
 from cdflib.epochs import CDFepoch
 from packaging.version import Version
-import inspect
 
 import astropy.units as u
 

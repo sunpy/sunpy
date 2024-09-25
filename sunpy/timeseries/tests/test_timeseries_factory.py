@@ -4,11 +4,11 @@ import datetime
 from pathlib import Path
 from collections import OrderedDict
 
+import fsspec
 import numpy as np
 import pytest
-from pandas import DataFrame
-import fsspec
 from botocore.exceptions import ClientError, NoCredentialsError
+from pandas import DataFrame
 
 import astropy.units as u
 from astropy.io import fits
