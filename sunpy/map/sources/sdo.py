@@ -138,7 +138,7 @@ class HMIMap(GenericMap):
         Most HMI files seem to not have a parseable WAVEUNIT key so if it cannot be found
         we default to Angstrom
         """
-        return super().waveunit | u.Angstrom
+        return super().waveunit or u.Angstrom
 
     @property
     def measurement(self):
