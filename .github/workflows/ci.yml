@@ -103,14 +103,12 @@ jobs:
     with:
       default_python: '3.12'
       submodules: false
-      coverage: codecov
       toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
       envs: |
         - linux: py312-devdeps
         - linux: core_deps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        - linux: linkcheck
+          pytest: false
 
   sdist_verify:
     if: |
@@ -162,15 +160,11 @@ jobs:
           files: ./coverage.xml
 
   publish:
-    # Build wheels when pushing to any branch except main
-    # publish.yml will only publish if tagged ^v.*
+    # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
+    # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
     if: |
+      github.event_name != 'pull_request' ||
       (
-        github.event_name != 'pull_request' && (
-          github.ref_name != 'main' ||
-          github.event_name == 'workflow_dispatch'
-        )
-      ) || (
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )

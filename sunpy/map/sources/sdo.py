@@ -9,6 +9,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
 
@@ -68,6 +69,19 @@ class AIAMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -131,6 +145,18 @@ class HMIMap(GenericMap):
         return self.meta.get('telescop', '').split('/')[0]
 
     @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
+
+    @property
     def detector(self):
         return self.meta.get("detector", "HMI")
 
@@ -188,14 +214,21 @@ class HMISynopticMap(HMIMap):
     def date(self):
         """
         Image observation time.
-
-        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        date = self._get_date('DATE-OBS')
-        if date is None:
-            return self._get_date('T_OBS')
-        else:
-            return date
+        return self._get_date('T_OBS') or super().date
+
+    def _set_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def unit(self):

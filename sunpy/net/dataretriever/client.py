@@ -8,7 +8,8 @@ from sunpy import config
 from sunpy.net import attrs as a
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.base_client import BaseClient, QueryResponseRow, QueryResponseTable
-from sunpy.net.scraper import Scraper, get_timerange_from_exdict
+from sunpy.net.scraper import Scraper
+from sunpy.net.scraper_utils import get_timerange_from_exdict
 from sunpy.time import TimeRange
 from sunpy.util.parfive_helpers import Downloader
 
@@ -57,10 +58,9 @@ class GenericClient(BaseClient):
     :meth:`~sunpy.net.dataretriever.GenericClient.post_search_hook`.
     They help to translate the attrs for scraper before and after the search respectively.
     """
-    baseurl = None
-    # A regex string that can match all urls supported by the client.
-    # A string which is used to extract the desired metadata from urls correctly,
+    # A string which is used to match all files and extract the desired metadata from urls correctly,
     # using ``sunpy.extern.parse.parse``.
+    baseurl = None
     pattern = None
     # Set of required 'attrs' for client to handle the query.
     required = {a.Time, a.Instrument}
@@ -115,8 +115,8 @@ class GenericClient(BaseClient):
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):
         """
-        Helper function to return the baseurl, pattern and matchdict
-        for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
+        Helper function to return the pattern and matchdict for the
+        client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
         before using the scraper.
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
@@ -233,11 +233,11 @@ class GenericClient(BaseClient):
         -------
         A `QueryResponse` instance containing the query result.
         """
+        # baseurl added for backwards compatibility purposes only
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        scraper = Scraper(baseurl, regex=True)
+        scraper = Scraper(pattern=baseurl) if baseurl else Scraper(format=pattern)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
-                                                matcher=matchdict)
+        filesmeta = scraper._extract_files_meta(tr, extractor=pattern) if baseurl else scraper._extract_files_meta(tr, matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])
         metalist = []
         for i in filesmeta:

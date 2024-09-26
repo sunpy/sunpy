@@ -12,7 +12,6 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from matplotlib.transforms import Affine2D
-from packaging.version import Version
 
 import astropy.units as u
 import astropy.wcs
@@ -380,12 +379,12 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lat == aia171_test_map.observer_coordinate.frame.lat
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
-    assert frame.obstime == aia171_test_map.date
+    assert frame.obstime == aia171_test_map.reference_date
 
 
 def test_heliographic_longitude_crln(hmi_test_map):
     assert_quantity_allclose(hmi_test_map.heliographic_longitude,
-                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.date),
+                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.reference_date),
                              rtol=1e-3)  # A tolerance is needed because L0 is for Earth, not SDO
 
 
@@ -637,6 +636,16 @@ def test_save(aia171_test_map):
     for k in aiamap.meta:
         assert loaded_save.meta[k] == aiamap.meta[k]
     assert_quantity_allclose(loaded_save.data, aiamap.data)
+
+
+def test_save_asdf(tmpdir, aia171_test_map):
+    outpath = tmpdir/ "save_asdf.asdf"
+    aia171_test_map.save(outpath, filetype= "asdf")
+    loaded_save_asdf = sunpy.map.Map(str(outpath))
+    assert isinstance(loaded_save_asdf, sunpy.map.sources.AIAMap)
+    # Compare metadata without considering ordering of keys
+    assert dict(loaded_save_asdf.meta) == dict(aia171_test_map.meta)
+    np.testing.assert_array_equal(loaded_save_asdf.data, aia171_test_map.data)
 
 
 def test_save_compressed(aia171_test_map):
@@ -1453,12 +1462,35 @@ def test_submap_inputs(generic_map2, coords):
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
 
 
-def test_contour(simple_map):
+def test_contour_deprecation_warning(simple_map):
+
+    with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.get_contours instead."):
+        simple_map.contour(1.5)
+
+
+def test_get_contours_contourpy(simple_map):
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
     # 4 is the central pixel of the map, so contour half way between 1 and 2
-    contours = simple_map.contour(1.5)
+    contours = simple_map.get_contours(1.5, method='contourpy')
+    assert len(contours) == 1
+    contour = contours[0]
+    assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
+    assert contour.observer.lon == simple_map.observer_coordinate.frame.lon
+    assert contour.obstime == simple_map.date
+    assert u.allclose(contour.Tx, [-1, 0, 1, 0, -1] * u.arcsec, atol=1e-10 * u.arcsec)
+    assert u.allclose(contour.Ty, [ 0, -0.5, 0, 0.5, 0] * u.arcsec, atol=1e-10 * u.arcsec)
+    with pytest.raises(ValueError, match='level must be a single scalar value'):
+        simple_map.get_contours([1.5, 2.5])
+
+
+def test_get_contours_skimage(simple_map):
+    data = np.ones(simple_map.data.shape)
+    data[4, 4] = 2
+    simple_map = sunpy.map.Map(data, simple_map.meta)
+    # 4 is the central pixel of the map, so contour half way between 1 and 2
+    contours = simple_map.get_contours(1.5, method='skimage')
     assert len(contours) == 1
     contour = contours[0]
     assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
@@ -1467,34 +1499,37 @@ def test_contour(simple_map):
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
     with pytest.raises(ValueError, match='level must be a single scalar value'):
-        simple_map.contour([1.5, 2.5])
+        simple_map.get_contours([1.5, 2.5])
 
 
-def test_contour_units(simple_map):
+def test_get_contours_invalid_library(simple_map):
+    with pytest.raises(ValueError, match="Unknown method 'invalid_method'. Use 'contourpy' or 'skimage'."):
+        simple_map.get_contours(1.5, method='invalid_method')
+
+
+def test_get_contours_units(simple_map):
     # Check that contouring with units works as intended
     simple_map.meta['bunit'] = 'm'
-
     # Same units
-    contours = simple_map.contour(1.5 * u.m)
+    contours = simple_map.get_contours(1.5 * u.m)
     assert len(contours) == 1
 
     # Different units, but convertible
-    contours_cm = simple_map.contour(150 * u.cm)
+    contours_cm = simple_map.get_contours(150 * u.cm)
     for c1, c2 in zip(contours, contours_cm):
         assert np.all(c1 == c2)
 
     # Percentage
-    contours_percent = simple_map.contour(50 * u.percent)
+    contours_percent = simple_map.get_contours(50 * u.percent)
     high = np.max(simple_map.data)
     low = np.min(simple_map.data)
     middle = high - (high - low) / 2
-    contours_ref = simple_map.contour(middle * simple_map.unit)
+    contours_ref = simple_map.get_contours(middle * simple_map.unit)
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
 
-@pytest.mark.skipif(Version(matplotlib.__version__) < Version("3.6.0"), reason="Fails on old MPL versions, the first with block raises a different error")
-def test_contour_inputs(simple_map):
+def test_get_contours_inputs(simple_map):
     with pytest.raises(ValueError, match='Contour levels must be increasing'):
         simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
     with pytest.raises(ValueError, match=re.escape('The provided level (1000.0) is not smaller than the maximum data value (80)')):
@@ -1505,22 +1540,22 @@ def test_contour_inputs(simple_map):
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.draw_contours(1.5)
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
-        simple_map.contour(1.5)
+        simple_map.get_contours(1.5)
 
     with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
         simple_map.draw_contours(1.5 * u.s)
     with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
-        simple_map.contour(1.5 * u.s)
+        simple_map.get_contours(1.5 * u.s)
 
     # With no units, check that dimensionless works
     simple_map.meta.pop('bunit')
     simple_map.draw_contours(1.5 * u.dimensionless_unscaled)
-    simple_map.contour(1.5 * u.dimensionless_unscaled)
+    simple_map.get_contours(1.5 * u.dimensionless_unscaled)
 
     with pytest.raises(u.UnitsError, match='This map has no unit'):
         simple_map.draw_contours(1.5 * u.m)
     with pytest.raises(u.UnitsError, match='This map has no unit'):
-        simple_map.contour(1.5 * u.m)
+        simple_map.get_contours(1.5 * u.m)
 
 
 def test_print_map(generic_map):

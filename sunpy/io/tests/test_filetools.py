@@ -61,6 +61,16 @@ def test_read_file_fits_gzip(fname):
     assert np.all(hdulist[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
 
+def test_read_file_fits_fz_ext(tmp_path):
+    test_fits = tmp_path / 'test.fits.fz'
+    with open(TEST_AIA_IMAGE, 'rb') as orig:
+        with (test_fits).open('wb') as test:
+            test.write(orig.read())
+
+    aia_header, aia_data = read_file(str(test_fits))[0]
+    assert isinstance(aia_header, np.ndarray)
+    assert isinstance(aia_data, FileHeader)
+
 @skip_glymur
 def test_read_file_jp2():
     # Aim is to verify that we can read a JP2 file
