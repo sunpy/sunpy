@@ -253,7 +253,7 @@ def read_genx(filename):
     genx files have been used to store calibration data for multiple
     instruments and distributed within solarsoft. They are stored in XDR
     format; The External Data Representation Standard file format (XDR) is
-    described in `RFC 1014 <https://tools.ietf.org/html/rfc1014>`__,
+    described in `RFC 1014 <https://www.rfc-editor.org/rfc/rfc1014.txt>`__,
     written by Sun Microsystems, Inc. June 1987.
 
     SolarSoft genx writer creates structures to store the values together with
