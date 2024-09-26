@@ -131,6 +131,16 @@ class HMIMap(GenericMap):
         self._nickname = self.detector
 
     @property
+    def waveunit(self):
+        """
+        The `~astropy.units.Unit` of the wavelength of this observation.
+
+        Most HMI files seem to not have a parseable WAVEUNIT key so if it cannot be found
+        we default to Angstrom
+        """
+        return super().waveunit | u.Angstrom
+
+    @property
     def measurement(self):
         """
         Returns the measurement type.
