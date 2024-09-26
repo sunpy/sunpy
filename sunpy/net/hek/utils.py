@@ -274,7 +274,8 @@ def get_unit(unit):
         "square meter": m2,
         "ergs per cubic centimeter": erg_per_cm3,
         "HMI pixels": hmi_pixel,
-        "radians": u.rad
+        "radians": u.rad,
+        "hz": u.Hertz,
     }
     with u.add_enabled_units([cm2, m2, m3]), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         # Units for coordinate frames have more than one unit, otherwise it will be just one unit.
