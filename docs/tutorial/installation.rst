@@ -19,6 +19,8 @@ If you already have Python and ``conda`` working you can skip the next section.
 Instead, we recommend that you use miniforge which is a minimal installer that setups conda with the conda-forge channel, which is free to use for everyone.
 If you are using miniforge, you can skip the next section
 
+.. _sunpy-tutorial-installing-miniforge:
+
 Installing miniforge
 --------------------
 
@@ -26,6 +28,12 @@ If you don't already have a Python installation then we recommend installing Pyt
 This will install ``conda`` and automatically configure the default channel (a channel is a remote software repository) to be ``conda-forge``, which is where ``sunpy`` is available.
 
 First, download the installer for your system and architecture from the links below:
+
+.. note::
+
+   sunpy packages are not yet available on conda-forge for aarch64 or ppc64le
+   architectures on linux, you will have to install sunpy from pip on these
+   platforms.
 
 .. grid:: 3
 
