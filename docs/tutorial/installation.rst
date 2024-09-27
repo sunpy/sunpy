@@ -52,10 +52,10 @@ First, download the installer for your system and architecture from the links be
 
     .. grid-item-card:: Mac
 
-        `x86-64 <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh>`__
-
         `arm64 (Apple
         Silicon) <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh>`__
+
+        `x86-64 <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh>`__
 
 Then select your platform to install miniforge:
 
