@@ -93,11 +93,6 @@ Now we will create and activate a new virtual environment to install ``sunpy`` i
 .. code-block:: bash
 
     $ conda create --name sunpy
-    # Only run the following two lines
-    # if you have NOT installed miniforge or added conda-forge to your channels
-    # Do not run these lines if you are using Anaconda
-    $ conda config --add channels conda-forge
-    $ conda config --set channel_priority strict
     $ conda activate sunpy
 
 In this case the environment is named 'sunpy'.
@@ -105,6 +100,41 @@ Feel free to change this to a different environment name.
 
 The benefit of using a virtual environment is that it allows you to install packages without affecting any other Python installation on your system.
 This also means you can work on multiple projects (research or coding) with different package requirements without them interfering with each other.
+
+.. dropdown:: Click here if you haven't installed mini-forge
+    :color: warning
+
+    If you have installed miniforge or are using Anaconda you need to configure
+    conda to get your packages from conda-forge as well as the defaults channel.
+
+    SunPy no longer recommends using the defaults channel at all, see `this blog
+    post <https://sunpy.org/posts/2024/2024-08-09-anaconda/>`__ for details as
+    to why. Therefore, if you are using Anaconda or miniconda we would suggest
+    you uninstall it and install miniforge in its place.
+
+    We also appreciate this isn't going to be possible for everyone, so what
+    follows is our best instructions for how to proceed if you are using
+    miniconda or Anaconda.
+
+    The commands you need to run to add conda-forge and make it the default
+    location to install conda packages from are:
+
+    .. code-block:: bash
+
+        $ conda config --add channels conda-forge
+        $ conda config --set channel_priority strict
+
+    These commands are taken from the
+    `conda-forge documentation <https://conda-forge.org/docs/user/introduction/#how-can-i-install-packages-from-conda-forge>`__.
+
+    Running these commands affect all the environments in your conda
+    installation, critically, including the base Anaconda environment.  We
+    highly recommend that you do not install new packages, upgrade packages or
+    use your base environment. Instead create new environments for all your
+    projects, as you are much less likely to run into any pitfalls while using
+    `multiple channels <https://conda-forge.org/docs/user/tipsandtricks/#multiple-channels>`__ by
+    doing this.
+
 
 Now we have a fresh environment we can install ``sunpy``:
 
