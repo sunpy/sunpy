@@ -85,7 +85,7 @@ Then select your platform to install miniforge:
 In a new terminal (miniforge Prompt on Windows) run ``conda list`` to test that the install has worked.
 
 Installing sunpy
-----------------
+================
 
 To install ``sunpy``, start by launching a terminal (under a UNIX-like system) or the miniforge Prompt (under Windows).
 Now we will create and activate a new virtual environment to install ``sunpy`` into:
