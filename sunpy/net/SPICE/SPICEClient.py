@@ -146,6 +146,10 @@ class SPICEClient(BaseClient):
                 })
 
         return QueryResponseTable(results, client=self)
+    
+    @classmethod
+    def _attrs_module(cls):
+        return 'SPICE', 'sunpy.net.SPICE.attrs'
 
     def fetch(self, query_results, path=None, **kwargs):
         """

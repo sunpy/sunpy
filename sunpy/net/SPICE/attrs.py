@@ -1,4 +1,4 @@
-from sunpy.net.attr import SimpleAttr
+from sunpy.net.attr import SimpleAttr, AttrWalker
 from sunpy.time import parse_time
 
 
@@ -78,3 +78,12 @@ class Index(SimpleAttr):
 class Mission(SimpleAttr):
     def __init__(self, *value):
         self.value = value
+
+
+# walker = AttrWalker()
+
+# @walker.add_applier(Mission)
+# def __apply1(wlk,query,imap):
+#     imap[query.__class__.__name__.lower()] = query.value
+#     print(imap)
+
