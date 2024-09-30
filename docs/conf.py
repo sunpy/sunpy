@@ -2,6 +2,7 @@
 Configuration file for the Sphinx documentation builder.
 """
 # -- stdlib imports ------------------------------------------------------------
+
 import os
 import sys
 import datetime
@@ -10,6 +11,7 @@ import warnings
 from packaging.version import Version
 
 # -- Read the Docs Specific Configuration --------------------------------------
+
 # This needs to be done before sunpy is imported
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
@@ -20,6 +22,7 @@ if on_rtd:
     os.environ['PARFIVE_HIDE_PROGRESS'] = 'True'
 
 # -- Check for dependencies ----------------------------------------------------
+
 from sunpy.util import missing_dependencies_by_extra
 
 missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
