@@ -101,7 +101,7 @@ Feel free to change this to a different environment name.
 The benefit of using a virtual environment is that it allows you to install packages without affecting any other Python installation on your system.
 This also means you can work on multiple projects (research or coding) with different package requirements without them interfering with each other.
 
-.. dropdown:: Click here if you haven't installed mini-forge
+.. dropdown:: Click here if you haven't installed miniforge
     :color: warning
 
     If you have installed miniforge or are using Anaconda you need to configure conda to get your packages from conda-forge as well as the defaults channel.
