@@ -41,29 +41,6 @@ import sunpy
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 # -- Project information -------------------------------------------------------
-project = 'sunpy'
-author = 'The SunPy Community'
-copyright = f'{datetime.datetime.now().year}, {author}'
-
-<<<<<<<
-# Register remote data option with doctest
-import doctest
-
-REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
-
-# The full version, including alpha/beta/rc tags
-from sunpy import __version__
-
-release = __version__
-sunpy_version = Version(__version__)
-is_release = not(sunpy_version.is_prerelease or sunpy_version.is_devrelease)
-
-=======
-import datetime
-
-from packaging.version import Version
-
-# -- Project information -----------------------------------------------------
 
 # The full version, including alpha/beta/rc tags
 from sunpy import __version__
@@ -78,9 +55,15 @@ elif _version.is_devrelease:
     version = release = f'{_version.base_version}.dev{_version.dev}'
 is_development = _version.is_devrelease
 
-project = "sunpy"
-author = "The SunPy Community"
->>>>>>>
+project = 'sunpy'
+author = 'The SunPy Community'
+copyright = f'{datetime.datetime.now().year}, {author}'
+
+# Register remote data option with doctest
+import doctest
+
+REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
+
 # We want to make sure all the following warnings fail the build
 warnings.filterwarnings("error", category=SunpyDeprecationWarning)
 warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
@@ -88,6 +71,7 @@ warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
 warnings.filterwarnings("error", category=AstropyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
+
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.
 ori_level = sunpy.log.level
@@ -111,6 +95,7 @@ linkcheck_ignore = [
 linkcheck_anchors = False
 
 # -- General configuration ---------------------------------------------------
+
 # sphinxext-opengraph
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
@@ -237,6 +222,7 @@ intersphinx_mapping = {
 }
 
 # -- Options for hoverxref -----------------------------------------------------
+
 if os.environ.get("READTHEDOCS"):
     hoverxref_api_host = "https://readthedocs.org"
 
@@ -270,6 +256,7 @@ hoverxref_role_types = {
 }
 
 # -- Options for HTML output ---------------------------------------------------
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = "sunpy"
@@ -292,6 +279,7 @@ graphviz_dot_args = [
 ]
 
 # -- Sphinx Gallery ------------------------------------------------------------
+
 # JSOC email os env
 # see https://github.com/sunpy/sunpy/wiki/Home:-JSOC
 os.environ["JSOC_EMAIL"] = "jsoc@sunpy.org"
@@ -324,6 +312,7 @@ sphinx_gallery_conf = {
 }
 
 # -- Linking to OpenCV docs by using rst_epilog --------------------------------
+
 try:
     import requests
     from bs4 import BeautifulSoup
@@ -360,11 +349,13 @@ rst_epilog = f"""
 """
 
 # -- Options for sphinx-copybutton ---------------------------------------------
+
 # Python Repl + continuation, Bash, ipython and qtconsole + continuation, jupyter-console + continuation
 copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
 copybutton_prompt_is_regexp = True
 
 # -- Stability Page ------------------------------------------------------------
+
 with open('./reference/sunpy_stability.yaml') as estability:
     yaml = YAML(typ='rt')
     sunpy_modules = yaml.load(estability.read())
@@ -406,6 +397,7 @@ def jinja_to_rst(app, docname, source):
 
 
 # -- Sphinx setup --------------------------------------------------------------
+
 def setup(app):
     # Handles the templating for the jinja pages in our docs
     app.connect("source-read", jinja_to_rst)
