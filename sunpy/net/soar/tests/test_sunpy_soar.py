@@ -319,7 +319,7 @@ def test_distance_search_insitu():
     product = a.soar.Product("metis-vl-pol-angle")
     distance = a.soar.Distance(0.45 * u.AU, 0.46 * u.AU)
     res = Fido.search(distance & instrument & product & level)
-    assert res.file_num == 172
+    assert res.file_num == 240
 
 
 def test_distance_time_search():

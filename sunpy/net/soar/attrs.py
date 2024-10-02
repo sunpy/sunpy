@@ -10,7 +10,7 @@ from astropy.units import quantity_input
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, Range, SimpleAttr
 from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ["Product", "SOOP"]
+__all__ = ["Product", "SOOP", "Distance"]
 
 
 class Product(SimpleAttr):
@@ -32,26 +32,25 @@ class SOOP(SimpleAttr):
 
 
 class Distance(Range):
-    type_name = "distance"
+    """
+    Specifies the distance range.
+
+    Parameters
+    ----------
+    dist_min : `~astropy.units.Quantity`
+        The lower bound of the range.
+    dist_max : `~astropy.units.Quantity`
+        The upper bound of the range.
+
+    Notes
+    -----
+    The valid units for distance are AU, km, and mm. Any unit directly
+    convertible to these units is valid input. This class filters the query
+    by solar distance without relying on a specific distance column.
+    """
 
     @quantity_input(dist_min=u.m, dist_max=u.m)
     def __init__(self, dist_min: u.Quantity, dist_max: u.Quantity):  # NOQA: ANN204
-        """
-        Specifies the distance range.
-
-        Parameters
-        ----------
-        dist_min : `~astropy.units.Quantity`
-            The lower bound of the range.
-        dist_max : `~astropy.units.Quantity`
-            The upper bound of the range.
-
-        Notes
-        -----
-        The valid units for distance are AU, km, and mm. Any unit directly
-        convertible to these units is valid input. This class filters the query
-        by solar distance without relying on a specific distance column.
-        """
         # Ensure both dist_min and dist_max are scalar values
         if not all([dist_min.isscalar, dist_max.isscalar]):
             msg = "Both dist_min and dist_max must be scalar values."
@@ -65,6 +64,9 @@ class Distance(Range):
         super().__init__(dist_min, dist_max)
 
     def collides(self, other):
+        """
+        Check if the other attribute collides with this attribute.
+        """
         return isinstance(other, self.__class__)
 
 
