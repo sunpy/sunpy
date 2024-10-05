@@ -1,10 +1,12 @@
 """
 This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
 """
+
 import numbers
 from itertools import product
 
 import numpy as np
+from scipy.interpolate import griddata
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -164,11 +166,73 @@ def solar_angular_radius(coordinates):
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
-def sample_at_coords(smap, coordinates):
+def get_neighboring_indices(indices, position, dimensions):
     """
-    Samples the data in a map at given series of coordinates.
-    Uses nearest-neighbor interpolation of coordinates in map, as
-    it effectively uses array indexing.
+    Get the neighboring indices relative to given indices.
+
+    Parameters
+    ----------
+    indices : 2-D ndarray of integers with shape (2, n)
+        Indices to find neighbors for.
+    position : 1-D ndarray of shape (2,) or 2-element list
+        x and y position of neighbor relative to given indices.
+    dimensions : 1-D ndarray of shape (2,) or 2-element list
+        x and y dimensions of the map.
+
+    Returns
+    -------
+    neighbor_indices : 2-D ndarray of integers with shape (2, ...)
+        Neighboring indices. Those out of bound of the map are masked
+        out.
+
+    Examples
+    --------
+    >>> indices = np.array([[0, 1, 2, 3, 4], [0, 1, 2, 3, 4]])
+    >>> indices
+    array([[0, 1, 2, 3, 4],
+           [0, 1, 2, 3, 4]])
+
+    >>> # Right neighbors
+    >>> get_neighboring_indices(indices, [1, 0], [5, 5])
+    array([[1, 2, 3, 4],
+           [0, 1, 2, 3]])
+
+    >>> # Left neighbors
+    >>> get_neighboring_indices(indices, [-1, 0], [5, 5])
+    array([[0, 1, 2, 3],
+           [1, 2, 3, 4]])
+
+    >>> # Top neighbors
+    >>> get_neighboring_indices(indices, [0, 1], [5, 5])
+    array([[0, 1, 2, 3],
+           [1, 2, 3, 4]])
+
+    >>> # Bottom neighbors
+    >>> get_neighboring_indices(indices, [0, -1], [5, 5])
+    array([[1, 2, 3, 4],
+           [0, 1, 2, 3]])
+
+    """
+    x, y = indices + np.array(position).reshape(2, 1)
+    in_bound = (
+        (x >= 0)
+        & (x <= dimensions[0] - 1)
+        & (y >= 0)
+        & (y <= dimensions[1] - 1)
+    )
+    return np.vstack((x[in_bound], y[in_bound]))
+
+
+def sample_at_coords(
+    smap,
+    coordinates,
+    method="astropy",
+    neighbor_positions=[[1, 0], [-1, 0], [0, 1], [0, -1]],
+):
+    """
+    Samples the data in a map at given series of coordinates. The
+    simplices are found using `astropy.wcs.WCS.all_world2pix`, which is
+    similar to using nearest-neighbor interpolation.
 
     An error is raised if any of the coordinates fall outside the map bounds.
 
@@ -178,6 +242,28 @@ def sample_at_coords(smap, coordinates):
         A SunPy map.
     coordinates : `~astropy.coordinates.SkyCoord`
         Input coordinates.
+    method : {'astropy', 'nearest', 'linear', 'cubic'}, optional
+        Sampling method. One of
+
+        ``astropy``
+          sampled values are exactly those at the simplices.
+          This is the default and fastest behavior.
+
+        ``nearest``
+          sampled values are interpolated using
+          `~scipy.interpolate.NearestNDInterpolator`.
+
+        ``linear``
+          sampled values are interpolated using
+          `~scipy.interpolate.LinearNDInterpolator`.
+
+        ``cubic``
+          sampled values are interpolated using
+          `~scipy.interpolate.CloughTocher2DInterpolator`.
+
+    neighbor_positions : list of 2-element relative neighboring pixels
+        Extra neighboring simplices around the coordinates used for
+        interpolation.
 
     Returns
     -------
@@ -188,10 +274,34 @@ def sample_at_coords(smap, coordinates):
     --------
     .. minigallery:: sunpy.map.sample_at_coords
     """
-    if not all(contains_coordinate(smap, coordinates)):
-        raise ValueError('At least one coordinate is not within the bounds of the map.')
 
-    return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
+    if not all(contains_coordinate(smap, coordinates)):
+        msg = "At least one coordinate is not within the bounds of the map."
+        raise ValueError(msg)
+
+    indices = np.array(smap.wcs.world_to_array_index(coordinates))
+
+    if method == "astropy":
+        return u.Quantity(smap.data[*indices], smap.unit)
+
+    extended_indices = indices.copy()
+    dimensions = [smap.dimensions.x.value, smap.dimensions.y.value]
+    for position in neighbor_positions:
+        extended_indices = np.append(
+            extended_indices,
+            get_neighboring_indices(indices, position, dimensions),
+            axis=1,
+        )
+
+    map_coordinates = smap.wcs.array_index_to_world(*extended_indices)
+    interpolated_values = griddata(
+        (map_coordinates.Tx.value, map_coordinates.Ty.value),
+        smap.data[*extended_indices],
+        (coordinates.Tx.value, coordinates.Ty.value),
+        method=method,
+    )
+
+    return u.Quantity(interpolated_values, smap.unit)
 
 
 def _edge_coordinates(smap):
@@ -257,7 +367,7 @@ def contains_solar_center(smap):
         True if the map contains the solar center.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
-    return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
+    return contains_coordinate(smap, SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=smap.coordinate_frame))
 
 
 @u.quantity_input
