@@ -251,11 +251,11 @@ def sample_at_coords(
 
         ``nearest``
           sampled values are interpolated using
-          `~scipy.interpolate.NearestNDInterpolator`.
+          `~scipy.interpolate.NearestANDInterpolator`.
 
         ``linear``
           sampled values are interpolated using
-          `~scipy.interpolate.LinearNDInterpolator`.
+          `~scipy.interpolate.LinearANDInterpolator`.
 
         ``cubic``
           sampled values are interpolated using
