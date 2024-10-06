@@ -1,5 +1,5 @@
-from sunpy.net.attr import SimpleAttr, AttrWalker
-from sunpy.time import parse_time
+import sunpy.net.attrs as a
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 
 #PSP SPECIFIC
@@ -60,13 +60,6 @@ class Version(SimpleAttr):
     version number for kernels
     """
 
-class Time(SimpleAttr):
-    """
-    Time attribute for kernel
-    """
-    def __init__(self,start,end = None):
-        self.start = parse_time(start)
-        self.end = parse_time(end) if end is not None else None
 
 class Index(SimpleAttr):
     """
@@ -75,15 +68,45 @@ class Index(SimpleAttr):
     def __init__(self,*value):
         self.value = value
 
-class Mission(SimpleAttr):
+class Obsevotory(SimpleAttr):
     def __init__(self, *value):
         self.value = value
 
 
-# walker = AttrWalker()
+walker = AttrWalker()
 
-# @walker.add_applier(Mission)
-# def __apply1(wlk,query,imap):
-#     imap[query.__class__.__name__.lower()] = query.value
-#     print(imap)
+@walker.add_creator(AttrOr)
+def _create1(wlk, query):
+    qblocks = []
+    for iattr in query.attrs:
+        qblocks.extend(wlk.create(iattr))
+    return qblocks
 
+
+@walker.add_creator(AttrAnd, DataAttr)
+def _create(wlk, query):
+    map_ = {}
+    wlk.apply(query, map_)
+    return [map_]
+
+@walker.add_applier(Obsevotory)
+def _(wlk,query,imap):
+    imap[query.__class__.__name__.lower()] = query.value
+
+@walker.add_applier(Kernel_type)
+def _(wlk,query,imap):
+    imap[query.__class__.__name__.lower()] = query.value
+
+@walker.add_applier(a.Time)
+def _(wlk,query,imap):
+    imap["start"] = query.start.tdb.strftime('%Y%m%d')
+    imap["end"] = query.end.tdb.strftime('%Y%m%d') if query.end is not None else None
+
+@walker.add_applier(a.Instrument)
+def _(wlk,query,imap):
+    imap[query.__class__.__name__.lower()] = query.value
+
+@walker.add_applier(AttrAnd)
+def _apply(wlk, query, imap):
+    for iattr in query.attrs:
+        wlk.apply(iattr, imap)

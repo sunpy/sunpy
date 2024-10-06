@@ -1,7 +1,13 @@
+import os
+import json
+
+from sunpy.net import attrs as a
+from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
-from sunpy.net.SPICE import attrs as a
-from sunpy.net.SPICE.PSP.psp import PSPKernel
-from sunpy.net.SPICE.Solo.solar_orbiter import SoloKernel
+from sunpy.net.SPICE.attrs import walker
+# import sunpy.net.SPICE.attrs as a
+from sunpy.net.SPICE.sources.PSP.psp import PSPKernel
+from sunpy.net.SPICE.sources.solar_orbiter import SoloKernel
 
 __all__ = ['SPICEClient']
 
@@ -42,11 +48,11 @@ class SPICEClient(BaseClient):
 
     """
     kernel_classes = {
-        'PSP': PSPKernel,
-        'Solo': SoloKernel
+        'psp': PSPKernel,
+        'solo': SoloKernel
     }
 
-    def search(self, *query, missions=None):
+    def search(self, *query):
         """
         Search for SPICE kernels based on mission and other criteria.
 
@@ -81,61 +87,42 @@ class SPICEClient(BaseClient):
             PSP    lsk naif0012.tls     0
         """
 
-
+        missions=None
         results = []
-        query_params = {}
         kernel_type = None
+        query = and_(*query)
+        block  = walker.create(query)[0]
 
-        for q in query:
-            if isinstance(q,a.Mission):
-                missions = q.value
-            if isinstance(q, a.Kernel_type):
-                kernel_type = q.value
-            if isinstance(q, a.Time):
-                query_params['start'] = q.start
-                query_params['end'] = q.end
-            if isinstance(q, a.Instrument):
-                query_params['instrument'] = q.value
-            if isinstance(q, a.Link):
-                query_params['link'] = q.value
-            if isinstance(q, a.Version):
-                query_params['version'] = q.value
-            if isinstance(q,a.Readme):
-                query_params["get_readme"] = q.value
-            if isinstance(q,a.Index):
-                query_params["index"] = q.value
-            if isinstance(q,a.Analysis_fk):
-                query_params["Analysis_fk"] = q.value
-            if isinstance(q,a.Numupdates):
-                query_params["numupdates"] = q.value
-            if isinstance(q,a.Sensor):
-                query_params["sensor"] = q.value
-            if isinstance(q,a.Voem):
-                query_params["voem"] = q.value
-
-        if missions is None:
-            missions = ('PSP', 'Solo')
-        if kernel_type is None:
+        if "kernel_type" in block:
+            kernel_type = block["kernel_type"]
+            block.pop("kernel_type")
+        else:
             raise ValueError("Kernel type must be specified in the query.")
+
+        if "obsevotory" in block:
+            missions = block["obsevotory"]
+            block.pop("obsevotory")
+        else:
+            missions = ('psp', 'solo')
 
         psp_recognized = ["fk","lsk","sclk","pck","ahk","pek","ltapk","ik"]
         solo_recognized = ["ck", "fk", "ik", "lsk", "pck", "sclk", "spk","mk"]
 
-        if "PSP" in missions and kernel_type not in psp_recognized:
-            missions = ("Solo",)
-        elif "Solo" in missions and kernel_type not in solo_recognized:
-            missions = ("PSP",)
+        if "psp" in missions and kernel_type not in psp_recognized:
+            missions = ("solo",)
+        elif "solo" in missions and kernel_type not in solo_recognized:
+            missions = ("psp",)
 
-        if any(param in query_params for param in ["get_readme", "voem", "sensor"]):
-            missions = ("Solo",)
-        elif any(param in query_params for param in ["Analysis_fk", "numupdates"]):
-            missions = ("PSP",)
+        if any(param in block for param in ["get_readme", "voem", "sensor"]):
+            missions = ("solo",)
+        elif any(param in block for param in ["Analysis_fk", "numupdates"]):
+            missions = ("psp",)
 
         for mission in missions:
             if mission not in self.kernel_classes:
                 raise ValueError(f"Unsupported mission: {mission}. Supported missions: {list(self.kernel_classes.keys())}")
             kernel_class = self.kernel_classes[mission](kernel_type)
-            filtered_kernels = kernel_class.filter_kernels(**query_params)
+            filtered_kernels = kernel_class.filter_kernels(**block)
 
             for index, link in filtered_kernels.items():
                 results.append({
@@ -146,7 +133,7 @@ class SPICEClient(BaseClient):
                 })
 
         return QueryResponseTable(results, client=self)
-    
+
     @classmethod
     def _attrs_module(cls):
         return 'SPICE', 'sunpy.net.SPICE.attrs'
@@ -172,6 +159,29 @@ class SPICEClient(BaseClient):
             kernel_class.download_by_index(index, overwrite=False, progress=True, wait=True, path=path)
 
     @staticmethod
+    def load_spice_values():
+        from sunpy.net import attrs as a
+        here = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
+            keyword_info = json.load(attrs_file)
+        keyword_info = list(keyword_info.items())
+
+        attrs = {a.SPICE.Obsevotory:keyword_info}
+        return attrs
+
+    @classmethod
+    def register_values(cls):
+        """
+        Register the SOAR specific attributes with Fido.
+
+        Returns
+        -------
+        dict
+            The dictionary containing the values formed into attributes.
+        """
+        return cls.load_spice_values()
+
+    @staticmethod
     def _can_handle_query(*query):
         """
         Check if this client can handle the given query.
@@ -185,4 +195,4 @@ class SPICEClient(BaseClient):
         -------
         bool
         """
-        return any(isinstance(q, a.Kernel_type) for q in query)
+        return any(isinstance(q, a.SPICE.Kernel_type) for q in query)
