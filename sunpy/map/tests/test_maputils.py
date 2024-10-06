@@ -206,8 +206,10 @@ def test_on_disk_bounding_coordinates(aia171_test_map):
     np.testing.assert_almost_equal(tr.Ty.to(u.arcsec).value, 971.63586861, decimal=1)
 
 
-def test_data_at_coordinates(aia171_test_map, aia_test_arc):
-    data = sample_at_coords(aia171_test_map, aia_test_arc.coordinates())
+@pytest.mark.parametrize("method", ["astropy", "nearest"])
+def test_data_at_coordinates(aia171_test_map, aia_test_arc, method):
+    data = sample_at_coords(aia171_test_map, aia_test_arc.coordinates(),
+                            method=method)
     pixels = np.asarray(np.rint(
         aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
     x = pixels[0, :]
