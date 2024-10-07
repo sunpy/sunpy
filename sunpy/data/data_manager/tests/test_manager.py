@@ -15,7 +15,7 @@ def test_basic(storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
-def test_download_cache(manager, storage, downloader, data_function):
+def test_download_cache(storage, downloader, data_function):
     """
     Test calling function multiple times does not redownload.
     """
@@ -32,7 +32,7 @@ def test_file_tampered(manager, storage, downloader, data_function):
     Test calling function multiple times does not redownload.
     """
     data_function()
-    write_to_test_file(manager._tempdir + '/sunpy.test_file', 'b')
+    write_to_test_file(f'{manager._tempdir}/sunpy.test_file', 'b')
     with pytest.warns(SunpyUserWarning):
         data_function()
 
@@ -63,7 +63,7 @@ def test_skip_all(manager, storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
-def test_override_file(manager, storage, downloader, data_function, tmpdir):
+def test_override_file(manager, data_function, tmpdir):
     """
     Test the override_file functionality.
     """
@@ -83,16 +83,15 @@ def test_override_file(manager, storage, downloader, data_function, tmpdir):
     # Outside the context manager file is default
     folder = tmpdir.strpath
     data_function(default_tester)
-    write_to_test_file(str(Path(folder+'/another_file')), 'a')
+    write_to_test_file(str(Path(f'{folder}/another_file')), 'a')
 
     with manager.override_file('test_file', f'file://{folder}/another_file'):
         # Inside the file is replaced
         data_function(override_file_tester)
 
-    # TODO: this combined with the check above fails on windows
-    # with manager.override_file('test_file', f'{folder}/another_file'):
-    #     # Inside the file is replaced
-    #     data_function(override_file_tester)
+    with manager.override_file('test_file', f'{folder}/another_file'):
+        # Inside the file is replaced
+        data_function(override_file_tester)
 
     # check the function works with hash provided
     with manager.override_file('test_file', f'file://{folder}/another_file', MOCK_HASH):
