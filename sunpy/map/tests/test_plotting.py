@@ -345,6 +345,17 @@ def test_plot_autoalign(aia171_test_map):
     return fig
 
 
+@figure_test
+def test_plot_autoalign_reproject(aia171_test_map):
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    rotated_map.plot(axes=ax, autoalign='reproject')
+    return fig
+
+
 def test_plot_autoalign_bad_inputs(aia171_test_map):
     with pytest.raises(ValueError):
         aia171_test_map.plot(autoalign='bad')
