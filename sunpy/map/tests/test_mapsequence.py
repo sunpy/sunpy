@@ -13,7 +13,7 @@ import sunpy
 import sunpy.data.test
 import sunpy.map
 from sunpy.data.test import get_test_filepath
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, skip_windows
 from sunpy.util.metadata import MetaDict
 
 
@@ -241,6 +241,7 @@ def test_map_sequence_plot_clip_interval(aia171_test_map):
     animation._step()
 
 
+@skip_windows
 def test_mapsequence_plot_unit8_norm():
     # We want to check the case for images with no norms set
     # This code used to fail in this case.
@@ -250,6 +251,7 @@ def test_mapsequence_plot_unit8_norm():
     moving_coconut._step()
 
 
+@skip_windows
 def test_mapsequence_plot_unit8_norm_clip_interval():
     # We want to check the case for images with no norms set
     # This code used to fail in this case.
