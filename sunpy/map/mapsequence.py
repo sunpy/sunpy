@@ -11,6 +11,7 @@ import numpy as np
 import numpy.ma as ma
 
 import astropy.units as u
+from astropy.visualization import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.maputils import _clip_interval, _handle_norm
@@ -359,21 +360,18 @@ class MapSequence:
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
-
             im.set_array(ani_data[i].data)
-            im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
-            norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
-
+            im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings.get('cmap')) or "grey")
+            norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings.get('norm')))
             if clip_interval is not None:
                 vmin, vmax = _clip_interval(ani_data[i].data, clip_interval)
+                if norm is None:
+                    norm = ImageNormalize()
                 norm.vmin=vmin
                 norm.vmax=vmax
-            _handle_norm(norm, kwargs)
-
-            # The following explicit call is for bugged versions of Astropy's ImageNormalize
-            norm.autoscale_None(ani_data[i].data)
-            im.set_norm(norm)
-
+            if norm:
+                _handle_norm(norm, kwargs)
+                im.set_norm(norm)
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(ani_data[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)

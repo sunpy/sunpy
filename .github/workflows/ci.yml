@@ -29,6 +29,9 @@ jobs:
       posargs: -n auto --color=yes
       envs: |
         - linux: py312
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -43,7 +46,13 @@ jobs:
       envs: |
         - windows: py311
         - macos: py310
+          libraries:
+            brew:
+              - openjpeg
         - linux: py310-oldestdeps
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -60,11 +69,12 @@ jobs:
         docs/generated/
         .tox/sample_data/
       cache-key: docs-${{ github.run_id }}
-      libraries: |
-        apt:
-          - graphviz
       envs: |
         - linux: build_docs
+          libraries:
+            apt:
+              - libopenjp2-7
+              - graphviz
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -90,6 +100,9 @@ jobs:
               - graphviz
         - linux: py312-online
           posargs: -n auto --dist loadgroup --color=yes
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -106,6 +119,9 @@ jobs:
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py312-devdeps
+          libraries:
+            apt:
+              - libopenjp2-7
         - linux: core_deps
         - linux: linkcheck
           pytest: false
