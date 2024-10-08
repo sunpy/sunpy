@@ -13,7 +13,7 @@ import sunpy
 import sunpy.data.test
 import sunpy.map
 from sunpy.data.test import get_test_filepath
-from sunpy.tests.helpers import figure_test, skip_windows
+from sunpy.tests.helpers import figure_test, skip_glymur
 from sunpy.util.metadata import MetaDict
 
 
@@ -241,7 +241,7 @@ def test_map_sequence_plot_clip_interval(aia171_test_map):
     animation._step()
 
 
-@skip_windows
+@skip_glymur
 def test_mapsequence_plot_uint8_norm():
     # We want to check the case for images with no norms set
     # This code used to fail in this case.
@@ -251,10 +251,20 @@ def test_mapsequence_plot_uint8_norm():
     moving_coconut._step()
 
 
-@skip_windows
+@skip_glymur
 def test_mapsequence_plot_uint8_norm_clip_interval():
     # This code used to fail in this case.
     coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
     [coconut.plot_settings.pop("norm") for coconut in coconuts]
     moving_coconut = coconuts.plot(clip_interval=(1, 99.99)*u.percent)
+    moving_coconut._step()
+
+
+@skip_glymur
+def test_mapsequence_plot_set_norm_pass_vmin_vmax(aia171_test_map):
+    # CHecking that passing in interval values works if the map has a norm
+    coconuts = sunpy.map.Map([aia171_test_map]*10,sequence=True)
+    moving_coconut = coconuts.plot(clip_interval=(1, 99.99)*u.percent)
+    moving_coconut._step()
+    moving_coconut = coconuts.plot(vmin=100, vmax=1000)
     moving_coconut._step()

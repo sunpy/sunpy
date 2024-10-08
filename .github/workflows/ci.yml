@@ -74,6 +74,7 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+              - graphviz
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"

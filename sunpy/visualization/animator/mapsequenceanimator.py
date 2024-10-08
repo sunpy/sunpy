@@ -70,7 +70,7 @@ class MapSequenceAnimator(BaseFuncAnimator):
             self.remove_obj.pop(0).remove()
         i = int(val)
         im.set_array(self.data[i].data)
-        im.set_cmap(self.mapsequence[i].plot_settings.get('cmap',"grey"))
+        im.set_cmap(self.mapsequence[i].plot_settings.get('cmap', "grey"))
         if norm := self.mapsequence[i].plot_settings.get('norm'):
             im.set_norm(deepcopy(norm))
         if wcsaxes_compat.is_wcsaxes(im.axes):
