@@ -242,7 +242,7 @@ def test_map_sequence_plot_clip_interval(aia171_test_map):
 
 
 @skip_windows
-def test_mapsequence_plot_unit8_norm():
+def test_mapsequence_plot_uint8_norm():
     # We want to check the case for images with no norms set
     # This code used to fail in this case.
     coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
@@ -252,8 +252,7 @@ def test_mapsequence_plot_unit8_norm():
 
 
 @skip_windows
-def test_mapsequence_plot_unit8_norm_clip_interval():
-    # We want to check the case for images with no norms set
+def test_mapsequence_plot_uint8_norm_clip_interval():
     # This code used to fail in this case.
     coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
     [coconut.plot_settings.pop("norm") for coconut in coconuts]
