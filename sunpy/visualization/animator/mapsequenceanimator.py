@@ -70,9 +70,9 @@ class MapSequenceAnimator(BaseFuncAnimator):
             self.remove_obj.pop(0).remove()
         i = int(val)
         im.set_array(self.data[i].data)
-        im.set_cmap(self.mapsequence[i].plot_settings['cmap'])
-        if "norm" in self.mapsequence[i].plot_settings:
-            im.set_norm(deepcopy(self.mapsequence[i].plot_settings['norm']))
+        im.set_cmap(self.mapsequence[i].plot_settings.get('cmap',"grey"))
+        if norm := self.mapsequence[i].plot_settings.get('norm'):
+            im.set_norm(deepcopy(norm))
         if wcsaxes_compat.is_wcsaxes(im.axes):
             im.axes.reset_wcs(self.mapsequence[i].wcs)
         # Having this line in means the plot will resize for non-homogeneous
