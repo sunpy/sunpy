@@ -16,6 +16,7 @@ from astropy.visualization import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import expand_list
+from sunpy.util.decorators import deprecated, deprecated_renamed_argument
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 
@@ -49,15 +50,18 @@ class MapSequence:
     To coalign a mapsequence so that solar features remain on the same pixels,
     please see the "Coalignment of MapSequences" note below.
 
+    .. note:: The individual components of a `~sunpy.map.MapSequence` can be coaligned
+              using the functions in `sunkit_image.coalignment` or using the
+              `~sunpy.map.GenericMap.reproject` method.
+
     Examples
     --------
     >>> import sunpy.map
     >>> mapsequence = sunpy.map.Map('images/*.fits', sequence=True)   # doctest: +SKIP
-
-    MapSequences can be co-aligned using the routines in `sunkit_image.coalignment`.
     """
 
-    def __init__(self, *args, sortby='date', derotate=False, **kwargs):
+    @deprecated_renamed_argument('derotate', new_name=None, since='6.1',)
+    def __init__(self, *args, sortby='date', derotate=False):
         """Creates a new Map instance"""
 
         self.maps = expand_list(args)
@@ -68,13 +72,18 @@ class MapSequence:
 
         # Optionally sort data
         if sortby is not None:
-            if sortby == 'date':
-                self.maps.sort(key=self._sort_by_date())
-            else:
-                raise ValueError("Only sort by date is supported")
+            if sortby not in self._sort_methods:
+                raise ValueError(f"sortby must be one of the following: {self._sort_methods.keys()}")
+            self.maps.sort(key=self._sort_methods[sortby])
 
         if derotate:
-            self._derotate()
+            raise NotImplementedError("This functionality has not yet been implemented.")
+
+    @property
+    def _sort_methods(self):
+        return {
+            "date": lambda m: m.date,
+        }
 
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
@@ -242,15 +251,7 @@ class MapSequence:
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    # Sorting methods
-    @classmethod
-    def _sort_by_date(cls):
-        return lambda m: m.date  # maps.sort(key=attrgetter('date'))
-
-    def _derotate(self):
-        """Derotates the layers in the MapSequence"""
-        raise NotImplementedError("This functionality has not yet been implemented.")
-
+    @deprecated_renamed_argument('resample', new_name=None, since='6.1')
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, clip_interval=None, **kwargs):
         """
@@ -329,8 +330,7 @@ class MapSequence:
         >>> plt.show()   # doctest: +SKIP
 
         """
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
+        axes = self[0]._check_axes(axes)
         fig = axes.get_figure()
 
         if not plot_function:
@@ -395,6 +395,7 @@ class MapSequence:
 
         return ani
 
+    @deprecated_renamed_argument('resample', new_name=None, since='6.1')
     def peek(self, resample=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
@@ -473,19 +474,46 @@ class MapSequence:
 
         return MapSequenceAnimator(plot_sequence, **kwargs)
 
-    def all_maps_same_shape(self):
-        """
-        Tests if all the maps have the same number pixels in the x and y
-        directions.
-        """
+    @property
+    def all_have_same_shape(self):
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
-    def at_least_one_map_has_mask(self):
+    @deprecated(since='6.1', alternative='.all_have_same_shape')
+    def all_maps_same_shape(self):
         """
-        Tests if at least one map has a mask.
+        True if all the maps have the same number pixels along both axes.
         """
+        return self.all_have_same_shape
+
+    @property
+    def at_least_one_has_mask(self):
         return np.any([m.mask is not None for m in self.maps])
 
+    @deprecated(since='6.1', alternative='.at_least_one_has_mask')
+    def at_least_one_map_has_mask(self):
+        """
+        True if at least one map has a mask
+        """
+        return self.at_least_one_has_mask
+
+    @property
+    def data(self):
+        if not self.all_have_same_shape:
+            raise ValueError('Not all maps have the same shape.')
+        data = np.asarray([m.data for m in self.maps])
+        return np.swapaxes(np.swapaxes(data, 0, 1), 1, 2)
+
+    @property
+    def mask(self):
+        if not self.at_least_one_has_mask:
+            return
+        mask = np.zeros_like(self.data, dtype=bool)
+        for i, m in enumerate(self):
+            if m.mask is not None:
+                mask[..., i] = m.mask
+        return mask
+
+    @deprecated(since='6.1', alternative='.data and .mask')
     def as_array(self):
         """
         If all the map shapes are the same, their image data is rendered
@@ -498,43 +526,39 @@ class MapSequence:
         mask are supplied with a mask that is full of False entries.
         If all the map shapes are not the same, a ValueError is thrown.
         """
-        if self.all_maps_same_shape():
-            data = np.swapaxes(np.swapaxes(np.asarray(
-                [m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
-            if self.at_least_one_map_has_mask():
-                mask_sequence = np.zeros_like(data, dtype=bool)
-                for im, m in enumerate(self.maps):
-                    if m.mask is not None:
-                        mask_sequence[:, :, im] = m.mask
-                return ma.masked_array(data, mask=mask_sequence)
-            else:
-                return data
+        data = self.data
+        if (mask:=self.mask) is not None:
+            return ma.masked_array(data, mask=mask)
         else:
-            raise ValueError('Not all maps have the same shape.')
+            return data
 
+    @deprecated('6.1', alternative='.meta')
     def all_meta(self):
         """
         Return all the meta objects as a list.
         """
+        return self.meta
+
+    @property
+    def meta(self):
         return [m.meta for m in self.maps]
 
     def save(self, filepath, filetype='auto', **kwargs):
         """
-        Saves the sequence, with one file per map.
-
-        Currently SunPy can save files only in the FITS format.
+        Saves the sequence as one map for FITS file.
 
         Parameters
         ----------
-        filepath : str
-            Location to save the file(s) to.  The string must contain ``"{index}"``,
-            which will be populated with the corresponding index number for each
-            map.  Format specifiers (e.g., ``"{index:03}"``) can be used.
-        filetype : str
+        filepath : `str`
+            Template string specifying the file to which each map is saved.
+            The string must contain ``"{index}"``, which will be populated with
+            the corresponding index number for each map.  Format specifiers
+            (e.g., ``"{index:03}"``) can be used.
+        filetype : `str`
             'auto' or any supported file extension.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io._file_tools.write_file`.
+            `~sunpy.map.GenericMap.save`.
 
         Examples
         --------
