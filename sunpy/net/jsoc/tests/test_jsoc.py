@@ -309,7 +309,7 @@ def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     assert len(files) == 6
     m = sunpy.map.Map(files, sequence=True)
     assert m.all_maps_same_shape()
-    assert m.as_array().shape == (1085, 1085, 6)
+    assert m.data.shape == (1085, 1085, 6)
 
 
 def test_row_and_warning(mocker, client, jsoc_response_double):

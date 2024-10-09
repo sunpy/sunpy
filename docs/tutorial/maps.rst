@@ -542,7 +542,7 @@ It is often useful to return the image data in a `~sunpy.map.MapSequence` as a s
 
 .. code-block:: python
 
-    >>> map_seq_array = map_seq.as_array()  # doctest: +REMOTE_DATA
+    >>> map_seq_array = map_seq.data  # doctest: +REMOTE_DATA
 
 Since all of the maps in our sequence of the same shape, the first two dimensions of our combined array will be the same as the component maps while the last dimension will correspond to the number of maps in the map sequence.
 We can confirm this by looking at the shape of the above array.
