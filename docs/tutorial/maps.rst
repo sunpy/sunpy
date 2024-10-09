@@ -530,19 +530,16 @@ For example, the following returns the same information as in :ref:`sunpy-tutori
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
             -128.03072  , -128.03072  ]], dtype=float32)
 
-MapSequences can hold maps that have different shapes.
-To test if all the maps in a `~sunpy.map.MapSequence` have the same shape:
-
-.. code-block:: python
-
-    >>> map_seq.all_maps_same_shape()  # doctest: +REMOTE_DATA
-    np.True_
-
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
 .. code-block:: python
 
     >>> map_seq_array = map_seq.data  # doctest: +REMOTE_DATA
+
+.. note::
+
+    MapSequences can hold maps that have different shapes.
+    In the case where not every map has the same shape, trying to cast the sequence as a single three-dimensional array will fail.
 
 Since all of the maps in our sequence of the same shape, the first two dimensions of our combined array will be the same as the component maps while the last dimension will correspond to the number of maps in the map sequence.
 We can confirm this by looking at the shape of the above array.

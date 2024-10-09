@@ -474,38 +474,30 @@ class MapSequence:
 
         return MapSequenceAnimator(plot_sequence, **kwargs)
 
-    @property
-    def all_have_same_shape(self):
-        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
-
-    @deprecated(since='6.1', alternative='.all_have_same_shape')
+    @deprecated(since='6.1', alternative='.data')
     def all_maps_same_shape(self):
         """
         True if all the maps have the same number pixels along both axes.
         """
-        return self.all_have_same_shape
+        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
-    @property
-    def at_least_one_has_mask(self):
-        return np.any([m.mask is not None for m in self.maps])
-
-    @deprecated(since='6.1', alternative='.at_least_one_has_mask')
+    @deprecated(since='6.1', alternative='.mask')
     def at_least_one_map_has_mask(self):
         """
         True if at least one map has a mask
         """
-        return self.at_least_one_has_mask
+        return np.any([m.mask is not None for m in self.maps])
 
     @property
     def data(self):
-        if not self.all_have_same_shape:
+        if not np.all([m.data.shape == self[0].data.shape for m in self]):
             raise ValueError('Not all maps have the same shape.')
         data = np.asarray([m.data for m in self.maps])
         return np.swapaxes(np.swapaxes(data, 0, 1), 1, 2)
 
     @property
     def mask(self):
-        if not self.at_least_one_has_mask:
+        if not np.any([m.mask is not None for m in self.maps]):
             return
         mask = np.zeros_like(self.data, dtype=bool)
         for i, m in enumerate(self):
