@@ -14,6 +14,7 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 
@@ -54,34 +55,33 @@ def mapsequence_different(aia171_test_map):
 
 def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
     """Make sure that Mapsequence knows if all the maps have the same shape"""
-    assert mapsequence_all_the_same.all_maps_same_shape()
-    assert not mapsequence_different.all_maps_same_shape()
+    with pytest.warns(SunpyDeprecationWarning, match='The all_maps_same_shape function is deprecated'):
+        assert mapsequence_all_the_same.all_maps_same_shape()
+        assert not mapsequence_different.all_maps_same_shape()
 
 
 def test_at_least_one_map_has_mask(mapsequence_all_the_same,
                                    mapsequence_all_the_same_all_have_masks,
-                                   mapsequence_all_the_same_some_have_masks
-                                   ):
+                                   mapsequence_all_the_same_some_have_masks):
     """ Test that we can detect the presence of at least one masked map."""
-    assert not mapsequence_all_the_same.at_least_one_map_has_mask()
-    assert mapsequence_all_the_same_all_have_masks.at_least_one_map_has_mask()
-    assert mapsequence_all_the_same_some_have_masks.at_least_one_map_has_mask()
+    with pytest.warns(SunpyDeprecationWarning, match='The at_least_one_map_has_mask function is deprecated'):
+        assert not mapsequence_all_the_same.at_least_one_map_has_mask()
+        assert mapsequence_all_the_same_all_have_masks.at_least_one_map_has_mask()
+        assert mapsequence_all_the_same_some_have_masks.at_least_one_map_has_mask()
 
 
-def test_as_array(mapsequence_all_the_same,
-                  mapsequence_different,
-                  mapsequence_all_the_same_all_have_masks,
-                  mapsequence_all_the_same_some_have_masks):
-    """Make sure the data in the mapsequence returns correctly, when all the
-    maps have the same shape.  When they don't have the same shape, make
-    sure an error is raised."""
+def test_as_array_different_shapes(mapsequence_different):
     # Should raise a ValueError if the mapsequence has differently shaped maps in
     # it.
-    with pytest.raises(ValueError, match="Not all maps have the same shape."):
-        mapsequence_different.as_array()
+    with pytest.raises(ValueError):
+        with pytest.warns(SunpyDeprecationWarning, match='The as_array function is deprecated'):
+            mapsequence_different.as_array()
 
+
+def test_as_array_no_masks(mapsequence_all_the_same):
     # Test the case when none of the maps have a mask
-    returned_array = mapsequence_all_the_same.as_array()
+    with pytest.warns(SunpyDeprecationWarning, match='The as_array function is deprecated'):
+        returned_array = mapsequence_all_the_same.as_array()
     assert isinstance(returned_array, np.ndarray)
     assert returned_array.ndim == 3
     assert len(returned_array.shape) == 3
@@ -90,8 +90,11 @@ def test_as_array(mapsequence_all_the_same,
     assert returned_array.shape[2] == 2
     assert np.ma.getmask(returned_array) is np.ma.nomask
 
+
+def test_as_array_all_masks(mapsequence_all_the_same_all_have_masks):
     # Test the case when all the maps have masks
-    returned_array = mapsequence_all_the_same_all_have_masks.as_array()
+    with pytest.warns(SunpyDeprecationWarning, match='The as_array function is deprecated'):
+        returned_array = mapsequence_all_the_same_all_have_masks.as_array()
     assert isinstance(returned_array, np.ma.masked_array)
     data = np.ma.getdata(returned_array)
     assert data.ndim == 3
@@ -107,21 +110,16 @@ def test_as_array(mapsequence_all_the_same,
     assert mask.shape[2] == 2
     assert mask.dtype == bool
 
+
+def test_as_array_some_masks(mapsequence_all_the_same_some_have_masks):
     # Test the case when some of the maps have masks
-    returned_array = mapsequence_all_the_same_some_have_masks.as_array()
+    with pytest.warns(SunpyDeprecationWarning, match='The as_array function is deprecated'):
+        returned_array = mapsequence_all_the_same_some_have_masks.as_array()
     assert isinstance(returned_array, np.ma.masked_array)
     data = np.ma.getdata(returned_array)
-    assert data.ndim == 3
-    assert len(data.shape) == 3
-    assert data.shape[0] == 128
-    assert data.shape[1] == 128
-    assert data.shape[2] == 3
-    mask = np.ma.getmask(mapsequence_all_the_same_some_have_masks.as_array())
-    assert mask.ndim == 3
-    assert len(mask.shape) == 3
-    assert mask.shape[0] == 128
-    assert mask.shape[1] == 128
-    assert mask.shape[2] == 3
+    assert data.shape == (128, 128, 3)
+    mask = np.ma.getmask(returned_array)
+    assert mask.shape == (128, 128, 3)
     assert np.all(mask[0:2, 0:3, 0])
     assert np.all(mask[0:2, 0:3, 1])
     assert np.all(np.logical_not(mask[0:2, 0:3, 2]))
@@ -130,7 +128,9 @@ def test_as_array(mapsequence_all_the_same,
 def test_all_meta(mapsequence_all_the_same):
     """Tests that the correct number of map meta objects are returned, and
     that they are all map meta objects."""
-    meta = mapsequence_all_the_same.all_meta()
+    with pytest.warns(SunpyDeprecationWarning, match="The all_meta function is deprecated"):
+        mapsequence_all_the_same.all_meta()
+    meta = mapsequence_all_the_same.meta
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
     assert np.all(np.asarray(
@@ -160,7 +160,9 @@ def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
 
 def test_derotate():
     with pytest.raises(NotImplementedError):
-        sunpy.map.MapSequence(derotate=True)
+        with pytest.warns(SunpyDeprecationWarning,
+                          match='"derotate" was deprecated in version 6.1 and will be removed in a future version.'):
+            sunpy.map.MapSequence(derotate=True)
 
 
 def test_repr_html(mapsequence_all_the_same):
