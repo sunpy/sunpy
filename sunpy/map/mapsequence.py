@@ -502,7 +502,7 @@ class MapSequence:
     @property
     def mask(self):
         if not np.any([m.mask is not None for m in self.maps]):
-            return
+            return None
         mask = np.zeros_like(self.data, dtype=bool)
         for i, m in enumerate(self):
             if m.mask is not None:
