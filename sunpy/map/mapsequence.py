@@ -20,6 +20,10 @@ from sunpy.util.decorators import deprecated, deprecated_renamed_argument
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 
+# NOTE: This is necessary because the deprecated decorator does not currently issue the correct
+# deprecation message. Remove this when that is fixed and/or when the v6.1 deprecations are removed.
+v61_DEPRECATION_MESSAGE = 'The {func} {obj_type} is deprecated and will be removed in sunpy 7.1. Use the {alternative} instead.'
+
 __all__ = ['MapSequence']
 
 
@@ -474,19 +478,19 @@ class MapSequence:
 
         return MapSequenceAnimator(plot_sequence, **kwargs)
 
-    @deprecated(since='6.1', alternative='.data')
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='data property')
     def all_maps_same_shape(self):
         """
         True if all the maps have the same number pixels along both axes.
         """
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
-    @deprecated(since='6.1', alternative='.mask')
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='mask property')
     def at_least_one_map_has_mask(self):
         """
         True if at least one map has a mask
         """
-        return np.any([m.mask is not None for m in self.maps])
+        return self.mask is not None
 
     @property
     def data(self):
@@ -505,7 +509,7 @@ class MapSequence:
                 mask[..., i] = m.mask
         return mask
 
-    @deprecated(since='6.1', alternative='.data and .mask')
+    @deprecated(since='6.1', alternative='data and mask properties', message=v61_DEPRECATION_MESSAGE)
     def as_array(self):
         """
         If all the map shapes are the same, their image data is rendered
@@ -524,7 +528,7 @@ class MapSequence:
         else:
             return data
 
-    @deprecated('6.1', alternative='.meta')
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='meta property')
     def all_meta(self):
         """
         Return all the meta objects as a list.
