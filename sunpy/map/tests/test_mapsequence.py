@@ -62,9 +62,9 @@ def test_deprecations(mapsequence_all_the_same,
     with pytest.warns(SunpyDeprecationWarning,
                       match='The at_least_one_map_has_mask function is deprecated and will be removed in sunpy 7.1. Use the mask property instead.'):
         mapsequence_all_the_same.at_least_one_map_has_mask()
-    with pytest.raises(ValueError):
-        with pytest.warns(SunpyDeprecationWarning,
-                          match='The as_array function is deprecated and will be removed in sunpy 7.1. Use the data property instead.'):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match='The as_array function is deprecated and will be removed in sunpy 7.1. Use the data and mask properties instead.'):
+        with pytest.raises(ValueError):
             mapsequence_different.as_array()
     with pytest.warns(SunpyDeprecationWarning,
                       match="The all_meta function is deprecated and will be removed in sunpy 7.1. Use the meta property instead."):
