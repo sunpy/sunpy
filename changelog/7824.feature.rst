@@ -1,2 +1,2 @@
 The `~sunpy.map.maputils.sample_at_coords` now allows interpolation
-with unstructured data using `~scipy.interpolate.griddata`.
+with `~scipy.interpolate.griddata`.
