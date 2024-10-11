@@ -166,7 +166,7 @@ def solar_angular_radius(coordinates):
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
-def get_neighboring_indices(indices, position, dimensions):
+def _get_neighboring_indices(indices, position, dimensions):
     """
     Get the neighboring indices relative to given indices.
 
@@ -193,22 +193,22 @@ def get_neighboring_indices(indices, position, dimensions):
            [0, 1, 2, 3, 4]])
 
     >>> # Right neighbors
-    >>> get_neighboring_indices(indices, [1, 0], [5, 5])
+    >>> _get_neighboring_indices(indices, [1, 0], [5, 5])
     array([[1, 2, 3, 4],
            [0, 1, 2, 3]])
 
     >>> # Left neighbors
-    >>> get_neighboring_indices(indices, [-1, 0], [5, 5])
+    >>> _get_neighboring_indices(indices, [-1, 0], [5, 5])
     array([[0, 1, 2, 3],
            [1, 2, 3, 4]])
 
     >>> # Top neighbors
-    >>> get_neighboring_indices(indices, [0, 1], [5, 5])
+    >>> _get_neighboring_indices(indices, [0, 1], [5, 5])
     array([[0, 1, 2, 3],
            [1, 2, 3, 4]])
 
     >>> # Bottom neighbors
-    >>> get_neighboring_indices(indices, [0, -1], [5, 5])
+    >>> _get_neighboring_indices(indices, [0, -1], [5, 5])
     array([[1, 2, 3, 4],
            [0, 1, 2, 3]])
 
@@ -289,9 +289,11 @@ def sample_at_coords(
     for position in neighbor_positions:
         extended_indices = np.append(
             extended_indices,
-            get_neighboring_indices(indices, position, dimensions),
+            _get_neighboring_indices(indices, position, dimensions),
             axis=1,
         )
+
+    extended_indices = np.unique(extended_indices, axis=1)
 
     map_coordinates = smap.wcs.array_index_to_world(*extended_indices)
     interpolated_values = griddata(
