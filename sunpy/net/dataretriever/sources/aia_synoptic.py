@@ -8,20 +8,24 @@ import astropy.units as u
 import os
 from datetime import timedelta, datetime
 
-# Setup the logger
-logger = logging.getLogger(__name__)
-logger.setLevel(os.getenv("LOG_LEVEL", "INFO"))  # Allow log level to be configurable
 
-# Create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+# Logger setup
+def setup_logger():
+    logger = logging.getLogger(__name__)
+    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+    logger.setLevel(log_level)
 
-# Create formatter and add it to the handler
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-ch.setFormatter(formatter)
+    if not logger.hasHandlers():
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
 
-# Add the handler to the logger
-logger.addHandler(ch)
+    return logger
+
+
+logger = setup_logger()
 
 __all__ = ["AIASynopticClient"]
 
@@ -29,6 +33,16 @@ __all__ = ["AIASynopticClient"]
 class AIASynopticClient(GenericClient):
     """
     A client for retrieving AIA synoptic data from JSOC.
+
+    This client retrieves synoptic AIA data from the following source:
+    https://jsoc1.stanford.edu/data/aia/synoptic/
+
+    The synoptic dataset includes lower-resolution (1k) images, with additional
+    image processing steps like downsampling and time integration. Characteristics
+    of the dataset can be found here: https://jsoc1.stanford.edu/data/aia/synoptic/README.html
+
+    - If AIASynopticData is present, resolution defaults to 1k and any user-specified
+      resolution will be overridden.
 
     Attributes:
         baseurl (str): The base URL template for retrieving AIA synoptic data.
@@ -61,14 +75,9 @@ class AIASynopticClient(GenericClient):
             bool: True if the client can handle the query, False otherwise.
         """
         required_attrs = {attrs.Time, AIASynopticData}
-        optional_attrs = {attrs.Instrument, attrs.Wavelength, attrs.Sample}
         all_attrs = {type(x) for x in query}
 
-        if not required_attrs.issubset(all_attrs):
-            return False
-
-        has_synoptic_data_attr = any(isinstance(x, AIASynopticData) for x in query)
-        return has_synoptic_data_attr
+        return required_attrs.issubset(all_attrs) and any(isinstance(x, AIASynopticData) for x in query)
 
     def search(self, *query: SimpleAttr) -> QueryResponse:
         """
@@ -77,31 +86,36 @@ class AIASynopticClient(GenericClient):
         Parameters:
             query (SimpleAttr): The query parameters including time, wavelength, and cadence.
 
+        Notes:
+            If AIASynopticData is present, resolution defaults to 1k.
+            If a resolution is specified alongside AIASynopticData, it will be overridden to 1k.
+
         Returns:
             QueryResponse: A response object containing the result of the query.
         """
         time_range = None
         wavelengths = []
         cadence_seconds = None
+        use_synoptic_data = False
 
         for q in query:
             if isinstance(q, attrs.Time):
                 time_range = q
             elif isinstance(q, attrs.Wavelength):
-                wavelength_value = q.min.to(u.angstrom).value
-                wavelengths.append(int(wavelength_value))
+                wavelengths.append(int(q.min.to(u.angstrom).value))
             elif isinstance(q, attrs.Sample):
                 cadence_seconds = q.value
+            elif isinstance(q, AIASynopticData):
+                use_synoptic_data = True
+                # If synoptic data is used, enforce 1k resolution
+                if any(isinstance(attr, attrs.Resolution) for attr in query):
+                    logger.warning("Resolution is overridden to 1k due to the use of AIASynopticData.")
 
         if not time_range:
             logger.error("Time range must be specified for the AIASynopticClient.")
             raise ValueError("Time range must be specified for the AIASynopticClient.")
 
-        if not wavelengths:
-            wavelengths = self.known_wavelengths
-        else:
-            wavelengths = [str(wl).zfill(4) for wl in wavelengths]
-
+        wavelengths = [str(wl).zfill(4) for wl in (wavelengths or self.known_wavelengths)]
         urls = self._generate_urls(time_range, wavelengths, cadence_seconds)
         return self._prepare_query_response(urls)
 
@@ -119,34 +133,29 @@ class AIASynopticClient(GenericClient):
 
         data = {
             "Start Time": [],
-            "Instrument": [],
+            "Instrument": ["AIA"] * len(urls),
             "Wavelength": [],
             "url": [],
             "fileid": [],
         }
+
         for url in urls:
             filename = os.path.basename(url)
-            name_part = filename[3:-5]
-            parts = name_part.split("_")
+            parts = filename[3:-5].split("_")
             if len(parts) == 3:
-                date_str = parts[0]
-                time_str = parts[1]
-                wavelength_str = parts[2]
-                datetime_str = date_str + time_str
                 try:
-                    start_time = datetime.strptime(datetime_str, "%Y%m%d%H%M")
+                    start_time = datetime.strptime(parts[0] + parts[1], "%Y%m%d%H%M")
                 except ValueError:
                     start_time = None
                 data["Start Time"].append(start_time)
-                data["Wavelength"].append(int(wavelength_str))
+                data["Wavelength"].append(int(parts[2]))
             else:
                 data["Start Time"].append(None)
                 data["Wavelength"].append(None)
-            data["Instrument"].append("AIA")
             data["url"].append(url)
             data["fileid"].append(filename)
-        table = QueryResponseTable(data, client=self)
-        return QueryResponse(table)
+
+        return QueryResponse(QueryResponseTable(data, client=self))
 
     def _generate_urls(self, time_range: attrs.Time, wavelengths: list, cadence_seconds: int = None) -> list:
         """
@@ -160,23 +169,18 @@ class AIASynopticClient(GenericClient):
         Returns:
             list: URLs corresponding to the requested data.
         """
+        urls = []
         current_time = time_range.start.datetime
         end_time = time_range.end.datetime
-        urls = []
+        cadence = timedelta(seconds=cadence_seconds) if cadence_seconds else timedelta(minutes=1)
 
-        if cadence_seconds is not None:
-            cadence_timedelta = timedelta(seconds=cadence_seconds)
-        else:
-            cadence_timedelta = timedelta(minutes=1)
+        logger.info(f"Using cadence: {cadence}.")  # Log cadence
 
         while current_time <= end_time:
+            baseurl = current_time.strftime(self.baseurl)
             for wavelength in wavelengths:
-                formatted_baseurl = current_time.strftime(self.baseurl)
-                formatted_url = current_time.strftime(self.pattern).format(
-                    baseurl=formatted_baseurl, wavelength=str(wavelength).zfill(4)
-                )
-                urls.append(formatted_url)
-            current_time += cadence_timedelta
+                urls.append(self.pattern.format(baseurl=baseurl, wavelength=str(wavelength).zfill(4)))
+            current_time += cadence
 
         logger.debug(f"Generated {len(urls)} URLs for download.")
         return urls
@@ -193,11 +197,13 @@ class AIASynopticClient(GenericClient):
         """
         try:
             download_path = os.path.dirname(path)
-            max_conn = kwargs.get("max_conn", 10)
-            downloader.max_conn = max_conn
+            downloader.max_conn = kwargs.get("max_conn", 10)
             for record in query_result:
                 downloader.enqueue_file(record["url"], path=download_path)
             return downloader.download()
+        except (IOError, OSError) as e:
+            logger.error(f"File error while fetching data: {e}")
+            raise
         except Exception as e:
             logger.error(f"Error while fetching data: {e}")
             raise
