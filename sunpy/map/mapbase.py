@@ -238,7 +238,6 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
-
         self.plot_settings = {'cmap': 'gray',
                             'interpolation': 'nearest',
                             'origin': 'lower'
