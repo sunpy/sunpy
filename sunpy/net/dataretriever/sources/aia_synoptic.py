@@ -1,12 +1,14 @@
+import os
 import logging
-from sunpy.net import attrs, Fido
+from datetime import datetime, timedelta
+
+import astropy.units as u
+
+from sunpy.net import Fido, attrs
 from sunpy.net.attr import SimpleAttr
 from sunpy.net.dataretriever import GenericClient
-from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.attrs.aia_synoptic import AIASynopticData
-import astropy.units as u
-import os
-from datetime import timedelta, datetime
+from sunpy.net.dataretriever.client import QueryResponse
 
 
 # Logger setup
@@ -201,7 +203,7 @@ class AIASynopticClient(GenericClient):
             for record in query_result:
                 downloader.enqueue_file(record["url"], path=download_path)
             return downloader.download()
-        except (IOError, OSError) as e:
+        except OSError as e:
             logger.error(f"File error while fetching data: {e}")
             raise
         except Exception as e:

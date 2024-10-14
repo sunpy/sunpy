@@ -1,17 +1,15 @@
-import tempfile
 import os
+
 import pytest
-import warnings
 from hypothesis import given
-import logging
+
+import astropy.units as u
 
 import sunpy.net.dataretriever.sources.aia_synoptic as aia_synoptic
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.tests.strategies import time_attr
-from sunpy.time import parse_time
-import astropy.units as u
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 
 
 @pytest.fixture
