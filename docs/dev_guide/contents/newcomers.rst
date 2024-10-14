@@ -136,12 +136,11 @@ These links are more in-depth than this guide but you will need to replace ``ast
 In order to start coding you will need a local Python environment and we would recommend using `miniforge`_ (shortened to conda from here on).
 This method will bypass your operating system Python packages and makes the entire process easier.
 
-The first step is to install the version of conda that corresponds to your operating system and `instructions are here`_.
-Next we will want to setup the conda environment and we will need to add the `conda-forge`_ channel as a prerequisite:
+The first step is to install the version of miniforge which matches your system you can follow the instructions on :ref:`sunpy-tutorial-installing-miniforge` sunpy's install guide, but do not follow the "Installing sunpy" section.
+Next we will want to setup the conda environment:
 
 .. code:: bash
 
-    $ conda config --add channels conda-forge
     # Note you might need to add python=<version> if a new release of Python has come out very recently.
     # Typically it will take around 3 months before we can support the latest version of Python.
     $ conda create -n sunpy-dev pip
@@ -184,8 +183,7 @@ Ideally, when you start making changes you want to create a git branch:
 You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
-.. _miniforge: hhttps://github.com/conda-forge/miniforge?tab=readme-ov-file#download
-.. _instructions are here: https://conda.io/projects/conda/en/latest/user-guide/install/index.html#installation
+.. _miniforge: https://github.com/conda-forge/miniforge?tab=readme-ov-file#download
 .. _conda-forge: https://conda-forge.org/
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 .. _GitHub: https://github.com/
