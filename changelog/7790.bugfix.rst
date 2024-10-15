@@ -1,1 +1,1 @@
-Fixed incorrect URI handling in `map_factory`` and `timeseries_factory`.
+Fixed incorrect URI handling in `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries`.
