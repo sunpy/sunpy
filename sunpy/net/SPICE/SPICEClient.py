@@ -33,19 +33,18 @@ class SPICEClient(BaseClient):
 
     Examples
     --------
-    >>> from sunpy.net.SPICE import attrs as a
+    >>> from sunpy.net import attrs as a
     >>> from sunpy.net.SPICE.SPICEClient import SPICEClient
     >>> from astropy.time import Time
     >>> client = SPICEClient()  # doctest: +REMOTE_DATA
-    >>> query = [a.Mission('Solo'), a.Kernel_type('lsk')]   # doctest: +REMOTE_DATA
+    >>> query = [a.SPICE.Observatory.psp,a.Instrument.sweap]   # doctest: +REMOTE_DATA
     >>> results = client.search(*query) # doctest: +REMOTE_DATA
     >>> print(results) # doctest: +REMOTE_DATA
-    Mission Kernel     Link     Index
-    ------- ------ ------------ -----
-       Solo    lsk aareadme.txt     0
-       Solo    lsk naif0012.tls     1
-
+    Mission Kernel        Link       Index
+    ------- ------ ----------------- -----
+        psp     ik spp_sweap_v100.ti     0
     """
+
     kernel_classes = {
         'psp': PSPKernel,
         'solo': SoloKernel
@@ -74,18 +73,17 @@ class SPICEClient(BaseClient):
 
         Examples
         --------
-        >>> from sunpy.net.SPICE import attrs as a
-        >>> from sunpy.net.SPICE.SPICEClient import SPICEClient
-        >>> from astropy.time import Time
-        >>> client = SPICEClient()  # doctest: +REMOTE_DATA
-        >>> query = [a.Mission('PSP'), a.Kernel_type('lsk')]    # doctest: +REMOTE_DATA
-        >>> results = client.search(*query) # doctest: +REMOTE_DATA
-        >>> print(results)  # doctest: +REMOTE_DATA
-        Mission Kernel     Link     Index
-        ------- ------ ------------ -----
-            PSP    lsk naif0012.tls     0
+    >>> from sunpy.net import attrs as a
+    >>> from sunpy.net.SPICE.SPICEClient import SPICEClient
+    >>> from astropy.time import Time
+    >>> client = SPICEClient()  # doctest: +REMOTE_DATA
+    >>> query = [a.SPICE.Observatory.psp,a.Instrument.sweap]   # doctest: +REMOTE_DATA
+    >>> results = client.search(*query) # doctest: +REMOTE_DATA
+    >>> print(results) # doctest: +REMOTE_DATA
+    Mission Kernel        Link       Index
+    ------- ------ ----------------- -----
+        psp     ik spp_sweap_v100.ti     0
         """
-
         missions=None
         results = []
         kernel_type = None

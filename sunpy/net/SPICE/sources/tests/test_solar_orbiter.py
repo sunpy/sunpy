@@ -12,7 +12,7 @@ def test_all_links(Solo):
     links = Solo.get_all_links()
     assert isinstance(links,list)
     assert "naif0012.tls" in links
-    
+
 @pytest.mark.remote_data
 def test_filter_kernels_index(Solo):
     query1 = {
