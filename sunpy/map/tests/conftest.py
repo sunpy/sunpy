@@ -1,8 +1,12 @@
+import warnings
+
 import numpy as np
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
+from astropy.io.fits.verify import VerifyWarning
 from astropy.time import Time
 
 import sunpy.coordinates
@@ -143,7 +147,13 @@ def eit_test_map():
 def sample_171():
     from sunpy.data.sample import AIA_171_IMAGE
 
-    return sunpy.map.Map(AIA_171_IMAGE)
+    # Need to bypass
+    # VerifyWarning: Invalid 'BLANK' keyword in header.
+    # The 'BLANK' keyword is only applicable to integer data, and will be ignored in this HDU.
+    with fits.open(AIA_171_IMAGE) as hdu:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=VerifyWarning)
+            return sunpy.map.Map(hdu[1].data, hdu[1].header)
 
 
 @pytest.fixture
