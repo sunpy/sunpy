@@ -207,11 +207,6 @@ def detect_filetype(filepath, **kwargs):
             fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
         except Exception:
             return None
-    elif isinstance(filepath, fsspec.core.OpenFile):
-        try:
-            fileobj = filepath.open()
-        except Exception:
-            return None
     else:
         fileobj = open(filepath, 'rb')
     with fileobj as fp:
