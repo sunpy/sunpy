@@ -126,7 +126,7 @@ docs = [
   "sphinxext-opengraph>=0.6.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinx-hoverxref>=1.3.0",
-  "s3fs>=2024.6.1"
+  "boto3==1.35.40",
 ]
 docs-gallery = [
   "sunpy[docs]",
