@@ -1,12 +1,11 @@
-import os
 import json
+import pathlib
 
 from sunpy.net import attrs as a
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.SPICE.attrs import walker
-# import sunpy.net.SPICE.attrs as a
-from sunpy.net.SPICE.sources.PSP.psp import PSPKernel
+from sunpy.net.SPICE.sources.psp import PSPKernel
 from sunpy.net.SPICE.sources.solar_orbiter import SoloKernel
 
 __all__ = ['SPICEClient']
@@ -93,40 +92,21 @@ class SPICEClient(BaseClient):
         query = and_(*query)
         block  = walker.create(query)[0]
 
-        if "kernel_type" in block:
-            kernel_type = block["kernel_type"]
-            block.pop("kernel_type")
-        else:
-            raise ValueError("Kernel type must be specified in the query.")
+        if "instrument" in block:
+            kernel_type = "ik"
 
-        if "obsevotory" in block:
-            missions = block["obsevotory"]
-            block.pop("obsevotory")
-        else:
-            missions = ('psp', 'solo')
+        if "observatory" in block:
+            missions = block["observatory"]
+            block.pop("observatory")
 
-        psp_recognized = ["fk","lsk","sclk","pck","ahk","pek","ltapk","ik"]
-        solo_recognized = ["ck", "fk", "ik", "lsk", "pck", "sclk", "spk","mk"]
+        if missions not in self.kernel_classes:
+            raise ValueError(f"Unsupported mission: {missions}. Supported missions: {list(self.kernel_classes.keys())}")
+        kernel_class = self.kernel_classes[missions](kernel_type)
+        filtered_kernels = kernel_class.filter_kernels(**block)
 
-        if "psp" in missions and kernel_type not in psp_recognized:
-            missions = ("solo",)
-        elif "solo" in missions and kernel_type not in solo_recognized:
-            missions = ("psp",)
-
-        if any(param in block for param in ["get_readme", "voem", "sensor"]):
-            missions = ("solo",)
-        elif any(param in block for param in ["Analysis_fk", "numupdates"]):
-            missions = ("psp",)
-
-        for mission in missions:
-            if mission not in self.kernel_classes:
-                raise ValueError(f"Unsupported mission: {mission}. Supported missions: {list(self.kernel_classes.keys())}")
-            kernel_class = self.kernel_classes[mission](kernel_type)
-            filtered_kernels = kernel_class.filter_kernels(**block)
-
-            for index, link in filtered_kernels.items():
+        for index, link in enumerate(filtered_kernels.values()):
                 results.append({
-                    'Mission': mission,
+                    'Mission': missions,
                     'Kernel': kernel_type,
                     'Link': link,
                     'Index': index
@@ -138,7 +118,7 @@ class SPICEClient(BaseClient):
     def _attrs_module(cls):
         return 'SPICE', 'sunpy.net.SPICE.attrs'
 
-    def fetch(self, query_results, path=None, **kwargs):
+    def fetch(self, query_results, overwrite = False,path=None, **kwargs):
         """
         Fetch the selected kernels from both PSP and Solo missions based on the search results.
 
@@ -154,25 +134,26 @@ class SPICEClient(BaseClient):
         for result in query_results:
             mission = result['Mission']
             kernel_type = result['Kernel']
-            index = result['Index']
+            link = result['Link']
             kernel_class = self.kernel_classes[mission](kernel_type)
-            kernel_class.download_by_index(index, overwrite=False, progress=True, wait=True, path=path)
+            kernel_class.download_by_link(link, overwrite=overwrite, progress=True, wait=True, path=path)
 
     @staticmethod
     def load_spice_values():
-        from sunpy.net import attrs as a
-        here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
-            keyword_info = json.load(attrs_file)
-        keyword_info = list(keyword_info.items())
-
-        attrs = {a.SPICE.Obsevotory:keyword_info}
+        instr_path = pathlib.Path(__file__).parent / "data" / "instrument_attrs.json"
+        with instr_path.open() as instr_attrs_file:
+            all_instr = json.load(instr_attrs_file)
+        all_instr = list(all_instr.items())
+        attrs = {
+            a.Instrument:all_instr,
+            a.SPICE.Observatory:[('solo', 'solo'), ('psp', 'psp')]
+                }
         return attrs
 
     @classmethod
     def register_values(cls):
         """
-        Register the SOAR specific attributes with Fido.
+        Register the SPICE specific attributes with Fido.
 
         Returns
         -------
@@ -195,4 +176,5 @@ class SPICEClient(BaseClient):
         -------
         bool
         """
-        return any(isinstance(q, a.SPICE.Kernel_type) for q in query)
+
+        return any((isinstance(q, a.SPICE.Observatory) or isinstance(q,a.SPICE.Link))for q in query)

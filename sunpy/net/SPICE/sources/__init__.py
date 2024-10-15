@@ -1,2 +1,1 @@
-from PSP import psp
-from Solo import solar_orbiter
+from sunpy.net.SPICE.sources import psp, solar_orbiter

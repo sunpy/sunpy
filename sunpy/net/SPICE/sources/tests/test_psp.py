@@ -1,6 +1,6 @@
 import pytest
 
-from sunpy.net.SPICE.PSP.psp import PSPKernel
+from sunpy.net.SPICE.sources.psp import PSPKernel
 
 
 @pytest.fixture

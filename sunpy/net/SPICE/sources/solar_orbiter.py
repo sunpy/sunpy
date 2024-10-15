@@ -42,13 +42,6 @@ class SoloKernel:
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
 
-    def get_readme(self):
-        """
-        get aareadme.txt for specific kernel
-        """
-        readme = self.get_link_by_index()[0]
-        return readme
-
     def get_link_by_index(self):
         """
         returns a dictionary with each link mapped with its index
@@ -58,45 +51,43 @@ class SoloKernel:
             mapped[index] = link
         return mapped
 
-    def download_by_index(self,index,overwrite = False,progress = True,wait = True,downloader = None, path = None,):
-        """
-        Allows downloading links with their corresponding index.
-        ind being index.
-        """
-        links_mapped = self.filter_kernels()
+    def download_by_link(self,link,overwrite = False,progress = True,wait = True,downloader = None, path = None,):
+            """
+            Allows downloading links with their corresponding index.
+            ind being index.
+            """
+            # Create a downloader instance
+            downloader = Downloader(progress = progress,overwrite= overwrite,max_splits=1)
+            file_url = self.kernel_urls + "/" + link
+
+            if path is None:
+                default_dir = "Downloads" + f"_{self.kernel_type}"
+                path = os.path.join(default_dir,'{file}')
+
+            elif isinstance(path,Path):
+                path = str(path)
+            if isinstance(path,str) and '{file}' not in path:
+                path = os.path.join(path,'{file}')
+
+            if "aareadme.txt" == link:
+                file_name = path.format(file = f"for {self.kernel_type} {link}")
+            else:
+                file_name = path.format(file = link)
 
 
-        # Create a downloader instance
-        downloader = Downloader(progress = progress,overwrite= overwrite)
-        file_url = self.kernel_urls + "/" + links_mapped[index]
-
-        if path is None:
-            default_dir = "Downloads" + f"_{self.kernel_type}"
-            path = os.path.join(default_dir,'{file}')
-
-        elif isinstance(path,Path):
-            path = str(path)
-        if isinstance(path,str) and '{file}' not in path:
-            path = os.path.join(path,'{file}')
-
-        if not index:
-            file_name = path.format(file = f"for {self.kernel_type} {links_mapped[index]}")
-        else:
-            file_name = path.format(file = links_mapped[index])
-        downloader.enqueue_file(file_url, path=file_name, filename=file_name)
-        print(f"Queued for download: {index} -- {file_name}")
-        print(file_name)
+            downloader.enqueue_file(file_url, path=file_name, filename=file_name,max_splits=1)
 
 
 
-        if not wait:
-            return Results()
 
-        results =  downloader.download()
-        return results
+            if not wait:
+                return Results()
+
+            results =  downloader.download()
+            return results
 
 
-    def filter_kernels(self,get_readme = False,**kwargs):
+    def filter_kernels(self,**kwargs):
         """
         Filter kernels based on search terms using specified boolean logic.
         Returns:
@@ -108,17 +99,11 @@ class SoloKernel:
         if "index" in kwargs:
             for _,j in enumerate(kwargs["index"]):
                 filtered_kernel[j] = original_links[j]
-                print(filtered_kernel[j])
-            return filtered_kernel
-        if get_readme:
-            filtered_kernel[0] = self.get_readme()
             return filtered_kernel
         if 'start' in kwargs:
             kwargs['start'] = Time(kwargs['start']).tdb.strftime('%Y%m%d')
         if 'end' in kwargs and kwargs["end"] is not None:
             kwargs['end'] = Time(kwargs['end']).tdb.strftime('%Y%m%d')
-        if "version" in kwargs:
-            kwargs["version"] = "V" + str(kwargs["version"])
 
 
         for index, link in original_links.items():
