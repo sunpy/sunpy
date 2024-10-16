@@ -122,7 +122,7 @@ Footnotes
 
 .. [#apparent] The term "apparent" (as opposed to "true") is used to indicate that the observer perceives the locations and orientations of objects different from how they truly are due to effects that include light travel time.
 .. [#subEarth] "Sub-Earth" is a special case of "sub-observer", where the observer is at Earth (specifically, Earth center).  That is, the sub-Earth point is the point on the Sun's surface "below" the center of the Earth along the Sun-Earth line.
-.. [#Carrington] Carrington (1863), *Observations of the Spots on the Sun*, p. 16 and p.27
+.. [#Carrington] Carrington (1863), *Observations of the Spots on the Sun*, `p. 16 and p.27 <https://www.google.com/books/edition/_/GY1DAAAAcAAJ>`__
 .. [#IAU] Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates and rotational elements: 2006", `<http://dx.doi.org/10.1007/s10569-007-9072-y>`__
 .. [#AA] Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's Physical Ephemeris in The Astronomical Almanac", `<http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
 
