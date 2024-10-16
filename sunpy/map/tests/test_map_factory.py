@@ -256,7 +256,7 @@ def test_uri_pattern():
     """
     Testing publicly accessible s3 object
     """
-    amap = sunpy.map.Map("s3://gov-nasa-hdrl-data1/sdo/aia/20100513/0131/sdo_aia_h2_20100513T000400_0131_v1.fits", fsspec_kwargs={"anon": True})
+    amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
     assert isinstance(amap, sunpy.map.GenericMap)
 
 def test_save():

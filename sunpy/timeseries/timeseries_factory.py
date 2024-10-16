@@ -1,6 +1,7 @@
 """
 This module provides the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
+
 import os
 import copy
 import pathlib
@@ -33,12 +34,17 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import HDPair, is_url, parse_path, possibly_a_path, is_uri, parse_uri
+from sunpy.util.io import HDPair, is_uri, is_url, parse_path, parse_uri, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 
-__all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
-           'InvalidTimeSeriesInput', 'InvalidTimeSeriesType']
+__all__ = [
+    "TimeSeries",
+    "TimeSeriesFactory",
+    "NoTimeSeriesFound",
+    "InvalidTimeSeriesInput",
+    "InvalidTimeSeriesType",
+]
 
 
 class TimeSeriesFactory(BasicRegistrationFactory):
@@ -140,12 +146,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         pairs : `list` or `str`
             List of ``(data, header)`` pairs or ``fname`` if the file is not supported or incorrect.
         """
-        if 'source' not in kwargs.keys() or not kwargs['source']:
+        if "source" not in kwargs.keys() or not kwargs["source"]:
             try:
-                if detect_filetype(fname, **kwargs) == 'cdf':
+                if detect_filetype(fname, **kwargs) == "cdf":
                     # Put import here to ensure there is no import dependency
                     # on cdflib for TimeSeries
                     from sunpy.io._cdf import read_cdf
+
                     return read_cdf(os.fspath(fname), **kwargs)
             except UnrecognizedFileTypeError:
                 pass
@@ -171,7 +178,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Return `True` if ``meta`` is an object that could store metadata.
         """
-        return isinstance(meta, astropy.io.fits.header.Header | sunpy.io._header.FileHeader | dict | sunpy.timeseries.TimeSeriesMetaData)
+        return isinstance(
+            meta,
+            astropy.io.fits.header.Header
+            | sunpy.io._header.FileHeader
+            | dict
+            | sunpy.timeseries.TimeSeriesMetaData,
+        )
 
     @staticmethod
     def _is_units(units):
@@ -182,9 +195,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         with only `astropy.units` for values.
         """
         # Must be a dict and all items must be a unit
-        return (isinstance(units, dict)
-                and not isinstance(units, MetaDict)
-                and all(isinstance(units[key], u.UnitBase) for key in units))
+        return (
+            isinstance(units, dict)
+            and not isinstance(units, MetaDict)
+            and all(isinstance(units[key], u.UnitBase) for key in units)
+        )
 
     @staticmethod
     def _from_table(t):
@@ -206,8 +221,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             if len(table.primary_key) == 1:
                 table.primary_key[0]
             else:
-                raise ValueError("Invalid input Table, TimeSeries doesn't support conversion"
-                                 " of tables with more then one index column.")
+                raise ValueError(
+                    "Invalid input Table, TimeSeries doesn't support conversion"
+                    " of tables with more then one index column."
+                )
 
         # Extract, convert and remove the index column from the input table
         index = table[index_name]
@@ -276,7 +293,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
                 # The next two could be metadata or units
                 for _ in range(2):
-                    j = i+1
+                    j = i + 1
                     if j < len(args):
                         arg = args[j]
                         if self._is_units(arg):
@@ -292,9 +309,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 args[i] = Request(arg)
             elif possibly_a_path(arg) and not is_uri(arg):
                 args[i] = pathlib.Path(arg)
-            elif is_uri(arg):  
-                if 'fsspec_kwargs' in kwargs:
-                    fsspec_kw = kwargs['fsspec_kwargs']
+            elif is_uri(arg):
+                if "fsspec_kwargs" in kwargs:
+                    fsspec_kw = kwargs["fsspec_kwargs"]
                 else:
                     fsspec_kw = {}
                 args[i] = fsspec.open_files(arg, **fsspec_kw)
@@ -373,10 +390,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # if we only have one data header pair:
                 if len(pairs) == 1:
                     return [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
-                    
+
                 else:
-                    raise NoMatchError("Input read by sunpy.io can not find a "
-                                        "matching class for reading multiple HDUs")
+                    raise NoMatchError(
+                        "Input read by sunpy.io can not find a " "matching class for reading multiple HDUs"
+                    )
             if len(set(types)) > 1:
                 raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
 
@@ -427,7 +445,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             all_ts += self._parse_ts_results(r, **kwargs)
         return all_ts
 
-    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
+    @deprecated_renamed_argument(
+        "silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning
+    )
     def __call__(self, *args, silence_errors=False, allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
@@ -458,7 +478,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         new_timeseries = self._parse_args(*args, **kwargs)
 
         # Concatenate the timeseries into one if specified.
-        concatenate = kwargs.get('concatenate', False)
+        concatenate = kwargs.get("concatenate", False)
         if concatenate:
             # Merge all these timeseries into one.
             full_timeseries = new_timeseries.pop(0)
@@ -488,9 +508,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError(f"Too many candidate types identified ({n_matches})."
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.")
+            raise MultipleMatchError(
+                f"Too many candidate types identified ({n_matches})."
+                "Specify enough keywords to guarantee unique type "
+                "identification."
+            )
 
         # Only one suitable source class is found
         return candidate_widget_types[0]
@@ -508,10 +530,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each
         # instrument subclass.
-        filepath = kwargs.pop('filepath', None)
-        data = kwargs.pop('data', None)
-        meta = kwargs.pop('meta', None)
-        units = kwargs.pop('units', None)
+        filepath = kwargs.pop("filepath", None)
+        data = kwargs.pop("data", None)
+        meta = kwargs.pop("meta", None)
+        units = kwargs.pop("units", None)
         if filepath:
             data, meta, units = WidgetType._parse_file(filepath)
 
@@ -552,6 +574,8 @@ class NoTimeSeriesFound(ValueError):
 
 
 TimeSeriesFactory.__doc__ = TimeSeriesFactory.__doc__.format(source_names=source_names)
-TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
-                               default_widget_type=GenericTimeSeries,
-                               additional_validation_functions=['is_datasource_for'])
+TimeSeries = TimeSeriesFactory(
+    registry=GenericTimeSeries._registry,
+    default_widget_type=GenericTimeSeries,
+    additional_validation_functions=["is_datasource_for"],
+)

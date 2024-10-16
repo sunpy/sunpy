@@ -1,6 +1,8 @@
 """
 This module provides a CDF file reader for internal use.
 """
+import inspect
+
 import cdflib
 import numpy as np
 import pandas as pd
