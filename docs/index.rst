@@ -94,5 +94,6 @@ It includes an interface for searching and downloading data from multiple data p
     whatsnew/index
     citation
     reference/known_issues
+    reference/bibliography
     reference/stability
     dev_guide/index

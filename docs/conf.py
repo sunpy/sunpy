@@ -143,6 +143,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinxcontrib.bibtex',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -297,6 +298,8 @@ graphviz_dot_args = [
 # the docs. For more options, see:
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autoclass_content
 autoclass_content = "both"
+
+bibtex_bibfiles = ['references.bib']
 
 # -- Sphinx Gallery ------------------------------------------------------------
 

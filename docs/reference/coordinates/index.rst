@@ -97,9 +97,8 @@ Supported Coordinate Systems
      -
 
 
-For a description of these coordinate systems,
-see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
-and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
+For a description of these coordinate systems, see :cite:t:`thompson_coordinate_2006`
+and :cite:t:`franz_heliospheric_2002`
 (and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
 
 Reference/API
