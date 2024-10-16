@@ -2692,9 +2692,18 @@ class GenericMap(NDData):
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
         if autoalign == 'reproject':
-                target_wcs = axes.wcs
-                reprojected_map = self.reproject_to(target_wcs)
-                data = reprojected_map.data
+            target_wcs = axes.wcs
+
+            # Plot the map to set the limits implicitly
+            self.plot(axes=axes)
+
+            # Now get the valid limits after plotting
+            xlim, ylim = axes.get_xlim(), axes.get_ylim()
+
+            target_wcs = axes.wcs
+            array_shape = (int(np.abs(ylim[1] - ylim[0])), int(np.abs(xlim[1] - xlim[0])))
+            reprojected_map = self.reproject_to(target_wcs, shape_out=array_shape)
+            data = reprojected_map.data
 
         if autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
