@@ -46,7 +46,6 @@ class AIAMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         # Fill in some missing info
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
@@ -129,6 +128,16 @@ class HMIMap(GenericMap):
                 # Magnetic field maps, not intensity maps
                 self._set_symmetric_vmin_vmax()
         self._nickname = self.detector
+
+    @property
+    def waveunit(self):
+        """
+        The `~astropy.units.Unit` of the wavelength of this observation.
+
+        Most HMI files seem to not have a parseable WAVEUNIT key so if it cannot be found
+        we default to Angstrom
+        """
+        return super().waveunit or u.Angstrom
 
     @property
     def measurement(self):
