@@ -376,16 +376,9 @@ class MapSequence:
             if norm:
                 _handle_norm(norm, kwargs)
                 im.set_norm(norm)
-            if wcsaxes_compat.is_wcsaxes(axes):
-                im.axes.reset_wcs(ani_data[i].wcs)
-                wcsaxes_compat.default_wcs_grid(axes)
-            else:
-                bl = ani_data[i]._get_lon_lat(ani_data[i].bottom_left_coord)
-                tr = ani_data[i]._get_lon_lat(ani_data[i].top_right_coord)
-                x_range = list(u.Quantity([bl[0], tr[0]]).to(ani_data[i].spatial_units[0]).value)
-                y_range = list(u.Quantity([bl[1], tr[1]]).to(ani_data[i].spatial_units[1]).value)
 
-                im.set_extent(np.concatenate((x_range.value, y_range.value)))
+            im.axes.reset_wcs(ani_data[i].wcs)
+            wcsaxes_compat.default_wcs_grid(axes)
 
             if annotate:
                 annotate_frame(i)
