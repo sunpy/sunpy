@@ -136,6 +136,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinxcontrib.bibtex',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -281,6 +282,8 @@ graphviz_dot_args = [
     '-Gfontsize=10',
     '-Gfontname=Helvetica Neue, Helvetica, Arial, sans-serif'
 ]
+
+bibtex_bibfiles = ['references.bib']
 
 # -- Sphinx Gallery ------------------------------------------------------------
 
