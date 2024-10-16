@@ -109,7 +109,7 @@ tests-only = [
   "pytest-xdist>=3.0.2",
   "pytest>=7.1.0",
   "s3fs>=2024.6.1",
-  "boto3==1.35.40",
+  "boto3>=1.35.40",
 ]
 tests = [
   "sunpy[all,tests-only]",
