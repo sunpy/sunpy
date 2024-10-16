@@ -1,0 +1,1 @@
+Fixed incorrect URI handling in `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries`.

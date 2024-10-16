@@ -4,7 +4,9 @@ This module provides a generic file reader for internal use.
 import re
 import gzip
 import pathlib
+
 import fsspec
+
 from sunpy.util.io import is_uri
 
 try:
@@ -203,11 +205,6 @@ def detect_filetype(filepath, **kwargs):
         fsspec_kw = kwargs.get("fsspec_kwargs", {})
         try:
             fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
-        except Exception:
-            return None
-    elif isinstance(filepath, fsspec.core.OpenFile):
-        try:
-            fileobj = filepath.open()
         except Exception:
             return None
     else:

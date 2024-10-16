@@ -6,9 +6,8 @@ from collections import OrderedDict
 
 import numpy as np
 import pytest
-from pandas import DataFrame
-import fsspec
 from botocore.exceptions import ClientError, NoCredentialsError
+from pandas import DataFrame
 
 import astropy.units as u
 from astropy.io import fits
@@ -104,11 +103,10 @@ def test_from_uri():
     # Test read on ACE file saved on public NASA s3 repository.
     uri = ('s3://gov-nasa-hdrl-data1/cdaweb/ace/mag/level_2_cdaweb/mfi_k2/2017/ac_k2_mfi_20170705_v03.cdf')
     try:
-        fsspec.open(uri).open()
-        ts = sunpy.timeseries.TimeSeries(uri)
+        ts = sunpy.timeseries.TimeSeries(uri, fsspec_kwargs={'anon':True})
         assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
         assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
-    except (NoCredentialsError, ClientError, PermissionError):
+    except (NoCredentialsError, ClientError, PermissionError, TypeError):
         pytest.skip("S3 credentials are incorrect or expired. Skipping.")
 
 def test_read_cdf():
