@@ -61,7 +61,7 @@ class SUVIMap(GenericMap):
     * `GOES-R Mission <https://www.goes-r.gov>`_
     * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
     * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
-    * `Recommended instrument description article <https://doi.org/10.3847/2041-8213/aaa28e>`_
+    * Recommended instrument paper: :cite:t:`seaton_observations_2018`
     * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`_
     * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`_
     * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`_

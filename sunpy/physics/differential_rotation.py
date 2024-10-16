@@ -48,8 +48,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
         One of:
 
-        | ``howard`` : Use values from Howard et al. (1990)
-        | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
+        | ``howard`` : Use values from :cite:t:`howard_solar_1990`
+        | ``snodgrass`` : Use values from :cite:t:`snodgrass_magnetic_1983`
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
         | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
 
@@ -81,11 +81,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     ========= ======= ====== ====== ==========
 
     1 microrad/s is approximately 4.95 deg/day.
-
-    References
-    ----------
-    * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
-    * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
+    See also the comparisons in :cite:t:`beck_comparison_2000`.
     """
 
     return sunpy.sun.models.differential_rotation(duration, latitude, model=rot_type, frame_time=frame_time)
