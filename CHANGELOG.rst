@@ -1,3 +1,31 @@
+6.0.3 (2024-10-17)
+==================
+
+New Features
+------------
+
+- Added Python 3.13 wheels. (`#7838 <https://github.com/sunpy/sunpy/pull/7838>`__)
+
+
+Bug Fixes
+---------
+
+- `sunpy.map.MapSequence` unable to set the normalization for data that was UINT8 (JPEG2000) causing the animations to break. (`#7674 <https://github.com/sunpy/sunpy/pull/7674>`__)
+- All map sources that override ``date`` or ``reference_date`` now fall back to
+  the corresponding properties on `sunpy.map.GenericMap` if the needed source-specific metadata for these
+  properties cannot be found. (`#7810 <https://github.com/sunpy/sunpy/pull/7810>`__)
+- Fixes a bug where `~sunpy.map.sources.HMIMap` returned a wavelength without a unit because ``WAVEUNIT``
+  is not in the header and cannot be parsed from any other part of the metadata. If it cannot be found,
+  it now defaults to Angstrom. (`#7812 <https://github.com/sunpy/sunpy/pull/7812>`__)
+- Fixed a calculation bug when using `~sunpy.coordinates.PlanarScreen` when it is both tilted (the plane is not perpendicular to the observer-Sun direction) and offset (the plane does not go through Sun center). (`#7814 <https://github.com/sunpy/sunpy/pull/7814>`__)
+
+
+Documentation
+-------------
+
+- Add clarifications to install instructions about Anaconda and the defaults channel. (`#7813 <https://github.com/sunpy/sunpy/pull/7813>`__)
+
+
 6.0.2 (2024-09-10)
 ==================
 
