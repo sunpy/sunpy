@@ -251,6 +251,13 @@ def test_url_pattern():
     amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
     assert isinstance(amap, sunpy.map.GenericMap)
 
+@pytest.mark.remote_data
+def test_uri_pattern():
+    """
+    Testing publicly accessible s3 object
+    """
+    amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
+    assert isinstance(amap, sunpy.map.GenericMap)
 
 def test_save():
     # Test save out
@@ -271,6 +278,14 @@ def test_map_list_urls_cache():
             'https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits']
     sunpy.map.Map(urls)
 
+@pytest.mark.remote_data
+def test_map_list_uri():
+    """
+    Test for reading from URI (AWS S3).
+    """
+    uri_list = ["s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits",
+            's3://data.sunpy.org/sunpy/aia_lev1_1600a_2012_06_06t04_07_29_12z_image_lev1_lowres.fits']
+    sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize(('file', 'mapcls'), [
