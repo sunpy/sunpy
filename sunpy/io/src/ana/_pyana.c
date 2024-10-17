@@ -17,6 +17,7 @@ struct _typeobject {
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h> 	// For numpy
 
+
 #include "types.h"
 #include "anarw.h"
 
@@ -81,6 +82,7 @@ int asprintf( char **sptr, const char *fmt, ... )
     return retval;
 }
 #else
+    #include <time.h>
     #include <sys/time.h>
 #endif // _WIN32
 
