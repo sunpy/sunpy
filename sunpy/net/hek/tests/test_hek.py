@@ -180,6 +180,7 @@ def test_mixed_results_get():
                            attrs.hek.FRM.Name == 'SPoCA')
     assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 89
+    # We do not check the full timestamp as the last 8 digits change as data is reprocessed.
     assert result[0]["SOL_standard"].startswith("SOL2013-01-31T20:13:31")
 
 
@@ -192,6 +193,7 @@ def test_mixed_results_get_2():
                            attrs.hek.EventType("FL"))
     assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 19
+    # We do not check the full timestamp as the last 8 digits change as data is reprocessed.
     assert result[0]["SOL_standard"].startswith("SOL2011-08-08T01:30:04")
 
 

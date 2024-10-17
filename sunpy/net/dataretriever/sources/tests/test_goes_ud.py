@@ -70,10 +70,13 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 @pytest.mark.parametrize(("timerange", "url_start", "url_end"),
                          [(a.Time("2009/08/30 00:10", "2009/09/02"),
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2009/08/sci_gxrs-l2-irrad_g10_d20090830_v0-0-0.nc",
+                           # In case they the older file comes back we can uncomment this line and remove the new line below.
+                           #"https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes14/xrsf-l2-avg1m_science/2009/09/sci_xrsf-l2-avg1m_g14_d20090902_v1-0-0.nc")])
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/xrsf-l2-avg1m_science/2009/09/sci_xrsf-l2-avg1m_g10_d20090902_v1-0-0.nc")])
 def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
+    # This number likes to change as data is reprocessed, it was 12 before
     assert len(urls) == 8
     assert urls[0] == url_start
     assert urls[-1] == url_end
