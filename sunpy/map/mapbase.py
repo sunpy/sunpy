@@ -2593,10 +2593,19 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle).
+
+            - If ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
+            instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
+            is equivalent to specifying ``pcolormesh``.
+
+            - If ``reproject``, the map's data will be automatically reprojected to match the
+            WCS of the target axes using the :meth:`~sunpy.map.GenericMap.reproject_to` method,
+            ensuring proper alignment.
+
+            - If ``False``, no auto-alignment is performed, and the map is plotted using the
+            default method without any adjustments.
+
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
@@ -2631,8 +2640,8 @@ class GenericMap(NDData):
                             "If you are specifying the axes, use `axes=...` to pass it in.")
 
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+        if autoalign not in [False, True, 'pcolormesh', 'reproject']:
+            raise ValueError("The value for `autoalign` must be False, True, 'pcolormesh' or 'reproject'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
 
@@ -2680,6 +2689,20 @@ class GenericMap(NDData):
             data = self.data
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
+
+        if autoalign == 'reproject':
+            target_wcs = axes.wcs
+
+            # Plot the map to set the limits implicitly
+            self.plot(axes=axes)
+
+            # Now get the valid limits after plotting
+            xlim, ylim = axes.get_xlim(), axes.get_ylim()
+
+            target_wcs = axes.wcs
+            array_shape = (int(np.abs(ylim[1] - ylim[0])), int(np.abs(xlim[1] - xlim[0])))
+            reprojected_map = self.reproject_to(target_wcs, shape_out=array_shape)
+            data = reprojected_map.data
 
         if autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
