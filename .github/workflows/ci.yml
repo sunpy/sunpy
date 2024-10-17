@@ -28,7 +28,7 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py312
+        - linux: py313
           libraries:
             apt:
               - libopenjp2-7
@@ -44,8 +44,8 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - windows: py311
-        - macos: py310
+        - windows: py312
+        - macos: py311
           libraries:
             brew:
               - openjpeg
@@ -196,10 +196,10 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
       submodules: false
       targets: |
-        - cp3{10,11,12}-macosx_arm64
-        - cp3{10,11,12}-macosx_x86_64
-        - cp3{10,11,12}-manylinux_aarch64
-        - cp3{10,11,12}-manylinux_x86_64
+        - cp3{10,11,12,13}-macosx_arm64
+        - cp3{10,11,12,13}-macosx_x86_64
+        - cp3{10,11,12,13}-manylinux_aarch64
+        - cp3{10,11,12,13}-manylinux_x86_64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
