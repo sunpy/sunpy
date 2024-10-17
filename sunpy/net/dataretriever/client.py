@@ -14,26 +14,26 @@ from sunpy.util.parfive_helpers import Downloader
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['QueryResponse', 'GenericClient']
+__all__ = ["QueryResponse", "GenericClient"]
 
 
 class QueryResponse(QueryResponseTable):
-    hide_keys = ['url']
+    hide_keys = ["url"]
 
     def time_range(self):
         """
         Returns the time-span for which records are available.
         """
-        if 'Start Time' in self.colnames and 'End Time' in self.colnames:
-            return TimeRange(np.min(self['Start Time']), np.max(self['End Time']))
+        if "Start Time" in self.colnames and "End Time" in self.colnames:
+            return TimeRange(np.min(self["Start Time"]), np.max(self["End Time"]))
 
     def response_block_properties(self):
         """
         Returns a set of class attributes on all the response blocks.
         """
-        s = {a if not a.startswith('_') else None for a in dir(self[0])}
+        s = {a if not a.startswith("_") else None for a in dir(self[0])}
         for resp in self[1:]:
-            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
+            s = s.intersection({a if not a.startswith("_") else None for a in dir(resp)})
 
         s.remove(None)
         return s
@@ -57,6 +57,7 @@ class GenericClient(BaseClient):
     :meth:`~sunpy.net.dataretriever.GenericClient.post_search_hook`.
     They help to translate the attrs for scraper before and after the search respectively.
     """
+
     baseurl = None
     # A regex string that can match all urls supported by the client.
     # A string which is used to extract the desired metadata from urls correctly,
@@ -100,16 +101,17 @@ class GenericClient(BaseClient):
                     matchdict[attrname].append(val)
         for elem in args:
             if isinstance(elem, a.Time):
-                matchdict['Start Time'] = elem.start
-                matchdict['End Time'] = elem.end
-            elif hasattr(elem, 'value'):
+                matchdict["Start Time"] = elem.start
+                matchdict["End Time"] = elem.end
+            elif hasattr(elem, "value"):
                 matchdict[elem.__class__.__name__] = [str(elem.value).lower()]
             elif isinstance(elem, a.Wavelength):
-                matchdict['Wavelength'] = elem
+                matchdict["Wavelength"] = elem
             else:
                 raise ValueError(
                     f"GenericClient can not add {elem.__class__.__name__} to the rowdict dictionary to"
-                    "pass to the Client.")
+                    "pass to the Client."
+                )
         return matchdict
 
     @classmethod
@@ -136,7 +138,11 @@ class GenericClient(BaseClient):
         for key in regattrs_dict:
             all_vals = [i[0].lower() for i in regattrs_dict[key]]
             for x in query:
-                if isinstance(x, key) and issubclass(key, SimpleAttr) and str(x.value).lower() not in all_vals:
+                if (
+                    isinstance(x, key)
+                    and issubclass(key, SimpleAttr)
+                    and str(x.value).lower() not in all_vals
+                ):
                     return False
         return True
 
@@ -162,20 +168,20 @@ class GenericClient(BaseClient):
         rowdict = OrderedDict()
         tr = get_timerange_from_exdict(exdict)
         start = tr.start
-        start.format = 'iso'
+        start.format = "iso"
         end = tr.end
-        end.format = 'iso'
-        rowdict['Start Time'] = start
-        rowdict['End Time'] = end
+        end.format = "iso"
+        rowdict["Start Time"] = start
+        rowdict["End Time"] = end
         for k in matchdict:
-            if k not in ('Start Time', 'End Time', 'Wavelength'):
-                if k == 'Physobs':
+            if k not in ("Start Time", "End Time", "Wavelength"):
+                if k == "Physobs":
                     # not changing case for Phsyobs
                     rowdict[k] = matchdict[k][0]
                 else:
                     rowdict[k] = matchdict[k][0].upper()
         for k in exdict:
-            if k not in ['year', 'month', 'day', 'hour', 'minute', 'second']:
+            if k not in ["year", "month", "day", "hour", "minute", "second"]:
                 rowdict[k] = exdict[k]
         return rowdict
 
@@ -203,14 +209,14 @@ class GenericClient(BaseClient):
         for i, filename in enumerate(filenames):
             fname = Path(filename)
             if path is None:
-                fname = default_dir / '{file}'
-            elif '{file}' not in str(path):
-                fname = path / '{file}'
+                fname = default_dir / "{file}"
+            elif "{file}" not in str(path):
+                fname = path / "{file}"
             else:
                 fname = path
 
             temp_dict = qres[i].response_block_map
-            temp_dict['file'] = str(filename)
+            temp_dict["file"] = str(filename)
             fname = fname.expanduser()
             fname = Path(str(fname).format(**temp_dict))
 
@@ -234,19 +240,19 @@ class GenericClient(BaseClient):
         A `QueryResponse` instance containing the query result.
         """
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        scraper = Scraper(baseurl, regex=True)
-        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        filesmeta = scraper._extract_files_meta(tr, extractor=pattern,
-                                                matcher=matchdict)
-        filesmeta = sorted(filesmeta, key=lambda k: k['url'])
+        # patty = "{}synoptic/{year}/{month}/{day}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength}.fits"
+        # synoptic/2023/10/11/H0300/AIA20231011_0300_1234.fits
+        scraper = Scraper(pattern, regex=True)
+        tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
+        filesmeta = scraper._extract_files_meta(tr, extractor=self.patty, matcher=matchdict)
+        filesmeta = sorted(filesmeta, key=lambda k: k["url"])
         metalist = []
         for i in filesmeta:
             rowdict = self.post_search_hook(i, matchdict)
             metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
 
-    def fetch(self, qres, path=None, overwrite=False,
-              progress=True, downloader=None, wait=True, **kwargs):
+    def fetch(self, qres, path=None, overwrite=False, progress=True, downloader=None, wait=True, **kwargs):
         """
         Download a set of results.
 
@@ -284,9 +290,9 @@ class GenericClient(BaseClient):
 
         urls = []
         if len(qres):
-            urls = list(qres['url'])
+            urls = list(qres["url"])
 
-        filenames = [url.split('/')[-1] for url in urls]
+        filenames = [url.split("/")[-1] for url in urls]
 
         paths = self._get_full_filenames(qres, filenames, path)
 

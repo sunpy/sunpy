@@ -1,5 +1,6 @@
 from sunpy.net.attr import SimpleAttr
 
+
 __all__ = ["AIASynopticData"]
 
 
@@ -15,7 +16,7 @@ class AIASynopticData(SimpleAttr):
     When this attribute is present, the client will search for synoptic AIA data
     from the following source: https://jsoc1.stanford.edu/data/aia/synoptic/
 
-    This synoptic data typically includes lower resolution (1k) and involves
+    This synoptic data includes lower resolution (1k) and involves
     additional image processing steps (e.g., downsampling, time integration).
 
     Characteristics of the synoptic dataset can be found here:

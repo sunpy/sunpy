@@ -1,3 +1,3 @@
 from . import adapt, goes
 
-__all__ = ['adapt', 'goes']
+__all__ = ["adapt", "goes"]

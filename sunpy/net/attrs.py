@@ -1,4 +1,3 @@
-
 """
 'attrs' are parameters which can be composed together to specify searches to
 `sunpy.net.Fido`. They can be combined
@@ -16,12 +15,14 @@ In addition to the core attrs defined here, other sunpy clients also provide
 attrs specific to them, under:
 
 * `a.adapt <sunpy.net.dataretriever.attrs.adapt>`
+* `a.aia_synoptic <sunpy.net.dataretriever.attrs.aia_synoptic>`
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
 * `a.hek <sunpy.net.hek.attrs>`
 * `a.helio <sunpy.net.helio.attrs>`
 * `a.jsoc <sunpy.net.jsoc.attrs>`
 * `a.vso <sunpy.net.vso.attrs>`
 """
+
 from ._attrs import (
     Detector,
     ExtentType,
@@ -38,8 +39,35 @@ from ._attrs import (
 from .attr import AttrAnd, AttrOr
 
 # Trick the docs into thinking these attrs are defined in here.
-for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs, Source, Provider, ExtentType, AttrAnd, AttrOr):
+for _a in (
+    Time,
+    Instrument,
+    Wavelength,
+    Level,
+    Sample,
+    Detector,
+    Resolution,
+    Physobs,
+    Source,
+    Provider,
+    ExtentType,
+    AttrAnd,
+    AttrOr,
+):
     _a.__module__ = __name__
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'ExtentType',
-           'Sample', 'Detector', 'Resolution', 'Physobs', 'Source', 'Provider', 'AttrAnd', 'AttrOr']
+__all__ = [
+    "Time",
+    "Instrument",
+    "Wavelength",
+    "Level",
+    "ExtentType",
+    "Sample",
+    "Detector",
+    "Resolution",
+    "Physobs",
+    "Source",
+    "Provider",
+    "AttrAnd",
+    "AttrOr",
+]

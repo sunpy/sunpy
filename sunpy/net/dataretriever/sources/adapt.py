@@ -14,7 +14,7 @@ from sunpy.net.dataretriever.attrs.adapt import (
     ADAPTVersionYear,
 )
 
-__all__ = ['ADAPTClient']
+__all__ = ["ADAPTClient"]
 
 
 class ADAPTClient(GenericClient):
@@ -63,32 +63,60 @@ class ADAPTClient(GenericClient):
     ----------
     `Names and possible attrs values are available <https://gong.nso.edu/adapt/maps/adapt_filename_notes.txt>`__.
     """
-    baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
-    pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLonType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}' + \
-    '_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}' + \
-    '_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
+
+    baseurl = r"https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz"
+    pattern = (
+        "{}adapt{ADAPTFileType:1d}{ADAPTLonType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}"
+        + "_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}"
+        + "_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz"
+    )
 
     @classmethod
     def _attrs_module(cls):
-        return 'adapt', 'sunpy.net.dataretriever.attrs.adapt'
+        return "adapt", "sunpy.net.dataretriever.attrs.adapt"
 
     @classmethod
     def register_values(cls):
         adict = {
-            a.Instrument: [('ADAPT', 'ADvanced Adaptive Prediction Technique.')],
-            a.Provider: [('NSO', 'National Solar Observatory.')],
-            a.Source: [('GONG', 'Global Oscillation Network Group.')],
-            ADAPTFileType: [('4', 'Public')],
-            ADAPTLonType: [('0', 'Carrington Fixed'), ('1', 'Central Meridian'), ('2', 'East Limb')],
-            ADAPTInputSource: [('0', 'All'), ('1', 'KPVT'), ('2', 'VSM'), ('3', 'GONG'), ('4', 'HMI'), ('5', 'MDI'), ('6', 'MWO')],
-            ADAPTDataAssimilation: [('0', 'WH'), ('1', 'enLS'), ('2', 'enkf'), ('3', 'enLAKF')],
-            ADAPTResolution: [('1', '1.0 deg'), ('2', '0.2 deg')],
+            a.Instrument: [("ADAPT", "ADvanced Adaptive Prediction Technique.")],
+            a.Provider: [("NSO", "National Solar Observatory.")],
+            a.Source: [("GONG", "Global Oscillation Network Group.")],
+            ADAPTFileType: [("4", "Public")],
+            ADAPTLonType: [("0", "Carrington Fixed"), ("1", "Central Meridian"), ("2", "East Limb")],
+            ADAPTInputSource: [
+                ("0", "All"),
+                ("1", "KPVT"),
+                ("2", "VSM"),
+                ("3", "GONG"),
+                ("4", "HMI"),
+                ("5", "MDI"),
+                ("6", "MWO"),
+            ],
+            ADAPTDataAssimilation: [("0", "WH"), ("1", "enLS"), ("2", "enkf"), ("3", "enLAKF")],
+            ADAPTResolution: [("1", "1.0 deg"), ("2", "0.2 deg")],
             ADAPTVersionYear: [(str(i), f"Code version year -> {2000 + i}") for i in range(1, 20)],
             ADAPTRealizations: [(str(i), f"Number of Realizations -> {i}") for i in range(1, 20)],
-            ADAPTVersionMonth: [(chr(i+96), f"Code version month -> {i}") for i in range(1, 13)],
-            ADAPTEvolutionMode: [('a', 'Data assimilation step'), ('i', 'Intermediate step'), ('f', 'Forecast step')],
-            ADAPTHelioData: [('n', 'Not added or no data'), ('f', 'Far-side'), ('e', 'Emergence'), ('b', 'Both emergence & far-side')],
-            ADAPTMagData: [('0', 'Not added or no data'), ('1', 'Mag-los'), ('2', 'Mag-vector'), ('3', 'Mag- both los & vector'),
-                            ('4', 'Mag- polar avg obs'), ('5', 'Mag- los & polar'), ('6', 'Mag- vector & polar'), ('7', 'Mag- both los and vector & polar')]
+            ADAPTVersionMonth: [(chr(i + 96), f"Code version month -> {i}") for i in range(1, 13)],
+            ADAPTEvolutionMode: [
+                ("a", "Data assimilation step"),
+                ("i", "Intermediate step"),
+                ("f", "Forecast step"),
+            ],
+            ADAPTHelioData: [
+                ("n", "Not added or no data"),
+                ("f", "Far-side"),
+                ("e", "Emergence"),
+                ("b", "Both emergence & far-side"),
+            ],
+            ADAPTMagData: [
+                ("0", "Not added or no data"),
+                ("1", "Mag-los"),
+                ("2", "Mag-vector"),
+                ("3", "Mag- both los & vector"),
+                ("4", "Mag- polar avg obs"),
+                ("5", "Mag- los & polar"),
+                ("6", "Mag- vector & polar"),
+                ("7", "Mag- both los and vector & polar"),
+            ],
         }
         return adict
