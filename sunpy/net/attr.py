@@ -12,6 +12,7 @@ They are implemented using `functools.singledispatch` modified to dispatch on th
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
+
 import re
 import string
 import inspect
@@ -31,8 +32,21 @@ _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
 NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
-__all__ = ['Attr', 'DataAttr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
-           'ValueAttr', 'and_', 'or_', 'AttrWalker', 'AttrComparison', 'ComparisonParamAttrWrapper']
+__all__ = [
+    "Attr",
+    "DataAttr",
+    "DummyAttr",
+    "SimpleAttr",
+    "Range",
+    "AttrAnd",
+    "AttrOr",
+    "ValueAttr",
+    "and_",
+    "or_",
+    "AttrWalker",
+    "AttrComparison",
+    "ComparisonParamAttrWrapper",
+]
 
 
 def make_tuple():
@@ -59,10 +73,12 @@ def _print_attrs(attr, html=False):
     # Only sort the attrs if any have been registered
     sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
     *other_row_data, descs = sorted_attrs
-    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
-    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
-                  dtype=["U80", "U80", "U80", "U80"],
-                  data=[*other_row_data, descs])
+    descs = [(dsc[:77] + "...") if len(dsc) > 80 else dsc for dsc in descs]
+    table = Table(
+        names=["Attribute Name", "Client", "Full Name", "Description"],
+        dtype=["U80", "U80", "U80", "U80"],
+        data=[*other_row_data, descs],
+    )
 
     class_name = f"{(attr.__module__ + '.') or ''}{attr.__name__}"
     lines = [class_name]
@@ -75,9 +91,11 @@ def _print_attrs(attr, html=False):
     format_line = "<p>{}</p>" if html else "{}"
     width = -1 if html else get_width()
 
-    lines = [*[format_line.format(line) for line in lines],
-             *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html)]
-    return '\n'.join(lines)
+    lines = [
+        *[format_line.format(line) for line in lines],
+        *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html),
+    ]
+    return "\n".join(lines)
 
 
 class AttrMeta(type):
@@ -111,7 +129,7 @@ class AttrMeta(type):
             # We return Attr(name_long) to create the Attr requested.
             return self(registry.name_long[names.index(item)])
         except ValueError:
-            raise AttributeError(f'This attribute, {item} is not defined, please register it.')
+            raise AttributeError(f"This attribute, {item} is not defined, please register it.")
 
     def __dir__(self):
         """
@@ -223,18 +241,19 @@ class Attr(metaclass=AttrMeta):
         for client, attr_dict in adict.items():
             for attr, attr_values in attr_dict.items():
                 if not isiterable(attr_values) or isinstance(attr_values, str):
-                    raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
-                                     "The value is not iterable or just a string.")
+                    raise ValueError(
+                        f"Invalid input value: {attr_values} for key: {repr(attr)}. "
+                        "The value is not iterable or just a string."
+                    )
 
                 attr_tuple = cls._attr_registry[attr]
 
                 for pair in attr_values:
                     if len(pair) > 2:
-                        raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
+                        raise ValueError(f"Invalid length (!=2) for values: {attr_values}.")
                     elif len(pair) == 1:
                         if pair[0] != "*":
-                            raise ValueError(
-                                f'Invalid value given for * registration: {attr_values}.')
+                            raise ValueError(f"Invalid value given for * registration: {attr_values}.")
                         # Special case handling for * aka all values allowed.
                         pair = ["all", "All values of this type are supported."]
 
@@ -245,22 +264,21 @@ class Attr(metaclass=AttrMeta):
                         number_str = number_match.group(1)
                         name = p.number_to_words(number_str)
                         if number_str != number_match.string:
-                            name = name + "_" + number_match.string[number_match.end(1):]
+                            name = name + "_" + number_match.string[number_match.end(1) :]
                     except AttributeError:
                         name = pair[0]
 
                     # Sanitize part two: remove punctuation and replace it with _
-                    name = re.sub(f'[{re.escape(string.punctuation)}]', '_', name)
+                    name = re.sub(f"[{re.escape(string.punctuation)}]", "_", name)
                     # Sanitize name, we remove all special characters
-                    name = ''.join(char for char in name
-                                   if char.isidentifier() or char.isnumeric())
+                    name = "".join(char for char in name if char.isidentifier() or char.isnumeric())
                     # Make name lower case
                     name = name.lower()
 
                     if keyword.iskeyword(name):
                         # Attribute name has been appended with `_`
                         # to make it a valid identifier since its a python keyword.
-                        name = name + '_'
+                        name = name + "_"
 
                     attr_tuple[0].append(name)
                     attr_tuple[1].append(client.__name__.replace("Client", ""))
@@ -277,6 +295,7 @@ class DataAttr(Attr):
     distinction is to make it easier for walkers to match all classes which are
     not user specified Attrs.
     """
+
     def __new__(cls, *args, **kwargs):
         if cls is DataAttr:
             raise TypeError("You should not directly instantiate DataAttr, only it's subclasses.")
@@ -288,11 +307,12 @@ class DataAttr(Attr):
         # __init__() in all subclasses because the signature of __new__() takes precedence over the
         # signature of __init__().  We add a __new__() to all subclasses that do not explicitly
         # define it with a signature that matches __init__().
-        if '__new__' not in cls.__dict__:
+        if "__new__" not in cls.__dict__:
             unsigned_new = cls.__new__  # the inherited __new__()
 
             def signed_new(cls, *args, **kwargs):
                 return unsigned_new(cls, *args, **kwargs)
+
             signed_new.__signature__ = inspect.signature(cls.__init__)
             cls.__new__ = signed_new
 
@@ -391,22 +411,22 @@ class ComparisonParamAttrWrapper:
         self.name = name
 
     def __lt__(self, other):
-        return AttrComparison(self.name, '<', other)
+        return AttrComparison(self.name, "<", other)
 
     def __le__(self, other):
-        return AttrComparison(self.name, '<=', other)
+        return AttrComparison(self.name, "<=", other)
 
     def __gt__(self, other):
-        return AttrComparison(self.name, '>', other)
+        return AttrComparison(self.name, ">", other)
 
     def __ge__(self, other):
-        return AttrComparison(self.name, '>=', other)
+        return AttrComparison(self.name, ">=", other)
 
     def __eq__(self, other):
-        return AttrComparison(self.name, '=', other)
+        return AttrComparison(self.name, "=", other)
 
     def __ne__(self, other):
-        return AttrComparison(self.name, '!=', other)
+        return AttrComparison(self.name, "!=", other)
 
     def collides(self, other):
         return isinstance(other, ComparisonParamAttrWrapper)
@@ -448,11 +468,11 @@ class Range(DataAttr):
         if isinstance(other, Range):
             return self.min <= other.min and self.max >= other.max
         else:
-            return self.min <= other <= self.max
+            return self.min.value <= int(other) <= self.max.value
 
 
 class AttrAnd(Attr):
-    """ Attribute representing attributes ANDed together. """
+    """Attribute representing attributes ANDed together."""
 
     def __init__(self, attrs):
         super().__init__()
@@ -485,7 +505,7 @@ class AttrAnd(Attr):
 
 
 class AttrOr(Attr):
-    """ Attribute representing attributes ORed together. """
+    """Attribute representing attributes ORed together."""
 
     def __init__(self, attrs):
         super().__init__()
@@ -593,13 +613,15 @@ Registered appliers:\n {appliers}"""
     def _unknown_type_apply(*args, **kwargs):
         raise TypeError(
             f"{args[1]} or any of its parents have not been registered using "
-            "add_applier() with the AttrWalker")
+            "add_applier() with the AttrWalker"
+        )
 
     @staticmethod
     def _unknown_type_create(*args, **kwargs):
         raise TypeError(
             f"{args[1]} or any of its parents have not been registered using "
-            "add_creator() with the AttrWalker")
+            "add_creator() with the AttrWalker"
+        )
 
     def __init__(self):
         self.applymm = seconddispatch(self._unknown_type_apply)
@@ -621,20 +643,24 @@ Registered appliers:\n {appliers}"""
         """
         Register all specified types with this function for the ``.create`` method.
         """
+
         def _dec(fun):
             for type_ in types:
                 self.createmm.register(type_, fun)
             return fun
+
         return _dec
 
     def add_applier(self, *types):
         """
         Register all specified types with this function for the ``.apply`` method.
         """
+
         def _dec(fun):
             for type_ in types:
                 self.applymm.register(type_, fun)
             return fun
+
         return _dec
 
     def add_converter(self, *types):
@@ -643,36 +669,42 @@ Registered appliers:\n {appliers}"""
 
         After a converter is run, create or apply will be called again with the new types.
         """
+
         def _dec(fun):
             for type_ in types:
                 self.applymm.register(type_, self._cv_apply(fun))
                 self.createmm.register(type_, self._cv_create(fun))
             return fun
+
         return _dec
 
     def _cv_apply(self, fun):
         """
         Call the converter and then re-call apply.
         """
+
         def _fun(*args, **kwargs):
             args = list(args)
             args[1] = fun(args[1])
             return self.applymm(*args, **kwargs)
+
         return _fun
 
     def _cv_create(self, fun):
         """
         Call the converter and then re-call convert.
         """
+
         def _fun(*args, **kwargs):
             args = list(args)
             args[1] = fun(args[1])
             return self.createmm(*args, **kwargs)
+
         return _fun
 
 
 def and_(*args):
-    """ Trick operator precedence.
+    """Trick operator precedence.
 
     and_(foo < bar, bar < baz)
     """
@@ -683,7 +715,7 @@ def and_(*args):
 
 
 def or_(*args):
-    """ Trick operator precedence.
+    """Trick operator precedence.
 
     or_(foo < bar, bar < baz)
     """

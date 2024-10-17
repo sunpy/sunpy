@@ -79,13 +79,10 @@ class AIASynopticClient(GenericClient):
         return cls.baseurl, cls.pattern, matchdict
 
 
-# Register values upon module import
 if __name__ == "__main__":
     from sunpy.net import Fido
     from sunpy.net import attrs as a
     import astropy.units as u
-
-    # AIASynopticClient.register_values()  # Ensure registration is done
 
     # Example usage
     time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
@@ -96,28 +93,4 @@ if __name__ == "__main__":
 
     print(results)
 
-    Fido.fetch(results)
-
-    # @classmethod
-    # def pre_search_hook(cls, *args, **kwargs):
-    #     """
-    #     Helper function to return the baseurl, pattern and matchdict
-    #     for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
-    #     before using the scraper.
-    #     """
-    #     matchdict = cls._get_match_dict(*args, **kwargs)
-    #     return cls.baseurl, cls.pattern, matchdict
-
-    # def _can_handle_query(self, *query):
-    #     from sunpy.net import attrs as a
-
-    #     required = {a.Instrument, a.Wavelength}
-    #     all_attrs = {type(x) for x in query}
-    #     if not required.issubset(all_attrs):
-    #         return False
-    #     for x in query:
-    #         if isinstance(x, a.Instrument) and x.value.lower() != "aiasynoptic":
-    #             return False
-    #         # if isinstance(x, a.Wavelength) and x.unit != "angstrom":
-    #         #     return False
-    #     return True
+    Fido.fetch(results, path="DLData/{file}")

@@ -22,12 +22,8 @@ def aia_synoptic_client():
 def test_can_handle_query(aia_synoptic_client, time):
     """
     Test if the AIASynopticClient can handle specific queries.
-
-    Notes:
-        If AIASynopticData is provided, the resolution defaults to 1k.
-        If a mismatched resolution is provided alongside AIASynopticData,
-        a warning is raised, and resolution is overridden to 1k.
     """
+
     # Test with synoptic data
     assert aia_synoptic_client._can_handle_query(time, a.Instrument.aia, aia_synoptic.AIASynopticData())
 
@@ -59,11 +55,12 @@ def mock_query_object(
     obj = {
         "Start Time": parse_time(start_time),
         "End Time": parse_time(end_time),
-        "Instrument": "AIA",
+        "Instrument": "AIASynoptic",
         "Physobs": "intensity",
         "Source": "SDO",
-        "Provider": "NASA",
-        "url": ("https://aia.lmsal.com/synoptic/2020/01/01/fits/aia.lev1_uv_1600a_2020-01-01T000000Z.fits"),
+        "Provider": "JSOC",
+        "Wavelength": "0171",
+        "url": (r"https://jsoc1.stanford.edu/data/aia/synoptic/2023/10/11/H0000/AIA20231011_0000_0193.fits"),
     }
     return QueryResponse([obj], client=aia_synoptic_client)
 
