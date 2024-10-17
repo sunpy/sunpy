@@ -16,9 +16,6 @@ class AIASynopticClient(GenericClient):
     image processing steps like downsampling and time integration. Characteristics
     of the dataset can be found here: https://jsoc1.stanford.edu/data/aia/synoptic/README.html
 
-    - If AIASynopticData is present, resolution defaults to 1k and any user-specified
-      resolution will be overridden.
-
     Attributes:
         baseurl (str): The base URL template for retrieving AIA synoptic data.
         pattern (str): The URL pattern for AIA data, including wavelength.
@@ -35,10 +32,10 @@ class AIASynopticClient(GenericClient):
         1600,
         1700,
     ]
-    info_url = r"https://jsoc1.stanford.edu/data/aia/synoptic/"
-    baseurl = info_url + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_.....fits"
-    pattern = info_url + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_.....fits"
-    patty = "{}synoptic/{year:4d}/{month:2d}/{day:2d}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength:4d}.fits"
+    url_stem = r"https://jsoc1.stanford.edu/data/aia/synoptic/"
+    baseurl = url_stem + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_.....fits"
+    # pattern = info_url + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_.....fits"
+    pattern = "{}synoptic/{year:4d}/{month:2d}/{day:2d}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength:4d}.fits"
     # pattern = r"https://jsoc1.stanford.edu/data/aia/synoptic/(\d{4})/(\d{2})/(\d{2})/H(\d{2})00/AIA(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})_(?P<hour>\d{2})(?P<minute>\d{2})_(?P<wavelength>\d{4})\.fits"
 
     # pattern = extractor = (
@@ -48,6 +45,10 @@ class AIASynopticClient(GenericClient):
     from sunpy.net import attrs as a
 
     required = {a.Time, a.Instrument}
+
+    @property
+    def info_url(self):
+        return r"https://jsoc1.stanford.edu/data/aia/synoptic/"
 
     @classmethod
     def register_values(cls):
@@ -67,6 +68,16 @@ class AIASynopticClient(GenericClient):
         }
         return adict
 
+    @classmethod
+    def pre_search_hook(cls, *args, **kwargs):
+        """
+        Helper function to return the baseurl, pattern and matchdict
+        for the client required by :func:`~sunpy.net.dataretriever.GenericClient.search`
+        before using the scraper.
+        """
+        matchdict = cls._get_match_dict(*args, **kwargs)
+        return cls.baseurl, cls.pattern, matchdict
+
 
 # Register values upon module import
 if __name__ == "__main__":
@@ -74,16 +85,18 @@ if __name__ == "__main__":
     from sunpy.net import attrs as a
     import astropy.units as u
 
-    AIASynopticClient.register_values()  # Ensure registration is done
+    # AIASynopticClient.register_values()  # Ensure registration is done
 
     # Example usage
-    time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 06:00:00")
+    time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
     instrument = a.Instrument("AIASynoptic")
-    # wavelength = a.Wavelength(193 * u.angstrom)
-    # sample = a.Sample(4 * u.minute)
-    results = Fido.search(time_range, instrument)  # , wavelength)
+    wavelength = a.Wavelength(193 * u.angstrom)
+    sample = a.Sample(10 * u.minute)
+    results = Fido.search(time_range, instrument, wavelength)  # , sample)  # , wavelength)
 
     print(results)
+
+    Fido.fetch(results)
 
     # @classmethod
     # def pre_search_hook(cls, *args, **kwargs):

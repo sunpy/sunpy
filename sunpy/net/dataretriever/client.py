@@ -240,11 +240,9 @@ class GenericClient(BaseClient):
         A `QueryResponse` instance containing the query result.
         """
         baseurl, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        # patty = "{}synoptic/{year}/{month}/{day}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength}.fits"
-        # synoptic/2023/10/11/H0300/AIA20231011_0300_1234.fits
-        scraper = Scraper(pattern, regex=True)
+        scraper = Scraper(baseurl, regex=True)
         tr = TimeRange(matchdict["Start Time"], matchdict["End Time"])
-        filesmeta = scraper._extract_files_meta(tr, extractor=self.patty, matcher=matchdict)
+        filesmeta = scraper._extract_files_meta(tr, extractor=pattern, matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k["url"])
         metalist = []
         for i in filesmeta:
