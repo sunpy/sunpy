@@ -32,7 +32,7 @@ Fido supports a number of different remote data sources. To see a list the Fido 
 
 .. code-block:: python
 
-    >>> print(Fido)
+    >>> print(Fido)  # doctest: +SKIP
     sunpy.net.Fido
     <BLANKLINE>
     Fido is a unified data search and retrieval tool.
