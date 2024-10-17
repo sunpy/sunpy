@@ -1,0 +1,1 @@
+:func:`~sunpy.io._cdf.read_cdf` and `~sunpy.timeseries.TimeSeries` now handle cases where CDF variables do not have a ``FILLVAL`` attribute, preventing crashes during CDF file reading.
