@@ -1,5 +1,6 @@
 from sunpy.net.dataretriever import GenericClient
-from scraper import Scraper
+from sunpy.net import attrs as a
+
 __all__ = ["AIASynopticClient"]
 
 
@@ -25,7 +26,6 @@ class AIASynopticClient(GenericClient):
     baseurl = url_stem + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_(\d{4}).fits"
     pattern = "{}synoptic/{year:4d}/{month:2d}/{day:2d}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength:4d}.fits"
 
-    from sunpy.net import attrs as a
     required = {a.Time, a.Instrument}
     optional = {a.Sample, a.Resolution, a.Wavelength, a.Level}
 
