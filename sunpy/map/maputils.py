@@ -166,9 +166,80 @@ def solar_angular_radius(coordinates):
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
-def _get_neighboring_indices(indices, position, dimensions):
+def _find_neighbor_positions(radius: int) -> list[tuple[int, int]]:
+    """Helper for `sample_at_coords`.
+
+    Find a list of neighboring pixels from the origin ``(0, 0)``, such
+    that the path from the origin to the pixels is at most equal to
+    ``radius``.
+
+    Parameters
+    ----------
+    radius : int
+        Radius (in px).
+
+    Returns
+    -------
+    indices : list of (int, int)
+        List of 2-element tuples of the coordinates neighboring the
+        origin.
+
+    Examples
+    --------
+    This is best demonstrated in an example. First, we generate a blank
+    image with dimension ``2 * radius + 1`` with the point of interest
+    at the center.
+
+    >>> import numpy as np
+    >>> radius = 1
+    >>> image = np.sqrt((2 * radius + 1, 2 * radius + 1), dtype=int)
+
+    Now, we find the neighbors within a radius of the center at
+    ``(radius, radius)``.
+    >>> neighbors = [
+    ...     (i + radius, j + radius)
+    ...     for i, j in _find_neighbor_positions(radius)
+    ... ]
+    ... image[np.array(neighbors).T] = 1
+    ... image
+    [[0 1 0]
+     [1 0 1]
+     [0 1 0]]
+
+    Repeat this for `radius = 2` gives:
+    [[0 0 1 0 0]
+     [0 1 1 1 0]
+     [1 1 0 1 1]
+     [0 1 1 1 0]
+     [0 0 1 0 0]]
+
+    and `radius = 3`:
+    [[0 0 0 1 0 0 0]
+     [0 0 1 1 1 0 0]
+     [0 1 1 1 1 1 0]
+     [1 1 1 0 1 1 1]
+     [0 1 1 1 1 1 0]
+     [0 0 1 1 1 0 0]
+     [0 0 0 1 0 0 0]]
+
     """
-    Get the neighboring indices relative to given indices.
+    indices = [
+        (i - radius, j - radius)
+        for i, j in np.ndindex((2 * radius + 1, 2 * radius + 1))
+    ]
+    return [
+        (i, j)
+        for i, j in indices
+        if np.abs(i) + np.abs(j) <= radius and (i, j) != (0, 0)
+    ]
+
+
+def _get_neighboring_indices(indices, position, dimensions):
+    """Helper for `sample_at_coords`.
+
+    Given the relative ``position`` from `_find_neighbor_position`,
+    find the neighbors relative to a list of ``indices```. Neighbors
+    outside of the map ``dimensions`` are discarded.
 
     Parameters
     ----------
@@ -182,8 +253,7 @@ def _get_neighboring_indices(indices, position, dimensions):
     Returns
     -------
     neighbor_indices : 2-D ndarray of integers with shape (2, ...)
-        Neighboring indices. Those out of bound of the map are masked
-        out.
+        Neighboring indices.
 
     Examples
     --------
@@ -226,8 +296,8 @@ def _get_neighboring_indices(indices, position, dimensions):
 def sample_at_coords(
     smap,
     coordinates,
-    method="astropy",
-    neighbor_positions=[[1, 0], [-1, 0], [0, 1], [0, -1]],
+    method: str = "astropy",
+    radius: int = 1,
 ):
     """
     Samples the data in a map at given series of coordinates. The
@@ -250,9 +320,6 @@ def sample_at_coords(
           This is the default and fastest behavior.
 
         ``nearest``
-          sampled values are interpolated using
-          `~scipy.interpolate.NearestANDInterpolator`.
-
         ``linear``
           sampled values are interpolated using
           `~scipy.interpolate.LinearANDInterpolator`.
@@ -261,8 +328,8 @@ def sample_at_coords(
           sampled values are interpolated using
           `~scipy.interpolate.CloughTocher2DInterpolator`.
 
-    neighbor_positions : list of 2-element relative neighboring pixels
-        Extra neighboring simplices around the coordinates used for
+    radius : int
+        Radius around the ``coordinates``` to include points for
         interpolation.
 
     Returns
@@ -284,15 +351,18 @@ def sample_at_coords(
     if method == "astropy":
         return u.Quantity(smap.data[*indices], smap.unit)
 
+    # Extend the list of points used for interpolation to include the
+    #   neighbors within a given pixel radius.
     extended_indices = indices.copy()
     dimensions = [smap.dimensions.x.value, smap.dimensions.y.value]
-    for position in neighbor_positions:
+    for position in _find_neighbor_positions(radius):
         extended_indices = np.append(
             extended_indices,
             _get_neighboring_indices(indices, position, dimensions),
             axis=1,
         )
 
+    # Filter duplicates
     extended_indices = np.unique(extended_indices, axis=1)
 
     map_coordinates = smap.wcs.array_index_to_world(*extended_indices)
