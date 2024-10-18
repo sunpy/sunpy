@@ -9,8 +9,15 @@ class Link(SimpleAttr):
 
 class Observatory(SimpleAttr):
     """
-    index of link to be downloaded
+    Name of the mission
     """
+
+class Leapseconds(SimpleAttr):
+    """
+    pass
+    """
+    def __init__(self, value = True):
+        super().__init__(value)
 
 
 walker = AttrWalker()
@@ -54,3 +61,7 @@ def _(wlk,query,imap):
 def _apply(wlk, query, imap):
     for iattr in query.attrs:
         wlk.apply(iattr, imap)
+
+@walker.add_applier(Leapseconds)
+def _apply(wlk,query,imap):
+    imap[query.__class__.__name__.lower()] = query.value

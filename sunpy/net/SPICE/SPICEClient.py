@@ -92,7 +92,13 @@ class SPICEClient(BaseClient):
 
         if "instrument" in block:
             kernel_type = "ik"
+            block.pop("instrument")
 
+        elif "leapseconds" in block:
+            kernel_type = "lsk"
+            print(block)
+            block.pop("leapseconds")
+            
         if "observatory" in block:
             missions = block["observatory"]
             block.pop("observatory")
