@@ -1,5 +1,5 @@
 from sunpy.net.dataretriever import GenericClient
-
+from scraper import Scraper
 __all__ = ["AIASynopticClient"]
 
 
@@ -20,30 +20,18 @@ class AIASynopticClient(GenericClient):
         known_wavelengths (list): A list of known wavelength codes for AIA data.
     """
 
-    known_wavelengths = [
-        171,
-        193,
-        211,
-        304,
-        335,
-        1600,
-        1700,
-    ]
+    known_wavelengths = [171, 193, 211, 304, 335, 1600, 1700]
     url_stem = r"https://jsoc1.stanford.edu/data/aia/synoptic/"
     baseurl = url_stem + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_(\d{4}).fits"
     pattern = "{}synoptic/{year:4d}/{month:2d}/{day:2d}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength:4d}.fits"
 
-    # pattern = extractor = (
-    #     "https://jsoc1.stanford.edu/data/aia/synoptic/{year}/{month}/{day}/H{hour}00/AIA{year_full}{month_full}{day_full}_{hour_full}{minute}_{wavelength}.fits"
-    # )
-
     from sunpy.net import attrs as a
-
     required = {a.Time, a.Instrument}
+    optional = {a.Sample, a.Resolution, a.Wavelength, a.Level}
 
     @property
     def info_url(self):
-        return r"https://jsoc1.stanford.edu/data/aia/synoptic/"
+        return self.url_stem
 
     @classmethod
     def register_values(cls):
@@ -52,7 +40,7 @@ class AIASynopticClient(GenericClient):
         adict = {
             attrs.Instrument: [
                 ("AIASynoptic", "AIA Synoptic data from the Atmospheric Imaging Assembly instrument."),
-                ("AIA", "Data from the Atmospheric Imaging Assembly instrument."),
+                # ("AIA", "Data from the Atmospheric Imaging Assembly instrument."),
             ],
             attrs.Physobs: [
                 ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
