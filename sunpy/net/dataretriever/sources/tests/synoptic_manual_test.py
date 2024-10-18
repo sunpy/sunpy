@@ -63,11 +63,11 @@ if __name__ == "__main__":
 
     # Example usage
     time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
-    instrument = a.Instrument("AIA")
+    instrument = a.Instrument("AIASynoptic")
     wavelength = a.Wavelength(193 * u.angstrom)
-    resolution = a.Resolution("Synoptic")
+    # resolution = a.Resolution("Synoptic")
     # sample = a.Sample(10 * u.minute)
-    results = Fido.search(time_range, instrument, wavelength, resolution)  # , sample)  # , wavelength)
+    results = Fido.search(time_range, instrument, wavelength)  # , sample)  # , wavelength)
 
     print(results)
 
