@@ -46,7 +46,6 @@ class AIAMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         # Fill in some missing info
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
