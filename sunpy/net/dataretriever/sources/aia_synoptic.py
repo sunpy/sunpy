@@ -1,6 +1,4 @@
 from sunpy.net.dataretriever import GenericClient
-from sunpy.net.scraper import Scraper
-from sunpy.time import TimeRange
 
 __all__ = ["AIASynopticClient"]
 
@@ -33,10 +31,8 @@ class AIASynopticClient(GenericClient):
         1700,
     ]
     url_stem = r"https://jsoc1.stanford.edu/data/aia/synoptic/"
-    baseurl = url_stem + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_.....fits"
-    # pattern = info_url + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_.....fits"
+    baseurl = url_stem + r"%Y/%m/%d/H%H00/AIA%Y%m%d_%H%M_(\d{4}).fits"
     pattern = "{}synoptic/{year:4d}/{month:2d}/{day:2d}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength:4d}.fits"
-    # pattern = r"https://jsoc1.stanford.edu/data/aia/synoptic/(\d{4})/(\d{2})/(\d{2})/H(\d{2})00/AIA(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})_(?P<hour>\d{2})(?P<minute>\d{2})_(?P<wavelength>\d{4})\.fits"
 
     # pattern = extractor = (
     #     "https://jsoc1.stanford.edu/data/aia/synoptic/{year}/{month}/{day}/H{hour}00/AIA{year_full}{month_full}{day_full}_{hour_full}{minute}_{wavelength}.fits"
@@ -56,7 +52,8 @@ class AIASynopticClient(GenericClient):
 
         adict = {
             attrs.Instrument: [
-                ("AIASynoptic", "AIA Synoptic data from the Atmospheric Imaging Assembly instrument.")
+                ("AIASynoptic", "AIA Synoptic data from the Atmospheric Imaging Assembly instrument."),
+                ("AIA", "Data from the Atmospheric Imaging Assembly instrument."),
             ],
             attrs.Physobs: [
                 ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
@@ -65,6 +62,7 @@ class AIASynopticClient(GenericClient):
             attrs.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
             attrs.Level: [("1.5", "Level 1.5 data processed for specialized analysis.")],
             attrs.Wavelength: [(f"{wv:04d}", f"{wv} AA") for wv in cls.known_wavelengths],
+            attrs.Resolution: [("Synoptic", "1024x1024 dataset with 2 minute integration")],
         }
         return adict
 
@@ -77,20 +75,3 @@ class AIASynopticClient(GenericClient):
         """
         matchdict = cls._get_match_dict(*args, **kwargs)
         return cls.baseurl, cls.pattern, matchdict
-
-
-if __name__ == "__main__":
-    from sunpy.net import Fido
-    from sunpy.net import attrs as a
-    import astropy.units as u
-
-    # Example usage
-    time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
-    instrument = a.Instrument("AIASynoptic")
-    wavelength = a.Wavelength(193 * u.angstrom)
-    sample = a.Sample(10 * u.minute)
-    results = Fido.search(time_range, instrument, wavelength)  # , sample)  # , wavelength)
-
-    print(results)
-
-    Fido.fetch(results, path="DLData/{file}")

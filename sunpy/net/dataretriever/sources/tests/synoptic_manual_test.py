@@ -39,18 +39,36 @@
 #     print("No match.")
 
 
-from sunpy.net import Fido
-from sunpy.net import attrs as a
-import astropy.units as u
+# from sunpy.net import Fido
+# from sunpy.net import attrs as a
+# import astropy.units as u
 
 
-# Example usage
-time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
-instrument = a.Instrument("AIASynoptic")
-wavelength = a.Wavelength(193 * u.angstrom)
-sample = a.Sample(10 * u.minute)
-results = Fido.search(time_range, instrument, wavelength)  # , sample)  # , wavelength)
+# # Example usage
+# time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
+# instrument = a.Instrument("AIASynoptic")
+# wavelength = a.Wavelength(193 * u.angstrom)
+# sample = a.Sample(10 * u.minute)
+# results = Fido.search(time_range, instrument, wavelength)  # , sample)  # , wavelength)
 
-print(results)
+# print(results)
 
-Fido.fetch(results, path="DLData/{file}")
+# Fido.fetch(results, path="DLData/{file}")
+
+
+if __name__ == "__main__":
+    from sunpy.net import Fido
+    from sunpy.net import attrs as a
+    import astropy.units as u
+
+    # Example usage
+    time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
+    instrument = a.Instrument("AIA")
+    wavelength = a.Wavelength(193 * u.angstrom)
+    resolution = a.Resolution("Synoptic")
+    sample = a.Sample(10 * u.minute)
+    results = Fido.search(time_range, instrument, wavelength, resolution)  # , sample)  # , wavelength)
+
+    print(results)
+
+    # Fido.fetch(results, path="DLData/{file}")
