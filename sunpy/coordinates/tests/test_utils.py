@@ -8,6 +8,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.utils import (
     GreatArc,
+    Rectangle,
     get_limb_coordinates,
     get_rectangle_coordinates,
     solar_angle_equivalency,
@@ -370,3 +371,76 @@ def test_limb_coords():
 
     with pytest.raises(ValueError, match='Observer distance must be greater than rsun'):
         get_limb_coordinates(observer, 1.1 * u.au)
+
+
+def test_from_corners():
+    bottom_left = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+    top_right = SkyCoord(20*u.deg, 5*u.deg, frame='heliographic_stonyhurst')
+    rect = Rectangle.from_corners(bottom_left, top_right)
+
+    assert rect.bottom_left == bottom_left
+    assert rect.top_right == top_right
+
+def test_from_bottom_left():
+    bottom_left = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+    width = 10 * u.deg
+    height = 15 * u.deg
+    rect = Rectangle.from_bottom_left(bottom_left, width, height)
+
+    expected_top_right = SkyCoord(20*u.deg, 5*u.deg, frame='heliographic_stonyhurst')
+    assert rect.bottom_left == bottom_left
+    assert rect.top_right == expected_top_right
+
+def test_from_center():
+    center = SkyCoord(15*u.deg, -2.5*u.deg, frame='heliographic_stonyhurst')
+    width = 10 * u.deg
+    height = 15 * u.deg
+    rect = Rectangle.from_center(center, width, height)
+
+    expected_bottom_left = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+    expected_top_right = SkyCoord(20*u.deg, 5*u.deg, frame='heliographic_stonyhurst')
+
+    assert rect.bottom_left == expected_bottom_left
+    assert rect.top_right == expected_top_right
+
+def test_invalid_width_from_bottom_left():
+    bottom_left = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+    invalid_width = -5 * u.deg  # Negative width should raise ValueError
+    height = 15 * u.deg
+    with pytest.raises(ValueError, match="The specified width cannot be negative"):
+        Rectangle.from_bottom_left(bottom_left, invalid_width, height)
+
+def test_invalid_height_from_bottom_left():
+    bottom_left = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+    width = 10 * u.deg
+    invalid_height = -15 * u.deg  # Negative height should raise ValueError
+    with pytest.raises(ValueError, match="The specified height cannot be negative"):
+        Rectangle.from_bottom_left(bottom_left, width, invalid_height)
+
+def test_invalid_latitude_from_bottom_left():
+    bottom_left = SkyCoord(10*u.deg, 85*u.deg, frame='heliographic_stonyhurst')  # Near the pole
+    width = 10 * u.deg
+    height = 10 * u.deg  # Exceeds latitude limit
+    with pytest.raises(ValueError, match="The specified height exceeds the maximum latitude"):
+        Rectangle.from_bottom_left(bottom_left, width, height)
+
+def test_invalid_width_from_center():
+    center = SkyCoord(15*u.deg, -2.5*u.deg, frame='heliographic_stonyhurst')
+    invalid_width = 400 * u.deg  # Width exceeds 360 degrees, should raise ValueError
+    height = 15 * u.deg
+    with pytest.raises(ValueError, match="The specified width cannot be greater than 360 degrees"):
+        Rectangle.from_center(center, invalid_width, height)
+
+def test_invalid_height_from_center():
+    center = SkyCoord(15*u.deg, -2.5*u.deg, frame='heliographic_stonyhurst')
+    width = 10 * u.deg
+    invalid_height = -15 * u.deg  # Negative height should raise ValueError
+    with pytest.raises(ValueError, match="The specified height cannot be negative"):
+        Rectangle.from_center(center, width, invalid_height)
+
+def test_invalid_latitude_from_center():
+    center = SkyCoord(15*u.deg, 85*u.deg, frame='heliographic_stonyhurst')
+    width = 10 * u.deg
+    height = 20 * u.deg  # Exceeds latitude limits
+    with pytest.raises(ValueError, match="The specified height exceeds the maximum latitude"):
+        Rectangle.from_center(center, width, height)
