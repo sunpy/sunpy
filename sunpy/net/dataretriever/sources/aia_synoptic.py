@@ -27,7 +27,7 @@ class AIASynopticClient(GenericClient):
 
     @property
     def info_url(self):
-        return self.baseurl
+        return "https://jsoc1.stanford.edu/data/aia/synoptic/"
 
     @classmethod
     def register_values(cls):
@@ -103,16 +103,30 @@ class AIASynopticClient(GenericClient):
         Convert a list of file URLs to a QueryResponse object.
         """
         records = []
+        last_time = None  # Track the time of the last appended record
+        sample = matchdict.get("sample", None)  # Get the sampling interval if provided
+
+        # Convert sample interval to minutes if provided
+        sample_minutes = sample.value/60 if sample else None
+
         for file in filelist:
             time_match = self.scraper._extract_date(file)
             if time_match:
                 start_time = time_match.datetime
+                # Apply sampling logic: skip if the sample interval is not met
+                if sample_minutes is not None:
+                    if last_time is not None and (start_time - last_time).total_seconds() / 60 < sample_minutes:
+                        continue  # Skip appending this record
+
+                # Update the last_time to the current start_time if appending
+                last_time = start_time
+
                 # Extract metadata from matchdict if available
                 wavelength = matchdict.get("wavelength", None)
                 # Create a record for each file
                 record = {
                     'Start Time': start_time,
-                    'End Time': start_time + timedelta(seconds=59),
+                    'End Time': start_time + timedelta(seconds=119),  # Add 1 minute and 59 seconds
                     'Instrument': 'AIA',
                     'Physobs': 'intensity',
                     'Source': 'SDO',
@@ -123,6 +137,7 @@ class AIASynopticClient(GenericClient):
                     'URL': file
                 }
                 records.append(record)
+
         # Convert the list of records to a QueryResponse
         return QueryResponse(records, client=self)
 
@@ -140,4 +155,7 @@ class AIASynopticClient(GenericClient):
                     matchdict["wavelength"] = wavelength_value
                 else:
                     raise ValueError(f"Wavelength {wavelength_value} Å is not a known wavelength for AIA.")
+            if isinstance(arg, a.Sample):
+                matchdict["sample"] = arg
+
         return matchdict
