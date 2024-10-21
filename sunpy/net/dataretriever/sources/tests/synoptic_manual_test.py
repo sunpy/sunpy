@@ -62,13 +62,11 @@ if __name__ == "__main__":
     import astropy.units as u
 
     # Example usage
-    time_range = a.Time("2023-10-11 00:00:00", "2023-10-11 01:00:00")
-    instrument = a.Instrument("AIASynoptic")
-    wavelength = a.Wavelength(193 * u.angstrom)
-    # resolution = a.Resolution("Synoptic")
-    # sample = a.Sample(10 * u.minute)
-    results = Fido.search(time_range, instrument, wavelength)  # , sample)  # , wavelength)
-
+    time_range = a.Time("2013-10-30 00:00:00", "2013-10-31 00:00:00")
+    instrument = a.Instrument("AIA")
+    wavelength = a.Wavelength(171 * u.angstrom)
+    sample = a.Sample(10 * u.minute)  #TBD
+    results = Fido.search(time_range, instrument, wavelength, a.Level("synoptic"))   #, a.Level("synoptic"))  #, sample)
     print(results)
 
     # Fido.fetch(results, path="DLData/{file}")
