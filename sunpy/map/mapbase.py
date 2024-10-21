@@ -2474,6 +2474,19 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         corresponding matplotlib method.
         """
+        contour_params = [
+            'corner_mask', 'colors', 'alpha', 'cmap', 'norm', 'vmin', 'vmax',
+            'origin', 'extent', 'locator', 'extend', 'xunits', 'yunits',
+            'antialiased', 'nchunk', 'linewidths', 'linestyles', 'negative_linestyles',
+            'hatches', 'algorithm', 'clip_path'
+        ]
+
+        plot_settings = self.plot_settings.copy()
+        # Transfer relevant settings to contour_args
+        for key in contour_params:
+            if key in plot_settings:
+                contour_args[key] = plot_settings.pop(key)
+
         axes = self._check_axes(axes)
         levels = self._process_levels_arg(levels)
 
