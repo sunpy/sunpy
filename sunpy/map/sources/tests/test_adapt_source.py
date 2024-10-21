@@ -6,6 +6,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.adapt import ADAPTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -16,7 +17,16 @@ def adapt_map():
 
 def test_date(adapt_map):
     """Tests the date property of the ADAPTMap object."""
-    assert adapt_map.date == "2020-01-01T00:00:00.000"
+    assert adapt_map.date.isot == "2020-01-01T00:00:00.000"
+
+
+def test_reference_date(adapt_map):
+    """Tests the reference_date property of the ADAPTMap object."""
+    assert adapt_map.reference_date.isot == "2020-01-01T00:00:00.000"
+
+
+def test_private_date_setters(adapt_map):
+    _test_private_date_setters(adapt_map)
 
 
 def test_coordinate_system(adapt_map):

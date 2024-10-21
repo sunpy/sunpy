@@ -1,8 +1,12 @@
+import warnings
+
 import numpy as np
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
+from astropy.io.fits.verify import VerifyWarning
 from astropy.time import Time
 
 import sunpy.coordinates
@@ -101,20 +105,19 @@ def generic_map():
     return sunpy.map.Map((data, header))
 
 
-def make_simple_map():
-    # A 3x3 map, with it's center at (0, 0), and scaled differently in
-    # each direction
-    data = np.arange(9).reshape((3, 3))
-    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
-                                           frame='heliographic_stonyhurst'))
-    ref_pix = [1, 1] * u.pix
+@pytest.fixture
+def simple_map():
+    """
+    A simple 9x9 map, with its center at (0, 0),
+    and scaled differently in each direction.
+    """
+    data = np.arange(81).reshape((9, 9))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00', unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU, frame='heliographic_stonyhurst'))
+    ref_pix = [4, 4] * u.pix
     scale = [2, 1] * u.arcsec / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
     return sunpy.map.Map(data, header)
-
-
-simple_map = pytest.fixture(make_simple_map)
 
 
 @pytest.fixture
@@ -124,10 +127,8 @@ def carrington_map():
     # coordinates, so is ideal for testing situations where the non-linearity matters
     data = np.arange(20**2).reshape((20, 20))
     obstime = '2020-01-01'
-    observer = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst',
-                        obstime=obstime)
-    ref_coord = SkyCoord(120*u.deg, -70*u.deg, frame='heliographic_carrington',
-                         obstime=obstime, observer=observer)
+    observer = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst', obstime=obstime)
+    ref_coord = SkyCoord(120*u.deg, -70*u.deg, frame='heliographic_carrington', obstime=obstime, observer=observer)
     ref_pix = [0, 0] * u.pix
     scale = [2, 1] * u.deg / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
@@ -141,11 +142,19 @@ def eit_test_map():
     """
     return get_dummy_map_from_header(get_test_filepath("EIT_header/efz20040301.020010_s.header"))
 
+
 @pytest.fixture
 def sample_171():
     from sunpy.data.sample import AIA_171_IMAGE
 
-    return sunpy.map.Map(AIA_171_IMAGE)
+    # Need to bypass
+    # VerifyWarning: Invalid 'BLANK' keyword in header.
+    # The 'BLANK' keyword is only applicable to integer data, and will be ignored in this HDU.
+    with fits.open(AIA_171_IMAGE) as hdu:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=VerifyWarning)
+            return sunpy.map.Map(hdu[1].data, hdu[1].header)
+
 
 @pytest.fixture
 def sample_hmi():
