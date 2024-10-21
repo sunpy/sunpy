@@ -1,3 +1,5 @@
+# Author: Gilly <Gilly@SwRI.org>
+
 from sunpy.net.dataretriever import GenericClient
 from sunpy.net import attrs as a
 
@@ -27,7 +29,7 @@ class AIASynopticClient(GenericClient):
     pattern = "{}synoptic/{year:4d}/{month:2d}/{day:2d}/H{}/AIA{}_{hour:2d}{minute:2d}_{Wavelength:4d}.fits"
 
     required = {a.Time, a.Instrument}
-    optional = {a.Sample, a.Resolution, a.Wavelength, a.Level}
+    optional = {a.Sample, a.Level, a.Wavelength, a.ExtentType}
 
     @property
     def info_url(self):
@@ -35,21 +37,14 @@ class AIASynopticClient(GenericClient):
 
     @classmethod
     def register_values(cls):
-        from sunpy.net import attrs
-
         adict = {
-            attrs.Instrument: [
-                ("AIASynoptic", "AIA Synoptic data from the Atmospheric Imaging Assembly instrument."),
-                # ("AIA", "Data from the Atmospheric Imaging Assembly instrument."),
-            ],
-            attrs.Physobs: [
-                ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
-            ],
-            attrs.Source: [("SDO", "The Solar Dynamics Observatory.")],
-            attrs.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
-            attrs.Level: [("1.5", "Level 1.5 data processed for specialized analysis.")],
-            attrs.Wavelength: [(f"{wv:04d}", f"{wv} AA") for wv in cls.known_wavelengths],
-            attrs.Resolution: [("Synoptic", "1024x1024 dataset with 2 minute integration")],
+            a.Instrument: [("AIA", "Data from the Atmospheric Imaging Assembly instrument.")],
+            a.Physobs: [("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")],
+            a.Source: [("SDO", "The Solar Dynamics Observatory.")],
+            a.Wavelength: [(f"{wv:04d}", f"{wv} AA") for wv in cls.known_wavelengths],
+            a.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
+            a.Level: [("SYNOPTIC", "Level 1.5 data processed for quicker analysis. 1024x1024 dataset with 2 minute integration")],
+            a.ExtentType: [("SYNOPTIC", "Level 1.5 data processed for quicker analysis. 1024x1024 dataset with 2 minute integration")],
         }
         return adict
 
