@@ -53,6 +53,7 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+        - linux: py310
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -118,7 +119,7 @@ jobs:
       submodules: false
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py312-devdeps
+        - linux: py313-devdeps
           libraries:
             apt:
               - libopenjp2-7
