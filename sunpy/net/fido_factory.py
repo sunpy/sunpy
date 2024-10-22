@@ -508,7 +508,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             lines = [f"<p>{line}</p>" for line in lines]
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
-                key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))
+                key.__doc__.partition("\n\n")[0].strip().replace("\n", " "))))
         lines.extend(t.pformat_all(max_lines=visible_entries,
                                    show_dtype=False, max_width=width, align="<", html=html))
         return '\n'.join(lines)
