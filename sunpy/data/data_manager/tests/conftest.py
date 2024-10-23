@@ -15,14 +15,12 @@ DB_TESTDATA_FILE = Path(__file__).parent / 'db_testdata.csv'
 
 @pytest.fixture
 def downloader():
-    downloader = mocks.MockDownloader()
-    return downloader
+    return mocks.MockDownloader()
 
 
 @pytest.fixture
 def storage():
-    storage = InMemStorage()
-    return storage
+    return InMemStorage()
 
 
 @pytest.fixture
@@ -41,8 +39,7 @@ def cache(tmp_path, downloader, storage, mocker):
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
-    cache = Cache(downloader, storage, tmp_path)
-    return cache
+    return Cache(downloader, storage, tmp_path)
 
 
 @pytest.fixture
