@@ -8,6 +8,7 @@ This module provides the `Fido
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 """
 import os
+import re
 from pathlib import Path
 from textwrap import dedent
 from collections.abc import Sequence
@@ -508,7 +509,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             lines = [f"<p>{line}</p>" for line in lines]
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
-                key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))
+                re.sub(r"\s+", " ", key.__doc__.partition("\n\n")[0]).strip())))
         lines.extend(t.pformat_all(max_lines=visible_entries,
                                    show_dtype=False, max_width=width, align="<", html=html))
         return '\n'.join(lines)
