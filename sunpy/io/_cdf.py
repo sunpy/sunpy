@@ -1,11 +1,14 @@
 """
 This module provides a CDF file reader for internal use.
 """
+import inspect
+
 import cdflib
 import numpy as np
 import pandas as pd
 from cdflib.epochs import CDFepoch
 from packaging.version import Version
+import inspect
 
 import astropy.units as u
 
@@ -16,7 +19,7 @@ from sunpy.util.exceptions import warn_user
 __all__ = ['read_cdf']
 
 
-def read_cdf(fname):
+def read_cdf(fname, **kwargs):
     """
     Read a CDF file that follows the ISTP/IACG guidelines.
 
@@ -24,6 +27,8 @@ def read_cdf(fname):
     ----------
     fname : path-like
         Location of single CDF file to read.
+    **kwargs : dict
+        Additional keyword arguments are handed to ``cdflib.CDF`` reader.
 
     Returns
     -------
@@ -35,7 +40,9 @@ def read_cdf(fname):
     ----------
     Space Physics Guidelines for CDF https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html
     """
-    cdf = cdflib.CDF(str(fname))
+    # Limit to kwargs that exist in cdflib.CDF
+    filtered_kwargs = {k: v for k, v in kwargs.items() if k in [param.name for param in inspect.signature(cdflib.CDF).parameters.values()]}
+    cdf = cdflib.CDF(str(fname), **filtered_kwargs)
     # Extract the time varying variables
     cdf_info = cdf.cdf_info()
     meta = cdf.globalattsget()
