@@ -32,6 +32,10 @@ SUNPY_FRAME_CONVERTERS = [
         "sunpy.coordinates.frames.Helioprojective"
     ),
     SunpyFrameConverter(
+        "tag:sunpy.org:sunpy/coordinates/frames/helioprojectiveradial-*",
+        "sunpy.coordinates.frames.HelioprojectiveRadial"
+    ),
+    SunpyFrameConverter(
         "tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-*",
         "sunpy.coordinates.frames.HeliocentricInertial"
     ),
