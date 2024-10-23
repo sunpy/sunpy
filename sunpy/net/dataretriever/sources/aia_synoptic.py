@@ -8,6 +8,7 @@ from sunpy.net.dataretriever.client import QueryResponse
 
 __all__ = ["AIASynopticClient"]
 
+
 class AIASynopticClient(GenericClient):
     """
     A client for retrieving AIA synoptic data from JSOC.
@@ -22,8 +23,8 @@ class AIASynopticClient(GenericClient):
     baseurl = "https://jsoc1.stanford.edu/data/aia/synoptic/"
     known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
 
-    required = {a.Time, a.Instrument}
-    optional = {a.Sample, a.Level, a.Wavelength, a.ExtentType}
+    required = {a.Time, a.Instrument, a.Level}
+    supported = required + {a.Sample, a.Wavelength, a.ExtentType}
 
     @property
     def info_url(self):
@@ -33,7 +34,9 @@ class AIASynopticClient(GenericClient):
     def register_values(cls):
         adict = {
             a.Instrument: [("AIA", "Data from the Atmospheric Imaging Assembly instrument.")],
-            a.Physobs: [("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")],
+            a.Physobs: [
+                ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
+            ],
             a.Source: [("SDO", "The Solar Dynamics Observatory.")],
             a.Wavelength: [(f"{wv:04d}", f"{wv} Å") for wv in cls.known_wavelengths],
             a.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
@@ -69,7 +72,9 @@ class AIASynopticClient(GenericClient):
         start_time = time_range.start.datetime
         end_time = time_range.end.datetime
         sample = matchdict.get("sample", None)  # Get the sampling interval if provided
-        sample_minutes = sample.to(u.min).value if sample is not None else 2  # Default to 2-minute intervals if not provided
+        sample_minutes = (
+            sample.to(u.min).value if sample is not None else 2
+        )  # Default to 2-minute intervals if not provided
 
         # List of wavelengths to search
         wavelengths = [matchdict["wavelength"]] if "wavelength" in matchdict else self.known_wavelengths
@@ -117,22 +122,24 @@ class AIASynopticClient(GenericClient):
         for url in all_results:
             # Extract the timestamp from the URL
             time_match = self._extract_date_from_url(url)
+
             if time_match:
                 start_time = time_match
+                wavelength = self._extract_wavelength(url)
                 # Extract metadata from matchdict if available
-                wavelength = matchdict.get("wavelength", None)
+                # wavelength = matchdict.get("wavelength", None)
                 # Create a record for each file
                 record = {
-                    'Start Time': start_time,
-                    'End Time': start_time + timedelta(seconds=119),  # Add 1 minute and 59 seconds
-                    'Instrument': 'AIA',
-                    'Physobs': 'intensity',
-                    'Source': 'SDO',
-                    'Provider': 'JSOC',
-                    'Level': 'synoptic',
-                    'ExtentType': 'synoptic',
-                    'Wavelength': f"{wavelength} Å" if wavelength else 'Unknown',
-                    'url': url  # Make sure 'url' is lowercase
+                    "Start Time": start_time,
+                    "End Time": start_time + timedelta(seconds=119),  # Add 1 minute and 59 seconds
+                    "Instrument": "AIA",
+                    "Physobs": "intensity",
+                    "Source": "SDO",
+                    "Provider": "JSOC",
+                    "Level": "synoptic",
+                    "ExtentType": "synoptic",
+                    "Wavelength": f"{wavelength} Å" if wavelength else "Unknown",
+                    "url": url,  # Make sure 'url' is lowercase
                 }
                 records.append(record)
 
@@ -149,6 +156,20 @@ class AIASynopticClient(GenericClient):
             year, month, day, hour, yyyymmdd, hhmm = match.groups()
             return datetime.strptime(f"{yyyymmdd}_{hhmm}", "%Y%m%d_%H%M")
         return None
+
+    def _extract_wavelength(self, url: str) -> int | None:
+        """
+        Extract the 4-digit wavelength value from the given URL based on the expected pattern,
+        set it to self.wavelength, and return the wavelength as an integer.
+
+        Args:
+            url (str): The URL string from which to extract the wavelength.
+
+        Returns:
+            int | None: The extracted wavelength as an integer if successful, otherwise None.
+        """
+        next = url.split("_")[-1].split(".")[0]
+        return next if next else None
 
     def _get_match_dict(self, *args, **kwargs):
         """
