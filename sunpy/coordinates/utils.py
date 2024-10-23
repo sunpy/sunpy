@@ -10,7 +10,7 @@ from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
 from sunpy.sun import constants
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates' , 'Rectangle']
 
 
 class GreatArc:
@@ -385,6 +385,183 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
             top_right = top_right.frame
 
     return bottom_left, top_right
+
+
+class Rectangle:
+    def __init__(self, bottom_left: SkyCoord, top_right: SkyCoord):
+        """
+        Initializes a Rectangle object with bottom-left and top-right coordinates.
+
+        Parameters
+        ----------
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left corner of the rectangle.
+        top_right : `~astropy.coordinates.SkyCoord`
+            The top-right corner of the rectangle.
+
+        Examples
+        --------
+        >>> from astropy.coordinates import SkyCoord
+        >>> import astropy.units as u
+        >>> bl = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+        >>> tr = SkyCoord(20*u.deg, 5*u.deg, frame='heliographic_stonyhurst')
+        >>> rect = Rectangle(bl, tr)
+        >>> print(rect)
+        Rectangle(bottom_left=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (10., -10.)>, top_right=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (20., 5.)>)
+        """
+        if not (hasattr(bottom_left, 'transform_to') and hasattr(bottom_left, 'spherical')):
+            raise TypeError("Invalid input: bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
+
+        if not (hasattr(top_right, 'transform_to') and hasattr(top_right, 'spherical')):
+            raise TypeError("Invalid input: top_right must be of type SkyCoord or BaseCoordinateFrame.")
+
+        self.bottom_left = bottom_left
+        self.top_right = top_right
+
+    @classmethod
+    def from_corners(cls, bottom_left: SkyCoord, top_right: SkyCoord, as_tuple: bool = False):
+        """
+        Create a rectangle from the bottom-left and top-right coordinates.
+        If `as_tuple=True`, return a tuple of (bottom_left, top_right) instead of a Rectangle object.
+
+        Parameters
+        ----------
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left corner of the rectangle.
+        top_right : `~astropy.coordinates.SkyCoord`
+            The top-right corner of the rectangle.
+        as_tuple : bool, optional
+            If True, return a tuple of coordinates instead of a Rectangle object.
+
+        Examples
+        --------
+        >>> bl = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+        >>> tr = SkyCoord(20*u.deg, 5*u.deg, frame='heliographic_stonyhurst')
+        >>> rect = Rectangle.from_corners(bl, tr)
+        >>> print(rect)
+        Rectangle(bottom_left=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (10., -10.)>, top_right=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (20., 5.)>)
+        >>> print(rect.top_right)
+        <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (20., 5.)>
+        """
+        top_right = top_right.transform_to(bottom_left)
+        if as_tuple:
+            return (bottom_left, top_right)
+        return cls(bottom_left, top_right)
+
+    @classmethod
+    def from_bottom_left(cls, bottom_left: SkyCoord, width: u.deg, height: u.deg, as_tuple: bool = False):
+        """
+        Create a rectangle from the bottom-left corner, width, and height.
+        If `as_tuple=True`, return a tuple of (bottom_left, top_right) instead of a Rectangle object.
+
+        Parameters
+        ----------
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left corner of the rectangle.
+        width : `~astropy.units.Quantity`
+            The width of the rectangle.
+        height : `~astropy.units.Quantity`
+            The height of the rectangle.
+        as_tuple : bool, optional
+            If True, return a tuple of coordinates instead of a Rectangle object.
+
+        Examples
+        --------
+        >>> bl = SkyCoord(10*u.deg, -10*u.deg, frame='heliographic_stonyhurst')
+        >>> width = 10 * u.deg
+        >>> height = 15 * u.deg
+        >>> rect = Rectangle.from_bottom_left(bl, width, height)
+        >>> print(rect)
+        Rectangle(bottom_left=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (10., -10.)>, top_right=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (20., 5.)>)
+        >>> print(rect.top_right)
+        <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+        (20., 5.)>
+        """
+        if width < 0 * u.deg:
+            raise ValueError("The specified width cannot be negative.")
+        if width > 360 * u.deg:
+            raise ValueError("The specified width cannot be greater than 360 degrees.")
+        if height < 0 * u.deg:
+            raise ValueError("The specified height cannot be negative.")
+        if bottom_left.spherical.lat + height > 90 * u.deg:
+            raise ValueError("The specified height exceeds the maximum latitude.")
+
+        top_right = SkyCoord(
+            bottom_left.spherical.lon + width,
+            bottom_left.spherical.lat + height,
+            frame=bottom_left.frame
+        )
+
+        if as_tuple:
+            return (bottom_left, top_right)
+        return cls(bottom_left, top_right)
+
+    @classmethod
+    def from_center(cls, center: SkyCoord, width: u.deg, height: u.deg, as_tuple: bool = False):
+        """
+        Create a rectangle from the center coordinate, width, and height.
+        If `as_tuple=True`, return a tuple of (bottom_left, top_right) instead of a Rectangle object.
+
+        Parameters
+        ----------
+        center : `~astropy.coordinates.SkyCoord`
+            The center coordinate of the rectangle.
+        width : `~astropy.units.Quantity`
+            The width of the rectangle.
+        height : `~astropy.units.Quantity`
+            The height of the rectangle.
+        as_tuple : bool, optional
+            If True, return a tuple of coordinates. Otherwise, return a Rectangle object.
+
+        Examples
+        --------
+        >>> center = SkyCoord(15*u.deg, -2.5*u.deg, frame='heliographic_stonyhurst')
+        >>> width = 10 * u.deg
+        >>> height = 15 * u.deg
+        >>> rect = Rectangle.from_center(center, width, height)
+        >>> print(rect)
+        Rectangle(bottom_left=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+            (10., -10.)>, top_right=<SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+            (20., 5.)>)
+        >>> print(rect.top_right)
+        <SkyCoord (HeliographicStonyhurst: obstime=None, rsun=695700.0 km): (lon, lat) in deg
+            (20., 5.)>
+        """
+        if width < 0 * u.deg:
+            raise ValueError("The specified width cannot be negative.")
+        if width > 360 * u.deg:
+            raise ValueError("The specified width cannot be greater than 360 degrees.")
+        if height < 0 * u.deg:
+            raise ValueError("The specified height cannot be negative.")
+        if center.spherical.lat + height / 2 > 90 * u.deg or center.spherical.lat - height / 2 < -90 * u.deg:
+            raise ValueError("The specified height exceeds the maximum latitude.")
+
+        bottom_left = SkyCoord(
+            center.spherical.lon - width / 2,
+            center.spherical.lat - height / 2,
+            frame=center.frame
+        )
+
+        top_right = SkyCoord(
+            center.spherical.lon + width / 2,
+            center.spherical.lat + height / 2,
+            frame=center.frame
+        )
+
+        if as_tuple:
+            return (bottom_left, top_right)
+        return cls(bottom_left, top_right)
+
+
+    def __repr__(self):
+        return f"Rectangle(bottom_left={self.bottom_left}, top_right={self.top_right})"
 
 
 def solar_angle_equivalency(observer):
