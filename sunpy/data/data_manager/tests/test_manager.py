@@ -66,6 +66,8 @@ def test_defer_download(manager, storage, downloader, data_function,tmpdir):
     assert len(storage._store) == 0
 
     # Now call get() to trigger the actual download.
+
+
 def test_skip_all(manager, storage, downloader, data_function):
     """
     Test skip_hash_check redownloads data.
