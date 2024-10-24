@@ -54,7 +54,6 @@ class DataManager:
             def wrapper(*args, **kwargs):
                 self._namespace = self._get_module(func)
                 if defer_download:
-                    # Store the file information but don't download yet.
                     self._require_files[name] = {
                         'urls': urls,
                         'sha_hash': sha_hash,
