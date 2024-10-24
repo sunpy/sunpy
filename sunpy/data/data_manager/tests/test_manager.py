@@ -49,7 +49,22 @@ def test_wrong_hash_provided(manager):
     with pytest.raises(RuntimeError):
         test_foo()
 
+def test_defer_download(manager, storage, downloader, data_function,tmpdir):
+    """
+    Test that files are not downloaded immediately if defer_download is True,
+    but are downloaded when get is called.
+    """
+    folder = tmpdir.strpath
+    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH,defer_download=True)
+    def deferred_function():
+        pass
 
+    # Call the deferred function. No download should happen at this point.
+    deferred_function()
+    assert downloader.times_called == 0
+    assert len(storage._store) == 0
+
+    # Now call get() to trigger the actual download.
 def test_skip_all(manager, storage, downloader, data_function):
     """
     Test skip_hash_check redownloads data.

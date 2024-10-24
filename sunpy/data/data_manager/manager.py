@@ -62,7 +62,7 @@ class DataManager:
                 else:
                     # Proceed with the regular flow (download if needed).
                     self._download_and_cache_file(name, urls, sha_hash)
-                    
+
                 result = func(*args, **kwargs)
                 self._namespace = None
                 return result
