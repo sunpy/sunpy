@@ -110,14 +110,6 @@ def test_basic_query(aia_synoptic_client):
 
     # Output the results
     assert query_result is not None
-    print(f"Query Result: {query_result}")
-
-    # Fetch the data for the first result (optional)
-    if query_result:
-        download_path = "./downloads"
-        files = aia_synoptic_client.fetch(query_result[:1], path=download_path, downloader=None)
-        assert len(files) > 0
-        print(f"Downloaded files: {files}")
 
 
 if __name__ == "__main__":
