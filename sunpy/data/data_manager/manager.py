@@ -33,7 +33,7 @@ class DataManager:
         """
         Decorator for informing the data manager about the requirement of
         a file by a function. Optionally defer downloading the file until it's
-        requested in `get`.
+        requested in `sunpy.data.data_manager.manager.DataManager.get`.
 
         Parameters
         ----------
@@ -44,7 +44,7 @@ class DataManager:
         sha_hash : `str`
             SHA-256 hash of file.
         defer_download : `bool`, optional
-            If `True`, the file download is deferred until it is requested via `get`.
+            If `True`, the file download is deferred until it is requested via `sunpy.data.data_manager.manager.DataManager.get`.
         """
         if isinstance(urls, str):
             urls = [urls]
