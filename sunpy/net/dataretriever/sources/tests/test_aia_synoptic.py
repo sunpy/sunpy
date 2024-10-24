@@ -112,17 +112,3 @@ def test_basic_query(aia_synoptic_client):
     assert query_result is not None
 
 
-if __name__ == "__main__":
-    from sunpy.net.dataretriever.sources.aia_synoptic import AIASynopticClient
-    from sunpy.net import attrs
-
-    start_time = "2020-01-01T00:00:00.00"
-    end_time = "2020-01-01T23:59:59.999"
-
-    Client = AIASynopticClient()
-    search_request = Client.search(
-        attrs.Time(start_time, end_time), attrs.Sample(1 * u.hour), attrs.Wavelength(193 * u.angstrom)
-    )
-    request = Client.fetch(search_request)
-    print(search_request)
-    print(request)
