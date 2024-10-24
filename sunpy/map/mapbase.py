@@ -2691,16 +2691,36 @@ class GenericMap(NDData):
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
         if autoalign == 'reproject':
-            target_wcs = axes.wcs
+            # Set plot limits based on the extent of the map using metadata
+            naxis1 = self.meta.get('naxis1', self.data.shape[1])
+            naxis2 = self.meta.get('naxis2', self.data.shape[0])
+            print('shape og data.shape' ,naxis1 , naxis2)
+            # Ensure that all required metadata is available
+            crval1 = self.meta.get('crval1', 0)  # Default value if missing
+            crval2 = self.meta.get('crval2', 0)
+            cdelt1 = self.meta.get('cdelt1', 1)
+            cdelt2 = self.meta.get('cdelt2', 1)
 
-            # Plot the map to set the limits implicitly
-            self.plot(axes=axes)
+            # Calculate the extent using metadata (center coordinates and pixel scales)
+            extent = [
+                crval1 - cdelt1 * naxis1 / 2,  # xmin
+                crval1 + cdelt1 * naxis1 / 2,  # xmax
+                crval2 - cdelt2 * naxis2 / 2,  # ymin
+                crval2 + cdelt2 * naxis2 / 2   # ymax
+            ]
 
-            # Now get the valid limits after plotting
+            # Set the calculated limits on the axes
+            axes.set_xlim(extent[0], extent[1])
+            axes.set_ylim(extent[2], extent[3])
+
+            # Now get the updated limits after setting them
             xlim, ylim = axes.get_xlim(), axes.get_ylim()
 
+            # Compute the target WCS from the axes and calculate array shape
             target_wcs = axes.wcs
             array_shape = (int(np.abs(ylim[1] - ylim[0])), int(np.abs(xlim[1] - xlim[0])))
+
+            # Perform reprojection with the calculated shape
             reprojected_map = self.reproject_to(target_wcs, shape_out=array_shape)
             data = reprojected_map.data
 
