@@ -84,8 +84,9 @@ def _read(filepath, function_name, filetype=None, **kwargs):
         return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
         readername = detect_filetype(filepath)
-        if readername not in _READERS.keys():
-            readername = None
+        if readername in _READERS.keys():
+            return getattr(_READERS[readername], function_name)(filepath, **kwargs)
+        readername = None
     except UnrecognizedFileTypeError:
         readername = None
     for extension, name in _KNOWN_EXTENSIONS.items():
@@ -205,6 +206,10 @@ def detect_filetype(filepath):
         # First 4 bytes of CDF
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
+
+    # For ASDF files
+    if first80.startswith(b"#ASDF"):
+        return "asdf"
 
     # FITS
     # Checks for gzip signature.
