@@ -54,13 +54,11 @@ class DataManager:
             def wrapper(*args, **kwargs):
                 self._namespace = self._get_module(func)
                 if defer_download:
-                    # Store the file information but don't download yet.
                     self._require_files[name] = {
                         'urls': urls,
                         'sha_hash': sha_hash,
                     }
                 else:
-                    # Proceed with the regular flow (download if needed).
                     self._download_and_cache_file(name, urls, sha_hash)
 
                 result = func(*args, **kwargs)
@@ -128,7 +126,6 @@ class DataManager:
         `KeyError`
             If ``name`` is not in the cache.
         """
-        # Check if file is deferred and download it if necessary.
         if name in self._require_files:
             file_info = self._require_files.pop(name)
             self._download_and_cache_file(name, file_info['urls'], file_info['sha_hash'])

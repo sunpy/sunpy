@@ -49,6 +49,7 @@ def test_wrong_hash_provided(manager):
     with pytest.raises(RuntimeError):
         test_foo()
 
+
 def test_defer_download(manager, storage, downloader, data_function,tmpdir):
     """
     Test that files are not downloaded immediately if defer_download is True,
