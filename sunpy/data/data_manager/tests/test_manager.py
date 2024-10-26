@@ -69,7 +69,6 @@ def test_defer_download_get(manager, storage, downloader, data_function, tmpdir)
     @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH,defer_download=True)
     def deferred_function():
         manager.get('test_file')
-        pass
 
     deferred_function()
     assert downloader.times_called == 1
