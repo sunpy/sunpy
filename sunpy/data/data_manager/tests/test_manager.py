@@ -64,7 +64,7 @@ def test_defer_download(manager, storage, downloader, data_function, tmpdir):
     assert downloader.times_called == 0
     assert len(storage._store) == 0
 
-def test_defer_download_get(manager,storage,downloader,data_function,tmpdir):
+def test_defer_download_get(manager, storage, downloader, data_function, tmpdir):
     folder = tmpdir.strpath
     @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH,defer_download=True)
     def deferred_function():
