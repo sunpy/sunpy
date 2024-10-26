@@ -1,1 +1,1 @@
-Added ability to delay download in `~sunpy.data.data_manager.manager.require`
+Added ability to delay download in `~sunpy.data.data_manager.manager.DataManager.require`
