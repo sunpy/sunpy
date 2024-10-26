@@ -50,7 +50,7 @@ def test_wrong_hash_provided(manager):
         test_foo()
 
 
-def test_defer_download(manager, storage, downloader, data_function,tmpdir):
+def test_defer_download(manager, storage, downloader, data_function, tmpdir):
     """
     Test that files are not downloaded immediately if defer_download is True,
     but are downloaded when get is called.
