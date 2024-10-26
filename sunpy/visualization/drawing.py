@@ -16,7 +16,7 @@ from sunpy.coordinates.sun import _angular_radius
 from sunpy.coordinates.utils import get_limb_coordinates
 from sunpy.visualization import wcsaxes_compat
 
-__all__ = ["limb", "equator", "prime_meridian"]
+__all__ = ["limb", "equator", "prime_meridian", "extent"]
 
 
 @u.quantity_input
@@ -191,6 +191,40 @@ def prime_meridian(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
                                                  obstime=axes_frame.obstime))
     visible, hidden = _plot_vertices(lon0, axes, axes_frame, rsun,
                                      close_path=False, **kwargs)
+    return visible, hidden
+
+
+@u.quantity_input
+def extent(axes, wcs, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
+    """
+    Draws the extent of a given `~astropy.wcs.WCS`.
+
+    Parameters
+    ----------
+    """
+    if not wcsaxes_compat.is_wcsaxes(axes):
+        raise ValueError('axes must be a WCSAxes')
+    axes_frame = wcsapi_to_celestial_frame(axes.wcs)
+    shape = wcs.pixel_shape
+    # Find the corners in pixel space of the WCS
+    corners = np.array([(0, 0),
+                        (0, shape[0]-1),
+                        (shape[1]-1, shape[0]-1),
+                        (shape[1]-1, 0)])
+    # Find the edges in pixel space of the WCS
+    edges = np.array([(corners[0], corners[1]),
+                      (corners[1], corners[2]),
+                      (corners[2], corners[3]),
+                      (corners[3], corners[0])])
+    edges = np.array([(np.linspace(*e[:,0], resolution), np.linspace(*e[:,1],resolution))
+                      for e in edges])
+    visible = []
+    hidden = []
+    for edge in edges:
+        edge_coord = wcs.pixel_to_world(*edge)
+        _visible, _hidden = _plot_vertices(edge_coord, axes, axes_frame, rsun, close_path=False, **kwargs)
+        visible.append(_visible)
+        hidden.append(_hidden)
     return visible, hidden
 
 
