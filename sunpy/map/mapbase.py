@@ -2391,6 +2391,28 @@ class GenericMap(NDData):
             **kwargs
         )
 
+    def draw_extent(self, wcs, axes=None, *, resolution=1000, **kwargs):
+        """
+        Draw the extent of another WCS transformed into the map's frame.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            wcs,
+            resolution=resolution,
+            rsun=self.rsun_meters,
+            **kwargs
+        )
+
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
                         axes=None, top_right=None, **kwargs):
