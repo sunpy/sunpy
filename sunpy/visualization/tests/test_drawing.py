@@ -19,6 +19,21 @@ def aia171_test_map():
 
 
 @pytest.fixture
+def cropped_aia193_sample_map():
+    import sunpy.data.sample
+    m = sunpy.map.Map(sunpy.data.sample.AIA_193_JUN2012)
+    return m.submap(SkyCoord(Tx=300*u.arcsec, Ty=-450*u.arcsec,frame=m.coordinate_frame),
+                    width=500*u.arcsec,
+                    height=500*u.arcsec)
+
+
+@pytest.fixture
+def euvi195_sample_map():
+    import sunpy.data.sample
+    return Map(sunpy.data.sample.STEREO_A_195_JUN2012)
+
+
+@pytest.fixture
 def heliographic_test_map():
     (data, header), = sunpy.io._file_tools.read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
     # Fix unit strings to prevent some astropy fits fixing warnings
@@ -52,6 +67,14 @@ def test_heliographic_equator_prime_meridian(heliographic_test_map):
     heliographic_test_map.plot()
     drawing.equator(axes, color="blue")
     drawing.prime_meridian(axes, color="red")
+
+
+@figure_test
+def test_draw_extent(cropped_aia193_sample_map, euvi195_sample_map):
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=euvi195_sample_map)
+    euvi195_sample_map.plot(axes=ax)
+    drawing.extent(ax, cropped_aia193_sample_map.wcs)
 
 
 def test_prime_meridian_error():
