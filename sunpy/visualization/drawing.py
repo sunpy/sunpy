@@ -197,34 +197,45 @@ def prime_meridian(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
 @u.quantity_input
 def extent(axes, wcs, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     """
-    Draws the extent of a given `~astropy.wcs.WCS`.
+    Draws the extent as defined by a given `~astropy.wcs.WCS` instance.
 
     Parameters
     ----------
+    axes : `matplotlib.axes.Axes`
+        The axes to plot the prime meridian on, or "None" to use current axes.
+    wcs : `~astropy.wcs.WCS`
+        The WCS that defines the extent to be drawn.
+    rsun : `~astropy.units.Quantity`
+        Solar radius (in physical length units) at which to draw the solar
+        prime meridian. Defaults to the standard photospheric radius.
+    resolution : `int`
+        The number of points used to represent the prime meridian.
+
+    Returns
+    -------
+    visible : `~matplotlib.patches.Polygon`
+        The patch added to the axes for the visible part of the WCS extent.
+    hidden : `~matplotlib.patches.Polygon`
+        The patch added to the axes for the hidden part of the WCS extent.
     """
     if not wcsaxes_compat.is_wcsaxes(axes):
         raise ValueError('axes must be a WCSAxes')
     axes_frame = wcsapi_to_celestial_frame(axes.wcs)
     shape = wcs.pixel_shape
-    # Find the corners in pixel space of the WCS
+    # Define the corners of the WCS in pixel space starting at the
+    # lower left corner and moving clockwise
     corners = np.array([(0, 0),
                         (0, shape[0]-1),
                         (shape[1]-1, shape[0]-1),
                         (shape[1]-1, 0)])
-    # Find the edges in pixel space of the WCS
-    edges = np.array([(corners[0], corners[1]),
-                      (corners[1], corners[2]),
-                      (corners[2], corners[3]),
-                      (corners[3], corners[0])])
-    edges = np.array([(np.linspace(*e[:,0], resolution), np.linspace(*e[:,1],resolution))
-                      for e in edges])
-    visible = []
-    hidden = []
-    for edge in edges:
-        edge_coord = wcs.pixel_to_world(*edge)
-        _visible, _hidden = _plot_vertices(edge_coord, axes, axes_frame, rsun, close_path=False, **kwargs)
-        visible.append(_visible)
-        hidden.append(_hidden)
+    xy_edges = []
+    for i in range(corners.shape[0]):
+        i_next = 0 if i == (len(corners)-1) else i+1
+        # NOTE: exclude last entry to avoid duplicate entries at corners
+        xy_edges += [[np.linspace(*corners[[i,i_next],0], resolution)[:-1],
+                      np.linspace(*corners[[i,i_next],1], resolution)[:-1]]]
+    edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
+    visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, rsun, close_path=False, **kwargs)
     return visible, hidden
 
 

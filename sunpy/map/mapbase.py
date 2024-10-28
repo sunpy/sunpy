@@ -2397,9 +2397,19 @@ class GenericMap(NDData):
 
         Parameters
         ----------
+        wcs : `~astropy.wcs.WCS`
+            The WCS that defines the extent to be drawn.
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the prime meridian on, or "None" to use current axes.
+        resolution : `int`, optional
+            The number of points used to represent the prime meridian.
 
         Returns
         -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
         """
         # Put imports here to reduce sunpy.map import time
         import sunpy.visualization.drawing
