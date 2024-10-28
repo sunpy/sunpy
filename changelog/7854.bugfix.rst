@@ -1,0 +1,1 @@
+Update `astropy.Table` api in attr.py
