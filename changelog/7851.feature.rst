@@ -1,0 +1,2 @@
+Add `sunpy.visualization.drawing.extent` and `sunpy.map.GenericMap.draw_extent` to visualize the extent
+of another WCS on a map.
