@@ -1,1 +1,1 @@
-Update `astropy.Table` api in attr.py
+Fix use of deprecated ``astropy.table.Table.pformat_all`` in ``sunpy.net``.
