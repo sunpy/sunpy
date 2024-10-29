@@ -195,7 +195,7 @@ def prime_meridian(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
 
 
 @u.quantity_input
-def extent(axes, wcs, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
+def extent(axes, wcs, *, rsun: u.m = R_sun, **kwargs):
     """
     Draws the extent as defined by a given `~astropy.wcs.WCS` instance.
 
@@ -208,8 +208,6 @@ def extent(axes, wcs, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     rsun : `~astropy.units.Quantity`
         Solar radius (in physical length units) at which to draw the solar
         prime meridian. Defaults to the standard photospheric radius.
-    resolution : `int`
-        The number of points used to represent the prime meridian.
 
     Returns
     -------
@@ -222,20 +220,25 @@ def extent(axes, wcs, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
         raise ValueError('axes must be a WCSAxes')
     axes_frame = wcsapi_to_celestial_frame(axes.wcs)
     shape = wcs.pixel_shape
-    # Define the corners of the WCS in pixel space starting at the
-    # lower left corner and moving clockwise
-    corners = np.array([(0, 0),
-                        (0, shape[0]-1),
-                        (shape[1]-1, shape[0]-1),
-                        (shape[1]-1, 0)])
+    # Define the corners of the WCS in pixel space.
+    # These are, in order:
+    # 1. Lower left corner of the lower left pixel
+    # 2. Upper left corner of the upper left pixel
+    # 3. Upper right corner of the upper right pixel
+    # 4. Lower right corner of the lower right pixel
+    corners = np.array([(-0.5, -0.5),
+                        (-0.5, shape[0]-0.5),
+                        (shape[1]-0.5, shape[0]-0.5),
+                        (shape[1]-0.5, -0.5)])
     xy_edges = []
     for i in range(corners.shape[0]):
-        i_next = 0 if i == (len(corners)-1) else i+1
-        # NOTE: exclude last entry to avoid duplicate entries at corners
-        xy_edges += [[np.linspace(*corners[[i,i_next],0], resolution)[:-1],
-                      np.linspace(*corners[[i,i_next],1], resolution)[:-1]]]
+        i_next = (i+1)%corners.shape[0]
+        n_pixels = np.fabs(np.diff(corners[[i,i_next],:],axis=0)).max().astype(int)
+        # Exclude last point to avoid double counting corners
+        xy_edges += [[np.linspace(*corners[[i,i_next],0], n_pixels-1, endpoint=False),
+                      np.linspace(*corners[[i,i_next],1], n_pixels-1, endpoint=False)]]
     edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
-    visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, rsun, close_path=False, **kwargs)
+    visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, rsun, close_path=True, **kwargs)
     return visible, hidden
 
 
