@@ -2391,18 +2391,14 @@ class GenericMap(NDData):
             **kwargs
         )
 
-    def draw_extent(self, wcs, axes=None, *, resolution=1000, **kwargs):
+    def draw_extent(self, *, axes=None, **kwargs):
         """
-        Draw the extent of another WCS transformed into the map's frame.
+        Draw the extent of the map onto a given axes.
 
         Parameters
         ----------
-        wcs : `~astropy.wcs.WCS`
-            The WCS that defines the extent to be drawn.
         axes : `matplotlib.axes.Axes`, optional
-            The axes to plot the prime meridian on, or "None" to use current axes.
-        resolution : `int`, optional
-            The number of points used to represent the prime meridian.
+            The axes to plot the extent on, or "None" to use current axes.
 
         Returns
         -------
@@ -2417,8 +2413,7 @@ class GenericMap(NDData):
         axes = self._check_axes(axes)
         return sunpy.visualization.drawing.extent(
             axes,
-            wcs,
-            resolution=resolution,
+            self.wcs,
             rsun=self.rsun_meters,
             **kwargs
         )
