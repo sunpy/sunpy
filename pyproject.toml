@@ -26,14 +26,6 @@ readme = { file = "README.rst", content-type = "text/x-rst" }
 license = { file = "LICENSE.rst" }
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
-<<<<<<<
-=======
-docs = [
-  "sphinx",
-  "sphinx-automodapi",
-  "sunpy-sphinx-theme",
-  "packaging",
->>>>>>>
 ]
 dependencies = [
   "astropy>=5.3.0",
