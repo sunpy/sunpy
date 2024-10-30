@@ -1,5 +1,5 @@
 target-version = "py310"
-line-length = 110
+line-length = 120
 exclude = [
   ".git,",
   "__pycache__",
@@ -9,16 +9,34 @@ exclude = [
 ]
 
 [lint]
-select = ["E", "F", "W", "UP", "PT"]
+select = [
+  "E",
+  "F",
+  "W",
+  "UP",
+  "PT",
+]
 extend-ignore = [
-  # pycodestyle (E, W)
-  "E501", # LineTooLong                             # TODO! fix
+  # pycodestyle
+  "E501", # ignore line length will use a formatter instead
+  "E712", # Avoid equality comparisons to True; use if {cond}: for truth checks
+  "E721", # type comparison Use is and is not for type comparisons, or isinstance() for isinstance checks
+  # upgrades
+  "UP038", # Use | in isinstance - not compatible with models and is slower
   # pytest (PT)
   "PT001", # Always use pytest.fixture()
   "PT004", # Fixtures which don't return anything should have leading _
-  "PT007", # Parametrize should be lists of tuples  # TODO! fix
-  "PT011", # Too broad exception assert             # TODO! fix
+  "PT011",  # except(ValueRaises) is too broad
   "PT023", # Always use () on pytest decorators
+  # flake8-pie
+  "PIE808", # Disallow passing 0 as the first argument to range
+  # flake8-use-pathlib
+  "PTH123", # open() should be replaced by Path.open()
+  # Ruff
+  "RUF003", # Ignore ambiguous quote marks, doesn't allow ' in comments
+  "RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
+  "RUF013",  # PEP 484 prohibits implicit `Optional`
+  "RUF015",  # Prefer `next(iter(...))` over single element slice
 ]
 
 [lint.flake8-tidy-imports]
@@ -34,6 +52,9 @@ extend-ignore = [
 ]
 "docs/*.py" = [
   "INP001",  # Implicit-namespace-package. The examples are not a package.
+]
+"examples/**.py" = [
+  "T201", # allow use of print in examples
 ]
 "__init__.py" = ["E402", "F401", "F403"]
 "test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
