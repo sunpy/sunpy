@@ -256,13 +256,13 @@ date_begend = date_dict['DATE-BEG'] + (date_dict['DATE-END'] - date_dict['DATE-B
 
 
 @pytest.mark.parametrize(("keys", "expected_date"),
-                         ([['DATE-AVG', 'DATE-OBS', 'DATE-BEG', 'DATE-END'], date_dict['DATE-OBS']],
-                          [['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-BEG']],
-                          [['DATE-BEG', 'DATE-END'], date_dict['DATE-BEG']],
-                          [['DATE-BEG'], date_dict['DATE-BEG']],
-                          [['DATE-END'], date_dict['DATE-END']],
-                          [[], 'now']
-                          ))
+                         [(['DATE-AVG', 'DATE-OBS', 'DATE-BEG', 'DATE-END'], date_dict['DATE-OBS']),
+                          (['DATE-AVG', 'DATE-BEG', 'DATE-END'], date_dict['DATE-BEG']),
+                          (['DATE-BEG', 'DATE-END'], date_dict['DATE-BEG']),
+                          (['DATE-BEG'], date_dict['DATE-BEG']),
+                          (['DATE-END'], date_dict['DATE-END']),
+                          ([], 'now')
+                          ])
 def test_date(generic_map, keys, expected_date):
     # Remove pre-existing date keys
     for key in date_dict:
@@ -760,8 +760,8 @@ def test_submap_world(simple_map, rect, submap_out):
         np.testing.assert_equal(submap.data, submap_out)
 
 
-@pytest.mark.parametrize('test_map', ("aia171_roll_map", "aia171_test_map",
-                                      "hmi_test_map", "aia171_test_map_with_mask"),
+@pytest.mark.parametrize('test_map', ["aia171_roll_map", "aia171_test_map",
+                                      "hmi_test_map", "aia171_test_map_with_mask"],
                          indirect=['test_map'])
 def test_submap_world_corners(test_map):
     """
@@ -783,7 +783,7 @@ def test_submap_world_corners(test_map):
         assert submap.mask.shape == submap.data.shape
 
 
-@pytest.mark.parametrize('test_map', ("aia171_test_map", "heliographic_test_map"),
+@pytest.mark.parametrize('test_map', ["aia171_test_map", "heliographic_test_map"],
                          indirect=['test_map'])
 def test_submap_hgs_corners(test_map):
     """
