@@ -1,0 +1,2 @@
+class SolarnetClient:
+    pass
