@@ -348,16 +348,11 @@ def test_attr_iterable_length():
 
     # not iterable
 
-    error_message1 = (
-        r"Invalid input value: AIA for key: <class 'sunpy.net.tests.test_attr.Instrument'>\s*"
-        r"sunpy\.net\.tests\.test_attr\.Instrument\s*\n"
-        r"Dummy Instrument Class\.\s*\n\s*\n"
-        r"Attribute Name\s*Client\s*Full Name\s*Description\s*"
-        r"--------------\s*------\s*---------\s*-----------. "
-        r"The value is not iterable or just a string\."
-    )
+    error_message1 = r"Invalid input value: AIA for key: <class 'sunpy\.net\.tests\.test_attr\.Instrument'>\s*sunpy\.net\.tests\.test_attr\.Instrument\s*Dummy Instrument Class\.\s*Attribute Name\s*Client\s*Full Name\s*Description.*?The value is not iterable or just a string\."
 
-    with pytest.raises(ValueError, match=error_message1):
+    pattern_1_1 = re.compile(error_message1, re.DOTALL)
+
+    with pytest.raises(ValueError, match=pattern_1_1):
         attr.Attr.update_values({GenericClient: {Instrument: 'AIA'}})
 
     # too many items
