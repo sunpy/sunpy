@@ -25,6 +25,7 @@ extend-ignore = [
   "PT001", # Always use pytest.fixture()
   "PT004", # Fixtures which don't return anything should have leading _
   "PT023", # Always use () on pytest decorators
+  "PT011", # TODO: fix (too broad pytest.raises)
   # flake8-pie (PIE)
   "PIE808", # Disallow passing 0 as the first argument to range
   # flake8-use-pathlib (PTH)
