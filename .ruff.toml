@@ -36,27 +36,6 @@ extend-ignore = [
   "RUF015", # Prefer `next(iter(...))` over single element slice
 ]
 
-<<<<<<<
-[lint.flake8-tidy-imports]
-[lint.flake8-tidy-imports.banned-api]
-"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
-
-[lint.per-file-ignores]
-# Part of configuration, not a package.
-"setup.py" = ["INP001"]
-"conftest.py" = ["INP001"]
-"docs/conf.py" = [
-  "E402"  # Module imports not at top of file
-]
-"docs/*.py" = [
-  "INP001",  # Implicit-namespace-package. The examples are not a package.
-]
-"examples/**.py" = [
-  "T201", # allow use of print in examples
-]
-"__init__.py" = ["E402", "F401", "F403"]
-"test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
-=======
 [lint.per-file-ignores]
 "setup.py" = [
   "INP001", # File is part of an implicit namespace package.
@@ -83,12 +62,10 @@ extend-ignore = [
 "test_*.py" = [
   "E402", # Module level import not at top of cell
 ]
-
-[lint.pydocstyle]
-convention = "numpy"
->>>>>>>
 # Need to import clients to register them, but don't use them in file
-"sunpy/net/__init__.py" = ["F811"]
+"sunpy/net/__init__.py" = [
+  "F811", # Redefinition of unused {name} from {row}
+]
 # These files are allowed to use warnings.warn
 "sunpy/util/exceptions.py" = ["TID251"]
 "sunpy/util/tests/test_logger.py" = ["TID251"]
@@ -96,3 +73,7 @@ convention = "numpy"
 
 [lint.pydocstyle]
 convention = "numpy"
+
+[lint.flake8-tidy-imports]
+[lint.flake8-tidy-imports.banned-api]
+"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
