@@ -34,11 +34,11 @@ def test_parse_time_microseconds_excess_trailing_zeros():
     assert dt.scale == 'utc'
 
     # Excess digits beyond 6 digits should error if they are not zeros
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         dt = parse_time('2010-Oct-10 00:00:00.1234567')
 
     # An ending run of zeros should still error if they are not a microsecond field
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         dt = parse_time('10-Oct-2010.0000000')
 
 
@@ -288,9 +288,9 @@ def test_parse_time_astropy_formats(ts, fmt):
 def test_parse_time_int_float():
     # int and float values are not unique
     # The format has to be mentioned
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         parse_time(100)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         parse_time(100.0)
 
 

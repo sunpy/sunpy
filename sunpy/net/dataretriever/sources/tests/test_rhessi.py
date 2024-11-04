@@ -34,7 +34,7 @@ def test_get_observing_summary_dbase_file_with_unsupported_start_time(LCClient):
     RHESSI summary files are not available for before 2002-02-01, ensure
     `ValueError` is raised.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         LCClient.get_observing_summary_dbase_file("2002/01/21")
 
 
@@ -64,7 +64,7 @@ def test_get_base_url_on_urlerror(mock_urlopen):
     """
     If all tested URLs raise `URLError`, then raise an `IOError`
     """
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="!!"):
         rhessi.get_base_url()
 
 
@@ -73,7 +73,7 @@ def test_get_base_url_on_timeout(mock_urlopen):
     """
     If all tested data servers timeout, then raise an `IOError`
     """
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="!!"):
         rhessi.get_base_url()
 
 
@@ -82,7 +82,7 @@ def test_get_base_url_on_remote_disconnected(mock_urlopen):
     """
     If all tested data servers timeout, then raise an `IOError`
     """
-    with pytest.raises(OSError):
+    with pytest.raises(OSError, match="!!"):
         rhessi.get_base_url()
 
 

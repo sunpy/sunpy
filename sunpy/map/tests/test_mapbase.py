@@ -1182,9 +1182,9 @@ def test_rotate_rmatrix_angle(generic_map):
 
 
 def test_rotate_invalid_order(generic_map):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         generic_map.rotate(order=6)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         generic_map.rotate(order=-1)
 
 

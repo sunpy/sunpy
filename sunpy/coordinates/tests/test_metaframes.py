@@ -127,7 +127,7 @@ def test_no_base():
 
 
 def test_no_obstime():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         RotatedSunFrame(base=f.HeliographicStonyhurst(obstime=None))
 
 

@@ -129,7 +129,7 @@ def test_wrong_hash_error(manager, storage):
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         foo()
 
 

@@ -349,7 +349,7 @@ def test_table_to_ts():
     # ToDo: Try an incompatible table
     dual_index_table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
     dual_index_table.add_index(('time', 'intensity'))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         sunpy.timeseries.TimeSeries((dual_index_table, meta, units))
 
 

@@ -346,7 +346,7 @@ def test_plot_autoalign(aia171_test_map):
 
 
 def test_plot_autoalign_bad_inputs(aia171_test_map):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         aia171_test_map.plot(autoalign='bad')
 
 

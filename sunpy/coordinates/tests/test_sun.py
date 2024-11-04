@@ -501,7 +501,7 @@ def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fraction
                              (2000.5, 180),
 ])
 def test_carrington_rotation_time_longitude_err(crot, longitude):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         sun.carrington_rotation_time(crot*u.one, longitude*u.deg)
 
 

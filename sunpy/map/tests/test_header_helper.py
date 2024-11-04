@@ -227,15 +227,15 @@ def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc
 
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
     # Raise the HCC error
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         make_fitswcs_header(map_data, hcc_coord)
 
     # Check for when coordinate argument isn't given as an `astropy.coordinate.SkyCoord`
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         make_fitswcs_header(map_data, map_data)
 
     # Check for when an observation time isn't given
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         make_fitswcs_header(map_data, hpc_coord_notime)
 
     # Check arguments not given as astropy Quantities

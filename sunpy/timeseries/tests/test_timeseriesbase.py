@@ -419,7 +419,7 @@ def test_remove_column(eve_test_ts):
     assert len(removed.columns) == removed.to_dataframe().shape[1]
 
     # Check that removing a non-existent column errors
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         eve_test_ts.remove_column('random column name')
 
 
@@ -476,7 +476,7 @@ def test_empty_ts_invalid_peek(generic_ts):
     a = generic_ts.time_range.start - TimeDelta(2*u.day)
     b = generic_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = generic_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         empty_ts.peek()
 
 

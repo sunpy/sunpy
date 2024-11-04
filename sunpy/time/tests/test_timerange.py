@@ -37,10 +37,10 @@ def test_timerange_invalid_range():
     mid = '2016/06/04 09:30'
     upper = '2017/03/04 09:30'
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         sunpy.time.TimeRange((lower,))
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         sunpy.time.TimeRange((lower, mid, upper))
 
 
@@ -162,12 +162,12 @@ def test_split(timerange_a):
 
 
 def test_split_n_0_error(timerange_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         timerange_a.split(n=0)
 
 
 def test_input_error(timerange_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         sunpy.time.TimeRange(tbegin_str)
 
 

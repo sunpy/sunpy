@@ -163,19 +163,19 @@ def test_great_arc_wrongly_formatted_points(points, aia171_test_map):
     coordinate_frame = aia171_test_map.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         GreatArc(a, b, points=points)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         GreatArc(a, b).coordinates(points=points)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         GreatArc(a, b).inner_angles(points=points)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         GreatArc(a, b).distances(points=points)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         GreatArc(a, b).distances(points=points)
 
 
@@ -253,7 +253,7 @@ def rectangle_args():
 def test_rectangle_incomplete_input(rectangle_args):
     bottom_left, _, _, height = rectangle_args
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         get_rectangle_coordinates(bottom_left, height=height)
 
 
@@ -267,7 +267,7 @@ def test_rectangle_invalid_input(rectangle_args):
 def test_rectangle_all_parameters_passed(rectangle_args):
     bottom_left, top_right, width, height = rectangle_args
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         get_rectangle_coordinates(bottom_left, width=width, top_right=top_right, height=height)
 
 
@@ -334,7 +334,7 @@ def test_solar_angle_equivalency_inputs():
         solar_angle_equivalency("earth")
 
     test_coord = SkyCoord(0*u.arcsec, 0*u.arcsec)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         solar_angle_equivalency(test_coord)
 
 

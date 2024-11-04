@@ -100,11 +100,11 @@ def test_solar_rotate_coordinate():
     new_observer = get_earth(new_time)
 
     # Test that when both the observer and the time are specified, an error is raised.
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         d = solar_rotate_coordinate(c, observer=observer, time=new_time)
 
     # Test that the code properly filters the observer keyword
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         d = solar_rotate_coordinate(c, observer='earth')
 
     # Test that the code properly filters the time keyword
@@ -168,7 +168,7 @@ def test_consistency_with_rotatedsunframe():
 def test_differential_rotate_observer_all_off_disk(all_off_disk_map):
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         differential_rotate(all_off_disk_map)
 
 
@@ -251,7 +251,7 @@ def test_differential_rotate_time_off_disk(all_off_disk_map):
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
     new_time = all_off_disk_map.date + 48*u.hr
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         differential_rotate(all_off_disk_map, time=new_time)
 
 
@@ -265,12 +265,12 @@ def test_get_new_observer(aia171_test_map):
 
     # The observer time is set along with other definitions of time
     for time in (rotation_interval, new_time, time_delta):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="!!"):
             new_observer = _get_new_observer(initial_obstime, observer, time)
 
     # Obstime property is present but the value is None
     observer_obstime_is_none = SkyCoord(12*u.deg, 46*u.deg, frame=frames.HeliographicStonyhurst)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         new_observer = _get_new_observer(None, observer_obstime_is_none, None)
 
     # When the observer is set, it gets passed back out
@@ -297,7 +297,7 @@ def test_get_new_observer(aia171_test_map):
                                        observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value, decimal=3)
 
     # The observer and the time cannot both be None
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         new_observer = _get_new_observer(initial_obstime, None, None)
 
 
@@ -349,7 +349,7 @@ def test_get_extreme_position():
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
         assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="!!"):
         _get_extreme_position(coords, 'lon', operator=np.nanmax)
 
 
