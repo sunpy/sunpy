@@ -6,6 +6,7 @@ from sunpy.net import attr
 from sunpy.net.attr import AttrMeta, make_tuple
 from sunpy.net.dataretriever import GenericClient
 
+import re
 
 class Instrument(attr.SimpleAttr):
     """
@@ -344,11 +345,26 @@ def test_attr_numbes():
 
 
 def test_attr_iterable_length():
+
     # not iterable
-    with pytest.raises(ValueError, match="!!"):
+
+    error_message1 = (
+        r"Invalid input value: AIA for key: <class 'sunpy.net.tests.test_attr.Instrument'>\s*"
+        r"sunpy\.net\.tests\.test_attr\.Instrument\s*\n"
+        r"Dummy Instrument Class\.\s*\n\s*\n"
+        r"Attribute Name\s*Client\s*Full Name\s*Description\s*"
+        r"--------------\s*------\s*---------\s*-----------. "
+        r"The value is not iterable or just a string\."
+    )
+
+    with pytest.raises(ValueError, match=error_message1):
         attr.Attr.update_values({GenericClient: {Instrument: 'AIA'}})
+
     # too many items
-    with pytest.raises(ValueError, match="!!"):
+
+    error_message2 = r"Invalid length \(!=2\) for values: \[\('AIA', 'AIA is Nice', 'Error now'\)\]."
+
+    with pytest.raises(ValueError, match=error_message2):
         attr.Attr.update_values(
             {GenericClient: {Instrument: [('AIA', 'AIA is Nice', 'Error now')]}})
 
@@ -365,7 +381,7 @@ def test_asterisk_attrs(ALL):
 ])
 def test_single_pair_argument_attrs(wrong_name):
     # This checks that other single string entries fail.
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=re.escape("Invalid value given for * registration: [('not star',)].") + "|" + re.escape("Invalid value given for * registration: [('*whoops',)].")):
         attr.Attr.update_values({GenericClient: {Instrument: [wrong_name]}})
 
 

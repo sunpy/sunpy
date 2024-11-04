@@ -30,7 +30,7 @@ def composite_test_map(aia171_test_map, hmi_test_map):
 
 
 def test_type_of_arguments_composite_map(composite_test_map):
-    with pytest.raises(ValueError, match="!!") as excinfo:
+    with pytest.raises(ValueError, match="CompositeMap expects pre-constructed map objects.") as excinfo:
         sunpy.map.CompositeMap(23, composite=True)
     assert str(excinfo.value) == 'CompositeMap expects pre-constructed map objects.'
 
@@ -111,7 +111,7 @@ def test_set_alpha_composite_map(composite_test_map):
 
 @pytest.mark.parametrize(('index', 'alpha'), [(0, 5.0), (1, -3.0)])
 def test_set_alpha_out_of_range_composite_map(composite_test_map, index, alpha):
-    with pytest.raises(Exception, match="!!") as excinfo:
+    with pytest.raises(Exception, match="Alpha value must be between 0 and 1") as excinfo:
         composite_test_map.set_alpha(index, alpha)
     assert str(excinfo.value) == 'Alpha value must be between 0 and 1.'
 

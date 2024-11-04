@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import re
 
 import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord
@@ -18,6 +19,9 @@ from sunpy.sun import constants
 # The inner angle is the same between each pair of coordinates.  You can
 # calculate these coordinates using the inner angle formulae as listed here:
 # https://en.wikipedia.org/wiki/Great-circle_distance
+
+combined_pattern = (re.escape("One dimensional numpy ndarrays only") + "|" + re.escape("All value in points array must be strictly >=0 and <=1.") + "|" + re.escape("Incorrectly specified \"points\" keyword value.")
+)
 
 
 @pytest.mark.parametrize(("start", "end"), [((0, 0), (0, 45)),
@@ -159,23 +163,24 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
                                     np.asarray([0.1, 0.2, -0.1, 0.4]),
                                     np.asarray([0.3, 1.1, 0.6, 0.7]),
                                     'strings_not_permitted'])
+
 def test_great_arc_wrongly_formatted_points(points, aia171_test_map):
     coordinate_frame = aia171_test_map.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError,match=combined_pattern):
         GreatArc(a, b, points=points)
 
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern):
         GreatArc(a, b).coordinates(points=points)
 
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern):
         GreatArc(a, b).inner_angles(points=points)
 
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern):
         GreatArc(a, b).distances(points=points)
 
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern):
         GreatArc(a, b).distances(points=points)
 
 
@@ -253,7 +258,7 @@ def rectangle_args():
 def test_rectangle_incomplete_input(rectangle_args):
     bottom_left, _, _, height = rectangle_args
 
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Invalid input, either bottom_left and top_right or bottom_left and height and width should be provided."):
         get_rectangle_coordinates(bottom_left, height=height)
 
 
@@ -267,7 +272,7 @@ def test_rectangle_invalid_input(rectangle_args):
 def test_rectangle_all_parameters_passed(rectangle_args):
     bottom_left, top_right, width, height = rectangle_args
 
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Invalid input, width, height and top_right parameters should not be passed simultaneously."):
         get_rectangle_coordinates(bottom_left, width=width, top_right=top_right, height=height)
 
 
@@ -334,7 +339,7 @@ def test_solar_angle_equivalency_inputs():
         solar_angle_equivalency("earth")
 
     test_coord = SkyCoord(0*u.arcsec, 0*u.arcsec)
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Observer must have an observation time, `obstime`."):
         solar_angle_equivalency(test_coord)
 
 

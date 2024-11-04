@@ -1,4 +1,5 @@
 import warnings
+import re
 
 import numpy as np
 import pytest
@@ -501,7 +502,7 @@ def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fraction
                              (2000.5, 180),
 ])
 def test_carrington_rotation_time_longitude_err(crot, longitude):
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=re.escape("Carrington longitude(s) must be > 0 degrees and <= 360 degrees.") + "|" + re.escape("Carrington rotation number(s) must be integral if `longitude` is provided.")):
         sun.carrington_rotation_time(crot*u.one, longitude*u.deg)
 
 

@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+import re
+
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
@@ -185,7 +187,7 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     assert ~coordinate_is_on_solar_disk(off_disk)
 
     # Raise the error
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=re.escape("The input coordinate(s) is of type HeliographicStonyhurst, but must be in the Helioprojective frame.")):
         coordinate_is_on_solar_disk(on_disk.transform_to(HeliographicStonyhurst))
 
     # Check for sets of coordinates

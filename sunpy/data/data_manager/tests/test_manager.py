@@ -6,6 +6,7 @@ import pytest
 from sunpy.data.data_manager.tests.mocks import MOCK_HASH, write_to_test_file
 from sunpy.util.exceptions import SunpyUserWarning
 
+import re
 
 def test_basic(storage, downloader, data_function):
     data_function()
@@ -129,7 +130,7 @@ def test_wrong_hash_error(manager, storage):
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=re.escape("['url1', 'url2'] has already been downloaded, but no file matching the hash asdf can be found.")):
         foo()
 
 

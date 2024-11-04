@@ -11,6 +11,9 @@ from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header
 from sunpy.util.metadata import MetaDict
 
+import re
+
+combined_pattern_1 = (re.escape("This function does not currently support heliocentric coordinates.") + "|" + re.escape("coordinate needs to be a coordinate frame or an SkyCoord instance.") + "|" + re.escape("The coordinate needs an observation time, `obstime`."))
 
 @pytest.fixture
 def map_data():
@@ -227,15 +230,15 @@ def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc
 
 def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
     # Raise the HCC error
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern_1):
         make_fitswcs_header(map_data, hcc_coord)
 
     # Check for when coordinate argument isn't given as an `astropy.coordinate.SkyCoord`
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern_1):
         make_fitswcs_header(map_data, map_data)
 
     # Check for when an observation time isn't given
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match=combined_pattern_1):
         make_fitswcs_header(map_data, hpc_coord_notime)
 
     # Check arguments not given as astropy Quantities

@@ -34,11 +34,11 @@ def test_parse_time_microseconds_excess_trailing_zeros():
     assert dt.scale == 'utc'
 
     # Excess digits beyond 6 digits should error if they are not zeros
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:\n- 'datetime': Input values for datetime class must be datetime objects\n- 'ymdhms': input must be dict or table-like\n- 'iso': Time 2010-Oct-10 00:00:00 does not match iso format\n- 'isot': Time 2010-Oct-10 00:00:00 does not match isot format\n- 'yday': Time 2010-Oct-10 00:00:00 does not match yday format\n- 'datetime64': Input values for datetime64 class must be datetime64 objects\n- 'fits': Time 2010-Oct-10 00:00:00.1234567 does not match fits format\n- 'byear_str': Time 2010-Oct-10 00:00:00.1234567 does not match byear_str format\n- 'jyear_str': Time 2010-Oct-10 00:00:00.1234567 does not match jyear_str format\n- 'astropy_time': Input values for astropy_time class must all be the same astropy Time type."):
         dt = parse_time('2010-Oct-10 00:00:00.1234567')
 
     # An ending run of zeros should still error if they are not a microsecond field
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:\n- 'datetime': Input values for datetime class must be datetime objects\n- 'ymdhms': input must be dict or table-like\n- 'iso': Time 10-Oct-2010 does not match iso format\n- 'isot': Time 10-Oct-2010 does not match isot format\n- 'yday': Time 10-Oct-2010 does not match yday format\n- 'datetime64': Input values for datetime64 class must be datetime64 objects\n- 'fits': Time 10-Oct-2010.0000000 does not match fits format\n- 'byear_str': Time 10-Oct-2010.0000000 does not match byear_str format\n- 'jyear_str': Time 10-Oct-2010.0000000 does not match jyear_str format\n- 'astropy_time': Input values for astropy_time class must all be the same astropy Time type."):
         dt = parse_time('10-Oct-2010.0000000')
 
 
@@ -288,9 +288,9 @@ def test_parse_time_astropy_formats(ts, fmt):
 def test_parse_time_int_float():
     # int and float values are not unique
     # The format has to be mentioned
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:\n- 'datetime': Input values for datetime class must be datetime objects\n- 'ymdhms': input must be dict or table-like\n- 'iso': Input values for iso class must be strings\n- 'isot': Input values for isot class must be strings\n- 'yday': Input values for yday class must be strings\n- 'datetime64': Input values for datetime64 class must be datetime64 objects\n- 'fits': Input values for fits class must be strings\n- 'byear_str': Input values for byear_str class must be strings\n- 'jyear_str': Input values for jyear_str class must be strings\n- 'astropy_time': Input values for astropy_time class must all be the same astropy Time type."):
         parse_time(100)
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:\n- 'datetime': Input values for datetime class must be datetime objects\n- 'ymdhms': input must be dict or table-like\n- 'iso': Input values for iso class must be strings\n- 'isot': Input values for isot class must be strings\n- 'yday': Input values for yday class must be strings\n- 'datetime64': Input values for datetime64 class must be datetime64 objects\n- 'fits': Input values for fits class must be strings\n- 'byear_str': Input values for byear_str class must be strings\n- 'jyear_str': Input values for jyear_str class must be strings\n- 'astropy_time': Input values for astropy_time class must all be the same astropy Time type."):
         parse_time(100.0)
 
 

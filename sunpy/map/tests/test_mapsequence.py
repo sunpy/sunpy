@@ -77,7 +77,7 @@ def test_as_array(mapsequence_all_the_same,
     sure an error is raised."""
     # Should raise a ValueError if the mapsequence has differently shaped maps in
     # it.
-    with pytest.raises(ValueError, match="!!"):
+    with pytest.raises(ValueError, match="Not all maps have the same shape."):
         mapsequence_different.as_array()
 
     # Test the case when none of the maps have a mask
