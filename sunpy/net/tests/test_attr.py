@@ -347,18 +347,11 @@ def test_attr_numbes():
 def test_attr_iterable_length():
 
     # not iterable
-
-    error_message1 = "The value is not iterable or just a string"
-    pattern_1_1 = re.compile(error_message1, re.DOTALL)
-
-    with pytest.raises(ValueError, match=pattern_1_1):
+    with pytest.raises(ValueError, match="The value is not iterable or just a string"):
         attr.Attr.update_values({GenericClient: {Instrument: 'AIA'}})
 
     # too many items
-
-    error_message2 = "Error now"
-
-    with pytest.raises(ValueError, match=error_message2):
+    with pytest.raises(ValueError, match="Error now"):
         attr.Attr.update_values(
             {GenericClient: {Instrument: [('AIA', 'AIA is Nice', 'Error now')]}})
 

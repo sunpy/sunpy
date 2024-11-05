@@ -21,8 +21,6 @@ from sunpy.sun import constants
 # https://en.wikipedia.org/wiki/Great-circle_distance
 
 
-
-
 @pytest.mark.parametrize(("start", "end"), [((0, 0), (0, 45)),
                                             ((0, 0), (45, 0)),
                                             ((0, 45), (0, 0)),
@@ -156,20 +154,14 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
     assert len(distances) == points_expected
     assert u.isclose(distances[-1].value * u.m, last_distance * u.km)
 
-error_messages = {
-    "one_d_array": "One dimensional numpy ndarrays only",
-    "points_range": "All value in points array must be strictly >=0 and <=1.",
-    "points_keyword": "Incorrectly specified \"points\" keyword value."
-}
-
 # Test that the great arc code rejects wrongly formatted points
 @pytest.mark.parametrize(
     ("points", "expected_error"), 
     [
-        (np.asarray([[0, 0.1], [0.2, 0.3]]), error_messages["one_d_array"]),  
-        (np.asarray([0.1, 0.2, -0.1, 0.4]), error_messages["points_range"]),  
-        (np.asarray([0.3, 1.1, 0.6, 0.7]), error_messages["points_range"]),   
-        ('strings_not_permitted', error_messages["points_keyword"]),          
+        (np.asarray([[0, 0.1], [0.2, 0.3]]), "One dimensional numpy ndarrays only"),  
+        (np.asarray([0.1, 0.2, -0.1, 0.4]), "All value in points array must be strictly >=0 and <=1."),  
+        (np.asarray([0.3, 1.1, 0.6, 0.7]), "All value in points array must be strictly >=0 and <=1."),   
+        ('strings_not_permitted', "Incorrectly specified \"points\" keyword value."),          
     ]
     )
 
