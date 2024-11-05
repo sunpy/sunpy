@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 import pytest
 
@@ -10,10 +12,6 @@ from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header
 from sunpy.util.metadata import MetaDict
-
-import re
-
-combined_pattern_1 = (re.escape("This function does not currently support heliocentric coordinates.") + "|" + re.escape("coordinate needs to be a coordinate frame or an SkyCoord instance.") + "|" + re.escape("The coordinate needs an observation time, `obstime`."))
 
 @pytest.fixture
 def map_data():
@@ -227,19 +225,31 @@ def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc
     header = make_fitswcs_header(map_data, hpc_coord, unit=input_unit)
     assert header['bunit'] == output_string
 
+error_messages_1 = {
+    "heliocentric_unsupported": "This function does not currently support heliocentric coordinates.",
+    "coord_instance": "coordinate needs to be a coordinate frame or an SkyCoord instance.",
+    "missing_obstime": "The coordinate needs an observation time, `obstime`."
+}
 
-def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
-    # Raise the HCC error
-    with pytest.raises(ValueError, match=combined_pattern_1):
-        make_fitswcs_header(map_data, hcc_coord)
-
-    # Check for when coordinate argument isn't given as an `astropy.coordinate.SkyCoord`
-    with pytest.raises(ValueError, match=combined_pattern_1):
-        make_fitswcs_header(map_data, map_data)
-
-    # Check for when an observation time isn't given
-    with pytest.raises(ValueError, match=combined_pattern_1):
-        make_fitswcs_header(map_data, hpc_coord_notime)
+@pytest.mark.parametrize(
+    "coordinate_input, error_messages_1",
+    [
+        ("hcc_coord", error_messages_1["heliocentric_unsupported"]),   # Unsupported HCC error
+        ("map_data", error_messages_1["coord_instance"]),              # Invalid coordinate type
+        ("hpc_coord_notime", error_messages_1["missing_obstime"])      # Missing observation time
+    ]
+)
+def test_invalid_inputs(coordinate_input, error_messages_1, map_data, hcc_coord, hpc_coord_notime, hpc_coord):
+    coordinates = {
+        "hcc_coord": hcc_coord,
+        "map_data": map_data,
+        "hpc_coord_notime": hpc_coord_notime,
+    }
+    coord = coordinates[coordinate_input]
+    
+    
+    with pytest.raises(ValueError, match=re.escape(error_messages_1)):
+        make_fitswcs_header(map_data, coord)
 
     # Check arguments not given as astropy Quantities
     with pytest.raises(TypeError):

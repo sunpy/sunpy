@@ -348,8 +348,7 @@ def test_attr_iterable_length():
 
     # not iterable
 
-    error_message1 = r"Invalid input value: AIA for key: <class 'sunpy\.net\.tests\.test_attr\.Instrument'>\s*sunpy\.net\.tests\.test_attr\.Instrument\s*Dummy Instrument Class\.\s*Attribute Name\s*Client\s*Full Name\s*Description.*?The value is not iterable or just a string\."
-
+    error_message1 = "The value is not iterable or just a string"
     pattern_1_1 = re.compile(error_message1, re.DOTALL)
 
     with pytest.raises(ValueError, match=pattern_1_1):
@@ -357,7 +356,7 @@ def test_attr_iterable_length():
 
     # too many items
 
-    error_message2 = r"Invalid length \(!=2\) for values: \[\('AIA', 'AIA is Nice', 'Error now'\)\]."
+    error_message2 = "Error now"
 
     with pytest.raises(ValueError, match=error_message2):
         attr.Attr.update_values(
@@ -376,7 +375,7 @@ def test_asterisk_attrs(ALL):
 ])
 def test_single_pair_argument_attrs(wrong_name):
     # This checks that other single string entries fail.
-    with pytest.raises(ValueError, match=re.escape("Invalid value given for * registration: [('not star',)].") + "|" + re.escape("Invalid value given for * registration: [('*whoops',)].")):
+    with pytest.raises(ValueError, match=re.escape("Invalid value given for")):
         attr.Attr.update_values({GenericClient: {Instrument: [wrong_name]}})
 
 

@@ -20,8 +20,7 @@ from sunpy.sun import constants
 # calculate these coordinates using the inner angle formulae as listed here:
 # https://en.wikipedia.org/wiki/Great-circle_distance
 
-combined_pattern = (re.escape("One dimensional numpy ndarrays only") + "|" + re.escape("All value in points array must be strictly >=0 and <=1.") + "|" + re.escape("Incorrectly specified \"points\" keyword value.")
-)
+
 
 
 @pytest.mark.parametrize(("start", "end"), [((0, 0), (0, 45)),
@@ -157,30 +156,40 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
     assert len(distances) == points_expected
     assert u.isclose(distances[-1].value * u.m, last_distance * u.km)
 
+error_messages = {
+    "one_d_array": "One dimensional numpy ndarrays only",
+    "points_range": "All value in points array must be strictly >=0 and <=1.",
+    "points_keyword": "Incorrectly specified \"points\" keyword value."
+}
 
 # Test that the great arc code rejects wrongly formatted points
-@pytest.mark.parametrize("points", [np.asarray([[0, 0.1], [0.2, 0.3]]),
-                                    np.asarray([0.1, 0.2, -0.1, 0.4]),
-                                    np.asarray([0.3, 1.1, 0.6, 0.7]),
-                                    'strings_not_permitted'])
+@pytest.mark.parametrize(
+    "points, expected_error", 
+    [
+        (np.asarray([[0, 0.1], [0.2, 0.3]]), error_messages["one_d_array"]),  
+        (np.asarray([0.1, 0.2, -0.1, 0.4]), error_messages["points_range"]),  
+        (np.asarray([0.3, 1.1, 0.6, 0.7]), error_messages["points_range"]),   
+        ('strings_not_permitted', error_messages["points_keyword"]),          
+    ]
+    )
 
-def test_great_arc_wrongly_formatted_points(points, aia171_test_map):
+def test_great_arc_wrongly_formatted_points(points, expected_error, aia171_test_map):
     coordinate_frame = aia171_test_map.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
-    with pytest.raises(ValueError,match=combined_pattern):
+    with pytest.raises(ValueError,match=re.escape(expected_error)):
         GreatArc(a, b, points=points)
 
-    with pytest.raises(ValueError, match=combined_pattern):
+    with pytest.raises(ValueError, match=re.escape(expected_error)):
         GreatArc(a, b).coordinates(points=points)
 
-    with pytest.raises(ValueError, match=combined_pattern):
+    with pytest.raises(ValueError, match=re.escape(expected_error)):
         GreatArc(a, b).inner_angles(points=points)
 
-    with pytest.raises(ValueError, match=combined_pattern):
+    with pytest.raises(ValueError, match=re.escape(expected_error)):
         GreatArc(a, b).distances(points=points)
 
-    with pytest.raises(ValueError, match=combined_pattern):
+    with pytest.raises(ValueError, match=re.escape(expected_error)):
         GreatArc(a, b).distances(points=points)
 
 

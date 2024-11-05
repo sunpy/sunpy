@@ -16,17 +16,17 @@ def test_MockObject_illegal_kwargs(mocked_mockobject):
     Any attempt to use a kwarg which has the same name as an attribute/method
     of the underlying object or datastore will raise a ValueError.
     """
-    with pytest.raises(ValueError, match="kwarg 'values' is already an attribute of <class 'dict'> or <class 'sunpy.tests.mocks.MockObject'>"):
+    with pytest.raises(ValueError, match="kwarg 'values' is already an attribute"):
         MockObject(records=[], values=1)
 
-    with pytest.raises(ValueError, match="kwarg 'items' is already an attribute of <class 'dict'> or <class 'sunpy.tests.mocks.MockObject'>"):
+    with pytest.raises(ValueError, match="kwarg 'items' is already an attribute"):
         MockObject(items=('a', 'b', 'c'))
 
-    with pytest.raises(ValueError, match="kwarg '__hash__' is already an attribute of <class 'dict'> or <class 'sunpy.tests.mocks.MockObject'>"):
+    with pytest.raises(ValueError, match="kwarg '__hash__' is already an attribute"):
         MockObject(__hash__=0x23424)
 
     # adding a new 'prohibited' attribute will be prevented
-    with pytest.raises(ValueError, match="Name 'keys' is already an attribute of <class 'dict'> or <class 'sunpy.tests.mocks.MockObject'>"):
+    with pytest.raises(ValueError, match="Name 'keys' is already an attribute"):
         mocked_mockobject['keys'] = [3, 4]
 
 

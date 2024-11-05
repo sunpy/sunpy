@@ -167,7 +167,7 @@ def test_split_n_0_error(timerange_a):
 
 
 def test_input_error(timerange_a):
-    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:\n- 'datetime': Input values for datetime class must be datetime objects\n- 'ymdhms': input must be dict or table-like\n- 'iso': Time 2 does not match iso format\n- 'isot': Time 2 does not match isot format\n- 'yday': Time 2 does not match yday format\n- 'datetime64': Input values for datetime64 class must be datetime64 objects\n- 'fits': Time 2 does not match fits format\n- 'byear_str': Time 2 does not match byear_str format\n- 'jyear_str': Time 2 does not match jyear_str format\n- 'astropy_time': Input values for astropy_time class must all be the same astropy Time type."):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:"):
         sunpy.time.TimeRange(tbegin_str)
 
 

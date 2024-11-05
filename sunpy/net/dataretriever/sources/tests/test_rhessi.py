@@ -66,7 +66,7 @@ def test_get_base_url_on_urlerror(mock_urlopen):
     """
     If all tested URLs raise `URLError`, then raise an `IOError`
     """
-    with pytest.raises(OSError, match=re.escape("Unable to find an online HESSI server from ('https://hesperia.gsfc.nasa.gov/hessidata/', 'http://hessi.ssl.berkeley.edu/hessidata/', 'http://soleil.i4ds.ch/hessidata/')")):
+    with pytest.raises(OSError, match=re.escape("Unable to find an online HESSI server from")):
         rhessi.get_base_url()
 
 

@@ -318,7 +318,7 @@ def test_nans(rot30):
         axs[i, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
         for j in range(6):
             if j not in _rotation_registry[method].allowed_orders:
-                with pytest.raises(ValueError, match="!!"):
+                with pytest.raises(ValueError, match="2 is one of the allowed orders for method 'opencv': {0, 1, 3}"):
                     affine_transform(image_with_nans, rot30, order=j, method=method, missing=np.nan)
                 axs[i, j+1].remove()
             else:

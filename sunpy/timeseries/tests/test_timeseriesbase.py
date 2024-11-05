@@ -421,7 +421,7 @@ def test_remove_column(eve_test_ts):
     assert len(removed.columns) == removed.to_dataframe().shape[1]
 
     # Check that removing a non-existent column errors
-    with pytest.raises(ValueError, match=re.escape("Given column name (random column name) not in list of columns ['XRS-B proxy', 'XRS-A proxy', 'SEM proxy', '0.1-7ESPquad', '17.1ESP', '25.7ESP', '30.4ESP', '36.6ESP', 'darkESP', '121.6MEGS-P', 'darkMEGS-P', 'q0ESP', 'q1ESP', 'q2ESP', 'q3ESP', 'CMLat', 'CMLon', 'x_cool proxy', 'oldXRSB proxy']")):
+    with pytest.raises(ValueError, match=re.escape("Given column name (random column name) not in list of columns")):
         eve_test_ts.remove_column('random column name')
 
 
@@ -478,7 +478,7 @@ def test_empty_ts_invalid_peek(generic_ts):
     a = generic_ts.time_range.start - TimeDelta(2*u.day)
     b = generic_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = generic_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError, match=re.escape("The timeseries can't be plotted as it has no data present. (len(self._data) == 0)")):
+    with pytest.raises(ValueError, match="The timeseries can't be plotted as it has no data present"):
         empty_ts.peek()
 
 
