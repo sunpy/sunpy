@@ -232,7 +232,7 @@ error_messages_1 = {
 }
 
 @pytest.mark.parametrize(
-    ("coordinate_input, error_messages_1"),
+    ("coordinate_input", "error_messages_1"),
     [
         ("hcc_coord", error_messages_1["heliocentric_unsupported"]),   # Unsupported HCC error
         ("map_data", error_messages_1["coord_instance"]),              # Invalid coordinate type
