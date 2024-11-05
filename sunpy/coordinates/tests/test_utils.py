@@ -164,7 +164,7 @@ error_messages = {
 
 # Test that the great arc code rejects wrongly formatted points
 @pytest.mark.parametrize(
-    "points, expected_error", 
+    ("points, expected_error"), 
     [
         (np.asarray([[0, 0.1], [0.2, 0.3]]), error_messages["one_d_array"]),  
         (np.asarray([0.1, 0.2, -0.1, 0.4]), error_messages["points_range"]),  
