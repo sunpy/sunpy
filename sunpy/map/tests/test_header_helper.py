@@ -13,6 +13,7 @@ from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header
 from sunpy.util.metadata import MetaDict
 
+
 @pytest.fixture
 def map_data():
     return np.random.rand(20, 10)
@@ -228,9 +229,9 @@ def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc
 @pytest.mark.parametrize(
     ("coordinate_input", "expected_error_message"),
     [
-        ("hcc_coord", "This function does not currently support heliocentric coordinates."),   
-        ("map_data", "coordinate needs to be a coordinate frame or an SkyCoord instance."),    
-        ("hpc_coord_notime", "The coordinate needs an observation time, `obstime`.")      
+        ("hcc_coord", "This function does not currently support heliocentric coordinates."),
+        ("map_data", "coordinate needs to be a coordinate frame or an SkyCoord instance."),
+        ("hpc_coord_notime", "The coordinate needs an observation time, `obstime`.")
     ]
 )
 def test_invalid_inputs(coordinate_input, expected_error_message, map_data, hcc_coord, hpc_coord_notime, hpc_coord):
@@ -240,8 +241,8 @@ def test_invalid_inputs(coordinate_input, expected_error_message, map_data, hcc_
         "hpc_coord_notime": hpc_coord_notime,
     }
     coord = coordinates[coordinate_input]
-    
-    
+
+
     with pytest.raises(ValueError, match=re.escape(expected_error_message)):
         make_fitswcs_header(map_data, coord)
 

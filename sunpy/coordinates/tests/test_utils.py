@@ -1,6 +1,7 @@
+import re
+
 import numpy as np
 import pytest
-import re
 
 import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord
@@ -156,12 +157,12 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
 
 # Test that the great arc code rejects wrongly formatted points
 @pytest.mark.parametrize(
-    ("points", "expected_error"), 
+    ("points", "expected_error"),
     [
-        (np.asarray([[0, 0.1], [0.2, 0.3]]), "One dimensional numpy ndarrays only"),  
-        (np.asarray([0.1, 0.2, -0.1, 0.4]), "All value in points array must be strictly >=0 and <=1."),  
-        (np.asarray([0.3, 1.1, 0.6, 0.7]), "All value in points array must be strictly >=0 and <=1."),   
-        ('strings_not_permitted', "Incorrectly specified \"points\" keyword value."),          
+        (np.asarray([[0, 0.1], [0.2, 0.3]]), "One dimensional numpy ndarrays only"),
+        (np.asarray([0.1, 0.2, -0.1, 0.4]), "All value in points array must be strictly >=0 and <=1."),
+        (np.asarray([0.3, 1.1, 0.6, 0.7]), "All value in points array must be strictly >=0 and <=1."),
+        ('strings_not_permitted', "Incorrectly specified \"points\" keyword value."),
     ]
     )
 

@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 
 import pytest
@@ -6,7 +7,6 @@ from sunpy.net import attr
 from sunpy.net.attr import AttrMeta, make_tuple
 from sunpy.net.dataretriever import GenericClient
 
-import re
 
 class Instrument(attr.SimpleAttr):
     """

@@ -1,9 +1,8 @@
+import re
 import socket
 from unittest import mock
 from http.client import RemoteDisconnected
 from urllib.error import URLError
-
-import re
 
 import pytest
 

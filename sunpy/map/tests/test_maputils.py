@@ -1,7 +1,7 @@
+import re
+
 import numpy as np
 import pytest
-
-import re
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord

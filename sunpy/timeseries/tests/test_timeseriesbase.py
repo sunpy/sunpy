@@ -1,3 +1,4 @@
+import re
 import copy
 import datetime
 from collections import OrderedDict
@@ -20,8 +21,6 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
-
-import re
 
 # Test fixtures are in ../conftest.py
 

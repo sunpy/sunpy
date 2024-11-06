@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import pytest
@@ -6,7 +7,6 @@ import pytest
 from sunpy.data.data_manager.tests.mocks import MOCK_HASH, write_to_test_file
 from sunpy.util.exceptions import SunpyUserWarning
 
-import re
 
 def test_basic(storage, downloader, data_function):
     data_function()
