@@ -51,18 +51,16 @@ To search for data in JSOC, your query needs at minimum, a "Series" name and a "
     <BLANKLINE>
     The JSOC Series to Download.
     <BLANKLINE>
-                Attribute Name           Client             Full Name                                                Description
-    ---------------------------------- ------ ---------------------------------- --------------------------------------------------------------------------------
-    aia_flatfield                      JSOC   aia.flatfield                      AIA flatfield
-    aia_lev1                           JSOC   aia.lev1                           AIA Level 1
-    aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
-    aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
-    aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
-    aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
-    aia_response                       JSOC   aia.response                       AIA instrument response table
-    aia_temperature_summary_300s       JSOC   aia.temperature_summary_300s       Temperature Statistics from AIA Housekeeping - Thermal Packet
-    hmi_b_135s                         JSOC   hmi.b_135s                         Full-disk Milne-Eddington inversion with the azimuth disambiguation informati...
-        ...
+             Attribute Name         Client            Full Name                                              Description
+    ------------------------------- ------ ------------------------------- --------------------------------------------------------------------------------
+    aia_flatfield                   JSOC   aia.flatfield                   AIA flatfield
+    aia_lev1                        JSOC   aia.lev1                        AIA Level 1
+    aia_lev1_euv_12s                JSOC   aia.lev1_euv_12s                AIA Level 1, 12 second cadence
+    ...                             ...    ...                             ...
+    mdi_vw_v_sht_modes_asym_archive JSOC   mdi.vw_v_sht_modes_asym_archive full results from jpkbgn with asymmetric fits
+    mdi_vw_v_sht_pow                JSOC   mdi.vw_v_sht_pow                power spectra computed after gapfilling
+    mdi_vw_v_sht_secs_72d           JSOC   mdi.vw_v_sht_secs_72d           sections of data, discontinuities in between
+    Length = 267 rows
 
 Different PrimeKeys are supported by different Series, and you can find out the PrimeKeys supported in any Series by:
 

@@ -24,8 +24,20 @@ def LCClient():
     ("timerange", "url_start", "url_end"),
     [(Time('1995/06/03 1:00', '1995/06/05'),
       'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
-      'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
-     (Time('2008/06/02 12:00', '2008/06/04'),
+      'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits')])
+def test_get_url_for_time_range_old(LCClient, timerange, url_start, url_end):
+    # NASA likes to break its servers quite often.
+    qresponse = LCClient.search(timerange)
+    urls = [i['url'] for i in qresponse]
+    assert isinstance(urls, list)
+    assert urls[0] == url_start
+    assert urls[-1] == url_end
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize(
+    ("timerange", "url_start", "url_end"),
+    [(Time('2008/06/02 12:00', '2008/06/04'),
       'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2008/06/sci_gxrs-l2-irrad_g10_d20080602_v0-0-0.nc',
       'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/xrsf-l2-avg1m_science/2008/06/sci_xrsf-l2-avg1m_g10_d20080604_v1-0-0.nc'),
      (Time('2020/08/02', '2020/08/04'),
@@ -58,11 +70,14 @@ def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
 @pytest.mark.parametrize(("timerange", "url_start", "url_end"),
                          [(a.Time("2009/08/30 00:10", "2009/09/02"),
                            "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/gxrs-l2-irrad_science/2009/08/sci_gxrs-l2-irrad_g10_d20090830_v0-0-0.nc",
-                           "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes14/xrsf-l2-avg1m_science/2009/09/sci_xrsf-l2-avg1m_g14_d20090902_v1-0-0.nc")])
+                           # In case they the older file comes back we can uncomment this line and remove the new line below.
+                           #"https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes14/xrsf-l2-avg1m_science/2009/09/sci_xrsf-l2-avg1m_g14_d20090902_v1-0-0.nc")])
+                           "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes10/xrsf-l2-avg1m_science/2009/09/sci_xrsf-l2-avg1m_g10_d20090902_v1-0-0.nc")])
 def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
     qresponse = LCClient.search(timerange)
     urls = [i['url'] for i in qresponse]
-    assert len(urls) == 12
+    # This number likes to change as data is reprocessed, it was 12 before
+    assert len(urls) == 8
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
@@ -71,7 +86,7 @@ def test_get_overlap_providers(LCClient, timerange, url_start, url_end):
 @pytest.mark.parametrize(("timerange", "url_old", "url_new"),
                          [(a.Time('2013/10/28', '2013/10/29'),
                            "https://umbra.nascom.nasa.gov/goes/fits/2013/go1520131028.fits",
-                           "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes13/gxrs-l2-irrad_science/2013/10/sci_gxrs-l2-irrad_g13_d20131028_v0-0-0.nc")])
+                           "https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes13/gxrs-l2-irrad_science/2013/10/sci_gxrs-l2-irrad_g13_d20131028_v0-1-0.nc")])
 def test_old_data_access(timerange, url_old, url_new):
     # test first for old data
     qr = Fido.search(timerange, a.Instrument("XRS"), a.Provider("SDAC"))
