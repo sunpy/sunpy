@@ -27,7 +27,7 @@ from sunpy.time import parse_time
 ##############################################################################
 # Define the time for the plot as the time when this script is run.
 
-obstime = parse_time('now')
+obstime = parse_time('2024-Oct-17 20:23')
 
 ##############################################################################
 # Define a convenience function to extract the first full orbit from a
