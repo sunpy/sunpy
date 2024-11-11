@@ -90,7 +90,7 @@ As an example:
 
 .. code-block:: python
 
-    >>> print(a.Instrument)  # doctest: +SKIP
+    >>> print(a.Instrument)
     sunpy.net.attrs.Instrument
     <BLANKLINE>
     Specifies the Instrument name for the search.

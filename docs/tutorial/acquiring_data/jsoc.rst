@@ -46,7 +46,7 @@ To search for data in JSOC, your query needs at minimum, a "Series" name and a "
 
 .. code-block:: python
 
-    >>> print(a.jsoc.Series)  # doctest: +SKIP
+    >>> print(a.jsoc.Series)
     sunpy.net.jsoc.attrs.Series
     <BLANKLINE>
     The JSOC Series to Download.

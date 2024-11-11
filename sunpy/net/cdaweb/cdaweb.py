@@ -27,7 +27,7 @@ class CDAWEBClient(BaseClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> print(a.cdaweb.Dataset)  # doctest: +SKIP
+    >>> print(a.cdaweb.Dataset)
     sunpy.net.cdaweb.attrs.Dataset
     <BLANKLINE>
     Dataset ID.
