@@ -90,35 +90,26 @@ As an example:
 
 .. code-block:: python
 
-    >>> print(a.Instrument)
+    >>> print(a.Instrument)  # doctest: +SKIP
     sunpy.net.attrs.Instrument
     <BLANKLINE>
     Specifies the Instrument name for the search.
     <BLANKLINE>
-    Attribute Name Client  Full Name                             Description
-    -------------- ------ ------------ ----------------------------------------------------------------
-    adapt          ADAPT  ADAPT        ADvanced Adaptive Prediction Technique.
-    aia            VSO    AIA          Atmospheric Imaging Assembly
-    bcs            VSO    BCS          Bragg Crystal Spectrometer
-    be_continuum   VSO    BE-Continuum INAF-OACT Barra Equatoriale Continuum Instrument
-    be_halpha      VSO    BE-Halpha    INAF-OACT Barra Equatoriale Hα Instrument
-    bigbear        VSO    Big Bear     Big Bear Solar Observatory, California TON and GONG+ sites
-    caii           VSO    CAII         Kanzelhöhe Ca II k Instrument
-    cds            VSO    CDS          Coronal Diagnostic Spectrometer
-    celias         VSO    CELIAS       Charge, Element, and Isotope Analysis System
-    cerrotololo    VSO    Cerro Tololo Cerro Tololo, Chile GONG+ site
-    ...            ...    ...          ...
-    vault_1999     VSO    VAULT-1999   Very High Angular Resolution Ultraviolet Telescope (1999 flight)
-    vault_2002     VSO    VAULT-2002   Very High Angular Resolution Ultraviolet Telescope (2002 flight)
-    vault_2014     VSO    VAULT-2014   Very High Angular Resolution Ultraviolet Telescope (2014 flight)
-    virgo          VSO    VIRGO        Variability of Solar Irradiance and Gravity Oscillations
-    vsm            VSO    vsm          Vector SpecroMagnetograph
-    wbs            VSO    WBS          Wide Band Spectrometer
-    wispr          VSO    WISPR        Wide-Field Imager for Solar Probe Plus
-    x123           VSO    X123         X123 SXR Spectometer
-    xrs            XRS    XRS          GOES X-ray Sensor
-    xrt            VSO    XRT          X-Ray Telescope
-    Length = 108 rows
+           Attribute Name          Client   ...                                   Description
+    --------------------------- ----------- ... --------------------------------------------------------------------------------
+    adapt                       ADAPT       ... ADvanced Adaptive Prediction Technique.
+    aia                         VSO         ... Atmospheric Imaging Assembly
+    bcs                         VSO         ... Bragg Crystal Spectrometer
+    be_continuum                VSO         ... INAF-OACT Barra Equatoriale Continuum Instrument
+    be_halpha                   VSO         ... INAF-OACT Barra Equatoriale Hα Instrument
+    bigbear                     VSO         ... Big Bear Solar Observatory, California TON and GONG+ sites
+    caii                        VSO         ... Kanzelhöhe Ca II k Instrument
+    cds                         VSO         ... Coronal Diagnostic Spectrometer
+    celias                      VSO         ... Charge, Element, and Isotope Analysis System
+    cerrotololo                 VSO         ... Cerro Tololo, Chile GONG+ site
+    chp                         VSO         ... Chromospheric Helium-I Imaging Photometer
+    cook                        VSO         ... None
+    ...
 
 This is a full list of known values, a description, and which clients support those values (if you want to search using a specific data source).
 Printing attributes like this is supported for most attributes, including  client specific ones.
