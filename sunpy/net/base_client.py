@@ -358,7 +358,7 @@ def _print_client(client, html=False, visible_entries=None):
     lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
     if html:
         lines = [f"<p>{line}</p>" for line in lines]
-    lines.extend(t.pformat_all(max_lines=visible_entries, show_dtype=False,
+    lines.extend(t.pformat(max_lines=visible_entries, show_dtype=False,
                                max_width=width, align="<", html=html))
     return '\n'.join(lines)
 

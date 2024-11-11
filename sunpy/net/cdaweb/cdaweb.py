@@ -33,15 +33,11 @@ class CDAWEBClient(BaseClient):
     Dataset ID.
     <BLANKLINE>
     <BLANKLINE>
-          Attribute Name       Client         Full Name                                            Description
-    -------------------------- ------ -------------------------- --------------------------------------------------------------------------------
-    a1_k0_mpa                  CDAWEB A1_K0_MPA                  LANL 2001 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
-    a2_k0_mpa                  CDAWEB A2_K0_MPA                  LANL 2002 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
-    ac_at_def                  CDAWEB AC_AT_DEF                  ACE Hourly RTN, GSE and J2000 GCI Attitude direction cosines - E. C. Stone (C...
-    ...                        ...    ...                        ...
-    wi_wa_rad1_l3_df           CDAWEB WI_WA_RAD1_L3_DF           Wind Waves, Level 3 Direction-Finding (DF) parameters - K. Issautier (LESIA, ...
-    wild2_helio1day_position   CDAWEB WILD2_HELIO1DAY_POSITION   Position in heliocentric coordinates from SPDF Helioweb - Natalia Papitashvil...
-    wind_3dp_echsfits_e0_yr    CDAWEB WIND_3DP_ECHSFITS_E0-YR    Wind spacecraft, 3DP accurate electron parameters - Chadi S. Salem (Universit...
+                         Attribute Name                     Client ...                                   Description
+    ------------------------------------------------------- ------ ... --------------------------------------------------------------------------------
+    a1_k0_mpa                                               CDAWEB ... LANL 2001 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
+    a2_k0_mpa                                               CDAWEB ... LANL 2002 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
+    ...
     >>> res = Fido.search(a.Time('2021/07/01', '2021/07/08'),
     ...                   a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')) # doctest: +REMOTE_DATA
     >>> res # doctest: +REMOTE_DATA
