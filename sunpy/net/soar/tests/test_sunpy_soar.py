@@ -102,8 +102,8 @@ def test_registered_attrs() -> None:
 def test_registered_instr_attrs() -> None:
     # Check if the Solo instruments are registered in a.Instrument
     instr_attr = a.Instrument
-    assert "SOAR" in instr_attr._attr_registry[instr_attr].client  # NOQA: SLF001
-    assert "stix" in instr_attr._attr_registry[instr_attr].name  # NOQA: SLF001
+    assert "SOAR" in instr_attr._attr_registry[instr_attr].client
+    assert "stix" in instr_attr._attr_registry[instr_attr].name
 
 
 def test_registered_soop_names() -> None:
@@ -237,7 +237,7 @@ def test_wavelength_range() -> None:
 
 
 def test_join_science_query() -> None:
-    result = SOARClient._construct_payload(  # NOQA: SLF001
+    result = SOARClient._construct_payload(
         [
             "instrument='EUI'",
             "begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'",
@@ -256,7 +256,7 @@ def test_join_science_query() -> None:
 
 
 def test_join_low_latency_query() -> None:
-    result = SOARClient._construct_payload(  # NOQA: SLF001
+    result = SOARClient._construct_payload(
         [
             "instrument='EUI'",
             "begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'",
@@ -275,7 +275,7 @@ def test_join_low_latency_query() -> None:
 
 
 def test_distance_query():
-    result = SOARClient._construct_payload(  # NOQA: SLF001
+    result = SOARClient._construct_payload(
         [
             "instrument='RPW'",
             "DISTANCE(0.28,0.30)",
@@ -287,7 +287,7 @@ def test_distance_query():
 
 
 def test_distance_join_query():
-    result = SOARClient._construct_payload(  # NOQA: SLF001
+    result = SOARClient._construct_payload(
         [
             "instrument='EUI'",
             "DISTANCE(0.28,0.30)",
@@ -319,7 +319,7 @@ def test_distance_search_insitu():
     product = a.soar.Product("metis-vl-pol-angle")
     distance = a.soar.Distance(0.45 * u.AU, 0.46 * u.AU)
     res = Fido.search(distance & instrument & product & level)
-    assert res.file_num == 240
+    assert res.file_num == 248
 
 
 def test_distance_time_search():
@@ -357,13 +357,13 @@ def test_distance_out_of_bounds_warning(recwarn):
 def test_soar_server_down() -> None:
     # As the SOAR server is expected to be down in this test, a JSONDecodeError is expected
     # to be raised due to the absence of a valid JSON response.
-    TAP_ENDPOINT = (
+    tap_endpoint = (
         "http://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT"
         " * FROM v_ll_data_item WHERE begin_time%3E='2020-11-13 00:00:00' AND "
         "begin_time%3C='2020-11-14 00:00:00' AND level='LL02' AND descriptor='mag'"
     )
     # We do not give any json data similar to the condition when the server is down.
-    responses.add(responses.GET, TAP_ENDPOINT, body="Invalid JSON response", status=200)
+    responses.add(responses.GET, tap_endpoint, body="Invalid JSON response", status=200)
 
     time = a.Time("2020-11-13", "2020-11-14")
     level = a.Level("LL02")

@@ -33,7 +33,7 @@ class SOARClient(BaseClient):
     * `SOAR <https://soar.esac.esa.int/soar/>`__
     """
 
-    def search(self, *query, **kwargs):  # NOQA: ARG002
+    def search(self, *query, **kwargs):
         r"""
         Query this client for a list of results.
 
@@ -253,7 +253,7 @@ class SOARClient(BaseClient):
         result_table.sort("Start time")
         return result_table
 
-    def fetch(self, query_results, *, path, downloader, **kwargs) -> None:  # NOQA: ARG002
+    def fetch(self, query_results, *, path, downloader, **kwargs) -> None:
         """
         Queue a set of results to be downloaded.
         `sunpy.net.base_client.BaseClient` does the actual downloading, so we
