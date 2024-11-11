@@ -8,6 +8,11 @@ on:
     #        │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
     #        │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
     - cron: '0 0 * * *' # run every day at midnight UTC
+
+# Give permissions to write issue labels
+permissions:
+  issues: write
+
 jobs:
   label_sync:
     runs-on: ubuntu-latest
