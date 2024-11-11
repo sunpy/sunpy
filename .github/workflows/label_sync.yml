@@ -15,4 +15,4 @@ jobs:
     steps:
       - uses: srealmoreno/label-sync-action@850ba5cef2b25e56c6c420c4feed0319294682fd
         with:
-          config-file: https://raw.githubusercontent.com/sunpy/.github/labels.yml
+          config-file: https://raw.githubusercontent.com/sunpy/.github/main/labels.yml
