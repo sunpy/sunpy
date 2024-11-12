@@ -310,10 +310,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             elif possibly_a_path(arg) and not is_uri(arg):
                 args[i] = pathlib.Path(arg)
             elif is_uri(arg):
-                if "fsspec_kwargs" in kwargs:
-                    fsspec_kw = kwargs["fsspec_kwargs"]
-                else:
-                    fsspec_kw = {}
+                fsspec_kw = kwargs.get("fsspec_kwargs", {})
                 args[i] = fsspec.open_files(arg, **fsspec_kw)
             i += 1
         return args

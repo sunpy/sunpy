@@ -106,8 +106,7 @@ def test_from_uri():
     try:
         ts = sunpy.timeseries.TimeSeries(uri, fsspec_kwargs={'anon':True})
     except (NoCredentialsError, ClientError, PermissionError, TypeError):
-        url = 'http://data.sunpy.org/sunpy/v1/psp_fld_l2_mag_rtn_1min_20200104_v02.cdf'
-        ts = sunpy.timeseries.TimeSeries(url)
+        ts = sunpy.timeseries.TimeSeries(psp_filepath)
     assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
     assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
 
