@@ -222,6 +222,10 @@ def detect_filetype(filepath, **kwargs):
         fp.seek(0)
         cdf_magic_number = fp.read(4).hex()
 
+    # For ASDF files
+    if first80.startswith(b"#ASDF"):
+        return "asdf"
+
     # FITS
     # Checks for gzip signature.
     # If found, decompresses first few bytes and checks for FITS

@@ -46,7 +46,6 @@ class AIAMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         # Fill in some missing info
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
@@ -78,7 +77,7 @@ class AIAMap(GenericMap):
 
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().reference_date
 
     def _set_reference_date(self, date):
         self.meta['t_obs'] = parse_time(date).utc.isot
@@ -131,6 +130,16 @@ class HMIMap(GenericMap):
         self._nickname = self.detector
 
     @property
+    def waveunit(self):
+        """
+        The `~astropy.units.Unit` of the wavelength of this observation.
+
+        Most HMI files seem to not have a parseable WAVEUNIT key so if it cannot be found
+        we default to Angstrom
+        """
+        return super().waveunit or u.Angstrom
+
+    @property
     def measurement(self):
         """
         Returns the measurement type.
@@ -151,7 +160,7 @@ class HMIMap(GenericMap):
 
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().reference_date
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
@@ -215,7 +224,7 @@ class HMISynopticMap(HMIMap):
         """
         Image observation time.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().date
 
     def _set_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
@@ -225,7 +234,7 @@ class HMISynopticMap(HMIMap):
         """
         The reference date for the coordinate system.
         """
-        return self._get_date('T_OBS')
+        return self._get_date('T_OBS') or super().reference_date
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
