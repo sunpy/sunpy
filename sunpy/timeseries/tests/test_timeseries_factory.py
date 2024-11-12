@@ -6,7 +6,6 @@ from collections import OrderedDict
 
 import numpy as np
 import pytest
-from botocore.exceptions import ClientError, NoCredentialsError
 from pandas import DataFrame
 
 import astropy.units as u
@@ -101,13 +100,11 @@ def test_from_url():
 @pytest.mark.remote_data
 def test_from_uri():
     # Test read on ACE file saved on public NASA s3 repository.
-    uri = ('s3://gov-nasa-hdrl-data1/cdaweb/ace/mag/level_2_cdaweb/mfi_k2/2017/ac_k2_mfi_20170705_v03.cdf')
-    try:
-        ts = sunpy.timeseries.TimeSeries(uri, fsspec_kwargs={'anon':True})
-        assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
-        assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
-    except (NoCredentialsError, ClientError, PermissionError, TypeError):
-        pytest.skip("S3 credentials are incorrect or expired. Skipping.")
+    uri = ('s3://data.sunpy.org/sunpy/psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
+    ts = sunpy.timeseries.TimeSeries(uri, fsspec_kwargs={'anon':True})
+    assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
+    assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
+
 
 def test_read_cdf():
     ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)
