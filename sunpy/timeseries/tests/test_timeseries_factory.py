@@ -103,6 +103,7 @@ def test_from_uri():
     uri = ('s3://data.sunpy.org/sunpy/psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
     ts = sunpy.timeseries.TimeSeries(uri, fsspec_kwargs={'anon':True})
     # cdflib cannot read from s3 anonymously, so it returns an empty list
+    # this is a temporary workaround
     if len(ts)==0:
         ts = sunpy.timeseries.TimeSeries(psp_filepath)
     assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
