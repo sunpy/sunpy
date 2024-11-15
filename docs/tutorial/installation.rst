@@ -22,7 +22,7 @@ If you are using miniforge, you can skip the next section
 .. _sunpy-tutorial-installing-miniforge:
 
 Installing miniforge (and conda)
-================
+================================
 
 If you don't already have a Python installation then we recommend installing Python with `miniforge <https://github.com/conda-forge/miniforge/#miniforge>`__.
 Miniforge will install ``conda`` and automatically configure the default channel (a channel is a remote software repository) to be ``conda-forge``, which is where ``sunpy`` is available.
