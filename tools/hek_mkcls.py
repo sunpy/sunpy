@@ -262,12 +262,12 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
     if base != 'object':
         ret += f'@_makeinstance\nclass {name}({base}):\n'
     else:
-        ret += '@_makeinstance\nclass %s:\n' % name
+        ret += f'@_makeinstance\nclass {name}:\n'
     for k, v in keys:
         ret += f'    {k[len(key) + pad:]} = {v}({k!r})\n'
     if init:
-        ret += '''\n    def __init__(self):
-        super().__init__(%r)''' % name.lower()
+        ret += f'''\n    def __init__(self):
+        super().__init__({name.lower()!r})'''
     return ret
 
 
