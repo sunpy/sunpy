@@ -264,8 +264,9 @@ def test_uri_directory_pattern():
     """
     Testing publicly accessible s3 directory
     """
-    amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
-    assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
+    with pytest.warns(SunpyUserWarning, match='Failed to read'):
+        amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
+        assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
 
 def test_save():
     # Test save out
