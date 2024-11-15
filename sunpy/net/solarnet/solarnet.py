@@ -6,4 +6,5 @@ base_url = "https://solarnet2.oma.be/service/api/svo/{}"
 
 class SolarnetClient(BaseClient):
 
-    pass
+    def search(self, *args, **kwargs):
+        
