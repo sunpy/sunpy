@@ -200,9 +200,7 @@ class MapFactory(BasicRegistrationFactory):
         data_header_pairs = []
         for arg in args:
             try:
-                data_header_pairs += self._parse_arg(
-                    arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs
-                )
+                data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
             except NoMapsInFileError as e:
                 if not (silence_errors or allow_errors):
                     raise
@@ -250,12 +248,8 @@ class MapFactory(BasicRegistrationFactory):
     def _parse_uri(self, arg, **kwargs):
         return parse_uri(arg, self._read_file, **kwargs)
 
-    @deprecated_renamed_argument(
-        "silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning
-    )
-    def __call__(
-        self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs
-    ):
+    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
+    def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):
         """Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
@@ -286,9 +280,7 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io._file_tools.read_file` such as
         ``memmap`` for FITS files.
         """
-        data_header_pairs = self._parse_args(
-            *args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs
-        )
+        data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
@@ -366,8 +358,5 @@ class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files"""
 
 
-Map = MapFactory(
-    registry=GenericMap._registry,
-    default_widget_type=GenericMap,
-    additional_validation_functions=["is_datasource_for"],
-)
+Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,
+                 additional_validation_functions=["is_datasource_for"])

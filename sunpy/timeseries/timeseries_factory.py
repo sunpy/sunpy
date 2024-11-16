@@ -38,13 +38,7 @@ from sunpy.util.io import HDPair, is_uri, is_url, parse_path, parse_uri, possibl
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 
-__all__ = [
-    "TimeSeries",
-    "TimeSeriesFactory",
-    "NoTimeSeriesFound",
-    "InvalidTimeSeriesInput",
-    "InvalidTimeSeriesType",
-]
+__all__ = ["TimeSeries", "TimeSeriesFactory", "NoTimeSeriesFound", "InvalidTimeSeriesInput", "InvalidTimeSeriesType"]
 
 
 class TimeSeriesFactory(BasicRegistrationFactory):
@@ -178,13 +172,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Return `True` if ``meta`` is an object that could store metadata.
         """
-        return isinstance(
-            meta,
-            astropy.io.fits.header.Header
-            | sunpy.io._header.FileHeader
-            | dict
-            | sunpy.timeseries.TimeSeriesMetaData,
-        )
+        return isinstance(meta, astropy.io.fits.header.Header | sunpy.io._header.FileHeader | dict | sunpy.timeseries.TimeSeriesMetaData)
 
     @staticmethod
     def _is_units(units):
@@ -195,11 +183,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         with only `astropy.units` for values.
         """
         # Must be a dict and all items must be a unit
-        return (
-            isinstance(units, dict)
-            and not isinstance(units, MetaDict)
-            and all(isinstance(units[key], u.UnitBase) for key in units)
-        )
+        return (isinstance(units, dict)
+                and not isinstance(units, MetaDict)
+                and all(isinstance(units[key], u.UnitBase) for key in units))
 
     @staticmethod
     def _from_table(t):
@@ -221,10 +207,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             if len(table.primary_key) == 1:
                 table.primary_key[0]
             else:
-                raise ValueError(
-                    "Invalid input Table, TimeSeries doesn't support conversion"
-                    " of tables with more then one index column."
-                )
+                raise ValueError("Invalid input Table, TimeSeries doesn't support conversion"
+                                 " of tables with more then one index column.")
 
         # Extract, convert and remove the index column from the input table
         index = table[index_name]
@@ -310,10 +294,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             elif possibly_a_path(arg) and not is_uri(arg):
                 args[i] = pathlib.Path(arg)
             elif is_uri(arg):
-                if "fsspec_kwargs" in kwargs:
-                    fsspec_kw = kwargs["fsspec_kwargs"]
-                else:
-                    fsspec_kw = {}
+                fsspec_kw = kwargs.get("fsspec_kwargs", {})
                 args[i] = fsspec.open_files(arg, **fsspec_kw)
             i += 1
         return args
@@ -574,8 +555,6 @@ class NoTimeSeriesFound(ValueError):
 
 
 TimeSeriesFactory.__doc__ = TimeSeriesFactory.__doc__.format(source_names=source_names)
-TimeSeries = TimeSeriesFactory(
-    registry=GenericTimeSeries._registry,
-    default_widget_type=GenericTimeSeries,
-    additional_validation_functions=["is_datasource_for"],
-)
+TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
+                               default_widget_type=GenericTimeSeries,
+                               additional_validation_functions=["is_datasource_for"])
