@@ -9,7 +9,7 @@ class Datasets(SimpleAttr):
 
 class limit(SimpleAttr):
     """
-    number of links needed (default value is 10)
+    number of links default value(20)
     """
 
 walker = AttrWalker()
@@ -55,4 +55,4 @@ def _apply(wlk,query,imap):
 
 @walker.add_applier(limit)
 def _apply(wlk,query,imap):
-    imap["limit"] = query.value
+    imap["limit"] = int(query.value)

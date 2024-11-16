@@ -1,1 +1,2 @@
-from sunpy.net.solarnet import attrs, solarnet
+from sunpy.net.solarnet.attrs import *
+from sunpy.net.solarnet.solarnet import *
