@@ -259,15 +259,6 @@ def test_uri_pattern():
     amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
     assert isinstance(amap, sunpy.map.GenericMap)
 
-@pytest.mark.remote_data
-def test_uri_directory_pattern():
-    """
-    Testing publicly accessible s3 directory
-    """
-    with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
-        assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
-
 def test_save():
     # Test save out
     aiamap = sunpy.map.Map(AIA_171_IMAGE)
@@ -294,7 +285,8 @@ def test_map_list_uri():
     """
     uri_list = ["s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits",
             's3://data.sunpy.org/sunpy/aia_lev1_1600a_2012_06_06t04_07_29_12z_image_lev1_lowres.fits']
-    sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
+    amap = sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
+    assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize(('file', 'mapcls'), [
