@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import pytest
@@ -129,7 +130,7 @@ def test_wrong_hash_error(manager, storage):
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("['url1', 'url2'] has already been downloaded, but no file matching the hash asdf can be found.")):
         foo()
 
 

@@ -103,9 +103,13 @@ As an example:
     be_continuum                VSO         ... INAF-OACT Barra Equatoriale Continuum Instrument
     be_halpha                   VSO         ... INAF-OACT Barra Equatoriale Hα Instrument
     bigbear                     VSO         ... Big Bear Solar Observatory, California TON and GONG+ sites
+    caii                        VSO         ... Kanzelhöhe Ca II k Instrument
+    cds                         VSO         ... Coronal Diagnostic Spectrometer
+    celias                      VSO         ... Charge, Element, and Isotope Analysis System
+    cerrotololo                 VSO         ... Cerro Tololo, Chile GONG+ site
+    chp                         VSO         ... Chromospheric Helium-I Imaging Photometer
+    cook                        VSO         ... None
     ...
-    xrs                         XRS         ... GOES X-ray Sensor
-    xrt                         VSO         ... X-Ray Telescope
 
 This is a full list of known values, a description, and which clients support those values (if you want to search using a specific data source).
 Printing attributes like this is supported for most attributes, including  client specific ones.
