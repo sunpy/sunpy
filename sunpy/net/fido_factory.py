@@ -196,6 +196,9 @@ class UnifiedResponse(Sequence):
             ret += '\n'.join(lines[1:])
             ret += '\n\n'
 
+        ret += "Latest VSO data retrieval status available at https://docs.virtualsolar.org/wiki/VSOHealthReport\n"
+
+
         return ret
 
     def show(self, *cols):
