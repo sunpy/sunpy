@@ -247,6 +247,8 @@ class GenericMap(NDData):
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
             self.plot_settings['norm'] = colors.Normalize()
+            self.norm_to_check_contour = self.plot_settings['norm']
+
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
@@ -2445,6 +2447,64 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
+
+    def _update_contour_args(self, contour_args):
+        """
+        Updates `contour_args` with values from `plot_settings`, ensuring
+        compatibility with Matplotlib's contour plotting. Removes unsupported
+        or unnecessary keys and modifies values for consistency with contour
+        defaults.
+
+        This method modifies the input dictionary `contour_args` to reflect the
+        appropriate settings for contour plotting, avoiding issues with non-compatible
+        keywords like 'cmap' or 'interpolation'.
+
+        Parameters
+        ----------
+        contour_args : dict
+            A dictionary of arguments to be used for contour plotting.
+
+        Returns
+        -------
+        dict
+            The updated `contour_args` dictionary, with unsupported arguments removed
+            and default values applied where necessary.
+
+        Notes
+        -----
+        - 'cmap': Set to `None` to avoid the error "ValueError: Either colors or cmap must be None".
+        - 'interpolation': Removed because Matplotlib's contour function raises the warning
+        "The following kwargs were not used by contour: 'interpolation'".
+        - 'origin': If `'origin': 'lower'` is present, it is replaced with `'origin': None`,
+        as `None` is the default value for Matplotlib's contour plots.
+        """
+        plot_settings = self.plot_settings.copy()
+        contour_args.update(plot_settings)
+
+        # Define default settings for normal plots and contour-specific updates
+        original_plot_defaults = {
+            'origin': 'lower',
+        }
+        default_contour_param = {
+            'origin': None,
+        }
+
+        # Replace conflicting settings with contour defaults
+        for key in original_plot_defaults:
+            if key in contour_args and contour_args[key] == original_plot_defaults[key]:
+                contour_args[key] = default_contour_param[key]
+
+        # if contour_args['norm'] == self.norm_to_check_contour:
+        #     contour_args['norm'] = None
+
+        # Remove unsupported parameters for contour plots
+        contour_args['cmap'] = None  # Contour plots can not use 'cmap' if 'colors' is not None
+        contour_args.pop('interpolation')
+        contour_args['norm'] = None
+
+        return contour_args
+
+
     def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
@@ -2474,18 +2534,8 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         corresponding matplotlib method.
         """
-        contour_params = [
-            'corner_mask', 'colors', 'alpha', 'cmap', 'norm', 'vmin', 'vmax',
-            'origin', 'extent', 'locator', 'extend', 'xunits', 'yunits',
-            'antialiased', 'nchunk', 'linewidths', 'linestyles', 'negative_linestyles',
-            'hatches', 'algorithm', 'clip_path'
-        ]
 
-        plot_settings = self.plot_settings.copy()
-        # Transfer relevant settings to contour_args
-        for key in contour_params:
-            if key in plot_settings:
-                contour_args[key] = plot_settings.pop(key)
+        contour_args = self._update_contour_args(contour_args)
 
         axes = self._check_axes(axes)
         levels = self._process_levels_arg(levels)
