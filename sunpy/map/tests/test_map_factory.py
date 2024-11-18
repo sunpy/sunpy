@@ -259,6 +259,15 @@ def test_uri_pattern():
     amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
     assert isinstance(amap, sunpy.map.GenericMap)
 
+@pytest.mark.remote_data
+def test_uri_directory_pattern():
+    """
+    Testing publicly accessible s3 directory
+    """
+    with pytest.warns(SunpyUserWarning, match='Failed to read'):
+        amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
+        assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
+
 def test_save():
     # Test save out
     aiamap = sunpy.map.Map(AIA_171_IMAGE)
