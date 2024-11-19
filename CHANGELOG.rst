@@ -55,7 +55,6 @@ Removals
 
 New Features
 ------------
-- Added a link to the VSO Health Report in the Fido Results when using the VSOClient. (`#7853 <https://github.com/sunpy/sunpy/issues/7853>`__)
 - ``sunpy.io.read_file`` will now try to detect the filetype based on the content and then fallback to using the file extension. (`#6736 <https://github.com/sunpy/sunpy/pull/6736>`__)
 - It is now possible to read the comments in a header from a JPEG2000 file. (`#6841 <https://github.com/sunpy/sunpy/pull/6841>`__)
 - Added the ability for `sunpy.map.Map` to load files from a generator. (`#7024 <https://github.com/sunpy/sunpy/pull/7024>`__)
