@@ -1732,7 +1732,7 @@ def test_draw_carrington_map(carrington_map):
 def test_plot_settings_and_contour_params(simple_map):
     new_plot_settings = copy.deepcopy(simple_map.plot_settings)
     new_plot_settings['alpha'] = 0.5
-    new_plot_settings['cmap'] = 'plasma'
+    new_plot_settings['zorder'] = 10
 
     # Set the new plot settings back to the map
     simple_map.plot_settings = new_plot_settings
@@ -1740,7 +1740,9 @@ def test_plot_settings_and_contour_params(simple_map):
     # Ensure draw_contours uses these settings correctly
     levels = [0.5, 1.0, 1.5]
     contour_plot = simple_map.draw_contours(levels)
+    
     assert contour_plot.get_alpha() == 0.5
+    assert contour_plot.get_zorder() == 10
 
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())
