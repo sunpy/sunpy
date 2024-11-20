@@ -2499,7 +2499,6 @@ class GenericMap(NDData):
         contour_args['cmap'] = None  # 'cmap' cannot be used for contour plots when levels are not None,in-case of composite maps.
         contour_args.update(contour_args_copy)  # If 'draw_contour' is used, this ensures the method arguments are applied.
 
-        # Remove unsupported parameters for contour plots
         contour_args.pop('interpolation')
         contour_args['norm'] = None
 
