@@ -2496,9 +2496,6 @@ class GenericMap(NDData):
             if key in contour_args and contour_args[key] == original_plot_defaults[key]:
                 contour_args[key] = default_contour_param[key]
 
-        # if contour_args['norm'] == self.norm_to_check_contour:
-        #     contour_args['norm'] = None
-
         contour_args['cmap'] = None  # 'cmap' cannot be used for contour plots when levels are not None,in-case of composite maps.
         contour_args.update(contour_args_copy)  # If 'draw_contour' is used, this ensures the method arguments are applied.
 
@@ -2538,7 +2535,6 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         corresponding matplotlib method.
         """
-
         contour_args = self._update_contour_args(contour_args)
 
         axes = self._check_axes(axes)
