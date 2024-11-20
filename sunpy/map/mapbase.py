@@ -2451,7 +2451,7 @@ class GenericMap(NDData):
     def _update_contour_args(self, contour_args):
         """
         Updates ``contour_args`` with values from ``plot_settings``.
-        
+
         Parameters
         ----------
         contour_args : dict
