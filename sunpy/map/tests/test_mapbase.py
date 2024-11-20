@@ -1741,7 +1741,7 @@ def test_plot_settings_and_contour_params(simple_map):
     levels = [0.5, 1.0, 1.5]
     contour_plot = simple_map.draw_contours(levels)
 
-    assert          contour_plot.get_alpha() == 0.5
+    assert contour_plot.get_alpha() == 0.5
     assert contour_plot.get_zorder() == 10
 
 
