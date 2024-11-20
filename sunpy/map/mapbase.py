@@ -2450,15 +2450,8 @@ class GenericMap(NDData):
 
     def _update_contour_args(self, contour_args):
         """
-        Updates `contour_args` with values from `plot_settings`, ensuring
-        compatibility with Matplotlib's contour plotting. Removes unsupported
-        or unnecessary keys and modifies values for consistency with contour
-        defaults.
-
-        This method modifies the input dictionary `contour_args` to reflect the
-        appropriate settings for contour plotting, avoiding issues with non-compatible
-        keywords like 'cmap' or 'interpolation'.
-
+        Updates ``contour_args`` with values from ``plot_settings``.
+        
         Parameters
         ----------
         contour_args : dict
@@ -2467,8 +2460,7 @@ class GenericMap(NDData):
         Returns
         -------
         dict
-            The updated `contour_args` dictionary, with unsupported arguments removed
-            and default values applied where necessary.
+            The updated `contour_args` dictionary.
 
         Notes
         -----
