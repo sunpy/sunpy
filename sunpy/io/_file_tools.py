@@ -191,7 +191,7 @@ def detect_filetype(filepath, **kwargs):
     filepath : `str`, `pathlib.Path`
         Where the file is.
     **kwargs : `dict`
-        Additional keyword arguments are handed to ``fsspec.open``.
+        Additional keyword arguments.
 
     Returns
     -------

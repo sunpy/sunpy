@@ -34,7 +34,7 @@ dependencies = [
   "parfive[ftp]>=2.0.0",
   "pyerfa>=2.0.0.1",
   "requests>=2.28.0",
-  "fsspec>=2023.3.0"
+  "fsspec>=2023.3.0",
 ]
 dynamic = ["version"]
 keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
@@ -110,8 +110,8 @@ tests-only = [
   "pytest-mpl>=0.16",
   "pytest-xdist>=3.0.2",
   "pytest>=7.1.0",
-  "boto3>=1.24.59",
-  "s3fs>=2023.3.0",
+  "fsspec[s3]>=2023.3.0",
+  "boto3>=1.26.41",  # cdflib has it's own special s3 handling which requires this
 ]
 tests = [
   "sunpy[all,tests-only]",

@@ -294,7 +294,7 @@ def test_map_list_uri():
     Test for reading from URI (AWS S3).
     """
     uri_list = ["s3://data.sunpy.org/aiapy/aia_lev1_171a_2019_01_01t00_00_09_35z_image_lev1.fits",
-            "s3://data.sunpy.org/aiapy/aia_lev1_94a_2019_01_01t00_00_11_12z_image_lev1.fits"]
+                "s3://data.sunpy.org/aiapy/aia_lev1_94a_2019_01_01t00_00_11_12z_image_lev1.fits"]
     amap = sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
     assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
 

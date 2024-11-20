@@ -114,7 +114,7 @@ def is_url(obj):
 
 def is_uri(obj):
     """
-    Check if the given object is a valid URI.
+    Check if the given object is a valid non-http(s) URI.
 
     Parameters
     ----------
