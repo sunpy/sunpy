@@ -2472,9 +2472,7 @@ class GenericMap(NDData):
         """
         plot_settings = self.plot_settings.copy()
         contour_args_copy = contour_args.copy()
-
         contour_args.update(plot_settings)
-
         # Define default settings for normal plots and contour-specific updates
         original_plot_defaults = {
             'origin': 'lower',
@@ -2482,18 +2480,17 @@ class GenericMap(NDData):
         default_contour_param = {
             'origin': None,
         }
-
         # Replace conflicting settings with contour defaults
         for key in original_plot_defaults:
             if key in contour_args and contour_args[key] == original_plot_defaults[key]:
                 contour_args[key] = default_contour_param[key]
-
-        contour_args['cmap'] = None  # 'cmap' cannot be used for contour plots when levels are not None,in-case of composite maps.
-        contour_args.update(contour_args_copy)  # If 'draw_contour' is used, this ensures the method arguments are applied.
-
+        # 'cmap' cannot be used for contour plots when levels are not None,
+        # which is the case in composite maps.
+        contour_args['cmap'] = None
+        # If 'draw_contour' is used, this ensures the method arguments are applied.
+        contour_args.update(contour_args_copy)
         contour_args.pop('interpolation')
         contour_args['norm'] = None
-
         return contour_args
 
 
