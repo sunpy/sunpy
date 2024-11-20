@@ -2479,6 +2479,8 @@ class GenericMap(NDData):
         as `None` is the default value for Matplotlib's contour plots.
         """
         plot_settings = self.plot_settings.copy()
+        contour_args_copy = contour_args.copy()
+
         contour_args.update(plot_settings)
 
         # Define default settings for normal plots and contour-specific updates
@@ -2497,8 +2499,10 @@ class GenericMap(NDData):
         # if contour_args['norm'] == self.norm_to_check_contour:
         #     contour_args['norm'] = None
 
+        contour_args['cmap'] = None  # 'cmap' cannot be used for contour plots when levels are not None,in-case of composite maps.
+        contour_args.update(contour_args_copy)  # If 'draw_contour' is used, this ensures the method arguments are applied.
+
         # Remove unsupported parameters for contour plots
-        contour_args['cmap'] = None  # Contour plots can not use 'cmap' if 'colors' is not None
         contour_args.pop('interpolation')
         contour_args['norm'] = None
 

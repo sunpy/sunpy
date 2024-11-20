@@ -1732,9 +1732,7 @@ def test_draw_carrington_map(carrington_map):
 def test_plot_settings_and_contour_params(simple_map):
     new_plot_settings = copy.deepcopy(simple_map.plot_settings)
     new_plot_settings['alpha'] = 0.5
-
-    # Ensure the new settings reflect the changes
-    assert new_plot_settings['alpha'] == 0.5
+    new_plot_settings['cmap'] = 'plasma'
 
     # Set the new plot settings back to the map
     simple_map.plot_settings = new_plot_settings
