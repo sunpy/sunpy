@@ -85,7 +85,6 @@ def test_plot_composite_map_mplkwargs(composite_test_map):
     }
 
 
-
 def test_plot_composite_map_plot_settings(composite_test_map):
     composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
     with pytest.raises(TypeError) as e:
@@ -94,6 +93,7 @@ def test_plot_composite_map_plot_settings(composite_test_map):
     assert 'unused_a' in str(e.value)
     assert 'unused_b' in str(e.value)
     assert 'linestyles' not in str(e.value)
+
 
 def test_remove_composite_map(composite_test_map):
     composite_test_map.remove_map(0)
