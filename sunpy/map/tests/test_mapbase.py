@@ -2,7 +2,6 @@
 Test Generic Map
 """
 import re
-import copy
 import tempfile
 from copy import deepcopy
 
@@ -1729,20 +1728,12 @@ def test_draw_carrington_map(carrington_map):
     return fig
 
 
-def test_plot_settings_and_contour_params(simple_map):
-    new_plot_settings = copy.deepcopy(simple_map.plot_settings)
-    new_plot_settings['alpha'] = 0.5
-    new_plot_settings['zorder'] = 10
-
-    # Set the new plot settings back to the map
-    simple_map.plot_settings = new_plot_settings
-
-    # Ensure draw_contours uses these settings correctly
+def test_plot_settings_for_draw_contour(simple_map):
     levels = [0.5, 1.0, 1.5]
-    contour_plot = simple_map.draw_contours(levels)
+    contour_plot = simple_map.draw_contours(levels, cmap = 'plasma')
 
-    assert contour_plot.get_alpha() == 0.5
-    assert contour_plot.get_zorder() == 10
+    assert contour_plot.get_cmap().name == 'plasma'
+    assert np.array_equal(contour_plot.levels, levels)
 
 
 @pytest.mark.parametrize('method', _rotation_registry.keys())

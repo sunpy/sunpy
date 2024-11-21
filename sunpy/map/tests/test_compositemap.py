@@ -65,6 +65,28 @@ def test_plot_composite_map_colors(composite_test_map):
 
 
 def test_plot_composite_map_mplkwargs(composite_test_map):
+    levels = [-1000, -500, -250, 250, 500, 1000] * u.G
+    composite_test_map.set_levels(index=1, levels=levels)
+    new_plot_settings = composite_test_map.get_plot_settings(1)
+
+    new_plot_settings['linewidths'] = 18
+    new_plot_settings['alpha'] = 1
+    new_plot_settings['zorder'] = 10
+    new_plot_settings['norm'] = 'log'
+
+    assert composite_test_map.get_plot_settings()[1] ==  {
+        'alpha': 1,
+        'cmap': 'gray',
+        'interpolation': 'nearest',
+        'linewidths': 18,
+        'norm': 'log',
+        'origin': 'lower',
+        'zorder': 10,
+    }
+
+
+
+def test_plot_composite_map_plot_settings(composite_test_map):
     composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
     with pytest.raises(TypeError) as e:
         composite_test_map.plot(linestyles='--', unused_a=1, unused_b=2)
@@ -72,7 +94,6 @@ def test_plot_composite_map_mplkwargs(composite_test_map):
     assert 'unused_a' in str(e.value)
     assert 'unused_b' in str(e.value)
     assert 'linestyles' not in str(e.value)
-
 
 def test_remove_composite_map(composite_test_map):
     composite_test_map.remove_map(0)
