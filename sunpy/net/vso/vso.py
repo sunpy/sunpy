@@ -690,4 +690,4 @@ class VSOClient(BaseClient):
 
     @property
     def info_url(self):
-        return 'http://vso.stanford.edu/cgi-bin/search'
+        return ('http://vso.stanford.edu/cgi-bin/search')

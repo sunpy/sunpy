@@ -186,8 +186,7 @@ class UnifiedResponse(Sequence):
             ret = f'Results from {len(self)} Providers:\n\n'
         for block in self:
             ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
-            if block.client.__class__.__name__ == 'VSOClient' and block.client.info_url is not None:
-                ret += "VSO Data Provider Health Status available at https://docs.virtualsolar.org/wiki/VSOHealthReport\n"
+            if block.client.info_url is not None:
                 ret += f'Source: {block.client.info_url}\n'
             size = block.total_size()
             if np.isfinite(size):
