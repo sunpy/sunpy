@@ -247,7 +247,6 @@ class GenericMap(NDData):
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
             self.plot_settings['norm'] = colors.Normalize()
-
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
