@@ -68,11 +68,13 @@ import doctest
 
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
-# We want to make sure all the following warnings fail the build
-warnings.filterwarnings("error", category=SunpyDeprecationWarning)
-warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
-warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
-warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+# We want to make sure all the following warnings fail the build on CI but not
+# when actually building docs on RTD.
+if not on_rtd:
+    warnings.filterwarnings("error", category=SunpyDeprecationWarning)
+    warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
+    warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
+    warnings.filterwarnings("error", category=AstropyDeprecationWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 
