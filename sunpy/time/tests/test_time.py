@@ -3,7 +3,9 @@ from datetime import date, datetime, timezone
 import numpy as np
 import pandas
 import pytest
+from packaging import version
 
+import astropy
 import astropy.time
 from astropy.time import Time
 
@@ -34,11 +36,11 @@ def test_parse_time_microseconds_excess_trailing_zeros():
     assert dt.scale == 'utc'
 
     # Excess digits beyond 6 digits should error if they are not zeros
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:"):
         dt = parse_time('2010-Oct-10 00:00:00.1234567')
 
     # An ending run of zeros should still error if they are not a microsecond field
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:"):
         dt = parse_time('10-Oct-2010.0000000')
 
 
@@ -284,13 +286,17 @@ def test_parse_time_astropy_formats(ts, fmt):
     dt = parse_time(ts, format=fmt)
     assert dt.format == fmt
 
-
+@pytest.mark.xfail(
+    condition=version.parse(astropy.__version__) < version.parse("6.1"),
+    reason="This test fails on Astropy versions below 6.1",
+    strict=True
+)
 def test_parse_time_int_float():
     # int and float values are not unique
     # The format has to be mentioned
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:"):
         parse_time(100)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:"):
         parse_time(100.0)
 
 

@@ -194,7 +194,7 @@ def test_wsdl_retriever_no_content(mock_endpoint_parser):
     """
     No links found? Raise ValueError
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="No online HELIO servers can be found."):
         wsdl_retriever()
 
 
@@ -214,7 +214,7 @@ def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_par
     """
     Unable to find any valid Taverna URLs? Raise ValueError
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="No online HELIO servers can be found."):
         wsdl_retriever()
 
 
@@ -225,7 +225,7 @@ def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_l
     """
     Unable to find any valid Taverna URLs? Raise ValueError
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="No online HELIO servers can be found."):
         wsdl_retriever()
 
 

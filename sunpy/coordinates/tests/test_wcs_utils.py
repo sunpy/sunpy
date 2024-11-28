@@ -24,11 +24,11 @@ from sunpy.coordinates.wcs_utils import (
 )
 
 
-@pytest.mark.parametrize(('ctype', 'frame'), [[['HPLN', 'HPLT'], Helioprojective],
-                                              [['HPLT', 'HPLN'], Helioprojective],
-                                              [['HGLN', 'HGLT'], HeliographicStonyhurst],
-                                              [['CRLN', 'CRLT'], HeliographicCarrington],
-                                              [['SOLX', 'SOLY'], Heliocentric]
+@pytest.mark.parametrize(('ctype', 'frame'), [(['HPLN', 'HPLT'], Helioprojective),
+                                              (['HPLT', 'HPLN'], Helioprojective),
+                                              (['HGLN', 'HGLT'], HeliographicStonyhurst),
+                                              (['CRLN', 'CRLT'], HeliographicCarrington),
+                                              (['SOLX', 'SOLY'], Heliocentric)
                                               ])
 def test_wcs_frame_mapping(ctype, frame):
     wcs = WCS(naxis=2)
