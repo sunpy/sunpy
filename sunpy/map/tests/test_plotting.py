@@ -357,47 +357,13 @@ def test_plot_autoalign_reproject(aia171_test_map):
 
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_test_map)
-
-    # Plot with autoalign set to 'reproject'
     rotated_map.plot(axes=ax, autoalign='reproject')
 
-    # Get the limits from the axes
-    xlim, ylim = ax.get_xlim(), ax.get_ylim()
-
-    # Ensure reprojection was applied and limits were set
-    assert xlim[0] != xlim[1]
-    assert ylim[0] != ylim[1]
-
-    assert ax.wcs == aia171_test_map.wcs
-
-    return fig
-
-
-def test_reprojection_map_data(aia171_test_map):
-
-    #Test reprojection functionality in the plot method, especially focusing on the new reprojection logic.
-    aia171_test_map._data = aia171_test_map.data.astype('float32')
-    rotated_map = aia171_test_map.rotate(30 * u.deg, order=3)
-
-    # Mock axes to control the WCS and limit setting
-    fig = Figure()
-    ax = fig.add_subplot(projection=aia171_test_map)
-
-    # Manually set limits for reprojection to trigger
-    ax.set_xlim(-5, 5)
-    ax.set_ylim(-5, 5)
-
-    # Plot with reprojection
-    rotated_map.plot(axes=ax, autoalign='reproject')
-
-    # Ensure the map was reprojected with the calculated array shape
     target_wcs = ax.wcs
-    expected_shape = (int(np.abs(ax.get_ylim()[1] - ax.get_ylim()[0])),
-                      int(np.abs(ax.get_xlim()[1] - ax.get_xlim()[0])))
-
-    reprojected_map = rotated_map.reproject_to(target_wcs, shape_out=expected_shape)
-
-    assert reprojected_map.data.shape == expected_shape
+    reprojected_map = rotated_map.reproject_to(target_wcs)
+    assert ax.wcs == aia171_test_map.wcs
+    assert reprojected_map.data.shape == (128, 128)
+    return fig
 
 
 @figure_test

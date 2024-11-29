@@ -2595,14 +2595,14 @@ class GenericMap(NDData):
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
             axes (e.g., a difference in rotation angle).
 
-                - If ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
-                instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
-                is equivalent to specifying ``pcolormesh``.
-                - If ``reproject``, the map's data will be automatically reprojected to match the
-                WCS of the target axes using the :meth:`~sunpy.map.GenericMap.reproject_to` method,
-                ensuring proper alignment.
-                - If ``False``, no auto-alignment is performed, and the map is plotted using the
-                default method without any adjustments.
+            - If ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
+            instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
+            is equivalent to specifying ``pcolormesh``.
+            - If ``reproject``, the map's data will be automatically reprojected to match the
+            WCS of the target axes using the :meth:`~sunpy.map.GenericMap.reproject_to` method,
+            ensuring proper alignment.
+            - If ``False``, no auto-alignment is performed, and the map is plotted using the
+            default method without any adjustments.
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
@@ -2689,8 +2689,6 @@ class GenericMap(NDData):
             naxis2 = self.meta.get('naxis2', self.data.shape[0])
 
             target_wcs = axes.wcs
-
-            # Perform reprojection
             reprojected_map = self.reproject_to(target_wcs)
             data = reprojected_map.data
             new_meta = self.meta.copy()
