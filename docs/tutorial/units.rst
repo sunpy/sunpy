@@ -94,7 +94,7 @@ If we try to convert a wavelength to energy using what we learned in the previou
    ...
    astropy...UnitConversionError: 'm' (length) and 'keV' (energy/torque/work) are not convertible
 
-However, we can perform this conversion using the `~astropy.units.equivalencies.spectral` equivalency:
+However, we can perform this conversion using the `~astropy.units.spectral` equivalency:
 
 .. code-block:: python
 
