@@ -1,5 +1,6 @@
 import os
 import pathlib
+from functools import singledispatchmethod
 from collections import OrderedDict
 from urllib.request import Request
 
@@ -26,8 +27,7 @@ from sunpy.util.datatype_factory_base import (
     ValidationFunctionError,
 )
 from sunpy.util.exceptions import NoMapsInFileError, SunpyDeprecationWarning, warn_user
-from sunpy.util.functools import seconddispatch
-from sunpy.util.io import is_uri, is_url, parse_path, parse_uri, possibly_a_path
+from sunpy.util.io import expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
@@ -173,32 +173,40 @@ class MapFactory(BasicRegistrationFactory):
 
         # Sanitise the input so that each 'type' of input corresponds to a different
         # class, so single dispatch can be used later
-        nargs = len(args)
-        i = 0
-        while i < nargs:
-            arg = args[i]
+        parsed_args = []
+        skip_next = False
+        for i, arg in enumerate(args):
+            if skip_next:
+                skip_next = False
+                continue
+
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
                 # The next two items are data and a header
-                data = args.pop(i)
-                header = args.pop(i)
-                args.insert(i, (data, header))
-                nargs -= 1
+                data, header = args[i:i+2]
+                parsed_args.append((data, header))
+                skip_next = True
             elif isinstance(arg, str) and is_url(arg):
                 # Replace URL string with a Request object to dispatch on later
-                args[i] = Request(arg)
+                parsed_args.append(Request(arg))
             elif possibly_a_path(arg) and not is_uri(arg):
                 # Replace path strings with Path objects
-                args[i] = pathlib.Path(arg)
+                parsed_args.append(pathlib.Path(arg))
             elif is_uri(arg):
-                # Replace uri string with list of fsspec OpenFile objects
                 fsspec_kw = kwargs.get("fsspec_kwargs", {})
-                args[i] = fsspec.open_files(arg, **fsspec_kw)
-            i += 1
+                # Get a list of open file objects (i.e. if given a glob)
+                open_files = fsspec.open_files(arg, **fsspec_kw)
+                # If any of the elements of the list are directories we want to
+                # glob all files in them
+                expanded_files = expand_list([expand_fsspec_open_file(f) for f in open_files])
+                # Add all OpenFile objects to the parsed list
+                parsed_args += expanded_files
+            else:
+                parsed_args.append(arg)
 
         # Parse the arguments
         # Note that this list can also contain GenericMaps if they are directly given to the factory
         data_header_pairs = []
-        for arg in args:
+        for arg in parsed_args:
             try:
                 data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
             except NoMapsInFileError as e:
@@ -208,14 +216,13 @@ class MapFactory(BasicRegistrationFactory):
 
         return data_header_pairs
 
-    # Note that post python 3.8 this can be @functools.singledispatchmethod
-    @seconddispatch
+    @singledispatchmethod
     def _parse_arg(self, arg, **kwargs):
         """
         Take a factory input and parse into (data, header) pairs.
         Must return a list, even if only one pair is returned.
         """
-        raise ValueError(f"Invalid input: {arg}")
+        raise ValueError(f"Invalid input: {arg!r}")
 
     @_parse_arg.register(tuple)
     def _parse_tuple(self, arg, **kwargs):
@@ -244,9 +251,11 @@ class MapFactory(BasicRegistrationFactory):
     def _parse_path(self, arg, **kwargs):
         return parse_path(arg, self._read_file, **kwargs)
 
-    @_parse_arg.register(list)
-    def _parse_uri(self, arg, **kwargs):
-        return parse_uri(arg, self._read_file, **kwargs)
+    @_parse_arg.register(fsspec.core.OpenFile)
+    def _parse_fsspec_file(self, arg, **kwargs):
+        # TODO: We should probably migrate the whole of the unified IO layer to
+        # use fsspec for everything, but for now we parse the URI through
+        return self._read_file(arg.full_name, **kwargs)
 
     @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):

@@ -8,6 +8,22 @@ import urllib.request
 HDPair = collections.namedtuple("HDPair", ["data", "header"])
 
 
+def expand_fsspec_open_file(open_file):
+    """
+    Expand an OpenFile object to apply a glob if it is a directory.
+    """
+    fs = open_file.fs
+    path = open_file.path
+
+    if not fs.exists(path):
+        raise FileNotFoundError(f"{open_file.full_name} does not exist.")
+
+    if fs.isdir(path):
+        return list(sorted(fs.glob(path + "/*")))
+
+    return [open_file]
+
+
 def parse_uri(obj_list, f, **kwargs):
     """
     Read in a series of fsspec OpenFile objects using the function *f*

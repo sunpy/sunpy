@@ -58,7 +58,6 @@ _READERS = Readers({
 })
 
 
-
 def _read(filepath, function_name, filetype=None, **kwargs):
     """
     This functions provides the logic paths for reading a file.
