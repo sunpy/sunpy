@@ -77,7 +77,7 @@ class MapSequence:
         # Optionally sort data
         if sortby is not None:
             if sortby not in self._sort_methods:
-                raise ValueError(f"sortby must be one of the following: {self._sort_methods.keys()}")
+                raise ValueError(f"sortby must be one of the following: {list(self._sort_methods.keys())}")
             self.maps.sort(key=self._sort_methods[sortby])
 
         if derotate:
@@ -351,7 +351,7 @@ class MapSequence:
                                                    self[i].spatial_units[1]))
 
         if resample:
-            if self.all_maps_same_shape():
+            if self.all_same_shape:
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 ani_data = [amap.resample(resample) for amap in self.maps]
             else:
@@ -459,7 +459,7 @@ class MapSequence:
         from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
         if resample:
-            if self.all_maps_same_shape():
+            if self.all_same_shape:
                 plot_sequence = MapSequence()
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 for amap in self.maps:
