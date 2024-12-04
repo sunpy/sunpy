@@ -471,10 +471,17 @@ class MapSequence:
 
         return MapSequenceAnimator(plot_sequence, **kwargs)
 
-    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='data property')
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='all_same_shape property')
     def all_maps_same_shape(self):
         """
         True if all the maps have the same number pixels along both axes.
+        """
+        return self.all_same_shape
+
+    @property
+    def all_same_shape(self):
+        """
+        True if the data array of each map has the same shape.
         """
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
@@ -487,13 +494,26 @@ class MapSequence:
 
     @property
     def data(self):
-        if not np.all([m.data.shape == self[0].data.shape for m in self]):
+        """
+        Data array of shape ``(N_y, N_x, N_t)`` where ``(N_y,N_x)`` is the
+        shape of each individual map and ``N_t`` is the number of maps.
+
+        .. note:: If all maps do not have the same shape, a `ValueError` is raised.
+        """
+        if not self.all_same_shape:
             raise ValueError('Not all maps have the same shape.')
         data = np.asarray([m.data for m in self.maps])
         return np.swapaxes(np.swapaxes(data, 0, 1), 1, 2)
 
     @property
     def mask(self):
+        """
+        Combined mask with same shape as `~sunpy.map.MapSequence.data` for all maps in the sequence.
+
+        If no map in the sequence has a mask, this returns None.
+        If at least one map in the sequence has a mask, the layers
+        corresponding to those maps without a mask will be all `False`.
+        """
         if not np.any([m.mask is not None for m in self.maps]):
             return None
         mask = np.zeros_like(self.data, dtype=bool)
@@ -530,6 +550,9 @@ class MapSequence:
 
     @property
     def meta(self):
+        """
+        Metadata objects of each map as a list.
+        """
         return [m.meta for m in self.maps]
 
     def save(self, filepath, filetype='auto', **kwargs):
