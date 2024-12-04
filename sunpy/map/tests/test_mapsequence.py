@@ -57,7 +57,7 @@ def test_deprecations(mapsequence_all_the_same,
                       mapsequence_different):
     # TODO: Remove this in v7.1
     with pytest.warns(SunpyDeprecationWarning,
-                      match="The all_maps_same_shape function is deprecated and will be removed in sunpy 7.1. Use the data property instead."):
+                      match="The all_maps_same_shape function is deprecated and will be removed in sunpy 7.1. Use the all_same_shape property instead."):
         mapsequence_all_the_same.all_maps_same_shape()
     with pytest.warns(SunpyDeprecationWarning,
                       match='The at_least_one_map_has_mask function is deprecated and will be removed in sunpy 7.1. Use the mask property instead.'):
