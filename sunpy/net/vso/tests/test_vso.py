@@ -363,8 +363,10 @@ def test_build_client_params():
         build_client(url="http://notathing.com/")
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
+
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
         results = client.search(
             core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),

@@ -83,7 +83,7 @@ class MapFactory(BasicRegistrationFactory):
     >>> import sunpy.map
     >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     """
 
     def _read_file(self, fname, **kwargs):

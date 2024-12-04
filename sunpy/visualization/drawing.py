@@ -133,7 +133,7 @@ def equator(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
     >>> import sunpy.map
     >>> from sunpy.visualization import drawing
     >>> import sunpy.data.sample   # doctest: +REMOTE_DATA
-    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)   # doctest: +REMOTE_DATA
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)   # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = fig.add_subplot(projection=aia)   # doctest: +SKIP
     >>> aia.plot()   # doctest: +SKIP

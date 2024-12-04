@@ -34,7 +34,7 @@ To create a `~sunpy.map.Map` from a sample Atmospheric Imaging Assembly (AIA) im
 
     >>> sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
     PosixPath('.../AIA20110607_063302_0171_lowres.fits')
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
 In many cases sunpy automatically detects the type of file as well as the the instrument associated with it.
 In this case, we have a FITS file from the AIA instrument onboard the Solar Dynamics Observatory (SDO).
