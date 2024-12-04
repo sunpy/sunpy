@@ -34,7 +34,7 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import HDPair, is_uri, is_url, parse_path, parse_uri, possibly_a_path
+from sunpy.util.io import HDPair, expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 
@@ -257,10 +257,14 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Sanitise the input so that each 'type' of input corresponds to a different
         # class, so single dispatch can be used later
-        i = 0
-        while i < len(args):
-            arg = args[i]
-            if isinstance(arg, np.ndarray | Table | pd.DataFrame):
+        parsed_args = []
+        skip_n_arg = 0
+        for i, arg in enumerate(args):
+            if skip_n_arg:
+                skip_n_arg -= 1
+                continue
+
+            if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
                 # Extract data and metadata
                 # The next item is data
                 data = args[i]
@@ -276,28 +280,34 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     data = pd.DataFrame(data=data[:, 1:], index=Time(data[:, 0]))
 
                 # The next two could be metadata or units
-                for _ in range(2):
-                    j = i + 1
+                for z in range(2):
+                    j = i + z + 1
                     if j < len(args):
-                        arg = args[j]
-                        if self._is_units(arg):
-                            units.update(arg)
-                            args.pop(j)
-                        elif self._is_metadata(arg):
-                            meta.update(self._parse_meta(arg))
-                            args.pop(j)
+                        narg = args[j]
+                        if self._is_units(narg):
+                            units.update(narg)
+                            skip_n_arg += 1
+                        elif self._is_metadata(narg):
+                            meta.update(self._parse_meta(narg))
+                            skip_n_arg += 1
 
-                args[i] = (data, meta, units)
+                parsed_args.append((data, meta, units))
 
             elif isinstance(arg, str) and is_url(arg):
-                args[i] = Request(arg)
+                parsed_args.append(Request(arg))
             elif possibly_a_path(arg) and not is_uri(arg):
-                args[i] = pathlib.Path(arg)
+                parsed_args.append(pathlib.Path(arg))
             elif is_uri(arg):
                 fsspec_kw = kwargs.get("fsspec_kwargs", {})
-                args[i] = fsspec.open_files(arg, **fsspec_kw)
-            i += 1
-        return args
+                # Get a list of open file objects (i.e. if given a glob)
+                open_files = fsspec.open_files(arg, **fsspec_kw)
+                # If any of the elements of the list are directories we want to
+                # glob all files in them
+                expanded_files = expand_list([expand_fsspec_open_file(f) for f in open_files])
+                parsed_args += expanded_files
+            else:
+                parsed_args.append(arg)
+        return parsed_args
 
     def _parse_args(self, *args, **kwargs):
         """
@@ -418,13 +428,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    @_parse_arg.register(list)
-    def _parse_uri(self, obj_list, **kwargs):
-        results = parse_uri(obj_list, self._read_file, **kwargs)
-        all_ts = []
-        for r in results:
-            all_ts += self._parse_ts_results(r, **kwargs)
-        return all_ts
+    @_parse_arg.register(fsspec.core.OpenFile)
+    def _parse_fsspec_file(self, arg, **kwargs):
+        # TODO: We should probably migrate the whole of the unified IO layer to
+        # use fsspec for everything, but for now we parse the URI through
+        return self._read_file(arg.full_name, **kwargs)
 
     @deprecated_renamed_argument(
         "silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning

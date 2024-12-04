@@ -24,37 +24,6 @@ def expand_fsspec_open_file(open_file):
     return [open_file]
 
 
-def parse_uri(obj_list, f, **kwargs):
-    """
-    Read in a series of fsspec OpenFile objects using the function *f*
-
-    Parameters
-    ----------
-    obj_list : list of fsspec.core.OpenFile objects
-    f : callable
-        Must return a list of read-in data.
-    kwargs :
-        Additional keyword arguments are handed to ``f``.
-
-    Returns
-    -------
-    list
-        List of files read in by ``f``.
-    """
-    read_files = []
-    for obj in obj_list:
-        fs = obj.fs
-        path = obj.path
-        if fs.isfile(path):
-            uri = fs.unstrip_protocol(path)
-            read_files += f(uri, **kwargs)
-        elif fs.isdir(path):
-            for afile in sorted(fs.glob(path + "/*")):
-                uri = fs.unstrip_protocol(afile)
-                read_files += f(uri, **kwargs)
-    return read_files
-
-
 def parse_path(path, f, **kwargs):
     """
     Read in a series of files at *path* using the function *f*.
