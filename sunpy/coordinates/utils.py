@@ -71,7 +71,7 @@ class GreatArc:
     >>> from sunpy.coordinates.utils import GreatArc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
-    >>> m = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> m = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
     >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
     >>> great_arc = GreatArc(a, b)  # doctest: +REMOTE_DATA

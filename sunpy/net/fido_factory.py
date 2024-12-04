@@ -289,7 +289,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
         ...                        a.Instrument.aia,
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
-        ...                        a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+        ...                        a.Sample(10*u.minute))  # doctest: +SKIP
 
         Parameters
         ----------

@@ -1,8 +1,16 @@
+.. doctest-skip-all
+
 .. _sunpy-tutorial-acquiring-data-jsoc:
 
 **************************************
 Finding and Downloading Data from JSOC
 **************************************
+
+.. warning::
+
+    The JSOC suffered extensive water damage and are currently working to fix this.
+    As a result, currently there is no data access.
+    `For more information, please find that here. <https://solarweb1.stanford.edu/JSOC_Emergency_Resources>`__
 
 Joint Science Operations Center (JSOC) contains data products from the Solar Dynamics Observatory, as well as certain other missions and instruments.
 These data are available from the JSOC database, which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`__.

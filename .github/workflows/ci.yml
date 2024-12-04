@@ -120,7 +120,7 @@ jobs:
       submodules: false
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py313-devdeps
+        - linux: py313-devdeps-online
           libraries:
             apt:
               - libopenjp2-7
