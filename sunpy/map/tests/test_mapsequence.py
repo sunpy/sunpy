@@ -64,7 +64,7 @@ def test_deprecations(mapsequence_all_the_same,
         mapsequence_all_the_same.at_least_one_map_has_mask()
     with pytest.warns(SunpyDeprecationWarning,
                       match='The as_array function is deprecated and will be removed in sunpy 7.1. Use the data and mask properties instead.'):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='Not all maps have the same shape.'):
             mapsequence_different.as_array()
     with pytest.warns(SunpyDeprecationWarning,
                       match="The all_meta function is deprecated and will be removed in sunpy 7.1. Use the meta property instead."):
@@ -77,7 +77,7 @@ def test_deprecations(mapsequence_all_the_same,
 
 def test_as_array_different_shapes(mapsequence_different):
     # Should raise a ValueError if the mapsequence has differently shaped maps
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Not all maps have the same shape.'):
         mapsequence_different.data
 
 
