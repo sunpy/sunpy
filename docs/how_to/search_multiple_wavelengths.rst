@@ -1,3 +1,5 @@
+.. doctest-skip-all
+
 .. _sunpy-how-to-search-for-multiple-wavelengths-with-fido:
 
 *****************************************
@@ -22,7 +24,7 @@ Use the `~sunpy.net.attrs.Wavelength` to search for a particular wavelength:
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 135.578 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -45,7 +47,7 @@ The "|" operator can be used to combine multiple wavelengths:
     Results from 2 Providers:
     <BLANKLINE>
     2 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 135.578 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -55,7 +57,7 @@ The "|" operator can be used to combine multiple wavelengths:
     2022-02-20 00:00:21.000 2022-02-20 00:00:22.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 203.366 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -80,7 +82,7 @@ When searching for more than two wavelengths, it is more practical to use the :f
     Results from 5 Providers:
     <BLANKLINE>
     2 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 135.578 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -90,7 +92,7 @@ When searching for more than two wavelengths, it is more practical to use the :f
     2022-02-20 00:00:23.000 2022-02-20 00:00:24.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 203.366 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -101,7 +103,7 @@ When searching for more than two wavelengths, it is more practical to use the :f
     2022-02-20 00:00:30.000 2022-02-20 00:00:31.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     2 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 135.578 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -111,7 +113,7 @@ When searching for more than two wavelengths, it is more practical to use the :f
     2022-02-20 00:00:21.000 2022-02-20 00:00:22.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 203.366 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -122,7 +124,7 @@ When searching for more than two wavelengths, it is more practical to use the :f
     2022-02-20 00:00:28.000 2022-02-20 00:00:29.000    SDO ...    FULLDISK 64.64844
     <BLANKLINE>
     2 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 135.578 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size

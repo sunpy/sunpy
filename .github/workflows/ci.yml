@@ -120,7 +120,7 @@ jobs:
       submodules: false
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py313-devdeps
+        - linux: py313-devdeps-online
           libraries:
             apt:
               - libopenjp2-7
@@ -172,7 +172,7 @@ jobs:
           conda list
           cd /tmp
           pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
