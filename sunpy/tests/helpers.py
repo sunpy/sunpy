@@ -15,7 +15,7 @@ from astropy.wcs.wcs import FITSFixedWarning
 # NOTE: Do not import sunpy subpackages which have optional dependencies here,
 # this module should be importable with no extra dependencies installed.
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_cdf', 'skip_opencv', 'warnings_as_errors', 'asdf_entry_points']
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_cdf', 'skip_opencv', 'warnings_as_errors', 'asdf_entry_points', 'skip_jsoc']
 
 try:
     import glymur
@@ -50,16 +50,16 @@ except ImportError:
     SKIP_CDF = True
 
 
-
-skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
-skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
-skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
-skip_cdf = pytest.mark.skipif(SKIP_CDF, reason="CDFlib is not available.")
-skip_opencv = pytest.mark.skipif(SKIP_OPENCV, reason="opencv is not available.")
 asdf_entry_points = pytest.mark.skipif(
     not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
     reason="No SunPy ASDF entry points.",
 )
+skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
+skip_cdf = pytest.mark.skipif(SKIP_CDF, reason="CDFlib is not available.")
+skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
+skip_jsoc = pytest.mark.skip(reason="JSOC is not available.")
+skip_opencv = pytest.mark.skipif(SKIP_OPENCV, reason="opencv is not available.")
+skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 
 
 

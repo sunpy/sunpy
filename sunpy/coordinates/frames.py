@@ -577,7 +577,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         # we can not easily prevent this, so we check the specific function is being called
         # within the stack trace.
         stack_trace = traceback.format_stack()
-        matching_string = 'wcsaxes.*_draw_grid'
+        matching_string = 'wcsaxes.*(_draw_grid|_update_ticks)'
         bypass = any([re.search(matching_string, string) for string in stack_trace])
         if not bypass and np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "

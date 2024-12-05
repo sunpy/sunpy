@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 
 import pytest
@@ -344,11 +345,13 @@ def test_attr_numbes():
 
 
 def test_attr_iterable_length():
+
     # not iterable
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="The value is not iterable or just a string"):
         attr.Attr.update_values({GenericClient: {Instrument: 'AIA'}})
+
     # too many items
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Error now"):
         attr.Attr.update_values(
             {GenericClient: {Instrument: [('AIA', 'AIA is Nice', 'Error now')]}})
 
@@ -365,7 +368,7 @@ def test_asterisk_attrs(ALL):
 ])
 def test_single_pair_argument_attrs(wrong_name):
     # This checks that other single string entries fail.
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("Invalid value given for")):
         attr.Attr.update_values({GenericClient: {Instrument: [wrong_name]}})
 
 

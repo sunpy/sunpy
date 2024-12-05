@@ -29,6 +29,9 @@ jobs:
       posargs: -n auto --color=yes
       envs: |
         - linux: py312
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -41,9 +44,17 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - windows: py311
-        - macos: py310
+        - windows: py312
+        - macos: py311
+          libraries:
+            brew:
+              - openjpeg
         - linux: py310-oldestdeps
+          libraries:
+            apt:
+              - libopenjp2-7
+        - linux: py310
+        - linux: py313
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -60,11 +71,12 @@ jobs:
         docs/generated/
         .tox/sample_data/
       cache-key: docs-${{ github.run_id }}
-      libraries: |
-        apt:
-          - graphviz
       envs: |
         - linux: build_docs
+          libraries:
+            apt:
+              - libopenjp2-7
+              - graphviz
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -90,6 +102,9 @@ jobs:
               - graphviz
         - linux: py312-online
           posargs: -n auto --dist loadgroup --color=yes
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -105,7 +120,10 @@ jobs:
       submodules: false
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py312-devdeps
+        - linux: py313-devdeps-online
+          libraries:
+            apt:
+              - libopenjp2-7
         - linux: core_deps
         - linux: linkcheck
           pytest: false
@@ -154,7 +172,7 @@ jobs:
           conda list
           cd /tmp
           pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
@@ -180,10 +198,10 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
       submodules: false
       targets: |
-        - cp3{10,11,12}-macosx_arm64
-        - cp3{10,11,12}-macosx_x86_64
-        - cp3{10,11,12}-manylinux_aarch64
-        - cp3{10,11,12}-manylinux_x86_64
+        - cp3{10,11,12,13}-macosx_arm64
+        - cp3{10,11,12,13}-macosx_x86_64
+        - cp3{10,11,12,13}-manylinux_aarch64
+        - cp3{10,11,12,13}-manylinux_x86_64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}

@@ -32,7 +32,7 @@ dependencies = [
   "numpy>=1.23.5",
   "packaging>=23.0",
   "parfive[ftp]>=2.0.0",
-  "pyerfa>=2.0",
+  "pyerfa>=2.0.0.1",
   "requests>=2.28.0",
 ]
 dynamic = ["version"]
@@ -48,6 +48,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Physics",
 ]
 
@@ -113,11 +114,12 @@ tests = [
   "sunpy[all,tests-only]",
 ]
 docs = [
+  "sphinx>=5.0.0",
+  "sphinx-automodapi>=0.14.1",
+  "packaging>=23.0",
   "sunpy[all]",
   "hvpy>=1.1.0",
   "ruamel.yaml>=0.17.19",
-  "sphinx>=5.0.0",
-  "sphinx-automodapi>=0.14.1",
   "sphinx-changelog>=1.5.0",
   "sphinx-copybutton>=0.5.0",
   "sphinx-design>=0.2.0",

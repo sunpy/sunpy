@@ -5,7 +5,6 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import EarthLocation, SkyCoord
-from astropy.time import Time
 
 from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
@@ -56,10 +55,11 @@ class GONGSynopticMap(GenericMap):
     def date(self):
         # The FITS file has a date that is made from the date-obs and time-obs keywords
         # Which is not what date-obs is supposed to be.
-        if 'time-obs' in self.meta:
-            return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
-        else:
-            return Time(self.meta.get('date-obs'))
+        if date_obs := self.meta.get('date-obs'):
+            if time_obs := self.meta.get('time-obs'):
+                date_obs = f"{date_obs} {time_obs}"
+            date_obs = parse_time(date_obs)
+        return date_obs or super().date
 
     def _set_date(self, date):
         if 'time-obs' in self.meta:

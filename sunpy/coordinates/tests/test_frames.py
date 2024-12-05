@@ -573,6 +573,11 @@ def off_limb_coord():
     return SkyCoord(Tx=[-1000, 300, 1000]*u.arcsec, Ty=[-1000, 300, 1000]*u.arcsec, frame=frame)
 
 
+@pytest.fixture
+def non_earth_coord():
+    return SkyCoord(70*u.deg, 20*u.deg, 1*u.AU, obstime='2020-01-01', frame=HeliographicStonyhurst)
+
+
 @pytest.mark.parametrize('screen_class', [
     SphericalScreen,
     PlanarScreen,
@@ -611,5 +616,26 @@ def test_planar_screen(off_limb_coord, only_off_disk, distance_from_center, dist
 ])
 def test_spherical_screen(off_limb_coord, only_off_disk, distance):
     with SphericalScreen(off_limb_coord.observer, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('only_off_disk', 'distance_from_center', 'distance'), [
+    (False, 0*u.m, [0.96419505, 0.98918004, 1.00321100]*u.AU),
+    (True, 0*u.m, [0.96419505, 0.97910333, 1.00321100]*u.AU),
+    (False, 1*u.Rsun, [0.94916557, 0.97376111, 0.98757335]*u.AU),
+])
+def test_planar_screen_askew(off_limb_coord, only_off_disk, distance_from_center, distance, non_earth_coord):
+    with PlanarScreen(non_earth_coord, distance_from_center=distance_from_center, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('only_off_disk', 'distance'), [
+    (False, [0.96348934, 0.98911699, 1.00251206]*u.AU),
+    (True, [0.96348934, 0.97910333, 1.00251206]*u.AU),
+])
+def test_spherical_screen_askew(off_limb_coord, only_off_disk, distance, non_earth_coord):
+    with SphericalScreen(non_earth_coord, only_off_disk=only_off_disk):
         olc_3d = off_limb_coord.make_3d()
     assert u.quantity.allclose(olc_3d.distance, distance)
