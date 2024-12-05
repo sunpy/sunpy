@@ -184,6 +184,14 @@ def test_unifiedresponse_slicing():
 
 
 @pytest.mark.remote_data
+def test_ipydatagrid_table():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
+    assert isinstance(results, UnifiedResponse)
+    assert isinstance(results.show_in_notebook(), None)
+
+
+@pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
