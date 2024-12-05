@@ -90,7 +90,7 @@ def show_hpr_impact_angle(declination_axis):
     if not isinstance(declination_axis, CoordinateHelper):
         raise TypeError("The input should be one of the WCSAxes coordinate axes.")
 
-    old_format_method = declination_axis._formatter_locator.formatter
+    old_format_method = declination_axis.formatter
 
     def new_format_method(values, spacing, format="auto"):
         return old_format_method(values + 90*u.deg, spacing, format=format)
