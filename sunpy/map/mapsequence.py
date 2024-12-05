@@ -56,7 +56,7 @@ class MapSequence:
 
     .. note:: The individual components of a `~sunpy.map.MapSequence` can be coaligned
               using the functions in `sunkit_image.coalignment` or using the
-              `~sunpy.map.GenericMap.reproject` method.
+              `~sunpy.map.GenericMap.reproject_to` method.
 
     Examples
     --------
@@ -536,7 +536,7 @@ class MapSequence:
         If all the map shapes are not the same, a ValueError is thrown.
         """
         data = self.data
-        if (mask:=self.mask) is not None:
+        if (mask := self.mask) is not None:
             return ma.masked_array(data, mask=mask)
         else:
             return data
