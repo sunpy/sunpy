@@ -169,7 +169,7 @@ MONTHS_MAP = {
 DAYS_PAT = r"(Mon|Tue|Wed|Thu|Fri|Sat|Sun)"
 MONTHS_PAT = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
 ALL_MONTHS_PAT = r"(%s)" % "|".join(MONTHS_MAP)
-TIME_PAT = r"(\d{1,2}:\d{1,2}(:\d{1,2}(\.\d+)?)?)"
+TIME_PAT = r"(\d{2}:\d{2}(:\d{2}(\.\d+)?)?)"
 AM_PAT = r"(\s+[AP]M)"
 TZ_PAT = r"(\s+[-+]\d\d?:?\d\d)"
 
@@ -299,18 +299,18 @@ dt_format_to_regex = {
     "%d": "[0-9]{1,2}",
     "%b": "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)",
     "%B": "(?:January|February|March|April|May|June|July|August|September|October|November|December)",
-    "%m": "[0-9]{1,2}",
+    "%m": "[0-9]{2}", # month 
     "%y": "[0-9]{2}",
     "%Y": "[0-9]{4}",
-    "%H": "[0-9]{1,2}",
-    "%I": "[0-9]{1,2}",
+    "%H": "[0-9]{2}", # 24-Hour clock as a zero-padded decimal
+    "%I": "[0-9]{2}", # 12-Hour clock format
     "%p": "(?:AM|PM)",
     "%M": "[0-9]{2}",
     "%S": "[0-9]{2}",
     "%f": "[0-9]{1,6}",
     "%z": "[+|-][0-9]{2}(:?[0-9]{2})?(:?[0-9]{2})?",
     # "%Z": punt
-    "%j": "[0-9]{1,3}",
+    "%j": "[0-9]{3}", # Day of the year format 
     "%U": "[0-9]{1,2}",
     "%W": "[0-9]{1,2}",
 }

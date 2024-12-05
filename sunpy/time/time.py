@@ -26,11 +26,11 @@ __all__ = [
 REGEX = {
     '%Y': r'(?P<year>\d{4})',
     '%j': r'(?P<dayofyear>\d{3})',
-    '%m': r'(?P<month>\d{1,2})',
-    '%d': r'(?P<day>\d{1,2})',
-    '%H': r'(?P<hour>\d{1,2})',
-    '%M': r'(?P<minute>\d{1,2})',
-    '%S': r'(?P<second>\d{1,2})',
+    '%m': r'(?P<month>\d{2})',
+    '%d': r'(?P<day>\d{2})',
+    '%H': r'(?P<hour>\d{2})',
+    '%M': r'(?P<minute>\d{2})',
+    '%S': r'(?P<second>\d{2})',
     '%f': r'(?P<microsecond>\d+)',
     '%b': r'(?P<month_str>[a-zA-Z]+)',
 }
