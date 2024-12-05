@@ -5,6 +5,8 @@ import pathlib
 import collections
 import urllib.request
 
+import fsspec
+
 HDPair = collections.namedtuple("HDPair", ["data", "header"])
 
 
@@ -19,7 +21,7 @@ def expand_fsspec_open_file(open_file):
         raise FileNotFoundError(f"{open_file.full_name} does not exist.")
 
     if fs.isdir(path):
-        return list(sorted(fs.glob(path + "/*")))
+        return fsspec.open_files([fs.unstrip_protocol(f) for f in sorted(fs.glob(path + "/*"))])
 
     return [open_file]
 
