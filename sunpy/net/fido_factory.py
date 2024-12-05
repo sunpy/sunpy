@@ -214,6 +214,50 @@ class UnifiedResponse(Sequence):
         """
         return type(self)(*[i.show(*cols) for i in self._list])
 
+
+    def show_in_notebook(self, **kwargs):
+        """
+        Display the tables in the current object as interactive grids in a Jupyter Notebook.
+
+        This function utilizes the ``ipydatagrid`` library to render tables as interactive grids.
+        Each table in the current object is converted to a ``pandas.DataFrame``, passed to an
+        ``ipydatagrid.DataGrid`` instance, and displayed directly in the notebook.
+
+        .. note::
+            This function requires the optional dependencies ``pandas``, ``IPython`` and ``ipydatagrid``.
+            Ensure these are installed before calling this method.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Additional keyword arguments to customize the ``ipydatagrid.DataGrid`` instance.
+            For available options, use ``help(ipydatagrid.DataGrid)`` in a Jupyter Notebook.
+
+        Raises
+        ------
+        ValueError
+            If no tables are available to display.
+
+        Returns
+        -------
+        None
+            The method displays the grids directly in the notebook and does not return anything.
+        """
+        from ipydatagrid import DataGrid
+        from IPython.display import display
+
+        if not self._list:
+            raise ValueError("No tables to display.")
+
+        for table in (self._list):
+            # Identify and exclude multidimensional columns
+            valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
+            filtered_table = table[valid_columns]
+            df = filtered_table.to_pandas()
+            grid = DataGrid(df, **kwargs)
+            display(grid)
+
+
     @property
     def all_colnames(self):
         """
