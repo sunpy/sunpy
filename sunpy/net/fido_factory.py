@@ -243,11 +243,14 @@ class UnifiedResponse(Sequence):
         None
             The method displays the grids directly in the notebook and does not return anything.
         """
-        from ipydatagrid import DataGrid
-        from IPython.display import display
-
-        if not self._list:
-            raise ValueError("No tables to display.")
+        try:
+            from ipydatagrid import DataGrid
+            from IPython.display import display
+        except ImportError:
+            raise ImportError(
+                "Both `ipydatagrid` and `IPython` are required to display tables. "
+                "Install them using `pip install ipydatagrid ipython`."
+            )
 
         for table in (self._list):
             # Identify and exclude multidimensional columns
