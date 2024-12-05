@@ -93,6 +93,11 @@ def test_helioviewer_rotation(lasco_map, lasco_helioviewer):
     np.testing.assert_array_equal(lasco_helioviewer.rotation_matrix, [[1., 0.], [0., 1.]])
 
 
+@skip_glymur
+def test_lasco_helioviewer_unit(lasco_helioviewer):
+    assert lasco_helioviewer.unit == u.dimensionless_unscaled
+
+
 def test_wcs(lasco_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):

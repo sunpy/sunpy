@@ -169,6 +169,14 @@ class LASCOMap(GenericMap):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
+    @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is not None and bunit == 0:
+            # The HV JP2 files given to us have a 0 value BUNIT
+            return u.dimensionless_unscaled
+        return super().unit
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image."""
