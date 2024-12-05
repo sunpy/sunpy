@@ -2458,7 +2458,7 @@ class GenericMap(NDData):
         Returns
         -------
         dict
-            The updated `contour_args` dictionary.
+            The updated ``contour_args`` dictionary.
 
         Notes
         -----
