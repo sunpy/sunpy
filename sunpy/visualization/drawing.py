@@ -201,7 +201,7 @@ def extent(axes, wcs, *, rsun: u.m = R_sun, **kwargs):
 
     Parameters
     ----------
-    axes : `matplotlib.axes.Axes`
+    axes : `astropy.visualization.wcsaxes.WCSAxes`
         The axes to plot the prime meridian on, or "None" to use current axes.
     wcs : `~astropy.wcs.WCS`
         The WCS that defines the extent to be drawn.
