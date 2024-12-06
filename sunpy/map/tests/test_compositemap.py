@@ -70,8 +70,8 @@ def test_plot_composite_map_updated_args(composite_test_map, simple_map):
     contour_args = {'norm': 'log',
                     'cmap' :  'plasma'}
     updated_args = simple_map._update_contour_args(contour_args)
-    # Since 'norm' is explicitly provided in contour_args, it remains unchanged in updated_args.
-    #'cmap' is not provided in contour_args, so it defaults to None in updated_args.
+    # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
+    # they remains unchanged in updated_args.
     assert updated_args ==  {
         'cmap': 'plasma',
         'norm': 'log',
