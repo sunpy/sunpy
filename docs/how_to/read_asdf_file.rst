@@ -19,10 +19,10 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
 .. code-block:: python
 
     >>> import sunpy.map
-    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> from sunpy.io import read_file, write_file
 
-    >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
     # Save the map to an ASDF file
     >>> aiamap.save("aia171.asdf")  # doctest: +REMOTE_DATA

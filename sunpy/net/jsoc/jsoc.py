@@ -89,11 +89,11 @@ class JSOCClient(BaseClient):
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
         >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-        ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +SKIP
 
         The response object holds the records that your query will return:
 
-        >>> print(response)   # doctest: +REMOTE_DATA
+        >>> print(response)   # doctest: +SKIP
                  T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
         ----------------------- -------- ---------- -------- -------
         2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -123,9 +123,9 @@ class JSOCClient(BaseClient):
     A registered email address is not required if you only need to query for data,
     it is used only if you need to make an export request. For example,::
 
-        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+        >>> client = jsoc.JSOCClient()  # doctest: +SKIP
         >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-        ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +REMOTE_DATA
+        ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +SKIP
 
     The above is a successful query operation, and will return query responses as before.
 
@@ -145,14 +145,14 @@ class JSOCClient(BaseClient):
         >>> import astropy.units as u
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+        >>> client = jsoc.JSOCClient()  # doctest: +SKIP
         >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +SKIP
 
         The response object holds the records that your query will return:
 
-        >>> print(response)  # doctest: +REMOTE_DATA
+        >>> print(response)  # doctest: +SKIP
                T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
         -------------------- -------- -------- -------- -------
         2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
@@ -228,11 +228,11 @@ class JSOCClient(BaseClient):
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> client = jsoc.JSOCClient()  # doctest: +SKIP
             >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA),
-            ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Segment('image'))  # doctest: +SKIP
+            >>> print(response)  # doctest: +SKIP
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
             -------------------- -------- -------- -------- -------
             2017-09-06T11:59:59Z  SDO/AIA    AIA_4      304    2194
@@ -254,10 +254,10 @@ class JSOCClient(BaseClient):
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> client = jsoc.JSOCClient()  # doctest: +SKIP
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
-            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +SKIP
+            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +SKIP
                      T_REC          WAVELNTH CAR_ROT
             ----------------------- -------- -------
             2014.01.01_00:00:45_TAI   6173.0    2145
@@ -282,11 +282,11 @@ class JSOCClient(BaseClient):
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> client = jsoc.JSOCClient()  # doctest: +SKIP
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'),
-            ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +SKIP
+            >>> print(response)  # doctest: +SKIP
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
             -------------------- -------- -------- -------- -------
             2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145

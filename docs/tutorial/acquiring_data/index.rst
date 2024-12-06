@@ -1,8 +1,16 @@
+.. doctest-skip-all
+
 .. _sunpy-tutorial-acquiring-data-index:
 
 **************
 Acquiring Data
 **************
+
+.. warning::
+
+    The JSOC suffered extensive water damage and are currently working to fix this.
+    As a result, currently there is no data access.
+    `For more information, please find that here. <https://solarweb1.stanford.edu/JSOC_Emergency_Resources>`__
 
 This section of the tutorial introduces ways to obtain different kind of solar data from different places.
 The main tutorial below focuses on ``Fido``, which is a generic search interface that sunpy provides.
@@ -155,7 +163,7 @@ As an example, specific passbands can be searched for by supplying a `~astropy.u
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 67.789 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -175,7 +183,7 @@ Data of a given cadence can also be specified using the `a.Sample <sunpy.net.att
     Results from 1 Provider:
     <BLANKLINE>
     25 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 1.695 Gbyte
     <BLANKLINE>
            Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs  Wavetype Extent Width Extent Length Extent Type   Size
@@ -231,7 +239,7 @@ In this example we'll search for LYRA or RHESSI data in a given time range:
     2012-03-04 00:00:00.000 2012-03-04 23:59:59.999     RHESSI summary_lightcurve RHESSI     NASA
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs  Extent Type   Size
                                                                            keV                                       Mibyte
@@ -270,7 +278,7 @@ For example, the following code returns a response containing LYRA data from the
     2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     2
     <BLANKLINE>
     50 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs   Extent Type   Size
                                                                          Angstrom                                     Mibyte
@@ -340,7 +348,7 @@ For example if we did a query for some AIA and HMI data:
     Results from 2 Providers:
     <BLANKLINE>
     41 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 2.779 Gbyte
     <BLANKLINE>
            Start Time               End Time        Source Instrument    Wavelength    Provider  Physobs  Wavetype Extent Width Extent Length Extent Type   Size
@@ -369,7 +377,7 @@ For example if we did a query for some AIA and HMI data:
     Length = 41 rows
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time               End Time        Source Instrument    Wavelength    Provider      Physobs       Wavetype Extent Width Extent Length Extent Type   Size
                                                                           Angstrom                                                                                  Mibyte
@@ -397,7 +405,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     Results from 2 Providers:
     <BLANKLINE>
     41 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time       Instrument  Physobs     Wavelength
                                                      Angstrom
@@ -425,7 +433,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     Length = 41 rows
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time       Instrument      Physobs          Wavelength
                                                               Angstrom

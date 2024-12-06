@@ -39,7 +39,7 @@ from sphinx_gallery.sorting import ExplicitOrder
 from sunpy_sphinx_theme import PNG_ICON
 
 from astropy.utils.exceptions import AstropyDeprecationWarning
-
+from astropy.io.fits.verify import VerifyWarning
 import sunpy
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
@@ -68,11 +68,16 @@ import doctest
 
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
-# We want to make sure all the following warnings fail the build
-warnings.filterwarnings("error", category=SunpyDeprecationWarning)
-warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
-warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
-warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+# We want to make sure all the following warnings fail the build on CI but not
+# when actually building docs on RTD.
+if not on_rtd:
+    warnings.filterwarnings("error", category=SunpyDeprecationWarning)
+    warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
+    warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
+    warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+# Raised all by the sample data now and astropy 7,
+# so we want to prevent this failing any of the builds
+warnings.filterwarnings("ignore", category=VerifyWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 
