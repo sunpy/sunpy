@@ -147,9 +147,9 @@ dev = ["sunpy[docs,tests]"]
 
 [project.urls]
 Homepage = "https://sunpy.org"
-Download = "https://pypi.org/project/sunpy/"
-"Source Code" = "https://github.com/sunpy/sunpy/"
-Documentation = "https://docs.sunpy.org/"
+"Source Code" = "https://github.com/sunpy/sunpy"
+Download = "https://pypi.org/project/sunpy"
+Documentation = "https://docs.sunpy.org"
 Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 "Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
 
