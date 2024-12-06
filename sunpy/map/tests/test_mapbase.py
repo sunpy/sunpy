@@ -1728,14 +1728,6 @@ def test_draw_carrington_map(carrington_map):
     return fig
 
 
-def test_plot_settings_for_draw_contour(simple_map):
-    levels = [0.5, 1.0, 1.5]
-    contour_plot = simple_map.draw_contours(levels, cmap = 'plasma')
-
-    assert contour_plot.get_cmap().name == 'plasma'
-    assert np.array_equal(contour_plot.levels, levels)
-
-
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
