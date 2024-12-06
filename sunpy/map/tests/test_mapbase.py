@@ -1712,6 +1712,19 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
     return fig
 
 
+def test_plot_composite_map_updated_args(simple_map):
+    contour_args = {'norm': 'log',
+                    'cmap' :  'plasma'}
+    updated_args = simple_map._update_contour_args(contour_args)
+    # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
+    # they remains unchanged in updated_args.
+    assert updated_args ==  {
+        'cmap': 'plasma',
+        'norm': 'log',
+        'origin': None,
+    }
+
+
 @figure_test
 def test_draw_simple_map(simple_map):
     fig = plt.figure(figsize=(6, 6))

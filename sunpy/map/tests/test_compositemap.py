@@ -64,21 +64,6 @@ def test_plot_composite_map_colors(composite_test_map):
     composite_test_map.plot(colors='red')
 
 
-def test_plot_composite_map_updated_args(composite_test_map, simple_map):
-    levels = [-1000, -500, -250, 250, 500, 1000] * u.G
-    composite_test_map.set_levels(index=1, levels=levels)
-    contour_args = {'norm': 'log',
-                    'cmap' :  'plasma'}
-    updated_args = simple_map._update_contour_args(contour_args)
-    # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
-    # they remains unchanged in updated_args.
-    assert updated_args ==  {
-        'cmap': 'plasma',
-        'norm': 'log',
-        'origin': None,
-    }
-
-
 def test_plot_composite_map_plot_settings(composite_test_map):
     composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
     with pytest.raises(TypeError) as e:
