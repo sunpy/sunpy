@@ -111,6 +111,13 @@ ogp_use_first_image = True
 ogp_description_length = 160
 ogp_custom_meta_tags = [
     '<meta property="og:ignore_canonical" content="true" />',
+<<<<<<<
+=======
+    "sphinx.ext.mathjax",
+    "sphinx_automodapi.automodapi",
+    "sphinx_automodapi.smart_resolver",
+    "sphinx_changelog",
+>>>>>>>
 ]
 
 # Suppress warnings about overriding directives as we overload some of the

@@ -1,3 +1,7 @@
+<<<<<<<
+=======
+# Main CI Workflow
+>>>>>>>
 name: CI
 
 on:
@@ -21,7 +25,7 @@ concurrency:
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       submodules: false
       coverage: codecov
@@ -36,8 +40,13 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test:
+<<<<<<<
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+=======
+    needs: [core, sdist_verify]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+>>>>>>>
     with:
       submodules: false
       coverage: codecov
@@ -60,7 +69,7 @@ jobs:
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       default_python: '3.12'
       submodules: false
@@ -114,7 +123,7 @@ jobs:
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       default_python: '3.12'
       submodules: false
@@ -187,7 +196,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v1
     with:
       upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
       anaconda_user: scientific-python-nightly-wheels

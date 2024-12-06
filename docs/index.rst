@@ -13,7 +13,14 @@ It includes an interface for searching and downloading data from multiple data p
         :link-type: ref
         :text-align: center
 
+<<<<<<<
         :material-outlined:`accessibility_new;8em;sd-text-secondary`
+=======
+   whatsnew/index
+
+Indices and tables
+==================
+>>>>>>>
 
         **New users start here!**
         Walkthrough on how to install sunpy and use the key features of the package.
