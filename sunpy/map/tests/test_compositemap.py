@@ -67,13 +67,13 @@ def test_plot_composite_map_colors(composite_test_map):
 def test_plot_composite_map_updated_args(composite_test_map, simple_map):
     levels = [-1000, -500, -250, 250, 500, 1000] * u.G
     composite_test_map.set_levels(index=1, levels=levels)
-
-    contour_args = {'norm': 'log'}
+    contour_args = {'norm': 'log',
+                    'cmap' :  'plasma'}
     updated_args = simple_map._update_contour_args(contour_args)
     # Since 'norm' is explicitly provided in contour_args, it remains unchanged in updated_args.
     #'cmap' is not provided in contour_args, so it defaults to None in updated_args.
     assert updated_args ==  {
-        'cmap': None,
+        'cmap': 'plasma',
         'norm': 'log',
         'origin': None,
     }
