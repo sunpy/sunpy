@@ -232,7 +232,7 @@ def extent(axes, wcs, *, rsun: u.m = R_sun, **kwargs):
                         (shape[1]-0.5, -0.5)])
     xy_edges = []
     for i in range(corners.shape[0]):
-        i_next = (i+1)%corners.shape[0]
+        i_next = (i + 1) % corners.shape[0]
         n_pixels = np.fabs(np.diff(corners[[i,i_next],:],axis=0)).max().astype(int)
         # Exclude last point to avoid double counting corners
         xy_edges += [[np.linspace(*corners[[i,i_next],0], n_pixels-1, endpoint=False),
