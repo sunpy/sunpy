@@ -41,18 +41,18 @@ class ESPTimeSeries(GenericTimeSeries):
         * 'CH_30' - EUV irradiance 30nm
         * 'CH_36' - EUV irradiance 36nm
 
+    .. note::
+
+        The 36 nm channel demonstrates a significant noise and it is not recommended to be
+        used for short-time observations of solar irradiance.
+
     References
     ----------
     * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`__
     * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
     * `README ESP data <http://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`__
     * `ESP lvl1 data <http://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`__
-    * `ESP instrument paper <https://doi.org/10.1007/s11207-009-9485-8>`__
-
-    Notes
-    -----
-    The 36nm channel demonstrates a significant noise and it is not recommended to be
-    used for short-time observations of solar irradiance.
+    * ESP instrument paper: :cite:t:`didkovsky_euv_2012`
     """
 
     _source = 'esp'
@@ -190,7 +190,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`__
     * `EVE Data Access <http://lasp.colorado.edu/home/eve/data/data-access/>`__
-    * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`__
+    * Instrument Paper :cite:t:`woods_extreme_2012`.
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
