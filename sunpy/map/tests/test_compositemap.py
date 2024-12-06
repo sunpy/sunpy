@@ -64,7 +64,7 @@ def test_plot_composite_map_colors(composite_test_map):
     composite_test_map.plot(colors='red')
 
 
-def test_plot_composite_map_plot_settings(composite_test_map):
+def test_plot_composite_map_mplkwargs(composite_test_map):
     composite_test_map.set_levels(1, np.arange(-75, 76, 25) << u.percent)
     with pytest.raises(TypeError) as e:
         composite_test_map.plot(linestyles='--', unused_a=1, unused_b=2)
