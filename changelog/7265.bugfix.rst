@@ -1,0 +1,2 @@
+Now `~sunpy.data.cache.Cache` will not delete a stale file if the download fails.
+It will now return the "stale" file if the download fails.
