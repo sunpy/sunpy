@@ -475,7 +475,7 @@ class VSOClient(BaseClient):
         # Iterate over the series and make a DRI for each.
         # groupby creates an iterator based on a key function, in this case
         # based on the series (the part before the first ':')
-        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+        for _, fileids in itertools.groupby(series_sorted, key=series_func):
             dris.append(self.make('DataRequestItem',
                                   provider='JSOC',
                                   fileiditem={'fileid': list(fileids)}))
@@ -690,4 +690,4 @@ class VSOClient(BaseClient):
 
     @property
     def info_url(self):
-        return 'http://vso.stanford.edu/cgi-bin/search'
+        return 'https://sdac.virtualsolar.org/cgi/search'

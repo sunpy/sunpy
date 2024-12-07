@@ -97,18 +97,23 @@ Using Coordinates with Maps
 
    .. code-block:: python
 
+    >>> import warnings
+
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
+    >>> from astropy.io.fits.verify import VerifyWarning
 
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
 
-    >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> with warnings.catch_warnings():  # doctest: +REMOTE_DATA
+    ...     warnings.simplefilter("ignore", category=VerifyWarning)
+    ...     amap = sunpy.map.Map(AIA_171_IMAGE)
     >>> amap.coordinate_frame  # doctest: +REMOTE_DATA
     <Helioprojective Frame (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406429, 0.04787238, 1.51846026e+11)>)>
 
-   This can be used when creating a `~astropy.coordinates.SkyCoord` object to set the coordinate system to that image:
+    This can be used when creating a `~astropy.coordinates.SkyCoord` object to set the coordinate system to that image:
 
    .. code-block:: python
 

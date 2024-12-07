@@ -261,23 +261,24 @@ def test_map_list_urls_cache():
     """
     urls = ['https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits',
             'https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits']
-    sunpy.map.Map(urls)
+    with pytest.warns(fits.verify.VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+        sunpy.map.Map(urls)
 
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize(('file', 'mapcls'), [
-    ["EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap],
-    ["lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap],
-    ["mdi.fd_Ic.20101015_230100_TAI.data.header", sunpy.map.sources.MDIMap],
-    ["mdi.fd_M_96m_lev182.20101015_191200_TAI.data.header", sunpy.map.sources.MDIMap],
-    ["euvi_20090615_000900_n4euA_s.header", sunpy.map.sources.EUVIMap],
-    ["cor1_20090615_000500_s4c1A.header", sunpy.map.sources.CORMap],
-    ["hi_20110910_114721_s7h2A.header", sunpy.map.sources.HIMap],
-    [AIA_171_IMAGE, sunpy.map.sources.AIAMap],
-    [RHESSI_IMAGE, sunpy.map.sources.RHESSIMap],
-    ["FGMG4_20110214_030443.7.header", sunpy.map.sources.SOTMap],
-    ["swap_lv1_20140606_000113.header", sunpy.map.sources.SWAPMap],
-    ["HinodeXRT.header", sunpy.map.sources.XRTMap],
+    ("EIT_header/efz20040301.000010_s.header", sunpy.map.sources.EITMap),
+    ("lasco_c2_25299383_s.header", sunpy.map.sources.LASCOMap),
+    ("mdi.fd_Ic.20101015_230100_TAI.data.header", sunpy.map.sources.MDIMap),
+    ("mdi.fd_M_96m_lev182.20101015_191200_TAI.data.header", sunpy.map.sources.MDIMap),
+    ("euvi_20090615_000900_n4euA_s.header", sunpy.map.sources.EUVIMap),
+    ("cor1_20090615_000500_s4c1A.header", sunpy.map.sources.CORMap),
+    ("hi_20110910_114721_s7h2A.header", sunpy.map.sources.HIMap),
+    (AIA_171_IMAGE, sunpy.map.sources.AIAMap),
+    (RHESSI_IMAGE, sunpy.map.sources.RHESSIMap),
+    ("FGMG4_20110214_030443.7.header", sunpy.map.sources.SOTMap),
+    ("swap_lv1_20140606_000113.header", sunpy.map.sources.SWAPMap),
+    ("HinodeXRT.header", sunpy.map.sources.XRTMap),
 ])
 def test_sources(file, mapcls):
     p = pathlib.Path(get_test_filepath(file))
