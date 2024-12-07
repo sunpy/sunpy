@@ -58,6 +58,42 @@ _READERS = Readers({
 })
 
 
+def get_valid_filepath(filepath):
+    """
+    Ensures the filepath is a valid string, pathlib.Path, or fsspec.OpenFile.
+
+    Parameters
+    ----------
+    filepath : str, pathlib.Path, or fsspec.OpenFile
+        The file path or file object to be validated.
+
+    Returns
+    -------
+    valid_filepath : str or pathlib.Path
+        A validated file path that can be passed to other functions.
+
+    Raises
+    ------
+    TypeError
+        If the filepath is not of type str, pathlib.Path, or fsspec.OpenFile.
+    """
+     # Handle URI or remote path
+    if isinstance(filepath, str) and (filepath.startswith("http") or filepath.startswith("ftp")):
+        fileobj = fsspec.open(filepath, 'rb')
+        return fileobj.urlpath
+
+    # If it's an fsspec.OpenFile object, return the file's name or path
+    elif isinstance(filepath, fsspec.open_files):
+        return filepath.urlpath
+
+    # If it's a string or pathlib.Path, return the path as a string
+    elif isinstance(filepath, (str, pathlib.Path)):
+        return str(filepath)
+
+    # Raise error for invalid file type
+    else:
+        raise TypeError("filepath must be a string, pathlib.Path, or fsspec.OpenFile.")
+
 def _read(filepath, function_name, filetype=None, **kwargs):
     """
     This functions provides the logic paths for reading a file.
@@ -84,7 +120,7 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    filepath = str(filepath)
+    filepath = get_valid_filepath(filepath)
     if filetype is not None:
         return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
@@ -124,6 +160,7 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
+    filepath = get_valid_filepath(filepath)
     return _read(filepath, 'read', filetype, **kwargs)
 
 
@@ -148,6 +185,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
+    filepath = get_valid_filepath(filepath)
     return _read(filepath, 'get_header', filetype, **kwargs)
 
 
@@ -173,6 +211,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     -----
     * This routine currently only supports saving a single HDU.
     """
+    fname = get_valid_filepath(fname)
     if filetype == 'auto':
         # Get the extension without the leading dot
         filetype = pathlib.Path(fname).suffix[1:]
