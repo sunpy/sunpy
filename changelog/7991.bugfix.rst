@@ -1,0 +1,2 @@
+Fixes Issue with parse time regex dropping 0's on minutes/seconds
+Adds support the timestamp %Y%m%d%H%M
