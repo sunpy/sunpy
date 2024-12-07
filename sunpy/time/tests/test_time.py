@@ -211,12 +211,8 @@ def test_parse_time_ISO():
     dt4 = Time('2007-05-04T21:08:00')
     dt5 = Time('2007-05-04')
 
-    assert (
-        parse_time('20070504210812') == dt3 
-    )
-    assert (
-        parse_time('200705042108') == dt4 
-    )
+    assert parse_time('20070504210812') == dt3
+    assert parse_time('200705042108') == dt4
     
     lst = [
         ('2007-05-04T21:08:12.999999', dt2),
