@@ -11,7 +11,7 @@ from sunpy.net.attr import (AttrAnd, AttrOr, AttrWalker, DataAttr, Range,
                             SimpleAttr)
 from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ["Product", "SOOP", "Distance"]
+__all__ = ["SOOP", "Distance", "Product"]
 
 
 class Product(SimpleAttr):

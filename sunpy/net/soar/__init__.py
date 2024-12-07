@@ -14,4 +14,4 @@ from sunpy.net.soar.client import SOARClient
 
 from .version import version as __version__
 
-__all__ = ["__version__", "SOARClient"]
+__all__ = ["SOARClient", "__version__"]
