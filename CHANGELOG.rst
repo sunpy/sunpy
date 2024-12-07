@@ -1,3 +1,13 @@
+6.0.4 (2024-12-06)
+==================
+
+Bug Fixes
+---------
+
+- Fix use of deprecated ``astropy.table.Table.pformat_all`` in ``sunpy.net``. (`#7854 <https://github.com/sunpy/sunpy/pull/7854>`__)
+- Added correct unit fallback for LASCO JPEG2000 files from the Helioviewer. (`#7890 <https://github.com/sunpy/sunpy/pull/7890>`__)
+
+
 6.0.3 (2024-10-17)
 ==================
 
