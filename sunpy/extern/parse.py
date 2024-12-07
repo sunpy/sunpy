@@ -169,7 +169,7 @@ MONTHS_MAP = {
 DAYS_PAT = r"(Mon|Tue|Wed|Thu|Fri|Sat|Sun)"
 MONTHS_PAT = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
 ALL_MONTHS_PAT = r"(%s)" % "|".join(MONTHS_MAP)
-TIME_PAT = r"(\d{2}:\d{2}(:\d{2}(\.\d+)?)?)"
+TIME_PAT = r"(\d{1,2}:\d{1,2}(:\d{1,2}(\.\d+)?)?)"
 AM_PAT = r"(\s+[AP]M)"
 TZ_PAT = r"(\s+[-+]\d\d?:?\d\d)"
 
