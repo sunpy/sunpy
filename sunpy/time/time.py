@@ -229,6 +229,12 @@ def convert_time_list(time_list, format=None, **kwargs):
 def convert_time_str(time_string, **kwargs):
     if 'TAI' in time_string:
         kwargs['scale'] = 'tai'
+    
+    # if time_string does not have proper format r'20021204([T_])?242012(\.\d{6})?' format 
+    if re.match(r'\d{8}([T_])?' , time_string):                         
+        if not re.match(r'\d{8}([T_])?\d{6}(\.\d{6})?' , time_string):
+            message = 'Input values did not match the format of astro.time.time'
+            raise ValueError(message)
 
     for time_format in TIME_FORMAT_LIST:
         try:
