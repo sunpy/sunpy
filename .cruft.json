@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "cd21e0d710513a891ed03f29e8afd6e0b9217f04",
+  "commit": "3737aa309d2a695ada046c7868c5683213003f3d",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -10,6 +10,12 @@
       "author_name": "The SunPy Community",
       "author_email": "sunpy@googlegroups.com",
       "project_url": "https://sunpy.org",
+      "github_repo": "sunpy/sunpy",
+      "sourcecode_url": "https://github.com/sunpy/sunpy",
+      "download_url": "https://pypi.org/project/sunpy",
+      "documentation_url": "https://docs.sunpy.org",
+      "changelog_url": "https://docs.sunpy.org/en/stable/whatsnew/changelog.html",
+      "issue_tracker_url": "https://github.com/sunpy/sunpy/issues",
       "license": "BSD 2-Clause",
       "minimum_python_version": "3.10",
       "use_compiled_extensions": "y",
