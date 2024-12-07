@@ -238,6 +238,21 @@ def test_parse_time_ISO():
         assert is_time_equal(dt, v)
         assert dt.format == 'isot'
 
+def test_parse_time_invalid_format():
+    invalid_format = [
+        '20070504T2108',
+        '20070504T21082',
+        '20070504_2108',
+        '20070504_21082',
+        '200705042108',
+        '2007050421082',
+        '20070504T2108.999999',
+        '20070504T21082.999999',
+    ]
+
+    for k in invalid_format:
+        with pytest.raises(ValueError) as err:
+            parse_time(k)
 
 def test_parse_time_tai():
     tai_format = Time('2007-05-04T21:08:12', scale='tai')
