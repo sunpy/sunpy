@@ -299,18 +299,18 @@ dt_format_to_regex = {
     "%d": "[0-9]{1,2}",
     "%b": "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)",
     "%B": "(?:January|February|March|April|May|June|July|August|September|October|November|December)",
-    "%m": "[0-9]{2}", # month 
+    "%m": "[0-9]{1,2}", 
     "%y": "[0-9]{2}",
     "%Y": "[0-9]{4}",
-    "%H": "[0-9]{2}", # 24-Hour clock as a zero-padded decimal
-    "%I": "[0-9]{2}", # 12-Hour clock format
+    "%H": "[0-9]{1,2}",
+    "%I": "[0-9]{1,2}",
     "%p": "(?:AM|PM)",
     "%M": "[0-9]{2}",
     "%S": "[0-9]{2}",
     "%f": "[0-9]{1,6}",
     "%z": "[+|-][0-9]{2}(:?[0-9]{2})?(:?[0-9]{2})?",
     # "%Z": punt
-    "%j": "[0-9]{3}", # Day of the year format 
+    "%j": "[0-9]{1,3}",
     "%U": "[0-9]{1,2}",
     "%W": "[0-9]{1,2}",
 }
