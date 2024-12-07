@@ -80,11 +80,11 @@ def get_valid_filepath(filepath):
      # Handle URI or remote path
     if isinstance(filepath, str) and (filepath.startswith("http") or filepath.startswith("ftp")):
         fileobj = fsspec.open(filepath, 'rb')
-        return fileobj.urlpath
+        return fileobj.path
 
     # If it's an fsspec.OpenFile object, return the file's name or path
-    elif isinstance(filepath, fsspec.open_files):
-        return filepath.urlpath
+    if isinstance(filepath, list) and all(isinstance(fp, fsspec.core.OpenFile) for fp in filepath):
+        return [fp.path for fp in filepath]
 
     # If it's a string or pathlib.Path, return the path as a string
     elif isinstance(filepath, (str, pathlib.Path)):
