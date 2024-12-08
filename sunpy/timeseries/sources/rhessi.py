@@ -104,7 +104,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     Summary lightcurves are quicklook data products intended for rapid assessment and
     are not science-quality data. They are uncorrected for instrumental effects and
-    backgrounds
+    backgrounds.
 
     RHESSI provides summary lightcurves in the following passbands:
 
