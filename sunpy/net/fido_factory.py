@@ -233,11 +233,6 @@ class UnifiedResponse(Sequence):
             Additional keyword arguments to customize the ``ipydatagrid.DataGrid`` instance.
             For available options, use ``help(ipydatagrid.DataGrid)`` in a Jupyter Notebook.
 
-        Raises
-        ------
-        ValueError
-            If no tables are available to display.
-
         Returns
         -------
         None
@@ -245,13 +240,18 @@ class UnifiedResponse(Sequence):
         """
         try:
             from ipydatagrid import DataGrid
+        except ImportError:
+            raise ImportError(
+                "`ipydatagrid` is required to display tables. "
+                "Install them using `pip install ipydatagrid`."
+            )
+        try:
             from IPython.display import display
         except ImportError:
             raise ImportError(
-                "Both `ipydatagrid` and `IPython` are required to display tables. "
-                "Install them using `pip install ipydatagrid ipython`."
+                "`IPython` is required to display tables. "
+                "Install them using `pip install ipython`."
             )
-
         for table in (self._list):
             # Identify and exclude multidimensional columns
             valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
