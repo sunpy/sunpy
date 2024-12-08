@@ -719,98 +719,111 @@ def _sun_north_angle_to_z(frame):
     return Angle(angle)
 
 
-def eclipse_amount(observer, *, moon_radius: Literal['IAU', 'minimum'] = 'IAU'):
+def limb_profile_from_dem(dem_data, observer_distance, resolution=18000):
     """
-    Return the percentage of the Sun that is eclipsed by the Moon.
+    Compute the lunar limb profile from DEM data, with integrated transformations.
 
-    The occultation of the solar disk by the Moon is calculated using the
-    simplifying assumption that the Moon has a constant radius.  Since the Moon has
-    an irregular profile of peaks and valleys, the output can be slightly inaccurate
-    for the start/end of partial solar eclipses (a.k.a. penumbral contacts) and the
-    start/end of total solar eclipses (a.k.a. umbral contacts).
+    Parameters
+    ----------
+    dem_data : array
+        Lunar DEM data, formatted as [(latitude, longitude, elevation)].
+    observer_distance : float
+        Distance of the observer from the Moon in km.
+    resolution : int, optional
+        Number of angular intervals for the limb profile (default is 18000).
+
+    Returns
+    -------
+    limb_profile : np.ndarray
+        Array of angular radii (alpha) at evenly spaced azimuthal angles.
+    """
+    
+    # Initialize the limb profile
+    limb_profile = np.zeros(resolution)
+
+    # Precompute azimuthal bins
+    angular_intervals = np.linspace(0, 2 * np.pi, resolution, endpoint=False)
+
+    for lat, lon, elevation in dem_data:
+        # Convert (lat, lon, elevation) to Cartesian coordinates
+        # Later we will convert this for the observer's perspective
+        lat, lon = np.radians(lat), np.radians(lon)
+        R = 1737.4 + elevation  # Moon's radius + elevation in km
+        x = R * np.cos(lat) * np.cos(lon)
+        y = R * np.cos(lat) * np.sin(lon)
+        z = R * np.sin(lat)
+
+        # Apply a rotation for the observer's perspective
+        x_rot, y_rot, z_rot = x, y, z  # Identity rotation for now (replace with real rotation)
+
+        # Convert to polar coordinates relative to observer
+        r = np.sqrt(y_rot**2 + z_rot**2)
+        theta = np.arctan2(z_rot, y_rot)
+        alpha = np.arctan(r / (observer_distance - x_rot))
+
+        # Update the limb profile at the appropriate azimuthal index
+        index = int((theta % (2 * np.pi)) / (2 * np.pi) * resolution)
+        limb_profile[index] = max(limb_profile[index], alpha)
+
+    return limb_profile
+
+def eclipse_amount(observer, dem_data, observer_distance, *, resolution=18000):
+    """
+    Return the percentage of the Sun that is eclipsed by the Moon using a dynamic lunar limb model.
 
     Parameters
     ----------
     observer : `~astropy.coordinates.SkyCoord`
         The observer location and observation time.
-    moon_radius : `str`
-        The choice of which radius to use for the Moon.
-        The default option (``'IAU'``) is the IAU mean radius (R_moon / R_earth =
-        0.2725076).
-        The alternative option (``'minimum'``) is the mean minimum radius (R_moon /
-        R_earth = 0.272281).
+    dem_data : array
+        Lunar DEM data, formatted as [(latitude, longitude, elevation), ...].
+    observer_distance : float
+        Distance of the observer from the Moon in km.
+    resolution : int, optional
+        Number of angular intervals for the limb profile (default is 18000).
 
-    Notes
-    -----
-    The apparent location of the Moon accounts for the effect of light travel time.
-
-    The location of the Moon is appreciably inaccurate with Astropy's built-in
-    ephemeris, so it is highly recommended to use a JPL ephemeris instead.  See
-    :ref:`astropy-coordinates-solarsystem`.
-
-    Using the mean minimum radius for the Moon will result in slightly more accurate
-    estimates of the start/end of total solar eclipses, at the expense of slightly
-    more inaccurate estimates for the amount of partial solar eclipses.  See
-    `this page <https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html>`__
-    for relevant discussion.
-
-    Examples
-    --------
-    .. minigallery:: sunpy.coordinates.sun.eclipse_amount
+    Returns
+    -------
+    fraction : `~astropy.units.Quantity`
+        The eclipse fraction as a percentage.
     """
-    # The radius of the Moon to use (in units of Earth radii)
-    # See https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html
-    radius_options = {
-        'IAU': 0.2725076,
-        'minimum': 0.272281
-    }
-    try:
-        R_moon = radius_options[moon_radius] * R_earth
-    except KeyError:
-        raise ValueError("The supported values for `moon_radius` are: " + ", ".join(radius_options.keys()))
+    # Compute the lunar limb profile
+    limb_profile = limb_profile_from_dem(dem_data, observer_distance, resolution)
 
-    # Get the light-travel-time adjusted location of the Moon
+    # Observer's position relative to the Moon
     moon = get_body_heliographic_stonyhurst('moon', observer.obstime, observer=observer, quiet=True)
-
-    # Get Cartesian vectors relative to the observer
     observer = observer.transform_to(moon)
-    vec_sun = -observer.cartesian
+
+    # Compute azimuthal angle for limb profile
     vec_moon = moon.cartesian - observer.cartesian
-    dist_moon = vec_moon.norm()
+    theta = np.arctan2(vec_moon.z, vec_moon.y)
 
-    # Sun's angular radius (s), Moon's angular radius (m), and angular separation (d)
+    # Retrieve dynamic angular radius from limb profile
+    index = int((theta % (2 * np.pi)) / (2 * np.pi) * resolution)
+    m = limb_profile[index]
+
+    # Compute Sun's angular radius and angular separation
     s = np.arcsin(constants.radius / observer.radius).value
-    m = np.arcsin(R_moon / dist_moon).value
-    d = np.arccos(vec_sun.dot(vec_moon) / (observer.radius * dist_moon)).value
+    d = np.arccos(vec_sun.dot(vec_moon) / (observer.radius * vec_moon.norm())).value
 
-    # Elevate scalars to arrays
-    s, m, d = np.atleast_1d(s), np.atleast_1d(m), np.atleast_1d(d)
-
-    # Pre-calculate cosines, sines, and areas of the Sun and Moon
+    # Precalculate eclipse fraction using the dynamic lunar radius
     cs, ss = np.cos(s), np.sin(s)
     cm, sm = np.cos(m), np.sin(m)
     cd, sd = np.cos(d), np.sin(d)
     area_s = 2 * np.pi * (1 - cs)
     area_m = 2 * np.pi * (1 - cm)
+    area_int = 2 * (np.pi
+                    - np.arccos((cd - cs * cm) / (ss * sm))
+                    - np.arccos((cm - cd * cs) / (sd * ss)) * cs
+                    - np.arccos((cs - cd * cm) / (sd * sm)) * cm)
 
-    # Calculate the area of the intersection of two spherical caps
-    # Tovchigrechko & Vakser (2001), eq. 4, https://doi.org/10.1110/ps.8701
-    # See also https://math.stackexchange.com/a/4028073
-    with np.errstate(invalid='ignore'):
-        area_int = 2 * (np.pi
-                        - np.arccos((cd - cs * cm) / (ss * sm))
-                        - np.arccos((cm - cd * cs) / (sd * ss)) * cs
-                        - np.arccos((cs - cd * cm) / (sd * sm)) * cm)
-
-    # The above formula does not handle the edge cases
+    # Handle edge cases for zero, total, and annular eclipses
     area_int[d >= s + m] = 0  # zero eclipse
     area_int[m >= s + d] = area_s[m >= s + d]  # total eclipse
     area_int[s >= m + d] = area_m[s >= m + d]  # annular eclipse
 
-    # Divide by the area of the Sun to get the eclipse fraction
+    # Divide by Sun's area and return fraction
     fraction = area_int / area_s
-
-    # Clip the result to remove <0% and >100% due to numerical precision
     fraction = np.clip(fraction, 0, 1)
 
     return u.Quantity(fraction.reshape(observer.data.shape)).to(u.percent)
