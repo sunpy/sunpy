@@ -37,6 +37,17 @@ REGEX = {
 # DO NOT SORT THIS LIST.
 # The string parsing is dependent on the specific order within this list.
 TIME_FORMAT_LIST = [
+    """
+    Reordering these formats may cause incorrect parsing results.
+    "%Y%m%dT%H%M",  # Example 20070504T2108
+    "%Y%m%dT%H%M%S",  # Example 20070504T210812
+
+    "%Y%m%d_%H%M",  # Example 20070504_2108
+    "%Y%m%d_%H%M%S",  # Example 20070504_210812
+
+    "%Y%m%d%H%M",  # Example 201401041205
+    "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC/VSO Export/Downloads)
+    """
     "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
     "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
     "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
