@@ -96,8 +96,8 @@ corresponds to the coordinate axis for ``x`` and ``axis2`` corresponds to
 
 This class assumes that the metadata adheres to the FITS 4 standard.
 Where the CROTA2 metadata is provided (without PC_ij) it assumes a conversion
-to the standard PC_ij described in section 6.1 of .
-`Calabretta & Greisen (2002) <https://doi.org/10.1051/0004-6361:20021327>`_
+to the standard PC_ij described in section 6.1 of
+:cite:t:`calabretta_representations_2002`.
 
 .. warning::
     If a header has CD_ij values but no PC_ij values, CDELT values are required
