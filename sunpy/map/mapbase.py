@@ -166,7 +166,7 @@ class GenericMap(NDData):
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
     >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
