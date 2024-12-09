@@ -34,6 +34,7 @@ REGEX = {
     '%f': r'(?P<microsecond>\d+)',
     '%b': r'(?P<month_str>[a-zA-Z]+)',
 }
+# Do NOT sort this list. The String Parsing is dependent on the specific order within this list.
 TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
     "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
