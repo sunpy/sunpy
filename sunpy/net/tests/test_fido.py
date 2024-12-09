@@ -1,6 +1,7 @@
 import os
 import pathlib
 from stat import S_IREAD, S_IRGRP, S_IROTH
+from types import NoneType
 from unittest import mock
 
 import hypothesis.strategies as st
@@ -171,6 +172,14 @@ def test_unifiedresponse_slicing():
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], QueryResponseTable)
+
+
+@pytest.mark.remote_data
+def test_ipydatagrid_table():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
+    assert isinstance(results, UnifiedResponse)
+    assert isinstance(results.show_in_notebook(), NoneType)
 
 
 @pytest.mark.remote_data
