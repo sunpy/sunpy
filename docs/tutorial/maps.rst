@@ -70,7 +70,7 @@ To make sure this has all worked correctly, we can take a quick look at ``my_map
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 This should show a representation of the data as well as some of its associated attributes.
 If you are in a Jupyter Notebook, this will show a rich HTML view of the table along with several quick-look plots.
@@ -136,7 +136,7 @@ The data in a Map is stored as a `numpy.ndarray` object and is accessible throug
        [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
         -127.899666 , -127.899666 ],
        [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-        -128.03072  , -128.03072  ]], dtype=float32)
+        -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 This array can then be indexed like any other NumPy array.
 For example, to get the 0th element in the array:
@@ -528,7 +528,7 @@ For example, the following returns the same information as in :ref:`sunpy-tutori
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
