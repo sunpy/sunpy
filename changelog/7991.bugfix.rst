@@ -1,2 +1,1 @@
-Fixes Issue with parse time regex dropping 0's on minutes/seconds
-Adds support for the timestamp %Y%m%d%H%M
+Added support within `~.parse_time` for the timestamp ``%Y%m%d%H%M``.
