@@ -114,10 +114,16 @@ def test_truncation_slices(eve_test_ts,
 
 def test_truncation_timerange(eve_test_ts):
     truncated = eve_test_ts.truncate(eve_test_ts.time_range.split(3)[1])
+    truncated_1 = eve_test_ts.truncate('2016-06-10 00:02:00', '2016-06-10 00:06:00')
     # Check the resulting timerange in both TS and TSMD
     assert (truncated.time_range ==
             truncated.meta.time_range ==
             eve_test_ts.time_range.split(3)[1])
+    # Check when the timerange is in str
+    assert truncated_1.time_range == truncated_1.meta.time_range == TimeRange('2016-06-10 00:02:00', '2016-06-10 00:06:00')
+    # Check when the timerange does not overlaps with the data timerange
+    with pytest.raises(ValueError, match="Provided timerange is not within the bounds of the timeseries"):
+        eve_test_ts.truncate(TimeRange('2012-06-07 05:00', '2012-06-07 06:30'))
 
 
 def test_truncation_dates(eve_test_ts):
@@ -220,8 +226,7 @@ def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
     b = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
-    truncated = truncated.truncate(tr)
-    return truncated
+    return truncated, tr
 
 
 @pytest.fixture
@@ -231,15 +236,39 @@ def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
     b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(2*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
-    truncated = truncated.truncate(tr)
-    return truncated
+    return truncated, tr
 
 
-def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts,
-                                 truncated_new_tr_all_after_ts):
-    assert (truncated_new_tr_all_before_ts.meta.metadata ==
-            truncated_new_tr_all_after_ts.meta.metadata ==
-            [])
+def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts, truncated_new_tr_all_after_ts):
+    truncated_before, time_range_before = truncated_new_tr_all_before_ts
+    truncated_after, time_range_after = truncated_new_tr_all_after_ts
+
+    message = "Provided timerange is not within the bounds of the timeseries"
+    with pytest.raises(ValueError, match=message):
+        truncated_before.truncate(time_range_before)
+    with pytest.raises(ValueError, match=message):
+        truncated_after.truncate(time_range_after)
+
+
+@pytest.fixture
+def truncated_new_tr_partially_ts(esp_test_ts):
+    start_time_outside = esp_test_ts.time_range.start - TimeDelta(1*u.min)
+    center_time = esp_test_ts.time_range.center
+    end_time_outside = esp_test_ts.time_range.end + TimeDelta(1*u.min)
+
+    tr_1 = TimeRange(start_time_outside, center_time)
+    tr_2 = TimeRange(center_time, end_time_outside)
+    return tr_1, tr_2
+
+def test_truncated_new_tr_partially_ts(esp_test_ts, truncated_new_tr_partially_ts):
+
+    tr_1, tr_2 = truncated_new_tr_partially_ts
+    truncated = copy.deepcopy(esp_test_ts)
+    truncated_1 = truncated.truncate(tr_1)
+    truncated_2 = truncated.truncate(tr_2)
+    # Check when TimeRange lie partially inside Timeseries
+    assert truncated_1.time_range == truncated_1.meta.time_range ==  truncated.time_range.split()[0]
+    assert truncated_2.time_range == truncated_2.meta.time_range ==  truncated.time_range.split()[1]
 
 
 def test_extraction(eve_test_ts):
@@ -481,9 +510,8 @@ def test_empty_ts_invalid_peek(generic_ts):
     # Truncate a timeseries so it's empty
     a = generic_ts.time_range.start - TimeDelta(2*u.day)
     b = generic_ts.time_range.start - TimeDelta(1*u.day)
-    empty_ts = generic_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError, match="The timeseries can't be plotted as it has no data present"):
-        empty_ts.peek()
+    with pytest.raises(ValueError, match="Provided timerange is not within the bounds of the timeseries"):
+        generic_ts.truncate(TimeRange(a, b))
 
 
 def test_equality(generic_ts, table_ts):
