@@ -92,9 +92,6 @@ def read_cdf(fname, **kwargs):
             if np.issubdtype(data.dtype, np.floating):
                 if 'FILLVAL' in attrs:
                     data[data == attrs['FILLVAL']] = np.nan
-                else:
-                    log.debug(f"No 'FILLVAL' attribute found for variable {var_key}.")
-
 
             # Get units
             if 'UNITS' in attrs:
