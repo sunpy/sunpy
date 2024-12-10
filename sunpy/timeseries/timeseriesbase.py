@@ -530,12 +530,15 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` with only the selected times.
         """
+        is_int = False
         # Evaluate inputs
         # If given strings, then use to create a sunpy.time.timerange.TimeRange
         # for the SunPy text date parser.
         if isinstance(a, str) and isinstance(b, str):
-            a = TimeRange(a, b)
-        if isinstance(a, TimeRange):
+            time_range = TimeRange(a, b)
+            start = time_range.start.datetime
+            end = time_range.end.datetime
+        elif isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start.datetime
             end = a.end.datetime
@@ -543,6 +546,16 @@ class GenericTimeSeries:
             # Otherwise we already have the values
             start = a
             end = b
+            is_int = True
+
+        min_time, max_time = self._data.index.min(), self._data.index.max()
+        # Check if the timerange overlaps with the data timerange
+        if not is_int:
+            if min_time >= start and max_time <= end:
+                pass
+            elif (start <= end <= min_time or max_time <= start <= end):
+                message = "Provided timerange is not within the bounds of the timeseries"
+                raise ValueError(message)
 
         # If an interval integer was given then use in truncation.
         truncated_data = self._data.sort_index()[start:end:int]
