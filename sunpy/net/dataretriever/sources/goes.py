@@ -275,7 +275,6 @@ class SUVIClient(GenericClient):
             for wave in supported_waves:
                 if wave in req_wave:
                     all_waves.append(int(wave.value))
-
         else:
             all_waves = [int(i.value) for i in supported_waves]
         all_satnos = matchdict.get('SatelliteNumber')
