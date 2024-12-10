@@ -23,9 +23,10 @@ def test_read_cdf():
     assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
     # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
-    # Simulate missing 'FILLVAL' for one variable and ensure graceful handling
+
 
 def test_generic_timeseries_columns():
+    # Simulate missing 'FILLVAL' for one variable and ensure graceful handling
     all_ts = read_cdf(filepath)
     for ts in all_ts:
         # Iterate over each column in the GenericTimeSeries
