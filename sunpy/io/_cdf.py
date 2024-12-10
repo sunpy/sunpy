@@ -90,7 +90,11 @@ def read_cdf(fname, **kwargs):
             # It would be nice to properley mask these values to work with
             # non-floating point (ie. int) dtypes, but this is not possible with pandas
             if np.issubdtype(data.dtype, np.floating):
-                data[data == attrs['FILLVAL']] = np.nan
+                if 'FILLVAL' in attrs:
+                    data[data == attrs['FILLVAL']] = np.nan
+                else:
+                    log.debug(f"No 'FILLVAL' attribute found for variable {var_key}.")
+                
 
             # Get units
             if 'UNITS' in attrs:
