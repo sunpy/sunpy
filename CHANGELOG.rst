@@ -399,12 +399,12 @@ Documentation
 - Added `sunpy.map.PixelPair` to the reference documentation. (`#6620 <https://github.com/sunpy/sunpy/pull/6620>`__)
 - Split the installation docs into a new Installation tutorial, and an installation guide. (`#6639 <https://github.com/sunpy/sunpy/pull/6639>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_time_series_goes_xrs_nrt_data.py`) to download GOES NRT data and load it into `~sunpy.timeseries.TimeSeries`. (`#6744 <https://github.com/sunpy/sunpy/pull/6744>`__)
-- Added an example gallery (:ref:`sphx_glr_generated_gallery_acquiring_data_querying_and_loading_SHARP_data.py`) for querying SHARP data and loading it into a `~sunpy.map.Map`. (`#6757 <https://github.com/sunpy/sunpy/pull/6757>`__)
+- Added an example gallery (:ref:`sphx_glr_generated_gallery_acquiring_data_skip_querying_and_loading_SHARP_data.py`) for querying SHARP data and loading it into a `~sunpy.map.Map`. (`#6757 <https://github.com/sunpy/sunpy/pull/6757>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_units_and_coordinates_ParkerSolarProbe_trajectory.py`) to plot the trajectory of Parker Solar Probe. (`#6771 <https://github.com/sunpy/sunpy/pull/6771>`__)
 - Created a "Showcase" section of the gallery, which includes a new example (:ref:`sphx_glr_generated_gallery_showcase_where_is_stereo.py`) and a relocated example (:ref:`sphx_glr_generated_gallery_showcase_hmi_cutout.py`). (`#6781 <https://github.com/sunpy/sunpy/pull/6781>`__)
 - Updated examples in the gallery to always explicitly create an Axes and use that for plotting, instead of using the Matplotlib pyplot API. (`#6822 <https://github.com/sunpy/sunpy/pull/6822>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_map_masking_hmi.py`) of how to mask a HMI map based on the intensity of AIA. (`#6825 <https://github.com/sunpy/sunpy/pull/6825>`__)
-- Added an example (:ref:`sphx_glr_generated_gallery_plotting_mplcairo_plotting.py`) to blend two maps using ``mplcairo``. (`#6835 <https://github.com/sunpy/sunpy/pull/6835>`__)
+- Added an example to blend two maps using ``mplcairo``. (`#6835 <https://github.com/sunpy/sunpy/pull/6835>`__)
 - Changed the reprojecting images to different observers example (:ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`) to avoid using custom wcs headers where possible. (`#6853 <https://github.com/sunpy/sunpy/pull/6853>`__)
 - Added a note in examples :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py` and :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py` suggesting to use :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to retain off-disk HMI data. (`#6855 <https://github.com/sunpy/sunpy/pull/6855>`__)
 - Moved the Helioviewer migration guide from the tutorial to guide section of the docs. (`#6868 <https://github.com/sunpy/sunpy/pull/6868>`__)
@@ -585,7 +585,7 @@ Bug Fixes
   now automatically scales with the left-hand y-axis. (`#6486 <https://github.com/sunpy/sunpy/pull/6486>`__)
 - Add support for Python 3.11.
 
-  The deprecated `cgi.parse_header` is now available as
+  The deprecated "cgi.parse_header" is now available as
   `sunpy.util.net.parse_header`. (`#6512 <https://github.com/sunpy/sunpy/pull/6512>`__)
 - Fixed the metadata handling of :meth:`~sunpy.map.GenericMap.resample` and :meth:`~sunpy.map.GenericMap.superpixel` so that the CDELTi values are scaled and the PCi_j matrix (if used) is modified in the correct manner for asymmetric scaling.
   The previous approach of having the PCi_j matrix store all of the scaling resulted in non-intuitive behaviors when accessing the `~sunpy.map.GenericMap.scale` and `~sunpy.map.GenericMap.rotation_matrix` properties, and when de-rotating a map via :meth:`~sunpy.map.GenericMap.rotate`. (`#6571 <https://github.com/sunpy/sunpy/pull/6571>`__)
@@ -2004,7 +2004,7 @@ Features
 --------
 
 - Add a new `sunpy.data.manager` and `sunpy.data.cache` for dealing with versioned remote data within functions.
-  Please see the `Remote Data Manager <https://docs.sunpy.org/en/latest/dev_guide/remote_data.html>`__ guide. (`#3124 <https://github.com/sunpy/sunpy/pull/3124>`__)
+  Please see the ``Remote Data Manager`` guide. (`#3124 <https://github.com/sunpy/sunpy/pull/3124>`__)
 - Added the coordinate frames `~sunpy.coordinates.frames.HeliocentricEarthEcliptic` (HEE), `~sunpy.coordinates.frames.GeocentricSolarEcliptic` (GSE), `~sunpy.coordinates.frames.HeliocentricInertial` (HCI), and `~sunpy.coordinates.frames.GeocentricEarthEquatorial` (GEI). (`#3212 <https://github.com/sunpy/sunpy/pull/3212>`__)
 - Added SunPy Map support for GOES SUVI images. (`#3269 <https://github.com/sunpy/sunpy/pull/3269>`__)
 - - Support APE14 for ``ImageAnimatorWCS`` in SunPy's visualization module (`#3275 <https://github.com/sunpy/sunpy/pull/3275>`__)

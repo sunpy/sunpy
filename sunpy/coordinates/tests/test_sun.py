@@ -1,3 +1,4 @@
+import re
 import warnings
 
 import numpy as np
@@ -71,7 +72,6 @@ def test_angular_radius(t2):
     # Validate against a published value from the Astronomical Almanac (2013, C13)
     # The Astromomical Almanac uses a slightly different radius for the Sun (6.96e5 km)
     # The Astronomical Almanac also uses a small-angle approximation
-    # See https://archive.org/details/131123ExplanatorySupplementAstronomicalAlmanac/page/n212/mode/1up
     assert_quantity_allclose(sun.angular_radius(t2),
                              Angle('0d15m44.61s') / (6.96e5*u.km) * radius,  # scale to IAU radius
                              atol=0.005*u.arcsec)
@@ -494,15 +494,16 @@ def test_carrington_rotation_time_longitude_numpy(crot, longitude, crot_fraction
                sun.carrington_rotation_time(crot_fractional*u.one))
 
 
-@pytest.mark.parametrize(("crot", "longitude"),
-                         [
-                             (2000, 0),
-                             (2000, -10),
-                             (2000, 400),
-                             (2000.5, 180),
-])
-def test_carrington_rotation_time_longitude_err(crot, longitude):
-    with pytest.raises(ValueError):
+@pytest.mark.parametrize(("crot", "longitude", "expected_error"),
+    [
+        (2000, 0, "Carrington longitude(s) must be > 0 degrees and <= 360 degrees."),
+        (2000, -10, "Carrington longitude(s) must be > 0 degrees and <= 360 degrees."),
+        (2000, 400, "Carrington longitude(s) must be > 0 degrees and <= 360 degrees."),
+        (2000.5, 180, "Carrington rotation number(s) must be integral if `longitude` is provided.")
+    ]
+)
+def test_carrington_rotation_time_longitude_err(crot, longitude, expected_error):
+    with pytest.raises(ValueError, match=re.escape(expected_error)):
         sun.carrington_rotation_time(crot*u.one, longitude*u.deg)
 
 

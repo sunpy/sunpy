@@ -187,10 +187,10 @@ class PlanarScreen(BaseScreen):
         super().__init__(**kwargs)
 
     def calculate_distance(self, frame):
-        direction = self._vantage_point.transform_to(frame).cartesian
-        direction = CartesianRepresentation(1, 0, 0) * frame.observer.radius - direction
-        direction /= direction.norm()
-        d_from_plane = (frame.observer.radius - self._distance_from_center) * direction.x
+        obs_to_vantage = self._vantage_point.transform_to(frame).cartesian
+        vantage_to_sun = CartesianRepresentation(1, 0, 0) * frame.observer.radius - obs_to_vantage
+        direction = vantage_to_sun / vantage_to_sun.norm()
+        d_from_plane = frame.observer.radius * direction.x - self._distance_from_center
         rep = frame.represent_as(UnitSphericalRepresentation)
         distance = d_from_plane / rep.dot(direction)
         return distance

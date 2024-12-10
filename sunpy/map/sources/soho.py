@@ -135,13 +135,25 @@ class LASCOMap(GenericMap):
 
     @property
     def date(self):
-        date = self.meta.get('date-obs', self.meta.get('date_obs'))
-        # In case someone fixes the header
-        if 'T' in date:
-            return parse_time(date)
+        if date := self.meta.get('date-obs', self.meta.get('date_obs')):
+            # If the header has already been fixed, no need to concatenate
+            if (time := self.meta.get('time-obs', self.meta.get('time_obs'))) and 'T' not in date:
+                date = f"{date}T{time}"
+            date = parse_time(date)
+        return date or super().date
 
-        time = self.meta.get('time-obs', self.meta.get('time_obs'))
-        return parse_time(f"{date}T{time}")
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            time_key = 'time-obs'
+            del self.meta['time-obs']
+        if 'time_obs' in self.meta:
+            time_key = 'time_obs'
+            del self.meta['time_obs']
+        date_key = 'date-obs' if 'date-obs' in self.meta else 'date_obs'
+        if time_key in self.meta:
+            self.meta[date_key], self.meta[time_key] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta[date_key] = parse_time(date).utc.isot
 
     @property
     def nickname(self):
@@ -156,6 +168,14 @@ class LASCOMap(GenericMap):
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
+
+    @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is not None and bunit == 0:
+            # The HV JP2 files given to us have a 0 value BUNIT
+            return u.dimensionless_unscaled
+        return super().unit
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -265,6 +285,7 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
+
     @property
     def date(self):
         """
@@ -272,9 +293,10 @@ class MDISynopticMap(MDIMap):
 
         This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        time = self._get_date('date-obs')
-        if time is None:
-            return self._get_date('t_obs')
+        return self._get_date('date-obs') or self._get_date('t_obs') or super().date
+
+    def _set_date(self, date):
+        self.meta['date-obs'] = self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def spatial_units(self):

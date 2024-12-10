@@ -16,17 +16,17 @@ def test_MockObject_illegal_kwargs(mocked_mockobject):
     Any attempt to use a kwarg which has the same name as an attribute/method
     of the underlying object or datastore will raise a ValueError.
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="kwarg 'values' is already an attribute"):
         MockObject(records=[], values=1)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="kwarg 'items' is already an attribute"):
         MockObject(items=('a', 'b', 'c'))
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="kwarg '__hash__' is already an attribute"):
         MockObject(__hash__=0x23424)
 
     # adding a new 'prohibited' attribute will be prevented
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Name 'keys' is already an attribute"):
         mocked_mockobject['keys'] = [3, 4]
 
 
@@ -132,16 +132,16 @@ def test_read_only_mode_MockOpenTextFile():
                                      for line in content.split(new_line)]
     read_only.close()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="I/O operation on closed file"):
         read_only.readable()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="I/O operation on closed file"):
         read_only.writable()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="I/O operation on closed file"):
         read_only.read()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="I/O operation on closed file"):
         read_only.readlines()
 
 

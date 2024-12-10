@@ -21,7 +21,7 @@ This can be either a string or a `~pathlib.Path`.
     >>> import sunpy.map
     >>> import sunpy.data.sample
 
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> my_map = sunpy.map.Map('file.fits')  # doctest: +SKIP
     >>> my_map = sunpy.map.Map(pathlib.Path('file.fits'))  # doctest: +SKIP
     >>> sub_dir = pathlib.Path('local_dir/sub_dir')
@@ -46,10 +46,10 @@ If needed, this way can be used to modify the header before passing it to `~sunp
 
     >>> import astropy.io.fits
 
-    >>> with astropy.io.fits.open(sunpy.data.sample.AIA_171_IMAGE) as hdul:
+    >>> with astropy.io.fits.open(sunpy.data.sample.AIA_171_IMAGE) as hdul:  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     ...     data = hdul[1].data
-    ...     header = hdul[1].header  # doctest: +REMOTE_DATA
-    >>> my_map = sunpy.map.Map(data, header)  # doctest: +REMOTE_DATA
+    ...     header = hdul[1].header
+    >>> my_map = sunpy.map.Map(data, header)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
 These data header pairs can also be passed as a `tuple`,
 
@@ -94,7 +94,7 @@ URL
 .. code-block:: python
 
     >>> sample_data_url = 'http://data.sunpy.org/sunpy/v1/AIA20110607_063302_0171_lowres.fits'
-    >>> my_map = sunpy.map.Map(sample_data_url)  # doctest: +REMOTE_DATA
+    >>> my_map = sunpy.map.Map(sample_data_url)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
 Combinations of any of the above
 ================================

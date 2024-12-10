@@ -11,6 +11,7 @@ from sunpy.coordinates import sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.sun import constants
+from .helpers import _test_private_date_setters
 
 __all__ = "Pritish C. (VaticanCameos)"
 
@@ -20,10 +21,21 @@ def euvi_map():
     return get_dummy_map_from_header(get_test_filepath("euvi_20090615_000900_n4euA_s.header"))
 
 
-# EUVI Tests
 def test_fitstoEUVI(euvi_map):
     """Tests the creation of EUVIMap using FITS."""
     assert isinstance(euvi_map, EUVIMap)
+
+
+def test_reference_date(euvi_map):
+    assert euvi_map.reference_date.isot == "2009-06-15T00:09:08.009"
+
+
+def test_date(euvi_map):
+    assert euvi_map.date.isot == "2009-06-15T00:09:00.006"
+
+
+def test_private_date_setters(euvi_map):
+    _test_private_date_setters(euvi_map)
 
 
 def test_is_datasource_for(euvi_map):
