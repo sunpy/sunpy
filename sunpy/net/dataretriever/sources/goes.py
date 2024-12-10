@@ -278,12 +278,18 @@ class SUVIClient(GenericClient):
         matchdict = self._get_match_dict(*args, **kwargs)
         req_wave = matchdict.get('Wavelength', None)
         if req_wave is not None:
-            wmin = req_wave.min.to(u.Angstrom, equivalencies=u.spectral())
-            wmax = req_wave.max.to(u.Angstrom, equivalencies=u.spectral())
-            req_wave = a.Wavelength(wmin, wmax)
+            # wmin = (req_wave.min.to(u.Angstrom, equivalencies=u.spectral()))
+            # wmax = (req_wave.max.to(u.Angstrom, equivalencies=u.spectral()))
+
+            #casting it to int
+            wmin_round = round(req_wave.min.value) * u.Angstrom
+            wmax_round = round(req_wave.max.value) * u.Angstrom
+
+            req_wave = (a.Wavelength(wmin_round, wmax_round))
             for wave in supported_waves:
                 if wave in req_wave:
                     all_waves.append(int(wave.value))
+
         else:
             all_waves = [int(i.value) for i in supported_waves]
         all_satnos = matchdict.get('SatelliteNumber')
