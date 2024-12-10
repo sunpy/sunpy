@@ -8,8 +8,7 @@ from sunpy.io._cdf import read_cdf
 from sunpy.timeseries import GenericTimeSeries
 
 filepath = get_test_filepath('solo_L2_epd-ept-north-hcad_20200713_V02.cdf')
-
-
+           
 def test_read_cdf():
     all_ts = read_cdf(filepath)
     assert isinstance(all_ts, list)
