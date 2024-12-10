@@ -1,0 +1,1 @@
+Modified `_cdf.py`` to safely handle `FILLVAL`` and updated `test_cdf.py` to validate `NaN` handling in `GenericTimeSeries`.

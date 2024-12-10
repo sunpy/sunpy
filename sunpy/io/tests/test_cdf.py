@@ -31,4 +31,3 @@ def test_read_cdf():
             # Ensure no errors occur and data is valid
             assert col_data is not None
             assert np.any(np.isnan(col_data)) or np.all(~np.isnan(col_data))
-        
