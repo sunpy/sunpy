@@ -23,7 +23,6 @@ extend-ignore = [
   "UP038", # Use | in isinstance - not compatible with models and is slower
   # pytest (PT)
   "PT001", # Always use pytest.fixture()
-  "PT004", # Fixtures which don't return anything should have leading _
   "PT023", # Always use () on pytest decorators
   # flake8-pie (PIE)
   "PIE808", # Disallow passing 0 as the first argument to range
