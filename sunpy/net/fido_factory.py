@@ -219,24 +219,22 @@ class UnifiedResponse(Sequence):
         """
         Display the tables in the current object as interactive grids in a Jupyter Notebook.
 
-        This function utilizes the ``ipydatagrid`` library to render tables as interactive grids.
-        Each table in the current object is converted to a ``pandas.DataFrame``, passed to an
-        ``ipydatagrid.DataGrid`` instance, and displayed directly in the notebook.
+        This function utilizes the ``itables`` library to render tables as interactive grids.
+        Each table in the current object is converted to a ``pandas.DataFrame`` and displayed directly in the notebook.
 
         .. note::
-            This function requires the optional dependencies ``pandas``, ``IPython`` and ``ipydatagrid``.
-            Ensure these are installed before calling this method.
+            This function requires the optional dependency ``itables``.
+            Ensure it is installed before calling this method.
 
         Parameters
         ----------
         **kwargs : dict, optional
-            Additional keyword arguments to customize the ``ipydatagrid.DataGrid`` instance.
-            For available options, use ``help(ipydatagrid.DataGrid)`` in a Jupyter Notebook.
+            Additional keyword arguments to customize the ``itables.show`` function.
 
         Returns
         -------
         None
-            The method displays the grids directly in the notebook and does not return anything.
+            The method displays the tables directly in the notebook and does not return anything.
         """
         try:
             from itables import show
@@ -245,12 +243,12 @@ class UnifiedResponse(Sequence):
                 "`itables` is required to display tables. "
                 "Install itables using `pip install itables`."
             )
-        for table in (self._list):
+        for table in self._list:
             # Identify and exclude multidimensional columns
             valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
             filtered_table = table[valid_columns]
-            df = filtered_table.to_pandas()
-            show(df)
+            df = filtered_table.to_pandas()    
+            show(df, **kwargs)
 
 
     @property

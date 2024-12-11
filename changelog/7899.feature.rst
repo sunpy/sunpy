@@ -1,0 +1,1 @@
+Added :meth:`sunpy.net.UnifiedResponse.show_in_notebook` to render fido search results in form of interactive table using ``itables`` in Jupyter notebooks.

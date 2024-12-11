@@ -119,8 +119,7 @@ tests-only = [
   "pytest-mpl>=0.16",
   "pytest-xdist>=3.0.2",
   "pytest>=7.1.0",
-  "ipydatagrid>=1.3.2",
-  "ipython>=8.0.0"
+  "itables>=2.2.4"
 ]
 tests = [
   "sunpy[all,s3,tests-only]",
