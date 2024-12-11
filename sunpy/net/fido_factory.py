@@ -239,26 +239,18 @@ class UnifiedResponse(Sequence):
             The method displays the grids directly in the notebook and does not return anything.
         """
         try:
-            from ipydatagrid import DataGrid
+            from itables import show
         except ImportError:
             raise ImportError(
-                "`ipydatagrid` is required to display tables. "
-                "Install them using `pip install ipydatagrid`."
-            )
-        try:
-            from IPython.display import display
-        except ImportError:
-            raise ImportError(
-                "`IPython` is required to display tables. "
-                "Install them using `pip install ipython`."
+                "`itables` is required to display tables. "
+                "Install itables using `pip install itables`."
             )
         for table in (self._list):
             # Identify and exclude multidimensional columns
             valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
             filtered_table = table[valid_columns]
             df = filtered_table.to_pandas()
-            grid = DataGrid(df, **kwargs)
-            display(grid)
+            show(df)
 
 
     @property
