@@ -2715,7 +2715,7 @@ class GenericMap(NDData):
 
         return ret
 
-    @deprecated(since="6.1", alternative="sunpy.map.GenericMap.get_contours")
+    @deprecated(since="6.1", alternative="sunpy.map.GenericMap.find_contours")
     def contour(self, level, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
@@ -2773,7 +2773,7 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def get_contours(self, level, method='contourpy', **kwargs):
+    def find_contours(self, level, method='contourpy', **kwargs):
         """
         Returns coordinates of the contours for a given level value.
 
@@ -2804,7 +2804,7 @@ class GenericMap(NDData):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
-        >>> contours = aia.get_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
+        >>> contours = aia.find_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
         >>> contours[0]  # doctest: +REMOTE_DATA
         <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
             (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
