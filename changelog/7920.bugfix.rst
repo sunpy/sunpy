@@ -1,0 +1,1 @@
+Fixed unit conversion in `sunpy.net.dataretriever.sources.goes.SUVIClient`
