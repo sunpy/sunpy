@@ -57,6 +57,7 @@ from .frames import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
     SolarMagnetic,
 )
 
@@ -579,6 +580,68 @@ def hpc_to_hpc(from_coo, to_frame):
     hpc = hgs.transform_to(to_frame)
 
     return hpc
+
+
+def _matrix_hpc_to_hpr():
+    # Returns the transformation matrix that permutes/swaps axes from HPC to HPR
+
+    # HPR spherical coordinates are a right-handed frame with these equivalent Cartesian axes:
+    #   HPR_X = HPC_Z
+    #   HPR_Y = -HPC_Y
+    #   HPR_Z = -HPC_X
+    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
+    return np.array([[0, 0, 1],
+                     [0, -1, 0],
+                     [-1, 0, 0]])
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 Helioprojective, HelioprojectiveRadial)
+@_transformation_debug("HPC->HPR")
+def hpc_to_hpr(hpc_coord, hpr_frame):
+    """
+    Convert from Helioprojective Cartesian to Helioprojective Radial.
+    """
+    _check_observer_defined(hpc_coord)
+    _check_observer_defined(hpr_frame)
+
+    # Transform the HPR observer (in HGS) to the HPR obstime in case it's different
+    observer = _transform_obstime(hpr_frame.observer, hpr_frame.obstime)
+
+    # Loopback transform HPC coord to obstime and observer of HPR frame
+    int_frame = Helioprojective(obstime=observer.obstime, observer=observer)
+    int_coord = hpc_coord.transform_to(int_frame)
+
+    # Permute/swap axes from HPC to HPR equivalent Cartesian
+    newrepr = int_coord.cartesian.transform(_matrix_hpc_to_hpr())
+
+    return hpr_frame.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HelioprojectiveRadial, Helioprojective)
+@_transformation_debug("HPR->HPC")
+def hpr_to_hpc(hpr_coord, hpc_frame):
+    """
+    Convert from Helioprojective Radial to Helioprojective Cartesian.
+    """
+    _check_observer_defined(hpr_coord)
+    _check_observer_defined(hpc_frame)
+
+    # Permute/swap axes from HPR to HPC equivalent Cartesian
+    newrepr = hpr_coord.cartesian.transform(matrix_transpose(_matrix_hpc_to_hpr()))
+
+    # Transform the HPR observer (in HGS) to the HPR obstime in case it's different
+    observer = _transform_obstime(hpr_coord.observer, hpr_coord.obstime)
+
+    # Complete the conversion of HPR to HPC at the obstime and observer of the HPR coord
+    int_coord = Helioprojective(newrepr, obstime=observer.obstime, observer=observer)
+
+    # Loopback transform HPC as needed
+    return int_coord.transform_to(hpc_frame)
+
+
+frame_transform_graph._add_merged_transform(HelioprojectiveRadial, Helioprojective, HelioprojectiveRadial)
 
 
 def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
@@ -1249,7 +1312,7 @@ def _make_sunpy_graph():
     # Frames to keep in the transformation graph
     keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
                  'heliographic_stonyhurst', 'heliographic_carrington',
-                 'heliocentric', 'helioprojective',
+                 'heliocentric', 'helioprojective', 'helioprojectiveradial',
                  'heliocentricearthecliptic', 'geocentricsolarecliptic',
                  'heliocentricinertial', 'geocentricearthequatorial',
                  'geomagnetic', 'solarmagnetic', 'geocentricsolarmagnetospheric',
@@ -1322,7 +1385,7 @@ def _tweak_graph(docstr):
 
     # Set the nodes for SunPy frames to be white
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
-                    'Heliocentric', 'Helioprojective',
+                    'Heliocentric', 'Helioprojective', 'HelioprojectiveRadial',
                     'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
                     'HeliocentricInertial', 'GeocentricEarthEquatorial',
                     'Geomagnetic', 'SolarMagnetic', 'GeocentricSolarMagnetospheric']
