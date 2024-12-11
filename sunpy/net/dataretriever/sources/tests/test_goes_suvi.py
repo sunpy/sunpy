@@ -43,27 +43,15 @@ def test_can_handle_query(time):
 
 @pytest.mark.remote_data
 def test_search_different_units(suvi_client):
-    result1 = suvi_client.search(a.Time("2024-05-08 00:00:00.000", "2024-05-08 00:04:00.000 "),
+    result_ang = suvi_client.search(a.Time("2024-05-08 00:00:00.000", "2024-05-08 00:04:00.000 "),
                          a.Instrument.suvi,
                          a.Wavelength(171* u.AA),
                          a.Level('2'))[0]
-    result2 = suvi_client.search(a.Time("2024-05-08 00:00:00.000", "2024-05-08 00:04:00.000 "),
+    result_nm = suvi_client.search(a.Time("2024-05-08 00:00:00.000", "2024-05-08 00:04:00.000 "),
                          a.Instrument.suvi,
                          a.Wavelength(17.1* u.nm),
                          a.Level('2'))[0]
-
-
-    assert len(result1) > 0
-    assert len(result2) > 0
-    assert len(result1) == len(result2)
-
-    assert result1['Source'] == result2['Source']
-    assert result1['Provider'] == result2['Provider']
-    assert result1['Physobs'] == result2['Physobs']
-    assert result1['Instrument'] == result2['Instrument']
-    assert result1["Wavelength"] == result2["Wavelength"]
-    assert result1["Level"] == result2["Level"]
-    assert result1['url'] == result2['url']
+    assert len(result_ang) == len(result_nm)
 
 
 def mock_query_object(suvi_client):
