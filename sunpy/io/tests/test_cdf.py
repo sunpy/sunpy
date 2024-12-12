@@ -26,8 +26,8 @@ def test_read_cdf():
 
 
 def test_check_nan_values():
-    all_ts = read_cdf(filepath)[1]
-    col = first_ts.quantity('Electron_Flux_1')
+    first_ts = read_cdf(filepath)[0]
+    col = first_ts.quantity('Electron_Flux_0')
     assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
     # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
