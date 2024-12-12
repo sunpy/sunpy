@@ -247,7 +247,7 @@ class UnifiedResponse(Sequence):
             # Identify and exclude multidimensional columns
             valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
             filtered_table = table[valid_columns]
-            df = filtered_table.to_pandas()    
+            df = filtered_table.to_pandas()
             show(df, **kwargs)
 
 

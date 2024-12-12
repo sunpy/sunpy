@@ -14,8 +14,8 @@ def test_time_subclass():
 
 def test_attrs_time():
     times = a.Time("2020/10/01T00:00", "2020/10/01T00:00")
-    times.start == parse_time("2020/10/01T00:00")
-    times.end == parse_time("2020/10/01T00:00")
+    assert times.start == parse_time("2020/10/01T00:00")
+    assert times.end == parse_time("2020/10/01T00:00")
 
 
 def test_wavelength_attr():
@@ -26,11 +26,9 @@ def test_wavelength_attr():
     assert u.allclose(wave.max, 2.e+16*u.Angstrom)
     assert wave.max.unit == u.Angstrom
     assert wave.unconverted_value == (1*u.Mm, 2*u.Mm)
-    
+
 
 def test_instrument_search(mocker):
     mock_datagrid =  mocker.patch("itables.show")
     a.Instrument.search()
     mock_datagrid.assert_called_once()
-    assert times.start == parse_time("2020/10/01T00:00")
-    assert times.end == parse_time("2020/10/01T00:00")
