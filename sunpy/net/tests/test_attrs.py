@@ -15,3 +15,9 @@ def test_attrs_time():
     times = a.Time("2020/10/01T00:00", "2020/10/01T00:00")
     times.start == parse_time("2020/10/01T00:00")
     times.end == parse_time("2020/10/01T00:00")
+
+
+def test_instrument_search(mocker):
+    mock_datagrid =  mocker.patch("itables.show")
+    a.Instrument.search()
+    mock_datagrid.assert_called_once()

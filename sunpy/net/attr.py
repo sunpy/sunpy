@@ -39,6 +39,31 @@ def make_tuple():
     return _ATTR_TUPLE([], [], [], [])
 
 
+def _create_table(attr):
+    """
+    Create a table from the given attribute registry.
+
+    Parameters
+    ----------
+    attr : object
+        An object that contains an attribute registry.
+
+    Returns
+    -------
+    astropy.table.Table
+        A table with columns "Attribute Name", "Client", "Full Name", and "Description".
+    """
+    attrs = attr._attr_registry[attr]
+    # Only sort the attrs if any have been registered
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
+    *other_row_data, descs = sorted_attrs
+    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
+    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
+                  dtype=["U80", "U80", "U80", "U80"],
+                  data=[*other_row_data, descs])
+    return table
+
+
 def _print_attrs(attr, html=False):
     """
     Given a Attr class will print out each registered attribute.
@@ -55,14 +80,7 @@ def _print_attrs(attr, html=False):
     `str`
         String with the registered attributes.
     """
-    attrs = attr._attr_registry[attr]
-    # Only sort the attrs if any have been registered
-    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
-    *other_row_data, descs = sorted_attrs
-    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
-    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
-                  dtype=["U80", "U80", "U80", "U80"],
-                  data=[*other_row_data, descs])
+    table = _create_table(attr)
 
     class_name = f"{(attr.__module__ + '.') or ''}{attr.__name__}"
     lines = [class_name]
@@ -140,6 +158,37 @@ class AttrMeta(type):
         This enables the "pretty" printing of Attrs with html.
         """
         return _print_attrs(self, html=True)
+
+
+    def search(self, **kwargs):
+        """
+        Display the attrs tables as interactive grids in a Jupyter Notebook.
+
+        This function utilizes the ``itables`` library to render tables as interactive grids.
+
+        .. note::
+            This function requires the optional dependency ``itables``.
+            Ensure it is installed before calling this method.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Additional keyword arguments to customize the ``itables.show`` function.
+
+        Returns
+        -------
+        None
+            The method displays the tables directly in the notebook and does not return anything.
+        """
+        try:
+            from itables import show
+        except ImportError:
+            raise ImportError(
+                "`itables` is required to display tables. "
+                "Install itables using `pip install itables`."
+            )
+        table = _create_table(self)
+        show(table.to_pandas(), **kwargs)
 
 
 class Attr(metaclass=AttrMeta):

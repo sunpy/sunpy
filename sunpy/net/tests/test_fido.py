@@ -177,7 +177,7 @@ def test_unifiedresponse_slicing():
 def test_show_in_notebook(mocker):
     results = Fido.search(a.Time('2012/1/1', '2012/1/2'), a.Instrument.aia | a.Instrument.hmi)
     assert isinstance(results, UnifiedResponse)
-    mock_datagrid =  mock.patch("itables.show")
+    mock_datagrid =  mocker.patch("itables.show")
     results.show_in_notebook()
     mock_datagrid.assert_has_calls(2)
 
