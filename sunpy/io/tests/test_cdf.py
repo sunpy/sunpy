@@ -24,28 +24,9 @@ def test_read_cdf():
     # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
 
+
 def test_check_nan_values():
-
-    all_ts = read_cdf(filepath)
-    assert isinstance(all_ts, list)
-
-    assert len(all_ts) > 0
-
-    for i, ts in enumerate(all_ts):
-        print(f"Checking Timeseries {i + 1} for NaN values...")
-        has_nan = False
-
-        data = ts.to_dataframe()
-        for column in data.columns:
-            if data[column].isna().any():
-                has_nan = True
-                print(f"  Column '{column}' contains NaN values.")
-
-        if not has_nan:
-            print(f"  No NaN values found in Timeseries {i + 1}.")
-        print()
-
-    first_ts = all_ts[1]
+    all_ts = read_cdf(filepath)[1]
     col = first_ts.quantity('Electron_Flux_1')
     assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
     # Check that fillvals are replaced by NaN
