@@ -26,6 +26,7 @@ def test_read_cdf():
     # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
 
+<<<<<<< Updated upstream
 
 def test_generic_timeseries_columns():
     # Read the CDF file using cdflib to get variable attributes
@@ -105,3 +106,24 @@ def test_generic_timeseries_columns():
                     # If original data had NaNs, ensure they are preserved
                     nan_positions = np.isnan(original_col_data)
                     assert np.all(np.isnan(col_data[nan_positions]))
+=======
+def test_check_nan_values():
+    all_ts = read_cdf(filepath)
+    assert isinstance(all_ts, list)
+
+    assert len(all_ts) > 0
+
+    for i, ts in enumerate(all_ts):
+        print(f"Checking Timeseries {i + 1} for NaN values...")
+        has_nan = False
+
+        data = ts.to_dataframe()
+        for column in data.columns:
+            if data[column].isna().any():
+                has_nan = True
+                print(f"  Column '{column}' contains NaN values.")
+
+        if not has_nan:
+            print(f"  No NaN values found in Timeseries {i + 1}.")
+        print()    
+>>>>>>> Stashed changes
