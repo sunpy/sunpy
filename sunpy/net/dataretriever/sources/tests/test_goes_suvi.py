@@ -41,6 +41,19 @@ def test_can_handle_query(time):
     assert ans6 is True
 
 
+@pytest.mark.remote_data
+def test_search_different_units(suvi_client):
+    result_ang = suvi_client.search(a.Time("2024-05-08 00:00:00.000", "2024-05-08 00:04:00.000 "),
+                         a.Instrument.suvi,
+                         a.Wavelength(171* u.AA),
+                         a.Level('2'))[0]
+    result_nm = suvi_client.search(a.Time("2024-05-08 00:00:00.000", "2024-05-08 00:04:00.000 "),
+                         a.Instrument.suvi,
+                         a.Wavelength(17.1* u.nm),
+                         a.Level('2'))[0]
+    assert len(result_ang) == len(result_nm)
+
+
 def mock_query_object(suvi_client):
     """
     Creating a Query Response object and prefilling it with some information

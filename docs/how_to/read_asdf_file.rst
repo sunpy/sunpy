@@ -58,7 +58,7 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
             [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
                 -127.899666 , -127.899666 ],
             [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-                -128.03072  , -128.03072  ]], dtype=float32)
+                -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 When saving a Map to ASDF, all maps are saved as a `.GenericMap` and not a specific source class.
 This comes with some trade-offs.
