@@ -92,10 +92,7 @@ def read_cdf(fname, **kwargs):
             if np.issubdtype(data.dtype, np.floating):
                 if 'FILLVAL' in attrs:
                     data[data == attrs['FILLVAL']] = np.nan
-<<<<<<< Updated upstream
-=======
-                
->>>>>>> Stashed changes
+
 
             # Get units
             if 'UNITS' in attrs:
