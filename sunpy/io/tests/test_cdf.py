@@ -13,8 +13,8 @@ from sunpy.timeseries import GenericTimeSeries, TimeSeries
 
 filepath = get_test_filepath('solo_L2_epd-ept-north-hcad_20200713_V02.cdf')
 
-def test_read_cdf():
 
+def test_read_cdf():
     all_ts = read_cdf(filepath)
     assert isinstance(all_ts, list)
     assert len(all_ts) == 3
