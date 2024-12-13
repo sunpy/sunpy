@@ -44,7 +44,7 @@ def test_read_psp_data():
     # Read the first downloaded file
     # data = read_cdf(downloaded_files.data[0])
     print(ts.columns)
-    # assert isinstance(ts, TimeSeries), "The data should be a list of TimeSeries objects."
+    assert isinstance(ts, GenericTimeSeries), "The data should be a list of TimeSeries objects."
 
     col = ts.quantity('EFLUX_VS_ENERGY_0')
     # assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
