@@ -94,5 +94,6 @@ def show_hpr_impact_angle(declination_axis):
 
     def new_format_method(values, spacing, format="auto"):
         return old_format_method(values + 90*u.deg, spacing, format=format)
+    # TODO: Astropy >= 7.0 use declination_axis.set_major_formatter(new_format_method)
     declination_axis._formatter_locator.formatter = new_format_method
     declination_axis.set_axislabel('Helioprojective Impact Angle')

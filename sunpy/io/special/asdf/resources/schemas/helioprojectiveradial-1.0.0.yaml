@@ -46,14 +46,13 @@ allOf:
         properties:
           observer:
             anyOf:
-              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
-              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.1.0"
+              - tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.*"
               - type:
                   string
           rsun:
-            tag: "tag:stsci.edu:asdf/unit/quantity-1.1.0"
+            tag: "tag:stsci.edu:asdf/unit/quantity-1.*"
           obstime:
-            tag: "tag:stsci.edu:asdf/time/time-1.1.0"
+            tag: "tag:stsci.edu:asdf/time/time-1.*"
 
         required: [rsun]
         additionalProperties: False
