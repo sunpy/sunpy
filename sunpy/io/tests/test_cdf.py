@@ -28,25 +28,16 @@ def test_read_cdf():
     # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
 
+
 @pytest.mark.remote_data
 def test_read_psp_data():
-
-    # Define the dataset and time range
+    # This was a failing example provided by
+    # https://github.com/sunpy/sunpy/issues/7565
     dataset = 'PSP_SWP_SPI_SF00_L3_MOM'
     trange = a.Time(dt.date(2023, 3, 14), dt.date(2023, 3, 15))
-
-    # Search and fetch the data
     result = Fido.search(trange, a.cdaweb.Dataset(dataset))
     downloaded_files = Fido.fetch(result)
-
     ts = TimeSeries(downloaded_files, concatenate=True)
-
-    # Read the first downloaded file
-    # data = read_cdf(downloaded_files.data[0])
-    print(ts.columns)
-    assert isinstance(ts, GenericTimeSeries), "The data should be a list of TimeSeries objects."
-
+    assert isinstance(ts, GenericTimeSeries)
     col = ts.quantity('EFLUX_VS_ENERGY_0')
-    # assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
-    print(col)
     assert np.sum(np.isnan(col)) >= 0
