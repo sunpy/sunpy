@@ -1,3 +1,4 @@
+import datetime as dt
 
 import numpy as np
 
@@ -5,12 +6,14 @@ import astropy.units as u
 
 from sunpy.data.test import get_test_filepath
 from sunpy.io._cdf import read_cdf
-from sunpy.timeseries import GenericTimeSeries
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+from sunpy.timeseries import GenericTimeSeries, TimeSeries
 
 filepath = get_test_filepath('solo_L2_epd-ept-north-hcad_20200713_V02.cdf')
 
-
 def test_read_cdf():
+
     all_ts = read_cdf(filepath)
     assert isinstance(all_ts, list)
     assert len(all_ts) == 3
@@ -25,9 +28,22 @@ def test_read_cdf():
     assert np.sum(np.isnan(col)) == 189
 
 
-def test_check_nan_values():
-    first_ts = read_cdf(filepath)[0]
-    col = first_ts.quantity('Electron_Flux_0')
+def test_read_psp_data():
+    # Define the dataset and time range
+    dataset = 'PSP_SWP_SPI_SF00_L3_MOM'
+    trange = a.Time(dt.date(2023, 3, 14), dt.date(2023, 3, 15))
+
+    # Search and fetch the data
+    result = Fido.search(trange, a.cdaweb.Dataset(dataset))
+    downloaded_files = Fido.fetch(result)
+
+    ts = TimeSeries(downloaded_files, concatenate=True)
+
+    # Read the first downloaded file
+    # data = read_cdf(downloaded_files.data[0])
+    print(ts.columns)
+    assert isinstance(ts, TimeSeries), "The data should be a list of TimeSeries objects."
+
+    col = ts.quantity('EFLUX_VS_ENERGY_0')
     assert col.unit == u.Unit("1 / (cm2 MeV s sr)")
-    # Check that fillvals are replaced by NaN
     assert np.sum(np.isnan(col)) == 189
