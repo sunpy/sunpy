@@ -1,5 +1,3 @@
-import datetime as dt
-
 import numpy as np
 import pytest
 
@@ -34,7 +32,7 @@ def test_read_psp_data():
     # This was a failing example provided by
     # https://github.com/sunpy/sunpy/issues/7565
     dataset = 'PSP_SWP_SPI_SF00_L3_MOM'
-    trange = a.Time(dt.date(2023, 3, 14), dt.date(2023, 3, 15))
+    trange = a.Time('2023-03-14', '2023-03-15')
     result = Fido.search(trange, a.cdaweb.Dataset(dataset))
     downloaded_files = Fido.fetch(result)
     ts = TimeSeries(downloaded_files, concatenate=True)
