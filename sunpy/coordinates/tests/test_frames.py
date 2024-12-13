@@ -312,6 +312,10 @@ def test_create_hpr_3d(args, kwargs):
 
     assert_quantity_allclose(hpr1.theta, 90*u.deg)
 
+    # Since hpr1 is already 3D, make_3d() should simply return the original object
+    hpr2 = hpr1.make_3d()
+    assert hpr2 is hpr1
+
 
 def test_hpr_distance():
     hpr1 = HelioprojectiveRadial(0*u.deg, -90*u.deg,

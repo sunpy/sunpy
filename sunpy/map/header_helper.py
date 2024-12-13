@@ -477,7 +477,7 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
     # Calculate the correct location for this reference coord, which will likely be far off the data array
     reference_pixel = [
         shape[1] / 2. - 0.5,
-        ((90*u.deg - theta_min) / theta_binsize).decompose().value - 0.5
+        ((90*u.deg - theta_min) / theta_binsize).to_value(u.one) - 0.5
     ] * u.pix
 
     scale = u.Quantity([360*u.deg / int(shape[1]), theta_binsize]) / u.pix

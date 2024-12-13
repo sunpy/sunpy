@@ -179,24 +179,24 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
             wcs.wcs.dateobs = frame.obstime.utc.isot
 
         if isinstance(frame, Helioprojective):
-            xcoord = 'HPLN' + '-' + projection
-            ycoord = 'HPLT' + '-' + projection
+            xcoord = f'HPLN-{projection}'
+            ycoord = f'HPLT-{projection}'
             wcs.wcs.cunit = ['arcsec', 'arcsec']
         elif isinstance(frame, HelioprojectiveRadial):
-            xcoord = 'HRLN' + '-' + projection
-            ycoord = 'HRLT' + '-' + projection
+            xcoord = f'HRLN-{projection}'
+            ycoord = f'HRLT-{projection}'
             wcs.wcs.cunit = ['deg', 'arcsec']
         elif isinstance(frame, Heliocentric):
             xcoord = 'SOLX'
             ycoord = 'SOLY'
             wcs.wcs.cunit = ['deg', 'deg']
         elif isinstance(frame, HeliographicCarrington):
-            xcoord = 'CRLN' + '-' + projection
-            ycoord = 'CRLT' + '-' + projection
+            xcoord = f'CRLN-{projection}'
+            ycoord = f'CRLT-{projection}'
             wcs.wcs.cunit = ['deg', 'deg']
         elif isinstance(frame, HeliographicStonyhurst):
-            xcoord = 'HGLN' + '-' + projection
-            ycoord = 'HGLT' + '-' + projection
+            xcoord = f'HGLN-{projection}'
+            ycoord = f'HGLT-{projection}'
             wcs.wcs.cunit = ['deg', 'deg']
         else:
             # A subclass not supported by the core library
