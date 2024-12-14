@@ -160,7 +160,7 @@ class AttrMeta(type):
         return _print_attrs(self, html=True)
 
 
-    def search(self, **kwargs):
+    def show_in_notebook(self, **kwargs):
         """
         Display the attrs tables as interactive grids in a Jupyter Notebook.
 
