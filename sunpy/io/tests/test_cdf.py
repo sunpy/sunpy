@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pytest
 
@@ -8,6 +10,7 @@ from sunpy.io._cdf import read_cdf
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.timeseries import GenericTimeSeries, TimeSeries
+from sunpy.util.exceptions import SunpyUserWarning
 
 filepath = get_test_filepath('solo_L2_epd-ept-north-hcad_20200713_V02.cdf')
 
@@ -35,7 +38,10 @@ def test_read_psp_data():
     trange = a.Time('2023-03-14', '2023-03-15')
     result = Fido.search(trange, a.cdaweb.Dataset(dataset))
     downloaded_files = Fido.fetch(result)
-    ts = TimeSeries(downloaded_files, concatenate=True)
-    assert isinstance(ts, GenericTimeSeries)
-    col = ts.quantity('EFLUX_VS_ENERGY_0')
-    assert np.sum(np.isnan(col)) >= 0
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=SunpyUserWarning)
+        ts = TimeSeries(downloaded_files, concatenate=True)
+        assert isinstance(ts, GenericTimeSeries)
+        col = ts.quantity('EFLUX_VS_ENERGY_0')
+        assert np.sum(np.isnan(col)) >= 0
