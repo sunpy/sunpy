@@ -28,7 +28,7 @@ def test_wavelength_attr():
     assert wave.unconverted_value == (1*u.Mm, 2*u.Mm)
 
 
-def test_instrument_search(mocker):
+def test_instrument_show_in_notebook(mocker):
     mock_datagrid =  mocker.patch("itables.show")
-    a.Instrument.search()
+    a.Instrument.show_in_notebook()
     mock_datagrid.assert_called_once()
