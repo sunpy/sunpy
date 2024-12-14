@@ -1,4 +1,3 @@
-import warnings
 
 import numpy as np
 import pytest
@@ -39,9 +38,9 @@ def test_read_psp_data():
     result = Fido.search(trange, a.cdaweb.Dataset(dataset))
     downloaded_files = Fido.fetch(result)
 
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=SunpyUserWarning)
+    with pytest.warns(SunpyUserWarning):
         ts = TimeSeries(downloaded_files, concatenate=True)
-        assert isinstance(ts, GenericTimeSeries)
-        col = ts.quantity('EFLUX_VS_ENERGY_0')
-        assert np.sum(np.isnan(col)) >= 0
+
+    assert isinstance(ts, GenericTimeSeries)
+    col = ts.quantity('EFLUX_VS_ENERGY_0')
+    assert np.sum(np.isnan(col)) >= 0
