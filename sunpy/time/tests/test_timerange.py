@@ -255,6 +255,21 @@ def test_extend(inputs):
     assert timerange.dt == TimeDelta(delta)
 
 
+# Checks when start + delta_1 > end + delta_2
+def test_extend_end_start():
+    start = datetime(2012,1,1)
+    end = datetime(2012,1,10)
+    delta_1 = timedelta(days=15)
+    delta_2 = timedelta(days=2)
+
+    timerange = sunpy.time.TimeRange(start, end)
+    timerange.extend(delta_1, delta_2)
+    assert isinstance(timerange, sunpy.time.TimeRange)
+    assert timerange.start == Time(end + delta_2)
+    assert timerange.end == Time(start + delta_1)
+    assert timerange.dt == TimeDelta(start + delta_1 - end - delta_2)
+
+
 def test_contains(timerange_a):
     before = Time('1990-1-1')
     after = Time('2022-1-1')
