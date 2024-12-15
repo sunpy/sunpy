@@ -257,10 +257,8 @@ def test_extend(inputs):
 
 # Checks when start + delta_1 > end + delta_2
 def test_extend_end_start():
-    start = datetime(2012,1,1)
-    end = datetime(2012,1,10)
-    delta_1 = timedelta(days=15)
-    delta_2 = timedelta(days=2)
+    start, end = datetime(2012, 1, 1), datetime(2012, 1, 10)
+    delta_1, delta_2 = timedelta(days=15), timedelta(days=2)
 
     timerange = sunpy.time.TimeRange(start, end)
     timerange.extend(delta_1, delta_2)
