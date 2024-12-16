@@ -217,24 +217,19 @@ class UnifiedResponse(Sequence):
 
     def show_in_notebook(self, **kwargs):
         """
-        Display the tables in the current object as interactive grids in a Jupyter Notebook.
+        Display the attrs tables as interactive grids in a Jupyter Notebook.
 
-        This function utilizes the ``itables`` library to render tables as interactive grids.
-        Each table in the current object is converted to a ``pandas.DataFrame`` and displayed directly in the notebook.
+        This function utilizes the `itables` library to render tables as interactive grids.
 
         .. note::
-            This function requires the optional dependency ``itables``.
+            This function requires the optional dependency `itables`.
             Ensure it is installed before calling this method.
 
         Parameters
         ----------
         **kwargs : dict, optional
-            Additional keyword arguments to customize the ``itables.show`` function.
+            Additional keyword arguments to customize the :func:`itables.show` function.
 
-        Returns
-        -------
-        None
-            The method displays the tables directly in the notebook and does not return anything.
         """
         try:
             from itables import show
