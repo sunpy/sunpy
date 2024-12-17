@@ -14,7 +14,7 @@ __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
-    'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table',
+    'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table','suit_color_table'
 ]
 
 
@@ -338,6 +338,7 @@ def stereo_hi_color_table(camera):
     return cmap_from_rgb_file(f'STEREO HI{camera}', f'hi{camera}.csv')
 
 
+
 @u.quantity_input
 def suvi_color_table(wavelength: u.angstrom):
     """
@@ -376,3 +377,12 @@ def euvi_color_table(wavelength: u.angstrom):
             "Invalid EUVI wavelength. Valid values are "
             "171, 195, 284, 304."
         )
+
+def suit_color_table(band):
+    try:
+        return cmap_from_rgb_file(f'suit_{band.lower()}', f'suit_{band.lower()}.csv')
+    except OSError:
+        raise ValueError(
+                "Invalid Band. Valid Values are: "
+                "NB01, NB02, NB03, NB04, NB05, NB06, NB07, NB08, BB01, BB02, BB03"
+                )
