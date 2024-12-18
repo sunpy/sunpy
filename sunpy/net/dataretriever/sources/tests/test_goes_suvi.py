@@ -24,6 +24,7 @@ def test_can_handle_query(time):
     assert suvi_client._can_handle_query(time, a.Instrument.suvi, a.Wavelength(131 * u.Angstrom)) is True
     assert suvi_client._can_handle_query(time) is False
     assert suvi_client._can_handle_query(time, a.Instrument.aia) is False
+    assert suvi_client._can_handle_query(time, a.Instrument.suvi, a.goes.SatelliteNumber(16))
 
 
 def mock_query_object(suvi_client):
