@@ -1,3 +1,5 @@
+import tempfile
+
 import pytest
 from hypothesis import given, settings
 
@@ -76,6 +78,18 @@ def test_fetch_working_mock(suvi_client, mocker):
     download_list = suvi_client.fetch(qr)
 
     assert len(download_list) == len(qr)
+
+
+def test_fetch_single_file(suvi_client):
+    start = '2019/05/25 00:50'
+    end = '2019/05/25 00:52'
+    wave = 94 * u.Angstrom
+    goes_sat = a.goes.SatelliteNumber.sixteen
+    tr = a.Time(start, end)
+    qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        download_list = suvi_client.fetch(qr1, path=tmpdirname)
+    assert len(download_list) == len(qr1)
 
 
 def test_attr_reg():
