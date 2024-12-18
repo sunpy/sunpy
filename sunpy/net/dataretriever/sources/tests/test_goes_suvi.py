@@ -79,6 +79,11 @@ def test_fetch_working_mock(suvi_client, mocker):
     assert len(download_list) == len(qr)
 
 
+def test_attr_reg():
+    a.Instrument.suvi = a.Instrument("SUVI")
+    a.goes.SatelliteNumber.A16 = a.goes.SatelliteNumber("16")
+
+
 def test_show(suvi_client):
     """Verify that show() displays the correct columns."""
     mock_qr = mock_query_object(suvi_client)
