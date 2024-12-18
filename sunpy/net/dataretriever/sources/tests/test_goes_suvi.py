@@ -80,6 +80,7 @@ def test_fetch_working_mock(suvi_client, mocker):
     assert len(download_list) == len(qr)
 
 
+@pytest.mark.remote_data
 def test_fetch_single_file(suvi_client):
     start = '2019/05/25 00:50'
     end = '2019/05/25 00:52'
