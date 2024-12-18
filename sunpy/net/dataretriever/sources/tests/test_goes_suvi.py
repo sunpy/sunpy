@@ -50,10 +50,6 @@ def mock_query_object(suvi_client):
 def test_combined_search(suvi_client, start, end, wave, level, expected_num_files):
     goes_sat = a.goes.SatelliteNumber.sixteen
     qresponse = suvi_client.search(a.Time(start, end), a.Wavelength(wave * u.Angstrom), goes_sat, a.Level(level))
-    print("Query Response Length:", len(qresponse))
-    # print("Query Response Table:")
-    # print(qresponse.table)
-    print(f"Start: {start}, End: {end}, Wavelength: {wave}, Level: {level}")
     assert len(qresponse) == expected_num_files
 
 
