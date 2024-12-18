@@ -58,7 +58,7 @@ def test_get_all_wavelengths_level2(suvi_client):
     """Check retrieval for all wavelengths without specifying one."""
     qresponse = suvi_client.search(a.Time('2019/05/25 00:50', '2019/05/25 00:52'),
                                    a.goes.SatelliteNumber.sixteen, a.Level(2))
-    assert len(qresponse) == 6, "Expected 6 results but got {0}".format(len(qresponse))
+    assert len(qresponse) == 6, f"Expected 6 results but got {len(qresponse)}"
     wavelengths = [w.value for w in qresponse['Wavelength']]
     expected_wavelengths = {94, 131, 171, 195, 284, 304}
     assert set(wavelengths) == expected_wavelengths, f"Wavelengths do not match. Got {wavelengths}, expected {expected_wavelengths}."
