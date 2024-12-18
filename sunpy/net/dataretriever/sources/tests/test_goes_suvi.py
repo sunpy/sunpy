@@ -15,7 +15,7 @@ def suvi_client():
     return goes.SUVIClient()
 
 
-@settings(max_examples=5)  # Limit Hypothesis examples
+@settings(max_examples=5)
 @given(time_attr())
 def test_can_handle_query(time):
     suvi_client = goes.SUVIClient()
