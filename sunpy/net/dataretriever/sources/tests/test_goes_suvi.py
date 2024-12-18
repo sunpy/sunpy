@@ -50,11 +50,6 @@ def mock_query_object(suvi_client):
 def test_combined_search(suvi_client, start, end, wave, level, expected_num_files):
     goes_sat = a.goes.SatelliteNumber.sixteen
     qresponse = suvi_client.search(a.Time(start, end), a.Wavelength(wave * u.Angstrom), goes_sat, a.Level(level))
-    print("Query Response Length:", len(qresponse))
-    print(qresponse)
-    # print("Query Response Table:")
-    # print(qresponse.table)
-    print(f"Start: {start}, End: {end}, Wavelength: {wave}, Level: {level}")
     assert len(qresponse) == expected_num_files
 
 
@@ -63,7 +58,13 @@ def test_get_all_wavelengths_level2(suvi_client):
     """Check retrieval for all wavelengths without specifying one."""
     qresponse = suvi_client.search(a.Time('2019/05/25 00:50', '2019/05/25 00:52'),
                                    a.goes.SatelliteNumber.sixteen, a.Level(2))
-    assert len(qresponse) == 6
+    print(qresponse)
+    print(len(qresponse))
+    assert len(qresponse) == 6, "Expected 6 results but got {0}".format(len(qresponse))
+    wavelengths = [w.value for w in qresponse['Wavelength']]
+
+    expected_wavelengths = {94, 131, 171, 195, 284, 304}
+    assert set(wavelengths) == expected_wavelengths, f"Wavelengths do not match. Got {wavelengths}, expected {expected_wavelengths}."
 
 
 def test_fetch_working_mock(suvi_client, mocker):
