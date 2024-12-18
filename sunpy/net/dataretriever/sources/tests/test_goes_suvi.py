@@ -18,6 +18,7 @@ def suvi_client():
 @settings(max_examples=5)
 @given(time_attr())
 def test_can_handle_query(time):
+    # Don't use the fixture, as hypothesis complains
     suvi_client = goes.SUVIClient()
     assert suvi_client._can_handle_query(time, a.Instrument.suvi) is True
     assert suvi_client._can_handle_query(time, a.Instrument.suvi, a.Wavelength(131 * u.Angstrom)) is True
@@ -64,7 +65,6 @@ def test_get_all_wavelengths_level2(suvi_client):
     assert len(qresponse) == 6
 
 
-@pytest.mark.remote_data
 def test_fetch_working_mock(suvi_client, mocker):
     mocker.patch.object(suvi_client, 'search', return_value=mock_query_object(suvi_client))
     mocker.patch.object(suvi_client, 'fetch', return_value=['mockfile.fits'])
