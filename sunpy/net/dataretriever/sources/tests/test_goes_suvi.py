@@ -80,7 +80,6 @@ def test_fetch_working_mock(suvi_client, mocker):
 
 
 def test_show(suvi_client):
-    """Verify that show() displays the correct columns."""
     mock_qr = mock_query_object(suvi_client)
     qrshow = mock_qr.show()
     assert {'Start Time', 'End Time', 'Instrument', 'Physobs', 'Source', 'Provider', 'Level', 'Wavelength', 'url'} \
