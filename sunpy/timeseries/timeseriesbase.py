@@ -5,6 +5,7 @@ This module provides `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import html
 import time
+import builtins
 import textwrap
 import webbrowser
 from tempfile import NamedTemporaryFile
@@ -533,7 +534,6 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` with only the selected times.
         """
-        is_int = False
         # Evaluate inputs
         # If given strings, then use to create a sunpy.time.timerange.TimeRange
         # for the SunPy text date parser.
@@ -549,11 +549,10 @@ class GenericTimeSeries:
             # Otherwise we already have the values
             start = a
             end = b
-            is_int = True
 
         min_time, max_time = self._data.index.min(), self._data.index.max()
         # Check if the timerange overlaps with the data timerange
-        if not is_int:
+        if not (isinstance(start, builtins.int) and isinstance(end, builtins.int)):
             if min_time >= start and max_time <= end:
                 pass
             elif (start <= end <= min_time or max_time <= start <= end):
