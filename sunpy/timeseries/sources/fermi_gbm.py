@@ -66,6 +66,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     # and a URL to the mission website.
     _source = 'gbmsummary'
     _url = "https://gammaray.nsstc.nasa.gov/gbm/#"
+    _hdulist = None
 
     def plot(self, axes=None, columns=None, **kwargs):
         """
@@ -126,7 +127,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         return fig
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         Parses a GBM CSPEC FITS file.
 
@@ -136,10 +137,10 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
             The path to the file you want to parse.
         """
         hdus = sunpy.io._file_tools.read_file(filepath)
-        return cls._parse_hdus(hdus)
+        return cls._parse_hdus(hdus, **kwargs)
 
     @classmethod
-    def _parse_hdus(cls, hdulist):
+    def _parse_hdus(cls, hdulist, **kwargs):
         """
         Parses a GBM CSPEC `astropy.io.fits.HDUList`.
 
@@ -148,6 +149,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         hdulist : `str`
             The path to the file you want to parse.
         """
+        cls._hdulist= hdulist
         header = MetaDict(OrderedDict(hdulist[0].header))
         # these GBM files have three FITS extensions.
         # extn1 - this gives the energy range for each of the 128 energy bins
@@ -157,9 +159,10 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         count_data = hdulist[2].data
 
         # rebin the 128 energy channels into some summary ranges
+        # some of default bin ranges are
         # 4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
         # put the data in the units of counts/s/keV
-        summary_counts = _bin_data_for_summary(energy_bins, count_data)
+        summary_counts = _bin_data_for_summary(energy_bins, count_data, **kwargs)
 
         # get the time information in datetime format with the correct MET adjustment
         met_ref_time = parse_time('2001-01-01 00:00')  # Mission elapsed time
@@ -167,14 +170,13 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         gbm_times.precision = 9
         gbm_times = gbm_times.isot.astype('datetime64')
 
-        column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
-                         '100-300 keV', '300-800 keV', '800-2000 keV']
+        ebands = kwargs.get('energy_bands', [4, 15, 25, 50, 100, 300, 800, 2000])
+        ebands = sorted(ebands)
+        column_labels = [f'{ebands[i]}-{ebands[i+1]} keV'  for i in range(len(ebands)-1)]
 
         # Add the units data
-        units = OrderedDict([('4-15 keV', u.ct / u.s / u.keV), ('15-25 keV', u.ct / u.s / u.keV),
-                             ('25-50 keV', u.ct / u.s / u.keV), ('50-100 keV', u.ct / u.s / u.keV),
-                             ('100-300 keV', u.ct / u.s / u.keV), ('300-800 keV', u.ct / u.s / u.keV),
-                             ('800-2000 keV', u.ct / u.s / u.keV)])
+        units = OrderedDict((col, u.ct / u.s / u.keV) for col in column_labels)
+
         return pd.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
     @classmethod
@@ -191,13 +193,26 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('GBM')
 
+    @classmethod
+    def energy_bins(cls, energy_bands):
+        """
+        Determine GBM timeseries with different energy bins ranges
+        Parameters
+        ----------
+        ebands : `list`, `tuple`
+            The energy bins you want.
+        """
+        from sunpy.timeseries.timeseries_factory import TimeSeries
+        data, meta, units = cls._parse_hdus(cls._hdulist, energy_bands = energy_bands)
+        return TimeSeries(data, meta, units)
 
-def _bin_data_for_summary(energy_bins, count_data):
+
+def _bin_data_for_summary(energy_bins, count_data, **kwargs):
     """
     Rebin the 128 energy channels into some summary ranges and put the data in
     the units of counts/s/keV.
 
-    Bin ranges used:
+    default bin ranges used:
     * 4-15 keV
     * 15-25 keV
     * 25-50 keV
@@ -213,9 +228,9 @@ def _bin_data_for_summary(energy_bins, count_data):
     count_data : `numpy.ndarray`
         The array of count data to rebin.
     """
-
     # list of energy bands to sum between
-    ebands = [4, 15, 25, 50, 100, 300, 800, 2000]
+    ebands = kwargs.get('energy_bands', [4, 15, 25, 50, 100, 300, 800, 2000])
+    ebands = sorted(ebands)
     e_center = (energy_bins['e_min'] + energy_bins['e_max']) / 2
     indices = [np.searchsorted(e_center, e) for e in ebands]
 
