@@ -346,8 +346,24 @@ def test_plot_autoalign(aia171_test_map):
 
 
 def test_plot_autoalign_bad_inputs(aia171_test_map):
-    with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, or 'pcolormesh'."):
+    with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, 'pcolormesh' or 'reproject'."):
         aia171_test_map.plot(autoalign='bad')
+
+
+@figure_test
+def test_plot_autoalign_reproject(aia171_test_map):
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    rotated_map = aia171_test_map.rotate(30 * u.deg, order=3)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    rotated_map.plot(axes=ax, autoalign='reproject')
+
+    target_wcs = ax.wcs
+    reprojected_map = rotated_map.reproject_to(target_wcs)
+    assert ax.wcs == aia171_test_map.wcs
+    assert reprojected_map.data.shape == (128, 128)
+    return fig
 
 
 @figure_test
