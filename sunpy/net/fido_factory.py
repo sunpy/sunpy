@@ -219,16 +219,16 @@ class UnifiedResponse(Sequence):
         """
         Display the attrs tables as interactive grids in a Jupyter Notebook.
 
-        This function utilizes the `itables` library to render tables as interactive grids.
+        This function utilizes the ``itables`` library to render tables as interactive grids.
 
         .. note::
-            This function requires the optional dependency `itables`.
+            This function requires the optional dependency ``itables``.
             Ensure it is installed before calling this method.
 
         Parameters
         ----------
         **kwargs : dict, optional
-            Additional keyword arguments to customize the :func:`itables.show` function.
+            Additional keyword arguments to customize the ``itables.show`` function.
 
         """
         try:
