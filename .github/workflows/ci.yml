@@ -106,6 +106,11 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+        - manylinux_aarch64: py312-online
+          posargs: -n auto --dist loadgroup --color=yes
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -122,6 +127,11 @@ jobs:
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py313-devdeps-online
+          libraries:
+            apt:
+              - libopenjp2-7
+        - manylinux_aarch64: py313-devdeps
+          posargs: -n auto --dist loadgroup --color=yes
           libraries:
             apt:
               - libopenjp2-7
@@ -195,14 +205,23 @@ jobs:
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests-only'
-      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
+      test_extras: 'tests'
+      test_command: |
+        pytest -p no:warnings --doctest-rst --pyargs sunpy
+        -n auto --dist loadgroup --color=yes
       submodules: false
       targets: |
         - cp3{10,11,12,13}-macosx_arm64
         - cp3{10,11,12,13}-macosx_x86_64
         - cp3{10,11,12,13}-manylinux_aarch64
         - cp3{10,11,12,13}-manylinux_x86_64
+      aarch64: |
+        manylinux_aarch64
+        pytest -vvv -n auto --dist loadgroup --pyargs sunpy
+        libraries:
+          apt:
+            - libopenjp2-7
+            - graphviz
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
