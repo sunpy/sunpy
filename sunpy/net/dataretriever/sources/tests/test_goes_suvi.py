@@ -17,6 +17,12 @@ def suvi_client():
     return goes.SUVIClient()
 
 
+@pytest.fixture
+def temp_dir():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        yield tmpdirname
+
+
 @settings(max_examples=5)
 @given(time_attr())
 def test_can_handle_query(time):
@@ -66,31 +72,27 @@ def test_get_all_wavelengths_level2(suvi_client):
     assert set(wavelengths) == expected_wavelengths
 
 
-def test_fetch_working_mock(suvi_client, mocker):
-    mocker.patch.object(suvi_client, 'search', return_value=mock_query_object(suvi_client))
-    mocker.patch.object(suvi_client, 'fetch', return_value=['mockfile.fits'])
-
-    tr = a.Time('2019/05/25 00:50', '2019/05/25 00:52')
-    wave = a.Wavelength(94 * u.Angstrom)
-    goes_sat = a.goes.SatelliteNumber.sixteen
-
-    qr = suvi_client.search(tr, a.Instrument.suvi, wave, goes_sat, a.Level(2))
-    download_list = suvi_client.fetch(qr)
-
-    assert len(download_list) == len(qr)
-
-
+@pytest.mark.parametrize("use_mock", [True, False])
 @pytest.mark.remote_data
-def test_fetch_single_file(suvi_client):
+def test_fetch_single_or_mocked_file(suvi_client, temp_dir, mocker, use_mock):
     start = '2019/05/25 00:50'
     end = '2019/05/25 00:52'
     wave = 94 * u.Angstrom
     goes_sat = a.goes.SatelliteNumber.sixteen
     tr = a.Time(start, end)
-    qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        download_list = suvi_client.fetch(qr1, path=tmpdirname)
+
+    if use_mock:
+        mocker.patch.object(suvi_client, 'search', return_value=mock_query_object(suvi_client))
+        mocker.patch.object(suvi_client, 'fetch', return_value=['mockfile.fits'])
+        qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
+        download_list = suvi_client.fetch(qr1)
+    else:
+        qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
+        download_list = suvi_client.fetch(qr1, path=str(temp_dir))
+
     assert len(download_list) == len(qr1)
+    if use_mock:
+        assert download_list == ['mockfile.fits']
 
 
 def test_attr_reg():
