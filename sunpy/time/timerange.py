@@ -407,14 +407,23 @@ class TimeRange:
 
         Parameters
         ----------
-        dt_start : `astropy.time.TimeDelta`
+        dt_start : `astropy.time.TimeDelta`, `datetime.timedelta`
             The amount to shift the start time.
-        dt_end : `astropy.time.TimeDelta`
+        dt_end : `astropy.time.TimeDelta`, `datetime.timedelta`
             The amount to shift the end time.
         """
-        # TODO: Support datetime.timedelta
+        if isinstance(dt_start, timedelta):
+            dt_start = TimeDelta(dt_start)
+            dt_start.format = self.dt.format
+        if isinstance(dt_end, timedelta):
+            dt_end = TimeDelta(dt_end)
+            dt_end.format = self.dt.format
+
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
+
+        if self._t1 > self._t2:
+            self._t1, self._t2 = self._t2, self._t1
 
     def get_dates(self):
         """

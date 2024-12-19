@@ -239,13 +239,33 @@ def test_previous():
     assert timerange.dt == delta
 
 
-def test_extend():
+@pytest.mark.parametrize("inputs", [
+    (datetime(2012,1,1), datetime(2012,2,1)),
+    (datetime(2012,2,1), datetime(2012,1,1)),
+    (start, end),
+    (end, start),
+])
+def test_extend(inputs):
+    delta_ = inputs[1] - inputs[0]
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    timerange.extend(delta, delta)
+    timerange.extend(delta_, delta_)
     assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.start == start + delta
-    assert timerange.end == end + delta
-    assert timerange.dt == delta
+    assert timerange.start == start + TimeDelta(delta_)
+    assert timerange.end == end + TimeDelta(delta_)
+    assert timerange.dt == TimeDelta(delta)
+
+
+# Checks when start + delta_1 > end + delta_2
+def test_extend_end_start():
+    start, end = datetime(2012, 1, 1), datetime(2012, 1, 10)
+    delta_1, delta_2 = timedelta(days=15), timedelta(days=2)
+
+    timerange = sunpy.time.TimeRange(start, end)
+    timerange.extend(delta_1, delta_2)
+    assert isinstance(timerange, sunpy.time.TimeRange)
+    assert timerange.start == Time(end + delta_2)
+    assert timerange.end == Time(start + delta_1)
+    assert timerange.dt == TimeDelta(start + delta_1 - end - delta_2)
 
 
 def test_contains(timerange_a):
