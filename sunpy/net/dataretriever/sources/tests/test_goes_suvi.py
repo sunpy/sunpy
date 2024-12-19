@@ -1,5 +1,3 @@
-import tempfile
-
 import pytest
 from hypothesis import given, settings
 
@@ -15,12 +13,6 @@ from sunpy.time import parse_time
 @pytest.fixture
 def suvi_client():
     return goes.SUVIClient()
-
-
-@pytest.fixture
-def temp_dir():
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        yield tmpdirname
 
 
 @settings(max_examples=5)
@@ -74,7 +66,7 @@ def test_get_all_wavelengths_level2(suvi_client):
 
 @pytest.mark.parametrize("use_mock", [True, False])
 @pytest.mark.remote_data
-def test_fetch_single_or_mocked_file(suvi_client, temp_dir, mocker, use_mock):
+def test_fetch_single_or_mocked_file(suvi_client, tmp_path, mocker, use_mock):
     start = '2019/05/25 00:50'
     end = '2019/05/25 00:52'
     wave = 94 * u.Angstrom
@@ -88,7 +80,7 @@ def test_fetch_single_or_mocked_file(suvi_client, temp_dir, mocker, use_mock):
         download_list = suvi_client.fetch(qr1)
     else:
         qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
-        download_list = suvi_client.fetch(qr1, path=str(temp_dir))
+        download_list = suvi_client.fetch(qr1, path=str(tmp_path))
 
     assert len(download_list) == len(qr1)
     if use_mock:
