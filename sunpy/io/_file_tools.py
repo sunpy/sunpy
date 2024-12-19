@@ -5,6 +5,10 @@ import re
 import gzip
 import pathlib
 
+import fsspec
+
+from sunpy.util.io import is_uri
+
 try:
     from . import _fits as fits
 except ImportError:
@@ -54,7 +58,6 @@ _READERS = Readers({
 })
 
 
-
 def _read(filepath, function_name, filetype=None, **kwargs):
     """
     This functions provides the logic paths for reading a file.
@@ -73,6 +76,8 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     filetype : {'jp2' | 'fits' | 'ana'}, optional
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
+    **kwargs : `dict`
+        Additional keyword arguments are handed to file specific reader.
 
     Returns
     -------
@@ -177,7 +182,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
 
-def detect_filetype(filepath):
+def detect_filetype(filepath, **kwargs):
     """
     Attempts to determine the type of file a given filepath is.
 
@@ -185,6 +190,8 @@ def detect_filetype(filepath):
     ----------
     filepath : `str`, `pathlib.Path`
         Where the file is.
+    **kwargs : `dict`
+        Additional keyword arguments.
 
     Returns
     -------
@@ -193,8 +200,15 @@ def detect_filetype(filepath):
     """
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
-
-    with open(filepath, 'rb') as fp:
+    if is_uri(filepath):
+        fsspec_kw = kwargs.get("fsspec_kwargs", {})
+        try:
+            fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
+        except Exception:
+            return None
+    else:
+        fileobj = open(filepath, 'rb')
+    with fileobj as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.

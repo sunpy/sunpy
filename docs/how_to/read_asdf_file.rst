@@ -19,10 +19,10 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
 .. code-block:: python
 
     >>> import sunpy.map
-    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> from sunpy.io import read_file, write_file
 
-    >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
     # Save the map to an ASDF file
     >>> aiamap.save("aia171.asdf")  # doctest: +REMOTE_DATA
@@ -58,7 +58,7 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
             [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
                 -127.899666 , -127.899666 ],
             [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-                -128.03072  , -128.03072  ]], dtype=float32)
+                -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 When saving a Map to ASDF, all maps are saved as a `.GenericMap` and not a specific source class.
 This comes with some trade-offs.

@@ -251,6 +251,22 @@ def test_url_pattern():
     amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
     assert isinstance(amap, sunpy.map.GenericMap)
 
+@pytest.mark.remote_data
+def test_uri_pattern():
+    """
+    Testing publicly accessible s3 object
+    """
+    amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
+    assert isinstance(amap, sunpy.map.GenericMap)
+
+@pytest.mark.remote_data
+def test_uri_directory_pattern():
+    """
+    Testing publicly accessible s3 directory
+    """
+    with pytest.warns(SunpyUserWarning, match='Failed to read'):
+        amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
+        assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
 
 def test_save():
     # Test save out
@@ -269,8 +285,18 @@ def test_map_list_urls_cache():
     """
     urls = ['https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits',
             'https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits']
-    sunpy.map.Map(urls)
+    with pytest.warns(fits.verify.VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+        sunpy.map.Map(urls)
 
+@pytest.mark.remote_data
+def test_map_list_uri():
+    """
+    Test for reading from URI (AWS S3).
+    """
+    uri_list = ["s3://data.sunpy.org/aiapy/aia_lev1_171a_2019_01_01t00_00_09_35z_image_lev1.fits",
+                "s3://data.sunpy.org/aiapy/aia_lev1_94a_2019_01_01t00_00_11_12z_image_lev1.fits"]
+    amap = sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
+    assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize(('file', 'mapcls'), [

@@ -34,7 +34,7 @@ To create a `~sunpy.map.Map` from a sample Atmospheric Imaging Assembly (AIA) im
 
     >>> sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
     PosixPath('.../AIA20110607_063302_0171_lowres.fits')
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
 In many cases sunpy automatically detects the type of file as well as the the instrument associated with it.
 In this case, we have a FITS file from the AIA instrument onboard the Solar Dynamics Observatory (SDO).
@@ -70,7 +70,7 @@ To make sure this has all worked correctly, we can take a quick look at ``my_map
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 This should show a representation of the data as well as some of its associated attributes.
 If you are in a Jupyter Notebook, this will show a rich HTML view of the table along with several quick-look plots.
@@ -136,7 +136,7 @@ The data in a Map is stored as a `numpy.ndarray` object and is accessible throug
        [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
         -127.899666 , -127.899666 ],
        [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-        -128.03072  , -128.03072  ]], dtype=float32)
+        -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 This array can then be indexed like any other NumPy array.
 For example, to get the 0th element in the array:
@@ -222,11 +222,11 @@ The WCS is accessible as an attribute:
     <BLANKLINE>
     Number of WCS axes: 2
     CTYPE : 'HPLN-TAN' 'HPLT-TAN'
-    CRVAL : np.float64(0.00089530541880571) np.float64(0.00038493926472939)
-    CRPIX : np.float64(512.5) np.float64(512.5)
-    PC1_1 PC1_2  : np.float64(0.99999706448085) np.float64(0.0024230207763071)
-    PC2_1 PC2_2  : np.float64(-0.0024230207763071) np.float64(0.99999706448085)
-    CDELT : np.float64(0.00066744222222222) np.float64(0.00066744222222222)
+    CRVAL : 0.00089530541880571 0.00038493926472939
+    CRPIX : 512.5 512.5
+    PC1_1 PC1_2  : 0.99999706448085 0.0024230207763071
+    PC2_1 PC2_2  : -0.0024230207763071 0.99999706448085
+    CDELT : 0.00066744222222222 0.00066744222222222
     NAXIS : 1024  1024
 
 WCS is a fairly complex topic, but all we need to know for now is that the WCS provides the transformation between the pixel coordinates of the image and physical or "world" coordinates.
@@ -528,21 +528,18 @@ For example, the following returns the same information as in :ref:`sunpy-tutori
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
-
-MapSequences can hold maps that have different shapes.
-To test if all the maps in a `~sunpy.map.MapSequence` have the same shape:
-
-.. code-block:: python
-
-    >>> map_seq.all_maps_same_shape()  # doctest: +REMOTE_DATA
-    np.True_
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
 .. code-block:: python
 
-    >>> map_seq_array = map_seq.as_array()  # doctest: +REMOTE_DATA
+    >>> map_seq_array = map_seq.data  # doctest: +REMOTE_DATA
+
+.. note::
+
+    MapSequences can hold maps that have different shapes.
+    In the case where not every map has the same shape, trying to cast the sequence as a single three-dimensional array will fail.
 
 Since all of the maps in our sequence of the same shape, the first two dimensions of our combined array will be the same as the component maps while the last dimension will correspond to the number of maps in the map sequence.
 We can confirm this by looking at the shape of the above array.
