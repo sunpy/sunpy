@@ -64,28 +64,38 @@ def test_get_all_wavelengths_level2(suvi_client):
     assert set(wavelengths) == expected_wavelengths
 
 
-@pytest.mark.parametrize("use_mock", [True, False])
 @pytest.mark.remote_data
-def test_fetch_single_or_mocked_file(suvi_client, tmp_path, mocker, use_mock):
+def test_fetch_real_file(suvi_client, tmp_path):
     start = '2019/05/25 00:50'
     end = '2019/05/25 00:52'
     wave = 94 * u.Angstrom
     goes_sat = a.goes.SatelliteNumber.sixteen
     tr = a.Time(start, end)
+    download_list = suvi_client.fetch(
+        suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2)),
+        path=str(tmp_path)
+    )
+    assert len(download_list) == len(
+        suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
+    )
 
-    if use_mock:
-        mocker.patch.object(suvi_client, 'search', return_value=mock_query_object(suvi_client))
-        mocker.patch.object(suvi_client, 'fetch', return_value=['mockfile.fits'])
-        qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
-        download_list = suvi_client.fetch(qr1)
-    else:
-        qr1 = suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
-        download_list = suvi_client.fetch(qr1, path=str(tmp_path))
 
-    assert len(download_list) == len(qr1)
-    if use_mock:
-        assert download_list == ['mockfile.fits']
-
+@pytest.mark.remote_data
+def test_fetch_mocked_file(suvi_client, mocker):
+    start = '2019/05/25 00:50'
+    end = '2019/05/25 00:52'
+    wave = 94 * u.Angstrom
+    goes_sat = a.goes.SatelliteNumber.sixteen
+    tr = a.Time(start, end)
+    mocker.patch.object(suvi_client, 'search', return_value=mock_query_object(suvi_client))
+    mocker.patch.object(suvi_client, 'fetch', return_value=['mockfile.fits'])
+    download_list = suvi_client.fetch(
+        suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
+    )
+    assert download_list == ['mockfile.fits']
+    assert len(download_list) == len(
+        suvi_client.search(tr, a.Instrument.suvi, a.Wavelength(wave), goes_sat, a.Level(2))
+    )
 
 def test_attr_reg():
     a.Instrument.suvi = a.Instrument("SUVI")
