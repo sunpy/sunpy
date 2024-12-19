@@ -195,7 +195,7 @@ jobs:
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests-only'
+      test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
       targets: |
