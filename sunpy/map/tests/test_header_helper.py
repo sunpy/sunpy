@@ -5,12 +5,13 @@ import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import Time
 from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
-from sunpy.map.header_helper import make_heliographic_header
+from sunpy.map.header_helper import make_heliographic_header, make_hpr_header
 from sunpy.util.metadata import MetaDict
 
 
@@ -305,3 +306,18 @@ def test_make_heliographic_header_invalid_inputs(aia171_test_map):
     header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=-1*u.deg)
     assert header_test_above['crval1'] == 1.0
     assert header_test_below['crval1'] == 359.0
+
+
+def test_make_hpr_header(hgs_coord):
+    header = make_hpr_header(hgs_coord, (100, 720), theta_binsize=0.1*u.deg)
+    assert header['ctype1'] == 'HRLN-CAR'
+    assert header['ctype2'] == 'HRLT-CAR'
+    assert header['naxis1'] == 720
+    assert header['naxis2'] == 100
+    assert header['crpix1'] == 360.5
+    assert header['crpix2'] == 900.5
+    assert header['crval1'] == 180.0
+    assert header['crval2'] == 0.0
+    assert header['hgln_obs'] == -50.0
+    assert header['hglt_obs'] == 50.0
+    assert Time(header['date-obs']) == hgs_coord.obstime
