@@ -23,3 +23,4 @@ from .stereo import *
 from .suvi import *
 from .trace import *
 from .yohkoh import *
+from .suit import *
