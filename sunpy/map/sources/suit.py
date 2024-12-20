@@ -7,9 +7,8 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
 from sunpy.map.mapbase import GenericMap
-from astropy.visualization import ImageNormalize
-
-from astropy.visualization import AsinhStretch
+# from astropy.visualization import ImageNormalize
+# from astropy.visualization import AsinhStretch
 
 __all__ = ['SUITMap']
 __author__ = ['Rahul Gopalakrishnan']
@@ -30,9 +29,9 @@ class SUITMap(GenericMap):
         self.filter = header.get('FTR_NAME').strip()
         self.plot_settings['cmap'] = f"suit_{self.filter.lower()}"
         self.plot_settings['title'] = f"SUIT {self.filter} - {self.reference_date}"
-        self.plot_settings["norm"] = ImageNormalize(
-            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
-        )
+        # self.plot_settings["norm"] = ImageNormalize(
+            # stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
+        # )
 
     @property
     def _supported_observer_coordinates(self):
