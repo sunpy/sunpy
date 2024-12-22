@@ -179,7 +179,7 @@ def test_show_in_notebook(mocker):
     assert isinstance(results, UnifiedResponse)
     mock_datagrid =  mocker.patch("itables.show")
     results.show_in_notebook()
-    mock_datagrid.assert_has_calls(2)
+    assert mock_datagrid.call_count == 2
 
 
 @pytest.mark.remote_data
