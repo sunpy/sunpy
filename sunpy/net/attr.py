@@ -102,7 +102,7 @@ class AttrMeta(type):
     """
     We want to enable discovery, by tab completion, of values for all subclasses of Attr.
     So have to create a metaclass that overloads the methods that Python uses, so that they work on the classes.
-    This would allow that `attrs.Instrument` to be able to tab complete to `attrs.Instrument.aia`.
+    This would allow that ``attrs.Instrument`` to be able to tab complete to ``attrs.Instrument.aia``.
     """
 
     # The aim is to register Attrs as a namedtuple of lists
