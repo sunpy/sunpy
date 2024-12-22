@@ -7,8 +7,6 @@ import pathlib
 
 import fsspec
 
-from sunpy.util.io import is_uri
-
 try:
     from . import _fits as fits
 except ImportError:
@@ -24,7 +22,6 @@ try:
 except ImportError:
     ana = None
 
-
 __all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 
 # File formats supported by sunpy.io
@@ -34,9 +31,7 @@ _KNOWN_EXTENSIONS = {
     ('fz', 'f0'): 'ana'
 }
 
-
 class Readers(dict):
-    # Define a dict which raises a custom error message if the value is None
     def __init__(self, *args):
         dict.__init__(self, *args)
 
@@ -57,86 +52,72 @@ _READERS = Readers({
     'ana': ana
 })
 
-
-def get_valid_filepath(filepath):
+def get_open_file(filepath, **kwargs):
     """
-    Ensures the filepath is a valid string, pathlib.Path, or fsspec.OpenFile.
+    Ensures the filepath is converted to an fsspec.OpenFile object.
 
     Parameters
     ----------
     filepath : str, pathlib.Path, or fsspec.OpenFile
         The file path or file object to be validated.
+    **kwargs : dict
+        Additional keyword arguments for fsspec.open.
 
     Returns
     -------
-    valid_filepath : str or pathlib.Path
-        A validated file path that can be passed to other functions.
+    fsspec.OpenFile
+        An open file object.
 
     Raises
     ------
     TypeError
         If the filepath is not of type str, pathlib.Path, or fsspec.OpenFile.
     """
-     # Handle URI or remote path
-    if isinstance(filepath, str) and (filepath.startswith("http") or filepath.startswith("ftp")):
-        fileobj = fsspec.open(filepath, 'rb')
-        return fileobj.path
+    if isinstance(filepath, fsspec.core.OpenFile):
+        return filepath
 
-    # If it's an fsspec.OpenFile object, return the file's name or path
-    if isinstance(filepath, list) and all(isinstance(fp, fsspec.core.OpenFile) for fp in filepath):
-        return [fp.path for fp in filepath]
+    if isinstance(filepath, (str, pathlib.Path)):
+        return fsspec.open(filepath, 'rb', **kwargs)
 
-    # If it's a string or pathlib.Path, return the path as a string
-    elif isinstance(filepath, (str, pathlib.Path)):
-        return str(filepath)
+    raise TypeError("filepath must be a string, pathlib.Path, or fsspec.OpenFile.")
 
-    # Raise error for invalid file type
-    else:
-        raise TypeError("filepath must be a string, pathlib.Path, or fsspec.OpenFile.")
-
-def _read(filepath, function_name, filetype=None, **kwargs):
+def _read(open_file, function_name, filetype=None, **kwargs):
     """
-    This functions provides the logic paths for reading a file.
-
-    It is trying to handle, reading files with known extensions and reading files with known readers.
-
-    We also want the detection logic to first try to detect the filetype based on the content and then
-    fallback to using extension.
+    This function provides the logic paths for reading a file.
 
     Parameters
     ----------
-    filepath : pathlib.Path, str
-        The file to be read.
+    open_file : fsspec.OpenFile
+        The file to be read as an open file object.
     function_name : {'read' | 'get_header'}
         The name of the function to call on the reader.
     filetype : {'jp2' | 'fits' | 'ana'}, optional
         Supported reader or extension to manually specify the filetype.
-        Supported readers are ('jp2', 'fits', 'ana')
-    **kwargs : `dict`
-        Additional keyword arguments are handed to file specific reader.
+        Supported readers are ('jp2', 'fits', 'ana').
+    **kwargs : dict
+        Additional keyword arguments are handed to the file-specific reader.
 
     Returns
     -------
-    pairs : `list`
+    pairs : list
         A list of (data, header) tuples.
     """
-    filepath = get_valid_filepath(filepath)
-    if filetype is not None:
-        return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
-    try:
-        readername = detect_filetype(filepath)
-        if readername in _READERS.keys():
-            return getattr(_READERS[readername], function_name)(filepath, **kwargs)
-        readername = None
-    except UnrecognizedFileTypeError:
-        readername = None
-    for extension, name in _KNOWN_EXTENSIONS.items():
-        if filepath.endswith(extension) or filetype in extension:
-            readername = name
-    if readername is not None:
-        return getattr(_READERS[readername], function_name)(filepath, **kwargs)
-    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
+    with open_file as fp:
+        if filetype is not None:
+            return getattr(_READERS[filetype], function_name)(fp, **kwargs)
 
+        try:
+            readername = detect_filetype(fp)
+            if readername in _READERS.keys():
+                return getattr(_READERS[readername], function_name)(fp, **kwargs)
+        except UnrecognizedFileTypeError:
+            readername = None
+
+        for extension, name in _KNOWN_EXTENSIONS.items():
+            if open_file.path.endswith(extension) or filetype in extension:
+                return getattr(_READERS[name], function_name)(fp, **kwargs)
+
+    raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
 
 def read_file(filepath, filetype=None, **kwargs):
     """
@@ -144,7 +125,7 @@ def read_file(filepath, filetype=None, **kwargs):
 
     Parameters
     ----------
-    filepath : `str`, path-like
+    filepath : `str`, path-like, or fsspec.OpenFile
         The file to be read.
     filetype : `str`, optional
         Supported reader or extension to manually specify the filetype.
@@ -160,9 +141,8 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    filepath = get_valid_filepath(filepath)
-    return _read(filepath, 'read', filetype, **kwargs)
-
+    open_file = get_open_file(filepath, **kwargs)
+    return _read(open_file, 'read', filetype, **kwargs)
 
 def read_file_header(filepath, filetype=None, **kwargs):
     """
@@ -172,9 +152,9 @@ def read_file_header(filepath, filetype=None, **kwargs):
 
     Parameters
     ----------
-    filepath : `str`
+    filepath : str, path-like, or fsspec.OpenFile
         The file from which the header is to be read.
-    filetype : `str`
+    filetype : str, optional
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits').
     **kwargs : `dict`
@@ -185,9 +165,8 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
-    filepath = get_valid_filepath(filepath)
-    return _read(filepath, 'get_header', filetype, **kwargs)
-
+    open_file = get_open_file(filepath, **kwargs)
+    return _read(open_file, 'get_header', filetype, **kwargs)
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
@@ -195,59 +174,49 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
     Parameters
     ----------
-    fname : `str`
-        Filename of file to save.
-    data : `numpy.ndarray`
+    fname : str or fsspec.OpenFile
+        Filename of the file to save.
+    data : numpy.ndarray
         Data to save to a fits file.
-    header : `collections.OrderedDict`
+    header : collections.OrderedDict
         Meta data to save with the data.
-    filetype : `str`, {'auto', 'fits', 'jp2'}, optional
-        Filetype to save if ``auto`` the  filename extension will
-        be detected, else specify a supported file extension.
-    **kwargs : `dict`
-        All extra keyword arguments are passed to ``.write`` for the file specific reader.
+    filetype : str, {'auto', 'fits', 'jp2'}, optional
+        Filetype to save if `auto`, the filename extension will
+        be detected; otherwise, specify a supported file extension.
+    **kwargs : dict
+        All extra keyword arguments are passed to `.write` for the file-specific reader.
 
     Notes
     -----
-    * This routine currently only supports saving a single HDU.
+    This routine currently only supports saving a single HDU.
     """
-    fname = get_valid_filepath(fname)
+    open_file = get_open_file(fname, **kwargs)
     if filetype == 'auto':
-        # Get the extension without the leading dot
-        filetype = pathlib.Path(fname).suffix[1:]
+        filetype = pathlib.Path(open_file.path).suffix[1:]
+
     for extension, readername in _KNOWN_EXTENSIONS.items():
         if filetype in extension:
-            return _READERS[readername].write(fname, data, header, **kwargs)
+            return _READERS[readername].write(open_file, data, header, **kwargs)
+
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
-
-def detect_filetype(filepath, **kwargs):
+def detect_filetype(open_file, **kwargs):
     """
     Attempts to determine the type of file a given filepath is.
 
     Parameters
     ----------
-    filepath : `str`, `pathlib.Path`
-        Where the file is.
-    **kwargs : `dict`
+    open_file : fsspec.OpenFile
+        The file to inspect.
+    **kwargs : dict
         Additional keyword arguments.
 
     Returns
     -------
-    filetype : `str`
+    filetype : str
         The type of file.
     """
-    if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
-        return None
-    if is_uri(filepath):
-        fsspec_kw = kwargs.get("fsspec_kwargs", {})
-        try:
-            fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
-        except Exception:
-            return None
-    else:
-        fileobj = open(filepath, 'rb')
-    with fileobj as fp:
+    with open_file as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
@@ -268,7 +237,7 @@ def detect_filetype(filepath, **kwargs):
     # Checks for gzip signature.
     # If found, decompresses first few bytes and checks for FITS
     if first80[:3] == b"\x1f\x8b\x08":
-        with gzip.open(filepath, 'rb') as fp:
+        with gzip.open(open_file.path, 'rb') as fp:
             first80 = fp.read(80)
 
     # Check for "KEY_WORD  =" at beginning of file
