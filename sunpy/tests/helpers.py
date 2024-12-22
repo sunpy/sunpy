@@ -5,8 +5,6 @@ from pathlib import Path
 from functools import wraps
 from importlib.metadata import entry_points
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import pytest
 
 import astropy
@@ -74,6 +72,7 @@ def get_hash_library_name():
     """
     Generate the hash library name for this env.
     """
+    import matplotlib as mpl
     import mpl_animators
 
     animators_version = "dev" if (("dev" in mpl_animators.__version__) or ("rc" in mpl_animators.__version__)) else mpl_animators.__version__.replace('.', '')
@@ -98,6 +97,8 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+    import matplotlib.pyplot as plt
+
     hash_library_name = get_hash_library_name()
     hash_library_file = Path(__file__).parent / hash_library_name
 
