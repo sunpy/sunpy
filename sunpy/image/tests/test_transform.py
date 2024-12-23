@@ -7,7 +7,7 @@ from skimage import transform as tf
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
 from sunpy.image.transform import _rotation_registry, affine_transform
-from sunpy.tests.helpers import figure_test, skip_numpy2
+from sunpy.tests.helpers import figure_test, skip_windows
 from sunpy.util import SunpyUserWarning
 
 # Tolerance for tests
@@ -245,6 +245,7 @@ def test_float32(identity):
     assert np.issubdtype(out_arr.dtype, np.float32)
 
 
+@skip_windows
 def test_reproducible_matrix_multiplication():
     # Test whether matrix multiplication involving a large matrix always gives the same answer
     # This indirectly tests whichever BLAS/LAPACK libraries that NumPy is linking to (if any)
@@ -317,7 +318,7 @@ def test_nans(rot30):
         axs[i, 0].imshow(image_with_nans, vmin=-1.1, vmax=1.1)
         for j in range(6):
             if j not in _rotation_registry[method].allowed_orders:
-                with pytest.raises(ValueError):
+                with pytest.raises(ValueError, match=f"^{j} is one of the allowed orders for method '{method}': {set(_rotation_registry[method].allowed_orders)}$"):
                     affine_transform(image_with_nans, rot30, order=j, method=method, missing=np.nan)
                 axs[i, j+1].remove()
             else:
@@ -332,7 +333,6 @@ def test_nans(rot30):
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @pytest.mark.parametrize('order', range(6))
-@skip_numpy2
 def test_endian(method, order, rot30):
     if order not in _rotation_registry[method].allowed_orders:
         return

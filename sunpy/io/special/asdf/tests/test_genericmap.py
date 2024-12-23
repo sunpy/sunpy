@@ -1,13 +1,14 @@
 import numpy as np
 import pytest
+from packaging.version import Version
 
 import asdf
 import astropy.units as u
+from asdf.testing.helpers import roundtrip_object
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.tests.helpers import asdf_entry_points
-from .helpers import roundtrip_object
 
 
 def assert_roundtrip_map(old):
@@ -23,6 +24,13 @@ def assert_roundtrip_map(old):
         np.testing.assert_allclose(old.mask, new.mask)
 
     assert old.unit == new.unit
+
+
+def asdf_open_memory_mapping_kwarg(memmap: bool) -> dict:
+    if Version(asdf.__version__) >= Version("3.1.0"):
+        return {"memmap": memmap}
+    else :
+        return {"copy_arrays": not memmap}
 
 
 @pytest.fixture
@@ -48,7 +56,7 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
 @asdf_entry_points
 def test_load_100_file_with_shift():
     fname = get_test_filepath("aiamap_shift_genericmap_1.0.0.asdf")
-    with asdf.open(fname, copy_arrays=True) as af:
+    with asdf.open(fname, **asdf_open_memory_mapping_kwarg(memmap=False)) as af:
         aiamap = af['object']
         assert isinstance(aiamap, sunpy.map.sources.AIAMap)
         assert "crval1" in aiamap.meta.modified_items
@@ -59,7 +67,7 @@ def test_load_100_file_with_shift():
 @asdf_entry_points
 def test_load_100_file_with_no_shift():
     fname = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
-    with asdf.open(fname, copy_arrays=True) as af:
+    with asdf.open(fname, **asdf_open_memory_mapping_kwarg(memmap=False)) as af:
         aiamap = af['object']
         assert isinstance(aiamap, sunpy.map.sources.AIAMap)
         assert "crval1" not in aiamap.meta.modified_items

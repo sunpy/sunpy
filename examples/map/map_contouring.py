@@ -29,7 +29,7 @@ print(aiamap.unit)
 # chose a contour level, and use the :meth:`~sunpy.map.GenericMap.contour`
 # method to extract the contours.
 
-contours = aiamap.contour(50000 * u.ct)
+contours = aiamap.find_contours(50000 * u.DN)
 
 ##############################################################################
 # Finally, we can plot the map, and add each of the contours in turn.

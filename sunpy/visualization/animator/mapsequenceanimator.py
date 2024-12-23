@@ -68,22 +68,19 @@ class MapSequenceAnimator(BaseFuncAnimator):
         # plot
         while self.remove_obj:
             self.remove_obj.pop(0).remove()
-
         i = int(val)
         im.set_array(self.data[i].data)
-        im.set_cmap(self.mapsequence[i].plot_settings['cmap'])
-        norm = deepcopy(self.mapsequence[i].plot_settings['norm'])
-        im.set_norm(norm)
-
+        im.set_cmap(self.mapsequence[i].plot_settings.get('cmap', "grey"))
+        if norm := self.mapsequence[i].plot_settings.get('norm'):
+            im.set_norm(deepcopy(norm))
         if wcsaxes_compat.is_wcsaxes(im.axes):
             im.axes.reset_wcs(self.mapsequence[i].wcs)
-        # Having this line in means the plot will resize for non-homogenous
+        # Having this line in means the plot will resize for non-homogeneous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.
         # im.set_extent(self.mapsequence[i].xrange + self.mapsequence[i].yrange)
         if self.annotate:
             self._annotate_plot(i)
-
         self.remove_obj += list(
             self.user_plot_function(self.fig, self.axes, self.mapsequence[i]))
 

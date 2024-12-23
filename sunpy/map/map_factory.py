@@ -1,18 +1,21 @@
 import os
 import pathlib
+from functools import singledispatchmethod
 from collections import OrderedDict
 from urllib.request import Request
 
+import fsspec
 import numpy as np
 
 import astropy.io.fits
 from astropy.utils.decorators import deprecated_renamed_argument
+from astropy.utils.introspection import minversion
 from astropy.wcs import WCS
 
 from sunpy import log
 from sunpy.data import cache
-from sunpy.io._file_tools import read_file
-from sunpy.io.header import FileHeader
+from sunpy.io._file_tools import detect_filetype, read_file
+from sunpy.io._header import FileHeader
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.mapsequence import MapSequence
@@ -24,18 +27,18 @@ from sunpy.util.datatype_factory_base import (
     ValidationFunctionError,
 )
 from sunpy.util.exceptions import NoMapsInFileError, SunpyDeprecationWarning, warn_user
-from sunpy.util.functools import seconddispatch
-from sunpy.util.io import is_url, parse_path, possibly_a_path
+from sunpy.util.io import expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
     import dask.array
+
     SUPPORTED_ARRAY_TYPES += (dask.array.Array,)
 except ImportError:
     pass
 
-__all__ = ['Map', 'MapFactory']
+__all__ = ["Map", "MapFactory"]
 
 
 class MapFactory(BasicRegistrationFactory):
@@ -82,7 +85,7 @@ class MapFactory(BasicRegistrationFactory):
     >>> import sunpy.map
     >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     """
 
     def _read_file(self, fname, **kwargs):
@@ -93,9 +96,20 @@ class MapFactory(BasicRegistrationFactory):
         # call a fits file or a jpeg2k file, etc
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
-        log.debug(f'Reading {fname}')
+        log.debug(f"Reading {fname}")
         try:
-            pairs = read_file(os.fspath(fname), **kwargs)
+            filetype = detect_filetype(fname)
+            if filetype == "asdf":
+                import asdf
+                if minversion(asdf, "3.1.0"):
+                    _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
+                else:
+                    _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
+                with asdf.open(fname,** _NO_MEMMAP_KWARGS) as af:
+                    pairs = [value for value in af.tree.values() if isinstance(value, GenericMap)]
+                    return pairs
+            else:
+                pairs = read_file(os.fspath(fname), filetype=filetype, **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}\n{e}"
             if kwargs.get("silence_errors") or kwargs.get("allow_errors"):
@@ -159,28 +173,40 @@ class MapFactory(BasicRegistrationFactory):
 
         # Sanitise the input so that each 'type' of input corresponds to a different
         # class, so single dispatch can be used later
-        nargs = len(args)
-        i = 0
-        while i < nargs:
-            arg = args[i]
+        parsed_args = []
+        skip_next = False
+        for i, arg in enumerate(args):
+            if skip_next:
+                skip_next = False
+                continue
+
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
                 # The next two items are data and a header
-                data = args.pop(i)
-                header = args.pop(i)
-                args.insert(i, (data, header))
-                nargs -= 1
+                data, header = args[i:i+2]
+                parsed_args.append((data, header))
+                skip_next = True
             elif isinstance(arg, str) and is_url(arg):
-                # Repalce URL string with a Request object to dispatch on later
-                args[i] = Request(arg)
-            elif possibly_a_path(arg):
-                # Repalce path strings with Path objects
-                args[i] = pathlib.Path(arg)
-            i += 1
+                # Replace URL string with a Request object to dispatch on later
+                parsed_args.append(Request(arg))
+            elif possibly_a_path(arg) and not is_uri(arg):
+                # Replace path strings with Path objects
+                parsed_args.append(pathlib.Path(arg))
+            elif is_uri(arg):
+                fsspec_kw = kwargs.get("fsspec_kwargs", {})
+                # Get a list of open file objects (i.e. if given a glob)
+                open_files = fsspec.open_files(arg, **fsspec_kw)
+                # If any of the elements of the list are directories we want to
+                # glob all files in them
+                expanded_files = expand_list([expand_fsspec_open_file(f) for f in open_files])
+                # Add all OpenFile objects to the parsed list
+                parsed_args += expanded_files
+            else:
+                parsed_args.append(arg)
 
         # Parse the arguments
         # Note that this list can also contain GenericMaps if they are directly given to the factory
         data_header_pairs = []
-        for arg in args:
+        for arg in parsed_args:
             try:
                 data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
             except NoMapsInFileError as e:
@@ -190,14 +216,13 @@ class MapFactory(BasicRegistrationFactory):
 
         return data_header_pairs
 
-    # Note that post python 3.8 this can be @functools.singledispatchmethod
-    @seconddispatch
+    @singledispatchmethod
     def _parse_arg(self, arg, **kwargs):
         """
         Take a factory input and parse into (data, header) pairs.
         Must return a list, even if only one pair is returned.
         """
-        raise ValueError(f"Invalid input: {arg}")
+        raise ValueError(f"Invalid input: {arg!r}")
 
     @_parse_arg.register(tuple)
     def _parse_tuple(self, arg, **kwargs):
@@ -226,9 +251,15 @@ class MapFactory(BasicRegistrationFactory):
     def _parse_path(self, arg, **kwargs):
         return parse_path(arg, self._read_file, **kwargs)
 
+    @_parse_arg.register(fsspec.core.OpenFile)
+    def _parse_fsspec_file(self, arg, **kwargs):
+        # TODO: We should probably migrate the whole of the unified IO layer to
+        # use fsspec for everything, but for now we parse the URI through
+        return self._read_file(arg.full_name, **kwargs)
+
     @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):
-        """ Method for running the factory. Takes arbitrary arguments and
+        """Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
 
@@ -255,8 +286,8 @@ class MapFactory(BasicRegistrationFactory):
 
         Notes
         -----
-        Extra keyword arguments are passed through to `sunpy.io.read_file` such
-        as `memmap` for FITS files.
+        Extra keyword arguments are passed through to `sunpy.io._file_tools.read_file` such as
+        ``memmap`` for FITS files.
         """
         data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
         new_maps = list()
@@ -273,14 +304,13 @@ class MapFactory(BasicRegistrationFactory):
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
                 new_maps.append(new_map)
-            except (NoMatchError, MultipleMatchError,
-                    ValidationFunctionError, MapMetaValidationError) as e:
+            except (NoMatchError, MultipleMatchError, ValidationFunctionError, MapMetaValidationError) as e:
                 if not (silence_errors or allow_errors):
                     raise
                 warn_user(f"One of the data, header pairs failed to validate with: {e}")
 
         if not len(new_maps):
-            raise RuntimeError('No maps loaded')
+            raise RuntimeError("No maps loaded")
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:
@@ -296,11 +326,9 @@ class MapFactory(BasicRegistrationFactory):
         return new_maps
 
     def _check_registered_widgets(self, data, meta, **kwargs):
-
         candidate_widget_types = list()
 
         for key in self.registry:
-
             # Call the registered validation function for each registered class
             if self.registry[key](data, meta, **kwargs):
                 candidate_widget_types.append(key)
@@ -313,10 +341,12 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified "
-                                     f"({candidate_widget_types}). "
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.")
+            raise MultipleMatchError(
+                "Too many candidate types identified "
+                f"({candidate_widget_types}). "
+                "Specify enough keywords to guarantee unique type "
+                "identification."
+            )
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -330,14 +360,12 @@ class InvalidMapInput(ValueError):
 
 
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with Map
-    """
+    """Exception to raise when an invalid type of map is requested with Map"""
 
 
 class NoMapsFound(ValueError):
-    """Exception to raise when input does not point to any valid maps or files
-    """
+    """Exception to raise when input does not point to any valid maps or files"""
 
 
 Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,
-                 additional_validation_functions=['is_datasource_for'])
+                 additional_validation_functions=["is_datasource_for"])

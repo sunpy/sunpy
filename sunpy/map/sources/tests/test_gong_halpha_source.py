@@ -2,10 +2,10 @@ import pytest
 from numpy.testing import assert_equal
 
 import astropy.units as u
-from astropy.time import Time
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import GONGHalphaMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -28,15 +28,26 @@ def test_observatory(gong_halpha):
     assert gong_halpha.observatory == "NSO-GONG"
 
 
+def test_reference_date(gong_halpha):
+    assert gong_halpha.reference_date.isot == "2024-02-16T00:00:02.000"
+
+
 def test_date(gong_halpha):
-    """Tests the date property of the GONGHalphaMap map."""
-    assert_equal(Time('2024-02-16T00:00:02'), gong_halpha.date)
+    assert gong_halpha.date.isot == "2024-02-16T00:00:02.000"
+
+
+def test_private_date_setters(gong_halpha):
+    _test_private_date_setters(gong_halpha)
 
 
 def test_scale(gong_halpha):
     """Tests the scale property of the GONGHalphaMap map."""
     assert_equal(gong_halpha.scale.axis1, 1.0794939681708389 * (u.arcsec / u.pix))
     assert_equal(gong_halpha.scale.axis2, 1.0794939681708389 * (u.arcsec / u.pix))
+
+
+def test_rsun_obs(gong_halpha):
+    assert gong_halpha.rsun_obs == 971.544571353755 * u.arcsec
 
 
 def test_nickname(gong_halpha):

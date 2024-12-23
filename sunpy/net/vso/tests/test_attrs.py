@@ -24,7 +24,7 @@ def test_Time_timerange():
 
 
 def test_input_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Specify start and end or start has to be a TimeRange"):
         core_attrs.Time('2012/1/1')
 
 
@@ -92,13 +92,13 @@ def test_attror_and():
 
 
 def test_wave_inputQuantity():
-    wrong_type_mesage = "Wave inputs must be astropy Quantities"
+    wrong_type_message = "Wave inputs must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
         core_attrs.Wavelength(10, 23)
-    assert wrong_type_mesage in str(excinfo.value)
+    assert wrong_type_message in str(excinfo.value)
     with pytest.raises(TypeError) as excinfo:
         core_attrs.Wavelength(10 * u.AA, 23)
-    assert wrong_type_mesage in str(excinfo.value)
+    assert wrong_type_message in str(excinfo.value)
 
 
 def test_wave_toangstrom():

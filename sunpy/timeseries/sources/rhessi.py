@@ -36,7 +36,7 @@ def uncompress_countrate(compressed_countrate):
     # Ensure uncompressed counts are between 0 and 255
     if (compressed_countrate.min() < 0) or (compressed_countrate.max() > 255):
         raise ValueError(
-            f'Exepected uncompressed counts {compressed_countrate} to in range 0-255')
+            f'Expected uncompressed counts {compressed_countrate} to in range 0-255')
 
     # TODO Must be a better way than creating entire lookup table on each call
     ll = np.arange(0, 16, 1)
@@ -101,6 +101,10 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     obtain high fidelity solar spectra from X rays (down to 3 keV) to gamma rays (1 MeV).
     Each spectrometer is coupled to a set of grids with different pitches which enable
     fourier-style imaging as the spacecraft spins.
+
+    Summary lightcurves are quicklook data products intended for rapid assessment and
+    are not science-quality data. They are uncorrected for instrumental effects and
+    backgrounds.
 
     RHESSI provides summary lightcurves in the following passbands:
 
@@ -182,7 +186,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod

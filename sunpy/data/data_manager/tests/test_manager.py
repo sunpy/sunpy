@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import pytest
@@ -48,6 +49,31 @@ def test_wrong_hash_provided(manager):
 
     with pytest.raises(RuntimeError):
         test_foo()
+
+
+def test_defer_download(manager, storage, downloader, data_function, tmpdir):
+    """
+    Test that files are not downloaded immediately if defer_download is True,
+    but are downloaded when get is called.
+    """
+    folder = tmpdir.strpath
+    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH,defer_download=True)
+    def deferred_function():
+        pass
+
+    deferred_function()
+    assert downloader.times_called == 0
+    assert len(storage._store) == 0
+
+def test_defer_download_get(manager, storage, downloader, data_function, tmpdir):
+    folder = tmpdir.strpath
+    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH, defer_download=True)
+    def deferred_function():
+        manager.get('test_file')
+
+    deferred_function()
+    assert downloader.times_called == 1
+    assert len(storage._store) == 1
 
 
 def test_skip_all(manager, storage, downloader, data_function):
@@ -128,7 +154,7 @@ def test_wrong_hash_error(manager, storage):
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("['url1', 'url2'] has already been downloaded, but no file matching the hash asdf can be found.")):
         foo()
 
 

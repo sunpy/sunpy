@@ -105,7 +105,7 @@ def aia_color_table(wavelength: u.angstrom):
 
     Parameters
     ----------
-    wavelength : `~astropy.units.quantity`
+    wavelength : `~astropy.units.quantity.Quantity`
         Wavelength for the desired AIA color table.
     """
     aia_wave_dict = create_aia_wave_dict()
@@ -300,36 +300,34 @@ def hmi_mag_color_table():
     Returns an alternate HMI Magnetogram color table; from Stanford
     University/JSOC.
 
+    This is used by default for the `~sunpy.map.sources.HMISynopticMap`.
+    But by default, for `~sunpy.map.sources.HMIMap` a grayscale colormap is used.
+
     Examples
     --------
-    >>> # Example usage for NRT data:
-    >>> import sunpy.map
-    >>> import matplotlib
-    >>> hmi = sunpy.map.Map('fblos.fits')  # doctest: +SKIP
-    >>> hmi.plot_settings['cmap'] = matplotlib.colormaps['hmimag']  # doctest: +SKIP
-    >>> hmi.peek(vmin=-1500.0, vmax=1500.0)  # doctest: +SKIP
 
-    >>> # OR (for a basic plot with pixel values on the axes)
-    >>> import numpy as np
-    >>> import matplotlib
-    >>> import matplotlib.pyplot as plt
-    >>> import sunpy.map
-    >>> hmi = sunpy.map.Map('fblos.fits')  # doctest: +SKIP
-    >>> plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=matplotlib.colormaps['hmimag'], origin='lower')  # doctest: +SKIP
-    >>> plt.show()  # doctest: +SKIP
+    .. plot::
+        :include-source:
+        :context: close-figs
 
-    >>> # Example usage for science (Level 1.0) data:
-    >>> import numpy as np
-    >>> import matplotlib
-    >>> import sunpy.map
-    >>> hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')  # doctest: +SKIP
-    >>> hmir = hmi.rotate()  # doctest: +SKIP
-    >>> hmir.plot_settings['cmap'] = matplotlib.colormaps['hmimag']  # doctest: +SKIP
-    >>> hmir.peek(vmin=-1500.0, vmax=1500.0)  # doctest: +SKIP
+        import matplotlib.pyplot as plt
+        import astropy.units as u
+
+        import sunpy.map
+        from sunpy.data.sample import HMI_LOS_IMAGE
+
+        smap = sunpy.map.Map(HMI_LOS_IMAGE)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection=smap)
+
+        smap.plot(axes=ax, cmap="hmimag", norm=None, vmin=-1500.0, vmax=1500.0)
+
+        plt.show()
 
     References
     ----------
-    * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`_
+    * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`__
     """
     return cmap_from_rgb_file('SDO HMI magnetogram', 'hmi_mag.csv')
 

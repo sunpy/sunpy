@@ -15,8 +15,8 @@ class NoRHClient(GenericClient):
     Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation
     time series data.
 
-    Uses this `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`__
-    hosted by the `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`__.
+    Uses this `https archive <https://solar.nro.nao.ac.jp/norh/data/tcx>`__
+    hosted by the `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/index.html>`__.
 
     Queries to NoRH should specify either 17GHz or 34GHz as a Wavelength.
 
@@ -31,23 +31,27 @@ class NoRHClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the NoRHClient:
-    Source: https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html
+    Source: https://solar.nro.nao.ac.jp/norh/index.html
     <BLANKLINE>
-           Start Time               End Time        ... Provider Wavelength
-                                                    ...             GHz
-    ----------------------- ----------------------- ... -------- ----------
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999 ...      NRO       17.0
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999 ...      NRO       17.0
+           Start Time               End Time        Instrument Source Provider Wavelength
+                                                                                  GHz
+    ----------------------- ----------------------- ---------- ------ -------- ----------
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       NORH   NAOJ      NRO       17.0
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       NORH   NAOJ      NRO       17.0
     <BLANKLINE>
     <BLANKLINE>
 
+    References
+    ----------
+    * `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/index.html>`__
+    * `NoRH Data Archive <https://solar.nro.nao.ac.jp/norh/data/tcx>`__
+    * `NoRH User Guide <https://solar.nro.nao.ac.jp/norh/doc/manuale/>`__
     """
-    baseurl = r'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/(\w){3}%y%m%d'
-    pattern = '{}/tcx/{year:4d}/{month:2d}/{Wavelength:3l}{:4d}{day:2d}'
+    pattern = r'https://solar.nro.nao.ac.jp/norh/data/tcx/{{year:4d}}/{{month:2d}}/{{Wavelength:3l}}{{:4d}}{{day:2d}}'
 
     @property
     def info_url(self):
-        return 'https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html'
+        return 'https://solar.nro.nao.ac.jp/norh/index.html'
 
     @classmethod
     def pre_search_hook(cls, *args, **kwargs):

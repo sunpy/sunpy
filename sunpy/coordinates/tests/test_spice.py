@@ -216,3 +216,16 @@ def test_to_helioprojective(spice_test):
     sunpy_coord = hpc.geocentricsolarecliptic
     assert_quantity_allclose(sunpy_coord.lon, spice_coord.lon, rtol=1e-6)
     assert_quantity_allclose(sunpy_coord.lat, spice_coord.lat, rtol=1e-6)
+
+def test_get_rotation_matrix(spice_test):
+    result1 = spice.get_rotation_matrix('HEEQ', 'J2000', '2024-07-04')
+    expected_result1 = np.array([[ 0.20454304,  0.97118061,  0.12235349],
+                                 [-0.87442558,  0.23746563, -0.42307208],
+                                 [-0.43993415, -0.02045257,  0.8977971]])
+    np.testing.assert_allclose(result1, expected_result1, atol=1e-6)
+
+    result2 = spice.get_rotation_matrix('HEEQ', 'HEEQ', '2024-07-04', '2024-07-18')
+    expected_result2 = np.array([[ 0.97314148,  0.23020788,  0],
+                                 [-0.23020788,  0.97314148, 0],
+                                 [0, 0, 1]])
+    np.testing.assert_allclose(result2, expected_result2, atol=1e-6)

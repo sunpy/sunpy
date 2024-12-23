@@ -11,6 +11,7 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 import sunpy.io
+import sunpy.io._file_tools
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
@@ -134,7 +135,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod

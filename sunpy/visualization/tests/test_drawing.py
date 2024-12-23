@@ -20,7 +20,7 @@ def aia171_test_map():
 
 @pytest.fixture
 def heliographic_test_map():
-    (data, header), = sunpy.io.read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
+    (data, header), = sunpy.io._file_tools.read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
     # Fix unit strings to prevent some astropy fits fixing warnings
     header['CUNIT1'] = 'deg'
     header['CUNIT2'] = 'deg'

@@ -1,485 +1,18 @@
-r'''Parse strings using a specification based on the Python format() syntax.
-
-   ``parse()`` is the opposite of ``format()``
-
-The module is set up to only export ``parse()``, ``search()``, ``findall()``,
-and ``with_pattern()`` when ``import \*`` is used:
-
->>> from parse import *
-
-From there it's a simple thing to parse a string:
-
-.. code-block:: pycon
-
-    >>> parse("It's {}, I love it!", "It's spam, I love it!")
-    <Result ('spam',) {}>
-    >>> _[0]
-    'spam'
-
-Or to search a string for some pattern:
-
-.. code-block:: pycon
-
-    >>> search('Age: {:d}\n', 'Name: Rufus\nAge: 42\nColor: red\n')
-    <Result (42,) {}>
-
-Or find all the occurrences of some pattern in a string:
-
-.. code-block:: pycon
-
-    >>> ''.join(r[0] for r in findall(">{}<", "<p>the <b>bold</b> text</p>"))
-    'the bold text'
-
-If you're going to use the same pattern to match lots of strings you can
-compile it once:
-
-.. code-block:: pycon
-
-    >>> from parse import compile
-    >>> p = compile("It's {}, I love it!")
-    >>> print(p)
-    <Parser "It's {}, I love it!">
-    >>> p.parse("It's spam, I love it!")
-    <Result ('spam',) {}>
-
-("compile" is not exported for ``import *`` usage as it would override the
-built-in ``compile()`` function)
-
-The default behaviour is to match strings case insensitively. You may match with
-case by specifying `case_sensitive=True`:
-
-.. code-block:: pycon
-
-    >>> parse('SPAM', 'spam', case_sensitive=True) is None
-    True
-
-
-Format Syntax
--------------
-
-A basic version of the `Format String Syntax`_ is supported with anonymous
-(fixed-position), named and formatted fields::
-
-   {[field name]:[format spec]}
-
-Field names must be a valid Python identifiers, including dotted names;
-element indexes imply dictionaries (see below for example).
-
-Numbered fields are also not supported: the result of parsing will include
-the parsed fields in the order they are parsed.
-
-The conversion of fields to types other than strings is done based on the
-type in the format specification, which mirrors the ``format()`` behaviour.
-There are no "!" field conversions like ``format()`` has.
-
-Some simple parse() format string examples:
-
-.. code-block:: pycon
-
-    >>> parse("Bring me a {}", "Bring me a shrubbery")
-    <Result ('shrubbery',) {}>
-    >>> r = parse("The {} who {} {}", "The knights who say Ni!")
-    >>> print(r)
-    <Result ('knights', 'say', 'Ni!') {}>
-    >>> print(r.fixed)
-    ('knights', 'say', 'Ni!')
-    >>> print(r[0])
-    knights
-    >>> print(r[1:])
-    ('say', 'Ni!')
-    >>> r = parse("Bring out the holy {item}", "Bring out the holy hand grenade")
-    >>> print(r)
-    <Result () {'item': 'hand grenade'}>
-    >>> print(r.named)
-    {'item': 'hand grenade'}
-    >>> print(r['item'])
-    hand grenade
-    >>> 'item' in r
-    True
-
-Note that `in` only works if you have named fields.
-
-Dotted names and indexes are possible with some limits. Only word identifiers
-are supported (ie. no numeric indexes) and the application must make additional
-sense of the result:
-
-.. code-block:: pycon
-
-    >>> r = parse("Mmm, {food.type}, I love it!", "Mmm, spam, I love it!")
-    >>> print(r)
-    <Result () {'food.type': 'spam'}>
-    >>> print(r.named)
-    {'food.type': 'spam'}
-    >>> print(r['food.type'])
-    spam
-    >>> r = parse("My quest is {quest[name]}", "My quest is to seek the holy grail!")
-    >>> print(r)
-    <Result () {'quest': {'name': 'to seek the holy grail!'}}>
-    >>> print(r['quest'])
-    {'name': 'to seek the holy grail!'}
-    >>> print(r['quest']['name'])
-    to seek the holy grail!
-
-If the text you're matching has braces in it you can match those by including
-a double-brace ``{{`` or ``}}`` in your format string, just like format() does.
-
-
-Format Specification
---------------------
-
-Most often a straight format-less ``{}`` will suffice where a more complex
-format specification might have been used.
-
-Most of `format()`'s `Format Specification Mini-Language`_ is supported:
-
-   [[fill]align][0][width][.precision][type]
-
-The differences between `parse()` and `format()` are:
-
-- The align operators will cause spaces (or specified fill character) to be
-  stripped from the parsed value. The width is not enforced; it just indicates
-  there may be whitespace or "0"s to strip.
-- Numeric parsing will automatically handle a "0b", "0o" or "0x" prefix.
-  That is, the "#" format character is handled automatically by d, b, o
-  and x formats. For "d" any will be accepted, but for the others the correct
-  prefix must be present if at all.
-- Numeric sign is handled automatically.
-- The thousands separator is handled automatically if the "n" type is used.
-- The types supported are a slightly different mix to the format() types.  Some
-  format() types come directly over: "d", "n", "%", "f", "e", "b", "o" and "x".
-  In addition some regular expression character group types "D", "w", "W", "s"
-  and "S" are also available.
-- The "e" and "g" types are case-insensitive so there is not need for
-  the "E" or "G" types. The "e" type handles Fortran formatted numbers (no
-  leading 0 before the decimal point).
-
-===== =========================================== ========
-Type  Characters Matched                          Output
-===== =========================================== ========
-l     Letters (ASCII)                             str
-w     Letters, numbers and underscore             str
-W     Not letters, numbers and underscore         str
-s     Whitespace                                  str
-S     Non-whitespace                              str
-d     Digits (effectively integer numbers)        int
-D     Non-digit                                   str
-n     Numbers with thousands separators (, or .)  int
-%     Percentage (converted to value/100.0)       float
-f     Fixed-point numbers                         float
-F     Decimal numbers                             Decimal
-e     Floating-point numbers with exponent        float
-      e.g. 1.1e-10, NAN (all case insensitive)
-g     General number format (either d, f or e)    float
-b     Binary numbers                              int
-o     Octal numbers                               int
-x     Hexadecimal numbers (lower and upper case)  int
-ti    ISO 8601 format date/time                   datetime
-      e.g. 1972-01-20T10:21:36Z ("T" and "Z"
-      optional)
-te    RFC2822 e-mail format date/time             datetime
-      e.g. Mon, 20 Jan 1972 10:21:36 +1000
-tg    Global (day/month) format date/time         datetime
-      e.g. 20/1/1972 10:21:36 AM +1:00
-ta    US (month/day) format date/time             datetime
-      e.g. 1/20/1972 10:21:36 PM +10:30
-tc    ctime() format date/time                    datetime
-      e.g. Sun Sep 16 01:03:52 1973
-th    HTTP log format date/time                   datetime
-      e.g. 21/Nov/2011:00:07:11 +0000
-ts    Linux system log format date/time           datetime
-      e.g. Nov  9 03:37:44
-tt    Time                                        time
-      e.g. 10:21:36 PM -5:30
-===== =========================================== ========
-
-Some examples of typed parsing with ``None`` returned if the typing
-does not match:
-
-.. code-block:: pycon
-
-    >>> parse('Our {:d} {:w} are...', 'Our 3 weapons are...')
-    <Result (3, 'weapons') {}>
-    >>> parse('Our {:d} {:w} are...', 'Our three weapons are...')
-    >>> parse('Meet at {:tg}', 'Meet at 1/2/2011 11:00 PM')
-    <Result (datetime.datetime(2011, 2, 1, 23, 0),) {}>
-
-And messing about with alignment:
-
-.. code-block:: pycon
-
-    >>> parse('with {:>} herring', 'with     a herring')
-    <Result ('a',) {}>
-    >>> parse('spam {:^} spam', 'spam    lovely     spam')
-    <Result ('lovely',) {}>
-
-Note that the "center" alignment does not test to make sure the value is
-centered - it just strips leading and trailing whitespace.
-
-Width and precision may be used to restrict the size of matched text
-from the input. Width specifies a minimum size and precision specifies
-a maximum. For example:
-
-.. code-block:: pycon
-
-    >>> parse('{:.2}{:.2}', 'look')           # specifying precision
-    <Result ('lo', 'ok') {}>
-    >>> parse('{:4}{:4}', 'look at that')     # specifying width
-    <Result ('look', 'at that') {}>
-    >>> parse('{:4}{:.4}', 'look at that')    # specifying both
-    <Result ('look at ', 'that') {}>
-    >>> parse('{:2d}{:2d}', '0440')           # parsing two contiguous numbers
-    <Result (4, 40) {}>
-
-Some notes for the date and time types:
-
-- the presence of the time part is optional (including ISO 8601, starting
-  at the "T"). A full datetime object will always be returned; the time
-  will be set to 00:00:00. You may also specify a time without seconds.
-- when a seconds amount is present in the input fractions will be parsed
-  to give microseconds.
-- except in ISO 8601 the day and month digits may be 0-padded.
-- the date separator for the tg and ta formats may be "-" or "/".
-- named months (abbreviations or full names) may be used in the ta and tg
-  formats in place of numeric months.
-- as per RFC 2822 the e-mail format may omit the day (and comma), and the
-  seconds but nothing else.
-- hours greater than 12 will be happily accepted.
-- the AM/PM are optional, and if PM is found then 12 hours will be added
-  to the datetime object's hours amount - even if the hour is greater
-  than 12 (for consistency.)
-- in ISO 8601 the "Z" (UTC) timezone part may be a numeric offset
-- timezones are specified as "+HH:MM" or "-HH:MM". The hour may be one or two
-  digits (0-padded is OK.) Also, the ":" is optional.
-- the timezone is optional in all except the e-mail format (it defaults to
-  UTC.)
-- named timezones are not handled yet.
-
-Note: attempting to match too many datetime fields in a single parse() will
-currently result in a resource allocation issue. A TooManyFields exception
-will be raised in this instance. The current limit is about 15. It is hoped
-that this limit will be removed one day.
-
-.. _`Format String Syntax`:
-  http://docs.python.org/library/string.html#format-string-syntax
-.. _`Format Specification Mini-Language`:
-  http://docs.python.org/library/string.html#format-specification-mini-language
-
-
-Result and Match Objects
-------------------------
-
-The result of a ``parse()`` and ``search()`` operation is either ``None`` (no match), a
-``Result`` instance or a ``Match`` instance if ``evaluate_result`` is False.
-
-The ``Result`` instance has three attributes:
-
-``fixed``
-   A tuple of the fixed-position, anonymous fields extracted from the input.
-``named``
-   A dictionary of the named fields extracted from the input.
-``spans``
-   A dictionary mapping the names and fixed position indices matched to a
-   2-tuple slice range of where the match occurred in the input.
-   The span does not include any stripped padding (alignment or width).
-
-The ``Match`` instance has one method:
-
-``evaluate_result()``
-   Generates and returns a ``Result`` instance for this ``Match`` object.
-
-
-
-Custom Type Conversions
------------------------
-
-If you wish to have matched fields automatically converted to your own type you
-may pass in a dictionary of type conversion information to ``parse()`` and
-``compile()``.
-
-The converter will be passed the field string matched. Whatever it returns
-will be substituted in the ``Result`` instance for that field.
-
-Your custom type conversions may override the builtin types if you supply one
-with the same identifier:
-
-.. code-block:: pycon
-
-    >>> def shouty(string):
-    ...    return string.upper()
-    ...
-    >>> parse('{:shouty} world', 'hello world', dict(shouty=shouty))
-    <Result ('HELLO',) {}>
-
-If the type converter has the optional ``pattern`` attribute, it is used as
-regular expression for better pattern matching (instead of the default one):
-
-.. code-block:: pycon
-
-    >>> def parse_number(text):
-    ...    return int(text)
-    >>> parse_number.pattern = r'\d+'
-    >>> parse('Answer: {number:Number}', 'Answer: 42', dict(Number=parse_number))
-    <Result () {'number': 42}>
-    >>> _ = parse('Answer: {:Number}', 'Answer: Alice', dict(Number=parse_number))
-    >>> assert _ is None, "MISMATCH"
-
-You can also use the ``with_pattern(pattern)`` decorator to add this
-information to a type converter function:
-
-.. code-block:: pycon
-
-    >>> from parse import with_pattern
-    >>> @with_pattern(r'\d+')
-    ... def parse_number(text):
-    ...    return int(text)
-    >>> parse('Answer: {number:Number}', 'Answer: 42', dict(Number=parse_number))
-    <Result () {'number': 42}>
-
-A more complete example of a custom type might be:
-
-.. code-block:: pycon
-
-    >>> yesno_mapping = {
-    ...     "yes":  True,   "no":    False,
-    ...     "on":   True,   "off":   False,
-    ...     "true": True,   "false": False,
-    ... }
-    >>> @with_pattern(r"|".join(yesno_mapping))
-    ... def parse_yesno(text):
-    ...     return yesno_mapping[text.lower()]
-
-
-If the type converter ``pattern`` uses regex-grouping (with parenthesis),
-you should indicate this by using the optional ``regex_group_count`` parameter
-in the ``with_pattern()`` decorator:
-
-.. code-block:: pycon
-
-    >>> @with_pattern(r'((\d+))', regex_group_count=2)
-    ... def parse_number2(text):
-    ...    return int(text)
-    >>> parse('Answer: {:Number2} {:Number2}', 'Answer: 42 43', dict(Number2=parse_number2))
-    <Result (42, 43) {}>
-
-Otherwise, this may cause parsing problems with unnamed/fixed parameters.
-
-
-Potential Gotchas
------------------
-
-``parse()`` will always match the shortest text necessary (from left to right)
-to fulfil the parse pattern, so for example:
-
-
-.. code-block:: pycon
-
-    >>> pattern = '{dir1}/{dir2}'
-    >>> data = 'root/parent/subdir'
-    >>> sorted(parse(pattern, data).named.items())
-    [('dir1', 'root'), ('dir2', 'parent/subdir')]
-
-So, even though `{'dir1': 'root/parent', 'dir2': 'subdir'}` would also fit
-the pattern, the actual match represents the shortest successful match for
-``dir1``.
-
-----
-
-- 1.19.0 Added slice access to fixed results (thanks @jonathangjertsen).
-  Also corrected matching of *full string* vs. *full line* (thanks @giladreti)
-  Fix issue with using digit field numbering and types
-- 1.18.0 Correct bug in int parsing introduced in 1.16.0 (thanks @maxxk)
-- 1.17.0 Make left- and center-aligned search consume up to next space
-- 1.16.0 Make compiled parse objects pickleable (thanks @martinResearch)
-- 1.15.0 Several fixes for parsing non-base 10 numbers (thanks @vladikcomper)
-- 1.14.0 More broad acceptance of Fortran number format (thanks @purpleskyfall)
-- 1.13.1 Project metadata correction.
-- 1.13.0 Handle Fortran formatted numbers with no leading 0 before decimal
-  point (thanks @purpleskyfall).
-  Handle comparison of FixedTzOffset with other types of object.
-- 1.12.1 Actually use the `case_sensitive` arg in compile (thanks @jacquev6)
-- 1.12.0 Do not assume closing brace when an opening one is found (thanks @mattsep)
-- 1.11.1 Revert having unicode char in docstring, it breaks Bamboo builds(?!)
-- 1.11.0 Implement `__contains__` for Result instances.
-- 1.10.0 Introduce a "letters" matcher, since "w" matches numbers
-  also.
-- 1.9.1 Fix deprecation warnings around backslashes in regex strings
-  (thanks Mickael Schoentgen). Also fix some documentation formatting
-  issues.
-- 1.9.0 We now honor precision and width specifiers when parsing numbers
-  and strings, allowing parsing of concatenated elements of fixed width
-  (thanks Julia Signell)
-- 1.8.4 Add LICENSE file at request of packagers.
-  Correct handling of AM/PM to follow most common interpretation.
-  Correct parsing of hexadecimal that looks like a binary prefix.
-  Add ability to parse case sensitively.
-  Add parsing of numbers to Decimal with "F" (thanks John Vandenberg)
-- 1.8.3 Add regex_group_count to with_pattern() decorator to support
-  user-defined types that contain brackets/parenthesis (thanks Jens Engel)
-- 1.8.2 add documentation for including braces in format string
-- 1.8.1 ensure bare hexadecimal digits are not matched
-- 1.8.0 support manual control over result evaluation (thanks Timo Furrer)
-- 1.7.0 parse dict fields (thanks Mark Visser) and adapted to allow
-  more than 100 re groups in Python 3.5+ (thanks David King)
-- 1.6.6 parse Linux system log dates (thanks Alex Cowan)
-- 1.6.5 handle precision in float format (thanks Levi Kilcher)
-- 1.6.4 handle pipe "|" characters in parse string (thanks Martijn Pieters)
-- 1.6.3 handle repeated instances of named fields, fix bug in PM time
-  overflow
-- 1.6.2 fix logging to use local, not root logger (thanks Necku)
-- 1.6.1 be more flexible regarding matched ISO datetimes and timezones in
-  general, fix bug in timezones without ":" and improve docs
-- 1.6.0 add support for optional ``pattern`` attribute in user-defined types
-  (thanks Jens Engel)
-- 1.5.3 fix handling of question marks
-- 1.5.2 fix type conversion error with dotted names (thanks Sebastian Thiel)
-- 1.5.1 implement handling of named datetime fields
-- 1.5 add handling of dotted field names (thanks Sebastian Thiel)
-- 1.4.1 fix parsing of "0" in int conversion (thanks James Rowe)
-- 1.4 add __getitem__ convenience access on Result.
-- 1.3.3 fix Python 2.5 setup.py issue.
-- 1.3.2 fix Python 3.2 setup.py issue.
-- 1.3.1 fix a couple of Python 3.2 compatibility issues.
-- 1.3 added search() and findall(); removed compile() from ``import *``
-  export as it overwrites builtin.
-- 1.2 added ability for custom and override type conversions to be
-  provided; some cleanup
-- 1.1.9 to keep things simpler number sign is handled automatically;
-  significant robustification in the face of edge-case input.
-- 1.1.8 allow "d" fields to have number base "0x" etc. prefixes;
-  fix up some field type interactions after stress-testing the parser;
-  implement "%" type.
-- 1.1.7 Python 3 compatibility tweaks (2.5 to 2.7 and 3.2 are supported).
-- 1.1.6 add "e" and "g" field types; removed redundant "h" and "X";
-  removed need for explicit "#".
-- 1.1.5 accept textual dates in more places; Result now holds match span
-  positions.
-- 1.1.4 fixes to some int type conversion; implemented "=" alignment; added
-  date/time parsing with a variety of formats handled.
-- 1.1.3 type conversion is automatic based on specified field types. Also added
-  "f" and "n" types.
-- 1.1.2 refactored, added compile() and limited ``from parse import *``
-- 1.1.1 documentation improvements
-- 1.1.0 implemented more of the `Format Specification Mini-Language`_
-  and removed the restriction on mixing fixed-position and named fields
-- 1.0.0 initial release
-
-This code is copyright 2012-2021 Richard Jones <richard@python.org>
-See the end of the source file for the license of use.
-'''
-
 from __future__ import absolute_import
 
-__version__ = '1.19.0'
-
-# yes, I now have two problems
+import logging
 import re
 import sys
-from datetime import datetime, time, tzinfo, timedelta
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
+from datetime import tzinfo
 from decimal import Decimal
 from functools import partial
-import logging
 
-__all__ = 'parse search findall with_pattern'.split()
+
+__version__ = "1.20.2"
+__all__ = ["parse", "search", "findall", "with_pattern"]
 
 log = logging.getLogger(__name__)
 
@@ -529,16 +62,16 @@ class int_convert:
     It may also have other non-numeric characters that we can ignore.
     """
 
-    CHARS = '0123456789abcdefghijklmnopqrstuvwxyz'
+    CHARS = "0123456789abcdefghijklmnopqrstuvwxyz"
 
     def __init__(self, base=None):
         self.base = base
 
     def __call__(self, string, match):
-        if string[0] == '-':
+        if string[0] == "-":
             sign = -1
             number_start = 1
-        elif string[0] == '+':
+        elif string[0] == "+":
             sign = 1
             number_start = 1
         else:
@@ -548,21 +81,20 @@ class int_convert:
         base = self.base
         # If base wasn't specified, detect it automatically
         if base is None:
-
             # Assume decimal number, unless different base is detected
             base = 10
 
             # For number formats starting with 0b, 0o, 0x, use corresponding base ...
-            if string[number_start] == '0' and len(string) - number_start > 2:
-                if string[number_start + 1] in 'bB':
+            if string[number_start] == "0" and len(string) - number_start > 2:
+                if string[number_start + 1] in "bB":
                     base = 2
-                elif string[number_start + 1] in 'oO':
+                elif string[number_start + 1] in "oO":
                     base = 8
-                elif string[number_start + 1] in 'xX':
+                elif string[number_start + 1] in "xX":
                     base = 16
 
         chars = int_convert.CHARS[:base]
-        string = re.sub('[^%s]' % chars, '', string.lower())
+        string = re.sub("[^%s]" % chars, "", string.lower())
         return sign * int(string, base)
 
 
@@ -592,7 +124,7 @@ class FixedTzOffset(tzinfo):
         self._name = name
 
     def __repr__(self):
-        return '<%s %s %s>' % (self.__class__.__name__, self._name, self._offset)
+        return "<%s %s %s>" % (self.__class__.__name__, self._name, self._offset)
 
     def utcoffset(self, dt):
         return self._offset
@@ -605,41 +137,41 @@ class FixedTzOffset(tzinfo):
 
     def __eq__(self, other):
         if not isinstance(other, FixedTzOffset):
-            return False
+            return NotImplemented
         return self._name == other._name and self._offset == other._offset
 
 
-MONTHS_MAP = dict(
-    Jan=1,
-    January=1,
-    Feb=2,
-    February=2,
-    Mar=3,
-    March=3,
-    Apr=4,
-    April=4,
-    May=5,
-    Jun=6,
-    June=6,
-    Jul=7,
-    July=7,
-    Aug=8,
-    August=8,
-    Sep=9,
-    September=9,
-    Oct=10,
-    October=10,
-    Nov=11,
-    November=11,
-    Dec=12,
-    December=12,
-)
-DAYS_PAT = r'(Mon|Tue|Wed|Thu|Fri|Sat|Sun)'
-MONTHS_PAT = r'(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)'
-ALL_MONTHS_PAT = r'(%s)' % '|'.join(MONTHS_MAP)
-TIME_PAT = r'(\d{1,2}:\d{1,2}(:\d{1,2}(\.\d+)?)?)'
-AM_PAT = r'(\s+[AP]M)'
-TZ_PAT = r'(\s+[-+]\d\d?:?\d\d)'
+MONTHS_MAP = {
+    "Jan": 1,
+    "January": 1,
+    "Feb": 2,
+    "February": 2,
+    "Mar": 3,
+    "March": 3,
+    "Apr": 4,
+    "April": 4,
+    "May": 5,
+    "Jun": 6,
+    "June": 6,
+    "Jul": 7,
+    "July": 7,
+    "Aug": 8,
+    "August": 8,
+    "Sep": 9,
+    "September": 9,
+    "Oct": 10,
+    "October": 10,
+    "Nov": 11,
+    "November": 11,
+    "Dec": 12,
+    "December": 12,
+}
+DAYS_PAT = r"(Mon|Tue|Wed|Thu|Fri|Sat|Sun)"
+MONTHS_PAT = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
+ALL_MONTHS_PAT = r"(%s)" % "|".join(MONTHS_MAP)
+TIME_PAT = r"(\d{1,2}:\d{1,2}(:\d{1,2}(\.\d+)?)?)"
+AM_PAT = r"(\s+[AP]M)"
+TZ_PAT = r"(\s+[-+]\d\d?:?\d\d)"
 
 
 def date_convert(
@@ -665,11 +197,11 @@ def date_convert(
         m = groups[mm]
         d = groups[dd]
     elif ymd is not None:
-        y, m, d = re.split(r'[-/\s]', groups[ymd])
+        y, m, d = re.split(r"[-/\s]", groups[ymd])
     elif mdy is not None:
-        m, d, y = re.split(r'[-/\s]', groups[mdy])
+        m, d, y = re.split(r"[-/\s]", groups[mdy])
     elif dmy is not None:
-        d, m, y = re.split(r'[-/\s]', groups[dmy])
+        d, m, y = re.split(r"[-/\s]", groups[dmy])
     elif d_m_y is not None:
         d, m, y = d_m_y
         d = groups[d]
@@ -680,14 +212,14 @@ def date_convert(
 
     H = M = S = u = 0
     if hms is not None and groups[hms]:
-        t = groups[hms].split(':')
+        t = groups[hms].split(":")
         if len(t) == 2:
             H, M = t
         else:
             H, M, S = t
-            if '.' in S:
-                S, u = S.split('.')
-                u = int(float('.' + u) * 1000000)
+            if "." in S:
+                S, u = S.split(".")
+                u = int(float("." + u) * 1000000)
             S = int(S)
         H = int(H)
         M = int(M)
@@ -696,19 +228,19 @@ def date_convert(
         am = groups[am]
         if am:
             am = am.strip()
-        if am == 'AM' and H == 12:
+        if am == "AM" and H == 12:
             # correction for "12" hour functioning as "0" hour: 12:15 AM = 00:15 by 24 hr clock
             H -= 12
-        elif am == 'PM' and H == 12:
+        elif am == "PM" and H == 12:
             # no correction needed: 12PM is midday, 12:00 by 24 hour clock
             pass
-        elif am == 'PM':
+        elif am == "PM":
             H += 12
 
     if tz is not None:
         tz = groups[tz]
-    if tz == 'Z':
-        tz = FixedTzOffset(0, 'UTC')
+    if tz == "Z":
+        tz = FixedTzOffset(0, "UTC")
     elif tz:
         tz = tz.strip()
         if tz.isupper():
@@ -716,14 +248,14 @@ def date_convert(
             pass
         else:
             sign = tz[0]
-            if ':' in tz:
-                tzh, tzm = tz[1:].split(':')
+            if ":" in tz:
+                tzh, tzm = tz[1:].split(":")
             elif len(tz) == 4:  # 'snnn'
                 tzh, tzm = tz[1], tz[2:4]
             else:
                 tzh, tzm = tz[1:3], tz[3:5]
             offset = int(tzm) + int(tzh) * 60
-            if sign == '-':
+            if sign == "-":
                 offset = -offset
             tz = FixedTzOffset(offset, tz)
 
@@ -741,6 +273,66 @@ def date_convert(
     return d
 
 
+def strf_date_convert(x, _, type):
+    is_date = any("%" + x in type for x in "aAwdbBmyYjUW")
+    is_time = any("%" + x in type for x in "HIpMSfz")
+
+    dt = datetime.strptime(x, type)
+    if "%y" not in type and "%Y" not in type:  # year not specified
+        dt = dt.replace(year=datetime.today().year)
+
+    if is_date and is_time:
+        return dt
+    elif is_date:
+        return dt.date()
+    elif is_time:
+        return dt.time()
+    else:
+        ValueError("Datetime not a date nor a time?")
+
+
+# ref: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+dt_format_to_regex = {
+    "%a": "(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)",
+    "%A": "(?:Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)",
+    "%w": "[0-6]",
+    "%d": "[0-9]{1,2}",
+    "%b": "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)",
+    "%B": "(?:January|February|March|April|May|June|July|August|September|October|November|December)",
+    "%m": "[0-9]{1,2}",
+    "%y": "[0-9]{2}",
+    "%Y": "[0-9]{4}",
+    "%H": "[0-9]{1,2}",
+    "%I": "[0-9]{1,2}",
+    "%p": "(?:AM|PM)",
+    "%M": "[0-9]{2}",
+    "%S": "[0-9]{2}",
+    "%f": "[0-9]{1,6}",
+    "%z": "[+|-][0-9]{2}(:?[0-9]{2})?(:?[0-9]{2})?",
+    # "%Z": punt
+    "%j": "[0-9]{1,3}",
+    "%U": "[0-9]{1,2}",
+    "%W": "[0-9]{1,2}",
+}
+
+# Compile a regular expression pattern that matches any date/time format symbol.
+dt_format_symbols_re = re.compile("|".join(dt_format_to_regex))
+
+
+def get_regex_for_datetime_format(format_):
+    """
+    Generate a regex pattern for a given datetime format string.
+
+    Parameters:
+        format_ (str): The datetime format string.
+
+    Returns:
+        str: A regex pattern corresponding to the datetime format string.
+    """
+    # Replace all format symbols with their regex patterns.
+    return dt_format_symbols_re.sub(lambda m: dt_format_to_regex[m.group(0)], format_)
+
+
 class TooManyFields(ValueError):
     pass
 
@@ -750,41 +342,43 @@ class RepeatedNameError(ValueError):
 
 
 # note: {} are handled separately
-# note: I don't use r'' here because Sublime Text 2 syntax highlight has a fit
-REGEX_SAFETY = re.compile(r'([?\\\\.[\]()*+\^$!\|])')
+REGEX_SAFETY = re.compile(r"([?\\.[\]()*+^$!|])")
 
 # allowed field types
-ALLOWED_TYPES = set(list('nbox%fFegwWdDsSl') + ['t' + c for c in 'ieahgcts'])
+ALLOWED_TYPES = set(list("nbox%fFegwWdDsSl") + ["t" + c for c in "ieahgcts"])
 
 
 def extract_format(format, extra_types):
-    """Pull apart the format [[fill]align][0][width][.precision][type]"""
+    """Pull apart the format [[fill]align][sign][0][width][.precision][type]"""
     fill = align = None
-    if format[0] in '<>=^':
+    if format[0] in "<>=^":
         align = format[0]
         format = format[1:]
-    elif len(format) > 1 and format[1] in '<>=^':
+    elif len(format) > 1 and format[1] in "<>=^":
         fill = format[0]
         align = format[1]
         format = format[2:]
 
+    if format.startswith(("+", "-", " ")):
+        format = format[1:]
+
     zero = False
-    if format and format[0] == '0':
+    if format and format[0] == "0":
         zero = True
         format = format[1:]
 
-    width = ''
+    width = ""
     while format:
         if not format[0].isdigit():
             break
         width += format[0]
         format = format[1:]
 
-    if format.startswith('.'):
+    if format.startswith("."):
         # Precision isn't needed but we need to capture it so that
         # the ValueError isn't raised.
         format = format[1:]  # drop the '.'
-        precision = ''
+        precision = ""
         while format:
             if not format[0].isdigit():
                 break
@@ -793,13 +387,18 @@ def extract_format(format, extra_types):
 
     # the rest is the type, if present
     type = format
-    if type and type not in ALLOWED_TYPES and type not in extra_types:
-        raise ValueError('format spec %r not recognised' % type)
+    if (
+        type
+        and type not in ALLOWED_TYPES
+        and type not in extra_types
+        and not any(k in type for k in dt_format_to_regex)
+    ):
+        raise ValueError("format spec %r not recognised" % type)
 
     return locals()
 
 
-PARSE_RE = re.compile(r"""({{|}}|{\w*(?:(?:\.\w+)|(?:\[[^\]]+\]))*(?::[^}]+)?})""")
+PARSE_RE = re.compile(r"({{|}}|{[\w-]*(?:\.[\w-]+|\[[^]]+])*(?::[^}]+)?})")
 
 
 class Parser(object):
@@ -807,7 +406,7 @@ class Parser(object):
 
     def __init__(self, format, extra_types=None, case_sensitive=False):
         # a mapping of a name as in {hello.world} to a regex-group compatible
-        # name, like hello__world Its used to prevent the transformation of
+        # name, like hello__world. It's used to prevent the transformation of
         # name-to-group and group to name to fail subtly, such as in:
         # hello_.world-> hello___world->hello._world
         self._group_to_name_map = {}
@@ -834,12 +433,12 @@ class Parser(object):
         self.__search_re = None
         self.__match_re = None
 
-        log.debug('format %r -> %r', format, self._expression)
+        log.debug("format %r -> %r", format, self._expression)
 
     def __repr__(self):
         if len(self._format) > 20:
-            return '<%s %r>' % (self.__class__.__name__, self._format[:17] + '...')
-        return '<%s %r>' % (self.__class__.__name__, self._format)
+            return "<%s %r>" % (self.__class__.__name__, self._format[:17] + "...")
+        return "<%s %r>" % (self.__class__.__name__, self._format)
 
     @property
     def _search_re(self):
@@ -849,24 +448,24 @@ class Parser(object):
             except AssertionError:
                 # access error through sys to keep py3k and backward compat
                 e = str(sys.exc_info()[1])
-                if e.endswith('this version only supports 100 named groups'):
+                if e.endswith("this version only supports 100 named groups"):
                     raise TooManyFields(
-                        'sorry, you are attempting to parse ' 'too many complex fields'
+                        "sorry, you are attempting to parse too many complex fields"
                     )
         return self.__search_re
 
     @property
     def _match_re(self):
         if self.__match_re is None:
-            expression = r'\A%s\Z' % self._expression
+            expression = r"\A%s\Z" % self._expression
             try:
                 self.__match_re = re.compile(expression, self._re_flags)
             except AssertionError:
                 # access error through sys to keep py3k and backward compat
                 e = str(sys.exc_info()[1])
-                if e.endswith('this version only supports 100 named groups'):
+                if e.endswith("this version only supports 100 named groups"):
                     raise TooManyFields(
-                        'sorry, you are attempting to parse ' 'too many complex fields'
+                        "sorry, you are attempting to parse too many complex fields"
                     )
             except re.error:
                 raise NotImplementedError(
@@ -877,11 +476,15 @@ class Parser(object):
 
     @property
     def named_fields(self):
-        return self._named_fields.copy()
+        return self._named_fields[:]
 
     @property
     def fixed_fields(self):
-        return self._fixed_fields.copy()
+        return self._fixed_fields[:]
+
+    @property
+    def format(self):
+        return self._format
 
     def parse(self, string, evaluate_result=True):
         """Match my format to the string exactly.
@@ -942,14 +545,18 @@ class Parser(object):
         result = {}
         for field, value in named_fields.items():
             # split 'aaa[bbb][ccc]...' into 'aaa' and '[bbb][ccc]...'
-            basename, subkeys = re.match(r'([^\[]+)(.*)', field).groups()
+            n = field.find("[")
+            if n == -1:
+                basename, subkeys = field, ""
+            else:
+                basename, subkeys = field[:n], field[n:]
 
             # create nested dictionaries {'aaa': {'bbb': {'ccc': ...}}}
             d = result
             k = basename
 
             if subkeys:
-                for subkey in re.findall(r'\[[^\]]+\]', subkeys):
+                for subkey in re.findall(r"\[[^]]+]", subkeys):
                     d = d.setdefault(k, {})
                     k = subkey[1:-1]
 
@@ -959,7 +566,7 @@ class Parser(object):
         return result
 
     def evaluate_result(self, m):
-        '''Generate a Result instance for the given regex match object'''
+        """Generate a Result instance for the given regex match object"""
         # ok, figure the fixed fields we've pulled out and type convert them
         fixed_fields = list(m.groups())
         for n in self._fixed_fields:
@@ -982,14 +589,14 @@ class Parser(object):
             named_fields[korig] = value
 
         # now figure the match spans
-        spans = dict((n, m.span(name_map[n])) for n in named_fields)
+        spans = {n: m.span(name_map[n]) for n in named_fields}
         spans.update((i, m.span(n + 1)) for i, n in enumerate(self._fixed_fields))
 
         # and that's our result
         return Result(fixed_fields, self._expand_named_fields(named_fields), spans)
 
     def _regex_replace(self, match):
-        return '\\' + match.group(1)
+        return "\\" + match.group(1)
 
     def _generate_expression(self):
         # turn my _format attribute into the _expression attribute
@@ -997,33 +604,35 @@ class Parser(object):
         for part in PARSE_RE.split(self._format):
             if not part:
                 continue
-            elif part == '{{':
-                e.append(r'\{')
-            elif part == '}}':
-                e.append(r'\}')
-            elif part[0] == '{' and part[-1] == '}':
+            elif part == "{{":
+                e.append(r"\{")
+            elif part == "}}":
+                e.append(r"\}")
+            elif part[0] == "{" and part[-1] == "}":
                 # this will be a braces-delimited field to handle
                 e.append(self._handle_field(part))
             else:
                 # just some text to match
                 e.append(REGEX_SAFETY.sub(self._regex_replace, part))
-        return ''.join(e)
+        return "".join(e)
 
     def _to_group_name(self, field):
         # return a version of field which can be used as capture group, even
         # though it might contain '.'
-        group = field.replace('.', '_').replace('[', '_').replace(']', '_')
+        group = field.replace(".", "_").replace("[", "_").replace("]", "_").replace("-", "_")
 
         # make sure we don't collide ("a.b" colliding with "a_b")
         n = 1
         while group in self._group_to_name_map:
             n += 1
-            if '.' in field:
-                group = field.replace('.', '_' * n)
-            elif '_' in field:
-                group = field.replace('_', '_' * n)
+            if "." in field:
+                group = field.replace(".", "_" * n)
+            elif "_" in field:
+                group = field.replace("_", "_" * n)
+            elif "-" in field:
+                group = field.replace("-", "_" * n)
             else:
-                raise KeyError('duplicated group name %r' % (field,))
+                raise KeyError("duplicated group name %r" % (field,))
 
         # save off the mapping
         self._group_to_name_map[group] = field
@@ -1036,10 +645,10 @@ class Parser(object):
 
         # now figure whether this is an anonymous or named field, and whether
         # there's any format specification
-        format = ''
+        format = ""
 
-        if ':' in field:
-            name, format = field.split(':')
+        if ":" in field:
+            name, format = field.split(":", 1)
         else:
             name = field
 
@@ -1052,195 +661,171 @@ class Parser(object):
                 if self._name_types[name] != format:
                     raise RepeatedNameError(
                         'field type %r for field "%s" '
-                        'does not match previous seen type %r'
+                        "does not match previous seen type %r"
                         % (format, name, self._name_types[name])
                     )
                 group = self._name_to_group_map[name]
                 # match previously-seen value
-                return r'(?P=%s)' % group
+                return r"(?P=%s)" % group
             else:
                 group = self._to_group_name(name)
                 self._name_types[name] = format
             self._named_fields.append(group)
             # this will become a group, which must not contain dots
-            wrap = r'(?P<%s>%%s)' % group
+            wrap = r"(?P<%s>%%s)" % group
         else:
             self._fixed_fields.append(self._group_index)
-            wrap = r'(%s)'
+            wrap = r"(%s)"
             group = self._group_index
 
         # simplest case: no type specifier ({} or {name})
         if not format:
             self._group_index += 1
-            return wrap % r'.+?'
+            return wrap % r".+?"
 
         # decode the format specification
         format = extract_format(format, self._extra_types)
 
         # figure type conversions, if any
-        type = format['type']
-        is_numeric = type and type in 'n%fegdobx'
+        type = format["type"]
+        is_numeric = type and type in "n%fegdobx"
+        conv = self._type_conversions
         if type in self._extra_types:
             type_converter = self._extra_types[type]
-            s = getattr(type_converter, 'pattern', r'.+?')
-            regex_group_count = getattr(type_converter, 'regex_group_count', 0)
+            s = getattr(type_converter, "pattern", r".+?")
+            regex_group_count = getattr(type_converter, "regex_group_count", 0)
             if regex_group_count is None:
                 regex_group_count = 0
             self._group_index += regex_group_count
-            self._type_conversions[group] = convert_first(type_converter)
-        elif type == 'n':
-            s = r'\d{1,3}([,.]\d{3})*'
+            conv[group] = convert_first(type_converter)
+        elif type == "n":
+            s = r"\d{1,3}([,.]\d{3})*"
             self._group_index += 1
-            self._type_conversions[group] = int_convert(10)
-        elif type == 'b':
-            s = r'(0[bB])?[01]+'
-            self._type_conversions[group] = int_convert(2)
+            conv[group] = int_convert(10)
+        elif type == "b":
+            s = r"(0[bB])?[01]+"
+            conv[group] = int_convert(2)
             self._group_index += 1
-        elif type == 'o':
-            s = r'(0[oO])?[0-7]+'
-            self._type_conversions[group] = int_convert(8)
+        elif type == "o":
+            s = r"(0[oO])?[0-7]+"
+            conv[group] = int_convert(8)
             self._group_index += 1
-        elif type == 'x':
-            s = r'(0[xX])?[0-9a-fA-F]+'
-            self._type_conversions[group] = int_convert(16)
+        elif type == "x":
+            s = r"(0[xX])?[0-9a-fA-F]+"
+            conv[group] = int_convert(16)
             self._group_index += 1
-        elif type == '%':
-            s = r'\d+(\.\d+)?%'
+        elif type == "%":
+            s = r"\d+(\.\d+)?%"
             self._group_index += 1
-            self._type_conversions[group] = percentage
-        elif type == 'f':
-            s = r'\d*\.\d+'
-            self._type_conversions[group] = convert_first(float)
-        elif type == 'F':
-            s = r'\d*\.\d+'
-            self._type_conversions[group] = convert_first(Decimal)
-        elif type == 'e':
-            s = r'\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF'
-            self._type_conversions[group] = convert_first(float)
-        elif type == 'g':
-            s = r'\d+(\.\d+)?([eE][-+]?\d+)?|nan|NAN|[-+]?inf|[-+]?INF'
+            conv[group] = percentage
+        elif type == "f":
+            s = r"\d*\.\d+"
+            conv[group] = convert_first(float)
+        elif type == "F":
+            s = r"\d*\.\d+"
+            conv[group] = convert_first(Decimal)
+        elif type == "e":
+            s = r"\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF"
+            conv[group] = convert_first(float)
+        elif type == "g":
+            s = r"\d+(\.\d+)?([eE][-+]?\d+)?|nan|NAN|[-+]?inf|[-+]?INF"
             self._group_index += 2
-            self._type_conversions[group] = convert_first(float)
-        elif type == 'd':
-            if format.get('width'):
-                width = r'{1,%s}' % int(format['width'])
+            conv[group] = convert_first(float)
+        elif type == "d":
+            if format.get("width"):
+                width = r"{1,%s}" % int(format["width"])
             else:
-                width = '+'
-            s = r'\d{w}|[-+ ]?0[xX][0-9a-fA-F]{w}|[-+ ]?0[bB][01]{w}|[-+ ]?0[oO][0-7]{w}'.format(
+                width = "+"
+            s = r"\d{w}|[-+ ]?0[xX][0-9a-fA-F]{w}|[-+ ]?0[bB][01]{w}|[-+ ]?0[oO][0-7]{w}".format(
                 w=width
             )
-            self._type_conversions[
-                group
-            ] = int_convert()  # do not specify number base, determine it automatically
-        elif type == 'ti':
-            s = r'(\d{4}-\d\d-\d\d)((\s+|T)%s)?(Z|\s*[-+]\d\d:?\d\d)?' % TIME_PAT
+            conv[group] = int_convert()
+            # do not specify number base, determine it automatically
+        elif any(k in type for k in dt_format_to_regex):
+            s = get_regex_for_datetime_format(type)
+            conv[group] = partial(strf_date_convert, type=type)
+        elif type == "ti":
+            s = r"(\d{4}-\d\d-\d\d)((\s+|T)%s)?(Z|\s*[-+]\d\d:?\d\d)?" % TIME_PAT
             n = self._group_index
-            self._type_conversions[group] = partial(
-                date_convert, ymd=n + 1, hms=n + 4, tz=n + 7
-            )
+            conv[group] = partial(date_convert, ymd=n + 1, hms=n + 4, tz=n + 7)
             self._group_index += 7
-        elif type == 'tg':
-            s = r'(\d{1,2}[-/](\d{1,2}|%s)[-/]\d{4})(\s+%s)?%s?%s?' % (
-                ALL_MONTHS_PAT,
-                TIME_PAT,
-                AM_PAT,
-                TZ_PAT,
-            )
+        elif type == "tg":
+            s = r"(\d{1,2}[-/](\d{1,2}|%s)[-/]\d{4})(\s+%s)?%s?%s?"
+            s %= (ALL_MONTHS_PAT, TIME_PAT, AM_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(
+            conv[group] = partial(
                 date_convert, dmy=n + 1, hms=n + 5, am=n + 8, tz=n + 9
             )
             self._group_index += 9
-        elif type == 'ta':
-            s = r'((\d{1,2}|%s)[-/]\d{1,2}[-/]\d{4})(\s+%s)?%s?%s?' % (
-                ALL_MONTHS_PAT,
-                TIME_PAT,
-                AM_PAT,
-                TZ_PAT,
-            )
+        elif type == "ta":
+            s = r"((\d{1,2}|%s)[-/]\d{1,2}[-/]\d{4})(\s+%s)?%s?%s?"
+            s %= (ALL_MONTHS_PAT, TIME_PAT, AM_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(
+            conv[group] = partial(
                 date_convert, mdy=n + 1, hms=n + 5, am=n + 8, tz=n + 9
             )
             self._group_index += 9
-        elif type == 'te':
+        elif type == "te":
             # this will allow microseconds through if they're present, but meh
-            s = r'(%s,\s+)?(\d{1,2}\s+%s\s+\d{4})\s+%s%s' % (
-                DAYS_PAT,
-                MONTHS_PAT,
-                TIME_PAT,
-                TZ_PAT,
-            )
+            s = r"(%s,\s+)?(\d{1,2}\s+%s\s+\d{4})\s+%s%s"
+            s %= (DAYS_PAT, MONTHS_PAT, TIME_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(
-                date_convert, dmy=n + 3, hms=n + 5, tz=n + 8
-            )
+            conv[group] = partial(date_convert, dmy=n + 3, hms=n + 5, tz=n + 8)
             self._group_index += 8
-        elif type == 'th':
+        elif type == "th":
             # slight flexibility here from the stock Apache format
-            s = r'(\d{1,2}[-/]%s[-/]\d{4}):%s%s' % (MONTHS_PAT, TIME_PAT, TZ_PAT)
+            s = r"(\d{1,2}[-/]%s[-/]\d{4}):%s%s" % (MONTHS_PAT, TIME_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(
-                date_convert, dmy=n + 1, hms=n + 3, tz=n + 6
-            )
+            conv[group] = partial(date_convert, dmy=n + 1, hms=n + 3, tz=n + 6)
             self._group_index += 6
-        elif type == 'tc':
-            s = r'(%s)\s+%s\s+(\d{1,2})\s+%s\s+(\d{4})' % (
-                DAYS_PAT,
-                MONTHS_PAT,
-                TIME_PAT,
-            )
+        elif type == "tc":
+            s = r"(%s)\s+%s\s+(\d{1,2})\s+%s\s+(\d{4})"
+            s %= (DAYS_PAT, MONTHS_PAT, TIME_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(
-                date_convert, d_m_y=(n + 4, n + 3, n + 8), hms=n + 5
-            )
+            conv[group] = partial(date_convert, d_m_y=(n + 4, n + 3, n + 8), hms=n + 5)
             self._group_index += 8
-        elif type == 'tt':
-            s = r'%s?%s?%s?' % (TIME_PAT, AM_PAT, TZ_PAT)
+        elif type == "tt":
+            s = r"%s?%s?%s?" % (TIME_PAT, AM_PAT, TZ_PAT)
             n = self._group_index
-            self._type_conversions[group] = partial(
-                date_convert, hms=n + 1, am=n + 4, tz=n + 5
-            )
+            conv[group] = partial(date_convert, hms=n + 1, am=n + 4, tz=n + 5)
             self._group_index += 5
-        elif type == 'ts':
-            s = r'%s(\s+)(\d+)(\s+)(\d{1,2}:\d{1,2}:\d{1,2})?' % MONTHS_PAT
+        elif type == "ts":
+            s = r"%s(\s+)(\d+)(\s+)(\d{1,2}:\d{1,2}:\d{1,2})?" % MONTHS_PAT
             n = self._group_index
-            self._type_conversions[group] = partial(
-                date_convert, mm=n + 1, dd=n + 3, hms=n + 5
-            )
+            conv[group] = partial(date_convert, mm=n + 1, dd=n + 3, hms=n + 5)
             self._group_index += 5
-        elif type == 'l':
-            s = r'[A-Za-z]+'
+        elif type == "l":
+            s = r"[A-Za-z]+"
         elif type:
-            s = r'\%s+' % type
-        elif format.get('precision'):
-            if format.get('width'):
-                s = r'.{%s,%s}?' % (format['width'], format['precision'])
+            s = r"\%s+" % type
+        elif format.get("precision"):
+            if format.get("width"):
+                s = r".{%s,%s}?" % (format["width"], format["precision"])
             else:
-                s = r'.{1,%s}?' % format['precision']
-        elif format.get('width'):
-            s = r'.{%s,}?' % format['width']
+                s = r".{1,%s}?" % format["precision"]
+        elif format.get("width"):
+            s = r".{%s,}?" % format["width"]
         else:
-            s = r'.+?'
+            s = r".+?"
 
-        align = format['align']
-        fill = format['fill']
+        align = format["align"]
+        fill = format["fill"]
 
         # handle some numeric-specific things like fill and sign
         if is_numeric:
             # prefix with something (align "=" trumps zero)
-            if align == '=':
+            if align == "=":
                 # special case - align "=" acts like the zero above but with
                 # configurable fill defaulting to "0"
                 if not fill:
-                    fill = '0'
-                s = r'%s*' % fill + s
+                    fill = "0"
+                s = r"%s*" % fill + s
 
             # allow numbers to be prefixed with a sign
-            s = r'[-+ ]?' + s
+            s = r"[-+ ]?" + s
 
         if not fill:
-            fill = ' '
+            fill = " "
 
         # Place into a group now - this captures the value we want to keep.
         # Everything else from now is just padding to be stripped off
@@ -1248,24 +833,24 @@ class Parser(object):
             s = wrap % s
             self._group_index += 1
 
-        if format['width']:
+        if format["width"]:
             # all we really care about is that if the format originally
             # specified a width then there will probably be padding - without
             # an explicit alignment that'll mean right alignment with spaces
             # padding
             if not align:
-                align = '>'
+                align = ">"
 
-        if fill in r'.\+?*[](){}^$':
-            fill = '\\' + fill
+        if fill in r".\+?*[](){}^$":
+            fill = "\\" + fill
 
         # align "=" has been handled
-        if align == '<':
-            s = '%s%s+' % (s, fill)
-        elif align == '>':
-            s = '%s*%s' % (fill, s)
-        elif align == '^':
-            s = '%s*%s%s+' % (fill, s, fill)
+        if align == "<":
+            s = "%s%s*" % (s, fill)
+        elif align == ">":
+            s = "%s*%s" % (fill, s)
+        elif align == "^":
+            s = "%s*%s%s*" % (fill, s, fill)
 
         return s
 
@@ -1292,7 +877,7 @@ class Result(object):
         return self.named[item]
 
     def __repr__(self):
-        return '<%s %r %r>' % (self.__class__.__name__, self.fixed, self.named)
+        return "<%s %r %r>" % (self.__class__.__name__, self.fixed, self.named)
 
     def __contains__(self, name):
         return name in self.named
@@ -1310,7 +895,7 @@ class Match(object):
         self.match = match
 
     def evaluate_result(self):
-        '''Generate results for this Match'''
+        """Generate results for this Match"""
         return self.parser.evaluate_result(self.match)
 
 
