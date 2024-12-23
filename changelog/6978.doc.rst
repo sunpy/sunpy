@@ -1,1 +1,0 @@
-Added a how-to guide for manipulating grid lines on `~sunpy.map.GenericMap`.

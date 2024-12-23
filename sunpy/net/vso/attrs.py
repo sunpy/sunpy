@@ -45,7 +45,6 @@ class Extent(_attr.DataAttr):
     """
     Specify the spatial field-of-view of the query. Due to a bug in the VSO,
     the Extent attribute is not used.
-
     """
 
     def __init__(self, x, y, width, length, atype):

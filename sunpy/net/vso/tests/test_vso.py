@@ -3,6 +3,7 @@ from xml.etree import ElementTree
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
+import numpy as np
 import pytest
 from parfive import Results
 
@@ -22,9 +23,17 @@ from sunpy.net.vso.vso import (
     check_connection,
     get_online_vso_url,
 )
+from sunpy.tests.helpers import skip_jsoc
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyConnectionWarning, SunpyDeprecationWarning, SunpyUserWarning
+
+
+@pytest.fixture(scope="session")
+def check_vso_alive():
+    status = [check_connection(url["url"]) for url in DEFAULT_URL_PORT]
+    if not np.all(status):
+        pytest.xfail("No working VSO links found.")
 
 
 class MockQRRecord:
@@ -115,7 +124,7 @@ def test_show(mock_build_client):
     qrshow = qr.show('Start Time', 'Source', 'Type')
     assert str(qrshow) == '<No columns>'
 
-
+@skip_jsoc
 @pytest.mark.remote_data
 def test_path(client, tmpdir):
     """
@@ -245,6 +254,7 @@ def test_QueryResponse_build_table_with_no_end_time(mocker):
     assert start_time_[0].value == '2016-02-14 08:08:12.000'
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_vso_hmi(client, tmpdir):
     """
@@ -299,7 +309,7 @@ def fail_to_open_nso_cgi(disallowed_url, url, **kwargs):
 
 
 @pytest.mark.remote_data
-def test_fallback_if_cgi_offline(mocker):
+def test_fallback_if_cgi_offline(check_vso_alive, mocker):  # NOQA: ARG001
     """
     This test takes the cgi endpoint URL out of the WDSL, and then disables it,
     forcing the `get_online_vso_url` function to fallback to a secondary mirror.
@@ -353,8 +363,10 @@ def test_build_client_params():
         build_client(url="http://notathing.com/")
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
+
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
         results = client.search(
             core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
@@ -402,6 +414,7 @@ def test_vso_repr(client):
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_response_block_properties(client):
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
@@ -418,8 +431,8 @@ def test_response_block_properties_table(mocker, mock_response):
     legacy_response = QueryResponse.create(mock_response)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
 
-    print(legacy_response)
-    print(table_response)
+    assert str(legacy_response)
+    assert str(table_response)
 
 
 def test_row_to_table(mocker, mock_build_client, client, mock_table_response):
@@ -441,6 +454,7 @@ def test_iris_filename(client):
     assert filename.endswith("iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz")
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_table_noinfo_required(client):
     res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom))
@@ -474,3 +488,19 @@ def test_fetch_lyra(client, tmp_path):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
     files = client.fetch(res[0:1], path=tmp_path)
     assert len(files) == 1
+
+
+@pytest.mark.remote_data
+def test_client_stereo_extent(client):
+    res = client.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    # TODO: Update when VSo Extent filtering works
+    assert len(res) == 123
+    assert not all(res.columns["Extent Type"] == "CORONA")
+
+
+@pytest.mark.remote_data
+def test_fido_stereo_extent_type(client):
+    res = client.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    # TODO: Update when VSo Extent filtering works
+    assert len(res) == 123
+    assert not all(res.columns["Extent Type"] == "CORONA")

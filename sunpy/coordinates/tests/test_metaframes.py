@@ -6,7 +6,7 @@ from hypothesis import given, settings
 import astropy.units as u
 from astropy.coordinates import HeliocentricMeanEcliptic, SkyCoord, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
@@ -127,7 +127,7 @@ def test_no_base():
 
 
 def test_no_obstime():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="The base coordinate frame must have a defined `obstime`"):
         RotatedSunFrame(base=f.HeliographicStonyhurst(obstime=None))
 
 
@@ -144,6 +144,42 @@ def test_rotated_time_to_duration():
     r2 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'),
                          rotated_time='2001-01-01')
     assert_quantity_allclose(r2.duration, -1*u.day)
+
+
+def test_duration_from_timedelta():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    duration_timedelta = TimeDelta(4 * u.day)
+    r = RotatedSunFrame(base=base_frame, duration=duration_timedelta)
+
+    # Verify that the duration is correctly converted to a quantity in days
+    assert_quantity_allclose(r.duration, 4 * u.day)
+
+
+def test_duration_with_quantity_hours():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    # Testing with Quantity in hours (conversion needed)
+    duration_quantity = 96 * u.hour  # 4 days in hours
+    r = RotatedSunFrame(base=base_frame, duration=duration_quantity)
+    assert_quantity_allclose(r.duration, 4 * u.day)
+
+
+def test_both_duration_and_rotated_time_provided():
+    base_frame = f.HeliographicStonyhurst(obstime='2001-01-01')
+
+    with pytest.raises(ValueError, match="Specify either `duration` or `rotated_time`, not both."):
+        RotatedSunFrame(base=base_frame, duration=TimeDelta(1*u.day), rotated_time=Time('2001-01-02'))
+
+
+def test_duration_calculation():
+
+    base_time = Time('2001-01-01')
+    base_frame = f.HeliographicStonyhurst(obstime=base_time)
+    rotated_time = Time('2001-01-02')
+    r = RotatedSunFrame(base=base_frame, rotated_time=rotated_time)
+    expected_duration = (rotated_time.utc - base_time).to('day')
+    assert r.duration == expected_duration
 
 
 def test_rotated_time_property():
@@ -271,7 +307,7 @@ def test_obstime_change_loopback(indirect_fixture):
 
 @pytest.mark.parametrize("indirect_fixture",
                          ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc", "rot_hme"], indirect=True)
-def test_tranformation_to_nonobserver_frame(indirect_fixture):
+def test_transformation_to_nonobserver_frame(indirect_fixture):
     base_class, rot_frame = indirect_fixture
 
     hgs_frame = f.HeliographicStonyhurst(obstime='2020-01-01')

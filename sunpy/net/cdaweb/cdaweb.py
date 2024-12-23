@@ -33,16 +33,11 @@ class CDAWEBClient(BaseClient):
     Dataset ID.
     <BLANKLINE>
     <BLANKLINE>
-                        Attribute Name                    Client ...                                   Description
-    ----------------------------------------------------- ------ ... --------------------------------------------------------------------------------
-    a1_k0_mpa                                             CDAWEB ... LANL 2001 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
-    a2_k0_mpa                                             CDAWEB ... LANL 2002 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
-    ac_at_def                                             CDAWEB ... ACE Hourly RTN, GSE and J2000 GCI Attitude direction cosines - E. C. Stone (C...
+                         Attribute Name                     Client ...                                   Description
+    ------------------------------------------------------- ------ ... --------------------------------------------------------------------------------
+    a1_k0_mpa                                               CDAWEB ... LANL 2001 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
+    a2_k0_mpa                                               CDAWEB ... LANL 2002 Magnetospheric Plasma Analyzer Key Parameters - Mike Henderson (LANL)
     ...
-    wi_wa_rad1_l3_df                                      CDAWEB ... Wind Waves, Level 3 Direction-Finding (DF) parameters - K. Issautier (LESIA, ...
-    wild2_helio1day_position                              CDAWEB ... Position in heliocentric coordinates from SPDF Helioweb - Natalia Papitashvil...
-    wind_3dp_echsfits_e0_yr                               CDAWEB ... Wind spacecraft, 3DP accurate electron parameters - Chadi S. Salem (Universit...
-    >>>
     >>> res = Fido.search(a.Time('2021/07/01', '2021/07/08'),
     ...                   a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')) # doctest: +REMOTE_DATA
     >>> res # doctest: +REMOTE_DATA

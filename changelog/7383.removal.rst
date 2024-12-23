@@ -1,2 +1,0 @@
-There was a private "Maxwell" unit within `sunpy.map` to register it before astropy had support for it.
-This has now been removed in favour of using the astropy version.

@@ -144,7 +144,7 @@ class QueryResponseRow(Row):
         allowed in Python identifiers.
         """
         def key_clean(key):
-            key = re.sub('[%s]' % re.escape(string.punctuation), '_', key)
+            key = re.sub(f'[{re.escape(string.punctuation)}]', '_', key)
             key = key.replace(' ', '_')
             key = ''.join(char for char in key
                           if char.isidentifier() or char.isnumeric())
@@ -305,7 +305,7 @@ class QueryResponseTable(QTable):
         # Find the first power of 3 below the total filesize
         power = 10**(np.floor(np.log10(total.to_value(u.byte)) // 3) * 3)
         # Create mapping from prefix value to prefix name
-        prefix_dict = {p[2]: p[0][0] for p in u.si_prefixes}
+        prefix_dict = {p[2]: p[0][0] for p in u.core.si_prefixes}
         prefix_unit = u.Unit(f'{prefix_dict[power]}byte')
         return total.to(prefix_unit).round(3)
 
@@ -358,7 +358,7 @@ def _print_client(client, html=False, visible_entries=None):
     lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
     if html:
         lines = [f"<p>{line}</p>" for line in lines]
-    lines.extend(t.pformat_all(max_lines=visible_entries, show_dtype=False,
+    lines.extend(t.pformat(max_lines=visible_entries, show_dtype=False,
                                max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
@@ -484,14 +484,13 @@ class BaseClient(ABC):
     @staticmethod
     def check_attr_types_in_query(query, required_attrs={}, optional_attrs={}):
         """
-        Check a query againsted required and optional attributes.
+        Check a query against required and optional attributes.
 
         Returns `True` if *query* contains all the attrs in *required_attrs*,
         and if *query* contains only attrs in both *required_attrs* and *optional_attrs*.
         """
         query_attrs = {type(x) for x in query}
         all_attrs = required_attrs.union(optional_attrs)
-
         return required_attrs.issubset(query_attrs) and query_attrs.issubset(all_attrs)
 
     @classmethod

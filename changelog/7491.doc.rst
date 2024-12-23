@@ -1,2 +1,0 @@
-Add an example gallery entry demonstrating how to use the coordinates framework to compute intersections
-between instrument lines of sight and a simulation domain.

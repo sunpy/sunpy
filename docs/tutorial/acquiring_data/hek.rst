@@ -82,26 +82,24 @@ We can select just this column:
 .. code-block:: python
 
    >>> result["hek"]["frm_name"]  # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='frm_name' dtype='str32' length=19>
-                             asainz
-                             asainz
-                             asainz
-                             asainz
-                             asainz
-                             asainz
-                             asainz
-                  SSW Latest Events
-                               SWPC
-   Flare Detective - Trigger Module
-   Flare Detective - Trigger Module
-                               SWPC
-                  SSW Latest Events
-   Flare Detective - Trigger Module
-   Flare Detective - Trigger Module
-   Flare Detective - Trigger Module
-   Flare Detective - Trigger Module
-   Flare Detective - Trigger Module
-   Flare Detective - Trigger Module
+    <QueryResponseColumn name='frm_name' dtype='str32' length=19>
+                              asainz
+                              asainz
+                              asainz
+                              asainz
+                              asainz
+                              asainz
+                              asainz
+                   SSW Latest Events
+                                 ...
+                                SWPC
+                   SSW Latest Events
+    Flare Detective - Trigger Module
+    Flare Detective - Trigger Module
+    Flare Detective - Trigger Module
+    Flare Detective - Trigger Module
+    Flare Detective - Trigger Module
+    Flare Detective - Trigger Module
 
 It is likely each flare on the Sun was actually detected multiple times by many different methods.
 

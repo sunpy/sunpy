@@ -562,7 +562,7 @@ def L0(time='now',
     for the nearest point on the Sun's surface, but does not apply the stellar-aberration correction
     due to Earth's motion.
 
-    We do not apply the stellar-abberation correction by default because it should not be applied
+    We do not apply the stellar-aberration correction by default because it should not be applied
     for purposes such as co-aligning images that are each referenced to Sun-disk center.  Stellar
     aberration does not shift the apparent positions of solar features relative to the Sun-disk
     center.

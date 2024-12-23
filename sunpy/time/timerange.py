@@ -326,9 +326,9 @@ class TimeRange:
 
         Parameters
         ----------
-        cadence : `astropy.units.Quantity`, `astropy.time.TimeDelta`
+        cadence : `~astropy.units.quantity.Quantity`, `astropy.time.TimeDelta`
             Cadence.
-        window : `astropy.units.quantity`, `astropy.time.TimeDelta`
+        window : `~astropy.units.quantity.Quantity`, `astropy.time.TimeDelta`
             The length of window.
 
         Returns

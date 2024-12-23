@@ -33,7 +33,7 @@ class LYRAClient(GenericClient):
     2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     3
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 2.914 Gbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -45,9 +45,8 @@ class LYRAClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-    baseurl = (r'http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
-               r'lyra_(\d){8}-000000_lev(\d){1}_std.fits')
-    pattern = '{}/bsd/{year:4d}/{month:2d}/{day:2d}/{}_lev{Level:1d}_std.fits'
+
+    pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
 
     @property
     def info_url(self):

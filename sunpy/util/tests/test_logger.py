@@ -24,7 +24,7 @@ def test_is_the_logger_there():
     assert isinstance(log, SunpyLogger)
 
 
-def test_is_level_configed():
+def test_is_level_configured():
     """
     Test to make sure that the logger follows the config:
 
@@ -34,7 +34,7 @@ def test_is_level_configed():
     assert log.getEffectiveLevel() == config_level_numeric
 
 
-def test_is_log_to_file_configed():
+def test_is_log_to_file_configured():
     """
     Test to make sure that the logger follows the config:
 
