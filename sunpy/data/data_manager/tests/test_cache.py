@@ -62,3 +62,23 @@ def test_check_old_file_is_not_removed(cache, mocker):
         assert download.call_count == 1
     second_details = cache.get_by_hash(MOCK_HASH)
     assert first_details['file_path'] == second_details['file_path'] == str(path)
+
+
+def test_file_change_detetction(cache):
+
+    cache.download('http://example.com/file_name')
+    file_path = cache.get_by_hash(MOCK_HASH)["file_path"]
+
+    assert cache._downloader.times_called == 1
+
+
+    with patch('sunpy.data.data_manager.cache.Cache._download_and_hash') as download:
+        download("http://example.com/file_name",redownload = True)
+
+        assert download.call_count == 1
+
+    with open(file_path,"w") as file:
+        file.write("test writing")
+
+    cache.download('http://example.com/file_name',redownload=True)
+    assert cache._downloader.times_called == 2
