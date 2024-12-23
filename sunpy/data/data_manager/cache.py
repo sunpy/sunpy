@@ -8,7 +8,6 @@ from astropy.time import TimeDelta
 from sunpy.util.exceptions import warn_user
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file
-import os 
 
 __all__ = ['Cache']
 
@@ -74,7 +73,6 @@ class Cache:
             return Path(cache_details['file_path'])
         try:
             file_path, file_hash, url = self._download_and_hash(urls, namespace)
-            print(file_path)
             # We explicitly check for redownload or expiry:
             # This isn't needed as it should be caught bt the above if statement
             # but this is more explicit
@@ -154,14 +152,12 @@ class Cache:
         for url in urls:
             try:
                 path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
-                
+
                 self._downloader.download(url, path,overwrite = True)
                 shahash = hash_file(path)
-
                 return path, shahash, url
             except Exception as e:
                 warn_user(f"{e}")
                 errors.append(f"{e}")
 
         raise RuntimeError(errors)
-
