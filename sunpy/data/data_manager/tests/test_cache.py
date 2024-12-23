@@ -4,7 +4,7 @@ import pytest
 
 from sunpy.util.exceptions import SunpyUserWarning
 from .mocks import MOCK_HASH
-
+from sunpy.util import hash_file
 
 def test_cache_basic(cache):
     cache.download('http://example.com/abc.text')
@@ -63,22 +63,26 @@ def test_check_old_file_is_not_removed(cache, mocker):
     second_details = cache.get_by_hash(MOCK_HASH)
     assert first_details['file_path'] == second_details['file_path'] == str(path)
 
-
-def test_file_change_detetction(cache):
-
+def test_file_change_detection(cache):
+ 
     cache.download('http://example.com/file_name')
     file_path = cache.get_by_hash(MOCK_HASH)["file_path"]
 
+    initial_hash = hash_file(file_path)
+
     assert cache._downloader.times_called == 1
-
-
-    with patch('sunpy.data.data_manager.cache.Cache._download_and_hash') as download:
-        download("http://example.com/file_name",redownload = True)
-
-        assert download.call_count == 1
-
-    with open(file_path,"w") as file:
+    
+    with open(file_path, "a") as file:
         file.write("test writing")
 
-    cache.download('http://example.com/file_name',redownload=True)
+    modified_hash = hash_file(file_path)
+
+
+    assert initial_hash != modified_hash
+
+    cache.download('http://example.com/file_name', redownload=True)
+    
     assert cache._downloader.times_called == 2
+
+    redownloaded_hash = hash_file(file_path)
+    assert initial_hash == redownloaded_hash
