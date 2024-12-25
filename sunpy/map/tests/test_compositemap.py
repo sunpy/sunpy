@@ -1,6 +1,7 @@
 """
 Test Composite Map
 """
+import matplotlib as mpl
 import numpy as np
 import pytest
 
@@ -34,6 +35,9 @@ def test_type_of_arguments_composite_map(composite_test_map):
         sunpy.map.CompositeMap(23, composite=True)
     assert str(excinfo.value) == 'CompositeMap expects pre-constructed map objects.'
 
+def test_autoalign_composite_map(composite_test_map):
+    assert isinstance(composite_test_map.plot()[0], mpl.image.AxesImage)
+    assert isinstance(composite_test_map.plot()[1], mpl.collections.QuadMesh)
 
 @figure_test
 def test_plot_composite_map(composite_test_map):
