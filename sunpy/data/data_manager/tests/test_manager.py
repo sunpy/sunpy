@@ -104,7 +104,8 @@ def test_override_file(manager, data_function, tmpdir):
         """
         Function to test whether the file is /tmp/another_file.
         """
-        assert manager.get('test_file') == Path(f'{folder}/another_file')
+        assert manager.get('test_file') == Path(folder) / "another_file"
+
 
     # Outside the context manager file is default
     folder = tmpdir.strpath

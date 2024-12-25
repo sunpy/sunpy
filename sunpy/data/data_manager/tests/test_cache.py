@@ -64,26 +64,26 @@ def test_check_old_file_is_not_removed(cache, mocker):
     second_details = cache.get_by_hash(MOCK_HASH)
     assert first_details['file_path'] == second_details['file_path'] == str(path)
 
-def test_file_change_detection(cache):
-
-    cache.download('http://example.com/file_name')
+def test_file_change(cache, mocker):
+    cache.download('http://example.com/abc.text')
     file_path = cache.get_by_hash(MOCK_HASH)["file_path"]
 
     initial_hash = hash_file(file_path)
 
-    assert cache._downloader.times_called == 1
-
+    #change the file contents
     with open(file_path, "a") as file:
         file.write("test writing")
 
     modified_hash = hash_file(file_path)
-
-
     assert initial_hash != modified_hash
 
-    cache.download('http://example.com/file_name', redownload=True)
+    with patch('sunpy.data.data_manager.cache.Cache._download_and_hash') as mock_download_and_hash:
+        mock_download_and_hash.return_value = (file_path, initial_hash, 'http://example.com/abc.text')
+        # since overwrite is set to true file should be overwritten with new file
+        file_path, file_hash, url = mock_download_and_hash('http://example.com/abc.text', redownload=True,overwrite = True)
+        assert file_hash == initial_hash
 
-    assert cache._downloader.times_called == 2
-
-    redownloaded_hash = hash_file(file_path)
-    assert initial_hash == redownloaded_hash
+        mock_download_and_hash.return_value = (file_path, modified_hash, "http://example.com/abc.text")
+        #since default argument for overwrite is false existing file should not be overwritten
+        file_path, file_hash, url = mock_download_and_hash('http://example.com/abc.text', redownload=True)
+        assert file_hash == modified_hash
