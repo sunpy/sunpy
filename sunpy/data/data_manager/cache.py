@@ -74,7 +74,7 @@ class Cache:
         try:
             file_path, file_hash, url = self._download_and_hash(urls, namespace)
             # We explicitly check for redownload or expiry:
-            # This isn't needed as it should be caught bt the above if statement
+            # This isn't needed as it should be caught by the above if statement
             # but this is more explicit
             if cache_details and (redownload or self._has_expired(cache_details)):
                 self._storage.delete_by_key('url', cache_details['url'])
