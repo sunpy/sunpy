@@ -2631,7 +2631,7 @@ class GenericMap(NDData):
                             "If you are specifying the axes, use `axes=...` to pass it in.")
 
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
+        if autoalign not in [False, True, 'pcolormesh','imshow']:
             raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
@@ -2676,8 +2676,20 @@ class GenericMap(NDData):
             data = self.data
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
+            
+            
+        if autoalign == 'imshow':
+            transform = axes.get_transform(self.wcs)
+            
+            w = data.shape[1]
+            h = data.shape[0]
+            path = matplotlib.path.Path([[-0.5, -0.5], [w-0.5, -0.5], [w-0.5, h-0.5], [-0.5, h-0.5], [-0.5, -0.5]])
 
-        if autoalign == 'pcolormesh':
+            image = axes.imshow(data, transform=transform, **imshow_args)
+            image.set_clip_path(path)
+            ret = image
+
+        elif autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
             axes.set_aspect(imshow_args.get('aspect', 1))
 
