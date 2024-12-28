@@ -252,7 +252,10 @@ class GenericMap(NDData):
         params = list(inspect.signature(NDData).parameters)
         nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
         super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
-
+        # Check for missing 'rsun_ref' in header and add it if necessary
+        if 'rsun_ref' not in self.meta:
+            # Default value for solar radius in kilometers (696340 km)
+            self.meta['rsun_ref'] = 696340 * u.km.to(u.m)
         # Setup some attributes
         self._nickname = None
         # These are placeholders for default attributes, which are only set
