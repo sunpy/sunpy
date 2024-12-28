@@ -510,7 +510,13 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
     # Only this function needs scikit image
     from skimage import transform
-
+    # Ensure 'rsun_ref' consistency
+    rsun_ref = smap.meta.get('rsun_ref', None)
+    if rsun_ref is None:
+        raise KeyError("The input map's metadata is missing 'rsun_ref'.")
+    
+    # Use 'rsun_ref' throughout the function
+    rsun_ref = rsun_ref * u.m
     # Check whether the input contains the full disk of the Sun
     is_sub_full_disk = not contains_full_disk(smap)
     if is_sub_full_disk:

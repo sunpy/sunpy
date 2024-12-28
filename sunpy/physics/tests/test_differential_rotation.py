@@ -391,3 +391,23 @@ def test_differential_rotation(aia171_test_map):
     with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
+
+def test_rsun_ref_fallback():
+    import astropy.constants as const
+    from sunpy.map import Map
+    
+    data = np.random.rand(2,2) # Example data
+    meta = {'cdelt1': 1, 'cdelt2': 1, 'cunit1': 'arcsec', 'cunit2': 'arcsec', 'crpix1': 1, 'crpix2': 1,
+            'crval1': 0, 'crval2': 0, 'ctype1': 'HPLN-TAN', 'ctype2': 'HPLT-TAN',
+            'date-obs': '2022-01-01T00:00:00'}  # Missing 'rsun_ref'
+    smap = Map(data, meta)
+    
+    # Ensure rsun_ref is not initially in the map metadata
+    assert 'rsun_ref' not in smap.meta
+    
+    # Apply differential rotation
+    rotated_map = differential_rotate(smap)
+    
+    # Check if rsun_ref is added to the metadata 
+    assert 'rsun_ref' in rotated_map.meta
+    assert rotated_map.meta['rsun_ref'] == const.R_sun.to_value('m')
