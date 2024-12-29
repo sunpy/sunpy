@@ -2,7 +2,6 @@ import os
 import pathlib
 from unittest.mock import patch
 
-import fsspec
 import numpy as np
 import pytest
 
@@ -147,17 +146,9 @@ def test_write_file_ana(tmpdir):
 def test_write_file_fits(fname, tmpdir):
     # Aim is to verify that we can write a FITS file and read it back correctly
     aia_header, aia_data = read_file(TEST_AIA_IMAGE)[0][::-1]
-
-    # Convert tmpdir to pathlib.Path for consistency
-    tmpdir = pathlib.Path(tmpdir)
     filepath = tmpdir / fname
-
-    # Ensure filepath is str or pathlib.Path
-    filepath = str(filepath) if isinstance(fname, str) else filepath
-
     write_file(filepath, aia_data, aia_header)
-    assert pathlib.Path(filepath).exists()
-
+    assert filepath.exists()
     test_aia_header, test_aia_data = read_file(filepath)[0][::-1]
     assert np.all(np.equal(test_aia_data, aia_data))
     assert test_aia_header == aia_header
@@ -166,22 +157,22 @@ def test_write_file_fits(fname, tmpdir):
 def test_write_file_fits_bytes(tmpdir):
     # Aim is to verify that we can write a FITS file via a file-like object and read it back correctly
     aia_header, aia_data = read_file(TEST_AIA_IMAGE)[0][::-1]
-    tmpdir = pathlib.Path(tmpdir)
     filepath = tmpdir / "test_aia_171_image_bytes.fits"
-    write_file(filepath, aia_data, aia_header, filetype='fits')
+    with open(filepath, "wb") as file_obj:
+        write_file(file_obj, aia_data, aia_header, filetype='fits')
     assert filepath.exists()
     test_aia_header, test_aia_data = read_file(filepath)[0][::-1]
     assert np.all(np.equal(test_aia_data, aia_data))
     assert test_aia_header == aia_header
 
+
 def test_missing_file_extension(tmpdir):
     # Aim is read a FITS file without an extension
     aia_header, aia_data = read_file(TEST_AIA_IMAGE)[0][::-1]
-    tmpdir = pathlib.Path(tmpdir)
-    filepath = tmpdir / "test"
-    with fsspec.open(filepath, "wb") as file_obj:
-        write_file(filepath, aia_data, aia_header, filetype='fits')
-    assert pathlib.Path(filepath).exists()
+    filepath = tmpdir / "test" # No extension
+    with open(filepath, 'wb') as file_obj:
+        write_file(file_obj, aia_data, aia_header, filetype='fits')
+    assert filepath.exists()
     test_aia_header, test_aia_data = read_file(filepath)[0][::-1]
     assert np.all(np.equal(test_aia_data, aia_data))
     assert test_aia_header == aia_header

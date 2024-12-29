@@ -7,6 +7,7 @@ import pathlib
 
 import fsspec
 
+from sunpy.util.io import is_uri
 try:
     from . import _fits as fits
 except ImportError:
@@ -22,6 +23,7 @@ try:
 except ImportError:
     ana = None
 
+
 __all__ = ['read_file', 'read_file_header', 'write_file', 'detect_filetype']
 
 # File formats supported by sunpy.io
@@ -31,7 +33,9 @@ _KNOWN_EXTENSIONS = {
     ('fz', 'f0'): 'ana'
 }
 
+
 class Readers(dict):
+        # Define a dict which raises a custom error message if the value is None
     def __init__(self, *args):
         dict.__init__(self, *args)
 
@@ -85,6 +89,11 @@ def _read(open_file, function_name, filetype=None, **kwargs):
     """
     This function provides the logic paths for reading a file.
 
+    It is trying to handle, reading files with known extensions and reading files with known readers.
+
+    We also want the detection logic to first try to detect the filetype based on the content and then
+    fallback to using extension.
+
     Parameters
     ----------
     open_file : fsspec.OpenFile
@@ -93,13 +102,13 @@ def _read(open_file, function_name, filetype=None, **kwargs):
         The name of the function to call on the reader.
     filetype : {'jp2' | 'fits' | 'ana'}, optional
         Supported reader or extension to manually specify the filetype.
-        Supported readers are ('jp2', 'fits', 'ana').
-    **kwargs : dict
-        Additional keyword arguments are handed to the file-specific reader.
+        Supported readers are ('jp2', 'fits', 'ana')
+    **kwargs : `dict`
+        Additional keyword arguments are handed to file specific reader.
 
     Returns
     -------
-    pairs : list
+    pairs : `list`
         A list of (data, header) tuples.
     """
     with open_file as fp:
@@ -174,24 +183,25 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
     Parameters
     ----------
-    fname : str or fsspec.OpenFile
+    fname : `str` or fsspec.OpenFile
         Filename of the file to save.
-    data : numpy.ndarray
+    data : `numpy.ndarray`
         Data to save to a fits file.
-    header : collections.OrderedDict
+    header : `collections.OrderedDict`
         Meta data to save with the data.
-    filetype : str, {'auto', 'fits', 'jp2'}, optional
-        Filetype to save if `auto`, the filename extension will
-        be detected; otherwise, specify a supported file extension.
-    **kwargs : dict
-        All extra keyword arguments are passed to `.write` for the file-specific reader.
+    filetype : `str`, {'auto', 'fits', 'jp2'}, optional
+        Filetype to save if ``auto`` the  filename extension will
+        be detected, else specify a supported file extension.
+    **kwargs : `dict`
+        All extra keyword arguments are passed to ``.write`` for the file specific reader.
 
     Notes
     -----
-    This routine currently only supports saving a single HDU.
+    * This routine currently only supports saving a single HDU.    
     """
     open_file = get_open_file(fname, **kwargs)
     if filetype == 'auto':
+            # Get the extension without the leading dot
         filetype = pathlib.Path(open_file.path).suffix[1:]
 
     for extension, readername in _KNOWN_EXTENSIONS.items():
@@ -213,7 +223,7 @@ def detect_filetype(open_file, **kwargs):
 
     Returns
     -------
-    filetype : str
+    filetype : `str`
         The type of file.
     """
     with open_file as fp:

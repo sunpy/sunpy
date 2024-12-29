@@ -12,7 +12,6 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
-from sunpy.io._file_tools import read_file
 from sunpy.tests.helpers import figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
@@ -23,11 +22,11 @@ from sunpy.util.exceptions import (
 
 a_list_of_many = [f for f in get_test_data_filenames() if 'efz' in f.name]
 
-AIA_171_IMAGE = read_file(get_test_filepath('aia_171_level1.fits'))
-RHESSI_IMAGE = read_file(get_test_filepath('hsi_image_20101016_191218.fits'))
-AIA_193_JP2 = read_file(get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
-HMI_LOS_JP2 = read_file(get_test_filepath("2023_01_31__03_39_23_200__SDO_HMI_HMI_continuum.jp2"))
-AIA_ASDF = read_file(get_test_filepath("aiamap_genericmap_1.0.0.asdf"))
+AIA_171_IMAGE = get_test_filepath('aia_171_level1.fits')
+RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
+AIA_193_JP2 = get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+HMI_LOS_JP2 = get_test_filepath("2023_01_31__03_39_23_200__SDO_HMI_HMI_continuum.jp2")
+AIA_ASDF = get_test_filepath("aiamap_genericmap_1.0.0.asdf")
 AIA_MAP = sunpy.map.Map(AIA_171_IMAGE)
 VALID_MAP_INPUTS = [
     (AIA_171_IMAGE, ),
