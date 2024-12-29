@@ -7,8 +7,9 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
 from sunpy.map.mapbase import GenericMap
-# from astropy.visualization import ImageNormalize
-# from astropy.visualization import AsinhStretch
+from matplotlib import colors
+from astropy.visualization import ImageNormalize
+from astropy.visualization import AsinhStretch
 
 __all__ = ['SUITMap']
 __author__ = ['Rahul Gopalakrishnan']
@@ -27,11 +28,39 @@ class SUITMap(GenericMap):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
         self.filter = header.get('FTR_NAME').strip()
+        self.wavelnth = str(header.get('WAVELNTH','NA')).strip()
         self.plot_settings['cmap'] = f"suit_{self.filter.lower()}"
-        self.plot_settings['title'] = f"SUIT {self.filter} - {self.reference_date}"
-        # self.plot_settings["norm"] = ImageNormalize(
-            # stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
-        # )
+        self.plot_settings['title'] = f"SUIT {self.filter}:{self.wavelnth} A - {self.reference_date}"
+        norm = self.suit_norm()
+
+        if self.filter in norm:
+            self.plot_settings["norm"] = norm[self.filter]
+        else:
+            self.plot_settings["norm"] = ImageNormalize(
+                stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
+            )
+
+    def suit_norm(self):
+        a = np.array(self.data)
+        sliced_array = a[(a > 2000) & (a < 50000)]
+        baseline = np.median(sliced_array) if len(sliced_array) > 0 else 1000
+        norm_params = {
+            'NB05': (0.8, 0.2 * baseline, 3 * baseline),
+            'NB03': (0.8, 0.2 * baseline, 3 * baseline),
+            'NB04': (0.9, 0.2 * baseline, 2.5 * baseline),
+            'NB02': (0.9, 0.2 * baseline, 3 * baseline),
+            'NB07': (0.8, 0.2 * baseline, 2.5 * baseline),
+            'NB06': (0.8, 0.2 * baseline, 2.5 * baseline),
+            'BB03': (0.8, 0.2 * baseline, 2.5 * baseline),
+            'BB02': (0.8, 0.2 * baseline, 2.3 * baseline),
+            'BB01': (.8, 0.2 * baseline, 2.5 * baseline),
+            'NB01': (0.9, 0.1 * baseline, 3 * baseline),
+            'NB08': (0.8, 0.2 * baseline, 3 * baseline),
+        }
+
+        norm = {key: colors.PowerNorm(gamma=gamma, vmin=vmin, vmax=vmax)
+                 for key, (gamma, vmin, vmax) in norm_params.items()}
+        return norm
 
     @property
     def _supported_observer_coordinates(self):
