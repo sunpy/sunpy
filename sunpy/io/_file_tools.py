@@ -150,7 +150,7 @@ def read_file(filepath, filetype=None, **kwargs):
         A list of (data, header) tuples.
     """
     filepath = get_open_file(filepath, **kwargs)
-    filepath = str(filepath.path)
+    filepath = filepath.path
     return _read(filepath, 'read', filetype, **kwargs)
 
 
@@ -176,7 +176,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
         A list of headers.
     """
     filepath = get_open_file(filepath, **kwargs)
-    filepath = str(filepath.path)
+    filepath = filepath.path
     return _read(filepath, 'get_header', filetype, **kwargs)
 
 
@@ -210,6 +210,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
             return _READERS[readername].write(fname, data, header, **kwargs)
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
+
 def detect_filetype(filepath, **kwargs):
     """
     Attempts to determine the type of file a given filepath is.
@@ -237,7 +238,7 @@ def detect_filetype(filepath, **kwargs):
         except Exception:
             return None
     else:
-        fileobj = open(str(filepath), 'rb')
+        fileobj = open(filepath, 'rb')
     with fileobj as fp:
         line1 = fp.readline()
         line2 = fp.readline()
