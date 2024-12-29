@@ -8,6 +8,7 @@ import pathlib
 import fsspec
 
 from sunpy.util.io import is_uri
+
 try:
     from . import _fits as fits
 except ImportError:
@@ -35,7 +36,7 @@ _KNOWN_EXTENSIONS = {
 
 
 class Readers(dict):
-        # Define a dict which raises a custom error message if the value is None
+    # Define a dict which raises a custom error message if the value is None
     def __init__(self, *args):
         dict.__init__(self, *args)
 
@@ -56,7 +57,7 @@ _READERS = Readers({
     'ana': ana
 })
 
-def get_open_file(filepath, **kwargs):
+def get_open_file(filepath, mode="rb", **kwargs):
     """
     Ensures the filepath is converted to an fsspec.OpenFile object.
 
@@ -79,15 +80,11 @@ def get_open_file(filepath, **kwargs):
     """
     if isinstance(filepath, fsspec.core.OpenFile):
         return filepath
+    return fsspec.open(filepath, mode=mode, **kwargs)
 
-    if isinstance(filepath, (str, pathlib.Path)):
-        return fsspec.open(filepath, 'rb', **kwargs)
-
-    raise TypeError("filepath must be a string, pathlib.Path, or fsspec.OpenFile.")
-
-def _read(open_file, function_name, filetype=None, **kwargs):
+def _read(filepath, function_name, filetype=None, **kwargs):
     """
-    This function provides the logic paths for reading a file.
+    This functions provides the logic paths for reading a file.
 
     It is trying to handle, reading files with known extensions and reading files with known readers.
 
@@ -96,8 +93,8 @@ def _read(open_file, function_name, filetype=None, **kwargs):
 
     Parameters
     ----------
-    open_file : fsspec.OpenFile
-        The file to be read as an open file object.
+    filepath : pathlib.Path, str
+        The file to be read.
     function_name : {'read' | 'get_header'}
         The name of the function to call on the reader.
     filetype : {'jp2' | 'fits' | 'ana'}, optional
@@ -111,22 +108,24 @@ def _read(open_file, function_name, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    with open_file as fp:
-        if filetype is not None:
-            return getattr(_READERS[filetype], function_name)(fp, **kwargs)
-
-        try:
-            readername = detect_filetype(fp)
-            if readername in _READERS.keys():
-                return getattr(_READERS[readername], function_name)(fp, **kwargs)
-        except UnrecognizedFileTypeError:
-            readername = None
-
-        for extension, name in _KNOWN_EXTENSIONS.items():
-            if open_file.path.endswith(extension) or filetype in extension:
-                return getattr(_READERS[name], function_name)(fp, **kwargs)
-
+    filepath = get_open_file(filepath, **kwargs)
+    filepath = filepath.path
+    if filetype is not None:
+        return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
+    try:
+        readername = detect_filetype(filepath)
+        if readername in _READERS.keys():
+            return getattr(_READERS[readername], function_name)(filepath, **kwargs)
+        readername = None
+    except UnrecognizedFileTypeError:
+        readername = None
+    for extension, name in _KNOWN_EXTENSIONS.items():
+        if filepath.endswith(extension) or filetype in extension:
+            readername = name
+    if readername is not None:
+        return getattr(_READERS[readername], function_name)(filepath, **kwargs)
     raise UnrecognizedFileTypeError("The requested filetype is not currently supported by sunpy.")
+
 
 def read_file(filepath, filetype=None, **kwargs):
     """
@@ -134,7 +133,7 @@ def read_file(filepath, filetype=None, **kwargs):
 
     Parameters
     ----------
-    filepath : `str`, path-like, or fsspec.OpenFile
+    filepath : `str`, path-like
         The file to be read.
     filetype : `str`, optional
         Supported reader or extension to manually specify the filetype.
@@ -150,8 +149,10 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    open_file = get_open_file(filepath, **kwargs)
-    return _read(open_file, 'read', filetype, **kwargs)
+    filepath = get_open_file(filepath, **kwargs)
+    filepath = str(filepath.path)
+    return _read(filepath, 'read', filetype, **kwargs)
+
 
 def read_file_header(filepath, filetype=None, **kwargs):
     """
@@ -161,9 +162,9 @@ def read_file_header(filepath, filetype=None, **kwargs):
 
     Parameters
     ----------
-    filepath : str, path-like, or fsspec.OpenFile
+    filepath : `str`
         The file from which the header is to be read.
-    filetype : str, optional
+    filetype : `str`
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits').
     **kwargs : `dict`
@@ -174,8 +175,10 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
-    open_file = get_open_file(filepath, **kwargs)
-    return _read(open_file, 'get_header', filetype, **kwargs)
+    filepath = get_open_file(filepath, **kwargs)
+    filepath = str(filepath.path)
+    return _read(filepath, 'get_header', filetype, **kwargs)
+
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
@@ -183,8 +186,8 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
     Parameters
     ----------
-    fname : `str` or fsspec.OpenFile
-        Filename of the file to save.
+    fname : `str`
+        Filename of file to save.
     data : `numpy.ndarray`
         Data to save to a fits file.
     header : `collections.OrderedDict`
@@ -197,28 +200,25 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
     Notes
     -----
-    * This routine currently only supports saving a single HDU.    
+    * This routine currently only supports saving a single HDU.
     """
-    open_file = get_open_file(fname, **kwargs)
     if filetype == 'auto':
-            # Get the extension without the leading dot
-        filetype = pathlib.Path(open_file.path).suffix[1:]
-
+        # Get the extension without the leading dot
+        filetype = pathlib.Path(fname).suffix[1:]
     for extension, readername in _KNOWN_EXTENSIONS.items():
         if filetype in extension:
-            return _READERS[readername].write(open_file, data, header, **kwargs)
-
+            return _READERS[readername].write(fname, data, header, **kwargs)
     raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
-def detect_filetype(open_file, **kwargs):
+def detect_filetype(filepath, **kwargs):
     """
     Attempts to determine the type of file a given filepath is.
 
     Parameters
     ----------
-    open_file : fsspec.OpenFile
-        The file to inspect.
-    **kwargs : dict
+    filepath : `str`, `pathlib.Path`
+        Where the file is.
+    **kwargs : `dict`
         Additional keyword arguments.
 
     Returns
@@ -226,7 +226,19 @@ def detect_filetype(open_file, **kwargs):
     filetype : `str`
         The type of file.
     """
-    with open_file as fp:
+    filepath = get_open_file(filepath, **kwargs)
+    filepath = filepath.path
+    if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
+        return None
+    if is_uri(filepath):
+        fsspec_kw = kwargs.get("fsspec_kwargs", {})
+        try:
+            fileobj = fsspec.open(str(filepath), 'rb', **fsspec_kw).open()
+        except Exception:
+            return None
+    else:
+        fileobj = open(str(filepath), 'rb')
+    with fileobj as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
@@ -247,7 +259,7 @@ def detect_filetype(open_file, **kwargs):
     # Checks for gzip signature.
     # If found, decompresses first few bytes and checks for FITS
     if first80[:3] == b"\x1f\x8b\x08":
-        with gzip.open(open_file.path, 'rb') as fp:
+        with gzip.open(filepath, 'rb') as fp:
             first80 = fp.read(80)
 
     # Check for "KEY_WORD  =" at beginning of file
