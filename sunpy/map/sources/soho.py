@@ -12,7 +12,6 @@ from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 
-
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
 
 
