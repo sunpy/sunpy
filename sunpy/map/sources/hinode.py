@@ -58,7 +58,6 @@ class XRTMap(GenericMap):
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, header, **kwargs)
-
         self.plot_settings['cmap'] = 'hinodexrt'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
