@@ -50,7 +50,6 @@ class XRTMap(GenericMap):
     filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
                                   "Be_thick", "Gband", "Ti_poly"]
 
-
     def __init__(self, data, header, **kwargs):
         fw1 = header.get('EC_FW1_', '')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
@@ -59,7 +58,6 @@ class XRTMap(GenericMap):
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, header, **kwargs)
-
         self.plot_settings['cmap'] = 'hinodexrt'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
@@ -71,13 +69,10 @@ class XRTMap(GenericMap):
         """
         ctype1 = self.meta.get('ctype1', None)
         ctype2 = self.meta.get('ctype2', None)
-
         if ctype1.lower() in ("solar-x", "solar_x"):
             ctype1 = 'HPLN-TAN'
-
         if ctype2.lower() in ("solar-y", "solar_y"):
             ctype2 = 'HPLT-TAN'
-
         return SpatialPair(ctype1, ctype2)
 
     @property
@@ -195,13 +190,10 @@ class SOTMap(GenericMap):
         """
         ctype1 = self.meta.get('ctype1', None)
         ctype2 = self.meta.get('ctype2', None)
-
         if ctype1.lower() in ("solar-x", "solar_x"):
             ctype1 = 'HPLN-TAN'
-
         if ctype2.lower() in ("solar-y", "solar_y"):
             ctype2 = 'HPLT-TAN'
-
         return SpatialPair(ctype1, ctype2)
 
     @property

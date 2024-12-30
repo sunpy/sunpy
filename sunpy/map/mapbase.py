@@ -1232,8 +1232,6 @@ class GenericMap(NDData):
         # "solar-y" ctypes.  This overrides the default assignment and
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
-
-        # Check for deprecated or alternate values
         if ctype1.lower() in ("solar-x", "solar_x"):
             warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
@@ -1243,7 +1241,6 @@ class GenericMap(NDData):
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
-    
 
     @property
     def _supported_observer_coordinates(self):
