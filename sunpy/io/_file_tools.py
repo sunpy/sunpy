@@ -57,6 +57,7 @@ _READERS = Readers({
     'ana': ana
 })
 
+
 def get_open_file(filepath, mode="rb", **kwargs):
     """
     Ensures the filepath is converted to an fsspec.OpenFile object.
@@ -80,7 +81,7 @@ def get_open_file(filepath, mode="rb", **kwargs):
     """
     if isinstance(filepath, fsspec.core.OpenFile):
         return filepath
-    return fsspec.open(filepath, mode=mode, **kwargs)
+    return fsspec.open(str(filepath), mode=mode, **kwargs)
 
 def _read(filepath, function_name, filetype=None, **kwargs):
     """
@@ -229,6 +230,11 @@ def detect_filetype(filepath, **kwargs):
     """
     filepath = get_open_file(filepath, **kwargs)
     filepath = filepath.path
+
+    # Check for s3 URLs so we set anon=True if not already specified
+    if str(filepath).startswith('s3://'):
+        fsspec_kw = kwargs.setdefault('fsspec_kwargs', {})
+        fsspec_kw.setdefault('anon', True)
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
     if is_uri(filepath):
