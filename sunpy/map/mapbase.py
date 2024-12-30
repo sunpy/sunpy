@@ -1243,7 +1243,6 @@ class GenericMap(NDData):
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
-    
 
     @property
     def _supported_observer_coordinates(self):
