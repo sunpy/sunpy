@@ -593,6 +593,11 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     for key in all_keys:
         out_meta.pop(key)
 
+    # Check if 'rsun_ref' is in the metadata, if not, assign a default value
+    if 'rsun_ref' not in out_meta:
+        rsun_ref = out_meta.get('rsun_ref', GenericMap.rsun_meters.fget(smap))
+        out_meta['rsun_ref'] = rsun_ref
+        print(f"'rsun_ref' not found in metadata. Using default value: {rsun_ref}")     
     # Add a new HGS observer
     out_meta.update(get_observer_meta(new_observer, out_meta['rsun_ref']*u.m))
 
