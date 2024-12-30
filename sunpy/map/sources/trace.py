@@ -47,31 +47,30 @@ class TRACEMap(GenericMap):
         above concerning how to read "tri" files in SSWIDL.
     """
 
-    def _handle_deprecated_ctypes(self, ctype1, ctype2):
-        """
-        Override the default implementation to handle TRACEMAP-specific logic for CTYPE values.
-        """
-        if ctype1.lower() in ("solar-x", "solar_x"):
-            ctype1 = 'HPLN-TAN'
-
-        if ctype2.lower() in ("solar-y", "solar_y"):
-            ctype2 = 'HPLT-TAN'
-
-        return ctype1, ctype2
-
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
-        ctype1 = self.meta.get('ctype1', None)
-        ctype2 = self.meta.get('ctype2', None)
-
-        self._handle_deprecated_ctypes(ctype1, ctype2)
 
         self._nickname = self.detector
         # Colour maps
         self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+        
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle TRACEMAP-specific logic for CTYPE values.
+        """
+        ctype1 = self.meta.get('ctype1', None)
+        ctype2 = self.meta.get('ctype2', None)
+
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def spatial_units(self):

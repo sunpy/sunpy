@@ -34,30 +34,30 @@ class EITMap(GenericMap):
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
 
     """
-    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+
+        self._nickname = self.detector
+        self.plot_settings['cmap'] = self._get_cmap_name()
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        
+    @property
+    def coordinate_system(self):
         """
-        Override the default implementation to handle EITMAP-specific logic for CTYPE values.
+        Override the default implementation of coordinate_system to handle EITMAP-specific logic for CTYPE values.
         """
+        ctype1 = self.meta.get('ctype1', None)
+        ctype2 = self.meta.get('ctype2', None)
+
         if ctype1.lower() in ("solar-x", "solar_x"):
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
             ctype2 = 'HPLT-TAN'
 
-        return ctype1, ctype2
-
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
-
-        ctype1 = self.meta.get('ctype1', None)
-        ctype2 = self.meta.get('ctype2', None)
-
-        self._handle_deprecated_ctypes(ctype1, ctype2)
-
-        self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        return SpatialPair(ctype1, ctype2)
         
     @property
     def date(self):
@@ -121,31 +121,29 @@ class LASCOMap(GenericMap):
     References
     ----------
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    """
+    """    
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
 
-    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+        self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        
+    @property
+    def coordinate_system(self):
         """
         Override the default implementation to handle LASCOMAP-specific logic for CTYPE values.
         """
+        ctype1 = self.meta.get('ctype1', None)
+        ctype2 = self.meta.get('ctype2', None)
+
         if ctype1.lower() in ("solar-x", "solar_x"):
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
             ctype2 = 'HPLT-TAN'
 
-        return ctype1, ctype2
-    
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
-
-        ctype1 = self.meta.get('ctype1', None)
-        ctype2 = self.meta.get('ctype2', None)
-
-        self._handle_deprecated_ctypes(ctype1, ctype2)
-
-        self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def spatial_units(self):
