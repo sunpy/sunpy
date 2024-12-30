@@ -40,14 +40,7 @@ class EITMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         ctype1 = self.meta.get('ctype1', None)
-        if not ctype1:
-            warn_metadata("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
-            ctype1 = 'HPLN-TAN'
-
         ctype2 = self.meta.get('ctype2', None)
-        if not ctype2:
-            warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
-            ctype2 = 'HPLT-TAN'
 
         if ctype1.lower() in ("solar-x", "solar_x"):
             ctype1 = 'HPLN-TAN'
