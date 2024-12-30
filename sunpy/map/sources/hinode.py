@@ -50,7 +50,6 @@ class XRTMap(GenericMap):
     filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
                                   "Be_thick", "Gband", "Ti_poly"]
 
-
     def __init__(self, data, header, **kwargs):
         fw1 = header.get('EC_FW1_', '')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
