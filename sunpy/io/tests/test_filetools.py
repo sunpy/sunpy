@@ -1,6 +1,6 @@
 import os
 import pathlib
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
@@ -18,13 +18,17 @@ TEST_AIA_IMAGE_URI = "s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.f
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
 
+@pytest.mark.remote_data
 def test_read_file_network_fits():
     # Aim is to verify that we can read a files from a URL
     # but it is mocked to prevent network access
-    url = "https://hesperia.gsfc.nasa.gov/rhessi_extras/imagecube_fits/2015/12/20/20151220_2228_2248/hsi_imagecube_clean_20151220_2228_13tx3e.fits"
-    with patch("astropy.io.fits.file.download_file", return_value=TEST_AIA_IMAGE) as mock:
+    url = "https://hesperia.gsfc.nasa.gov/rhessi_extras/imagecube_fits_v2/2015/12/20/20151220_2338_0004/hsi_imagecube_clean_20151220_2338_18tx3e.fits"
+    mock_open_file = MagicMock()
+    mock_open_file.path = TEST_AIA_IMAGE
+    mock_open_file._original_uri = url
+    with patch("fsspec.open", return_value=mock_open_file) as mock:
         hdulist = read_file(url)
-        assert mock.call_args[0][0] == url
+        mock.assert_called_once_with(url, mode='rb')
     assert isinstance(hdulist, list)
     assert len(hdulist) == 1
     assert len(hdulist[0]) == 2
