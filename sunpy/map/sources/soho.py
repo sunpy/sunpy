@@ -121,7 +121,7 @@ class LASCOMap(GenericMap):
     References
     ----------
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    """    
+    """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
 
