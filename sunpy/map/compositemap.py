@@ -39,6 +39,9 @@ ACCEPTED_CONTOUR_KWARGS = get_keywords(
     [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
 )
 
+COMPARE_WCS_ATTR = [
+    'crpix', 'cdelt', 'crval', 'ctype', 'cunit', 'dateobs', 'dateavg'
+]
 
 class CompositeMap:
     """
@@ -444,10 +447,9 @@ class CompositeMap:
             if m.levels is False:
                 # We tell GenericMap.plot() that we need to autoalign the map
                 if wcsaxes_compat.is_wcsaxes(axes):
-                    if m.wcs == axes.wcs:
-                        params['autoalign'] = False
-                    else:
-                        params['autoalign'] = True
+                    # Set 'autoalign' to True if `m.wcs` differs from `axes.wcs`
+                    # otherwise, False.
+                    params['autoalign'] = not axes.wcs.wcs.compare(m.wcs.wcs, tolerance=0.01)
 
                 # Filter `matplot_args`
                 if params.get('autoalign', None) in (True, 'pcolormesh'):
