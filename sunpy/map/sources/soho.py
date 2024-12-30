@@ -11,7 +11,6 @@ from sunpy import log
 from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
-from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
@@ -35,6 +34,17 @@ class EITMap(GenericMap):
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
 
     """
+    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+        """
+        Override the default implementation to handle EITMAP-specific logic for CTYPE values.
+        """
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+
+        return ctype1, ctype2
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
@@ -42,17 +52,13 @@ class EITMap(GenericMap):
         ctype1 = self.meta.get('ctype1', None)
         ctype2 = self.meta.get('ctype2', None)
 
-        if ctype1.lower() in ("solar-x", "solar_x"):
-            ctype1 = 'HPLN-TAN'
-
-        if ctype2.lower() in ("solar-y", "solar_y"):
-            ctype2 = 'HPLT-TAN'
+        self._handle_deprecated_ctypes(ctype1, ctype2)
 
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
-
+        
     @property
     def date(self):
         # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
@@ -117,8 +123,25 @@ class LASCOMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     """
 
+    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+        """
+        Override the default implementation to handle LASCOMAP-specific logic for CTYPE values.
+        """
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+
+        return ctype1, ctype2
+    
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
+
+        ctype1 = self.meta.get('ctype1', None)
+        ctype2 = self.meta.get('ctype2', None)
+
+        self._handle_deprecated_ctypes(ctype1, ctype2)
 
         self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
         self.plot_settings['norm'] = ImageNormalize(

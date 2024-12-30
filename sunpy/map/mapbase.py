@@ -1228,8 +1228,31 @@ class GenericMap(NDData):
             warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
             ctype2 = 'HPLT-TAN'
 
+        # Astropy WCS does not understand the SOHO default of "solar-x" and
+        # "solar-y" ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
+
+        # Check for deprecated or alternate values
+        ctype1, ctype2 = self._handle_deprecated_ctypes(ctype1, ctype2)
 
         return SpatialPair(ctype1, ctype2)
+    
+    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+        """
+        Handle deprecated or alternate CTYPE values.
+
+        This is a default implementation, specific map sources can override this.
+        """
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLT-TAN' instead.")
+            ctype2 = 'HPLT-TAN'
+
+        return ctype1, ctype2
 
     @property
     def _supported_observer_coordinates(self):

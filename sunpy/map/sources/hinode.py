@@ -47,6 +47,18 @@ class XRTMap(GenericMap):
                                   "Be_thin", "C_poly", "Open"]
     filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
                                   "Be_thick", "Gband", "Ti_poly"]
+    
+    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+        """
+        Override the default implementation to handle XRTMAP-specific logic for CTYPE values.
+        """
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+
+        return ctype1, ctype2
 
     def __init__(self, data, header, **kwargs):
         fw1 = header.get('EC_FW1_', '')
@@ -56,6 +68,11 @@ class XRTMap(GenericMap):
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, header, **kwargs)
+        ctype1 = self.meta.get('ctype1', None)
+        ctype2 = self.meta.get('ctype2', None)
+
+        self._handle_deprecated_ctypes(ctype1, ctype2)
+
         self.plot_settings['cmap'] = 'hinodexrt'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
@@ -150,10 +167,27 @@ class SOTMap(GenericMap):
                         'FG shuttered I and V', 'FG shutterless I and V',
                         'FG shutterless I and V with 0.2s intervals',
                         'FG shutterless Stokes', 'SP IQUV 4D array']
+    
+    def _handle_deprecated_ctypes(self, ctype1, ctype2):
+        """
+        Override the default implementation to handle SOTMAP-specific logic for CTYPE values.
+        """
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+
+        return ctype1, ctype2
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
+
+        ctype1 = self.meta.get('ctype1', None)
+        ctype2 = self.meta.get('ctype2', None)
+
+        self._handle_deprecated_ctypes(ctype1, ctype2)
 
         # TODO (add other options, Now all treated as intensity. This follows
         # Hinode SDC archive) StokesQUV -> grey, Velocity -> EIS, Width -> EIS,
