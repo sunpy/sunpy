@@ -81,7 +81,14 @@ def get_open_file(filepath, mode="rb", **kwargs):
     """
     if isinstance(filepath, fsspec.core.OpenFile):
         return filepath
+    # For URIs, preserve the original URI as the path
+    if is_uri(str(filepath)):
+        open_file = fsspec.open(str(filepath), mode=mode, **kwargs)
+        # Preserve the original URI
+        open_file._original_uri = str(filepath)
+        return open_file
     return fsspec.open(str(filepath), mode=mode, **kwargs)
+
 
 def _read(filepath, function_name, filetype=None, **kwargs):
     """
@@ -109,8 +116,9 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    filepath = get_open_file(filepath, **kwargs)
-    filepath = filepath.path
+    open_file = get_open_file(filepath, **kwargs)
+    # Use original URI if available, otherwise use path
+    filepath = getattr(open_file, '_original_uri', open_file.path)
     if filetype is not None:
         return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
