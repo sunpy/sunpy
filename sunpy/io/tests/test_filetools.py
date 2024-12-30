@@ -28,7 +28,7 @@ def test_read_file_network_fits():
     mock_open_file._original_uri = url
     with patch("fsspec.open", return_value=mock_open_file) as mock:
         hdulist = read_file(url)
-        mock.assert_called_once_with(url, mode='rb')
+        mock.assert_any_call(url, mode='rb')
     assert isinstance(hdulist, list)
     assert len(hdulist) == 1
     assert len(hdulist[0]) == 2

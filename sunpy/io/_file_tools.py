@@ -83,9 +83,13 @@ def get_open_file(filepath, mode="rb", **kwargs):
         return filepath
     # For URIs, preserve the original URI as the path
     if is_uri(str(filepath)):
-        open_file = fsspec.open(str(filepath), mode=mode, **kwargs)
-        # Preserve the original URI
-        open_file._original_uri = str(filepath)
+        # Handle S3 specifically
+        if str(filepath).startswith("s3://"):
+            fs_kwargs = kwargs.pop("fsspec_kwargs", {})  # Extract fsspec kwargs
+            open_file = fsspec.open(str(filepath), mode=mode, anon=False, **fs_kwargs) #Explicitly set anon=False to force credential check
+        else:
+            open_file = fsspec.open(str(filepath), mode=mode, **kwargs)
+        open_file._original_uri = str(filepath) # Preserve original URI
         return open_file
     return fsspec.open(str(filepath), mode=mode, **kwargs)
 
@@ -246,7 +250,7 @@ def detect_filetype(filepath, **kwargs):
         except Exception:
             return None
     else:
-        fileobj = open(filepath, 'rb')
+        fileobj = fsspec.open(filepath, 'rb').open()
     with fileobj as fp:
         line1 = fp.readline()
         line2 = fp.readline()
