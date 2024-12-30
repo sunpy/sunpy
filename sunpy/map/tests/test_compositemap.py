@@ -18,7 +18,7 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')
 
 
 @pytest.fixture
-def composite_test_map(aia171_test_map, hmi_test_map):
+def composite_test_mapbase(aia171_test_map, hmi_test_map):
     # The test maps have wildly different observation times, which throws off compositing
     hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
     hmi_test_map.meta['t_obs'] = aia171_test_map.meta['t_obs']
@@ -27,6 +27,19 @@ def composite_test_map(aia171_test_map, hmi_test_map):
     del hmi_test_map.meta['crlt_obs']
     hmi_test_map.meta['hgln_obs'] = aia171_test_map.observer_coordinate.lon.to_value('deg')
     hmi_test_map.meta['hglt_obs'] = aia171_test_map.observer_coordinate.lat.to_value('deg')
+    return aia171_test_map, hmi_test_map
+
+@pytest.fixture
+def composite_test_map(composite_test_mapbase):
+    aia171_test_map = composite_test_mapbase[0]
+    hmi_test_map = composite_test_mapbase[1]
+    return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
+
+@pytest.fixture
+def composite_test_reproject_map(composite_test_mapbase, generic_map):
+    aia171_test_map = composite_test_mapbase[0]
+    hmi_test_map = composite_test_mapbase[1]
+    hmi_test_map = hmi_test_map.reproject_to(aia171_test_map.wcs)
     return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
 
 
@@ -35,9 +48,13 @@ def test_type_of_arguments_composite_map(composite_test_map):
         sunpy.map.CompositeMap(23, composite=True)
     assert str(excinfo.value) == 'CompositeMap expects pre-constructed map objects.'
 
-def test_autoalign_composite_map(composite_test_map):
+def test_autoalign_composite_map(composite_test_map, composite_test_reproject_map):
     assert isinstance(composite_test_map.plot()[0], mpl.image.AxesImage)
     assert isinstance(composite_test_map.plot()[1], mpl.collections.QuadMesh)
+    # check when map projected on same wcs
+    assert isinstance(composite_test_reproject_map.plot()[0], mpl.image.AxesImage)
+    assert isinstance(composite_test_reproject_map.plot()[1], mpl.image.AxesImage)
+
 
 @figure_test
 def test_plot_composite_map(composite_test_map):
