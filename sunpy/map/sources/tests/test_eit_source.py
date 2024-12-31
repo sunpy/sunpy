@@ -24,6 +24,7 @@ def test_fitstoEIT(eit_map):
     """Tests the creation of EITMap using FITS."""
     assert isinstance(eit_map, EITMap)
 
+
 def test_eitmap_coordinate_system(eit_map):
     assert eit_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
