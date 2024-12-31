@@ -40,6 +40,7 @@ def test_fitstoLASCO(lasco_map):
 def test_lasco_coordinate_system(lasco_map):
     assert lasco_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
+
 def test_is_datasource_for(lasco_map):
     """Test the is_datasource_for method of LASCOMap.
     Note that header data to be provided as an argument
