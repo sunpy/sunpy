@@ -27,6 +27,7 @@ def test_fits_to_xrt(xrt_map):
 def test_xrt_coordinate_system(xrt_map):
     assert xrt_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
+
 def test_is_datasource_for(xrt_map):
     """Test the is_datasource_for method of XRTMap.
     Note that header data to be provided as an argument
