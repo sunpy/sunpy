@@ -24,6 +24,7 @@ def test_fits_to_xrt(xrt_map):
     """Tests the creation of XRTMap using FITS."""
     assert isinstance(xrt_map, XRTMap)
 
+
 def test_xrt_coordinate_system(xrt_map):
     assert xrt_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
