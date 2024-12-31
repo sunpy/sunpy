@@ -27,6 +27,7 @@ def test_fitstoEIT(eit_map):
 def test_eitmap_coordinate_system(eit_map):
     assert eit_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
+
 def test_reference_date(eit_map):
     assert eit_map.reference_date.isot == "2004-03-01T00:00:10.515"
 
