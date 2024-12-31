@@ -36,6 +36,7 @@ def test_fitstoLASCO(lasco_map):
     """Tests the creation of LASCOMap using FITS."""
     assert isinstance(lasco_map, LASCOMap)
 
+
 def test_lasco_coordinate_system(lasco_map):
     assert lasco_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
