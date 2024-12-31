@@ -23,6 +23,7 @@ def test_fitstoSOT(sot):
 def test_sot_coordinate_system(sot):
     assert sot.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
+
 def test_is_datasource_for(sot):
     """Test the is_datasource_for method of SOTMap.
     Note that header data to be provided as an argument
