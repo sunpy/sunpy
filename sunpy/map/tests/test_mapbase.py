@@ -351,6 +351,13 @@ def test_default_coordinate_system(generic_map):
     with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
+def test_coordinate_system_solar_x_solar_y(generic_map):
+    generic_map.meta['ctype1'] = 'SOLAR-X'
+    generic_map.meta['ctype2'] = 'SOLAR-Y'
+    with pytest.warns(SunpyDeprecationWarning, match="CTYPE1 value 'solar-x'/'solar_x' is deprecated") :
+        with pytest.warns(SunpyDeprecationWarning, match="CTYPE2 value 'solar-y'/'solar_y' is deprecated") :
+            assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
 
 def test_carrington_longitude(generic_map):
     assert u.allclose(generic_map.carrington_longitude, sun.L0(generic_map.date))
