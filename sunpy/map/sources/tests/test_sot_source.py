@@ -19,6 +19,7 @@ def test_fitstoSOT(sot):
     """Tests the creation of SOTMap using FITS."""
     assert isinstance(sot, SOTMap)
 
+
 def test_sot_coordinate_system(sot):
     assert sot.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
