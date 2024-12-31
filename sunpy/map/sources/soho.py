@@ -41,7 +41,7 @@ class EITMap(GenericMap):
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
-        
+
     @property
     def coordinate_system(self):
         """
@@ -55,7 +55,7 @@ class EITMap(GenericMap):
             if ctype2.lower() in ("solar-y", "solar_y"):
                 ctype2 = 'HPLT-TAN'
             return SpatialPair(ctype1, ctype2)
-        
+
     @property
     def date(self):
         # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
@@ -125,7 +125,7 @@ class LASCOMap(GenericMap):
         self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
-        
+
     @property
     def coordinate_system(self):
         """
