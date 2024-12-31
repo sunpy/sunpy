@@ -18,6 +18,7 @@ def test_fitstoTRACE(trace_map):
     """Tests the creation of TRACEMap using FITS."""
     assert isinstance(trace_map, TRACEMap)
 
+
 def test_trace_coordinate_system(trace_map):
     assert trace_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
