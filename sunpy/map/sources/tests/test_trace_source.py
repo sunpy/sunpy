@@ -22,6 +22,7 @@ def test_fitstoTRACE(trace_map):
 def test_trace_coordinate_system(trace_map):
     assert trace_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
+
 def test_is_datasource_for(trace_map):
     """Test the is_datasource_for method of TRACEMap.
     Note that header data to be provided as an argument
