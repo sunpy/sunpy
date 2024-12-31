@@ -2,7 +2,6 @@
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
-from sunpy.map import GenericMap
 from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
