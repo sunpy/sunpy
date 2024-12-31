@@ -11,6 +11,7 @@ from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
 from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.map.mapbase import SpatialPair
 from .helpers import _test_private_date_setters
 
 header_list = [
@@ -35,6 +36,8 @@ def test_fitstoLASCO(lasco_map):
     """Tests the creation of LASCOMap using FITS."""
     assert isinstance(lasco_map, LASCOMap)
 
+def test_lasco_coordinate_system(lasco_map):
+    assert lasco_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 def test_is_datasource_for(lasco_map):
     """Test the is_datasource_for method of LASCOMap.
