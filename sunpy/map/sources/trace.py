@@ -60,13 +60,14 @@ class TRACEMap(GenericMap):
         """
         Override the default implementation to handle TRACEMAP-specific logic for CTYPE values.
         """
-        ctype1 = self.meta.get('ctype1', None)
-        ctype2 = self.meta.get('ctype2', None)
-        if ctype1.lower() in ("solar-x", "solar_x"):
-            ctype1 = 'HPLN-TAN'
-        if ctype2.lower() in ("solar-y", "solar_y"):
-            ctype2 = 'HPLT-TAN'
-        return SpatialPair(ctype1, ctype2)
+        if self.meta:
+            ctype1 = self.meta.get('ctype1', None)
+            ctype2 = self.meta.get('ctype2', None)
+            if ctype1.lower() in ("solar-x", "solar_x"):
+                ctype1 = 'HPLN-TAN'
+            if ctype2.lower() in ("solar-y", "solar_y"):
+                ctype2 = 'HPLT-TAN'
+            return SpatialPair(ctype1, ctype2)
 
     @property
     def spatial_units(self):
