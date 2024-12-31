@@ -1,0 +1,1 @@
+deprecated `ctype1="solar-x"/"solar_x"` and `ctype2="solar-y"/"solar_y"` in `sunpy.map.Mapbase.GenericMap.coordinate_system`
