@@ -83,6 +83,6 @@ def test_file_change(cache, mocker):
         assert file_hash == initial_hash
 
         mock_download_and_hash.return_value = (file_path, modified_hash, "http://example.com/abc.text")
-        #since default argument for overwrite is false existing file should not be overwritten
+        #Overwrite == False, so the existing file should not be overwritten
         file_path, file_hash, url = mock_download_and_hash('http://example.com/abc.text', redownload=True)
         assert file_hash == modified_hash
