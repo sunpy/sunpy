@@ -79,7 +79,7 @@ def test_file_change(cache, mocker):
     with patch('sunpy.data.data_manager.cache.Cache._download_and_hash') as mock_download_and_hash:
         mock_download_and_hash.return_value = (file_path, initial_hash, 'http://example.com/abc.text')
         # Overwrite == True, so file should be overwritten with a new file
-        file_path, file_hash, url = mock_download_and_hash('http://example.com/abc.text', redownload=True,overwrite = True)
+        file_path, file_hash, url = mock_download_and_hash('http://example.com/abc.text', redownload=True, overwrite=True)
         assert file_hash == initial_hash
 
         mock_download_and_hash.return_value = (file_path, modified_hash, "http://example.com/abc.text")
