@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "c66950b04d0a535002d122c9d5bc0f23534b530c",
+  "commit": "f14be4e69db1678316566c128153764c0e77aed2",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -31,7 +31,8 @@
         "docs/_static",
         ".github/workflows/sub_package_update.yml"
       ],
-      "_template": "https://github.com/sunpy/package-template"
+      "_template": "https://github.com/sunpy/package-template",
+      "_commit": "f14be4e69db1678316566c128153764c0e77aed2"
     }
   },
   "directory": null

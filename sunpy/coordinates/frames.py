@@ -36,7 +36,7 @@ _J2000 = Time('J2000.0', scale='tt')
 
 __all__ = ['SunPyBaseCoordinateFrame', 'BaseHeliographic', 'BaseMagnetic',
            'HeliographicStonyhurst', 'HeliographicCarrington',
-           'Heliocentric', 'Helioprojective',
+           'Heliocentric', 'Helioprojective', 'HelioprojectiveRadial',
            'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
            'HeliocentricInertial', 'GeocentricEarthEquatorial',
            'Geomagnetic', 'SolarMagnetic', 'GeocentricSolarMagnetospheric']
@@ -682,6 +682,125 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             yield
         finally:
             cls._assumed_screen = old_assumed_screen
+
+
+@add_common_docstring(**_frame_parameters())
+class HelioprojectiveRadial(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Helioprojective Radial system.
+
+    This is an observer-based spherical coordinate system, with:
+
+    - ``psi`` is the position angle of the coordinate, measured eastward from solar
+      north
+    - ``delta`` is the declination angle, which is the impact angle (the angle
+      between the observer-Sun line and the observer-coordinate line) minus 90
+      degrees
+    - ``r`` is the observer-coordinate distance
+
+    .. note::
+        The declination angle, rather than the impact angle, is used as a component
+        in order to match the FITS WCS definition.  The impact angle can be readily
+        retrieved using the `theta` property.
+
+    Parameters
+    ----------
+    {data}
+    psi : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
+        The position angle. Not needed if ``data`` is given.
+    delta : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
+        The declination angle. Not needed if ``data`` is given.
+    r: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
+        The observer-coordinate distance.  Not needed if ``data`` is given.
+    {rsun}
+    {observer}
+    {common}
+
+    See Also
+    --------
+    Helioprojective
+
+    Examples
+    --------
+    >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
+    >>> import astropy.units as u
+
+    >>> sc = SkyCoord(0*u.deg, -90*u.deg, 5*u.km,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojectiveradial")
+    >>> sc
+    <SkyCoord (HelioprojectiveRadial: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (psi, delta, distance) in (deg, deg, km)
+        (0., -90., 5.)>
+    >>> sc.theta
+    <Angle 0. arcsec>
+
+    >>> sc = SkyCoord(30*u.deg, -89.9*u.deg,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojectiveradial")
+    >>> sc
+    <SkyCoord (HelioprojectiveRadial: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (psi, delta) in deg
+        (30., -89.9)>
+    >>> sc.theta
+    <Angle 360. arcsec>
+
+    >>> sc = SkyCoord(CartesianRepresentation(1e5*u.km, -2e5*u.km, -1*u.AU),
+    ...               obstime="2011/01/05T00:00:50", observer="earth", frame="helioprojectiveradial")
+    >>> sc
+    <SkyCoord (HelioprojectiveRadial: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (psi, delta, distance) in (deg, deg, km)
+        (296.56505118, -89.91435897, 1.49598038e+08)>
+    >>> sc.theta
+    <Angle 308.30772022 arcsec>
+
+    .. minigallery:: sunpy.coordinates.HelioprojectiveRadial
+    """
+    _wrap_angle = 360*u.deg
+
+    default_representation = SphericalRepresentation
+
+    frame_specific_representation_info = {
+        SphericalRepresentation: [RepresentationMapping('lon', 'psi', u.deg),
+                                  RepresentationMapping('lat', 'delta', u.deg),
+                                  RepresentationMapping('distance', 'distance', None)],
+        SphericalDifferential: [RepresentationMapping('d_lon', 'd_psi', u.deg/u.s),
+                                RepresentationMapping('d_lat', 'd_delta', u.deg/u.s),
+                                RepresentationMapping('d_distance', 'd_distance', u.km/u.s)],
+        UnitSphericalRepresentation: [RepresentationMapping('lon', 'psi', u.deg),
+                                      RepresentationMapping('lat', 'delta', u.deg)],
+    }
+
+    rsun = QuantityAttribute(default=_RSUN, unit=u.km)
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
+
+    @property
+    def theta(self):
+        """
+        Returns the impact angle, which is the declination angle plus 90 degrees.
+        """
+        return (90*u.deg + self.spherical.lat).to(u.arcsec)
+
+    def make_3d(self):
+        """
+        Returns a 3D version of this coordinate.
+
+        If the coordinate is 2D, the default assumption is that the coordinate is on
+        the surface of the Sun, and the distance component is calculated
+        accordingly.  Under this assumption, if the 2D coordinate is outside the
+        disk, the distance component will be NaN.
+
+        The assumption can be changed using one of the screens in
+        `sunpy.coordinates.screens`.
+
+        Returns
+        -------
+        `~sunpy.coordinates.frames.HelioprojectiveRadial`
+            The 3D version of this coordinate.
+        """
+        # Skip if we already are 3D
+        if not self._is_2d:
+            return self
+
+        # Make 3D by going through HPC, which thus will make use of any screen
+        hpc_frame = Helioprojective(obstime=self.obstime, observer=self.observer, rsun=self.rsun)
+        return self.transform_to(hpc_frame).make_3d().transform_to(self)
 
 
 @add_common_docstring(**_frame_parameters())
