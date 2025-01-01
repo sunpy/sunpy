@@ -11,7 +11,7 @@ import itertools
 import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
-
+import warnings
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -55,7 +55,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
+from sunpy.util.exceptions import SunpyDeprecationWarning, warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -1233,11 +1233,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
-            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
+            warnings.warn("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.", SunpyDeprecationWarning)
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
-            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLT-TAN' instead.")
+            warnings.warn("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLT-TAN' instead.", SunpyDeprecationWarning)
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
