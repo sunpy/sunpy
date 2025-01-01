@@ -2653,7 +2653,7 @@ class GenericMap(NDData):
             ensuring proper alignment.
             - If ``False``, no auto-alignment is performed, and the map is plotted using the
             default method without any adjustments.
-            
+
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
