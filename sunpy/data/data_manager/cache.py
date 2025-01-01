@@ -74,9 +74,12 @@ class Cache:
                 break
         if details:
             if redownload or self._has_expired(details):
-                # if file is in cache and it has to be redownloaded or the cache has expired
+                # If file is in cache and it has to be redownloaded or the cache has expired
                 # then remove the file and delete the details from the storage
-                os.remove(details['file_path'])
+                try:
+                    os.remove(details['file_path'])
+                except FileNotFoundError:
+                    pass
                 self._storage.delete_by_key('url', details['url'])
             else:
                 return Path(details['file_path'])

@@ -95,7 +95,10 @@ class DataManager:
                     else:
                         # This is to handle the case when the local file
                         # appears to be tampered/corrupted
-                        if hash_file(details['file_path']) != details['file_hash']:
+                        if not pathlib.Path(details["file_path"]).is_file():
+                            warn_user("Requested file appears to missing and will be redownloaded.")
+                            file_path = self._cache.download(urls, self._namespace, redownload=True)
+                        elif hash_file(details['file_path']) != details['file_hash']:
                             warn_user("Hashes do not match, the file will be redownloaded "
                                       "(could be be tampered/corrupted)")
                             file_path = self._cache.download(urls, self._namespace, redownload=True)
