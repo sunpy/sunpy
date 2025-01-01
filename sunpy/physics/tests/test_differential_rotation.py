@@ -391,3 +391,22 @@ def test_differential_rotation(aia171_test_map):
     with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
+
+@pytest.mark.array_compare
+def test_rsun_ref_fallback(aia171_test_map):
+ # Print the rsun_ref value before starting the function call
+ if 'rsun_ref' in aia171_test_map.meta:
+ print(f"Initial rsun_ref value: {aia171_test_map.meta['rsun_ref']}")
+ # Remove the rsun_ref from metadata if it exists
+ del aia171_test_map.meta['rsun_ref']
+ print("rsun_ref removed from metadata.")
+ 
+ # Perform differential rotation while checking for the warning
+ with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+ rot_map = differential_rotate(aia171_test_map, time=2*u.day)
+ 
+ # Print the rsun_ref value after differential rotation (if it was added)
+ if 'rsun_ref' in rot_map.meta:
+ print(f"rsun_ref value after rotation: {rot_map.meta['rsun_ref']}")
+ 
+ return rot_map.data
