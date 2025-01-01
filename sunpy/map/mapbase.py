@@ -7,11 +7,12 @@ import html
 import inspect
 import numbers
 import textwrap
+import warnings
 import itertools
 import webbrowser
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
-import warnings
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -55,7 +56,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import SunpyDeprecationWarning, warn_deprecated, warn_metadata, warn_user
+from sunpy.util.exceptions import SunpyDeprecationWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
