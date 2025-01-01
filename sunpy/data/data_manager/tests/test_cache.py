@@ -68,10 +68,8 @@ def test_check_old_file_is_not_removed(cache, mocker):
 def test_file_change(cache, mocker):
     cache.download('http://example.com/abc.text')
     file_path = cache.get_by_hash(MOCK_HASH)["file_path"]
-
     initial_hash = hash_file(file_path)
 
-    #change the file contents
     with open(file_path, "a") as file:
         file.write("test writing")
 
