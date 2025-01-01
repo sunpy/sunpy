@@ -95,7 +95,7 @@ class DataManager:
                     raise RuntimeError(f"Hash of local file ({file_hash}) does not match expected hash ({sha_hash}). File may have changed on the remote server.")
             else:
                 if not pathlib.Path(details["file_path"]).is_file():
-                    warn_user("file appears to deleted. Redownloading......")
+                    warn_user("Requested file appears to missing and will be redownloaded.")
                     self._cache._download_and_hash(urls, self._namespace)
 
                 if hash_file(details['file_path']) != details['file_hash']:

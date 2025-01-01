@@ -251,23 +251,19 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
 
 
 def test_file_deleted_redownload(storage, downloader, data_function):
-
-    # Test that if a file if it is deleted. if yes then raise a warning and redonwload it .
+    # Checks that if a file is deleted, a warning is raised and the file is re-downloaded.
 
     data_function()
     assert len(storage._store) == 1
     test_file_path = Path(storage._store[0]['file_path'])
     assert test_file_path.exists()
 
-    #file deleted
     os.remove(test_file_path)
     assert not test_file_path.exists()
 
-    # Call the function again raise a warning and redonwload it
-    with pytest.warns(SunpyUserWarning, match="file appears to deleted. Redownloading......"):
+    with pytest.warns(SunpyUserWarning, match="Requested file appears to missing and will be redownloaded."):
         data_function()
 
-    # Ensure downloader was called again and the file was redownloaded
     assert downloader.times_called == 2
     assert len(storage._store) == 1
     assert test_file_path.exists()
