@@ -47,6 +47,7 @@ def test_get_by_hash_fail(cache):
     details = cache.get_by_hash('wrong_hash')
     assert details is None
 
+
 def test_check_old_file_is_not_removed(cache, mocker):
     # Checks that https://github.com/sunpy/sunpy/issues/7249 is fixed
 
