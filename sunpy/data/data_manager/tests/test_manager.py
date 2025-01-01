@@ -250,7 +250,7 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
     assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
 
 
-def test_file_deleted_redownload(manager, storage, downloader, data_function, tmpdir):
+def test_file_deleted_redownload(storage, downloader, data_function):
 
     # Test that if a file if it is deleted. if yes then raise a warning and redonwload it .
 
