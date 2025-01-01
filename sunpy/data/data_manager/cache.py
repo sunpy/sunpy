@@ -153,7 +153,7 @@ class Cache:
             try:
                 path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
 
-                self._downloader.download(url, path,overwrite = True)
+                self._downloader.download(url, path, overwrite=True)
                 shahash = hash_file(path)
                 return path, shahash, url
             except Exception as e:
