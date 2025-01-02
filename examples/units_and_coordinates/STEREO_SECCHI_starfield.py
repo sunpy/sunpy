@@ -71,13 +71,16 @@ print(len(result[0]))
 # Now we load all stars into an array coordinate. The reference epoch for the
 # star positions is J2015.5,so we update these positions to the date of the
 # COR2 observation using :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
+# Some Vizier results may be missing information on parallax, proper motion, or
+# radial velocity, so we fill those gaps with the fallback assumptions of
+# negligible parallax and zero velocity.
 
 tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
                     dec=result[0]['DE_ICRS'],
-                    distance=Distance(parallax=u.Quantity(result[0]['Plx'])),
-                    pm_ra_cosdec=result[0]['pmRA'],
-                    pm_dec=result[0]['pmDE'],
-                    radial_velocity=result[0]['RV'],
+                    distance=Distance(parallax=u.Quantity(result[0]['Plx'].filled(1e-4))),
+                    pm_ra_cosdec=result[0]['pmRA'].filled(0),
+                    pm_dec=result[0]['pmDE'].filled(0),
+                    radial_velocity=result[0]['RV'].filled(0),
                     frame='icrs',
                     obstime=Time(result[0]['Epoch'], format='jyear'))
 tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2_map.date)
