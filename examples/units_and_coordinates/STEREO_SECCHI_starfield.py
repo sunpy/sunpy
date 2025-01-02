@@ -55,12 +55,13 @@ stereo_to_sun = SkyCoord(-sun_to_stereo.spherical, obstime=sun_to_stereo.obstime
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
 # `astroquery <https://astroquery.readthedocs.io/en/latest/>`__.
-# We will search the GAIA2 star catalog for stars with magnitude
-# brighter than 7.
+# We will search the Hipparcos star catalogue (2007 reduction) for stars with
+# magnitude brighter than 8.  The Gaia star catalogues are more recent, but
+# but search queries take much longer due to their sizes and may truncate their
+# results.
 
-vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Gmag': '<7'}, timeout=1200)
-vv.ROW_LIMIT = -1
-result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
+vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Hpmag': '<8'})
+result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/311/hip2')
 
 ###############################################################################
 # Let's see how many stars we've found.
@@ -69,17 +70,19 @@ print(len(result[0]))
 
 ###############################################################################
 # Now we load all stars into an array coordinate. The reference epoch for the
-# star positions is J2015.5,so we update these positions to the date of the
+# star positions is J1991.25, so we update these positions to the date of the
 # COR2 observation using :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
+# Be aware that some star catalogues will report NaNs for parallax or proper
+# motion, and then those stars "disappear" upon propagation if the NaNs are not
+# replaced with physical values (e.g., zero proper motion).
 
-tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
-                    dec=result[0]['DE_ICRS'],
-                    distance=Distance(parallax=u.Quantity(result[0]['Plx'])),
+tbl_crds = SkyCoord(ra=result[0]['RArad'],
+                    dec=result[0]['DErad'],
+                    distance=Distance(parallax=u.Quantity(result[0]['Plx']), allow_negative=True),
                     pm_ra_cosdec=result[0]['pmRA'],
                     pm_dec=result[0]['pmDE'],
-                    radial_velocity=result[0]['RV'],
                     frame='icrs',
-                    obstime=Time(result[0]['Epoch'], format='jyear'))
+                    obstime=Time(1991.25, format='jyear'))
 tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2_map.date)
 
 ###############################################################################

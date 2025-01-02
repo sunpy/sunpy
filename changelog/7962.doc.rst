@@ -1,0 +1,1 @@
+The gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_STEREO_SECCHI_starfield.py` now queries the Hipparcos star catalogue instead of a Gaia star catalogue to avoid several issues with using the latter.
