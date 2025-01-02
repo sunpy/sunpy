@@ -18,7 +18,7 @@ from sunpy.util.exceptions import warn_user
 __all__ = ['read_cdf']
 
 
-def read_cdf(fname, **kwargs):
+def read_cdf(fname, ignore_vars=None, **kwargs):
     """
     Read a CDF file that follows the ISTP/IACG guidelines.
 
@@ -39,6 +39,9 @@ def read_cdf(fname, **kwargs):
     ----------
     Space Physics Guidelines for CDF https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html
     """
+    if ignore_vars is None:
+        ignore_vars = []
+
     # Limit to kwargs that exist in cdflib.CDF
     filtered_kwargs = {k: v for k, v in kwargs.items() if k in [param.name for param in inspect.signature(cdflib.CDF).parameters.values()]}
     cdf = cdflib.CDF(str(fname), **filtered_kwargs)
@@ -70,6 +73,9 @@ def read_cdf(fname, **kwargs):
         units = {}
 
         for var_key in sorted(var_keys):
+            if var_key in ignore_vars:
+                log.debug(f'Skipping {var_key} as it is in the ignore_vars list.')
+                continue
             attrs = var_attrs[var_key]
             # If this variable doesn't depend on this index, continue
             if attrs['DEPEND_0'] != index_key:
