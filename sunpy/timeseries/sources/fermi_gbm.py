@@ -19,6 +19,8 @@ from sunpy.visualization import peek_show
 
 __all__ = ['GBMSummaryTimeSeries']
 
+# Define new unit for kilo electronVolt
+u.KeV = u.def_unit('KeV', 1000 * u.eV)
 
 class GBMSummaryTimeSeries(GenericTimeSeries):
     """
@@ -157,7 +159,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         # extn3 - eclipse times?
         energy_bins = hdulist[1].data
         count_data = hdulist[2].data
-
+        cls._hdulist = None
         # rebin the 128 energy channels into some summary ranges
         # some of default bin ranges are
         # 4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
@@ -170,12 +172,16 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         gbm_times.precision = 9
         gbm_times = gbm_times.isot.astype('datetime64')
 
-        ebands = kwargs.get('energy_bands', [4, 15, 25, 50, 100, 300, 800, 2000])
+        ebands = kwargs.get('energy_bands', [4, 15, 25, 50, 100, 300, 800, 2000]*u.KeV)
+        ebands = [eband.to(u.KeV) if eband.unit != u.KeV else eband for eband in ebands]
         ebands = sorted(ebands)
-        column_labels = [f'{ebands[i]}-{ebands[i+1]} keV'  for i in range(len(ebands)-1)]
+        column_labels = [
+            f"{eband.value}-{next_eband.value} {eband.unit}"
+            for eband, next_eband in zip(ebands, ebands[1:])
+        ]
 
         # Add the units data
-        units = OrderedDict((col, u.ct / u.s / u.keV) for col in column_labels)
+        units = OrderedDict((col, u.ct / u.s / eband.unit) for col, eband in zip(column_labels, ebands))
 
         return pd.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
@@ -212,7 +218,7 @@ def _bin_data_for_summary(energy_bins, count_data, **kwargs):
     Rebin the 128 energy channels into some summary ranges and put the data in
     the units of counts/s/keV.
 
-    default bin ranges used:
+    Default bin ranges used:
     * 4-15 keV
     * 15-25 keV
     * 25-50 keV
@@ -229,16 +235,19 @@ def _bin_data_for_summary(energy_bins, count_data, **kwargs):
         The array of count data to rebin.
     """
     # list of energy bands to sum between
-    ebands = kwargs.get('energy_bands', [4, 15, 25, 50, 100, 300, 800, 2000])
+    ebands = kwargs.get('energy_bands', [4, 15, 25, 50, 100, 300, 800, 2000]*u.KeV)
+    ebands = [eband.to(u.KeV) if eband.unit != u.KeV else eband for eband in ebands]
     ebands = sorted(ebands)
     e_center = (energy_bins['e_min'] + energy_bins['e_max']) / 2
-    indices = [np.searchsorted(e_center, e) for e in ebands]
+    indices = [np.searchsorted(e_center, e.value) for e in ebands]
 
     summary_counts = []
     for ind_start, ind_end in zip(indices[:-1], indices[1:]):
-        # sum the counts in the energy bands, and find counts/s/keV
-        summed_counts = np.sum(count_data["counts"][:, ind_start:ind_end], axis=1)
-        energy_width = (energy_bins["e_max"][ind_end - 1] - energy_bins["e_min"][ind_start])
-        summary_counts.append(summed_counts/energy_width/count_data["exposure"])
-
+        if ind_start != len(e_center) or ind_end != len(e_center):
+            # sum the counts in the energy bands, and find counts/s/keV
+            summed_counts = np.sum(count_data["counts"][:, ind_start:ind_end], axis=1)
+            energy_width = (energy_bins["e_max"][ind_end - 1] - energy_bins["e_min"][ind_start])
+            summary_counts.append(summed_counts/energy_width/count_data["exposure"])
+        else:
+            summary_counts.append([np.nan]*len(count_data["exposure"]))
     return np.array(summary_counts).T
