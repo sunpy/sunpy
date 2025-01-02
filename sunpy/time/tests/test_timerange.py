@@ -255,8 +255,8 @@ def test_extend(inputs):
     assert timerange.dt == TimeDelta(delta)
 
 
-# Checks when start + delta_1 > end + delta_2
 def test_extend_end_start():
+    # Checks when start + delta_1 > end + delta_2
     start, end = datetime(2012, 1, 1), datetime(2012, 1, 10)
     delta_1, delta_2 = timedelta(days=15), timedelta(days=2)
 
