@@ -39,9 +39,6 @@ ACCEPTED_CONTOUR_KWARGS = get_keywords(
     [GenericMap.draw_contours, ContourSet.__init__, QuadContourSet._process_args]
 )
 
-COMPARE_WCS_ATTR = [
-    'crpix', 'cdelt', 'crval', 'ctype', 'cunit', 'dateobs', 'dateavg'
-]
 
 class CompositeMap:
     """
