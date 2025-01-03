@@ -8,7 +8,7 @@ Deprecation Policy
 Overview
 --------
 
-Our deprecation policy is designed to help users prepare for changes and removals in SunPy while ensuring stability and consistency. This section explains why you might see deprecation warnings, what they mean, and how you can address them.
+Our deprecation policy is designed to help users prepare for changes and removals in SunPy. This section explains why you might see deprecation warnings, what they mean, and how you can address them.
 
 Versioning Policy
 -----------------
@@ -29,8 +29,7 @@ When we plan to deprecate functionality, the following steps are taken to ensure
 
 **Deprecation Warnings**
 
-Deprecation warnings will be issued for at least two releases or six months before the functionality is removed. Warnings will specify the version in which the functionality will be removed and suggest alternatives if available.
-
+The deprecation warning has to be in one LTS release before the deprecated code can be removed. So in the above example, the warning will be in sunpy 3.1 but it can not be removed until sunpy 4.1 after the 4.0 LTS release.
 Example:
 
 .. code-block:: python
@@ -83,22 +82,3 @@ Code will emit deprecation warnings to inform users of planned changes or remova
 **Availability of Alternatives**
 
 Warnings will only be emitted when an alternative option exists for the functionality, or the functionality is to be completely removed.
-
-**LTS Releases**
-
-All effort will be made to provide at least one LTS release where deprecated functionality emits warnings, ensuring users moving between LTS releases are informed.
-
-Mitigating Impact
------------------
-
-To minimize the impact of deprecations and removals:
-
-**Code Searches**
-
-We perform code searches on openly available user code on GitHub or GitLab to assess the impact.
-
-**Continuous Integration (CI)**
-
-We recommend that users depending on SunPy perform tests in CI against our GitHub repository. Monthly beta releases can help in early identification of issues.
-
-This high-level discussion is intended for users and not core SunPy contributors. The information provided here aims to remain relatively stable over time. For more detailed information, refer to the `developer guide <https://docs.sunpy.org/en/latest/dev_guide/contents/public_api.html#deprecation-policy-and-breaking-changes>`_.
