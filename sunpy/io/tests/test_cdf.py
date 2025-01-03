@@ -44,3 +44,20 @@ def test_read_psp_data():
     assert isinstance(ts, GenericTimeSeries)
     col = ts.quantity('EFLUX_VS_ENERGY_0')
     assert np.sum(np.isnan(col)) >= 0
+
+@pytest.mark.remote_data
+def test_epd_step_data():
+    # This was an example which was a failing example showing this message "The variable "RTN_Pixels" has been skipped because it has more than 2 dimensions, which is unsupported. [sunpy.io._cdf]" provided by
+    # https://github.com/sunpy/sunpy/issues/7093
+    trange = a.Time("2022-1-26 10:30", "2022-1-27 15:40")
+    product = a.soar.Product('EPD-STEP-MAIN')
+    res = Fido.search(a.Instrument('EPD') & trange & a.Level(2) & product)
+    files = Fido.fetch(res)
+    ignore_vars = ["RTN_Pixels"]
+    data = TimeSeries(files, concatenate=True, ignore_vars=ignore_vars)
+    assert isinstance(data, GenericTimeSeries)
+
+    for var in ignore_vars:
+        assert var not in data.columns
+
+    print(data)
