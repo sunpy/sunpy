@@ -28,7 +28,7 @@ For detailed information, refer to `SunPy Enhancement Proposal (SEP) 0009 <https
 Release Practices
 =================
 
-There will be two planned releases of the SunPy core package per year with at least 4 months (preferably 6 months) between these releases. 
+There will be two planned releases of the SunPy core package per year with at least 4 months (preferably 6 months) between these releases.
 Users can expect these releases occur in the months of May and November based on the current release schedule of the astropy core package
 SunPy provides two types of releases:
 
@@ -91,7 +91,7 @@ Sunpy enforces strict standards for updating, changing, or deprecating public AP
 
 Documentation of Changes
 ------------------------
-    
+
 To help users adapt, all API changes are documented thoroughly:
 
 - Deprecation warnings inform users of planned changes or removals, provided an alternative exists or the functionality is being removed entirely.
