@@ -47,7 +47,7 @@ def test_read_psp_data():
 
 @pytest.mark.remote_data
 def test_epd_step_data():
-    # This was an example which was a failing example showing this message "The variable "RTN_Pixels" has been skipped because it has more than 2 dimensions, which is unsupported. [sunpy.io._cdf]" provided by
+    # This was a failing example showing this message "The variable "RTN_Pixels" has been skipped because it has more than 2 dimensions, which is unsupported. [sunpy.io._cdf]" provided by
     # https://github.com/sunpy/sunpy/issues/7093
     trange = a.Time("2022-1-26 10:30", "2022-1-27 15:40")
     product = a.soar.Product('EPD-STEP-MAIN')
