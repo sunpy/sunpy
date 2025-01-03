@@ -193,8 +193,8 @@ def _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape):
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
                                               reference_pixel[1].to_value(u.pixel) + 1)
 
-    meta_wcs['cdelt1'] = scale[0].to_value(meta_wcs['cunit1']/u.pixel)
-    meta_wcs['cdelt2'] = scale[1].to_value(meta_wcs['cunit2']/u.pixel)
+    meta_wcs['cdelt1'] = scale[0].to_value(u.Unit(meta_wcs['cunit1']) / u.pixel)
+    meta_wcs['cdelt2'] = scale[1].to_value(u.Unit(meta_wcs['cunit2']) / u.pixel)
     return meta_wcs
 
 
