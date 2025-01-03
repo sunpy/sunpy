@@ -22,7 +22,7 @@ from sunpy.physics.differential_rotation import (
     differential_rotate,
     solar_rotate_coordinate,
 )
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
@@ -392,20 +392,13 @@ def test_differential_rotation(aia171_test_map):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
 
-def test_rsun_ref_fallback(aia171_test_map):
-    from sunpy.util.exceptions import SunpyUserWarning
-    # Ensure rsun_ref is initially in the metadata
+def test_rsun_ref_fallback(aia171_test_map,caplog):
     assert 'rsun_ref' in aia171_test_map.meta
-
-    # Remove rsun_ref from metadata
     del aia171_test_map.meta['rsun_ref']
-    # Perform differential rotation and check for the correct warning
-    with pytest.warns(SunpyUserWarning) as record:
-        rot_map = differential_rotate(aia171_test_map, time=2 * u.day)
-    
-    for warning in record:
-        print(f"Captured warning: {warning}")
-
-    # Check that rsun_ref in the output map is the default value
+    with pytest.warns(SunpyUserWarning, match="Using 'time' assumes an Earth-based observer."):
+        with caplog.at_level("INFO"):
+            rot_map = differential_rotate(aia171_test_map, time=2 * u.day)
+    for record in caplog.records:
+        assert "Missing metadata for solar radius" in record.message
     assert 'rsun_ref' in rot_map.meta
-    print(f"rsun_ref value after rotation: {rot_map.meta['rsun_ref']}")
+    assert rot_map.meta['rsun_ref'] > 695999999.0
