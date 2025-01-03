@@ -137,7 +137,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         return axes.get_figure()
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
@@ -261,7 +261,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         return axes
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
