@@ -91,7 +91,7 @@ Sunpy enforces strict standards for updating, changing, or deprecating public AP
 
 Documentation of Changes
 ------------------------
-
+    
 To help users adapt, all API changes are documented thoroughly:
 
 - Deprecation warnings inform users of planned changes or removals, provided an alternative exists or the functionality is being removed entirely.
