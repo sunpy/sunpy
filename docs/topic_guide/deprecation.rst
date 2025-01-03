@@ -66,18 +66,18 @@ Deprecation Policy and Breaking Changes
 The goal of the deprecation policy is to try and ensure that users have enough time to adapt to any breaking changes or removals in the public API.
 Below are the key practices:
 
-Deprecation Policy and Breaking Changes
----------------------------------------
+The SunPy Project enforces these standards for updating, changing, or deprecating public APIs across the core package and **stable** affiliated packages.
+If functionality is planned for deprecation, the following steps are taken:
 
-Sunpy enforces strict standards for updating, changing, or deprecating public APIs across the core package and stable affiliated packages. If functionality is planned for deprecation, the following steps are taken:
+- A deprecation warning must be introduced in one LTS release before the deprecated code is removed.
+  For example:
+  
+    - A deprecation warning is introduced in ``sunpy`` 6.1.
+    - The code that is being removed, can only be removed in ``sunpy`` 7.1, after the 7.0 LTS release.
 
-- A deprecation warning must be introduced in one LTS release before the deprecated code is removed. For instance:
-  - The warning is introduced in Sunpy 6.1.
-  - The code can only be removed in Sunpy 7.1, after the 7.0 LTS release.
+The goal of the deprecation warning is to inform users of breaking changes or removals, provided an alternative exists or the functionality is being removed entirely.
 
-- Deprecation warnings inform users of planned changes or removals, provided an alternative exists or the functionality is being removed entirely.
-- Include a **“breaking”** changelog entry with detailed guidance for updating user code.
+Every effort is made to avoid breaking changes in public APIs.
+In cases where it is unavoidable, developers will conduct code searches on GitHub or GitLab to assess the potential impact on openly available user code.
 
-Every effort is made to avoid breaking changes in public APIs. In cases where it is unavoidable, Sunpy conducts code searches on GitHub or GitLab to assess the potential impact on openly available user code.
-
-When practical, provide a side-by-side comparison of old and new functionality.
+When practical, a migration guide or a side-by-side comparison of old and new functionality will be added to the documentation to ease the transition process.
