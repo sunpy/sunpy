@@ -123,7 +123,7 @@ class LYRATimeSeries(GenericTimeSeries):
         return axes[0].get_figure()
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         Parses Lyra FITS data files to create TimeSeries.
 

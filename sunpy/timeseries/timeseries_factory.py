@@ -390,7 +390,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             cls = types[0]
 
-            data_header_unit_tuple = cls._parse_hdus(pairs, **kwargs)
+            data_header_unit_tuple = cls._parse_hdus(pairs,  **kwargs)
             return self._parse_arg(data_header_unit_tuple)
 
     @seconddispatch
