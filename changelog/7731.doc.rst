@@ -1,0 +1,2 @@
+Added a :ref:`page <sunpy-topic-guide-deprecation-policy>` describing deprecation versioning and release practices and policies for users and developers.
+.
