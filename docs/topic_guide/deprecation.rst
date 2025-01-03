@@ -1,8 +1,8 @@
 .. _sunpy-topic-guide-deprecation-versioning:
 
-**********************************************
+*********************************************
 Deprecation, Versioning and Release Practices
-**********************************************
+*********************************************
 
 Versioning Policy
 =================
@@ -22,12 +22,13 @@ Here's an example release sequence to illustrate:
 - **1.1.1**: A bug fix for the short-support release (June 2025).
 - **2.0.0**: An LTS release (November 2025).
 
-For detailed information, refer to `Sunpy Enhancement Proposal (SEP) 0009 <https://github.com/sunpy/sunpy-SEP/blob/main/SEP-0009.md#deprecations-and-documentation>`__.
+For detailed information, refer to `SunPy Enhancement Proposal (SEP) 0009 <https://github.com/sunpy/sunpy-SEP/blob/main/SEP-0009.md#deprecations-and-documentation>`__.
 
 Release Practices
 =================
 
-There will be two planned major releases of ``sunpy`` per year, with approximately 6 months between these releases. Users can expect these releases to occur in the months of June and December, based on the current release schedule of ``astropy``.
+There will be two planned major releases of ``sunpy`` per year, with approximately 6 months between these releases.
+Users can expect these releases to occur in the months of June and December, based on the current release schedule of ``astropy``.
 
 ``sunpy`` provides two types of releases:
 
@@ -39,25 +40,31 @@ Support periods may be extended beyond these requirements if necessary.
 Python and Package Support Policies
 ===================================
 
-Sunpy aims to support a wide range of Python versions:
+``sunpy`` aims to support a wide range of Python versions:
 
-- Sunpy supports Python versions released within the past three years.
-- Support for newly released Python versions may take a few months to ensure compatibility.
+- Supports all Python versions released within the past three years.
+- Support for newly released Python versions may take a few months to ensure compatibility but the aim is less than 6 months.
 
-Sunpy has a short list of core dependencies (Python, numpy, astropy, parfive) and a long list of optional dependencies. The minimum version of these packages that we enforce follows this policy:
+``sunpy`` has a short list of core dependencies (Python, numpy, astropy, parfive) and a long list of optional dependencies.
+The minimum version of these packages that we enforce follows this policy:
 
 - **Python**: Released in the prior 36 months from the anticipated release date.
 - **astropy**: Released in the prior 12 months from the anticipated release date.
 - **Everything else**: Released in the prior 24 months from the anticipated release date.
 
-Affiliated packages maintained by the Sunpy team will follow this policy and will support at least the Sunpy LTS version at the time of their release.
+Affiliated packages maintained by the SunPy Project will follow this policy and will support at least the current ``sunpy`` LTS version at the time of their release.
 
-For dependencies only needed to run tests, Sunpy will support versions released in the prior 12 months to the current date, unless there is a critical issue that requires a newer version.
+For dependencies only needed to run tests, ``sunpy`` will support versions released in the prior 12 months to the current date, unless there is a critical issue that requires a newer version.
 
-Deprecation Process
-===================
+This policy is based on `SPEC-0`_.
 
-Sunpy's deprecation policy ensures users have ample time to adapt to changes and removals in the API. Below are the key practices:
+.. _SPEC-0: https://scientific-python.org/specs/spec-0000/
+
+Deprecation Policy and Breaking Changes
+=======================================
+
+The goal of the deprecation policy is to try and ensure that users have enough time to adapt to any breaking changes or removals in the public API.
+Below are the key practices:
 
 Deprecation Policy and Breaking Changes
 ---------------------------------------
