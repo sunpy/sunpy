@@ -177,7 +177,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         return axes
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         Parses rhessi FITS data files to create TimeSeries.
 
