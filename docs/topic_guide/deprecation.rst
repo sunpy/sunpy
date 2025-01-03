@@ -1,8 +1,8 @@
-.. _sunpy-topic-guide-deprecation-policy:
+.. _sunpy-topic-guide-deprecation-versioning:
 
-********************************************
-Deprecation Versioning and Release Practices
-********************************************
+**********************************************
+Deprecation, Versioning and Release Practices
+**********************************************
 
 Versioning Policy
 =================
@@ -11,7 +11,7 @@ Sunpy uses a date-based versioning system with three components, each serving a 
 
 - **X (LTS Version Number)**: Incremented with every Long Term Support (LTS) release.
 - **Y (Release Counter)**: Starts at 0 for LTS releases and increases for intermediate releases.
-- **Z (Bug Fix Number)**: Incremented for bug fix releases.
+- **Z (Bug Fix Counter)**: Incremented for bug fix releases.
 
 Here's an example release sequence to illustrate:
 
@@ -20,19 +20,17 @@ Here's an example release sequence to illustrate:
 - **1.1.0**: A short-support release (May 2025).
 - **1.0.2**: A bug fix for the LTS release (June 2025).
 - **1.1.1**: A bug fix for the short-support release (June 2025).
-- **1.2.0**: An unplanned short-support release (August 2025).
 - **2.0.0**: An LTS release (November 2025).
 
-For detailed information, refer to `SunPy Enhancement Proposal (SEP) 0009 <https://github.com/sunpy/sunpy-SEP/blob/main/SEP-0009.md#deprecations-and-documentation>`_.
-
+For detailed information, refer to `SunPy Enhancement Proposal (SEP) 0009 <https://github.com/sunpy/sunpy-SEP/blob/main/SEP-0009.md#deprecations-and-documentation>`__.
 Release Practices
 =================
 
-There will be two planned releases of the SunPy core package per year with at least 4 months (preferably 6 months) between these releases.
-Users can expect these releases occur in the months of May and November based on the current release schedule of the astropy core package
-SunPy provides two types of releases:
+There will be two planned major releases of ``sunpy`` per year with at around 6 months between these releases.
+Users can expect these releases occur in the months of June and December based on the current release schedule of the ``astropy``.
+``SunPy`` provides two types of releases:
 
-- **Long Term Support (LTS) Releases**: These are released at the start of each year and supported for 12 months or until the next LTS release.
+- **Long Term Support (LTS) Releases**: These are first major release of each year and supported for 12 months or until the next LTS release.
 - **Short-Support (Non-LTS) Releases**: These are the second release of the year, supported for 6 months or until the next release.
 
 Support periods may be extended beyond these requirements if necessary.
