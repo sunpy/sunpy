@@ -84,8 +84,7 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      # Due to mplcario, we need to use Python 3.10 for the wheels
-      default_python: '3.10'
+      default_python: '3.12'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
