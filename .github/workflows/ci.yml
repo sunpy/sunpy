@@ -100,7 +100,6 @@ jobs:
             apt:
               - libopenjp2-7
               - graphviz
-              - libcairo2-dev
         - linux: py312-online
           posargs: -n auto --dist loadgroup --color=yes
           libraries:
