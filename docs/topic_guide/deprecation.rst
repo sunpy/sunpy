@@ -1,13 +1,13 @@
 .. _sunpy-topic-guide-deprecation-versioning:
 
 **********************************************
-Deprecation, Versioning, and Release Practices
+Deprecation, Versioning and Release Practices
 **********************************************
 
 Versioning Policy
 =================
 
-Sunpy uses a date-based versioning system with three components, each serving a specific purpose:
+Sunpy uses semantic versioning system with three components, each serving a specific purpose:
 
 - **X (LTS Version Number)**: Incremented with every Long Term Support (LTS) release.
 - **Y (Release Counter)**: Starts at 0 for LTS releases and increases for intermediate releases.
@@ -67,6 +67,7 @@ Sunpy enforces strict standards for updating, changing, or deprecating public AP
 - A deprecation warning must be introduced in one LTS release before the deprecated code is removed. For instance:
   - The warning is introduced in Sunpy 6.1.
   - The code can only be removed in Sunpy 7.1, after the 7.0 LTS release.
+
 - Deprecation warnings inform users of planned changes or removals, provided an alternative exists or the functionality is being removed entirely.
 - Include a **“breaking”** changelog entry with detailed guidance for updating user code.
 
