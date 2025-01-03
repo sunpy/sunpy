@@ -69,7 +69,7 @@ def truncation_slice_test_ts_4(eve_test_ts):
 
 
 def test_repr_html(eve_test_ts):
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(RuntimeWarning, match="invalid value encountered in scalar divide"):
         assert eve_test_ts._repr_html_() is not None
 
 
