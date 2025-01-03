@@ -76,7 +76,7 @@ def _print_attrs(attr, html=False):
     width = -1 if html else get_width()
 
     lines = [*[format_line.format(line) for line in lines],
-             *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html)]
+             *table.pformat(show_dtype=False, max_width=width, align="<", html=html)]
     return '\n'.join(lines)
 
 

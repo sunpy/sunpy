@@ -57,7 +57,7 @@ class CompositeMap:
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> comp_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE,
     ...                          sunpy.data.sample.EIT_195_IMAGE,
-    ...                          composite=True)  # doctest: +REMOTE_DATA
+    ...                          composite=True)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))  # doctest: +REMOTE_DATA
     >>> comp_map.peek()  # doctest: +SKIP
 

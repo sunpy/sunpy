@@ -10,8 +10,8 @@ from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
-from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyMetadataWarning
+from .helpers import _test_private_date_setters
 
 header_list = [
     "lasco_c2_25299383_s.header",
@@ -53,10 +53,16 @@ def test_wavelength(lasco_map):
     assert lasco_map.wavelength is None
 
 
+def test_reference_date(lasco_map):
+    assert lasco_map.reference_date.isot in ["2009-02-28T00:05:33.380", "2002-05-21T00:00:00.000"]
+
+
 def test_date(lasco_map):
-    assert lasco_map.date == parse_time(
-        {'C2': '2009-02-28T00:05:33.380',
-         'C3': '2002-05-21T00:18:06.516'}[lasco_map.detector])
+    assert lasco_map.date.isot in ["2009-02-28T00:05:33.380", "2002-05-21T00:18:06.516"]
+
+
+def test_private_date_setters(lasco_map):
+    _test_private_date_setters(lasco_map)
 
 
 def test_nickname(lasco_map):
@@ -85,6 +91,11 @@ def test_helioviewer_rotation(lasco_map, lasco_helioviewer):
                'C3': [[1, 0], [0, 1]]}[lasco_map.detector]
     np.testing.assert_allclose(lasco_map.rotation_matrix, rmatrix, rtol=1e-6)
     np.testing.assert_array_equal(lasco_helioviewer.rotation_matrix, [[1., 0.], [0., 1.]])
+
+
+@skip_glymur
+def test_lasco_helioviewer_unit(lasco_helioviewer):
+    assert lasco_helioviewer.unit == u.dimensionless_unscaled
 
 
 def test_wcs(lasco_map):

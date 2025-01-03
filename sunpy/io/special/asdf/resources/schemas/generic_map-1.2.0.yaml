@@ -20,7 +20,9 @@ properties:
   mask:
     tag: "tag:stsci.edu:asdf/core/ndarray-1.*"
   unit:
-    tag: "tag:stsci.edu:asdf/unit/unit-1.*"
+    anyOf:
+     - tag: "tag:stsci.edu:asdf/unit/unit-1.*"
+     - tag: "tag:astropy.org:astropy/units/unit-1.*"
   uncertainty:
     type: object
 

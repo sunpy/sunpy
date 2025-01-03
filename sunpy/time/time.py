@@ -34,6 +34,8 @@ REGEX = {
     '%f': r'(?P<microsecond>\d+)',
     '%b': r'(?P<month_str>[a-zA-Z]+)',
 }
+# DO NOT SORT THIS LIST.
+# The string parsing is dependent on the specific order within this list.
 TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
     "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
@@ -41,6 +43,7 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
     "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
     "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
+    "%Y%m%dT%H%M",  # Example 20070504T2108 , Should precede "%Y%m%dT%H%M%S".
     "%Y%m%dT%H%M%S",  # Example 20070504T210812
     "%Y/%m/%d %H:%M:%S",  # Example 2007/05/04 21:08:12
     "%Y/%m/%d %H:%M",  # Example 2007/05/04 21:08
@@ -57,9 +60,11 @@ TIME_FORMAT_LIST = [
     "%d-%b-%Y",  # Example 04-May-2007
     "%d-%b-%Y %H:%M:%S",  # Example 04-May-2007 21:08:12
     "%d-%b-%Y %H:%M:%S.%f",  # Example 04-May-2007 21:08:12.999999
+    "%Y%m%d_%H%M",  # Example 20070504_2108 , Should precede "%Y%m%d_%H%M%S".
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M" ,   # Example 201401041205 , Should precede "%Y%m%d%H%M%S".
     "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC/VSO Export/Downloads)
     "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI - JSOC
     "%Y.%m.%d_%H:%M:%S.%f_TAI",  # Example 2019.09.15_00:00:02.898_TAI - JSOC
