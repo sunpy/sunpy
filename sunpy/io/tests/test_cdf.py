@@ -46,6 +46,7 @@ def test_read_psp_data():
     assert np.sum(np.isnan(col)) >= 0
 
 
+
 def test_cdf_reader_ignore_vars():
     all_ts = read_cdf(filepath, ignore_vars=["Electron_Flux"])
     assert isinstance(all_ts, list)
