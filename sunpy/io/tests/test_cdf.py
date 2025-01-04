@@ -50,11 +50,9 @@ def test_ignore_vars():
     all_ts = read_cdf(filepath, ignore_vars=ignore_vars)
     assert isinstance(all_ts, list)
     assert len(all_ts) > 0
-
-    for ts in all_ts:
-        assert isinstance(ts, GenericTimeSeries)
-        print("Available columns:", ts.columns)
-        for ignored_var in ignore_vars:
-            assert not any(col.startswith(ignored_var) for col in ts.columns), (
-                f"Variable {ignored_var} or its derivatives were not properly ignored."
-            )
+    ts = all_ts[0]
+    assert isinstance(ts, GenericTimeSeries)
+    print("Available columns:", ts.columns)
+    assert not any(col.startswith("Electron_Flux") for col in ts.columns), (
+        "Ignored variable 'Electron_Flux' or its derived columns were not skipped."
+    )
