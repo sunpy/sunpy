@@ -46,14 +46,10 @@ def test_read_psp_data():
     assert np.sum(np.isnan(col)) >= 0
 
 
-def test_ignore_vars():
-    ignore_vars = ["Electron_Flux"]
-    all_ts = read_cdf(filepath, ignore_vars=ignore_vars)
+def test_cdf_reader_ignore_vars():
+    all_ts = read_cdf(filepath, ignore_vars=["Electron_Flux"])
     assert isinstance(all_ts, list)
     assert len(all_ts) > 0
     ts = all_ts[0]
     assert isinstance(ts, GenericTimeSeries)
-    print("Available columns:", ts.columns)
-    assert not any(col.startswith("Electron_Flux") for col in ts.columns), (
-        "Ignored variable 'Electron_Flux' or its derived columns were not skipped."
-    )
+    assert not any(col.startswith("Electron_Flux") for col in ts.columns)
