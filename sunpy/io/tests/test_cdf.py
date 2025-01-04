@@ -45,6 +45,7 @@ def test_read_psp_data():
     col = ts.quantity('EFLUX_VS_ENERGY_0')
     assert np.sum(np.isnan(col)) >= 0
 
+
 def test_ignore_vars():
     ignore_vars = ["Electron_Flux"]
     all_ts = read_cdf(filepath, ignore_vars=ignore_vars)
