@@ -1,0 +1,1 @@
+Now `sunpy.map.CompositeMap.plot` will use `matplotlib.pyplot.imshow` to plot image if maps axes matches with projected axes else it will use `matplotlib.pyplot.pcolormesh`

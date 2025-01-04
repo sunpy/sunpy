@@ -444,7 +444,9 @@ class CompositeMap:
             if m.levels is False:
                 # We tell GenericMap.plot() that we need to autoalign the map
                 if wcsaxes_compat.is_wcsaxes(axes):
-                    params['autoalign'] = True
+                    # Set 'autoalign' to True if `m.wcs` differs from `axes.wcs`
+                    # otherwise, False.
+                    params['autoalign'] = not axes.wcs.wcs.compare(m.wcs.wcs, tolerance=0.01)
 
                 # Filter `matplot_args`
                 if params.get('autoalign', None) in (True, 'pcolormesh'):
