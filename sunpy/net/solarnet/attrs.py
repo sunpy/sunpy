@@ -4,7 +4,7 @@ from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 class Datasets(SimpleAttr):
     """
-    Name of datasets
+    Name of the dataset required.
     """
 
 class Limit(SimpleAttr):
