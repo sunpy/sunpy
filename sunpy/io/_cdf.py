@@ -73,7 +73,7 @@ def read_cdf(fname, ignore_vars=None, **kwargs):
         units = {}
 
         for var_key in sorted(var_keys):
-            if var_key in ignore_vars:
+            if ignore_vars and var_key in ignore_vars:
                 log.debug(f'Skipping {var_key} as it is in the ignore_vars list.')
                 continue
             attrs = var_attrs[var_key]
