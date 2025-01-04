@@ -27,7 +27,7 @@ class WISPRMap(GenericMap):
     ----------
     * `PSP science gateway <https://sppgway.jhuapl.edu//>`__
     * `WISPR Instrument Page <https://wispr.nrl.navy.mil//>`__
-    * `Instrument Paper <https://doi.org/10.1007/s11214-014-0114-y>`__
+    * :cite:t:`vourlidas_wide-field_2016`
     """
 
     def __init__(self, data, header, **kwargs):
