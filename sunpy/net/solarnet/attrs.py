@@ -9,7 +9,7 @@ class Datasets(SimpleAttr):
 
 class Limit(SimpleAttr):
     """
-    number of links default value(20)
+    Sets the max number of results, defaults to 20.
     """
 
 walker = AttrWalker()
