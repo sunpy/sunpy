@@ -22,7 +22,7 @@ from sunpy.physics.differential_rotation import (
     differential_rotate,
     solar_rotate_coordinate,
 )
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
@@ -391,3 +391,14 @@ def test_differential_rotation(aia171_test_map):
     with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
+
+def test_rsun_ref_fallback(aia171_test_map,caplog):
+    assert 'rsun_ref' in aia171_test_map.meta
+    del aia171_test_map.meta['rsun_ref']
+    with pytest.warns(SunpyUserWarning, match="Using 'time' assumes an Earth-based observer."):
+        with caplog.at_level("INFO"):
+            rot_map = differential_rotate(aia171_test_map, time=2 * u.day)
+    for record in caplog.records:
+        assert "Missing metadata for solar radius" in record.message
+    assert 'rsun_ref' in rot_map.meta
+    assert rot_map.meta['rsun_ref'] > 695999999.0
