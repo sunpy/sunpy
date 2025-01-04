@@ -166,6 +166,37 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_wcs_pv():
+    # Test that PVi_m values are preserved in the reconstructed WCS
+    zpn_header = {
+        'ctype1': 'HPLN-ZPN',
+        'ctype2': 'HPLT-ZPN',
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'pv1_0': 0,
+        'pv1_1': 0,
+        'pv1_2': 90,
+        'pv1_3': 180,
+        'pv2_1': 1,
+        'pv2_5': 0.2,
+        'pv2_10': 0.1,
+        'date-obs': '2025-01-01',
+        'hglt_obs': 0,
+        'hgln_obs': 0,
+        'dsun_obs': 1e13,
+    }
+    zpn_map = sunpy.map.Map((np.zeros((10, 10)), zpn_header))
+    pv_values = zpn_map.wcs.wcs.get_pv()
+    assert len(pv_values) == 7
+    assert pv_values[0] == (1, 0, 0)
+    assert pv_values[1] == (1, 1, 0)
+    assert pv_values[2] == (1, 2, 90)
+    assert pv_values[3] == (1, 3, 180)
+    assert pv_values[4] == (2, 1, 1.0)
+    assert pv_values[5] == (2, 5, 0.2)
+    assert pv_values[6] == (2, 10, 0.1)
+
+
 def test_wcs_cache(aia171_test_map):
     wcs1 = aia171_test_map.wcs
     wcs2 = aia171_test_map.wcs
