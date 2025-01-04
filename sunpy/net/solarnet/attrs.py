@@ -7,7 +7,7 @@ class Datasets(SimpleAttr):
     Name of datasets
     """
 
-class limit(SimpleAttr):
+class Limit(SimpleAttr):
     """
     number of links default value(20)
     """
