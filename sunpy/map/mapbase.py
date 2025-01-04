@@ -7,6 +7,7 @@ import html
 import inspect
 import numbers
 import textwrap
+import warnings
 import itertools
 import webbrowser
 from tempfile import NamedTemporaryFile
@@ -55,7 +56,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import SunpyDeprecationWarning, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -1218,12 +1219,12 @@ class GenericMap(NDData):
 
         If not present, defaults to (HPLN-TAN, HPLT-TAN), and emits a warning.
         """
-        ctype1 = self.meta.get('ctype1', None)
+        ctype1 = self.meta.get('ctype1', '')
         if not ctype1:
             warn_metadata("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
             ctype1 = 'HPLN-TAN'
 
-        ctype2 = self.meta.get('ctype2', None)
+        ctype2 = self.meta.get('ctype2', '')
         if not ctype2:
             warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
             ctype2 = 'HPLT-TAN'
@@ -1233,9 +1234,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warnings.warn("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.", SunpyDeprecationWarning)
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warnings.warn("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLT-TAN' instead.", SunpyDeprecationWarning)
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
