@@ -37,15 +37,15 @@ def _apply(wlk, query, imap):
 def _apply(wlk,query,imap):
     imap["wavelnth"] = int(query.min.value)
 
-@walker.add_applier(Datasets)
+@walker.add_applier(Dataset)
 def _apply(wlk,query,imap):
     imap["datasets"] = f"metadata_{query.value}"
 
 @walker.add_applier(Time)
 def _apply(wlk,query,imap):
     if query.end is not None:
-        imap["date_obs__gte"] = query.start.value
-        imap['data_obs_lt'] = query.end.value
+        imap["date_end__gte"] = query.start.value
+        imap['data_beg__lte'] = query.end.value
     else:
         imap["date_obs"] = query.start.value
 
@@ -53,6 +53,6 @@ def _apply(wlk,query,imap):
 def _apply(wlk,query,imap):
     imap["detector__iexact"] = query.value
 
-@walker.add_applier(limit)
+@walker.add_applier(Limit)
 def _apply(wlk,query,imap):
     imap["limit"] = int(query.value)

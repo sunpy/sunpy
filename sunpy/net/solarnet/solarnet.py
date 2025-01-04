@@ -186,8 +186,24 @@ class SolarnetClient(BaseClient):
         with data_sets.open() as data_values:
             data = json.load(data_values)
         data = list(data.items())
-        attrs = {a.solarnet.Datasets: data}
+        attrs = {a.solarnet.Dataset: data}
         return attrs
+
+    @staticmethod
+    def create_parse_solarnet_values():
+        """
+        To get the names of available datasets.
+        Make a GET request to https://solarnet.oma.be/service/api/svo/dataset to do so.
+        """
+
+        dir = os.path.dirname(os.path.realpath(__file__))
+        url = "https://solarnet.oma.be/service/api/svo/dataset"
+        response = requests.get(url, params={"limit": 100})
+        data = response.json()
+        names = [obj["name"].replace(" ", "_").lower() for obj in data.get("objects", [])]
+        values = {name: name for name in names}
+        with open(os.path.join(dir, 'data', 'datasets.json'), 'w') as attrs_file:
+            json.dump(dict(sorted(values.items())), attrs_file, indent=2)
 
     @classmethod
     def register_values(cls):
@@ -216,4 +232,4 @@ class SolarnetClient(BaseClient):
             True if the query can be handled, False otherwise.
         """
         from sunpy.net import attrs as a
-        return any(isinstance(q, a.solarnet.Datasets) for q in query)
+        return any(isinstance(q, a.solarnet.Dataset) for q in query)
