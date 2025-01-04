@@ -44,3 +44,16 @@ def test_read_psp_data():
     assert isinstance(ts, GenericTimeSeries)
     col = ts.quantity('EFLUX_VS_ENERGY_0')
     assert np.sum(np.isnan(col)) >= 0
+
+
+@pytest.mark.remote_data
+def test_ignore_vars_via_epd_step_data():
+    # Checks we can ignore data which might fail the reader
+    # https://github.com/sunpy/sunpy/issues/7093
+    res = Fido.search(a.Instrument('EPD') & a.Time("2022-1-26 10:30", "2022-1-27 15:40")& a.Level(2) & a.soar.Product('EPD-STEP-MAIN'))
+    files = Fido.fetch(res)
+    ignore_vars = ["RTN_Pixels"]
+    data = TimeSeries(files, concatenate=True, ignore_vars=ignore_vars)
+    assert isinstance(data, GenericTimeSeries)
+    for var in ignore_vars:
+        assert var not in data.columns
