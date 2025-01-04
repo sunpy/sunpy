@@ -2,7 +2,7 @@ from sunpy.net._attrs import Detector, Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 
-class Datasets(SimpleAttr):
+class Dataset(SimpleAttr):
     """
     Name of the dataset required.
     """
