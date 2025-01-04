@@ -448,7 +448,8 @@ class Range(DataAttr):
         if isinstance(other, Range):
             return self.min <= other.min and self.max >= other.max
         else:
-            return self.min <= other <= self.max
+            # return self.min <= other <= self.max
+            return self.min.value <= int(other) <= self.max.value
 
 
 class AttrAnd(Attr):
