@@ -1,4 +1,4 @@
-name: Scheduled builds
+name: Scheduled build triggerer
 
 on:
   # Allow manual runs through the web UI
@@ -12,10 +12,16 @@ on:
     - cron: '0 7 * * *'  # Every day at 07:00 UTC
 
 jobs:
-  dispatch_workflows:
+  if: github.repository == 'sunpy/sunpy'
+  dispatch_release_branches:
+  strategy:
+    fail-fast: false
+    matrix:
+      include:
+        - branch: 6.0
     runs-on: ubuntu-latest
     steps:
-      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref main
-      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 6.0
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
+      - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
     env:
       GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
