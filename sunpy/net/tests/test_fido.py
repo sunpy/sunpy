@@ -174,6 +174,15 @@ def test_unifiedresponse_slicing():
 
 
 @pytest.mark.remote_data
+def test_show_in_notebook(mocker):
+    results = Fido.search(a.Time('2012/1/1', '2012/1/2'), a.Instrument.aia | a.Instrument.hmi)
+    assert isinstance(results, UnifiedResponse)
+    mock_datagrid =  mocker.patch("itables.show")
+    results.show_in_notebook()
+    assert mock_datagrid.call_count == 2
+
+
+@pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
