@@ -1,7 +1,6 @@
 from datetime import date, datetime, timezone
 
 import numpy as np
-import pandas
 import pytest
 from packaging import version
 
@@ -74,6 +73,8 @@ def test_parse_time_int():
 
 
 def test_parse_time_pandas_timestamp():
+    import pandas
+
     ts = pandas.Timestamp(LANDING.datetime)
 
     dt = parse_time(ts)
@@ -83,6 +84,8 @@ def test_parse_time_pandas_timestamp():
 
 
 def test_parse_time_nanoseconds():
+    import pandas
+
     # Check that nanosecon precision is retained when parsing pandas timestamps
     ts = pandas.Timestamp('2020-07-31 00:00:26.166196864')
     dt = parse_time(ts)
@@ -92,6 +95,8 @@ def test_parse_time_nanoseconds():
 
 
 def test_parse_time_pandas_series():
+    import pandas
+
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.Series(inputs)
     as_inps = Time(inputs)
@@ -103,6 +108,8 @@ def test_parse_time_pandas_series():
 
 
 def test_parse_time_pandas_series_2():
+    import pandas
+
     inputs = [[datetime(2012, 1, 1, 0, 0), datetime(2012, 1, 2, 0, 0)],
               [datetime(2012, 1, 3, 0, 0), datetime(2012, 1, 4, 0, 0)]]
     ind = pandas.Series(inputs)
@@ -116,6 +123,8 @@ def test_parse_time_pandas_series_2():
 
 
 def test_parse_time_pandas_index():
+    import pandas
+
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.DatetimeIndex(inputs)
     as_inps = Time(inputs)

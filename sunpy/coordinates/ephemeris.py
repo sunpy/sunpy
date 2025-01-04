@@ -4,7 +4,6 @@ Ephemeris calculations using SunPy coordinate frames
 import re
 
 import numpy as np
-import requests
 
 import astropy.units as u
 from astropy.constants import c as speed_of_light
@@ -289,6 +288,9 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     INFO: Obtained JPL HORIZONS location for Solar Orbiter (spacecraft) (-144) [sunpy.coordinates.ephemeris]
     ...
     """
+    # Avoid a hard dependency on requests until it is actually needed
+    import requests
+
     # Reference plane defaults to the ecliptic (IAU 1976 definition)
     args = {
         'EPHEM_TYPE': 'VECTORS',
