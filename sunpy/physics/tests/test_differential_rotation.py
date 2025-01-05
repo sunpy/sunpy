@@ -23,7 +23,6 @@ from sunpy.physics.differential_rotation import (
     solar_rotate_coordinate,
 )
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
-from pytest import PytestConfigWarning
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
