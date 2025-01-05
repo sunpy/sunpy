@@ -210,6 +210,14 @@ class HMISynopticMap(HMIMap):
 
     @property
     def scale(self):
+        """
+        Note:
+            The sign of `CDELT1` is intentionally ignored by taking the absolute value (`np.abs()`), as the
+            metadata for HMI synoptic maps contains an incorrect sign for `CDELT1`. 
+            This ensures that the resulting HMI synoptic maps aligns with the expected longitude axis orientation
+            (increasing from 0° to 360° from left to right), which is consistent with JSOC-hosted PNGs.
+        """
+
         if self.meta['cunit2'] == 'Sine Latitude':
             # Since, this map uses the cylindrical equal-area (CEA) projection,
             # the spacing should be modified to 180/pi times the original value
