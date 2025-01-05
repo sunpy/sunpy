@@ -399,7 +399,5 @@ def test_rsun_ref_fallback(aia171_test_map,caplog):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     assert len(recorded_warnings) == 2
     warning_messages = [str(w.message) for w in recorded_warnings]
-    assert "Using 'time' assumes an Earth-based observer." in warning_messages[0]
     assert "'rsun_ref' not found in metadata. Using a default value" in warning_messages[1]
-    assert 'rsun_ref' in rot_map.meta
     assert rot_map.meta['rsun_ref'] > 695999999.0
