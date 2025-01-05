@@ -114,8 +114,12 @@ def read_cdf(fname, **kwargs):
                 unit = u.dimensionless_unscaled
 
             if data.ndim > 2:
-                # Skip data with dimensions >= 3 and give user warning
-                warn_user(f'The variable "{var_key}" has been skipped because it has more than 2 dimensions, which is unsupported.')
+                dependencies = [attrs.get(f"DEPEND_{i}", None) for i in range(1, data.ndim)]
+                dependency_values = [cdf.varget(dep) if dep else range(data.shape[i]) for i, dep in enumerate(dependencies, 1)]
+                for comb in np.ndindex(*(len(vals) for vals in dependency_values)):
+                    column_name = f"{var_key}_" + "_".join([f"{dep}{val}" for dep, val in zip(dependencies, comb)])
+                    df_dict[column_name] = data[(slice(None),) + comb]
+                    units[column_name] = unit
             elif data.ndim == 2:
                 # Multiple columns, give each column a unique label
                 for i, col in enumerate(data.T):
