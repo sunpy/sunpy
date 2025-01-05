@@ -17,18 +17,6 @@ __email__ = ['rahulg.astro@gmail.com']
 
 class SUITMap(GenericMap):
     """
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 9f3170385 (Add SUITMap and colorscheme.)
-    SUIT is blah blah blah
-
-    References:
-    -----------
-    Blah blah
-<<<<<<< HEAD
-=======
-=======
     The Solar Ultraviolet Imaging Telescope (SUIT) is one of the remote sensing payloads on board the Aditya-L1 mission of the Indian Space Research Organization (ISRO)
     that was launched on September 02, 2023. SUIT is designed to provide near-simultaneous full-disk and region-of-interest images of the Sun at various heights,
     slicing through the photosphere and chromosphere, employing an array of 11 scientifically calibrated filters (3 broad-band & 8 narrow-band) strategically
@@ -39,8 +27,6 @@ class SUITMap(GenericMap):
     * `Home Page: <https://suit.iucaa.in/>`_
     * `Mission Page: <https://suit.iucaa.in/about_SUIT>`_
     * `Publications Page: <https://suit.iucaa.in/node/5>`_
->>>>>>> 9f9916abf (Adds SUITMap.)
->>>>>>> 9f3170385 (Add SUITMap and colorscheme.)
     """
 
     def __init__(self, data, header, **kwargs):
@@ -60,15 +46,9 @@ class SUITMap(GenericMap):
             )
 
     def suit_norm(self):
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
         '''
         Function to fix a norm for the image from its median value
         '''
->>>>>>> 9f9916abf (Adds SUITMap.)
->>>>>>> 9f3170385 (Add SUITMap and colorscheme.)
         a = np.array(self.data)
         sliced_array = a[(a > 2000) & (a < 50000)]
         baseline = np.median(sliced_array) if len(sliced_array) > 0 else 1000
@@ -118,15 +98,9 @@ class SUITMap(GenericMap):
 
     @property
     def date_obs(self):
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
         """
         Time of observation
         """
->>>>>>> 9f9916abf (Adds SUITMap.)
->>>>>>> 9f3170385 (Add SUITMap and colorscheme.)
         return self.meta.get('T_OBS','')
 
     @property
