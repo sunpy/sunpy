@@ -52,6 +52,9 @@ def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func
     """
     Check that map methods preserve dask arrays if they are given as input, instead of eagerly
     operating on them and bringing them into memory.
+
+    methods repoject_to, resample, rotate from GenericMap dont work with dask arrays so are marked as xfail.
+    methods max, mean, min, std, superpixel, submap work with dask arrays so are marked they pass.
     """
     # Check that result array is still a Dask array
     res_dask = aia171_test_dask_map.__getattribute__(func)(**args)
