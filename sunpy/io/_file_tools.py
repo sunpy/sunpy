@@ -58,9 +58,9 @@ _READERS = Readers({
 })
 
 
-def get_open_file(filepath, mode="rb", **kwargs):
+def get_open_file_path(filepath):
     """
-    Ensures the filepath is converted to an fsspec.OpenFile object.
+    Helper function to get the file path from a file object, or return the file path if path is passed instead.
 
     Parameters
     ----------
@@ -71,17 +71,11 @@ def get_open_file(filepath, mode="rb", **kwargs):
 
     Returns
     -------
-    fsspec.OpenFile
-        An open file object.
-
-    Raises
-    ------
-    TypeError
-        If the filepath is not of type str, pathlib.Path, or fsspec.OpenFile.
+    path : str
     """
     if isinstance(filepath, fsspec.core.OpenFile):
-        return filepath
-    return fsspec.open(str(filepath), mode=mode, **kwargs)
+        return str(filepath.path)
+    return str(filepath)
 
 
 def _read(filepath, function_name, filetype=None, **kwargs):
@@ -110,9 +104,7 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    open_file = get_open_file(filepath, **kwargs)
-    # Use original URI if available, otherwise use path
-    filepath = getattr(open_file, '_original_uri', open_file.path)
+    filepath = get_open_file_path(filepath)
     if filetype is not None:
         return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
@@ -152,8 +144,7 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    filepath = get_open_file(filepath, **kwargs)
-    filepath = filepath.path
+    filepath = get_open_file_path(filepath)
     return _read(filepath, 'read', filetype, **kwargs)
 
 
@@ -178,8 +169,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
-    filepath = get_open_file(filepath, **kwargs)
-    filepath = filepath.path
+    filepath = get_open_file_path(filepath)
     return _read(filepath, 'get_header', filetype, **kwargs)
 
 
@@ -230,8 +220,7 @@ def detect_filetype(filepath, **kwargs):
     filetype : `str`
         The type of file.
     """
-    filepath = get_open_file(filepath, **kwargs)
-    filepath = filepath.path
+    filepath = get_open_file_path(filepath)
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
     if is_uri(filepath):
