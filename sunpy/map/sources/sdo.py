@@ -185,6 +185,13 @@ class HMISynopticMap(HMIMap):
 
     See `~sunpy.map.sources.sdo.HMIMap` for information on the HMI instrument.
 
+    Notes
+    -----
+    The sign of ``CDELT1`` in the header of (some) HMI synoptic maps is negative,
+    but needs to be positive for the underlying data array in order to agree with
+    HMI magnetograms as well as JSOC-hosted PNGs of the synoptic maps.  Accordingly,
+    we use the absolute value of ``CDELT1`` to force positivity.
+
     References
     ----------
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
@@ -210,15 +217,6 @@ class HMISynopticMap(HMIMap):
 
     @property
     def scale(self):
-        """
-        Notes
-        -----
-        The sign of ``CDELT1`` in the header of (some) HMI synoptic maps is negative,
-        but needs to be positive for the underlying data array in order to agree with
-        HMI magnetograms as well as JSOC-hosted PNGs of the synoptic maps.  Accordingly,
-        we use the absolute value of ``CDELT1`` to force positivity.
-        """
-
         if self.meta['cunit2'] == 'Sine Latitude':
             # Since, this map uses the cylindrical equal-area (CEA) projection,
             # the spacing should be modified to 180/pi times the original value
