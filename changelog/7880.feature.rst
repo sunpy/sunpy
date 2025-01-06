@@ -1,1 +1,1 @@
-Added support for querying data from solarnet API using SolarnetClient in  `sunpy.net.solarnet`
+Added support for querying data from solarnet API using SolarnetClient .
