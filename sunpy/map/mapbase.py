@@ -118,6 +118,9 @@ class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
 
+
+
+
     Parameters
     ----------
     data : `numpy.ndarray`, list
@@ -133,30 +136,32 @@ class GenericMap(NDData):
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
-    Compatibility of GenericMap methods with dask arrays
-    -----------------
-    .. list-table::
-       :widths: auto
-       :header-rows: 1
+        
+    Table of Methods and Their Behavior with Dask Arrays
+    -----------------------------------------------------
 
-       * - Method Name
-         - Compatible with Dask Arrays
-       * - repoject_to
-         - No
-       * - resample
-         - No
-       * - max
-         - Yes
-       * - mean
-         - Yes
-       * - min
-         - Yes
-       * - std
-         - Yes
-       * - superpixel
-         - Yes
-       * - submap
-         - Yes
+    +-------------------+--------------------------------+
+    | Method            | Compatibility with Dask Arrays |
+    +===================+================================+
+    | `reproject_to`    | No                             |
+    +-------------------+--------------------------------+
+    | `resample`        | No                             |
+    +-------------------+--------------------------------+
+    | `rotate`          | No                             |
+    +-------------------+--------------------------------+
+    | `max`             | Yes                            |
+    +-------------------+--------------------------------+
+    | `mean`            | Yes                            |
+    +-------------------+--------------------------------+
+    | `min`             | Yes                            |
+    +-------------------+--------------------------------+
+    | `std`             | Yes                            |
+    +-------------------+--------------------------------+
+    | `superpixel`      | Yes                            |
+    +-------------------+--------------------------------+
+    | `submap`          | Yes                            |
+    +-------------------+--------------------------------+
+   
 
     Examples
     --------
