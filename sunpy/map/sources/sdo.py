@@ -189,7 +189,7 @@ class HMISynopticMap(HMIMap):
     -----
     The sign of ``CDELT1`` in the header of (some) HMI synoptic maps is negative,
     but needs to be positive for the underlying data array in order to agree with
-    HMI magnetograms as well as JSOC-hosted ONGs of the synoptic maps.  Accordingly,
+    HMI magnetograms as well as JSOC-hosted PNGs of the synoptic maps. Accordingly,
     we use the absolute value of ``CDELT1`` to force positivity.
 
     References
