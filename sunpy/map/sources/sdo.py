@@ -211,11 +211,12 @@ class HMISynopticMap(HMIMap):
     @property
     def scale(self):
         """
-        Note:
-            The sign of `CDELT1` is intentionally ignored by taking the absolute value (`np.abs()`), as the
-            metadata for HMI synoptic maps contains an incorrect sign for `CDELT1`. 
-            This ensures that the resulting HMI synoptic maps aligns with the expected longitude axis orientation
-            (increasing from 0° to 360° from left to right), which is consistent with JSOC-hosted PNGs.
+        Notes
+        -----
+        The sign of ``CDELT1`` in the header of (some) HMI synoptic maps is negative,
+        but needs to be positive for the underlying data array in order to agree with
+        HMI magnetograms as well as JSOC-hosted PNGs of the synoptic maps.  Accordingly,
+        we use the absolute value of ``CDELT1`` to force positivity.
         """
 
         if self.meta['cunit2'] == 'Sine Latitude':
