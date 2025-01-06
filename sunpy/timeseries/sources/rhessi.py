@@ -102,6 +102,10 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     Each spectrometer is coupled to a set of grids with different pitches which enable
     fourier-style imaging as the spacecraft spins.
 
+    Summary lightcurves are quicklook data products intended for rapid assessment and
+    are not science-quality data. They are uncorrected for instrumental effects and
+    backgrounds.
+
     RHESSI provides summary lightcurves in the following passbands:
 
     * 3 - 6 keV
