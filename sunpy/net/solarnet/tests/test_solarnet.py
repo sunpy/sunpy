@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -40,3 +41,7 @@ def test_fetch(client,tmpdir):
     expected_file_name = str(query[0]["name"]) + ".fits"
     expected_file = path / expected_file_name
     assert expected_file.exists()
+    os.remove(expected_file)
+
+    # Verify the file has been deleted
+    assert not expected_file.exists()
