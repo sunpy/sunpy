@@ -118,9 +118,6 @@ class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
 
-
-
-
     Parameters
     ----------
     data : `numpy.ndarray`, list
