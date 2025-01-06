@@ -232,7 +232,8 @@ def detect_filetype(filepath, **kwargs):
     """
     filepath = get_open_file(filepath, **kwargs)
     filepath = filepath.path
-
+    if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
+        return None
     if is_uri(filepath):
         fsspec_kw = kwargs.get("fsspec_kwargs", {})
         try:
