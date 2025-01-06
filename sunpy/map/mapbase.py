@@ -137,8 +137,8 @@ class GenericMap(NDData):
         init.
 
 
-    Table of Methods and Their Behavior with Dask Arrays
-    -----------------------------------------------------
+    Methods and their known behavior with dask arrays
+    -------------------------------------------------
 
     +-------------------+--------------------------------+
     | Method            | Compatibility with Dask Arrays |
