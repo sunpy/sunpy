@@ -133,6 +133,31 @@ class GenericMap(NDData):
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
+    Compatibility of GenericMap methods with dask arrays
+    -----------------
+    .. list-table::
+       :widths: auto
+       :header-rows: 1
+
+       * - Method Name
+         - Compatible with Dask Arrays
+       * - repoject_to
+         - No
+       * - resample
+         - No
+       * - max
+         - Yes
+       * - mean
+         - Yes
+       * - min
+         - Yes
+       * - std
+         - Yes
+       * - superpixel
+         - Yes
+       * - submap
+         - Yes
+
     Examples
     --------
     >>> import sunpy.map
