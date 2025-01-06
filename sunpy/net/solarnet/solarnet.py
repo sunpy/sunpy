@@ -38,9 +38,9 @@ class SolarnetClient(BaseClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]
-    >>> url = Fido.search(*query)
-    >>> print(url)
+    >>> query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]  # doctest: +REMOTE_DATA
+    >>> url = Fido.search(*query)   # doctest: +REMOTE_DATA
+    >>> print(url)  # doctest: +REMOTE_DATA
     Index    datasets                              name
     ----- -------------------- --------------------------------------------------
         0 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06
@@ -64,9 +64,9 @@ class SolarnetClient(BaseClient):
         Examples
         --------
         >>> from sunpy.net import Fido, attrs as a
-        >>> query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]
-        >>> url = Fido.search(*query)
-        >>> print(url)
+        >>> query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]  # doctest: +SKIP
+        >>> url = Fido.search(*query)   # doctest: +SKIP
+        >>> print(url)  # doctest: +SKIP
         Index    datasets                              name
         ----- -------------------- --------------------------------------------------
             0 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06
