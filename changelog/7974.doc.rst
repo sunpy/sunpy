@@ -1,0 +1,1 @@
+Added note for users in the methods of `~sunpy.map.GenericMap` and a table to show which methods from `~sunpy.map.GenericMap` are expected to work/not work with dask arrays.
