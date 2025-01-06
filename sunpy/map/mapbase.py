@@ -763,7 +763,7 @@ class GenericMap(NDData):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays.
+        This method **does** preserve dask arrays.
         """
         return np.nanstd(self.data, *args, **kwargs)
 
@@ -771,7 +771,7 @@ class GenericMap(NDData):
         """
         Calculate the mean of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays.
+        This method **does** preserve dask arrays.
         """
         return np.nanmean(self.data, *args, **kwargs)
 
@@ -779,7 +779,7 @@ class GenericMap(NDData):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays.
+        This method **does** preserve dask arrays.
         """
         return np.nanmin(self.data, *args, **kwargs)
 
@@ -787,7 +787,7 @@ class GenericMap(NDData):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays.
+        This method **does** preserve dask arrays.
         """
         return np.nanmax(self.data, *args, **kwargs)
 
@@ -1688,7 +1688,7 @@ class GenericMap(NDData):
         as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
-        Note: This method dosent work with dask arrays.
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -1760,7 +1760,7 @@ class GenericMap(NDData):
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
 
-        Note: This method dosent work with dask arrays.
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -1954,7 +1954,7 @@ class GenericMap(NDData):
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
 
-        Note: This method dosent work with dask arrays.
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -2193,7 +2193,7 @@ class GenericMap(NDData):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
-        Note: This method dosent work with dask arrays.
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -2984,7 +2984,7 @@ class GenericMap(NDData):
 
         Additional keyword arguments are passed through to the reprojection function.
 
-        Note: This method dosent work with dask arrays.
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
