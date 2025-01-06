@@ -136,7 +136,7 @@ class GenericMap(NDData):
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
-        
+
     Table of Methods and Their Behavior with Dask Arrays
     -----------------------------------------------------
 
@@ -161,7 +161,7 @@ class GenericMap(NDData):
     +-------------------+--------------------------------+
     | `submap`          | Yes                            |
     +-------------------+--------------------------------+
-   
+
 
     Examples
     --------
@@ -763,7 +763,7 @@ class GenericMap(NDData):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
         """
         return np.nanstd(self.data, *args, **kwargs)
 
@@ -771,7 +771,7 @@ class GenericMap(NDData):
         """
         Calculate the mean of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
         """
         return np.nanmean(self.data, *args, **kwargs)
 
@@ -779,7 +779,7 @@ class GenericMap(NDData):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
         """
         return np.nanmin(self.data, *args, **kwargs)
 
@@ -787,7 +787,7 @@ class GenericMap(NDData):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
         """
         return np.nanmax(self.data, *args, **kwargs)
 
@@ -1760,7 +1760,7 @@ class GenericMap(NDData):
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
 
         Parameters
         ----------
@@ -1953,8 +1953,8 @@ class GenericMap(NDData):
         are returned. If the rectangle is defined in world coordinates, the
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
-        
-        Note: This method dosent work with dask arrays. 
+
+        Note: This method dosent work with dask arrays.
 
         Parameters
         ----------
@@ -2193,7 +2193,7 @@ class GenericMap(NDData):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
 
         Parameters
         ----------
@@ -2984,7 +2984,7 @@ class GenericMap(NDData):
 
         Additional keyword arguments are passed through to the reprojection function.
 
-        Note: This method dosent work with dask arrays. 
+        Note: This method dosent work with dask arrays.
 
         Parameters
         ----------
