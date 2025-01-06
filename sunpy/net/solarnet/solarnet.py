@@ -18,7 +18,7 @@ base_url = "https://solarnet2.oma.be/service/api/svo/{}"
 
 class SolarnetClient(BaseClient):
     """
-    A client for interacting with the Solarnet API.
+    Provides access to query and download from Solarnet API.
 
     Methods
     -------
@@ -38,7 +38,7 @@ class SolarnetClient(BaseClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> query = [a.solarnet.Datasets.eui_level_2 , a.solarnet.limit(2) , a.Detector("HRI_EUV")]
+    >>> query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]
     >>> url = Fido.search(*query)
     >>> print(url)
     Index    datasets                              name
@@ -64,7 +64,7 @@ class SolarnetClient(BaseClient):
         Examples
         --------
         >>> from sunpy.net import Fido, attrs as a
-        >>> query = [a.solarnet.Datasets.eui_level_2 , a.solarnet.limit(2) , a.Detector("HRI_EUV")]
+        >>> query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]
         >>> url = Fido.search(*query)
         >>> print(url)
         Index    datasets                              name
@@ -166,7 +166,7 @@ class SolarnetClient(BaseClient):
         """
         if len(query_results) == 3:
             index = query_results[0]
-            self.downloader(self.links[index], overwrite=overwrite, path=path)
+            self._downloader(self.links[index], overwrite=overwrite, path=path)
         else:
             for i in query_results:
                 index = i["index"]
