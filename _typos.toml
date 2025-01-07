@@ -16,6 +16,7 @@ default.extend-ignore-identifiers-re = [
     "alog10",
     "FOVs",
     "FOV",
+    "ISES",
     # HEK
     "OT",
     "ot",
