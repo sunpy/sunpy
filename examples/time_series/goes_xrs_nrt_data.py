@@ -81,7 +81,7 @@ peak_time = parse_time(flare_events['max_time'].values)
 flare_list = Table(data={"class": goes_class, "start_time": start_time, "peak_time": peak_time, "end_time": end_time})
 
 ###############################################################################
-# Finally, we can plot the timeseries and add the flare information
+# Finally, we can plot the timeseries and overlay all the flares that occured.
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
