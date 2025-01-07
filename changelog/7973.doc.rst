@@ -1,1 +1,1 @@
-Added a note on how the sign of CDELT1 is handled in `~sunpy.map.sources.sdo.HMISynopticMap.scale`.
+Added a note to the docstring of `~sunpy.map.sources.sdo.HMISynopticMap` that documents how the sign of CDELT1 is handled.
