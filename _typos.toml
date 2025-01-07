@@ -23,4 +23,5 @@ default.extend-ignore-identifiers-re = [
     # Coords,
     "pn",
     "lightyear",
+    "PNGs",
 ]
