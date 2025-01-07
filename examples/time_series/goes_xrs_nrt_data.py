@@ -1,15 +1,18 @@
 """
-=======================================================
-Creating a TimeSeries from GOES-XRS near real time data
-=======================================================
+========================================================================
+Creating a TimeSeries from GOES-XRS near real time data with flare times
+========================================================================
 
-This example will demonstrate how to download and load GOES XRS Near Real Time (NRT) data into a `sunpy.timeseries.TimeSeries`.
+This example will demonstrate how to make use of GOES XRS Near Real Time data.
+This includes the goes XRS timeseries data as well as the flare times.
 """
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from astropy import units as u
+from astropy.table import Table
+from astropy.time import TimeDelta
 
 from sunpy import timeseries as ts
 from sunpy.time import parse_time
@@ -64,9 +67,30 @@ goes_data = pd.DataFrame({"xrsa": goes_short["flux"].values, "xrsb": goes_long["
 goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
-# Finally, we can plot the timeseries.
+# Now we will download the latest flare event information
+
+flare_events = pd.read_json('https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json')
+
+###############################################################################
+# Next we load it into an astropy Table
+
+goes_class = [str(this_class) for this_class in flare_events['max_class'].values]
+start_time = parse_time(flare_events['begin_time'].values)
+end_time = parse_time(flare_events['end_time'].values)
+peak_time = parse_time(flare_events['max_time'].values)
+flare_list = Table(data={"class": goes_class, "start_time": start_time, "peak_time": peak_time, "end_time": end_time})
+
+###############################################################################
+# Finally, we can plot the timeseries and add the flare information
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
-
+for this_flare in flare_list:
+    if this_flare['start_time'] > goes_ts.time[-1] - TimeDelta(1 * u.day):
+        ax.axvline(this_flare['peak_time'].datetime)
+        ax.axvspan(this_flare['start_time'].datetime,
+                this_flare['end_time'].datetime,
+                alpha=0.2, label=f'{this_flare["peak_time"]} {this_flare["class"]}')
+ax.set_xlim(goes_ts.time[-1].datetime, (goes_ts.time[-1] - TimeDelta(1 * u.day)).datetime)
+ax.legend(loc=2)
 plt.show()
