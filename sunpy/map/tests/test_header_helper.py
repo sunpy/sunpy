@@ -1,4 +1,5 @@
 import re
+import warnings
 
 import numpy as np
 import pytest
@@ -12,6 +13,7 @@ import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header, make_hpr_header
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 
@@ -267,6 +269,8 @@ def test_invalid_inputs(coordinate_input, expected_error_message, map_data, hcc_
 @pytest.mark.parametrize('shape', [[90, 180], [240, 100]])
 @pytest.mark.parametrize('projection_code', ['CAR', 'CEA'])
 def test_make_heliographic_header(aia171_test_map, shape, projection_code, frame):
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     header = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, shape, frame=frame, projection_code=projection_code)
     carr_map = aia171_test_map.reproject_to(header)
 
@@ -283,6 +287,8 @@ def test_make_heliographic_header(aia171_test_map, shape, projection_code, frame
 
 
 def test_make_heliographic_header_invalid_inputs(aia171_test_map):
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     with pytest.raises(ValueError, match='projection_code must be one of'):
         make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', projection_code='blah')
 

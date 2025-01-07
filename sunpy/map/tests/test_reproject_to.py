@@ -59,6 +59,8 @@ def test_reproject_to_hgs_wcs(fig_test, fig_ref, aia171_test_map, hgs_header):
         # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
         warnings.filterwarnings("ignore", message='invalid value encountered',
                                 category=RuntimeWarning)
+        warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                                category=SunpyUserWarning)
 
         # Tests whether reprojecting to a WCS instance gives the same answer as to a header
         header_map = aia171_test_map.reproject_to(hgs_header)
@@ -77,6 +79,8 @@ def test_reproject_to_hpc_default(fig_test, fig_ref, aia171_test_map, hpc_header
         # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
         warnings.filterwarnings("ignore", message='invalid value encountered',
                                 category=RuntimeWarning)
+        warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                                category=SunpyUserWarning)
 
         # Tests whether the default reprojection is "interpolation"
         default_map = aia171_test_map.reproject_to(hpc_header)
@@ -109,6 +113,8 @@ def test_return_footprint(aia171_test_map, hpc_header):
         # NumPy <1.19 emits a RuntimeWarning because of comparison against NaNs
         warnings.filterwarnings("ignore", message='invalid value encountered',
                                 category=RuntimeWarning)
+        warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                                category=SunpyUserWarning)
 
         return_without_footprint = aia171_test_map.reproject_to(hpc_header)
         assert isinstance(return_without_footprint, sunpy.map.GenericMap)
@@ -125,6 +131,8 @@ def test_invalid_inputs(aia171_test_map, hpc_header):
 
 
 def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                            category=SunpyUserWarning)
     with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
         # Modifying the `hpc_header` rsun value to create a mismatch
         hpc_header["rsun_ref"] += 1
@@ -135,6 +143,8 @@ def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
 
 def test_reproject_to_warn_using_contexts(aia171_test_map, hpc_header):
     with propagate_with_solar_surface():
+        warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                                category=SunpyUserWarning)
         with sunpy.coordinates.SphericalScreen(aia171_test_map.observer_coordinate):
             # Check if a warning is raised if both context managers are used at the same time.
             with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data."):

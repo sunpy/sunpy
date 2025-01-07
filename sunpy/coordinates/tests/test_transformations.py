@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pytest
 
@@ -46,6 +48,7 @@ from sunpy.sun.constants import radius as _RSUN
 from sunpy.sun.constants import sidereal_rotation_rate
 from sunpy.sun.models import differential_rotation
 from sunpy.time import parse_time
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 def test_hcc_to_hgs():
@@ -512,6 +515,8 @@ def test_hgc_loopback_self_observer():
 
 
 def test_hcc_hcc():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # Test same observer and changing obstime
     observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-02-01')
     from_hcc = Heliocentric(0.2*u.AU, 0.3*u.AU, 0.4*u.AU, observer=observer, obstime='2001-01-01')
@@ -535,6 +540,8 @@ def test_hcc_hcc():
 
 
 def test_hcc_hgs_observer_mismatch():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # Test whether the transformation gives the same answer regardless of what obstime the observer
     # coordinate is represented in
     observer1 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
@@ -552,6 +559,8 @@ def test_hcc_hgs_observer_mismatch():
 
 
 def test_hgs_hcc_observer_mismatch():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # Test whether the transformation gives the same answer regardless of what obstime the observer
     # coordinate is represented in
     observer1 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
@@ -637,6 +646,8 @@ def test_hgs_hcc_sunspice():
 
 
 def test_hpc_hgs_implicit_hcc():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # An HPC->HGS transformation should give the same answer whether the transformation step
     #   through HCC is implicit or explicit
     start = SkyCoord(0*u.arcsec, 0*u.arcsec, 0.5*u.AU,
@@ -671,6 +682,8 @@ def test_velocity_hcrs_hgs():
 
 
 def test_velocity_hgs_hgc():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # Construct a simple HGS coordinate with zero velocity
     obstime = Time(['2019-01-01', '2019-04-01', '2019-07-01', '2019-10-01'])
     pos = CartesianRepresentation(1, 0, 0)*u.AU
@@ -973,6 +986,8 @@ def test_no_observer():
 
 
 def test_array_obstime():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # Validate that you can transform from an array of obstimes to no obstimes,
     # or different obstimes.
     a = SkyCoord([10]*2, [10]*2, unit=u.deg,
@@ -1101,6 +1116,8 @@ def test_transform_with_sun_center_reset():
 
 
 def test_rsun_preservation():
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # Check that rsun is preserved when transforming between any two frames with that attribute
     args_in = {'obstime': '2001-01-01', 'rsun': 690*u.Mm}
     args_out = {'obstime': '2001-02-01', 'rsun': 700*u.Mm}

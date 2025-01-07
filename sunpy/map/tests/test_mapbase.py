@@ -3,6 +3,7 @@ Test Generic Map
 """
 import re
 import tempfile
+import warnings
 from copy import deepcopy
 
 import matplotlib
@@ -1917,6 +1918,8 @@ def test_plot_deprecated_positional_args(aia171_test_map):
 
 
 def test_submap_nan_error(aia171_test_map):
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     # See https://github.com/sunpy/sunpy/pull/7543#issuecomment-2167019208 for more context
     coord_native = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia171_test_map.coordinate_frame)
     aia171_test_map.submap(coord_native, width=1000*u.arcsec, height=1000*u.arcsec)
