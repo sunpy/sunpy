@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from astropy import units as u
-from astropy.table import Table
 from astropy.time import TimeDelta
 
 from sunpy import timeseries as ts
