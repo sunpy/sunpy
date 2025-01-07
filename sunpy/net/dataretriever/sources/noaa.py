@@ -92,7 +92,7 @@ class NOAAPredictClient(GenericClient):
     <BLANKLINE>
      Instrument     Physobs     Source Provider
     ------------ -------------- ------ --------
-    NOAA-Predict sunspot number   USES     SWPC
+    NOAA-Predict sunspot number   ISES     SWPC
     <BLANKLINE>
     <BLANKLINE>
 
@@ -125,7 +125,7 @@ class NOAAPredictClient(GenericClient):
         adict = {attrs.Instrument: [
             ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')],
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
-            attrs.Source: [('USES', 'The International Space Environmental Services.')],
+            attrs.Source: [('ISES', 'The International Space Environmental Services.')],
             attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
             attrs.Time: [('*')]}
         return adict

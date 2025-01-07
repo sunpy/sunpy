@@ -190,7 +190,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     """
     NOAA Solar Cycle Predicted Progression.
 
-    The predictions are updated monthly and are produced by USES. Observed
+    The predictions are updated monthly and are produced by ISES. Observed
     values are initially the preliminary values which are replaced with the
     final values as they become available.
 
