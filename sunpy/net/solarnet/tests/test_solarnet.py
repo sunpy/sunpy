@@ -3,6 +3,8 @@ from pathlib import Path
 
 import pytest
 
+import astropy.units as u
+
 import sunpy.net.attrs as a
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.solarnet import SolarnetClient
@@ -36,7 +38,7 @@ def test_fetch(client,tmpdir):
     path = Path(tmpdir) / "test_file_1"
 
     #calling fetch
-    client.fetch(query[0],path = str(path))
+    client.fetch(query[0],path =path)
     assert path.exists()
     expected_file_name = str(query[0]["name"]) + ".fits"
     expected_file = path / expected_file_name
@@ -45,3 +47,9 @@ def test_fetch(client,tmpdir):
 
     # Verify the file has been deleted
     assert not expected_file.exists()
+
+@pytest.mark.remote_data
+def test_default_limit(client):
+    query = [a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA),a.Time("2020/02/04","2022/02/04")]
+    url = client.search(*query)
+    assert len(url) == 20

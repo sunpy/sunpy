@@ -105,7 +105,7 @@ class SolarnetClient(BaseClient):
             List of dataset file URLs.
         """
         links = []
-        req = requests.get(url, params=block)
+        req = requests.get(url,params = block)
         data = req.json()["objects"]
         for i in data:
             link = i["data_location"]["file_url"]
