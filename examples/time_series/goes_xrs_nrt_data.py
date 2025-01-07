@@ -5,6 +5,7 @@ Creating a TimeSeries from GOES-XRS near real time data with flare times
 
 This example will demonstrate how to make use of GOES XRS Near Real Time data.
 This includes the goes XRS timeseries data as well as the flare times.
+The real-time datasets can all be found at https://services.swpc.noaa.gov/json/goes/primary/
 """
 
 import matplotlib.pyplot as plt
@@ -18,22 +19,21 @@ from sunpy import timeseries as ts
 from sunpy.time import parse_time
 
 ###############################################################################
-# We will start by getting reading the GOES-XRS JSON file using `pandas.read_json`.
-# This allows us to download the file and load it straight into a `pandas.DataFrame`.
-# This file updates every minute and contains only the last 7 days worth of data.
+# We will start by getting reading the GOES-XRS JSON file using `Table.read`.
+# This allows us to download the file and load it straight into a `astropy.table.Table`.
+# This file updates every minute and contains only the last 3 days worth of data.
+# There is also a file with 7 days worth of data.
 
-goes_json_data = pd.read_json(
-    "https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json"
-)
+goes_data = Table.read('https://services.swpc.noaa.gov/json/goes/primary/xrays-3-day.json', format='pandas.json')
 
 ###############################################################################
 # XRS collects data in two energy channels, "0.05-0.4nm" and "0.1-0.8nm".
 # We separate these "short" and "long" wavelength readings into two arrays.
 
 # This will get us the short wavelength data.
-goes_short = goes_json_data[goes_json_data["energy"] == "0.05-0.4nm"]
+goes_short = goes_data[goes_data["energy"] == "0.05-0.4nm"]
 # This will get us the long wavelength data.
-goes_long = goes_json_data[goes_json_data["energy"] == "0.1-0.8nm"]
+goes_long = goes_data[goes_data["energy"] == "0.1-0.8nm"]
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires a datetime index which we can get
@@ -63,7 +63,7 @@ meta = dict(
 # `sunpy.timeseries.TimeSeries` as the data input.
 
 goes_data = pd.DataFrame(
-    {"xrsa": goes_short["flux"].values, "xrsb": goes_long["flux"].values},
+    {"xrsa": goes_short['flux'], "xrsb": goes_long['flux']},
     index=time_array.datetime,
 )
 
@@ -76,9 +76,7 @@ goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 ###############################################################################
 # NOAA also provides the past 7 days of flare information which we can also parse.
 
-flare_events = pd.read_json(
-    "https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json"
-)
+flare_events = Table.read("https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json", format='pandas.json')
 
 ###############################################################################
 # Finally, we can plot the timeseries and overlay all the flares that occurred.
@@ -86,7 +84,7 @@ flare_events = pd.read_json(
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
-for index, this_flare in flare_events.iterrows():
+for this_flare in flare_events:
     start_time, peak_time, end_time = parse_time(
         [this_flare["begin_time"], this_flare["max_time"], this_flare["end_time"]]
     )
