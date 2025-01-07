@@ -67,7 +67,7 @@ goes_data = pd.DataFrame({"xrsa": goes_short["flux"].values, "xrsb": goes_long["
 goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
-# Now we will download the latest flare event information
+# NOAA also provides the past 7 days of flare information which we can also parse.
 
 flare_events = pd.read_json('https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json')
 
