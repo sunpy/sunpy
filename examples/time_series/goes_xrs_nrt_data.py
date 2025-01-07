@@ -67,12 +67,12 @@ goes_data = pd.DataFrame({"xrsa": goes_short["flux"].values, "xrsb": goes_long["
 goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
-# Now we will download the latest flare event information
+# NOAA also provides the past 7 days of flare information which we can also parse.
 
 flare_events = pd.read_json('https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json')
 
 ###############################################################################
-# Finally, we can plot the timeseries and add the flare information.
+# Finally, we can plot the timeseries and overlay all the flares that occurred.
 # We will do this only for the last day otherwise the plot may be too busy.
 
 fig, ax = plt.subplots()
