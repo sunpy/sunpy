@@ -72,25 +72,18 @@ goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 flare_events = pd.read_json('https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json')
 
 ###############################################################################
-# Next we load it into an astropy Table
-
-goes_class = [str(this_class) for this_class in flare_events['max_class'].values]
-start_time = parse_time(flare_events['begin_time'].values)
-end_time = parse_time(flare_events['end_time'].values)
-peak_time = parse_time(flare_events['max_time'].values)
-flare_list = Table(data={"class": goes_class, "start_time": start_time, "peak_time": peak_time, "end_time": end_time})
-
-###############################################################################
-# Finally, we can plot the timeseries and add the flare information
+# Finally, we can plot the timeseries and add the flare information.
+# We will do this only for the last day otherwise the plot may be too busy.
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
-for this_flare in flare_list:
-    if this_flare['start_time'] > goes_ts.time[-1] - TimeDelta(1 * u.day):
-        ax.axvline(this_flare['peak_time'].datetime)
-        ax.axvspan(this_flare['start_time'].datetime,
-                this_flare['end_time'].datetime,
-                alpha=0.2, label=f'{this_flare["peak_time"]} {this_flare["class"]}')
+for index, this_flare in flare_events.iterrows():
+    start_time, peak_time, end_time = parse_time([this_flare['begin_time'], this_flare['max_time'], this_flare['end_time']])
+    if start_time > (goes_ts.time[-1] - TimeDelta(1 * u.day)):
+        ax.axvline(peak_time.datetime)
+        ax.axvspan(start_time.datetime,
+                   end_time.datetime,
+                   alpha=0.2, label=f'{peak_time} {this_flare["max_class"]}')
 ax.set_xlim(goes_ts.time[-1].datetime, (goes_ts.time[-1] - TimeDelta(1 * u.day)).datetime)
 ax.legend(loc=2)
 plt.show()
