@@ -1,7 +1,7 @@
 import pathlib
 import functools
 from contextlib import contextmanager
-from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 from sunpy.util.exceptions import warn_user
 from sunpy.util.util import hash_file
@@ -74,7 +74,7 @@ class DataManager:
         """
         replace = self._skip_file.get(name)
         if replace:
-            uri_parse = urlparse(replace['uri'])
+            uri_parse = urlsplit(replace['uri'])
             if uri_parse.scheme in ("", "file"):
                 file_path = uri_parse.netloc + uri_parse.path
                 file_hash = hash_file(file_path)
