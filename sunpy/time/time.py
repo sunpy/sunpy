@@ -224,6 +224,8 @@ def convert_time_list(time_list, format=None, **kwargs):
     # If we have a list of strings, need to get the correct format from our
     # list of custom formats.
     if isinstance(item, str) and format is None:
+        if 'TAI' in item:
+            kwargs['scale'] = 'tai'
         string_format = _get_time_fmt(item)
         return Time.strptime(time_list, string_format, **kwargs)
 
