@@ -43,9 +43,6 @@ goes_data.rename(columns={'0.05-0.4nm': 'xrsa', '0.1-0.8nm': 'xrsb'}, inplace=Tr
 # parsing the time strings.
 
 goes_data.index = Time(list(goes_data.index)).datetime
-# directly and transform into `astropy.time.Time`.
-
-time_array = parse_time(goes_short["time_tag"])
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
@@ -76,16 +73,8 @@ goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 flare_events = pd.read_json("https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json")
 
 ###############################################################################
-# Next we load it into an astropy Table
-
-goes_class = [str(this_class) for this_class in flare_events['max_class'].values]
-start_time = parse_time(flare_events['begin_time'].values)
-end_time = parse_time(flare_events['end_time'].values)
-peak_time = parse_time(flare_events['max_time'].values)
-flare_list = Table(data={"class": goes_class, "start_time": start_time, "peak_time": peak_time, "end_time": end_time})
-
-###############################################################################
-# Finally, we can plot the timeseries and overlay all the flares that occured.
+# Finally, we can plot the timeseries and overlay all the flares that occurred.
+# We will do this only for the last day otherwise the plot may be too busy.
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
@@ -93,10 +82,12 @@ plot_start = goes_ts.time[-1] - 1 * u.day
 ax.set_xlim(
     plot_start.datetime, (plot_start + 1 * u.day).datetime
 )
-for start_time, peak_time, end_time, max_class in zip(parse_time(flare_events["begin_time"]),
-                                                      parse_time(flare_events["max_time"]),
-                                                      parse_time(flare_events["end_time"]),
-                                                      flare_events["max_class"]):
+for start_time, peak_time, end_time, max_class in zip(
+    parse_time(flare_events["begin_time"]),
+    parse_time(flare_events["max_time"]),
+    parse_time(flare_events["end_time"]),
+    flare_events["max_class"]
+):
     if peak_time > plot_start:
         ax.axvline(peak_time.datetime)
     if end_time > plot_start:
