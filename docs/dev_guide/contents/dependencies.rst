@@ -1,4 +1,4 @@
-.. _packing_and_grouping_dependencies:
+.. _grouping_dependencies:
 
 *************************
 Extra Packages and Groups
