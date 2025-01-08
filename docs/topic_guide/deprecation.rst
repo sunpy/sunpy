@@ -7,7 +7,7 @@ Deprecation, Versioning and Release Practices
 Versioning Policy
 =================
 
-Sunpy uses semantic versioning system with three components, each serving a specific purpose:
+``sunpy`` uses a pseudo-semantic versioning system with three components, each serving a specific purpose:
 
 - **X (LTS Version Number)**: Incremented with every Long Term Support (LTS) release.
 - **Y (Release Counter)**: Starts at 0 for LTS releases and increases for intermediate releases.
@@ -40,15 +40,14 @@ Support periods may be extended beyond these requirements if necessary.
 Python and Package Support Policies
 ===================================
 
-``sunpy`` aims to support a wide range of Python versions:
+``sunpy`` aims to support:
 
-- Supports all Python versions released within the past three years.
-- Support for newly released Python versions may take a few months to ensure compatibility but the aim is less than 6 months.
+- All Python versions released within the past three years.
+- Newly released Python versions within 3 months but may longer due to upstream dependencies.
 
-``sunpy`` has a short list of core dependencies (Python, numpy, astropy, parfive) and a long list of optional dependencies.
+``sunpy`` has a short list of core dependencies (numpy, astropy, parfive) and a long list of optional dependencies.
 The minimum version of these packages that we enforce follows this policy:
 
-- **Python**: Released in the prior 36 months from the anticipated release date.
 - **astropy**: Released in the prior 12 months from the anticipated release date.
 - **Everything else**: Released in the prior 24 months from the anticipated release date.
 
@@ -56,22 +55,18 @@ Affiliated packages maintained by the SunPy Project will follow this policy and 
 
 For dependencies only needed to run tests, ``sunpy`` will support versions released in the prior 12 months to the current date, unless there is a critical issue that requires a newer version.
 
-This policy is based on `SPEC-0`_.
-
-.. _SPEC-0: https://scientific-python.org/specs/spec-0000/
+This policy is based on `SPEC-0 <https://scientific-python.org/specs/spec-0000/>`__.
 
 Deprecation Policy and Breaking Changes
 =======================================
 
-The goal of the deprecation policy is to try and ensure that users have enough time to adapt to any breaking changes or removals in the public API.
-Below are the key practices:
+The goal of the deprecation warning is to inform users of breaking changes or removals, provided an alternative exists or if the functionality is being removed entirely.
 
 The SunPy Project enforces these standards for updating, changing, or deprecating public APIs across the core package and **stable** affiliated packages.
 If functionality is planned for deprecation, the following steps are taken:
 
-- A deprecation warning must be introduced in one LTS release before the deprecated code is removed.
-  For example:
-
+A deprecation warning must be introduced in one LTS release before the deprecated code is removed.
+For example:
     - A deprecation warning is introduced in ``sunpy`` 6.1.
     - The code that is being removed, can only be removed in ``sunpy`` 7.1, after the 7.0 LTS release.
 
