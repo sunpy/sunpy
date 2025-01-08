@@ -106,7 +106,7 @@ def _regex_parse_time(inp, format):
     # understand the former.
     for key, value in REGEX.items():
         format = format.replace(key, value)
-    match = re.match(format, inp)
+    match = re.match(f"{format}$", inp)
     if match is None:
         return None, None
 
