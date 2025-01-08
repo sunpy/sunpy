@@ -116,6 +116,7 @@ def test_override_file(manager, data_function, tmpdir):
         # Inside the file is replaced
         data_function(override_file_tester)
 
+    # NOTE: This test fails on Windows due to https://github.com/python/cpython/issues/86381.
     # with manager.override_file('test_file', f'{folder}/another_file'):
     #     # Inside the file is replaced
     #     data_function(override_file_tester)
