@@ -3,9 +3,7 @@ from datetime import date, datetime, timezone
 import numpy as np
 import pandas
 import pytest
-from packaging import version
 
-import astropy
 import astropy.time
 from astropy.time import Time
 
@@ -291,11 +289,7 @@ def test_parse_time_astropy_formats(ts, fmt):
     dt = parse_time(ts, format=fmt)
     assert dt.format == fmt
 
-@pytest.mark.xfail(
-    condition=version.parse(astropy.__version__) < version.parse("6.1"),
-    reason="This test fails on Astropy versions below 6.1",
-    strict=True
-)
+
 def test_parse_time_int_float():
     # int and float values are not unique
     # The format has to be mentioned
