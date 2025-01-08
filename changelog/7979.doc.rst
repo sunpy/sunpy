@@ -1,0 +1,1 @@
+Added a how-to guide (:ref:`sunpy-how-to-mu-angle`) for calculating the heliocentric angle (:math:`\mu`).
