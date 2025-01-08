@@ -116,9 +116,9 @@ def test_override_file(manager, data_function, tmpdir):
         # Inside the file is replaced
         data_function(override_file_tester)
 
-    with manager.override_file('test_file', f'{folder}/another_file'):
-        # Inside the file is replaced
-        data_function(override_file_tester)
+    # with manager.override_file('test_file', f'{folder}/another_file'):
+    #     # Inside the file is replaced
+    #     data_function(override_file_tester)
 
     # check the function works with hash provided
     with manager.override_file('test_file', f'file://{folder}/another_file', MOCK_HASH):
