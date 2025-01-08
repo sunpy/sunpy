@@ -1,8 +1,8 @@
 .. _sunpy-how-to-create-a-map:
 
-*************************
-How to create a sunpy Map
-*************************
+******************
+Create a sunpy Map
+******************
 
 One of the primary goals of the Map interface is to make it as easy as possible to create a Map.
 As such, you can pass many different kinds of inputs to Map.
