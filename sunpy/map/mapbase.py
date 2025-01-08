@@ -1526,7 +1526,7 @@ class GenericMap(NDData):
         """
         Return any PV values in the metadata.
         """
-        pattern = re.compile('pv[0-9]_[0-9]{1,2}$', re.IGNORECASE)
+        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
         pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
 
         pv_values = []
