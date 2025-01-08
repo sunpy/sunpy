@@ -24,6 +24,7 @@ __all__ = [
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
+    '.': r'\.',
     '%Y': r'(?P<year>\d{4})',
     '%j': r'(?P<dayofyear>\d{3})',
     '%m': r'(?P<month>\d{1,2})',
