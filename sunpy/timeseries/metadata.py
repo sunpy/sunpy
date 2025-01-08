@@ -185,7 +185,7 @@ class TimeSeriesMetaData:
                 if timerange.start > meta[0].start:
                     pos = i + 1
         else:
-            raise ValueError('Incorrect datatime or data for append to TimeSeriesMetaData.')
+            raise ValueError('Incorrect datetime or data for append to TimeSeriesMetaData.')
 
         # Prepare tuple to append.
         new_metadata = (timerange, columns, metadata)

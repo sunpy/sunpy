@@ -1,7 +1,7 @@
 import pathlib
 import functools
 from contextlib import contextmanager
-from urllib.parse import urlsplit
+from urllib.parse import urlparse
 
 from sunpy.util.exceptions import warn_user
 from sunpy.util.util import hash_file
@@ -74,7 +74,7 @@ class DataManager:
         """
         replace = self._skip_file.get(name)
         if replace:
-            uri_parse = urlsplit(replace['uri'])
+            uri_parse = urlparse(replace['uri'])
             if uri_parse.scheme in ("", "file"):
                 file_path = uri_parse.netloc + uri_parse.path
                 file_hash = hash_file(file_path)
@@ -94,6 +94,10 @@ class DataManager:
                 if file_hash != sha_hash:
                     raise RuntimeError(f"Hash of local file ({file_hash}) does not match expected hash ({sha_hash}). File may have changed on the remote server.")
             else:
+                if not pathlib.Path(details["file_path"]).is_file():
+                    warn_user("Requested file appears to missing and will be redownloaded.")
+                    self._cache._download_and_hash(urls, self._namespace)
+
                 if hash_file(details['file_path']) != details['file_hash']:
                     warn_user("Hashes do not match, the file will be redownloaded (could be tampered/corrupted)")
                     file_path = self._cache.download(urls, self._namespace, redownload=True)
