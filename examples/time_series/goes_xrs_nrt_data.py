@@ -5,40 +5,46 @@ Creating a TimeSeries from GOES-XRS near real time data with flare times
 
 This example will demonstrate how to make use of GOES XRS Near Real Time data.
 This includes the goes XRS timeseries data as well as the flare times.
+The real-time datasets can all be found at https://services.swpc.noaa.gov/json/goes/primary/
 """
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from astropy import units as u
-from astropy.time import TimeDelta
+from astropy.time import Time
 
 from sunpy import timeseries as ts
 from sunpy.time import parse_time
 
 ###############################################################################
-# We will start by getting reading the GOES-XRS JSON file using `pandas.read_json`.
+# We will start by getting reading the GOES-XRS JSON file using :func:`pandas.read_json`.
 # This allows us to download the file and load it straight into a `pandas.DataFrame`.
-# This file updates every minute and contains only the last 7 days worth of data.
+# This file updates every minute and contains only the last 3 days worth of data.
+# There is also a file with 7 days worth of data.
 
 goes_json_data = pd.read_json(
     "https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json"
 )
 
 ###############################################################################
-# XRS collects data in two energy channels, "0.05-0.4nm" and "0.1-0.8nm".
-# We separate these "short" and "long" wavelength readings into two arrays.
+# The recorded flux values alternate between the two XRS energy channels:
+# "0.05-0.4nm" and "0.1-0.8nm". We make a `pivot table<https://en.wikipedia.org/wiki/Pivot_table>`__
+# that naturally rearranges the data into two flux columns. We then rename the
+# columns.
 
-# This will get us the short wavelength data.
-goes_short = goes_json_data[goes_json_data["energy"] == "0.05-0.4nm"]
-# This will get us the long wavelength data.
-goes_long = goes_json_data[goes_json_data["energy"] == "0.1-0.8nm"]
+goes_data = goes_data.pivot(
+    index='time_tag',
+    columns='energy',
+    values='observed_flux'
+)
+goes_data.rename(columns={'0.05-0.4nm': 'xrsa', '0.1-0.8nm': 'xrsb'}, inplace=True)
 
 ###############################################################################
-# `sunpy.timeseries.TimeSeries` requires a datetime index which we can get
-# directly and transform into `astropy.time.Time`.
+# `sunpy.timeseries.TimeSeries` requires a datetime index, which we can get by
+# parsing the time strings.
 
-time_array = parse_time(goes_short["time_tag"])
+goes_data.index = Time(list(goes_data.index)).datetime
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
@@ -46,6 +52,7 @@ time_array = parse_time(goes_short["time_tag"])
 # "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding
 # physical flux units, ``u.W/u.m**2``.
 
+units = dict([("xrsa", u.W / u.m ** 2), ("xrsb", u.W / u.m ** 2)])
 units = dict([("xrsa", u.W / u.m ** 2), ("xrsb", u.W / u.m ** 2)])
 
 ###############################################################################
@@ -55,15 +62,6 @@ units = dict([("xrsa", u.W / u.m ** 2), ("xrsb", u.W / u.m ** 2)])
 
 meta = dict(
     {"instrument": "GOES X-ray sensor", "measurements": "primary", "type": "quicklook"}
-)
-
-###############################################################################
-#  The final pre-step is create a new `pandas.DataFrame` which we can pass to
-# `sunpy.timeseries.TimeSeries` as the data input.
-
-goes_data = pd.DataFrame(
-    {"xrsa": goes_short["flux"].values, "xrsb": goes_long["flux"].values},
-    index=time_array.datetime,
 )
 
 ###############################################################################
