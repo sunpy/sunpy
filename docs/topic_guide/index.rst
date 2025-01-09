@@ -17,6 +17,7 @@ Although there are code snippets in various parts of each topic guide, these are
 
    coordinates/index
    custom_map_rotate
+   deprecation
    extending_fido
    scraper_migration
    history_comments
