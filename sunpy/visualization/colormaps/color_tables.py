@@ -338,7 +338,6 @@ def stereo_hi_color_table(camera):
     return cmap_from_rgb_file(f'STEREO HI{camera}', f'hi{camera}.csv')
 
 
-
 @u.quantity_input
 def suvi_color_table(wavelength: u.angstrom):
     """
