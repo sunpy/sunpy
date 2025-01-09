@@ -73,32 +73,30 @@ goes_data = pd.DataFrame(
 goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
-# NOAA also provides the past 7 days of flare information which we can also parse.
+# NOAA also provides the past 7 days of flare event identifications which we 
+# can also parse.
+# Note that it is possible that no flares occurred in the last 7 days.
 
 flare_events = pd.read_json(
     "https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json"
 )
 
 ###############################################################################
+# Next we sort the list and select only the largest flares. 
+
+if len(flare_events) > 0:
+    largest_flares = flare_events.sort_values('max_xrlong', ascending=False)[0:5]
+else:
+    largest_flares = []
+###############################################################################
 # Finally, we can plot the timeseries and overlay all the flares that occurred.
 # We will do this only for the last day otherwise the plot may be too busy.
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
-for index, this_flare in flare_events.iterrows():
-    start_time, peak_time, end_time = parse_time(
-        [this_flare["begin_time"], this_flare["max_time"], this_flare["end_time"]]
-    )
-    if start_time > (goes_ts.time[-1] - TimeDelta(1 * u.day)):
-        ax.axvline(peak_time.datetime)
-        ax.axvspan(
-            start_time.datetime,
-            end_time.datetime,
-            alpha=0.2,
-            label=f'{peak_time} {this_flare["max_class"]}',
-        )
-ax.set_xlim(
-    goes_ts.time[-1].datetime, (goes_ts.time[-1] - TimeDelta(1 * u.day)).datetime
-)
+for index, this_flare in largest_flares.iterrows():
+    peak_time = parse_time(this_flare["max_time"])
+    ax.axvline(peak_time.datetime, label=f'{peak_time.datetime} {this_flare["max_class"]}')
 ax.legend(loc=2)
+ax.set_title(f"Last 7 days of GOES XRS data with the largest {len(largest_flares)} flares labeled.")
 plt.show()
