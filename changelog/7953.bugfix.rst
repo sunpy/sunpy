@@ -1,0 +1,1 @@
+Fixed handling of 'rsun_ref' in `sunpy.physics.differential_rotation.py`,ensuring robust and flexible processing of solar data.
