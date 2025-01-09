@@ -26,7 +26,7 @@ goes_data = pd.read_json('https://services.swpc.noaa.gov/json/goes/primary/xrays
 
 ###############################################################################
 # The recorded flux values alternate between the two XRS energy channels:
-# "0.05-0.4nm" and "0.1-0.8nm". We make a `pivot table<https://en.wikipedia.org/wiki/Pivot_table>`__
+# "0.05-0.4nm" and "0.1-0.8nm". We make a `pivot table <https://en.wikipedia.org/wiki/Pivot_table>`__
 # that naturally rearranges the data into two flux columns. We then rename the
 # columns.
 
