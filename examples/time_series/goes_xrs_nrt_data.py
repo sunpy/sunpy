@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from astropy import units as u
-from astropy.time import Time
 
 from sunpy import timeseries as ts
 from sunpy.time import parse_time
