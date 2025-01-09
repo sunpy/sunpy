@@ -4,8 +4,6 @@ from sunpy.net.attr import AttrOr
 
 
 def test_complex_query():
-    a1 = attrs.Dataset("test_data")
-    a2 = attrs.Limit(23)
-    sol = solarnet.solarnet.and_(a1 | a2)
+    sol = solarnet.solarnet.and_(attrs.Dataset("test_data") |attrs.Limit(23) & attrs.Dataset("test_2_data") )
     assert isinstance(sol,AttrOr)
     assert len(sol.attrs) == 2

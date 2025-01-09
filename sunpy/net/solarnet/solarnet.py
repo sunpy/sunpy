@@ -164,13 +164,12 @@ class SolarnetClient(BaseClient):
         path : str or Path, optional
             Path template for saving the downloaded files.
         """
-        if len(query_results) == 3:
-            index = query_results[0]
+        indices = (
+            [query_results[0]] if len(query_results) == 3 
+            else [i["index"] for i in query_results]
+        )
+        for index in indices:
             self._downloader(self.links[index], overwrite=overwrite, path=path)
-        else:
-            for i in query_results:
-                index = i["index"]
-                self._downloader(self.links[index], overwrite=overwrite, path=path)
 
     @staticmethod
     def load_solarnet_values():
