@@ -165,7 +165,7 @@ class SolarnetClient(BaseClient):
             Path template for saving the downloaded files.
         """
         indices = (
-            [query_results[0]] if len(query_results) == 3 
+            [query_results[0]] if len(query_results) == 3
             else [i["index"] for i in query_results]
         )
         for index in indices:
