@@ -83,7 +83,7 @@ class XRSTimeSeries(GenericTimeSeries):
         if columns is None:
             columns = ["xrsa", "xrsb"]
         axes, columns = self._setup_axes_columns(axes, columns)
-        plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
+        plot_settings = {"xrsa": ["blue", r"0.5$-$4.0 $\mathrm{\AA}$"], "xrsb": ["red", r"1.0$-$8.0 $\mathrm{\AA}$"]}
         data = self.to_dataframe()
         for channel in columns:
             axes.plot(
