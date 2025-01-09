@@ -2717,6 +2717,11 @@ class GenericMap(NDData):
         `~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
         """
+        # Type checking annotate
+        if not isinstance(annotate, bool):
+            raise TypeError(f"Invalid value for `annotate`: {annotate}. It must be a boolean. "
+                "If you meant to pass `axes`, use `axes=...` explicitly.")
+
         # Todo: remove this when deprecate_positional_args_since is removed
         # Users sometimes assume that the first argument is `axes` instead of `annotate`
         if not isinstance(annotate, bool):
