@@ -104,7 +104,7 @@ def make_table(header, section_lines, supplementary_lines):
     for old_name, new_name in column_mapping.items():
         out_table.rename_column(old_name, new_name)
 
-    # Define a Solar Hemispere Unit
+    # Define a Solar Hemisphere Unit
     a = {}
     u.def_unit(
         "SH",
