@@ -205,7 +205,7 @@ class SolarnetClient(BaseClient):
             description = obj.get("description") or \
                         obj.get("instrument", {}).get("description") or \
                         obj.get("telescope", {}).get("description")
-            values[name] = description  
+            values[name] = description
         with open(os.path.join(dir, 'data', 'datasets.json'), 'w') as attrs_file:
             json.dump(dict(sorted(values.items())), attrs_file, indent=2)
 
