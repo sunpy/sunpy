@@ -392,12 +392,13 @@ def test_differential_rotation(aia171_test_map):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
 
-def test_rsun_ref_fallback(aia171_test_map,caplog):
-    assert 'rsun_ref' in aia171_test_map.meta
-    del aia171_test_map.meta['rsun_ref']
-    with pytest.warns(SunpyUserWarning) as recorded_warnings:
-        rot_map = differential_rotate(aia171_test_map, time=2*u.day)
-    assert len(recorded_warnings) == 2
-    warning_messages = [str(w.message) for w in recorded_warnings]
-    assert "'rsun_ref' not found in metadata. Using a default value" in warning_messages[1]
-    assert rot_map.meta['rsun_ref'] > 695999999.0
+
+def test_rsun_fallback(aia171_test_map):
+    # Remove the AIA-specific value of the solar radius
+    assert_quantity_allclose(aia171_test_map.rsun_meters, 696 * u.Mm)
+    del aia171_test_map.meta['rsun_ref'], aia171_test_map.meta['rsun_obs']
+
+    # Confirm that the differentially rotated map has the default value for the solar radius
+    new_observer = get_earth(aia171_test_map.date + 2 * u.day)
+    rot_map = differential_rotate(aia171_test_map, observer=new_observer)
+    assert_quantity_allclose(rot_map.rsun_meters, R_sun)
