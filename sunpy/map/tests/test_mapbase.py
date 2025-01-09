@@ -1909,11 +1909,11 @@ def test_plot_deprecated_positional_args(aia171_test_map):
 
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
         with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation')
+            aia171_test_map.plot('interpolation',annotate = True)
 
     with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
         with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation', True)
+            aia171_test_map.plot('interpolation', annotate = True)
 
 
 def test_submap_nan_error(aia171_test_map):
