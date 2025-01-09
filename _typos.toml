@@ -16,10 +16,12 @@ default.extend-ignore-identifiers-re = [
     "alog10",
     "FOVs",
     "FOV",
+    "ISES",
     # HEK
     "OT",
     "ot",
     # Coords,
     "pn",
     "lightyear",
+    "PNGs",
 ]
