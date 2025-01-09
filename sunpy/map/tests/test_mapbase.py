@@ -383,6 +383,7 @@ def test_default_coordinate_system(generic_map):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
 def test_coordinate_system_solar_x_solar_y(generic_map):
     generic_map.meta['ctype1'] = 'SOLAR-X'
     generic_map.meta['ctype2'] = 'SOLAR-Y'
