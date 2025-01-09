@@ -199,8 +199,13 @@ class SolarnetClient(BaseClient):
         url = "https://solarnet.oma.be/service/api/svo/dataset"
         response = requests.get(url, params={"limit": 100})
         data = response.json()
-        names = [obj["name"].replace(" ", "_").lower() for obj in data.get("objects", [])]
-        values = {name: name for name in names}
+        values = {}
+        for obj in data.get("objects", []):
+            name = obj["name"].replace(" ", "_").lower()
+            description = obj.get("description") or \
+                        obj.get("instrument", {}).get("description") or \
+                        obj.get("telescope", {}).get("description")
+            values[name] = description  
         with open(os.path.join(dir, 'data', 'datasets.json'), 'w') as attrs_file:
             json.dump(dict(sorted(values.items())), attrs_file, indent=2)
 
