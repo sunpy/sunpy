@@ -594,7 +594,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta.pop(key)
 
     # Add a new HGS observer
-    out_meta.update(get_observer_meta(new_observer, out_meta['rsun_ref']*u.m))
+    out_meta.update(get_observer_meta(new_observer, smap.rsun_meters))
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.
