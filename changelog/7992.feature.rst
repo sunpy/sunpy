@@ -1,0 +1,2 @@
+Astropy >= 7.0 uses declination_axis.set_major_formatter(new_format_method) instead of declination_axis._formatter_locator.formatter = new_format_method
+add this in `~sunpy.visualization.visualization.py` under the `show_hpr_impact_angle` function
