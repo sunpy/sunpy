@@ -106,7 +106,7 @@ def test_goes_leap_seconds():
 def test_goes_plot_column(goes_test_ts):
     ax = goes_test_ts.plot(columns=['xrsa'])
     assert len(ax.lines) == 1
-    assert '0.5--4.0' == ax.lines[0].get_label().split()[0]
+    assert '0.5$-$4.0' == ax.lines[0].get_label().split()[0]
 
 
 def test_goes_r_primarydetector():
