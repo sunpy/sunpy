@@ -7,6 +7,10 @@ Installation
 This is the first chapter in the sunpy tutorial, and by the end of it you should have a working installation of Python and ``sunpy``.
 For further information and alternative methods for installing ``sunpy`` beyond the recommended approach outlined below, refer to :ref:`sunpy-topic-guide-installing`.
 
+Note: We encourage all new and existing users to contribute code to this community project. Please consider following the developer installation instructions
+instead which are only slightly more difficult, refer to :ref:`newcomers`. These instructions install sunpy in a way that does not enable editing sunpy code. It is, of course, possible
+to do this later!
+
 Installing Python
 =================
 
