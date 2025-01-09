@@ -1,1 +1,1 @@
-Fixed handling of 'rsun_ref' if it is missing in the input map in `~sunpy.physics.differential_rotation.differential_rotate`.
+Fixed a bug in :func:`~sunpy.physics.differential_rotation.differential_rotate` that assumed the input map header had ``RSUN_REF`` defined.
