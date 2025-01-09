@@ -23,7 +23,7 @@ from sunpy.time import parse_time
 # This file updates every minute and contains only the last 3 days worth of data.
 # There is also a file with 7 days worth of data.
 
-goes_json_data = pd.read_json(
+goes_data = pd.read_json(
     "https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json"
 )
 
@@ -44,7 +44,7 @@ goes_data.rename(columns={'0.05-0.4nm': 'xrsa', '0.1-0.8nm': 'xrsb'}, inplace=Tr
 # `sunpy.timeseries.TimeSeries` requires a datetime index, which we can get by
 # parsing the time strings.
 
-goes_data.index = Time(list(goes_data.index)).datetime
+goes_data.index = parse_time([this_time_str[:-1] for this_time_str in goes_data.index]).datetime
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
@@ -52,7 +52,6 @@ goes_data.index = Time(list(goes_data.index)).datetime
 # "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding
 # physical flux units, ``u.W/u.m**2``.
 
-units = dict([("xrsa", u.W / u.m ** 2), ("xrsb", u.W / u.m ** 2)])
 units = dict([("xrsa", u.W / u.m ** 2), ("xrsb", u.W / u.m ** 2)])
 
 ###############################################################################
