@@ -1,0 +1,5 @@
+# Changelog
+
+## [Unreleased] - 2025-01-09
+### Changed
+- **`annotate` Argument Validation**: The validation for the `annotate` parameter in the `plot` method has been updated to raise a `TypeError` with a clearer error message if the value is not a boolean. The new message suggests that users explicitly pass `axes=...` if they meant to provide the axes argument instead of `annotate`.
