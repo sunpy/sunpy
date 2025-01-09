@@ -202,7 +202,7 @@ class Attr(metaclass=AttrMeta):
         Examples
         --------
         The first import is to make this example work, it should not be used otherwise
-        
+
         >>> from sunpy.net.dataretriever import GenericClient
         >>> from sunpy.net import attr, attrs
         >>> attr.Attr.update_values({GenericClient : {
