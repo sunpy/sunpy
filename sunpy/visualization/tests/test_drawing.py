@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import pytest
 from matplotlib.figure import Figure
 
@@ -46,39 +45,43 @@ def heliographic_test_map():
 
 @figure_test
 def test_draw_equator_aia171(aia171_test_map):
-    fig = plt.figure()
+    fig = Figure()
     axes = fig.add_subplot(projection=aia171_test_map)
     aia171_test_map.plot()
     drawing.equator(axes)
+    return fig
 
 
 @figure_test
 def test_draw_prime_meridian_aia171(aia171_test_map):
-    fig = plt.figure()
+    fig = Figure()
     axes = fig.add_subplot(projection=aia171_test_map)
     aia171_test_map.plot()
     drawing.prime_meridian(axes)
+    return fig
 
 
 @figure_test
 def test_heliographic_equator_prime_meridian(heliographic_test_map):
-    fig = plt.figure()
+    fig = Figure()
     axes = fig.add_subplot(projection=heliographic_test_map)
     heliographic_test_map.plot()
     drawing.equator(axes, color="blue")
     drawing.prime_meridian(axes, color="red")
+    return fig
 
 
 @figure_test
 def test_draw_extent(cropped_aia193_sample_map, euvi195_sample_map):
-    fig = plt.figure()
+    fig = Figure()
     ax = fig.add_subplot(projection=euvi195_sample_map)
     euvi195_sample_map.plot(axes=ax)
     drawing.extent(ax, cropped_aia193_sample_map.wcs)
+    return fig
 
 
 def test_prime_meridian_error():
-    axes = plt.subplot(projection=WCS())
+    axes = Figure().add_subplot(projection=WCS())
     with pytest.raises(ValueError, match="does not have an observer"):
         drawing.prime_meridian(axes)
 
@@ -91,7 +94,7 @@ def test_limb_invisible(aia171_test_map):
                        radius=aia_obs.radius / 10,
                        frame=aia_obs.replicate_without_data())
 
-    ax = Figure().add_subplot(111, projection=aia171_test_map)
+    ax = Figure().add_subplot(projection=aia171_test_map)
     # Original observer
     visible, hidden = drawing.limb(ax, aia_obs)
     assert visible is not None
