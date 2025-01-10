@@ -220,23 +220,11 @@ def extent(axes, wcs, *, rsun: u.m = R_sun, **kwargs):
         raise ValueError('axes must be a WCSAxes')
     axes_frame = wcsapi_to_celestial_frame(axes.wcs)
     shape = wcs.pixel_shape
-    # Define the corners of the WCS in pixel space.
-    # These are, in order:
-    # 1. Lower left corner of the lower left pixel
-    # 2. Upper left corner of the upper left pixel
-    # 3. Upper right corner of the upper right pixel
-    # 4. Lower right corner of the lower right pixel
-    corners = np.array([(-0.5, -0.5),
-                        (-0.5, shape[0]-0.5),
-                        (shape[1]-0.5, shape[0]-0.5),
-                        (shape[1]-0.5, -0.5)])
-    xy_edges = []
-    for i in range(corners.shape[0]):
-        i_next = (i + 1) % corners.shape[0]
-        n_pixels = np.fabs(np.diff(corners[[i,i_next],:],axis=0)).max().astype(int)
-        # Exclude last point to avoid double counting corners
-        xy_edges += [[np.linspace(*corners[[i,i_next],0], n_pixels-1, endpoint=False),
-                      np.linspace(*corners[[i,i_next],1], n_pixels-1, endpoint=False)]]
+    # Traverse the edges of the WCS in pixel space
+    xy_edges = [[np.full(shape[1], -0.5), np.arange(shape[1]) - 0.5],  # left edge
+                [np.arange(shape[0]) - 0.5, np.full(shape[0], shape[1] - 0.5)],  # top edge
+                [np.full(shape[1], shape[0] - 0.5), np.arange(shape[1], 0, -1) - 0.5],  # right edge
+                [np.arange(shape[0], 0, -1) - 0.5, np.full(shape[0], -0.5)]]  # bottom edge
     edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
     visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, rsun, close_path=True, **kwargs)
     return visible, hidden
