@@ -56,6 +56,18 @@ class TRACEMap(GenericMap):
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle TRACEMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
+
+    @property
     def spatial_units(self):
         """
         If not present in CUNIT{1,2} keywords, defaults to arcsec.

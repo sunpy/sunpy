@@ -383,6 +383,15 @@ def test_default_coordinate_system(generic_map):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
+def test_coordinate_system_solar_x_solar_y(generic_map):
+    generic_map.meta['ctype1'] = 'SOLAR-X'
+    generic_map.meta['ctype2'] = 'SOLAR-Y'
+    with pytest.warns(SunpyDeprecationWarning, match="CTYPE1 value 'solar-x'/'solar_x' is deprecated") :
+        with pytest.warns(SunpyDeprecationWarning, match="CTYPE2 value 'solar-y'/'solar_y' is deprecated") :
+            assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+
 def test_carrington_longitude(generic_map):
     assert u.allclose(generic_map.carrington_longitude, sun.L0(generic_map.date))
 
