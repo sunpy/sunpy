@@ -19,8 +19,8 @@ from sunpy.time import parse_time
 ###############################################################################
 # We will start by getting reading the GOES-XRS JSON file using :func:`pandas.read_json`.
 # This allows us to download the file and load it straight into a `pandas.DataFrame`.
-# This file updates every minute and contains only the last 3 days worth of data.
-# There is also a file with 7 days worth of data.
+# This file updates every minute and contains the last 7 days worth of data.
+# There is also a file with only the last 3 days worth of data.
 
 goes_data = pd.read_json(
     "https://services.swpc.noaa.gov/json/goes/primary/xrays-7-day.json"
@@ -78,21 +78,22 @@ flare_events = pd.read_json(
 )
 
 ###############################################################################
-# Next we sort the list and select only the largest flares. 
+# Next we sort the list and retain the five largest flares. 
 
 if len(flare_events) > 0:
-    largest_flares = flare_events.sort_values('max_xrlong', ascending=False)[0:5]
+    largest_flares = flare_events.sort_values('max_xrlong', ascending=False)[:5]
 else:
     largest_flares = []
+
 ###############################################################################
-# Finally, we can plot the timeseries and overlay all the flares that occurred.
-# We will do this only for the last day otherwise the plot may be too busy.
+# Finally, we plot the timeseries and overlay the largest flares that occurred.
 
 fig, ax = plt.subplots()
 goes_ts.plot(axes=ax)
-for index, this_flare in largest_flares.iterrows():
-    peak_time = parse_time(this_flare["max_time"])
-    ax.axvline(peak_time.datetime, label=f'{peak_time.datetime} {this_flare["max_class"]}')
-ax.legend(loc=2)
-ax.set_title(f"Last 7 days of GOES XRS data with the largest {len(largest_flares)} flares labeled.")
+if len(largest_flares) > 0:
+    for _, this_flare in largest_flares.iterrows():
+        peak_time = parse_time(this_flare["max_time"])
+        ax.axvline(peak_time.datetime, label=f'{peak_time.datetime} {this_flare["max_class"]}')
+ax.legend()
+ax.set_title(f"Last 7 days of GOES XRS data with the largest {len(largest_flares)} flares labeled")
 plt.show()
