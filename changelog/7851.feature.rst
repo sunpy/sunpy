@@ -1,2 +1,2 @@
-Add `sunpy.visualization.drawing.extent` to visualize the extent of another WCS on an axis.
+Add :func:`sunpy.visualization.drawing.extent` to visualize the extent of another WCS on an axis.
 Add `sunpy.map.GenericMap.draw_extent` to visualize the extent of a map on a given axis.
