@@ -195,19 +195,16 @@ def prime_meridian(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
 
 
 @u.quantity_input
-def extent(axes, wcs, *, rsun: u.m = R_sun, **kwargs):
+def extent(axes, wcs, **kwargs):
     """
     Draws the extent as defined by a given `~astropy.wcs.WCS` instance.
 
     Parameters
     ----------
     axes : `astropy.visualization.wcsaxes.WCSAxes`
-        The axes to plot the prime meridian on, or "None" to use current axes.
+        The axes to plot the WCS extent on, or "None" to use current axes.
     wcs : `~astropy.wcs.wcsapi.BaseLowLevelWCS`
         The WCS that defines the extent to be drawn.
-    rsun : `~astropy.units.Quantity`
-        Solar radius (in physical length units) at which to draw the solar
-        prime meridian. Defaults to the standard photospheric radius.
 
     Returns
     -------
@@ -226,7 +223,7 @@ def extent(axes, wcs, *, rsun: u.m = R_sun, **kwargs):
                 [np.full(shape[1], shape[0] - 0.5), np.arange(shape[1], 0, -1) - 0.5],  # right edge
                 [np.arange(shape[0], 0, -1) - 0.5, np.full(shape[0], -0.5)]]  # bottom edge
     edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
-    visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, rsun, close_path=True, **kwargs)
+    visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, R_sun, close_path=True, **kwargs)
     return visible, hidden
 
 

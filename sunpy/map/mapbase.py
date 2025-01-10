@@ -2414,7 +2414,6 @@ class GenericMap(NDData):
         return sunpy.visualization.drawing.extent(
             axes,
             self.wcs,
-            rsun=self.rsun_meters,
             **kwargs
         )
 
