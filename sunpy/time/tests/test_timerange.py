@@ -239,9 +239,9 @@ def test_previous():
     assert timerange.dt == delta
 
 
-def test_extend():
+def test_shift():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    timerange.extend(delta, delta)
+    timerange.shift(delta, delta)
     assert isinstance(timerange, sunpy.time.TimeRange)
     assert timerange.start == start + delta
     assert timerange.end == end + delta
