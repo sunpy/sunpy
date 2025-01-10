@@ -1,0 +1,2 @@
+Fixed some regex bugs in :func:`~sunpy.time.parse_time` that could result in additional, spurious matches for the candidate string format.
+There is a minor performance impact for each spurious match that is attempted to be used for parsing.
