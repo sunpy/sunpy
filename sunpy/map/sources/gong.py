@@ -8,11 +8,11 @@ from astropy.coordinates import EarthLocation, SkyCoord
 
 from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
+from sunpy.map.mapbase import SpatialPair
 from sunpy.time import parse_time
 
-__all__ = ['GONGSynopticMap', 'GONGHalphaMap']
+__all__ = ['GONGSynopticMap', 'GONGHalphaMap', 'GONGMagnetogramMap']
 
-from sunpy.map.mapbase import SpatialPair
 
 _SITE_NAMES = {
     'LE': 'Learmonth',
@@ -148,3 +148,92 @@ class GONGHalphaMap(GenericMap):
     @property
     def observer_coordinate(self):
         return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
+
+
+class GONGMagnetogramMap(GenericMap):
+    """
+    GONG Magnetogram.
+
+    The Global Oscillation Network Group (GONG) operates a six-station network of magnetographs
+    located around the Earth that observe the Sun nearly continuously.
+
+    References
+    ----------
+    """
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Datasource."""
+        return (str(header.get('TELESCOP', '')).endswith('GONG') and
+                str(header.get('IMTYPE', '')) == 'MAGNETIC')
+
+    @property
+    def date(self):
+        # The FITS file has a date that is made from the date-obs and time-obs keywords
+        # Which is not what date-obs is supposed to be.
+        if date_obs := self.meta.get('date-obs'):
+            if time_obs := self.meta.get('time-obs'):
+                date_obs = f"{date_obs} {time_obs}"
+            date_obs = parse_time(date_obs)
+        return date_obs or super().date
+
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta['date-obs'] = parse_time(date).utc.isot
+
+    @property
+    def reference_date(self):
+        return self.date
+
+    def _set_reference_date(self, date):
+        self._set_date(date)
+
+    @property
+    def scale(self):
+        """Scale."""
+        solar_r = (self.meta['SEMIDIAM'] * u.rad).to(u.arcsec)
+        return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
+                           solar_r / (self.meta['FNDLMBMA'] * u.pixel))
+
+    @property
+    def coordinate_system(self):
+        """
+        Coordinate system used.
+
+        Overrides the values in the header which are not understood by Astropy WCS.
+        """
+        return SpatialPair("HPLN-TAN", "HPLT-TAN")
+
+    @property
+    def nickname(self):
+        """Nicknames for the different sites, e.g BB for Big Bear."""
+        site = _SITE_NAMES.get(self.meta.get("site", ""), "UNKNOWN")
+        return f'{self.observatory}, {site}'
+
+    @property
+    def spatial_units(self):
+        """Spatial units."""
+        return SpatialPair(u.deg, u.deg)
+
+    @property
+    def _earth_location(self):
+        """Location of the observatory on Earth."""
+        return EarthLocation.from_geodetic(lat=self.meta['lat'] * u.rad, lon=self.meta['lon'] * u.rad,
+                                           height=self.meta['elev'] * u.m)
+
+    @property
+    def observer_coordinate(self):
+        """Coordinates of the observer."""
+        return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
+
+    @property
+    def rsun_obs(self):
+        """Solar radius in arcseconds."""
+        return (self.meta['semidiam']*u.rad).to(u.arcsec)
+
+    @property
+    def instrument(self):
+        """Type of instrument used."""
+        return 'Magnetogram'
