@@ -47,7 +47,7 @@ def heliographic_test_map():
 def test_draw_equator_aia171(aia171_test_map):
     fig = Figure()
     axes = fig.add_subplot(projection=aia171_test_map)
-    aia171_test_map.plot()
+    aia171_test_map.plot(axes=axes)
     drawing.equator(axes)
     return fig
 
@@ -56,7 +56,7 @@ def test_draw_equator_aia171(aia171_test_map):
 def test_draw_prime_meridian_aia171(aia171_test_map):
     fig = Figure()
     axes = fig.add_subplot(projection=aia171_test_map)
-    aia171_test_map.plot()
+    aia171_test_map.plot(axes=axes)
     drawing.prime_meridian(axes)
     return fig
 
@@ -65,7 +65,7 @@ def test_draw_prime_meridian_aia171(aia171_test_map):
 def test_heliographic_equator_prime_meridian(heliographic_test_map):
     fig = Figure()
     axes = fig.add_subplot(projection=heliographic_test_map)
-    heliographic_test_map.plot()
+    heliographic_test_map.plot(axes=axes)
     drawing.equator(axes, color="blue")
     drawing.prime_meridian(axes, color="red")
     return fig
