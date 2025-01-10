@@ -8,10 +8,10 @@ This is the first chapter in the sunpy tutorial, and by the end of it you should
 For further information and alternative methods for installing ``sunpy`` beyond the recommended approach outlined below, refer to :ref:`sunpy-topic-guide-installing`.
 
 .. note::
+
    We encourage all new and existing users to contribute code to this community project. 
-   Please consider following the :ref:`developer installation instructions <_newcomers>`.
-   It is slightly more difficult and will make it easier to contribute code in the future.
-to do this later!
+   Please consider following the :ref:`developer installation instructions <newcomers>`.
+   It is slightly more difficult but will make it easier to contribute code in the future.
 
 Installing Python
 =================
