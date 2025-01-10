@@ -69,7 +69,7 @@ meta = dict(
 goes_ts = ts.TimeSeries(goes_data, meta, units, source="xrs")
 
 ###############################################################################
-# NOAA also provides the past 7 days of flare event identifications which we 
+# NOAA also provides the past 7 days of flare event identifications which we
 # can also parse.
 # Note that it is possible that no flares occurred in the last 7 days.
 
@@ -78,7 +78,7 @@ flare_events = pd.read_json(
 )
 
 ###############################################################################
-# Next we sort the list and retain the five largest flares. 
+# Next we sort the list and retain the five largest flares.
 
 if len(flare_events) > 0:
     largest_flares = flare_events.sort_values('max_xrlong', ascending=False)[:5]
