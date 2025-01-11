@@ -44,7 +44,12 @@ jobs:
       run: |
         mkdir -p $HOME/.sunpy/data/ephemeris
         wget -q https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp -O $HOME/.sunpy/data/ephemeris/de430.bsp
-    
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox tox-gh-actions
+        
     - name: Run tests
       env:
         TOXENV: ${{ matrix.toxenv }}
