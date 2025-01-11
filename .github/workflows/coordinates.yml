@@ -1,0 +1,49 @@
+name: Coordinates Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sunpy/coordinates/**'
+      - '.github/workflows/coordinates.yml'
+      - 'tox.ini'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'sunpy/coordinates/**'
+      - '.github/workflows/coordinates.yml'
+      - 'tox.ini'
+
+env:
+  PYTHON_ARCH: x64
+  PYTEST_TIMEOUT: 180
+
+jobs:
+  coordinates:
+    runs-on: ubuntu-latest
+    name: Python ${{ matrix.python-version }} - ${{ matrix.toxenv }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: '3.12'
+            toxenv: py312-coordinates
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Download JPL ephemeris
+      run: |
+        mkdir -p $HOME/.sunpy/data/ephemeris
+        wget -q https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de430.bsp -O $HOME/.sunpy/data/ephemeris/de430.bsp
+    
+    - name: Run tests
+      env:
+        TOXENV: ${{ matrix.toxenv }}
+      run: tox -v
