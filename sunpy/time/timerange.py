@@ -410,14 +410,19 @@ class TimeRange:
 
         Parameters
         ----------
-        dt_start : `astropy.time.TimeDelta`
+        dt_start : `astropy.time.TimeDelta`, `datetime.timedelta`, `astropy.units.Quantity`
             The amount to shift the start time.
-        dt_end : `astropy.time.TimeDelta`
+        dt_end : `astropy.time.TimeDelta`, `datetime.timedelta`, `astropy.units.Quantity`
             The amount to shift the end time.
         """
-        # TODO: Support datetime.timedelta
+        dt_start = TimeDelta(dt_start, scale=self.dt.scale) if not isinstance(dt_start, TimeDelta) else dt_start
+        dt_end = TimeDelta(dt_end, scale=self.dt.scale) if not isinstance(dt_end, TimeDelta) else dt_end
+
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
+
+        if self._t1 > self._t2:
+            self._t1, self._t2 = self._t2, self._t1
 
     @deprecated('6.1', alternative='sunpy.time.TimeRange.shift')
     def extend(self, dt_start, dt_end):
