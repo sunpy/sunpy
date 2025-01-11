@@ -215,8 +215,8 @@ def test_repr():
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     rep = repr(results)
     rep = rep.split('\n')
-    # 8 header lines, the results table and two blank lines at the end
-    assert len(rep) == 8 + len(list(results)[0]) + 2
+    # 6 preamble lines, 2 table header rule, the results table data and two blank lines at the end
+    assert len(rep) == 6 + 2 + len(results[0]) + 2
 
 
 def filter_queries(queries):

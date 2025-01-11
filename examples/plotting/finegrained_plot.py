@@ -49,9 +49,6 @@ lat.set_ticks_visible(False)
 lat.set_ticklabel_visible(False)
 lon.set_ticklabel_visible(False)
 
-lon.coord_wrap = 180 * u.deg
-lon.set_major_formatter('dd')
-
 # Plot the Heliographic Stonyhurst grid
 overlay.grid(color='tab:blue', linewidth=2, linestyle='dashed')
 # Switch off the helioprojective grid
@@ -62,7 +59,7 @@ tx, ty = ax.coords
 # Use integer coordinates for either axis.
 tx.set_major_formatter('s')
 ty.set_major_formatter('s')
-ax.set_title(fr'AIA 171 $\AA$ {title_obsdate}')
+ax.set_title(fr'AIA 171 $\mathrm{{\AA}}$ {title_obsdate}')
 ax.set_ylabel('Helioprojective Latitude [arcsec]')
 ax.set_xlabel('Helioprojective Longitude [arcsec]')
 plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)
