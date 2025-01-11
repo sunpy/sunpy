@@ -73,7 +73,6 @@ class BasicRegistrationFactory:
         candidate_widget_types = list()
 
         for key in self.registry:
-
             # Call the registered validation function for each registered class
             if self.registry[key](*args, **kwargs):
                 candidate_widget_types.append(key)

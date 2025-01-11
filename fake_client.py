@@ -1,11 +1,12 @@
 from functools import partial
-from sunpy.net.base_client import BaseClient, convert_row_to_table
-import sunpy.util.net
 
-import sunpy.net.attrs as a
 import sunpy.net
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr
-from sunpy.net.base_client import QueryResponseTable
+import sunpy.net.attrs as a
+from sunpy.net.attr import and_
+import sunpy.util.net
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr
+from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
+
 
 walker = AttrWalker()
 
@@ -13,47 +14,58 @@ walker = AttrWalker()
 def create_or(wlk, tree):
     results = []
     for sub in tree.attrs:
-        results.append(wlk.create(sub))
-
+        results.extend(wlk.create(sub))
     return results
 
-
-@walker.add_creator(AttrAnd, DataAttr)
+@walker.add_creator(AttrAnd)
 def create_and(wlk, tree):
-    result = dict()
-    wlk.apply(tree, result)
-    return [result]
+    params = {}
+    for x in tree.attrs:
+        wlk.apply(x, params)
+    return [params]
 
+@walker.add_applier(DataAttr)
+def _(wlk, attr, params):
+    # Generic handler for any DataAttr
+    return params.update({attr.__class__.__name__.lower(): attr.value})
 
 @walker.add_applier(a.Time)
 def _(wlk, attr, params):
-    return params.update({'startTime': attr.start.isot,
-                            'endTime': attr.end.isot})
+    return params.update({
+        'start_time': attr.start.isot,
+        'end_time': attr.end.isot
+    })
 
-
-@walker.add_applier(a.Level)
+@walker.add_applier(a.Instrument)
 def _(wlk, attr, params):
-    return params.update({'level': attr.value})
+    if attr.value.lower() == 'lasco':
+        return params.update({'instrument': 'LASCO'})
+    return params.update({'instrument': attr.value})
 
 
 class ExampleClient(BaseClient):
     size_column = 'Filesize'
 
-    def search(self, query):
+    def search(self, *query):
+        query = and_(*query)
         queries = walker.create(query)
-        print("Seaching in fake client")
+        print("Searching in fake client")
         results = []
         for query_parameters in queries:
-            results.append(self._make_search(query_parameters))
-            # try:
-            #     resp = self._make_search(query_parameters)
-            #     results.append(resp)
-            # except ConnectionRefusedError as e:
-            #     # e.client_name = client.__class__.__name__.lower()
-            #     results.append(e)
+            # results.append(self._make_search(query_parameters))
+            try:
+                resp = self._make_search(query_parameters)
+                results.append(resp)
+            except Exception as e:
+                print("prvented error")
+                results.append(e)
 
         return QueryResponseTable(results, client=self)
-    
+     
+    @property
+    def info_url(self):
+        return 'https://cdaweb.gsfc.nasa.gov/index.html'
+
     @classmethod
     def register_values(cls):
 
@@ -68,13 +80,13 @@ class ExampleClient(BaseClient):
         }
 
         return adict
-    
+
     def _make_search(self, query):
-        raise ConnectionRefusedError                                        
+        raise ConnectionRefusedError
 
     def _make_filename(path, row, resp, url):
         # Define a fallback filename based on the information in the search results
-        name = f"row['ID'].fits"
+        name = "row['ID'].fits"
 
         if resp:
             cdheader = resp.headers.get("Content-Disposition", None)
@@ -95,17 +107,9 @@ class ExampleClient(BaseClient):
     @classmethod
     def _can_handle_query(cls, *query):
         query_attrs = set(type(x) for x in query)
-        supported_attrs = {a.Time, a.Level}
+        supported_attrs = {a.Time, a.Instrument}
         return supported_attrs.issuperset(query_attrs)
-    
-client = ExampleClient()
-# client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00')) 
-print(client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00')))
 
-
-
-
-
-
-
-
+# client = ExampleClient()
+# client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'))
+# print(client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00')))

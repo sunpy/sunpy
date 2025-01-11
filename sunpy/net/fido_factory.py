@@ -53,21 +53,27 @@ class UnifiedResponse(Sequence):
         """
         self._list = []
         self._numfile = 0
+        self._errors = {}
         for result in results:
-            if isinstance(result, ConnectionRefusedError):
-                self._list.append(None)
-                client_key = getattr(result, "client_name", len(self._list)-1)
-                self.errors[client_key] = result
+            # if result is an error, store it in the errors dict
+            print("Result", result, type(result), isinstance(result, TypeError))
+            if isinstance(result, Exception) or isinstance(result, TypeError):
+                arr = np.array([])
+                t = Table(arr, names=())
+                self._errors[result.client.__class__.__name__] = result
+                result = QueryResponseTable(t)
+            else:
+                self._errors[result.client.__class__.__name__] = None
 
-            if isinstance(result, QueryResponseRow):
-                result = result.as_table()
+                if isinstance(result, QueryResponseRow):
+                    result = result.as_table()
 
-            if isinstance(result, QueryResponseColumn):
-                result = result.as_table()
+                if isinstance(result, QueryResponseColumn):
+                    result = result.as_table()
 
-            if not isinstance(result, QueryResponseTable):
-                raise TypeError(
-                    f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
+                if not isinstance(result, QueryResponseTable):
+                    raise TypeError(
+                        f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
             self._list.append(result)
             self._numfile += len(result)
@@ -166,7 +172,7 @@ class UnifiedResponse(Sequence):
         The number of records returned in all responses.
         """
         return self._numfile
-    
+
     @property
     def errors(self):
         """
@@ -175,15 +181,7 @@ class UnifiedResponse(Sequence):
         If no errors are present, an empty list is returned.
         """
         # assuming that self._list has all the responses including errors
-        err = []
-        for res in self._list:
-            if isinstance(res, QueryResponseTable):
-                err.append(None)
-            else:
-                # connection refused error etc
-                # Not sure about res.errors, need to check
-                err.append(res.errors)
-        return err
+        return self._errors
 
     def _repr_html_(self):
         nprov = len(self)
@@ -397,8 +395,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # client generated results, we drop the empty VSO results for tidiness.
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
-        results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
-
+        # results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
+        print("Results", results)
         return UnifiedResponse(*results)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
@@ -557,6 +555,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         candidate_widget_types = self._check_registered_widgets(*query)
         results = []
         for client in candidate_widget_types:
+            print("Searching in", client.__name__)
             try:
                 tmpclient = client()
                 results.append(tmpclient.search(*query))
