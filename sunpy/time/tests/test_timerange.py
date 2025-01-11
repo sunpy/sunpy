@@ -240,6 +240,8 @@ def test_previous():
 
 
 @pytest.mark.parametrize(("delta_1", "delta_2"), [
+    (delta, delta),
+    (-delta, delta),
     (5*u.s, 10*u.s),
     (5*u.s, delta),
     (delta, 5*u.s),
