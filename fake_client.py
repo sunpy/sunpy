@@ -42,6 +42,9 @@ def _(wlk, attr, params):
 
 
 class ExampleClient(BaseClient):
+    """
+    This is a fake client for testing purposes
+    """
     size_column = 'Filesize'
 
     def search(self, *query):

@@ -59,7 +59,7 @@ class UnifiedResponse(Sequence):
             if isinstance(result, Exception) or isinstance(result, TypeError):
                 arr = np.array([])
                 t = Table(arr, names=())
-                self._errors[result.client] = result
+                self._errors[result.client.__class__.__name__] = result
                 result = QueryResponseTable(t, client=result.client)
             else:
                 self._errors[result.client.__class__.__name__] = None
@@ -76,7 +76,6 @@ class UnifiedResponse(Sequence):
 
             self._list.append(result)
             self._numfile += len(result)
-            print("look", self._errors)
 
     def __len__(self):
         return len(self._list)
@@ -176,11 +175,11 @@ class UnifiedResponse(Sequence):
     @property
     def errors(self):
         """
-        Returns a list of errors from the query.
+        Returns a dict of errors for all responses.
 
-        If no errors are present, an empty list is returned.
+        If no errors are present for a client, its value is None.
+        If no errors are present at all, an empty dict is returned.
         """
-        # assuming that self._list has all the responses including errors
         return self._errors
 
     def _repr_html_(self):
@@ -210,6 +209,8 @@ class UnifiedResponse(Sequence):
             if block.client.info_url is not None:
                 ret += f'Source: {block.client.info_url}\n'
             size = block.total_size()
+            if self.errors[block.client.__class__.__name__] is not None:
+                ret += f'Error: {repr(self._errors[block.client.__class__.__name__])}\n'
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
             ret += '\n'
@@ -558,7 +559,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             try:
                 results.append(tmpclient.search(*query))
             except Exception as e:
-                print(f"Error: {e} here")
                 e.client = tmpclient
                 results.append(e)
 
