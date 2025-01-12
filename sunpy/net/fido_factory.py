@@ -528,7 +528,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """Factory helper function"""
         candidate_widget_types = list()
         for key in self.registry:
-
             if self.registry[key](*args):
                 candidate_widget_types.append(key)
 
