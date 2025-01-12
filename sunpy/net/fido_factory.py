@@ -55,20 +55,21 @@ class UnifiedResponse(Sequence):
         self._numfile = 0
         self._errors = {}
         for result in results:
-            # if result is an error, store it in the errors dict
-            if isinstance(result, Exception) or isinstance(result, TypeError):
+            if isinstance(result, Exception):
                 arr = np.array([])
                 t = Table(arr, names=())
                 self._errors[result.client.__class__.__name__] = result
                 result = QueryResponseTable(t, client=result.client)
             else:
-                self._errors[result.client.__class__.__name__] = None
 
                 if isinstance(result, QueryResponseRow):
                     result = result.as_table()
 
                 if isinstance(result, QueryResponseColumn):
                     result = result.as_table()
+
+                self._errors[result.client.__class__.__name__] = None
+
 
                 if not isinstance(result, QueryResponseTable):
                     raise TypeError(
@@ -557,7 +558,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for client in candidate_widget_types:
             tmpclient = client()
             try:
-                results.append(tmpclient.search(*query))
+                result = tmpclient.search(*query)
+                result.client = tmpclient
+                results.append(result)
             except Exception as e:
                 e.client = tmpclient
                 results.append(e)
