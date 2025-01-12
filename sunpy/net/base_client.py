@@ -396,7 +396,6 @@ class BaseClient(ABC):
             return
 
         cls._registry[cls] = cls._can_handle_query
-        # print(cls)
 
         if hasattr(cls, "_attrs_module"):
             from sunpy.net import attrs
@@ -416,7 +415,6 @@ class BaseClient(ABC):
         # Register client attrs after it has registered its own attrs
         from sunpy.net import attr
         values = cls.register_values()
-        # print("code client: ", cls, "values: ", values)
         # If the client has no support, we won't try to register attrs
         if values:
             attr.Attr.update_values({cls: values})

@@ -564,14 +564,14 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         return results
 
-    # def __repr__(self):
-    #     return object.__repr__(self) + "\n" + self._print_clients()
+    def __repr__(self):
+        return object.__repr__(self) + "\n" + self._print_clients()
 
-    # def __str__(self):
-    #     """
-    #     This enables the "pretty" printing of the Fido Clients.
-    #     """
-    #     return self._print_clients()
+    def __str__(self):
+        """
+        This enables the "pretty" printing of the Fido Clients.
+        """
+        return self._print_clients()
 
     def _repr_html_(self):
         """
