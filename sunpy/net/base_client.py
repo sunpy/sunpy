@@ -421,11 +421,11 @@ class BaseClient(ABC):
         if values:
             attr.Attr.update_values({cls: values})
 
-    def __repr__(self):
-        """
-        Returns the normal repr plus the pretty client __str__.
-        """
-        return object.__repr__(self) + "\n" + _print_client(visible_entries=15, client=self)
+    # def __repr__(self):
+    #     """
+    #     Returns the normal repr plus the pretty client __str__.
+    #     """
+        # return object.__repr__(self) + "\n" + _print_client(visible_entries=15, client=self)
 
     def __str__(self):
         """

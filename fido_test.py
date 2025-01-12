@@ -4,7 +4,23 @@ from sunpy.net import attrs as a
 result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lasco)
 print(result)
 
+print(result.errors)
 
+# def lol():
+#     raise Exception("lol")
+
+# def hi():
+#     hi = lol()
+#     print(hi)
+
+# def hello():
+#     try:
+#         hi()
+#     except Exception as e:
+#         print("hello")
+#         print(e)
+
+# hello()
 
 
 

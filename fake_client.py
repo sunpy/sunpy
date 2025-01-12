@@ -2,11 +2,9 @@ from functools import partial
 
 import sunpy.net
 import sunpy.net.attrs as a
-from sunpy.net.attr import and_
 import sunpy.util.net
-from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable, convert_row_to_table
-
 
 walker = AttrWalker()
 
@@ -49,19 +47,19 @@ class ExampleClient(BaseClient):
     def search(self, *query):
         query = and_(*query)
         queries = walker.create(query)
-        print("Searching in fake client")
         results = []
         for query_parameters in queries:
-            # results.append(self._make_search(query_parameters))
-            try:
-                resp = self._make_search(query_parameters)
-                results.append(resp)
-            except Exception as e:
-                print("prvented error")
-                results.append(e)
+            results.append(self._make_search(query_parameters))
+
+            # try:
+            #     resp = self._make_search(query_parameters)
+            #     results.append(resp)
+            # except Exception as e:
+            #     print("prvented error")
+            #     results.append(e)
 
         return QueryResponseTable(results, client=self)
-     
+
     @property
     def info_url(self):
         return 'https://cdaweb.gsfc.nasa.gov/index.html'

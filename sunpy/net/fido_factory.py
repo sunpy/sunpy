@@ -20,7 +20,7 @@ from packaging.version import Version
 from astropy.table import Table
 
 from sunpy import config
-from sunpy.net import attr, vso
+from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -56,12 +56,11 @@ class UnifiedResponse(Sequence):
         self._errors = {}
         for result in results:
             # if result is an error, store it in the errors dict
-            print("Result", result, type(result), isinstance(result, TypeError))
             if isinstance(result, Exception) or isinstance(result, TypeError):
                 arr = np.array([])
                 t = Table(arr, names=())
-                self._errors[result.client.__class__.__name__] = result
-                result = QueryResponseTable(t)
+                self._errors[result.client] = result
+                result = QueryResponseTable(t, client=result.client)
             else:
                 self._errors[result.client.__class__.__name__] = None
 
@@ -77,6 +76,7 @@ class UnifiedResponse(Sequence):
 
             self._list.append(result)
             self._numfile += len(result)
+            print("look", self._errors)
 
     def __len__(self):
         return len(self._list)
@@ -396,7 +396,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
         # results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
-        print("Results", results)
         return UnifiedResponse(*results)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
@@ -555,27 +554,24 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         candidate_widget_types = self._check_registered_widgets(*query)
         results = []
         for client in candidate_widget_types:
-            print("Searching in", client.__name__)
+            tmpclient = client()
             try:
-                tmpclient = client()
                 results.append(tmpclient.search(*query))
             except Exception as e:
                 print(f"Error: {e} here")
-                e.client_name = client.__class__.__name__.lower()
+                e.client = tmpclient
                 results.append(e)
 
-        # This method is called by `search` and the results are fed into a
-        # UnifiedResponse object.
         return results
 
-    def __repr__(self):
-        return object.__repr__(self) + "\n" + self._print_clients()
+    # def __repr__(self):
+    #     return object.__repr__(self) + "\n" + self._print_clients()
 
-    def __str__(self):
-        """
-        This enables the "pretty" printing of the Fido Clients.
-        """
-        return self._print_clients()
+    # def __str__(self):
+    #     """
+    #     This enables the "pretty" printing of the Fido Clients.
+    #     """
+    #     return self._print_clients()
 
     def _repr_html_(self):
         """
