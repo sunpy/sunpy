@@ -20,7 +20,7 @@ from packaging.version import Version
 from astropy.table import Table
 
 from sunpy import config
-from sunpy.net import attr
+from sunpy.net import attr, vso
 from sunpy.net.base_client import BaseClient, QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
 from sunpy.util.parfive_helpers import Downloader, Results
@@ -396,7 +396,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # client generated results, we drop the empty VSO results for tidiness.
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
-        # results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
+        results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
         return UnifiedResponse(*results)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
