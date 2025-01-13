@@ -9,6 +9,7 @@ import astropy.units as u
 from astropy.constants import R_sun
 from astropy.coordinates import SkyCoord
 from astropy.visualization.wcsaxes.wcsapi import wcsapi_to_celestial_frame
+from astropy.wcs.wcsapi import BaseHighLevelWCS
 
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliocentricInertial, Helioprojective
@@ -215,14 +216,19 @@ def extent(axes, wcs, **kwargs):
     """
     if not wcsaxes_compat.is_wcsaxes(axes):
         raise ValueError('axes must be a WCSAxes')
+    if not isinstance(wcs, BaseHighLevelWCS):
+        raise TypeError("wcs should be a High Level WCS object")
     axes_frame = wcsapi_to_celestial_frame(axes.wcs)
-    shape = wcs.pixel_shape
+    shape = wcs.low_level_wcs.pixel_shape
     # Traverse the edges of the WCS in pixel space
     xy_edges = [[np.full(shape[1], -0.5), np.arange(shape[1]) - 0.5],  # left edge
                 [np.arange(shape[0]) - 0.5, np.full(shape[0], shape[1] - 0.5)],  # top edge
                 [np.full(shape[1], shape[0] - 0.5), np.arange(shape[1], 0, -1) - 0.5],  # right edge
                 [np.arange(shape[0], 0, -1) - 0.5, np.full(shape[0], -0.5)]]  # bottom edge
     edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
+    # Filter out any non-SkyCoord coordinates returned for these pixel axes
+    if not isinstance(edge_coords, SkyCoord):
+        edge_coords = [c for c in edge_coords if isinstance(c, SkyCoord)][0]
     visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, R_sun, close_path=True, **kwargs)
     return visible, hidden
 
