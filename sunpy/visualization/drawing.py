@@ -247,14 +247,13 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
 
     # Get the 2D vertices of the coordinates
     coord = coord.transform_to(frame)
-    # If we have a HPC frame ensure that it's 3D
-    if isinstance(coord.frame, Helioprojective):
-        coord = coord.frame.make_3d()
     Tx = coord.spherical.lon.to_value(u.deg)
     Ty = coord.spherical.lat.to_value(u.deg)
     vertices = np.array([Tx, Ty]).T
-    # Determine which points are visible
-    if hasattr(frame, 'observer'):
+
+    # Determine which points are visible (2D points are always visible)
+    is_2d = (norm := coord.spherical.norm()).unit is u.one and u.allclose(norm, 1*u.one)
+    if not is_2d and hasattr(frame, 'observer'):
         # The reference distance is the distance to the limb for the axes
         # observer
         rsun = getattr(frame, 'rsun', rsun)
