@@ -110,7 +110,9 @@ def cutout_wcs(aia171_test_map):
         'HGLN_OBS': aia171_test_map.wcs.wcs.aux.hgln_obs-90.0,
         'HGLT_OBS': aia171_test_map.wcs.wcs.aux.hglt_obs-15.0
     }
-    return WCS(header=header)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return WCS(header=header)
 
 
 @figure_test
