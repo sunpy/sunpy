@@ -21,9 +21,9 @@ def aia171_test_map():
 def cropped_aia193_sample_map():
     import sunpy.data.sample
     m = sunpy.map.Map(sunpy.data.sample.AIA_193_JUN2012)
-    return m.submap(SkyCoord(Tx=300*u.arcsec, Ty=-450*u.arcsec,frame=m.coordinate_frame),
-                    width=600*u.arcsec,
-                    height=200*u.arcsec)
+    return m.submap(SkyCoord(Tx=300*u.arcsec, Ty=-325*u.arcsec, frame=m.coordinate_frame),
+                    width=500*u.arcsec,
+                    height=250*u.arcsec)
 
 
 @pytest.fixture
