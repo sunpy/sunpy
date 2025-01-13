@@ -23,21 +23,6 @@ def aia171_test_map():
 
 
 @pytest.fixture
-def cropped_aia193_sample_map():
-    import sunpy.data.sample
-    m = sunpy.map.Map(sunpy.data.sample.AIA_193_JUN2012)
-    return m.submap(SkyCoord(Tx=300*u.arcsec, Ty=-325*u.arcsec, frame=m.coordinate_frame),
-                    width=500*u.arcsec,
-                    height=250*u.arcsec)
-
-
-@pytest.fixture
-def euvi195_sample_map():
-    import sunpy.data.sample
-    return Map(sunpy.data.sample.STEREO_A_195_JUN2012)
-
-
-@pytest.fixture
 def heliographic_test_map():
     (data, header), = sunpy.io._file_tools.read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
     # Fix unit strings to prevent some astropy fits fixing warnings
@@ -76,15 +61,6 @@ def test_heliographic_equator_prime_meridian(heliographic_test_map):
     return fig
 
 
-@figure_test
-def test_draw_extent(cropped_aia193_sample_map, euvi195_sample_map):
-    fig = Figure()
-    ax = fig.add_subplot(projection=euvi195_sample_map)
-    euvi195_sample_map.plot(axes=ax)
-    drawing.extent(ax, cropped_aia193_sample_map.wcs)
-    return fig
-
-
 def test_prime_meridian_error():
     axes = Figure().add_subplot(projection=WCS())
     with pytest.raises(ValueError, match="does not have an observer"):
@@ -108,6 +84,42 @@ def test_limb_invisible(aia171_test_map):
     visible, hidden = drawing.limb(ax, new_obs)
     assert visible is None
     assert hidden is not None
+
+
+@pytest.fixture
+def cutout_wcs(aia171_test_map):
+    header = {
+        'WCSAXES': 2,
+        'NAXIS1': 2000,
+        'NAXIS2': 1000,
+        'CRPIX1': 1000.5,
+        'CRPIX2': 500.5,
+        'CDELT1': 1.66666666666667E-04,
+        'CDELT2': 1.66666666666667E-04,
+        'CUNIT1': 'deg',
+        'CUNIT2': 'deg',
+        'CTYPE1': 'HPLN-TAN',
+        'CTYPE2': 'HPLT-TAN',
+        'CRVAL1': 0.0 ,
+        'CRVAL2': 0.0 ,
+        'LONPOLE': 180.0 ,
+        'LATPOLE': 0.0 ,
+        'DATE-OBS': '2011-02-15T00:00:01.340',
+        'DSUN_OBS': aia171_test_map.wcs.wcs.aux.dsun_obs,
+        # Ensures that at least part of the extent is behind the limb
+        'HGLN_OBS': aia171_test_map.wcs.wcs.aux.hgln_obs-90.0,
+        'HGLT_OBS': aia171_test_map.wcs.wcs.aux.hglt_obs-15.0
+    }
+    return WCS(header=header)
+
+
+@figure_test
+def test_draw_extent(aia171_test_map, cutout_wcs):
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    drawing.extent(ax, cutout_wcs)
+    return fig
 
 
 @pytest.fixture
