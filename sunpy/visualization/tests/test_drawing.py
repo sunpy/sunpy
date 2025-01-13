@@ -1,9 +1,14 @@
+import warnings
+
+import numpy as np
 import pytest
 from matplotlib.figure import Figure
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
+from astropy.wcs.wcsapi import HighLevelWCSWrapper
+from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
 import sunpy.io
 from sunpy.data.test import get_test_filepath
@@ -103,3 +108,61 @@ def test_limb_invisible(aia171_test_map):
     visible, hidden = drawing.limb(ax, new_obs)
     assert visible is None
     assert hidden is not None
+
+
+@pytest.fixture
+def wcs_3d_ln_lt_l_coupled(aia171_test_map):
+    # WCS for a 3D data cube with two celestial axes and one wavelength axis.
+    # The latitudinal dimension is coupled to the third pixel dimension through
+    # a single off diagonal element in the PCij matrix
+    header = {
+        'NAXIS1': 100,
+        'NAXIS2': 120,
+        'NAXIS3': 50,
+        'CTYPE1': 'HPLN-TAN',
+        'CRPIX1': 5,
+        'CDELT1': 5,
+        'CUNIT1': 'arcsec',
+        'CRVAL1': 0.0,
+
+        'CTYPE2': 'HPLT-TAN',
+        'CRPIX2': 5,
+        'CDELT2': 5,
+        'CUNIT2': 'arcsec',
+        'CRVAL2': 0.0,
+
+        'CTYPE3': 'UTC',
+        'CRPIX3': 1.0,
+        'CDELT3': 1,
+        'CUNIT3': 's',
+        'CRVAL3': 1.0,
+
+        'PC1_1': 1,
+        'PC1_2': 0,
+        'PC1_3': 0,
+        'PC2_1': 0,
+        'PC2_2': 1,
+        'PC2_3': -1.0,
+        'PC3_1': 1.0,
+        'PC3_2': 0.0,
+        'PC3_3': 0.0,
+
+        'WCSAXES': 3,
+
+        'DATE-OBS': aia171_test_map.date.isot,
+        'HGLN_OBS': aia171_test_map.wcs.wcs.aux.hgln_obs,
+        'HGLT_OBS': aia171_test_map.wcs.wcs.aux.hglt_obs,
+        'DSUN_OBS': aia171_test_map.wcs.wcs.aux.dsun_obs,
+    }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return HighLevelWCSWrapper(SlicedLowLevelWCS(WCS(header=header), np.s_[0, :, :]))
+
+
+@figure_test
+def test_draw_extent_3d(aia171_test_map, wcs_3d_ln_lt_l_coupled):
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    drawing.extent(ax, wcs_3d_ln_lt_l_coupled)
+    return fig
