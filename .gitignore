@@ -295,3 +295,6 @@ result_images
 
 # Save from Map.save example
 aia171.fits
+*.fits
+synoptic_manual_test.py
+example_aia_synoptic.ipynb
