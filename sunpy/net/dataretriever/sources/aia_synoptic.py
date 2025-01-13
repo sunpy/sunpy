@@ -24,7 +24,7 @@ class AIASynopticClient(GenericClient):
     known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
 
     required = {a.Time, a.Instrument, a.Level}
-    supported = required + {a.Sample, a.Wavelength, a.ExtentType}
+    # supported = required | {a.Sample, a.Wavelength, a.ExtentType}
 
     @property
     def info_url(self):
@@ -107,12 +107,8 @@ class AIASynopticClient(GenericClient):
             return QueryResponse([], client=self)
 
         # Convert file list to QueryResponse
-        query_response = self._make_records(all_results, matchdict)
 
-        # Remove the 'URL' column from the QueryResponse
-        # query_response.remove_column("URL")
-
-        return query_response
+        return self._make_records(all_results, matchdict)
 
     def _make_records(self, all_results, matchdict):
         """
@@ -126,8 +122,7 @@ class AIASynopticClient(GenericClient):
             if time_match:
                 start_time = time_match
                 wavelength = self._extract_wavelength(url)
-                # Extract metadata from matchdict if available
-                # wavelength = matchdict.get("wavelength", None)
+
                 # Create a record for each file
                 record = {
                     "Start Time": start_time,
@@ -137,7 +132,8 @@ class AIASynopticClient(GenericClient):
                     "Source": "SDO",
                     "Provider": "JSOC",
                     "Level": "synoptic",
-                    "ExtentType": "synoptic",
+                    "ExtentType": "FULLDISK",
+                    "File Size": "1.24 Mb",
                     "Wavelength": f"{wavelength} Å" if wavelength else "Unknown",
                     "url": url,  # Make sure 'url' is lowercase
                 }
