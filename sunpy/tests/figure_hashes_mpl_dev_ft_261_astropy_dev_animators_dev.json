@@ -77,5 +77,6 @@
   "sunpy.visualization.tests.test_drawing.test_draw_prime_meridian_aia171": "c3cfdafcb5dd168035473c10d3aea0f83af4def909836e6ce1dd07f589ba6ca5",
   "sunpy.visualization.tests.test_drawing.test_heliographic_equator_prime_meridian": "3cb195a44e899ef46de7365bd0a0c580b7ea69662bdc560a1bbb1686c2ad48cf",
   "sunpy.visualization.tests.test_drawing.test_draw_extent": "58f7371dff29ccfd5cb145a6713f1bddcd7b9c9ce92eff64bd60df066aa47c19",
+  "sunpy.visualization.tests.test_drawing.test_draw_extent_3d": "1d329ecd0e31f4d4ecfb3b75e255c117dc631bd39be9a8a862fb7974004ff07c",
   "sunpy.visualization.tests.test_visualization.test_show_hpr_impact_angle": "43f6c3fea4238064ce503d699cba6457b3eb07ee58ea2a52f43556f42ee7efc8"
 }
