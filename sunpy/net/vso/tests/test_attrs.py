@@ -24,7 +24,7 @@ def test_Time_timerange():
 
 
 def test_input_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Specify start and end or start has to be a TimeRange"):
         core_attrs.Time('2012/1/1')
 
 

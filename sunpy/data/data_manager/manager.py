@@ -27,11 +27,13 @@ class DataManager:
         self._namespace = None
         self._skip_hash_check = False
         self._skip_file = {}
+        self._require_files = {}
 
-    def require(self, name, urls, sha_hash):
+    def require(self, name, urls, sha_hash, defer_download=False):
         """
         Decorator for informing the data manager about the requirement of
-        a file by a function.
+        a file by a function. Optionally defer downloading the file until it's
+        requested in `~sunpy.data.data_manager.manager.DataManager.get`.
 
         Parameters
         ----------
@@ -41,6 +43,8 @@ class DataManager:
             A list of urls to download the file from.
         sha_hash : `str`
             SHA-256 hash of file.
+        defer_download : `bool`, optional
+            If `True`, the file download is deferred until it is requested via `~sunpy.data.data_manager.manager.DataManager.get`.
         """
         if isinstance(urls, str):
             urls = [urls]
@@ -49,72 +53,84 @@ class DataManager:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 self._namespace = self._get_module(func)
-                replace = self._skip_file.get(name)
-                if replace:
-                    uri_parse = urlparse(replace['uri'])
-                    if uri_parse.scheme in ("", "file"):
-                        # If a relative file uri is specified (i.e.
-                        # `file://sunpy/test`) this maintains compatibility
-                        # with the original behaviour where this would be
-                        # interpreted as `./sunpy/test` if no scheme is
-                        # specified netloc will be '' by default.
-                        file_path = uri_parse.netloc + uri_parse.path
-                        file_hash = hash_file(file_path)
-                    else:
-                        file_path, file_hash, _ = self._cache._download_and_hash(
-                            [replace['uri']], self._namespace
-                        )
-                    if replace['hash'] and file_hash != replace['hash']:
-                        # if hash provided to replace function doesn't match the hash of the file
-                        # raise error
-                        raise ValueError(
-                            "Hash provided to override_file does not match hash of the file.")
-                elif self._skip_hash_check:
-                    file_path = self._cache.download(urls, self._namespace, redownload=True)
+                if defer_download:
+                    self._require_files[name] = {
+                        'urls': urls,
+                        'sha_hash': sha_hash,
+                    }
                 else:
-                    details = self._cache.get_by_hash(sha_hash)
-                    if not details:
-                        # In case we are matching by hash and file does not exist
-                        # That might mean the wrong hash is supplied to decorator
-                        # We match by urls to make sure that is not the case
-                        if self._cache_has_file(urls):
-                            # If we can't find a file matching sha_hash, but the url is already
-                            # in the database
-                            raise ValueError(f"{urls} has already been downloaded, but no file "
-                                             f"matching the hash {sha_hash} can be found.")
-                        file_path = self._cache.download(urls, self._namespace)
-                        file_hash = hash_file(file_path)
-                        if file_hash != sha_hash:
-                            # the hash of the file downloaded does not match provided hash
-                            # this means the file has changed on the server.
-                            # the function should be updated to use the new
-                            # hash. Raise an error to notify.
-                            raise RuntimeError(
-                                f"Hash of local file ({file_hash}) does not match expected hash ({sha_hash}). "
-                                "File may have changed on the remote server.")
-                    else:
-                        # This is to handle the case when the local file
-                        # appears to be tampered/corrupted
-                        if hash_file(details['file_path']) != details['file_hash']:
-                            warn_user("Hashes do not match, the file will be redownloaded "
-                                      "(could be be tampered/corrupted)")
-                            file_path = self._cache.download(urls, self._namespace, redownload=True)
-                            # Recheck the hash again, if this fails, we will exit.
-                            if hash_file(file_path) != details['file_hash']:
-                                raise RuntimeError("Redownloaded file also has the incorrect hash."
-                                                   "The remote file on the server might have changed.")
-                        else:
-                            file_path = details['file_path']
+                    self._download_and_cache_file(name, urls, sha_hash)
 
-                if name not in self._file_cache:
-                    self._file_cache[name] = {}
-                self._file_cache[name][self._namespace] = file_path
                 result = func(*args, **kwargs)
                 self._namespace = None
                 return result
             return wrapper
 
         return decorator
+
+    def _download_and_cache_file(self, name, urls, sha_hash):
+        """
+        Internal method to handle the downloading and caching logic.
+        """
+        replace = self._skip_file.get(name)
+        if replace:
+            uri_parse = urlparse(replace['uri'])
+            if uri_parse.scheme in ("", "file"):
+                file_path = uri_parse.netloc + uri_parse.path
+                file_hash = hash_file(file_path)
+            else:
+                file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']], self._namespace)
+            if replace['hash'] and file_hash != replace['hash']:
+                raise ValueError("Hash provided to override_file does not match hash of the file.")
+        elif self._skip_hash_check:
+            file_path = self._cache.download(urls, self._namespace, redownload=True)
+        else:
+            details = self._cache.get_by_hash(sha_hash)
+            if not details:
+                if self._cache_has_file(urls):
+                    raise ValueError(f"{urls} has already been downloaded, but no file matching the hash {sha_hash} can be found.")
+                file_path = self._cache.download(urls, self._namespace)
+                file_hash = hash_file(file_path)
+                if file_hash != sha_hash:
+                    raise RuntimeError(f"Hash of local file ({file_hash}) does not match expected hash ({sha_hash}). File may have changed on the remote server.")
+            else:
+                if hash_file(details['file_path']) != details['file_hash']:
+                    warn_user("Hashes do not match, the file will be redownloaded (could be tampered/corrupted)")
+                    file_path = self._cache.download(urls, self._namespace, redownload=True)
+                    if hash_file(file_path) != details['file_hash']:
+                        raise RuntimeError("Redownloaded file also has the incorrect hash. The remote file on the server might have changed.")
+                else:
+                    file_path = details['file_path']
+
+        if name not in self._file_cache:
+            self._file_cache[name] = {}
+        self._file_cache[name][self._namespace] = file_path
+
+    def get(self, name):
+        """
+        Get the file by name, and download it if deferred.
+
+        Parameters
+        ----------
+        name : `str`
+            Name of the file given to the data manager, same as the one provided
+            in `~sunpy.data.data_manager.manager.DataManager.require`.
+
+        Returns
+        -------
+        `pathlib.Path`
+            Path of the file.
+
+        Raises
+        ------
+        `KeyError`
+            If ``name`` is not in the cache.
+        """
+        if name in self._require_files:
+            file_info = self._require_files.pop(name)
+            self._download_and_cache_file(name, file_info['urls'], file_info['sha_hash'])
+
+        return pathlib.Path(self._file_cache[name][self._namespace])
 
     @contextmanager
     def override_file(self, name, uri, sha_hash=None):
@@ -145,7 +161,7 @@ class DataManager:
     @contextmanager
     def skip_hash_check(self):
         """
-        Disables hash checking temporarily
+        Disables hash checking temporarily.
 
         Examples
         --------
@@ -157,28 +173,6 @@ class DataManager:
             yield
         finally:
             self._skip_hash_check = False
-
-    def get(self, name):
-        """
-        Get the file by name.
-
-        Parameters
-        ----------
-        name : `str`
-            Name of the file given to the data manager, same as the one provided
-            in `~sunpy.data.data_manager.manager.DataManager.require`.
-
-        Returns
-        -------
-        `pathlib.Path`
-            Path of the file.
-
-        Raises
-        ------
-        `KeyError`
-            If ``name`` is not in the cache.
-        """
-        return pathlib.Path(self._file_cache[name][self._namespace])
 
     def _cache_has_file(self, urls):
         for url in urls:

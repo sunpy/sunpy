@@ -78,12 +78,12 @@ def test_non_string():
 
 
 def test_on_frame_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid time input obstime='ajshdasjdhk"):
         Helioprojective(obstime='ajshdasjdhk')
 
 
 def test_on_frame_error2():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid time input obstime=17263871263"):
         Helioprojective(obstime=17263871263)
 
 
