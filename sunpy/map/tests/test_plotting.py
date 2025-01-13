@@ -45,6 +45,15 @@ def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
+@pytest.fixture
+def cropped_aia193_sample_map():
+    import sunpy.data.sample
+    m = sunpy.map.Map(sunpy.data.sample.AIA_193_JUN2012)
+    return m.submap(SkyCoord(Tx=300*u.arcsec, Ty=-325*u.arcsec, frame=m.coordinate_frame),
+                    width=500*u.arcsec,
+                    height=250*u.arcsec)
+
+
 @figure_test
 def test_plot_rotated_aia171(aia171_test_map):
     # Check that plotting a rotated map and a rectangle works as expected
@@ -330,6 +339,17 @@ def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
     aia171_test_map.draw_limb(axes=ax, color='red')
     ax.set_xlim(0, 360)
     ax.set_ylim(0, 180)
+    return fig
+
+
+@figure_test
+def test_map_draw_extent(aia171_test_map):
+    cropped_test_map = aia171_test_map.submap([50, 58]*u.pixel,
+                                              top_right=[80, 75]*u.pixel)
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    cropped_test_map.draw_extent(axes=ax, color="k")
     return fig
 
 

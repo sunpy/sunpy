@@ -241,6 +241,9 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
 
     # Get the 2D vertices of the coordinates
     coord = coord.transform_to(frame)
+    # If we have a HPC frame ensure that it's 3D
+    if isinstance(coord.frame, Helioprojective):
+        coord = coord.frame.make_3d()
     Tx = coord.spherical.lon.to_value(u.deg)
     Ty = coord.spherical.lat.to_value(u.deg)
     vertices = np.array([Tx, Ty]).T
