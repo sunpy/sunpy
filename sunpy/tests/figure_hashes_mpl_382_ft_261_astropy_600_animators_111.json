@@ -52,6 +52,7 @@
   "sunpy.map.tests.test_plotting.test_heliographic_grid_annotations": "c7c08b2b6dae1b96c303345b04682060da97a1b304e7f25bcfd40b2154751465",
   "sunpy.map.tests.test_plotting.test_draw_limb_different_observer": "8802a9b36bb9679067b5c45d752f5cb9e6757a51c41d9809e0b3e131786ada02",
   "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "47a0270b7442614eed65f9416f8ca11478d46e21187ca9a5bd2ded86c70dec99",
+  "sunpy.map.tests.test_plotting.test_map_draw_extent": "f987c66a132e92c7f40c92e7733cfc92c0cb1d7c33a79376c0edfad71ee655ab",
   "sunpy.map.tests.test_plotting.test_plot_autoalign": "352a8c7ece7f3439750a199cfa345d1ef23e6c14d545a94f67a6eb2e2257e898",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_pixel_alignment": "03e6e20d752c9de9f45022ea1819ca9bbd95950b0852f9138b28448636d533b6",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hgs": "c1dc26bedf3d24690364637e1a7d6fde165445049e633e8407ad2ccf42416fcb",
@@ -75,5 +76,7 @@
   "sunpy.visualization.tests.test_drawing.test_draw_equator_aia171": "abc52d5e8254b32ed42942926a4ee92d7b0aaf441bfe8c54cdcd98d6a7a62eba",
   "sunpy.visualization.tests.test_drawing.test_draw_prime_meridian_aia171": "33310a8ac04edf54fd1b219c81e22aadee046aa71f594c44a855d23fe4afb6f8",
   "sunpy.visualization.tests.test_drawing.test_heliographic_equator_prime_meridian": "3cb195a44e899ef46de7365bd0a0c580b7ea69662bdc560a1bbb1686c2ad48cf",
+  "sunpy.visualization.tests.test_drawing.test_draw_extent": "6e43a1b55ef0dd594307744748804b04075a25dcf1eedf9a1b9ee3c4586e5b8c",
+  "sunpy.visualization.tests.test_drawing.test_draw_extent_3d": "df0ffe4f8b435008379f33ef315137cc8914bddb01f392de0d9ed1f95deb7c68",
   "sunpy.visualization.tests.test_visualization.test_show_hpr_impact_angle": "90331c364f08e711bbb6ebd33b671911634630cb6335fa85c40b2eb64ddf44a7"
 }
