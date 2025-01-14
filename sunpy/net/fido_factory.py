@@ -56,10 +56,8 @@ class UnifiedResponse(Sequence):
         self._errors = {}
         for result in results:
             if isinstance(result, Exception):
-                arr = np.array([])
-                t = Table(arr, names=())
                 self._errors[result.client.__class__.__name__] = result
-                result = QueryResponseTable(t, client=result.client)
+                result = QueryResponseTable([], client=result.client)
             else:
 
                 if isinstance(result, QueryResponseRow):
