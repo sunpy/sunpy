@@ -1,0 +1,1 @@
+Add an example to the gallery to show that `sunpy.coordinates.screens.SphericalScreen` can be used even without reprojection
