@@ -3,8 +3,6 @@
 Add contours to a map using a SphericalScreen
 =============================================
 
-How to do coordinate transformations using a SphericalScreen.
-
 In this example, we will plot the 171 AIA image and add contours to it using `draw_contours`.
 We will also plot the 193 AIA image and add contours to it. The contours of  193 AIA will drawn
 by transforming the coordinates from the 171 image to the 193 image using the SphericalScreen class.
