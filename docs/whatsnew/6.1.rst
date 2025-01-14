@@ -55,3 +55,13 @@ Support has been added to ``sunpy.map.Map`` and ``sunpy.timeseries.TimeSeries`` 
 Support for S3 filesystems is tested, but other fsspec plugins should work for most filetypes, please open issues if errors are encountered with other filesystems.
 
 You will need to install packages for your desired filesystem so for S3 the ``s3fs`` package needs to be installed (use ``pip install sunpy[all,s3]`` or ``conda install sunpy s3fs boto3`` boto3 is currently needed for reading CDF files).
+
+Drawing the extent of a WCS
+===========================
+
+The extent of any WCS with two celestial axes can now be drawn on a `~astropy.visualization.wcsaxes.WCSAxes` using
+:func:`sunpy.visualization.drawing.extent`.
+Additionally, :meth:`sunpy.map.GenericMap.draw_extent` has been added as a convenience method for drawing the
+extent of any map.
+
+.. minigallery:: sunpy.visualization.drawing.extent
