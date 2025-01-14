@@ -59,7 +59,7 @@ You will need to install packages for your desired filesystem so for S3 the ``s3
 Drawing the extent of a WCS
 ===========================
 
-The extent of any WCS with two celestial axes can now be drawn on a `~astropy.visualization.WCSAxes` using
+The extent of any WCS with two celestial axes can now be drawn on a `~astropy.visualization.wcsaxes.WCSAxes` using
 :func:`sunpy.visualization.drawing.extent`.
 Additionally, :meth:`sunpy.map.GenericMap.draw_extent` has been added as a convenience method for drawing the
 extent of any map.
