@@ -163,7 +163,8 @@
             "name": "Sudarshan Konge"
         },
         {
-            "name": "Pratham Hole"
+            "name": "Pratham Hole",
+            "orcid": "0009-0009-6926-1034"
         },
         {
             "name": "Matt Wentzel-Long",
@@ -399,7 +400,8 @@
             "affiliation": "Johns Hopkins Applied Physics Lab"
         },
         {
-            "name": "Ankit Khushwaha"
+            "name": "Ankit Khushwaha",
+            "affiliation": "Indian Institute Of Technology Dharwad (IIT-DH)"
         },
         {
             "name": "Daniel Garcia Briseno"
@@ -466,7 +468,9 @@
             "name": "Sanjeev Dubey"
         },
         {
-            "name": "Saurav Kumar Roy"
+            "name": "Saurav Kumar Roy",
+            "orcid": "0009-0007-3703-6532",
+            "affiliation": "Amrita Vishwa Vidyapeetham, Amritapuri"
         },
         {
             "name": "Arthur Eigenbrot",
@@ -498,7 +502,8 @@
             "name": "Sudeep Sidhu"
         },
         {
-            "name": "Tanish Yelgoe"
+            "name": "Tanish Yelgoe",
+            "affiliation": "Indian Institute of Technology Gandhinagar (IIT-GN)"
         },
         {
             "name": "Tomas Meszaros"
@@ -851,7 +856,8 @@
             "affiliation": "Dublin Institute for Advanced Studies"
         },
         {
-            "name": "Raghav Agrawal"
+            "name": "Raghav Agrawal",
+            "affiliation": "Netaji Subhas University of Technology, New Delhi (NSUT New Delhi) and Indian Institute of Technology, Madras (IIT Madras)"
         },
         {
             "name": "Rajasekhar Reddy Mekala"
@@ -951,7 +957,10 @@
             "orcid": "0000-0001-5976-4492"
         },
         {
-            "name": "William Setterberg"
+            "name": "William Setterberg",
+            "orcid": "0000-0003-2165-8314",
+            "affiliation": "University of Minnesota"
+
         },
         {
             "name": "Yudhik Agrawal",
