@@ -31,7 +31,7 @@ The people who have contributed to the code for this release are:
 -  Albert Y. Shih
 -  Andrew Leonard
 -  Ankit Khushwaha  *
--  Diya910  *
+-  Diya Khetarpal  *
 -  Jan Gieseler
 -  Nabil Freij
 -  Nakshatra  *
