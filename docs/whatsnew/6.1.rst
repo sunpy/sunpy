@@ -53,11 +53,17 @@ Updates to minimum dependencies
 
 The minimum required versions of the following packages have been updated:
 
+- python>=3.11
 - astropy>=6.0.0
+- pyerfa>=2.0.1.1
 - matplotlib>=3.6.0
 - numpy>=1.24.0
 - pandas>=1.5.0
 - sphinx>=6.0.0
+- scipy>=1.10.1
+- scikit-image>=0.20.0
+- h5py>=3.8.0
+- reproject>=0.10.0
 
 Support for helioprojective radial coordinates and maps
 =======================================================
