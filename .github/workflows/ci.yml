@@ -105,6 +105,11 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+        - linux: py312-coordinates
+          posargs: -n auto --dist loadgroup --color=yes
+          libraries:
+            apt:
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
