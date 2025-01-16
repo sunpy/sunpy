@@ -1,2 +1,0 @@
-:meth:`sunpy.map.CompositeMap.plot` will now skip autoaligning an overplotted map image if that map's WCS matches the WCS of the figure axes.
-This significantly improves performance when the maps being composited have already been reprojected onto a common WCS.

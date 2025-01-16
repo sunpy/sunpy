@@ -1,1 +1,0 @@
-Fixed incorrect ``reference_date`` for GONG Synoptic maps.

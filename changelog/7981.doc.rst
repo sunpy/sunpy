@@ -1,1 +1,0 @@
-Updated :ref:`sphx_glr_generated_gallery_time_series_goes_xrs_nrt_data.py` to plot the largest flares that occurred during GOES XRS NRT data.
