@@ -1,1 +1,0 @@
-Fixed a bug in :func:`~sunpy.time.parse_time` where parsing a list of time strings could incorrectly fail even when parsing the individual elements would succeed.

@@ -1,1 +1,0 @@
-Renamed the `sunpy.time.TimeRange` method ``extend()`` to :meth:`sunpy.time.TimeRange.shift` to reflect what the method actually does.
