@@ -29,7 +29,7 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py312
+        - linux: py313
           libraries:
             apt:
               - libopenjp2-7
@@ -50,12 +50,10 @@ jobs:
           libraries:
             brew:
               - openjpeg
-        - linux: py310-oldestdeps
+        - linux: py311-oldestdeps
           libraries:
             apt:
               - libopenjp2-7
-        - linux: py310
-        - linux: py313
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -198,11 +196,11 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
       targets: |
-        - cp3{10,11,12,13}-macosx_arm64
-        - cp3{10,11,12,13}-macosx_x86_64
-        - target: cp3{10,11,12,13}-manylinux_aarch64
+        - cp3{11,12,13}-macosx_arm64
+        - cp3{11,12,13}-macosx_x86_64
+        - target: cp3{11,12,13}-manylinux_aarch64
           runs-on: arm
-        - cp3{10,11,12,13}-manylinux_x86_64
+        - cp3{11,12,13}-manylinux_x86_64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
