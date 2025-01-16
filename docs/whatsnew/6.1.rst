@@ -26,7 +26,7 @@ The people who have contributed to the code for this release are:
 
 -  Abinash Mahapatra  *
 -  Advait Pimparkar  *
--  Ahmad Amin  *
+-  Ahmad Saeed  *
 -  Akshit Tyagi
 -  Albert Y. Shih
 -  Andrew Leonard
