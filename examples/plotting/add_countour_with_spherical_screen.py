@@ -17,8 +17,7 @@ import sunpy.map
 from sunpy.coordinates.screens import SphericalScreen
 
 ##############################################################################
-# For this example, we will start with the sample data. To create the maps,
-# we need the 171 and 193 AIA images.
+# For this example, we will start with the sunpy sample data.
 
 aia193_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 aia171_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
