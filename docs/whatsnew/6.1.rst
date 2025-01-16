@@ -55,6 +55,7 @@ The minimum required versions of the following packages have been updated:
 
 - python>=3.11
 - astropy>=6.0.0
+- pyerfa>=2.0.1.1
 - matplotlib>=3.6.0
 - numpy>=1.24.0
 - pandas>=1.5.0
