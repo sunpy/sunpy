@@ -44,7 +44,6 @@ with SphericalScreen(aia171_map.observer_coordinate):
     aia171_map.draw_contours(levels=[1, 5]*u.percent, axes=ax2, colors='C2')
 ax2.set_title("Contours on 193 with SphericalScreen")
 
-
 ##############################################################################
 # without `SphereicalScreen` class the contours are drawn on the 193 image
 # using the 193 image's observer/coordinates.
