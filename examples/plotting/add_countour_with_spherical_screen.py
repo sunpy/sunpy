@@ -35,10 +35,10 @@ ax2 = fig.add_subplot(1,3,2,projection=aia193_map)
 aia193_map.plot(axes=ax2)
 
 ##############################################################################
-# We will now draw the contours on the 193 image. To do this, we will use the
-# `SphericalScreen` class so that it uses the observer/coordinates of the 171
+# We will now draw the contours on the AIA 193 map. To do this, we will use the
+# `SphericalScreen` class so that it uses the observer/coordinates of the AIA 171
 # image. So essentially we are transforming the coordinates of the contours
-# for the 193 image.
+# for the AIA 193 image.
 
 with SphericalScreen(aia171_map.observer_coordinate):
     aia171_map.draw_contours(levels=[1,5]*u.percent, axes=ax2, colors='C2')
