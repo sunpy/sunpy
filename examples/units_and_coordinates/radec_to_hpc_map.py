@@ -13,7 +13,7 @@ and a `~sunpy.map.Map` is made.
 
 The LOFAR example file has a WCS in celestial coordinates i.e. Right Ascension and
 Declination (RA-DEC). For this example, we are assuming that the definition of LOFAR's
-coordinate system for this observation is exactly the same as Astropy's ~astropy.coordinates.GCRS.
+coordinate system for this observation is exactly the same as Astropy's `~astropy.coordinates.GCRS`.
 For many solar studies we may want to plot this data in some Sun-centered coordinate frame,
 such as `~sunpy.coordinates.frames.Helioprojective`. In this example we read the data and
 header information from the LOFAR FITS file and then create a new header with updated WCS
