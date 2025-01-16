@@ -1,0 +1,1 @@
+Added How-to-Guide for Coordinates frames `sunpy.coordinates.Geomagnetic`, `sunpy.coordinates.SolarMagnetic` and `sunpy.coordinates.GeocentricSolarMagnetospheric` that depend upon Earth's magnetic dipole.
