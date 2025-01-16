@@ -17,6 +17,7 @@ struct _typeobject {
 #define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
 #include <numpy/arrayobject.h> 	// For numpy
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "time.h"
 #include "types.h"
