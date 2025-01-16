@@ -6,8 +6,6 @@ Add contours to a map using a SphericalScreen
 In this example, we try to show that SphericalScreen can be used as a general method
 to transform the coordinates(change the frame of reference i.e. the observer)
 from one image to another as seen by a new observer, even without reprojection.
-Here, we will draw contours on one image and then use the `SphericalScreen`
-class to draw the contours on another image using the former's perspective.
 """
 
 import matplotlib.pyplot as plt
