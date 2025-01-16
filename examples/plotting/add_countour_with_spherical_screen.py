@@ -48,8 +48,10 @@ ax2.set_title("Contours on 193 with SphericalScreen")
 ##############################################################################
 # without `SphereicalScreen` class the contours are drawn on the 193 image
 # using the 193 image's observer/coordinates.
+
 ax3 = fig.add_subplot(1,3,3,projection=aia193_map)
 aia193_map.plot(axes=ax3)
 aia171_map.draw_contours(levels=[1,5]*u.percent, axes=ax3, colors='C2')
 ax3.set_title("Contours on 193 without SphericalScreen")
+
 plt.show()
