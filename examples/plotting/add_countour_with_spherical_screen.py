@@ -42,6 +42,7 @@ aia193_map.plot(axes=ax2)
 # `SphericalScreen` class so that it uses the observer/coordinates of the 171
 # image. So essentially we are transforming the coordinates of the contours
 # for the 193 image.
+
 with SphericalScreen(aia171_map.observer_coordinate):
     aia171_map.draw_contours(levels=[1,5]*u.percent, axes=ax2, colors='C2')
 ax2.set_title("Contours on 193 with SphericalScreen")
