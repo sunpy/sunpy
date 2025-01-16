@@ -1,1 +1,0 @@
-Updated the internal CDF reader to handle ``FILLVAL`` only for floating point numbers.

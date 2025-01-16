@@ -1,1 +1,0 @@
-Added a table and notes to show which methods from `~sunpy.map.GenericMap` are expected to preserve laziness with dask arrays.
