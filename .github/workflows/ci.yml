@@ -199,7 +199,7 @@ jobs:
         - cp3{11,12,13}-macosx_arm64
         - cp3{11,12,13}-macosx_x86_64
         - target: cp3{11,12,13}-manylinux_aarch64
-          runs-on: arm
+          runs-on: ubuntu-24.04-arm
         - cp3{11,12,13}-manylinux_x86_64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
