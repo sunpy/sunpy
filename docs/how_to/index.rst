@@ -18,6 +18,7 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    create_custom_map
    create_custom_timeseries
    create_rectangle_on_map
+   earth_magnetic_dipole_frames
    fix_map_metadata
    manipulate_grid_lines
    parse_time
