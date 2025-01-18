@@ -53,16 +53,28 @@ class UnifiedResponse(Sequence):
         """
         self._list = []
         self._numfile = 0
+        self._errors = {}
         for result in results:
-            if isinstance(result, QueryResponseRow):
-                result = result.as_table()
+            if isinstance(result, Exception):
+                if hasattr(result.client, '__name__'):
+                    self._errors[result.client.__name__] = result
 
-            if isinstance(result, QueryResponseColumn):
-                result = result.as_table()
+                result = QueryResponseTable([], client=result.client)
+            else:
 
-            if not isinstance(result, QueryResponseTable):
-                raise TypeError(
-                    f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
+                if isinstance(result, QueryResponseRow):
+                    result = result.as_table()
+
+                if isinstance(result, QueryResponseColumn):
+                    result = result.as_table()
+
+                if hasattr(result.client, '__name__'):
+                    self._errors[result.client.__name__] = None
+
+
+                if not isinstance(result, QueryResponseTable):
+                    raise TypeError(
+                        f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
             self._list.append(result)
             self._numfile += len(result)
@@ -162,6 +174,16 @@ class UnifiedResponse(Sequence):
         """
         return self._numfile
 
+    @property
+    def errors(self):
+        """
+        Returns a dict of errors for all responses.
+
+        If no errors are present for a client, its value is None.
+        If no errors are present at all, an empty dict is returned.
+        """
+        return self._errors
+
     def _repr_html_(self):
         nprov = len(self)
         if nprov == 1:
@@ -189,6 +211,8 @@ class UnifiedResponse(Sequence):
             if block.client.info_url is not None:
                 ret += f'Source: {block.client.info_url}\n'
             size = block.total_size()
+            if self.errors[block.client.__name__] is not None:
+                ret += f'Error: {repr(self._errors[block.client.__name__])}\n'
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
             ret += '\n'
@@ -319,7 +343,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
         results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
-
         return UnifiedResponse(*results)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
@@ -478,11 +501,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         candidate_widget_types = self._check_registered_widgets(*query)
         results = []
         for client in candidate_widget_types:
-            tmpclient = client()
-            results.append(tmpclient.search(*query))
+            try:
+                tmpclient  = client()
+                result = tmpclient.search(*query)
+                result.client = client
+                results.append(result)
+            except Exception as e:
+                e.client = client
+                results.append(e)
 
-        # This method is called by `search` and the results are fed into a
-        # UnifiedResponse object.
         return results
 
     def __repr__(self):
