@@ -1,31 +1,46 @@
 version: 2.1
 
-no-backports: &no-backports
-  name: Skip any branches called cherry-pick
-  command: |
-    if [[ "${CIRCLE_BRANCH}" == *"cherry-pick"* || "${CIRCLE_BRANCH}" == *"backport"* ]]; then
-      circleci step halt
-    fi
+# Reusable Commands
+commands:
+  no-backports:
+    description: Skip cherry-pick or backport branches
+    steps:
+      - run:
+          name: Skip any branches called cherry-pick or backport
+          command: |
+            if [[ "${CIRCLE_BRANCH}" == *"cherry-pick"* || "${CIRCLE_BRANCH}" == *"backport"* ]]; then
+              circleci step halt
+            fi
 
-skip-check: &skip-check
-  name: Check for [ci skip]
-  command: bash .circleci/early_exit.sh
+  skip-check:
+    description: Check for [ci skip] in commit messages
+    steps:
+      - run:
+          name: Check for [ci skip]
+          command: bash .circleci/early_exit.sh
 
-merge-check: &merge-check
-  name: Check if we need to merge upstream main
-  command: |
-    if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
-      git fetch origin --tags
-      git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
-      git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
-    fi
+  merge-check:
+    description: Check if the upstream main branch needs merging
+    steps:
+      - run:
+          name: Check if we need to merge upstream main
+          command: |
+            if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+              git fetch origin --tags
+              git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
+              git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
+            fi
 
-apt-run: &apt-install
-  name: Install apt packages
-  command: |
-    sudo apt update
-    sudo apt install -y libopenjp2-7
+  apt-install:
+    description: Install required apt packages
+    steps:
+      - run:
+          name: Install apt packages
+          command: |
+            sudo apt update
+            sudo apt install -y libopenjp2-7
 
+# Jobs
 jobs:
   figure:
     parameters:
@@ -34,22 +49,26 @@ jobs:
     docker:
       - image: cimg/python:3.12
     environment:
-      TOXENV=<< parameters.jobname >>
+      TOXENV: << parameters.jobname >>
     steps:
-      - run: *no-backports
+      - no-backports
       - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: *apt-install
-      - run: pip install --user -U tox tox-pypi-filter
-      - run: tox -v
+      - skip-check
+      - merge-check
+      - apt-install
       - run:
-          name: Running codecov
+          name: Install Python dependencies
+          command: pip install --user -U tox tox-pypi-filter
+      - run:
+          name: Run tests with tox
+          command: tox -v
+      - run:
+          name: Upload code coverage
           command: bash -e .circleci/codecov_upload.sh -f ".tmp/${TOXENV}/coverage.xml"
       - store_artifacts:
           path: .tmp/<< parameters.jobname >>/figure_test_images
       - run:
-          name: "Image comparison page is available at: "
+          name: Image comparison page link
           command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
 
   deploy-reference-images:
@@ -63,35 +82,53 @@ jobs:
       GIT_SSH_COMMAND: ssh -i ~/.ssh/id_rsa_7b8fc81c13a3b446ec9aa50d3f626978
     steps:
       - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: *apt-install
-      # Clear out all the ssh keys so that it always uses the write deploy key
-      - run: ssh-add -D
-      # Add private key for deploying to the figure tests repo
+      - skip-check
+      - merge-check
+      - apt-install
+      - run:
+          name: Clear SSH keys
+          command: ssh-add -D
       - add_ssh_keys:
-          fingerprints: "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
-      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
-      - run: git clone git@github.com:sunpy/sunpy-figure-tests.git --depth 1 -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
-      # Generate Reference images
-      - run: pip install --user -U tox tox-pypi-filter
-      - run: rm -rf /home/circleci/sunpy-figure-tests/figures/$TOXENV/*
-      - run: tox -v -- --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
-      - run: |
-          hashlib=$(grep "^figure_hashes.*\.json$" toxlog)
-          cp ./sunpy/tests/$hashlib /home/circleci/sunpy-figure-tests/figures/$TOXENV/
-      - run: |
-          cd ~/sunpy-figure-tests/
-          git pull
-          git status
-          git add .
-          git commit -m "Update reference figures from ${CIRCLE_BRANCH}" || echo "No changes to reference images to deploy"
-          git push
+          fingerprints:
+            - "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
+      - run:
+          name: Add GitHub SSH key
+          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run:
+          name: Configure Git
+          command: |
+            git config --global user.email "sunpy@circleci"
+            git config --global user.name "SunPy Circle CI"
+      - run:
+          name: Clone figure tests repository
+          command: git clone git@github.com:sunpy/sunpy-figure-tests.git --depth 1 -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
+      - run:
+          name: Install Python dependencies
+          command: pip install --user -U tox tox-pypi-filter
+      - run:
+          name: Remove old reference images
+          command: rm -rf /home/circleci/sunpy-figure-tests/figures/$TOXENV/*
+      - run:
+          name: Generate reference images
+          command: tox -v -- --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
+      - run:
+          name: Copy figure hashes
+          command: |
+            hashlib=$(grep "^figure_hashes.*\.json$" toxlog)
+            cp ./sunpy/tests/$hashlib /home/circleci/sunpy-figure-tests/figures/$TOXENV/
+      - run:
+          name: Deploy reference images
+          command: |
+            cd ~/sunpy-figure-tests/
+            git pull
+            git status
+            git add .
+            git commit -m "Update reference figures from ${CIRCLE_BRANCH}" || echo "No changes to reference images to deploy"
+            git push
 
+# Workflows
 workflows:
   version: 2
-
   figure-tests:
     jobs:
       - figure:
@@ -101,7 +138,6 @@ workflows:
               jobname:
                 - "py312-figure"
                 - "py312-figure-devdeps"
-
       - deploy-reference-images:
           name: baseline-<< matrix.jobname >>
           matrix:
