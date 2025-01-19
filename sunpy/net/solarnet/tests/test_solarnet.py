@@ -25,7 +25,7 @@ def test_search(client):
 def test_can_handle_query(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
     assert not client._can_handle_query(a.solarnet.Limit(10))
-    assert client._can_handle_query(a.solarnet.Dataset.eui_level_2 |a.solarnet.Dataset.aia_level_1)
+    assert client._can_handle_query(a.solarnet.Dataset.eui_level_2 or a.solarnet.Dataset.aia_level_1)
 
 def test_solarnet_attrs(client):
     attrs = client.load_solarnet_values()
