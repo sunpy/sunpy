@@ -246,6 +246,13 @@ def test_hpc_obstime_from_observer():
     assert hpc.obstime is None
 
 
+def test_hpc_coord_obstime_observer_obstime_diff():
+    # Test that coordinate.obstime is not equal to observer.obstime
+    observer = HeliographicStonyhurst(obstime='2023-09-09')
+    with pytest.warns(SunpyUserWarning, match = "The 'obstime' of the coordinate and the observer differ"):
+        Helioprojective(obstime='2023-09-08', observer=observer)
+
+
 def test_hpc_is_visible_2d():
     hpc = Helioprojective(2000*u.arcsec, 2000*u.arcsec,
                           observer='earth', obstime='2023-08-03')

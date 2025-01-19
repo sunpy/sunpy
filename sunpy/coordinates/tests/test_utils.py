@@ -1,4 +1,5 @@
 import re
+import warnings
 
 import numpy as np
 import pytest
@@ -15,6 +16,7 @@ from sunpy.coordinates.utils import (
     solar_angle_equivalency,
 )
 from sunpy.sun import constants
+from sunpy.util.exceptions import SunpyUserWarning
 
 # Test the great arc code against calculable quantities
 # The inner angle is the same between each pair of coordinates.  You can
@@ -207,6 +209,8 @@ def test_great_arc_points_differentiates(aia171_test_map):
 # Test that the great arc code properly understands different observers
 # for the start and end points
 def test_great_arc_different_observer(aia171_test_map):
+    warnings.filterwarnings("ignore", message="The 'obstime' of the coordinate and the observer differ",
+                        category=SunpyUserWarning)
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=aia171_test_map.coordinate_frame)
 
     observer = SkyCoord(-10.0*u.deg, 83*u.deg, radius=0.9*u.au,
