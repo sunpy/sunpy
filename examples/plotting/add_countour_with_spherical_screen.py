@@ -24,9 +24,13 @@ aia193_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 aia171_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ##############################################################################
-# Create a figure with two subplots. The first subplot will have the 171 image
-# with contours drawn on it. The second subplot will have the 193 image drawn
-# on it.
+# We want to show how we can use `~sunpy.coordinates.SphericalScreen` as a
+# way to transform the observer coordinates from one map to another. For this
+# Lets try drawing contours on the AIA 171 map and use the observer
+# coordinates from this for contours on the AIA 193 map. Lets first start by
+# creating a figure with two subplots. The first subplot will have the AIA 171
+# map with contours drawn on it. The second subplot will have the AIA 193
+#  map drawn on it.
 fig= plt.figure(figsize=(15, 5))
 ax1 = fig.add_subplot(1, 3, 1, projection=aia171_map)
 aia171_map.plot(axes=ax1, clip_interval=(1,99.9)*u.percent)
@@ -38,7 +42,7 @@ aia193_map.plot(axes=ax2)
 ##############################################################################
 # We will now draw the contours on the AIA 193 map. To do this, we will use
 # the `~sunpy.coordinates.SphericalScreen` class so that it uses the observer
-# /coordinates of the AIA 171 image. So essentially we are transforming
+# coordinates of the AIA 171 image. So essentially we are transforming
 # the coordinates of the contours for the AIA 193 image.
 
 with SphericalScreen(aia171_map.observer_coordinate):
@@ -46,8 +50,8 @@ with SphericalScreen(aia171_map.observer_coordinate):
 ax2.set_title("Contours on 193 with SphericalScreen")
 
 ##############################################################################
-# without `SphereicalScreen` class the contours are drawn on the 193 image
-# using the 193 image's observer/coordinates.
+# without `~sunpy.coordinates.SphericalScreen` class the contours are drawn
+# on the 193 image using the 193 image's observer/coordinates.
 
 ax3 = fig.add_subplot(1,3,3,projection=aia193_map)
 aia193_map.plot(axes=ax3)
