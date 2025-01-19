@@ -2391,6 +2391,32 @@ class GenericMap(NDData):
             **kwargs
         )
 
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.wcs,
+            **kwargs
+        )
+
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
                         axes=None, top_right=None, **kwargs):

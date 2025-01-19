@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 import numpy as np
 import pandas
@@ -357,7 +357,7 @@ def test_parse_time_list_3():
 
 
 def test_is_time():
-    time.is_time(datetime.now(timezone.utc)) is True
+    time.is_time(datetime.now(UTC)) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
     assert time.is_time(Time.now()) is True
 
