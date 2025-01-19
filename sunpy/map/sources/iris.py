@@ -30,7 +30,7 @@ class SJIMap(GenericMap):
     ----------
     * `IRIS Mission Page <https://iris.lmsal.com>`_
     * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`_
-    * `IRIS Instrument Paper <https://doi.org/10.1007/s11207-014-0485-y>`_
+    * :cite:t:`de_pontieu_interface_2014`
     """
     @property
     def detector(self):
