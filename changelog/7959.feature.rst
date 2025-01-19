@@ -1,0 +1,1 @@
+Enhanced the ``read_cdf`` function in ``_cdf.py`` to support skipping specified variables by adding the ``ignore_vars`` parameter.

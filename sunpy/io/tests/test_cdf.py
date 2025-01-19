@@ -44,3 +44,13 @@ def test_read_psp_data():
     assert isinstance(ts, GenericTimeSeries)
     col = ts.quantity('EFLUX_VS_ENERGY_0')
     assert np.sum(np.isnan(col)) >= 0
+
+
+
+def test_cdf_reader_ignore_vars():
+    all_ts = read_cdf(filepath, ignore_vars=["Electron_Flux"])
+    assert isinstance(all_ts, list)
+    assert len(all_ts) > 0
+    ts = all_ts[0]
+    assert isinstance(ts, GenericTimeSeries)
+    assert not any(col.startswith("Electron_Flux") for col in ts.columns)
