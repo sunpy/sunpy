@@ -31,12 +31,13 @@ aia171_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # creating a figure with two subplots. The first subplot will have the AIA 171
 # map with contours drawn on it. The second subplot will have the AIA 193
 #  map drawn on it.
-fig= plt.figure(figsize=(15, 5))
+
+fig = plt.figure()
 ax1 = fig.add_subplot(1, 3, 1, projection=aia171_map)
 aia171_map.plot(axes=ax1, clip_interval=(1,99.9)*u.percent)
-aia171_map.draw_contours(levels=[1,5]*u.percent, axes=ax1, colors='C0')
+aia171_map.draw_contours(levels=[1, 5]*u.percent, axes=ax1, colors='C0')
 ax1.set_title("Contours on 173")
-ax2 = fig.add_subplot(1,3,2,projection=aia193_map)
+ax2 = fig.add_subplot(1, 3, 2, projection=aia193_map)
 aia193_map.plot(axes=ax2)
 
 ##############################################################################
