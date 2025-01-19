@@ -58,6 +58,26 @@ _READERS = Readers({
 })
 
 
+def get_open_file_path(filepath):
+    """
+    Helper function to get the file path from a file object, or return the file path if path is passed instead.
+
+    Parameters
+    ----------
+    filepath : str, pathlib.Path, or fsspec.OpenFile
+        The file path or file object to be validated.
+    **kwargs : dict
+        Additional keyword arguments for fsspec.open.
+
+    Returns
+    -------
+    path : str
+    """
+    if isinstance(filepath, fsspec.core.OpenFile):
+        return str(filepath.path)
+    return str(filepath)
+
+
 def _read(filepath, function_name, filetype=None, **kwargs):
     """
     This functions provides the logic paths for reading a file.
@@ -84,7 +104,7 @@ def _read(filepath, function_name, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
-    filepath = str(filepath)
+    filepath = get_open_file_path(filepath)
     if filetype is not None:
         return getattr(_READERS[filetype], function_name)(filepath, **kwargs)
     try:
@@ -124,6 +144,7 @@ def read_file(filepath, filetype=None, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
+    filepath = get_open_file_path(filepath)
     return _read(filepath, 'read', filetype, **kwargs)
 
 
@@ -148,6 +169,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers.
     """
+    filepath = get_open_file_path(filepath)
     return _read(filepath, 'get_header', filetype, **kwargs)
 
 
@@ -198,16 +220,17 @@ def detect_filetype(filepath, **kwargs):
     filetype : `str`
         The type of file.
     """
+    filepath = get_open_file_path(filepath)
     if str(filepath).startswith('http') or  str(filepath).startswith('ftp'):
         return None
     if is_uri(filepath):
         fsspec_kw = kwargs.get("fsspec_kwargs", {})
         try:
-            fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
+            fileobj = fsspec.open(str(filepath), 'rb', **fsspec_kw).open()
         except Exception:
             return None
     else:
-        fileobj = open(filepath, 'rb')
+        fileobj = fsspec.open(filepath, 'rb').open()
     with fileobj as fp:
         line1 = fp.readline()
         line2 = fp.readline()
