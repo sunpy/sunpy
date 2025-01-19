@@ -5,10 +5,9 @@ from pathlib import Path
 
 import requests
 
-from sunpy.net import attrs as a
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
-from sunpy.net.solarnet.attrs import walker
+from sunpy.net.solarnet.attrs import Dataset, walker
 from sunpy.util.parfive_helpers import Downloader, Results
 
 base_url = "https://solarnet2.oma.be/service/api/svo/{}"
@@ -185,7 +184,7 @@ class SolarnetClient(BaseClient):
         with data_sets.open() as data_values:
             data = json.load(data_values)
         data = list(data.items())
-        attrs = {a.solarnet.Dataset: data}
+        attrs = {Dataset: data}
         return attrs
 
     @staticmethod

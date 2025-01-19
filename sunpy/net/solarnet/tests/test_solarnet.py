@@ -6,6 +6,7 @@ import pytest
 import astropy.units as u
 
 import sunpy.net.attrs as a
+from sunpy.net import Fido
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.solarnet import SolarnetClient
 
@@ -25,7 +26,7 @@ def test_search(client):
 def test_can_handle_query(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
     assert not client._can_handle_query(a.solarnet.Limit(10))
-    assert client._can_handle_query(a.solarnet.Dataset.eui_level_2 or a.solarnet.Dataset.aia_level_1)
+    assert client._can_handle_query(a.solarnet.Dataset.eui_level_2)
 
 def test_solarnet_attrs(client):
     attrs = client.load_solarnet_values()
@@ -53,3 +54,11 @@ def test_default_limit(client):
     query = [a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA),a.Time("2020/02/04","2022/02/04")]
     url = client.search(*query)
     assert len(url) == 20
+
+@pytest.mark.remote_data
+def test_complex_query():
+    query = [a.solarnet.Dataset.lyra_level_2 & a.solarnet.Limit(2) | a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(3)]
+    url = Fido.search(*query)
+    assert len(url) == 2
+    assert len(url[0]) == 2
+    assert len(url[1]) == 3
