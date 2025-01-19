@@ -3,11 +3,12 @@
 Add contours to a map using a SphericalScreen
 =============================================
 
-In this example, we try to show that SphericalScreen can be used as a general method
-to transform the coordinates(change the frame of reference i.e. the observer)
-from one image to another as seen by a new observer, even without reprojection.
+In this example, we try to show that `~sunpy.coordinates.SphericalScreen`
+can be used as a general method to transform the coordinates(change
+the frame of reference i.e. the observer) from one image to another
+as seen by a new observer, even without reprojection.
 """
-
+# sphinx_gallery_thumbnail_number = 1
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -35,10 +36,10 @@ ax2 = fig.add_subplot(1,3,2,projection=aia193_map)
 aia193_map.plot(axes=ax2)
 
 ##############################################################################
-# We will now draw the contours on the AIA 193 map. To do this, we will use the
-# `SphericalScreen` class so that it uses the observer/coordinates of the AIA 171
-# image. So essentially we are transforming the coordinates of the contours
-# for the AIA 193 image.
+# We will now draw the contours on the AIA 193 map. To do this, we will use
+# the `~sunpy.coordinates.SphericalScreen` class so that it uses the observer
+# /coordinates of the AIA 171 image. So essentially we are transforming
+# the coordinates of the contours for the AIA 193 image.
 
 with SphericalScreen(aia171_map.observer_coordinate):
     aia171_map.draw_contours(levels=[1, 5]*u.percent, axes=ax2, colors='C2')
