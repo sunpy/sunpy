@@ -17,7 +17,7 @@ import numpy as np
 import parfive
 from packaging.version import Version
 
-from astropy.table import Table
+from astropy.table import Table, vstack
 
 from sunpy import config
 from sunpy.net import attr, vso
@@ -44,7 +44,7 @@ class UnifiedResponse(Sequence):
     index the second dimension with ``::2``.
     """
 
-    def __init__(self, *results):
+    def __init__(self, *results, combine=False):
         """
         Parameters
         ----------
@@ -53,6 +53,10 @@ class UnifiedResponse(Sequence):
         """
         self._list = []
         self._numfile = 0
+        self._combine = combine
+        if self._combine:
+            combined_results = {}
+
         for result in results:
             if isinstance(result, QueryResponseRow):
                 result = result.as_table()
@@ -64,8 +68,24 @@ class UnifiedResponse(Sequence):
                 raise TypeError(
                     f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
-            self._list.append(result)
-            self._numfile += len(result)
+            if self._combine:
+                combined_results[result.client] = combined_results.get(result.client, []) + [result]
+            else:
+                self._list.append(result)
+                self._numfile += len(result)
+
+
+
+        if self._combine:
+            for client, client_results in combined_results.items():
+                if len(results) == 1:
+                    self._list.append(results[0])
+                    self._numfile += len(results[0])
+                else:
+                    new_result = vstack(client_results)
+                    self._list.append(new_result)
+                    self._numfile += len(new_result)
+
 
     def __len__(self):
         return len(self._list)
@@ -169,7 +189,7 @@ class UnifiedResponse(Sequence):
         else:
             ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
-            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:</br>"
+            ret += f"{len(block)} Results from the {block.client.__name__}:</br>"
             ret += block._repr_html_()
             ret += '</br>'
 
@@ -185,9 +205,9 @@ class UnifiedResponse(Sequence):
         else:
             ret = f'Results from {len(self)} Providers:\n\n'
         for block in self:
-            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
+            ret += f"{len(block)} Results from the {block.client.__name__}:\n"
             if block.client.info_url is not None:
-                ret += f'Source: {block.client.info_url}\n'
+                ret += f'Source: {block.client.info_url.__get__(block.client, type(block.client))}\n'
             size = block.total_size()
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
@@ -321,7 +341,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     """
 
-    def search(self, *query):
+    def search(self, *query, combine=True):
         """
         Query for data in form of multiple parameters.
 
@@ -376,7 +396,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # don't know the full list of supported values we can search for (yet).
         results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
 
-        return UnifiedResponse(*results)
+        return UnifiedResponse(*results, combine=combine)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
@@ -534,8 +554,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         candidate_widget_types = self._check_registered_widgets(*query)
         results = []
         for client in candidate_widget_types:
-            tmpclient = client()
-            results.append(tmpclient.search(*query))
+            tmpclient  = client()
+            result = tmpclient.search(*query)
+            result.client = client
+            results.append(result)
 
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.

@@ -267,7 +267,7 @@ def test_fido_indexing(queries):
     # this.
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
-    res = Fido.search(query1 | query2)
+    res = Fido.search(query1 | query2, combine=False)
     assert len(res) == 2
 
     assert isinstance(res[1:], UnifiedResponse)
@@ -328,6 +328,13 @@ def test_fido_indexing(queries):
 
     if isinstance(res, UnifiedResponse):
         assert len(res) != 1
+
+@pytest.mark.remote_data
+def test_combined_response():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
 
 
 @no_vso
