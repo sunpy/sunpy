@@ -332,9 +332,28 @@ def test_fido_indexing(queries):
 @pytest.mark.remote_data
 def test_combined_response():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'), combine=True)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+@pytest.mark.remote_data
+def test_combine_attr():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'), combine=True)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
                   a.Instrument('AIA'))
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'), combine=False)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
+
+
 
 
 @no_vso
