@@ -55,7 +55,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -132,6 +132,33 @@ class GenericMap(NDData):
     **kwargs :
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
+
+
+    Methods and their known behavior with dask arrays
+    -------------------------------------------------
+
+    +-------------------+------------------------------------+
+    | Method            | Preserve laziness with Dask Arrays |
+    +===================+====================================+
+    | `reproject_to`    | No                                 |
+    +-------------------+------------------------------------+
+    | `resample`        | No                                 |
+    +-------------------+------------------------------------+
+    | `rotate`          | No                                 |
+    +-------------------+------------------------------------+
+    | `max`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `mean`            | Yes                                |
+    +-------------------+------------------------------------+
+    | `min`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `std`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `superpixel`      | Yes                                |
+    +-------------------+------------------------------------+
+    | `submap`          | Yes                                |
+    +-------------------+------------------------------------+
+
 
     Examples
     --------
@@ -732,24 +759,32 @@ class GenericMap(NDData):
     def std(self, *args, **kwargs):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanstd(self.data, *args, **kwargs)
 
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmean(self.data, *args, **kwargs)
 
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmin(self.data, *args, **kwargs)
 
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmax(self.data, *args, **kwargs)
 
@@ -1233,9 +1268,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1431,7 +1468,7 @@ class GenericMap(NDData):
         -----
         In many cases this is a simple rotation matrix, hence the property name.
         It general it does not have to be a pure rotation matrix, and can encode
-        other transformations e.g., skews for non-orthgonal coordinate systems.
+        other transformations e.g., skews for non-orthogonal coordinate systems.
         """
         if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
             return np.array(
@@ -1491,12 +1528,12 @@ class GenericMap(NDData):
         """
         Return any PV values in the metadata.
         """
-        pattern = re.compile('pv[0-9]_[0-9]a', re.IGNORECASE)
+        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
         pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
 
         pv_values = []
         for k in pv_keys:
-            i, m = int(k[2]), int(k[4])
+            i, m = int(k[2]), int(k[4:])
             pv_values.append((i, m, self.meta[k]))
         return pv_values
 
@@ -1650,6 +1687,8 @@ class GenericMap(NDData):
         as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         dimensions : `~astropy.units.Quantity`
@@ -1719,6 +1758,8 @@ class GenericMap(NDData):
         neither an angle or a rotation matrix are specified, the map will be
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -1911,6 +1952,8 @@ class GenericMap(NDData):
         are returned. If the rectangle is defined in world coordinates, the
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
+
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -2149,6 +2192,8 @@ class GenericMap(NDData):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
+        This method **does** preserve dask arrays.
+
         Parameters
         ----------
         dimensions : tuple
@@ -2343,6 +2388,32 @@ class GenericMap(NDData):
             self.observer_coordinate,
             resolution=resolution,
             rsun=self.rsun_meters,
+            **kwargs
+        )
+
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.wcs,
             **kwargs
         )
 
@@ -2959,6 +3030,8 @@ class GenericMap(NDData):
             This method requires the optional package `reproject` to be installed.
 
         Additional keyword arguments are passed through to the reprojection function.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------

@@ -1991,7 +1991,7 @@ Backwards Incompatible Changes
 Deprecations and Removals
 -------------------------
 
-- Removed the step of reparing images (replacing non-finite entries with local mean) before coaligning them. The user is expected to do this themselves before coaligning images. If NaNs/non-finite entries are present, a warning is thrown.
+- Removed the step of repairing images (replacing non-finite entries with local mean) before coaligning them. The user is expected to do this themselves before coaligning images. If NaNs/non-finite entries are present, a warning is thrown.
   The function ``sunpy.image.coalignment.repair_image_nonfinite`` is deprecated. (`#3287 <https://github.com/sunpy/sunpy/pull/3287>`__)
 - The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from ``calculate_distance`` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users. (`#3389 <https://github.com/sunpy/sunpy/pull/3389>`__)
 - ``sunpy.visualization.animator.ImageAnimatorWCS`` is now deprecated in favour of
@@ -2851,7 +2851,7 @@ Bug fixes
 -  Remove old style string formatting and other 2.6 compatibility lines.
 -  Added vso like querying feature to JSOC Client.
 -  Refactor the JSOC client so that it follows the .query() .get()
-   interface of VSOClient and UnifedDownloader.
+   interface of VSOClient and UnifiedDownloader.
 -  Provide ``__str__`` and ``__repr__`` methods on vso ``QueryResponse``
    deprecate ``.show()``.
 -  Downloaded files now keep file extensions rather than replacing all
