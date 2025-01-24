@@ -1087,7 +1087,6 @@ class GenericMap(NDData):
          The measurement value (e.g., wavelength or other observable). 
         Returns None if no relevant keyword is found.
          """
-
         return self.wavelength
 
     @property
