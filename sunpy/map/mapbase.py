@@ -805,7 +805,6 @@ class GenericMap(NDData):
                                'with sunpy.map.Map.\n'
                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                                'the FITS unit standards.')
-                unit = None
         return unit
 
     @property

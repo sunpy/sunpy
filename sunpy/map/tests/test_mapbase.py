@@ -253,11 +253,11 @@ def test_std(generic_map):
     np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
 
 
-def test_unit(generic_map):
+def test_unit(generic_map, aia171_test_map):
     assert generic_map.unit == u.DN / u.s
-    generic_map.meta['bunit'] = 'not a unit'
-    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string "not a unit"'):
-        assert generic_map.unit is None
+    aia171_test_map = aia171_test_map * (1 * (u.electron / u.DN / u.pix**2))
+    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string "electron / pix2"'):
+        assert aia171_test_map.unit is not None
 
 
 # ==============================================================================
