@@ -69,7 +69,7 @@ class UnifiedResponse(Sequence):
                     f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
             if self._combine:
-                combined_results[result.client] = combined_results.get(result.client, []) + [result]
+                combined_results[result.client.__class__.__name__] = combined_results.get(result.client.__class__.__name__, []) + [result]
             else:
                 self._list.append(result)
                 self._numfile += len(result)
@@ -82,7 +82,7 @@ class UnifiedResponse(Sequence):
                     self._list.append(results[0])
                     self._numfile += len(results[0])
                 else:
-                    new_result = vstack(client_results)
+                    new_result = vstack(client_results, metadata_conflicts='silent')
                     self._list.append(new_result)
                     self._numfile += len(new_result)
 
@@ -189,7 +189,7 @@ class UnifiedResponse(Sequence):
         else:
             ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
-            ret += f"{len(block)} Results from the {block.client.__name__}:</br>"
+            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:</br>"
             ret += block._repr_html_()
             ret += '</br>'
 
@@ -205,9 +205,9 @@ class UnifiedResponse(Sequence):
         else:
             ret = f'Results from {len(self)} Providers:\n\n'
         for block in self:
-            ret += f"{len(block)} Results from the {block.client.__name__}:\n"
+            ret += f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
             if block.client.info_url is not None:
-                ret += f'Source: {block.client.info_url.__get__(block.client, type(block.client))}\n'
+                ret += f'Source: {block.client.info_url}\n'
             size = block.total_size()
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
@@ -556,12 +556,21 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for client in candidate_widget_types:
             tmpclient  = client()
             result = tmpclient.search(*query)
-            result.client = client
+            print("Result Object", result.client.__class__.__name__)
             results.append(result)
 
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.
         return results
+
+        # def _make_query_to_client(self, *query):
+        # for client in candidate_widget_types:
+        #     tmpclient = client()
+        #     results.append(tmpclient.search(*query))
+
+        # # This method is called by `search` and the results are fed into a
+        # # UnifiedResponse object.
+        # return results
 
     def __repr__(self):
         return object.__repr__(self) + "\n" + self._print_clients()
