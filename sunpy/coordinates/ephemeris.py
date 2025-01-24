@@ -2,6 +2,7 @@
 Ephemeris calculations using SunPy coordinate frames
 """
 import re
+import xml.etree.ElementTree as ET
 
 import numpy as np
 import requests
@@ -27,13 +28,14 @@ from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .frames import HeliographicStonyhurst
+from ._scweb_query import _create_xml_request, _send_requests
+from .frames import GeocentricSolarEcliptic, HeliographicStonyhurst
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
 
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
-           'get_horizons_coord']
+           'get_horizons_coord',"get_sscweb_coord"]
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -392,3 +394,60 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     coord = SkyCoord(vector, frame=HeliocentricEclipticIAU76, obstime=obstime)
 
     return coord.transform_to(HeliographicStonyhurst).reshape(obstime.shape)
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def get_sscweb_coord(body,time,system = "Gse"):
+    """
+    Returns a `~astropy.coordinates.SkyCoord` representation of the location of a body available on SSCWeb
+    (https://sscweb.gsfc.nasa.gov/)
+    Parameters
+    ----------
+    body : `str`
+        The name of the body for which to calculate positions. The list of available bodies can be found at
+        https://sscweb.gsfc.nasa.gov/scansat.shtml.
+    time : `~sunpy.time.TimeRange`
+        The time range over which to query the body's location.
+    system : `str`, optional
+        The coordinate system to use for the output. Defaults to "Gse".
+
+    Returns
+    -------
+    out : `~astropy.coordinates.SkyCoord`
+        The location of the body in the `~sunpy.coordinates.GeocentricSolarEcliptic` frame.
+
+    Examples
+    --------
+    >>> from sunpy.coordinates import get_sscweb_coord
+    >>> from sunpy.time import TimeRange
+    >>> time = TimeRange("2020-04-04T00:00:00.000", "2020-04-04T00:02:00.000")
+
+    Query the location of the SDO spacecraft:
+
+    >>> get_sscweb_coord('sdo', time)  # doctest: +REMOTE_DATA
+    INFO: Obtained SSCWeb location for SDO (2) [sunpy.coordinates.ephemeris]
+    <SkyCoord (GeocentricSolarEcliptic: obstime=['2020-04-04T04:00:00.000', '2020-04-04T04:01:00.000',
+    '2020-04-04T04:02:00.000']): (lon, lat) in deg
+        [(130.36632, 0.8609663), (130.53755, 1.0435528),
+        (130.70879, 1.2261274)]>
+    """
+    xml_repr = _create_xml_request(body,time,system)
+    response = _send_requests(xml_repr)
+    namespace = {'ns': 'http://sscweb.gsfc.nasa.gov/schema'}
+    root = ET.fromstring(response.text)
+    coordinates = root.find('.//ns:Coordinates', namespace)
+
+    # Extract latitude and longitude
+    latitude_values = np.array([float(lat.text) for lat in coordinates.findall('.//ns:Latitude', namespace)]) * u.deg
+    longitude_values = np.array([float(lon.text) for lon in coordinates.findall('.//ns:Longitude', namespace)]) * u.deg
+
+    # Extract time values
+    times = root.findall(".//ns:Time", namespace)
+    time_values = Time([time.text for time in times])
+
+    return SkyCoord(
+        longitude_values,
+        latitude_values,
+        frame=GeocentricSolarEcliptic,
+        obstime=time_values
+    )

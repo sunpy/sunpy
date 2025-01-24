@@ -1,17 +1,25 @@
+"""
+Private functions for `sunpy.coordinates.get_sscweb_coord`.
+
+This module contains helper functions for generating and sending XML payloads to the SSCWeb API
+(https://sscweb.gsfc.nasa.gov/WS/sscr/2) to retrieve satellite or spacecraft location data.
+
+Functions:
+----------
+- `_create_xml_request`: Generates an XML payload for SSCWeb API requests.
+- `_send_requests`: Sends the XML payload to the SSCWeb API and retrieves the response.
+"""
+
+
+
 import xml.etree.ElementTree as ET
 
-import numpy as np
 import requests
 
-import astropy.units as u
-from astropy.coordinates import SkyCoord
-from astropy.time import Time
-
-from sunpy.coordinates import GeocentricSolarEcliptic
 from sunpy.time import TimeRange
 
 
-def _create_xml_request(name, time_range):
+def _create_xml_request(name, time_range,system):
     """
     Create an XML request payload for SSCWeb to fetch location data.
 
@@ -54,10 +62,11 @@ def _create_xml_request(name, time_range):
     output_options = ET.SubElement(data_request, "OutputOptions")
 
     # CoordinateOptions
+    # NOTE available coordinate options X, Y, Z, Latitude, Longitude , local-time (if applicable)
     coordinate_components = ["Lat", "Lon"]
     for component in coordinate_components:
         coordinate_option = ET.SubElement(output_options, "CoordinateOptions")
-        ET.SubElement(coordinate_option, "CoordinateSystem").text = "Gse"
+        ET.SubElement(coordinate_option, "CoordinateSystem").text = system
         ET.SubElement(coordinate_option, "Component").text = component
 
     return ET.tostring(ET.ElementTree(data_request).getroot(), encoding="unicode")
@@ -85,58 +94,3 @@ def _send_requests(xml):
     session.headers.update(headers)
     response = session.post(url, data=xml)
     return response
-
-def _decode_xml_response(response):
-    """
-    Decode the XML response from SSCWeb API into a SkyCoord object.
-
-    Parameters:
-    ----------
-    response : requests.Response
-        The HTTP response object containing XML data.
-
-    Returns:
-    -------
-    astropy.coordinates.SkyCoord
-        A SkyCoord object containing latitude, longitude, and timestamps in
-        the Geocentric Solar Ecliptic (GSE) frame.
-    """
-    namespace = {'ns': 'http://sscweb.gsfc.nasa.gov/schema'}
-    root = ET.fromstring(response.text)
-    coordinates = root.find('.//ns:Coordinates', namespace)
-
-    # Extract latitude and longitude
-    latitude_values = np.array([float(lat.text) for lat in coordinates.findall('.//ns:Latitude', namespace)]) * u.deg
-    longitude_values = np.array([float(lon.text) for lon in coordinates.findall('.//ns:Longitude', namespace)]) * u.deg
-
-    # Extract time values
-    times = root.findall(".//ns:Time", namespace)
-    time_values = Time([time.text for time in times])
-
-    return SkyCoord(
-        longitude_values,
-        latitude_values,
-        frame=GeocentricSolarEcliptic,
-        obstime=time_values
-    )
-
-def get_locations(name, time_range):
-    """
-    Retrieve the locations of a satellite or spacecraft from SSCWeb API.
-
-    Parameters:
-    ----------
-    name : str
-        Name of the satellite or spacecraft.
-    time_range : sunpy.time.TimeRange
-        The time range for which to fetch location data.
-
-    Returns:
-    -------
-    astropy.coordinates.SkyCoord
-        A SkyCoord object containing latitude, longitude, and timestamps in
-        the GeocentricSolarEcliptic (GSE) coordinate.
-    """
-    xml = _create_xml_request(name, time_range)
-    response = _send_requests(xml)
-    return _decode_xml_response(response)
