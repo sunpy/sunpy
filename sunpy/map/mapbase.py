@@ -55,7 +55,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -133,6 +133,33 @@ class GenericMap(NDData):
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
+
+    Methods and their known behavior with dask arrays
+    -------------------------------------------------
+
+    +-------------------+------------------------------------+
+    | Method            | Preserve laziness with Dask Arrays |
+    +===================+====================================+
+    | `reproject_to`    | No                                 |
+    +-------------------+------------------------------------+
+    | `resample`        | No                                 |
+    +-------------------+------------------------------------+
+    | `rotate`          | No                                 |
+    +-------------------+------------------------------------+
+    | `max`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `mean`            | Yes                                |
+    +-------------------+------------------------------------+
+    | `min`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `std`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `superpixel`      | Yes                                |
+    +-------------------+------------------------------------+
+    | `submap`          | Yes                                |
+    +-------------------+------------------------------------+
+
+
     Examples
     --------
     >>> import sunpy.map
@@ -166,7 +193,7 @@ class GenericMap(NDData):
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
     >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
@@ -732,24 +759,32 @@ class GenericMap(NDData):
     def std(self, *args, **kwargs):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanstd(self.data, *args, **kwargs)
 
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmean(self.data, *args, **kwargs)
 
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmin(self.data, *args, **kwargs)
 
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmax(self.data, *args, **kwargs)
 
@@ -1233,9 +1268,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1431,7 +1468,7 @@ class GenericMap(NDData):
         -----
         In many cases this is a simple rotation matrix, hence the property name.
         It general it does not have to be a pure rotation matrix, and can encode
-        other transformations e.g., skews for non-orthgonal coordinate systems.
+        other transformations e.g., skews for non-orthogonal coordinate systems.
         """
         if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
             return np.array(
@@ -1491,12 +1528,12 @@ class GenericMap(NDData):
         """
         Return any PV values in the metadata.
         """
-        pattern = re.compile('pv[0-9]_[0-9]a', re.IGNORECASE)
+        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
         pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
 
         pv_values = []
         for k in pv_keys:
-            i, m = int(k[2]), int(k[4])
+            i, m = int(k[2]), int(k[4:])
             pv_values.append((i, m, self.meta[k]))
         return pv_values
 
@@ -1650,6 +1687,8 @@ class GenericMap(NDData):
         as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         dimensions : `~astropy.units.Quantity`
@@ -1719,6 +1758,8 @@ class GenericMap(NDData):
         neither an angle or a rotation matrix are specified, the map will be
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -1911,6 +1952,8 @@ class GenericMap(NDData):
         are returned. If the rectangle is defined in world coordinates, the
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
+
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -2149,6 +2192,8 @@ class GenericMap(NDData):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
+        This method **does** preserve dask arrays.
+
         Parameters
         ----------
         dimensions : tuple
@@ -2346,6 +2391,32 @@ class GenericMap(NDData):
             **kwargs
         )
 
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.wcs,
+            **kwargs
+        )
+
     @u.quantity_input
     def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
                         axes=None, top_right=None, **kwargs):
@@ -2445,6 +2516,54 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
+
+    def _update_contour_args(self, contour_args):
+        """
+        Updates ``contour_args`` with values from ``plot_settings``.
+
+        Parameters
+        ----------
+        contour_args : dict
+            A dictionary of arguments to be used for contour plotting.
+
+        Returns
+        -------
+        dict
+            The updated ``contour_args`` dictionary.
+
+        Notes
+        -----
+        - 'cmap': Set to `None` to avoid the error "ValueError: Either colors or cmap must be None".
+        - 'interpolation': Removed because Matplotlib's contour function raises the warning
+        "The following kwargs were not used by contour: 'interpolation'".
+        - 'origin': If `'origin': 'lower'` is present, it is replaced with `'origin': None`,
+        as `None` is the default value for Matplotlib's contour plots.
+        """
+        plot_settings = self.plot_settings.copy()
+        contour_args_copy = contour_args.copy()
+        contour_args.update(plot_settings)
+        # Define default settings for normal plots and contour-specific updates
+        original_plot_defaults = {
+            'origin': 'lower',
+        }
+        default_contour_param = {
+            'origin': None,
+        }
+        # Replace conflicting settings with contour defaults
+        for key in original_plot_defaults:
+            if key in contour_args and contour_args[key] == original_plot_defaults[key]:
+                contour_args[key] = default_contour_param[key]
+        # 'cmap' cannot be used for contour plots when levels are not None,
+        # which is the case in composite maps.
+        contour_args['cmap'] = None
+        # custom 'norm' cannot be passed through plot_settings
+        contour_args['norm'] = None
+        # If 'draw_contour' is used, setting 'norm' and 'cmap' to None ensures the method arguments are applied.
+        contour_args.update(contour_args_copy)
+        contour_args.pop('interpolation')
+        return contour_args
+
+
     def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
@@ -2474,6 +2593,8 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         corresponding matplotlib method.
         """
+        contour_args = self._update_contour_args(contour_args)
+
         axes = self._check_axes(axes)
         levels = self._process_levels_arg(levels)
 
@@ -2729,7 +2850,7 @@ class GenericMap(NDData):
 
         return ret
 
-    @deprecated(since="6.1", alternative="sunpy.map.GenericMap.get_contours")
+    @deprecated(since="6.1", alternative="sunpy.map.GenericMap.find_contours")
     def contour(self, level, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
@@ -2787,7 +2908,7 @@ class GenericMap(NDData):
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
         return contours
 
-    def get_contours(self, level, method='contourpy', **kwargs):
+    def find_contours(self, level, method='contourpy', **kwargs):
         """
         Returns coordinates of the contours for a given level value.
 
@@ -2818,7 +2939,7 @@ class GenericMap(NDData):
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
-        >>> contours = aia.get_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
+        >>> contours = aia.find_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
         >>> contours[0]  # doctest: +REMOTE_DATA
         <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
             (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
@@ -2901,6 +3022,8 @@ class GenericMap(NDData):
             This method requires the optional package `reproject` to be installed.
 
         Additional keyword arguments are passed through to the reprojection function.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------

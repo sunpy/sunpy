@@ -24,6 +24,7 @@ __all__ = [
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
+    '.': r'\.',
     '%Y': r'(?P<year>\d{4})',
     '%j': r'(?P<dayofyear>\d{3})',
     '%m': r'(?P<month>\d{1,2})',
@@ -34,6 +35,8 @@ REGEX = {
     '%f': r'(?P<microsecond>\d+)',
     '%b': r'(?P<month_str>[a-zA-Z]+)',
 }
+# DO NOT SORT THIS LIST.
+# The string parsing is dependent on the specific order within this list.
 TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
     "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
@@ -41,6 +44,7 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
     "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
     "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
+    "%Y%m%dT%H%M",  # Example 20070504T2108 , Should precede "%Y%m%dT%H%M%S".
     "%Y%m%dT%H%M%S",  # Example 20070504T210812
     "%Y/%m/%d %H:%M:%S",  # Example 2007/05/04 21:08:12
     "%Y/%m/%d %H:%M",  # Example 2007/05/04 21:08
@@ -57,9 +61,11 @@ TIME_FORMAT_LIST = [
     "%d-%b-%Y",  # Example 04-May-2007
     "%d-%b-%Y %H:%M:%S",  # Example 04-May-2007 21:08:12
     "%d-%b-%Y %H:%M:%S.%f",  # Example 04-May-2007 21:08:12.999999
+    "%Y%m%d_%H%M",  # Example 20070504_2108 , Should precede "%Y%m%d_%H%M%S".
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M" ,   # Example 201401041205 , Should precede "%Y%m%d%H%M%S".
     "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC/VSO Export/Downloads)
     "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI - JSOC
     "%Y.%m.%d_%H:%M:%S.%f_TAI",  # Example 2019.09.15_00:00:02.898_TAI - JSOC
@@ -101,7 +107,7 @@ def _regex_parse_time(inp, format):
     # understand the former.
     for key, value in REGEX.items():
         format = format.replace(key, value)
-    match = re.match(format, inp)
+    match = re.match(f"{format}$", inp)
     if match is None:
         return None, None
 
@@ -212,52 +218,38 @@ def convert_time_astropy(time_string, **kwargs):
     return time_string
 
 
-@convert_time.register(list)
-def convert_time_list(time_list, format=None, **kwargs):
-    item = time_list[0]
-    # If we have a list of strings, need to get the correct format from our
-    # list of custom formats.
-    if isinstance(item, str) and format is None:
-        string_format = _get_time_fmt(item)
-        return Time.strptime(time_list, string_format, **kwargs)
-
-    # Otherwise return the default method
-    return convert_time.dispatch(object)(time_list, format, **kwargs)
-
-
 @convert_time.register(str)
+@convert_time.register(list)
 def convert_time_str(time_string, **kwargs):
-    if 'TAI' in time_string:
-        kwargs['scale'] = 'tai'
+    is_single_string = isinstance(time_string, str)
+    is_string_list = isinstance(time_string, list) and isinstance(time_string[0], str)
 
-    for time_format in TIME_FORMAT_LIST:
-        try:
+    if is_single_string or is_string_list:
+        first_item = time_string[0] if is_string_list else time_string
+        if 'TAI' in first_item:
+            kwargs['scale'] = 'tai'
+
+        for time_format in TIME_FORMAT_LIST:
             try:
-                ts, add_one_day = _regex_parse_time(time_string, time_format)
-            except TypeError:
-                break
-            if ts is None:
-                continue
-            t = Time.strptime(ts, time_format, **kwargs)
-            if add_one_day:
-                t += _ONE_DAY_TIMEDELTA
-            return t
-        except ValueError:
-            pass
+                try:
+                    ts, add_one_day = _regex_parse_time(first_item, time_format)
+                except TypeError:
+                    break
+                if ts is None:
+                    continue
+                if is_single_string:
+                    t = Time.strptime(ts, time_format, **kwargs)
+                    if add_one_day:
+                        t += _ONE_DAY_TIMEDELTA
+                else:
+                    # For a list of strings, we do not try to correct 24:00:00
+                    t = Time.strptime(time_string, time_format, **kwargs)
+                return t
+            except ValueError:
+                pass
 
     # when no format matches, call default function
     return convert_time.dispatch(object)(time_string, **kwargs)
-
-
-def _get_time_fmt(time_string):
-    """
-    Try all the formats in TIME_FORMAT_LIST to work out which one applies to
-    the time string.
-    """
-    for time_format in TIME_FORMAT_LIST:
-        ts, _ = _regex_parse_time(time_string, time_format)
-        if ts is not None:
-            return time_format
 
 
 def _variables_for_parse_time_docstring():

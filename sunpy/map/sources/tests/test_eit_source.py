@@ -7,6 +7,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import EITMap
 from .helpers import _test_private_date_setters
 
@@ -22,6 +23,10 @@ def eit_map():
 def test_fitstoEIT(eit_map):
     """Tests the creation of EITMap using FITS."""
     assert isinstance(eit_map, EITMap)
+
+
+def test_eitmap_coordinate_system(eit_map):
+    assert eit_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 
 def test_reference_date(eit_map):

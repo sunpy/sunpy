@@ -1,3 +1,0 @@
-Added :meth:`~sunpy.map.GenericMap.get_contours` for getting contours from a `~sunpy.map.Map`.
-By default the method uses ContourPy for performance reasons and consistency with :meth:`sunpy.map.GenericMap.draw_contours`.
-One can alternatively specify that the method use scikit-image.

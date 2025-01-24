@@ -166,6 +166,37 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_wcs_pv():
+    # Test that PVi_m values are preserved in the reconstructed WCS
+    zpn_header = {
+        'ctype1': 'HPLN-ZPN',
+        'ctype2': 'HPLT-ZPN',
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'pv1_0': 0,
+        'pv1_1': 0,
+        'pv1_2': 90,
+        'pv1_3': 180,
+        'pv2_1': 1,
+        'pv2_5': 0.2,
+        'pv2_10': 0.1,
+        'date-obs': '2025-01-01',
+        'hglt_obs': 0,
+        'hgln_obs': 0,
+        'dsun_obs': 1e13,
+    }
+    zpn_map = sunpy.map.Map((np.zeros((10, 10)), zpn_header))
+    pv_values = zpn_map.wcs.wcs.get_pv()
+    assert len(pv_values) == 7
+    assert pv_values[0] == (1, 0, 0)
+    assert pv_values[1] == (1, 1, 0)
+    assert pv_values[2] == (1, 2, 90)
+    assert pv_values[3] == (1, 3, 180)
+    assert pv_values[4] == (2, 1, 1.0)
+    assert pv_values[5] == (2, 5, 0.2)
+    assert pv_values[6] == (2, 10, 0.1)
+
+
 def test_wcs_cache(aia171_test_map):
     wcs1 = aia171_test_map.wcs
     wcs2 = aia171_test_map.wcs
@@ -350,6 +381,15 @@ def test_default_coordinate_system(generic_map):
     generic_map.meta['ctype1'] = 'HPLN-TAN'
     with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
+def test_coordinate_system_solar_x_solar_y(generic_map):
+    generic_map.meta['ctype1'] = 'SOLAR-X'
+    generic_map.meta['ctype2'] = 'SOLAR-Y'
+    with pytest.warns(SunpyDeprecationWarning, match="CTYPE1 value 'solar-x'/'solar_x' is deprecated") :
+        with pytest.warns(SunpyDeprecationWarning, match="CTYPE2 value 'solar-y'/'solar_y' is deprecated") :
+            assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
 def test_carrington_longitude(generic_map):
@@ -1464,16 +1504,16 @@ def test_submap_inputs(generic_map2, coords):
 
 def test_contour_deprecation_warning(simple_map):
 
-    with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.get_contours instead."):
+    with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.find_contours instead."):
         simple_map.contour(1.5)
 
 
-def test_get_contours_contourpy(simple_map):
+def test_find_contours_contourpy(simple_map):
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
     # 4 is the central pixel of the map, so contour half way between 1 and 2
-    contours = simple_map.get_contours(1.5, method='contourpy')
+    contours = simple_map.find_contours(1.5, method='contourpy')
     assert len(contours) == 1
     contour = contours[0]
     assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
@@ -1482,15 +1522,15 @@ def test_get_contours_contourpy(simple_map):
     assert u.allclose(contour.Tx, [-1, 0, 1, 0, -1] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [ 0, -0.5, 0, 0.5, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     with pytest.raises(ValueError, match='level must be a single scalar value'):
-        simple_map.get_contours([1.5, 2.5])
+        simple_map.find_contours([1.5, 2.5])
 
 
-def test_get_contours_skimage(simple_map):
+def test_find_contours_skimage(simple_map):
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
     # 4 is the central pixel of the map, so contour half way between 1 and 2
-    contours = simple_map.get_contours(1.5, method='skimage')
+    contours = simple_map.find_contours(1.5, method='skimage')
     assert len(contours) == 1
     contour = contours[0]
     assert contour.observer.lat == simple_map.observer_coordinate.frame.lat
@@ -1499,37 +1539,37 @@ def test_get_contours_skimage(simple_map):
     assert u.allclose(contour.Tx, [0, -1, 0, 1, 0] * u.arcsec, atol=1e-10 * u.arcsec)
     assert u.allclose(contour.Ty, [0.5, 0, -0.5, 0, 0.5] * u.arcsec, atol=1e-10 * u.arcsec)
     with pytest.raises(ValueError, match='level must be a single scalar value'):
-        simple_map.get_contours([1.5, 2.5])
+        simple_map.find_contours([1.5, 2.5])
 
 
-def test_get_contours_invalid_library(simple_map):
+def test_find_contours_invalid_library(simple_map):
     with pytest.raises(ValueError, match="Unknown method 'invalid_method'. Use 'contourpy' or 'skimage'."):
-        simple_map.get_contours(1.5, method='invalid_method')
+        simple_map.find_contours(1.5, method='invalid_method')
 
 
-def test_get_contours_units(simple_map):
+def test_find_contours_units(simple_map):
     # Check that contouring with units works as intended
     simple_map.meta['bunit'] = 'm'
     # Same units
-    contours = simple_map.get_contours(1.5 * u.m)
+    contours = simple_map.find_contours(1.5 * u.m)
     assert len(contours) == 1
 
     # Different units, but convertible
-    contours_cm = simple_map.get_contours(150 * u.cm)
+    contours_cm = simple_map.find_contours(150 * u.cm)
     for c1, c2 in zip(contours, contours_cm):
         assert np.all(c1 == c2)
 
     # Percentage
-    contours_percent = simple_map.get_contours(50 * u.percent)
+    contours_percent = simple_map.find_contours(50 * u.percent)
     high = np.max(simple_map.data)
     low = np.min(simple_map.data)
     middle = high - (high - low) / 2
-    contours_ref = simple_map.get_contours(middle * simple_map.unit)
+    contours_ref = simple_map.find_contours(middle * simple_map.unit)
     for c1, c2 in zip(contours_percent, contours_ref):
         assert np.all(c1 == c2)
 
 
-def test_get_contours_inputs(simple_map):
+def test_find_contours_inputs(simple_map):
     with pytest.raises(ValueError, match='Contour levels must be increasing'):
         simple_map.draw_contours([10, -10] * u.dimensionless_unscaled)
     with pytest.raises(ValueError, match=re.escape('The provided level (1000.0) is not smaller than the maximum data value (80)')):
@@ -1540,22 +1580,22 @@ def test_get_contours_inputs(simple_map):
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
         simple_map.draw_contours(1.5)
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
-        simple_map.get_contours(1.5)
+        simple_map.find_contours(1.5)
 
     with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
         simple_map.draw_contours(1.5 * u.s)
     with pytest.raises(u.UnitsError, match=re.escape("'s' (time) and 'm' (length) are not convertible")):
-        simple_map.get_contours(1.5 * u.s)
+        simple_map.find_contours(1.5 * u.s)
 
     # With no units, check that dimensionless works
     simple_map.meta.pop('bunit')
     simple_map.draw_contours(1.5 * u.dimensionless_unscaled)
-    simple_map.get_contours(1.5 * u.dimensionless_unscaled)
+    simple_map.find_contours(1.5 * u.dimensionless_unscaled)
 
     with pytest.raises(u.UnitsError, match='This map has no unit'):
         simple_map.draw_contours(1.5 * u.m)
     with pytest.raises(u.UnitsError, match='This map has no unit'):
-        simple_map.get_contours(1.5 * u.m)
+        simple_map.find_contours(1.5 * u.m)
 
 
 def test_print_map(generic_map):
@@ -1710,6 +1750,26 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
     ax3.set_title('Contours rotated by 90 deg CCW')
 
     return fig
+
+
+def test_plot_composite_map_updated_args(simple_map):
+    simple_map.plot_settings['cmap'] = 'viridis'
+    simple_map.plot_settings['norm'] = 'linear'
+    simple_map.plot_settings['origin'] = 'upper'
+    simple_map.plot_settings['alpha'] = 0.7
+    simple_map.plot_settings['zorder'] = 8
+    contour_args = {'norm': 'log',
+                    'cmap':'plasma'}
+    updated_args = simple_map._update_contour_args(contour_args)
+    # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
+    # their contour_args values will be used instead of plot_settings value
+    assert updated_args ==  {
+        'alpha': 0.7,
+        'cmap': 'plasma',
+        'norm': 'log',
+        'origin': 'upper',
+        'zorder': 8
+    }
 
 
 @figure_test

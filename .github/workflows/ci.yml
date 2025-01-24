@@ -1,3 +1,4 @@
+# Main CI Workflow
 name: CI
 
 on:
@@ -21,14 +22,14 @@ concurrency:
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py312
+        - linux: py313
           libraries:
             apt:
               - libopenjp2-7
@@ -37,7 +38,7 @@ jobs:
 
   test:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       submodules: false
       coverage: codecov
@@ -49,18 +50,16 @@ jobs:
           libraries:
             brew:
               - openjpeg
-        - linux: py310-oldestdeps
+        - linux: py311-oldestdeps
           libraries:
             apt:
               - libopenjp2-7
-        - linux: py310
-        - linux: py313
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       default_python: '3.12'
       submodules: false
@@ -83,8 +82,7 @@ jobs:
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
     with:
-      # Due to mplcario, we need to use Python 3.10 for the wheels
-      default_python: '3.10'
+      default_python: '3.12'
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
@@ -114,7 +112,7 @@ jobs:
         github.event_name == 'pull_request' &&
         contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
     with:
       default_python: '3.12'
       submodules: false
@@ -187,21 +185,22 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@main
+    uses: sunpy/github-actions-workflows/.github/workflows/publish.yml@main
     with:
       upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
       anaconda_user: scientific-python-nightly-wheels
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
       sdist: false
-      test_extras: 'tests-only'
-      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy.io.tests.test_ana'
+      test_extras: 'tests'
+      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
       targets: |
-        - cp3{10,11,12,13}-macosx_arm64
-        - cp3{10,11,12,13}-macosx_x86_64
-        - cp3{10,11,12,13}-manylinux_aarch64
-        - cp3{10,11,12,13}-manylinux_x86_64
+        - cp3{11,12,13}-macosx_arm64
+        - cp3{11,12,13}-macosx_x86_64
+        - target: cp3{11,12,13}-manylinux_aarch64
+          runs-on: ubuntu-24.04-arm
+        - cp3{11,12,13}-manylinux_x86_64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}

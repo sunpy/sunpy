@@ -43,6 +43,18 @@ class EITMap(GenericMap):
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
+    def coordinate_system(self):
+        """
+        Override the default implementation of coordinate_system to handle EITMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
+
+    @property
     def date(self):
         # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
         return self._get_date('date_obs') or super().date
@@ -114,6 +126,18 @@ class LASCOMap(GenericMap):
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle LASCOMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
+
+    @property
     def spatial_units(self):
         return SpatialPair(u.Unit(self.meta.get('cunit1').lower()),
                            u.Unit(self.meta.get('cunit2').lower()))
@@ -168,6 +192,14 @@ class LASCOMap(GenericMap):
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
+
+    @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is not None and bunit == 0:
+            # The HV JP2 files given to us have a 0 value BUNIT
+            return u.dimensionless_unscaled
+        return super().unit
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
