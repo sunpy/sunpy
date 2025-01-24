@@ -1074,12 +1074,20 @@ class GenericMap(NDData):
     @property
     def measurement(self):
         """
-        Measurement wavelength.
+        Returns the primary measurement of the map, typically the wavelength 
+        (from the 'WAVELNTH' FITS keyword). In some cases, it may represent 
+        other observables like LOS magnetograms or continuum intensity.
 
-        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
-        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
-        defaults to dimensionless units.
-        """
+        By default, it returns the wavelength with units (if 'WAVEUNIT' is present) 
+        or dimensionless if missing. Subclasses of GenericMap may override this 
+        property to return other measurement types.
+
+        Returns:
+         ~astropy.units.Quantity or str:
+         The measurement value (e.g., wavelength or other observable). 
+        Returns None if no relevant keyword is found.
+         """
+
         return self.wavelength
 
     @property
