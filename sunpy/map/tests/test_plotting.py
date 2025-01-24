@@ -345,6 +345,17 @@ def test_plot_autoalign(aia171_test_map):
     return fig
 
 
+@figure_test
+def test_plot_autoalign_imshow(aia171_test_map):
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    rotated_map.plot(axes=ax, autoalign='imshow')
+    return fig
+
+
 def test_plot_autoalign_bad_inputs(aia171_test_map):
     with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, or 'pcolormesh'."):
         aia171_test_map.plot(autoalign='bad')
@@ -368,6 +379,12 @@ def test_plot_autoalign_pixel_alignment(aia171_test_map):
     ax2.grid(False)
     ax2.set_xlim(x - 2, x + 2)
     ax2.set_ylim(y - 2, y + 2)
+
+    ax3 = fig.add_subplot(122, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax2, autoalign='imshow', title='Jusing testing function')
+    ax3.grid(False)
+    ax3.set_xlim(x - 2, x + 2)
+    ax3.set_ylim(y - 2, y + 2)
 
     return fig
 
