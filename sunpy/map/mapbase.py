@@ -2802,9 +2802,9 @@ class GenericMap(NDData):
         if autoalign == 'imshow':            
             w = data.shape[1]
             h = data.shape[0]
-            new_meta = self.meta.copy()
-            new_meta['naxis1'] = w
-            new_meta['naxis2'] = h
+           # new_meta = self.meta.copy()
+          #  new_meta['naxis1'] = w
+           # new_meta['naxis2'] = h
             
             image = axes.imshow(data, transform=axes.get_transform(self.wcs), **imshow_args)
             path = matplotlib.path.Path([[-0.5, -0.5], [w-0.5, -0.5], [w-0.5, h-0.5], [-0.5, h-0.5], [-0.5, -0.5]])
