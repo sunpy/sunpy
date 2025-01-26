@@ -5,6 +5,7 @@ import warnings
 
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
 from matplotlib.testing.decorators import check_figures_equal
 
 import astropy.units as u
@@ -139,3 +140,37 @@ def test_reproject_to_warn_using_contexts(aia171_test_map, hpc_header):
             # Check if a warning is raised if both context managers are used at the same time.
             with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data."):
                 aia171_test_map.reproject_to(hpc_header)
+
+
+@figure_test
+@pytest.mark.parametrize('auto_extent', [None, 'corners', 'edges', 'all'])
+def test_reproject_to_auto_extent(aia171_test_map, auto_extent):
+    aia = aia171_test_map.submap([32, 32] * u.pix, top_right=[80, 100]*u.pix)
+
+    header = {
+        'naxis1': 60,
+        'naxis2': 200,
+        'crpix1': 30.5,
+        'crpix2': 100.5,
+        'crval1': -750,
+        'crval2': 0,
+        'cdelt1': 10,
+        'cdelt2': 10,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': 80,
+        'hglt_obs': 10,
+        'rsun_ref': aia.rsun_meters.value,
+        'dsun_obs': aia.dsun.value,
+        'date-obs': aia.date.isot,
+        'mjd-obs': aia.date.mjd,
+    }
+
+    reprojected_aia = aia.reproject_to(header, auto_extent=auto_extent)
+    fig = Figure()
+    ax = fig.add_subplot(projection=reprojected_aia)
+    reprojected_aia.plot(axes=ax, title=f"auto_extent={auto_extent}")
+    aia.draw_extent(axes=ax, color='red')
+    return fig

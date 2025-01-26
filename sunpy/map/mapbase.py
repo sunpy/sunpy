@@ -9,6 +9,7 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
+from typing import Literal
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
@@ -3084,6 +3085,7 @@ class GenericMap(NDData):
         return axes
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
+                     auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
@@ -3104,6 +3106,14 @@ class GenericMap(NDData):
         return_footprint : `bool`
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
+        auto_extent : ``"all"``, ``"edges"``, ``"corners"``, or ``None``
+            If ``None``, the extent of the reprojected map comes from the target WCS.
+            If not ``None``, the extent of the reprojected map is automatically
+            determined by ensuring that all of the pixels, just the edges, or just the
+            corners of this map are in the contained within the extent.  Compared to the
+            target WCS, the extent will be shifted/expanded/cropped by an integer number
+            of pixels.
+            Defaults to ``None``.
 
         Returns
         -------
@@ -3129,6 +3139,11 @@ class GenericMap(NDData):
         See the respective documentation for these functions for additional keyword
         arguments that are allowed.
 
+        Of the options for the automatic determination of the reprojected extent, both
+        ``"edges"`` and ``"corners"`` will perform the calculation faster than
+        ``"all"``, but at the risk of potentially not including the entire reprojected
+        map.
+
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
@@ -3150,6 +3165,38 @@ class GenericMap(NDData):
         if algorithm not in functions:
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
+
+        if auto_extent is not None:
+            ny, nx = self.data.shape
+            if auto_extent == 'all':
+                pixels = np.indices((nx + 1, ny + 1)) - 0.5
+            elif auto_extent == 'edges':
+                pixels = grid_perimeter(nx, ny).T - 0.5
+            elif auto_extent == 'corners':
+                pixels = np.array([[0, 0, nx, nx], [0, ny, ny, 0]]) - 0.5
+            else:
+                raise ValueError("The allowed options for auto_extent are 'all', 'edges', 'corners', or None.")
+
+            out_xpixels, out_ypixels = astropy.wcs.utils.pixel_to_pixel(self.wcs, target_wcs, *pixels)
+
+            if not np.all(np.logical_and(np.isfinite(out_xpixels), np.isfinite(out_ypixels))):
+                if auto_extent == 'corners':
+                    raise RuntimeError("The extent could not be automatically determined from the corners. "
+                                       "Try specifying 'all' or 'edges'.")
+                elif auto_extent == 'edges':
+                    raise RuntimeError("The extent could not be automatically determined from the edges. "
+                                       "Try specifying 'all'.")
+                else:
+                    raise RuntimeError("The extent could not be automatically determined because all of "
+                                       "the coordinates in the map transformed to NaNs.")
+
+            left = int(np.floor(np.min(out_xpixels) + 0.5))
+            bottom = int(np.floor(np.min(out_ypixels) + 0.5))
+            right = int(np.ceil(np.max(out_xpixels) - 0.5))
+            top = int(np.ceil(np.max(out_ypixels) - 0.5))
+
+            target_wcs.wcs.crpix -= [left, bottom]
+            target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
         # reproject does not automatically grab the array shape from the WCS instance
         if target_wcs.array_shape is not None:
