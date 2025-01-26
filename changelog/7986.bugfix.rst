@@ -1,1 +1,0 @@
-Fixed the formatting of the the channel labels for `~sunpy.timeseries.sources.XRSTimeSeries`.

@@ -1,1 +1,0 @@
-Added a new how-to guide :ref:`sunpy-how-to-observer-by-coordinate` demonstrating how to create coordinate objects with an observer location specified using `~astropy.coordinates.SkyCoord`.
