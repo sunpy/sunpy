@@ -10,9 +10,9 @@ from matplotlib import colors
 from astropy.visualization import ImageNormalize
 from astropy.visualization import AsinhStretch
 
-__all__ = ['SUITMap']
-__author__ = ['Rahul Gopalakrishnan']
-__email__ = ['rahulg.astro@gmail.com']
+__all__ = ["SUITMap"]
+__author__ = ["Rahul Gopalakrishnan"]
+__email__ = ["rahulg.astro@gmail.com"]
 
 class SUITMap(GenericMap):
     """
@@ -40,7 +40,7 @@ class SUITMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-        filtername = header.get('FTR_NAME').strip()
+        filtername = header.get("FTR_NAME").strip()
         filternorms = {
                 "NB01": 0.1,
                 "NB02": 9.0,
@@ -54,18 +54,18 @@ class SUITMap(GenericMap):
                 "BB02":0.4,
                 "BB03":0.8,
                 }
-        self.plot_settings['cmap'] = f"suit_{filtername.lower()}"
-        self.plot_settings['title'] = f"SUIT {filtername}:{self.wavelength} - {self.reference_date}"
+        self.plot_settings["cmap"] = f"suit_{filtername.lower()}"
+        self.plot_settings["title"] = f"SUIT {filtername}:{self.wavelength} - {self.reference_date}"
         self.plot_settings["norm"] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(filternorms.get(filtername, 0.2))), clip=False)
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('haex_obs', 'haey_obs', 'haez_obs'), {'x': self.meta.get('haex_obs'),
-                                                        'y': self.meta.get('haey_obs'),
-                                                        'z': self.meta.get('haez_obs'),
-                                                        'unit': u.m,
-                                                        'representation_type': CartesianRepresentation,
-                                                        'frame': HeliocentricMeanEcliptic})
+        return [(("haex_obs", "haey_obs", "haez_obs"), {"x": self.meta.get("haex_obs"),
+                                                        "y": self.meta.get("haey_obs"),
+                                                        "z": self.meta.get("haez_obs"),
+                                                        "unit": u.m,
+                                                        "representation_type": CartesianRepresentation,
+                                                        "frame": HeliocentricMeanEcliptic})
                 ] + super()._supported_observer_coordinates
 
     @property
@@ -74,7 +74,7 @@ class SUITMap(GenericMap):
 
     @property
     def instrument(self):
-        return "Aditya-L1 (Solar Ultraviolet Imaging Telescope)"
+        return "Solar Ultraviolet Imaging Telescope (Aditya-L1)"
 
     @property
     def detector(self):
@@ -82,21 +82,21 @@ class SUITMap(GenericMap):
 
     @property
     def processing_level(self):
-        return self.meta.get('F_LEVEL','')
+        return self.meta.get("F_LEVEL", "")
 
     @property
     def _date_obs(self):
         """
         Time of observation
         """
-        return self._get_date('T_OBS')
+        return self._get_date("T_OBS")
 
     @property
     def reference_date(self):
         """
         The reference time is the time of Shutter open time. Does not include the exposure time.
         """
-        return self._get_date('T_OBS') or super().reference_date
+        return self._get_date("T_OBS") or super().reference_date
 
 
     @classmethod
@@ -104,5 +104,4 @@ class SUITMap(GenericMap):
         """
         Determines if header corresponds to a SUIT image
         """
-        payload = header.get('PNAME', '').strip().lower() == 'suit'
-        return  payload
+        return header.get("PNAME", "").strip().lower() == "suit"

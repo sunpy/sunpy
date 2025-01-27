@@ -14,7 +14,7 @@ __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
-    'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table','suit_color_table'
+    'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table', 'suit_color_table'
 ]
 
 

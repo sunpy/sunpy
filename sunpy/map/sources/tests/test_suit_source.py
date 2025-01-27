@@ -10,6 +10,7 @@ from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suit import SUITMap
 from sunpy.sun import constants
 
+
 __author__ = "Rahul Gopalakrishnan (rahulg.astro@gmail.com)"
 
 
@@ -46,3 +47,7 @@ def test_detector(suit_map):
 def test_norm_clip(suit_map):
     """Check for norm clipping"""
     assert not suit_map.plot_settings['norm'].clip
+
+def test_wcs(suit_map):
+    """Test WCS is valid and can transform from pixels to world coordinates"""
+    suit_map.pixel_to_world(0*u.pix, 0*u.pix)
