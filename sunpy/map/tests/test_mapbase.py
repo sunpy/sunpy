@@ -1041,6 +1041,17 @@ def test_superpixel_masked(aia171_test_map_with_mask):
     assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
 
 
+def test_superpixel_masked_bin_mask_true(aia171_test_map_with_mask):
+    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    dimensions = (2, 2) * u.pix
+    # Test that the mask is respected
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, bin_mask=True)
+    assert superpix_map.mask is not None
+    # Check the shape of the mask
+    expected_shape = input_dims * (1 * u.pix / dimensions)
+    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+
+
 def test_superpixel_units(generic_map):
     new_dims = (2, 2) * u.pix
     super1 = generic_map.superpixel(new_dims)

@@ -2242,7 +2242,6 @@ class GenericMap(NDData):
         else:
             data = self.data.copy()
 
-
         reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
         new_array = func(func(reshaped_data, axis=3), axis=1)
 
