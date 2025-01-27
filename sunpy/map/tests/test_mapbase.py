@@ -27,6 +27,7 @@ import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
@@ -1050,6 +1051,15 @@ def test_superpixel_masked_bin_mask_true(aia171_test_map_with_mask):
     # Check the shape of the mask
     expected_shape = input_dims * (1 * u.pix / dimensions)
     assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+
+    # Verify mask values (bin_mask=True)
+    reshaped_mask = reshape_image_to_4d_superpixel(
+        aia171_test_map_with_mask.mask,
+        [dimensions[1].value, dimensions[0].value],
+        [0, 0],
+    )
+    expected_mask = np.any(reshaped_mask, axis=(1, 3))
+    assert np.array_equal(superpix_map.mask, expected_mask)
 
 
 def test_superpixel_units(generic_map):
