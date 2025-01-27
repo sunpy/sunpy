@@ -2239,23 +2239,19 @@ class GenericMap(NDData):
         # function.
         if self.mask is not None:
             data = np.ma.array(self.data.copy(), mask=self.mask)
-            mask = self.mask
         else:
             data = self.data.copy()
-            mask = None
+
 
         reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-        reshaped_mask = reshape_image_to_4d_superpixel(mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]]) if mask is not None else None
-
         new_array = func(func(reshaped_data, axis=3), axis=1)
 
-        if bin_mask and reshaped_mask is not None:
-            # If the mask should be accounted for, propagate the mask to the superpixels
-            new_mask = func(func(reshaped_mask, axis=3), axis=1) > 0
-            # this approach was suggested in the issue but i think the below approach is more computationally efficient, let me know what which one to keep
-            # new_mask = np.any(reshaped_mask, axis=(3, 1))
-        elif not bin_mask and self.mask is not None:
-            new_mask = np.ma.getmaskarray(new_array)
+        if self.mask is not None:
+            if bin_mask:
+                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+                new_mask = np.any(reshaped_mask, axis=(3, 1))
+            else:
+                new_mask = np.ma.getmaskarray(new_array)
         else:
             new_mask = None
 
