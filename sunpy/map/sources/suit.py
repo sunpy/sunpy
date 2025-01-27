@@ -16,7 +16,7 @@ __email__ = ["rahulg.astro@gmail.com"]
 
 class SUITMap(GenericMap):
     """
-    SUIT Image Map
+    SUIT Image Map.
 
     The Solar Ultraviolet Imaging Telescope (SUIT) is one of the remote sensing
     payloads on board the Aditya-L1 mission of the Indian Space Research Organization (ISRO)
@@ -30,11 +30,10 @@ class SUITMap(GenericMap):
 
     References
     ----------
-    * `Home Page: <https://suit.iucaa.in/>`_
-    * `Mission Page: <https://suit.iucaa.in/about_SUIT>`_
-    * `Publications Page: <https://suit.iucaa.in/node/5>`_
-    * `Data Download PRADAN Page: <https://pradan.issdc.gov.in/al1>`_
-    ----------
+    * `Home Page: <https://suit.iucaa.in/>`__
+    * `Mission Page: <https://suit.iucaa.in/about_SUIT>`__
+    * `Publications Page: <https://suit.iucaa.in/node/5>`__
+    * `Data Download PRADAN Page: <https://pradan.issdc.gov.in/al1>`__
     """
 
     def __init__(self, data, header, **kwargs):
@@ -97,7 +96,6 @@ class SUITMap(GenericMap):
         The reference time is the time of Shutter open time. Does not include the exposure time.
         """
         return self._get_date("T_OBS") or super().reference_date
-
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
