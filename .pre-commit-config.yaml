@@ -24,14 +24,7 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
   - repo: https://github.com/crate-ci/typos
-<<<<<<<
     rev: dictgen-v0.3.1
-=======
-      - id: mixed-line-ending
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.0
->>>>>>>
     hooks:
       - id: typos
   - repo: local
