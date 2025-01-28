@@ -407,7 +407,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(Request)
     def _parse_url(self, request, **kwargs):
-        path = download_file(request.full_url, get_and_create_download_dir())
+        path = download_file(request.full_url, get_and_create_download_dir() , **kwargs)
         return self._parse_path(pathlib.Path(path), **kwargs)
 
     @_parse_arg.register(pathlib.Path)
