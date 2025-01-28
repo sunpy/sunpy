@@ -1,1 +1,0 @@
-Fixes the propagation of the mask in :meth:`sunpy.map.GenericMap.superpixel` by introducing a new ``bin_mask`` keyword argument, which defaults to ``False``. When ``bin_mask=True``, a superpixel will be masked if any of its constituent pixels are masked.
