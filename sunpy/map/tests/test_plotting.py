@@ -214,9 +214,9 @@ def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
 
 
 @figure_test
-def test_plot_masked_aia171_superpixel_bin_mask_true(aia171_test_map_with_mask):
+def test_plot_masked_aia171_superpixel_conservative_mask_true(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel(
-        (9, 7) * u.pix, offset=(4, 4) * u.pix, bin_mask=True).plot()
+        (9, 7) * u.pix, offset=(4, 4) * u.pix, conservative_mask=True).plot()
 
 
 @figure_test
