@@ -104,8 +104,7 @@ jobs:
           posargs: -n auto --dist loadgroup --color=yes
           libraries:
             apt:
-              - libopenjp2-7
-        - linux: coordinates-test      
+              - libopenjp2-7   
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -126,6 +125,7 @@ jobs:
             apt:
               - libopenjp2-7
         - linux: core_deps
+        - linux: coordinates
         - linux: linkcheck
           pytest: false
 
