@@ -7,7 +7,9 @@ import shutil
 from unicodedata import normalize
 from email.parser import FeedParser
 from urllib.parse import urlparse
+
 from astropy.utils.data import download_file as astropy_download_file
+
 from sunpy.util import replacement_filename
 
 __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
