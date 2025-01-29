@@ -32,10 +32,10 @@ We can create a `~astropy.units.Quantity` by multiplying a number by a unit:
 
 A `~astropy.units.Quantity` can be decomposed into its unit and numerical value using the ``.unit`` and ``.value`` attributes:
 
-.. code-block:: python
+.. doctest-requires:: numpy>=2.0.0
 
-   >>> length.value  # doctest: +SKIP
-   10.0
+   >>> length.value
+   np.float64(10.0)
 
    >>> length.unit
    Unit("m")
@@ -65,7 +65,7 @@ However, operations with incompatible units raise an error:
    >>> displacement + time
    Traceback (most recent call last):
    ...
-   astropy.units.core.UnitConversionError: Can only apply 'add' function to quantities with compatible dimensions
+   astropy...UnitConversionError: Can only apply 'add' function to quantities with compatible dimensions
 
 Converting Units
 ================
@@ -92,9 +92,9 @@ If we try to convert a wavelength to energy using what we learned in the previou
    >>> length.to(u.keV)
    Traceback (most recent call last):
    ...
-   astropy.units.core.UnitConversionError: 'm' (length) and 'keV' (energy/torque/work) are not convertible
+   astropy...UnitConversionError: 'm' (length) and 'keV' (energy/torque/work) are not convertible
 
-However, we can perform this conversion using the `~astropy.units.equivalencies.spectral` equivalency:
+However, we can perform this conversion using the `~astropy.units.spectral` equivalency:
 
 .. code-block:: python
 
@@ -124,12 +124,12 @@ Not every package in the scientific Python ecosystem understands units.
 As such, it is sometimes necessary to drop the units before passing `~astropy.units.Quantity` to such functions.
 As shown above, you can retrieve the just the numerical value of a `~astropy.units.Quantity`:
 
-.. code-block:: python
+.. doctest-requires:: numpy>=2.0.0
 
-   >>> length.to_value()  # doctest: +SKIP
-   10.0
-   >>> length.to_value(u.km)  # doctest: +SKIP
-   0.01
+   >>> length.to_value()
+   np.float64(10.0)
+   >>> length.to_value(u.km)
+   np.float64(0.01)
 
 Quantities as function arguments
 ================================
@@ -155,16 +155,15 @@ Now when this function is called, if the inputs are not convertible to the units
 
 .. code-block:: python
 
-   >>> speed(1*u.m, 10*u.m)
+   >>> speed(1*u.m, 10*u.m)  # doctest: +IGNORE_EXCEPTION_DETAIL
    Traceback (most recent call last):
    ...
-   astropy.units.core.UnitsError: Argument 'time' to function 'speed' must be in units convertible to 's'.
+   astropy...UnitsError: Argument 'time' to function 'speed' must be in units convertible to 's'.
 
-   >>> speed(1*u.m, 10)
-   ...
+   >>> speed(1*u.m, 10)  # doctest: +IGNORE_EXCEPTION_DETAIL
    Traceback (most recent call last):
    ...
-   TypeError: Argument 'time' to function 'speed' has no 'unit' attribute. ... pass in an astropy Quantity instead.
+   TypeError: Argument 'time' to function 'speed' has no 'unit' attribute. You should pass in an astropy Quantity instead.
 
 The units of the inputs need only be compatible with those in the function definition.
 For example, passing in a time in minutes still works even though we specified ``time: u.s``:

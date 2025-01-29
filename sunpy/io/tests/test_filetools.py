@@ -12,6 +12,8 @@ from sunpy.tests.helpers import skip_ana, skip_glymur
 
 TEST_RHESSI_IMAGE = get_test_filepath('hsi_image_20101016_191218.fits')
 TEST_AIA_IMAGE = get_test_filepath('aia_171_level1.fits')
+TEST_AIA_IMAGE_URI = "s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits"
+
 # Some of the tests images contain an invalid BLANK keyword;
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
@@ -36,6 +38,12 @@ def test_read_file_fits():
     assert isinstance(aia_header, np.ndarray)
     assert isinstance(aia_data, FileHeader)
 
+@pytest.mark.remote_data
+def test_read_file_fits_uri():
+    # Aim is to verify that we can read a FITS file from s3
+    aia_header, aia_data = read_file(TEST_AIA_IMAGE_URI, fsspec_kwargs={'anon':True})[0]
+    assert isinstance(aia_header, np.ndarray)
+    assert isinstance(aia_data, FileHeader)
 
 def test_read_file_fits_multiple_hdu():
     # Aim is to verify that we can read a FITS file with multiple HDUs
@@ -60,6 +68,16 @@ def test_read_file_fits_gzip(fname):
     assert isinstance(hdulist[0][1], FileHeader)
     assert np.all(hdulist[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
+
+def test_read_file_fits_fz_ext(tmp_path):
+    test_fits = tmp_path / 'test.fits.fz'
+    with open(TEST_AIA_IMAGE, 'rb') as orig:
+        with (test_fits).open('wb') as test:
+            test.write(orig.read())
+
+    aia_header, aia_data = read_file(str(test_fits))[0]
+    assert isinstance(aia_header, np.ndarray)
+    assert isinstance(aia_data, FileHeader)
 
 @skip_glymur
 def test_read_file_jp2():

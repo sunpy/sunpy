@@ -33,6 +33,7 @@ from sunpy.coordinates import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
     SolarMagnetic,
     SphericalScreen,
     propagate_with_solar_surface,
@@ -119,6 +120,25 @@ def test_hpc_hpc_null():
     assert quantity_allclose(hpc_new.Tx, hpc_in.Tx)
     assert quantity_allclose(hpc_new.Ty, hpc_in.Ty)
     assert hpc_out.observer == hpc_new.observer
+
+
+@pytest.mark.parametrize(('Tx', 'Ty', 'psi', 'delta', 'theta'),
+                         [(0*u.arcsec, 0*u.arcsec, 0*u.deg, -90*u.deg, 0*u.arcsec),
+                          (360*u.arcsec, 0*u.arcsec, 270*u.deg, -89.9*u.deg, 360*u.arcsec),
+                          (0*u.arcsec, -720*u.arcsec, 180*u.deg, -89.8*u.deg, 720*u.arcsec),
+                          (360*u.arcsec, -720*u.arcsec, 206.564946*u.deg, -89.776393*u.deg, 804.984145*u.arcsec)])
+def test_hpc_hpr(Tx, Ty, psi, delta, theta):
+    observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, radius=1*u.AU)
+    hpc = Helioprojective(Tx, Ty, observer=observer)
+
+    hpr = hpc.transform_to(HelioprojectiveRadial(observer=observer))
+    assert_quantity_allclose(hpr.psi, psi)
+    assert_quantity_allclose(hpr.delta, delta)
+    assert_quantity_allclose(hpr.theta, theta)
+
+    hpc_back = hpr.transform_to(hpc)
+    assert_quantity_allclose(hpc_back.Tx, Tx)
+    assert_quantity_allclose(hpc_back.Ty, Ty)
 
 
 def test_hpc_hpc_spherical_screen():

@@ -2,10 +2,8 @@
 This module provides functions to make WCSAxes work in SunPy.
 """
 import matplotlib.pyplot as plt
-from packaging.version import Version
 
 import astropy.units as u
-from astropy import __version__ as astropy_version
 from astropy.visualization import wcsaxes
 
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst
@@ -174,11 +172,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
     lon = overlay[0]
     lat = overlay[1]
 
-    # TODO: Remove when we depend on astropy 5.3
-    if Version(astropy_version) >= Version("5.3.dev"):
-        lon.coord_wrap = 180 * u.deg
-    else:
-        lon.coord_wrap = 180
+    lon.set_coord_type("longitude", coord_wrap=180*u.deg)
     lon.set_major_formatter('dd')
 
     if annotate:

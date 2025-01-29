@@ -21,6 +21,7 @@ from sunpy.coordinates.frames import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
 )
 from sunpy.coordinates.sun import angular_radius
 from sunpy.time import parse_time
@@ -267,6 +268,64 @@ def test_hpc_is_visible_tolerance():
         pytest.skip("Test already passes prior to increasing the tolerance.")
 
     assert hpc.is_visible(tolerance=1*u.m)
+
+
+# ==============================================================================
+# Helioprojective Radial Tests
+# ==============================================================================
+
+@pytest.mark.parametrize(('args', 'kwargs'),
+                         two_D_parameters + [(None, {'psi': 0 * u.deg,
+                                                     'delta': 0 * u.arcsec})])
+def test_create_hpr_2d(args, kwargs):
+    hpr1 = init_frame(HelioprojectiveRadial, args, kwargs)
+
+    assert isinstance(hpr1, HelioprojectiveRadial)
+    assert isinstance(hpr1._data, UnitSphericalRepresentation)
+
+    assert hpr1.psi.unit is u.deg
+    assert hpr1.delta.unit is u.deg
+    assert_quantity_allclose(hpr1.psi, 0*u.deg)
+    assert_quantity_allclose(hpr1.delta, 0*u.deg)
+
+    assert_quantity_allclose(hpr1.theta, 90*u.deg)
+
+
+@pytest.mark.parametrize(
+    ('args', 'kwargs'),
+    three_D_parameters + [(None, {'psi': 0 * u.deg,
+                                  'delta': 0 * u.arcsec,
+                                  'distance': 1 * u.Mm}),
+                          ([0 * u.deg, 0 * u.arcsec], {'distance': 1 * u.Mm})])
+def test_create_hpr_3d(args, kwargs):
+    hpr1 = init_frame(HelioprojectiveRadial, args, kwargs)
+
+    assert isinstance(hpr1, HelioprojectiveRadial)
+    assert isinstance(hpr1._data, SphericalRepresentation)
+
+    assert hpr1.psi.unit is u.deg
+    assert hpr1.delta.unit is u.deg
+    assert hpr1.distance.unit is u.Mm
+    assert_quantity_allclose(hpr1.psi, 0*u.deg)
+    assert_quantity_allclose(hpr1.delta, 0*u.deg)
+    assert_quantity_allclose(hpr1.distance, 1*u.Mm)
+
+    assert_quantity_allclose(hpr1.theta, 90*u.deg)
+
+    # Since hpr1 is already 3D, make_3d() should simply return the original object
+    hpr2 = hpr1.make_3d()
+    assert hpr2 is hpr1
+
+
+def test_hpr_distance():
+    hpr1 = HelioprojectiveRadial(0*u.deg, -90*u.deg,
+                                 observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+
+    hpr2 = hpr1.make_3d()
+
+    assert_quantity_allclose(hpr2.psi, 0*u.deg)
+    assert_quantity_allclose(hpr2.delta, -90*u.deg)
+    assert_quantity_allclose(hpr2.distance, DSUN_METERS - RSUN_METERS)
 
 
 # ==============================================================================
@@ -518,6 +577,11 @@ def off_limb_coord():
     return SkyCoord(Tx=[-1000, 300, 1000]*u.arcsec, Ty=[-1000, 300, 1000]*u.arcsec, frame=frame)
 
 
+@pytest.fixture
+def non_earth_coord():
+    return SkyCoord(70*u.deg, 20*u.deg, 1*u.AU, obstime='2020-01-01', frame=HeliographicStonyhurst)
+
+
 @pytest.mark.parametrize('screen_class', [
     SphericalScreen,
     PlanarScreen,
@@ -556,5 +620,26 @@ def test_planar_screen(off_limb_coord, only_off_disk, distance_from_center, dist
 ])
 def test_spherical_screen(off_limb_coord, only_off_disk, distance):
     with SphericalScreen(off_limb_coord.observer, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('only_off_disk', 'distance_from_center', 'distance'), [
+    (False, 0*u.m, [0.96419505, 0.98918004, 1.00321100]*u.AU),
+    (True, 0*u.m, [0.96419505, 0.97910333, 1.00321100]*u.AU),
+    (False, 1*u.Rsun, [0.94916557, 0.97376111, 0.98757335]*u.AU),
+])
+def test_planar_screen_askew(off_limb_coord, only_off_disk, distance_from_center, distance, non_earth_coord):
+    with PlanarScreen(non_earth_coord, distance_from_center=distance_from_center, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('only_off_disk', 'distance'), [
+    (False, [0.96348934, 0.98911699, 1.00251206]*u.AU),
+    (True, [0.96348934, 0.97910333, 1.00251206]*u.AU),
+])
+def test_spherical_screen_askew(off_limb_coord, only_off_disk, distance, non_earth_coord):
+    with SphericalScreen(non_earth_coord, only_off_disk=only_off_disk):
         olc_3d = off_limb_coord.make_3d()
     assert u.quantity.allclose(olc_3d.distance, distance)

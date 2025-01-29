@@ -9,6 +9,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
 
@@ -45,7 +46,6 @@ class AIAMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         # Fill in some missing info
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
@@ -68,6 +68,19 @@ class AIAMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -117,6 +130,16 @@ class HMIMap(GenericMap):
         self._nickname = self.detector
 
     @property
+    def waveunit(self):
+        """
+        The `~astropy.units.Unit` of the wavelength of this observation.
+
+        Most HMI files seem to not have a parseable WAVEUNIT key so if it cannot be found
+        we default to Angstrom
+        """
+        return super().waveunit or u.Angstrom
+
+    @property
     def measurement(self):
         """
         Returns the measurement type.
@@ -129,6 +152,18 @@ class HMIMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -149,6 +184,13 @@ class HMISynopticMap(HMIMap):
     collected over a 27-day solar rotation.
 
     See `~sunpy.map.sources.sdo.HMIMap` for information on the HMI instrument.
+
+    Notes
+    -----
+    The sign of ``CDELT1`` in the header of (some) HMI synoptic maps is negative,
+    but needs to be positive for the underlying data array in order to agree with
+    HMI magnetograms as well as JSOC-hosted PNGs of the synoptic maps. Accordingly,
+    we use the absolute value of ``CDELT1`` to force positivity.
 
     References
     ----------
@@ -188,14 +230,21 @@ class HMISynopticMap(HMIMap):
     def date(self):
         """
         Image observation time.
-
-        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        date = self._get_date('DATE-OBS')
-        if date is None:
-            return self._get_date('T_OBS')
-        else:
-            return date
+        return self._get_date('T_OBS') or super().date
+
+    def _set_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def unit(self):

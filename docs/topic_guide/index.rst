@@ -5,7 +5,7 @@ Topic Guides
 ************
 
 These topic guides provide a set of in-depth explanations for various parts of the ``sunpy`` core package.
-They assumes you have some knowledge of what ``sunpy`` is and how it works - if you're starting fresh you might want to check out the :ref:`tutorial` first.
+They assumes you have some knowledge of what ``sunpy`` is and how it works - if you're starting fresh you might want to check out the :ref:`sunpy-tutorial-index` first.
 
 **How to use the topic guides**
 
@@ -17,7 +17,9 @@ Although there are code snippets in various parts of each topic guide, these are
 
    coordinates/index
    custom_map_rotate
+   deprecation
    extending_fido
+   scraper_migration
    history_comments
    installation
    logger
