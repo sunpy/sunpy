@@ -400,7 +400,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
 def get_sscweb_coord(body,time,system = "Gse"):
     """
     Returns a `~astropy.coordinates.SkyCoord` representation of the location of a body available on SSCWeb
-    (https://sscweb.gsfc.nasa.gov/)
+    (ttps://sscweb.gsfc.nasa.gov/)
     Parameters
     ----------
     body : `str`

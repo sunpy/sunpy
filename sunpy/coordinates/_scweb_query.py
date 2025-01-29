@@ -1,16 +1,10 @@
 """
-Private functions for `sunpy.coordinates.get_sscweb_coord`.
+Private functions for `~sunpy.coordinates.get_sscweb_coord`.
 
 This module contains helper functions for generating and sending XML payloads to the SSCWeb API
 (https://sscweb.gsfc.nasa.gov/WS/sscr/2) to retrieve satellite or spacecraft location data.
 
-Functions:
-----------
-- `_create_xml_request`: Generates an XML payload for SSCWeb API requests.
-- `_send_requests`: Sends the XML payload to the SSCWeb API and retrieves the response.
 """
-
-
 
 import xml.etree.ElementTree as ET
 
