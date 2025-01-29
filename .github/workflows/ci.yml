@@ -105,6 +105,7 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+        - linux: coordinates-test      
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
