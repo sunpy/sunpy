@@ -1079,11 +1079,12 @@ class GenericMap(NDData):
         The measurement type can be described by a `str` or a
         `~astropy.units.Quantity`. If the latter, it is typically equal to
         `.GenericMap.wavelength`.
-
+        
         See Also
         --------
         wavelength : The wavelength of the observation.
         """
+
         return self.wavelength
 
     @property
