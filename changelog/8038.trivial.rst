@@ -1,0 +1,1 @@
+Update documentation for the measurement property in the GenericMap class
