@@ -104,7 +104,7 @@ jobs:
           posargs: -n auto --dist loadgroup --color=yes
           libraries:
             apt:
-              - libopenjp2-7   
+              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
