@@ -1,1 +1,0 @@
-Updated documentation for the ``measurement`` property in the `~.GenericMap`
