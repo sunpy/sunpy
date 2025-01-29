@@ -12,7 +12,7 @@
         {
             "name": "Nabil Freij",
             "orcid": "0000-0002-6253-082X",
-            "affiliation": "Lockheed Martin Solar and Astrophysics Laboratory & Bay Area Environmental Research Institute"
+            "affiliation": "SETI Institute & Lockheed Martin Solar and Astrophysics Laboratory"
         },
         {
             "name": "David Stansby",
@@ -45,7 +45,7 @@
         {
             "name": "Daniel F. Ryan",
             "orcid": "0000-0001-8661-3825",
-            "affiliation": "FHNW - University of Applied Sciences and Arts Northwestern Switzerland"
+            "affiliation": "University College London, Mullard Space Science Laboratory (UCL/MSSL)"
         },
         {
             "name": "Simon Liedtke"
@@ -58,7 +58,7 @@
         {
             "name": "Laura Hayes",
             "orcid": "0000-0002-6835-2390",
-            "affiliation": "European Space Research and Technology Centre, European Space Agency"
+            "affiliation": "Dublin Institute for Advanced Studies"
         },
         {
             "name": "David Pérez-Suárez",
@@ -144,7 +144,13 @@
         },
         {
             "name": "Alasdair Wilson",
-            "orcid": "0000-0003-0820-8159"
+            "orcid": "0000-0003-0820-8159",
+            "affiliation": "Oxford Research Software Engineering Team, University of Oxford"
+        },
+        {
+            "name": "Shane Maloney",
+            "orcid": "0000-0002-4715-1805",
+            "affiliation": "Dublin Institute for Advanced Studies"
         },
         {
             "name": "Michael S Kirk",
@@ -152,15 +158,14 @@
             "affiliation": "Catholic University of America & NASA Goddard Space Flight Center"
         },
         {
-            "name": "Shane Maloney",
-            "orcid": "0000-0002-4715-1805",
-            "affiliation": "Trinity College Dublin & Dublin Institute for Advanced Studies"
-        },
-        {
             "name": "Michael Mueller"
         },
         {
             "name": "Sudarshan Konge"
+        },
+        {
+            "name": "Pratham Hole",
+            "orcid": "0009-0009-6926-1034"
         },
         {
             "name": "Matt Wentzel-Long",
@@ -243,16 +248,16 @@
             "affiliation": "Indian Institute of Technology, Kharagpur"
         },
         {
+            "name": "Akshit Tyagi",
+            "orcid": "0009-0005-4804-9035",
+            "affiliation": "Jaypee Institute of Information Technology"
+        },
+        {
             "name": "Naman9639"
         },
         {
             "name": "Monica Bobra",
             "orcid": "0000-0002-5662-9604"
-        },
-        {
-            "name": "Akshit Tyagi",
-            "orcid": "0009-0005-4804-9035",
-            "affiliation": "Jaypee Institute of Information Technology"
         },
         {
             "name": "Jose Ivan Campos Rozo",
@@ -391,6 +396,16 @@
             "name": "Swapnil Sharma"
         },
         {
+            "name": "Wenli Mo",
+            "orcid": "0000-0002-9179-9801",
+            "affiliation": "Johns Hopkins Applied Physics Lab"
+        },
+        {
+            "name": "Ankit Khushwaha",
+            "orcid": "0009-0009-3953-4206",
+            "affiliation": "Indian Institute Of Technology Dharwad (IIT-DH)"
+        },
+        {
             "name": "Daniel Garcia Briseno"
         },
         {
@@ -455,6 +470,11 @@
             "name": "Sanjeev Dubey"
         },
         {
+            "name": "Saurav Kumar Roy",
+            "orcid": "0009-0007-3703-6532",
+            "affiliation": "Amrita Vishwa Vidyapeetham, Amritapuri"
+        },
+        {
             "name": "Arthur Eigenbrot",
             "orcid": "0000-0003-0810-4368",
             "affiliation": "National Solar Observatory"
@@ -484,6 +504,10 @@
             "name": "Sudeep Sidhu"
         },
         {
+            "name": "Tanish Yelgoe",
+            "affiliation": "Indian Institute of Technology Gandhinagar (IIT-GN)"
+        },
+        {
             "name": "Tomas Meszaros"
         },
         {
@@ -497,6 +521,11 @@
         },
         {
             "name": "Abhishek Pandey"
+        },
+        {
+            "name": "Abinash Mahapatra",
+            "orcid": "0009-0000-5975-6775",
+            "affiliation": "Odisha University of Technology and Research"
         },
         {
             "name": "Adrian Price-Whelan",
@@ -580,9 +609,15 @@
             "name": "Abijith Bahuleyan"
         },
         {
+            "name": "Advait Pimparkar"
+        },
+        {
             "name": "Adwait Bhope",
             "orcid": "0000-0002-7133-8776",
             "affiliation": "Savitribai Phule Pune University"
+        },
+        {
+            "name": "Ahmad Saeed"
         },
         {
             "name": "Amarjit Singh Gaba",
@@ -699,6 +734,10 @@
             "orcid": "0000-0001-8629-7068"
         },
         {
+            "name": "Diya Khetarpal",
+            "orcid": "0009-0009-4729-6797"
+        },
+        {
             "name": "Ed Behn"
         },
         {
@@ -800,6 +839,10 @@
             "name": "Mouloudi Mohamed Lyes"
         },
         {
+            "name": "Nakshatra",
+            "affiliation": "IIT Kharagpur"
+        },
+        {
             "name": "Nakul Shahdadpuri"
         },
         {
@@ -817,6 +860,11 @@
             "name": "Paul J. Wright",
             "orcid": "0000-0001-9021-611X",
             "affiliation": "Dublin Institute for Advanced Studies"
+        },
+        {
+            "name": "Raghav Agrawal",
+            "orcid": "0009-0000-1788-2917",
+            "affiliation": "Netaji Subhas University of Technology, New Delhi (NSUT New Delhi) and Indian Institute of Technology, Madras (IIT Madras)"
         },
         {
             "name": "Rajasekhar Reddy Mekala"
@@ -914,6 +962,12 @@
         {
             "name": "William Jamieson",
             "orcid": "0000-0001-5976-4492"
+        },
+        {
+            "name": "William Setterberg",
+            "orcid": "0000-0003-2165-8314",
+            "affiliation": "University of Minnesota"
+
         },
         {
             "name": "Yudhik Agrawal",
