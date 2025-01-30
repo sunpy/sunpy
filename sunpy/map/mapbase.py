@@ -1075,11 +1075,11 @@ class GenericMap(NDData):
     def measurement(self):
         """
         The measurement type of the observation.
-        
+
         The measurement type can be described by a `str` or a
         `~astropy.units.Quantity`. If the latter, it is typically equal to
         `.GenericMap.wavelength`.
-        
+
         See Also
         --------
         wavelength : The wavelength of the observation.
