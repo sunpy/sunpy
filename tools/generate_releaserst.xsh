@@ -173,6 +173,7 @@ prev = {a.split('\t')[1] for a in $(git shortlog -ns --no-merges @($(git rev-lis
 
 # Get all authors from the previous release to this one
 current = {a.split('\t')[1] for a in current_log.split('\n')[:-1]}
+current = {a for a in current if "[bot]" not in a}
 
 new = current.difference(prev)
 
@@ -187,6 +188,9 @@ lines = current_log.split('\n')[:-1]
 
 shortlog = []
 for i, line in enumerate(lines):
+    if "[bot]" in line:
+        continue
+
     if commit_count:
         outl = line
     else:
@@ -211,7 +215,7 @@ prcnt = count_prs_since(since, upto, repo, args['--pat'], verbose=verbose)
 output = '\n'.join(shortlog)
 
 
-pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] else args["--project-name"]
+pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] != "<project-name>" else args["--project-name"]
 
 print()
 print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt} merged pull requests closing {icnt} issues from {npeople} people, {nnew} of which are first-time contributors to {pretty_project_name}.")

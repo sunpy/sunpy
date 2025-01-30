@@ -1,6 +1,7 @@
 """
 Test Composite Map
 """
+import matplotlib as mpl
 import numpy as np
 import pytest
 
@@ -17,21 +18,49 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')
 
 
 @pytest.fixture
-def composite_test_map(aia171_test_map, hmi_test_map):
+def adjusted_test_maps(aia171_test_map, hmi_test_map):
     # The test maps have wildly different observation times, which throws off compositing
     hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
+    hmi_test_map.meta['t_obs'] = aia171_test_map.meta['t_obs']
     # Also set the HMI observer location to be the same as the AIA observer location
     del hmi_test_map.meta['crln_obs']
     del hmi_test_map.meta['crlt_obs']
     hmi_test_map.meta['hgln_obs'] = aia171_test_map.observer_coordinate.lon.to_value('deg')
     hmi_test_map.meta['hglt_obs'] = aia171_test_map.observer_coordinate.lat.to_value('deg')
+    return aia171_test_map, hmi_test_map
+
+@pytest.fixture
+def composite_test_map(adjusted_test_maps):
+    aia171_test_map, hmi_test_map = adjusted_test_maps
+    return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
+
+@pytest.fixture
+def composite_test_map_prealigned(adjusted_test_maps):
+    aia171_test_map, hmi_test_map = adjusted_test_maps
+    hmi_test_map = hmi_test_map.reproject_to(aia171_test_map.wcs)
     return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
 
 
 def test_type_of_arguments_composite_map(composite_test_map):
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError, match="CompositeMap expects pre-constructed map objects.") as excinfo:
         sunpy.map.CompositeMap(23, composite=True)
     assert str(excinfo.value) == 'CompositeMap expects pre-constructed map objects.'
+
+
+@figure_test
+def test_autoalign_needed(composite_test_map):
+    # The overplot will use pcolormesh if the WCSs do not match
+    images = composite_test_map.plot()
+    assert isinstance(images[0], mpl.image.AxesImage)
+    assert isinstance(images[1], mpl.collections.QuadMesh)
+
+
+@figure_test
+def test_autoalign_not_needed(composite_test_map_prealigned):
+    # The overplot will use imshow if the WCSs match
+    images = composite_test_map_prealigned.plot()
+    assert isinstance(images[0], mpl.image.AxesImage)
+    assert isinstance(images[1], mpl.image.AxesImage)
 
 
 @figure_test
@@ -110,7 +139,7 @@ def test_set_alpha_composite_map(composite_test_map):
 
 @pytest.mark.parametrize(('index', 'alpha'), [(0, 5.0), (1, -3.0)])
 def test_set_alpha_out_of_range_composite_map(composite_test_map, index, alpha):
-    with pytest.raises(Exception) as excinfo:
+    with pytest.raises(Exception, match="Alpha value must be between 0 and 1") as excinfo:
         composite_test_map.set_alpha(index, alpha)
     assert str(excinfo.value) == 'Alpha value must be between 0 and 1.'
 

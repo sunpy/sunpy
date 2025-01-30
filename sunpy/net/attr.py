@@ -76,7 +76,7 @@ def _print_attrs(attr, html=False):
     width = -1 if html else get_width()
 
     lines = [*[format_line.format(line) for line in lines],
-             *table.pformat_all(show_dtype=False, max_width=width, align="<", html=html)]
+             *table.pformat(show_dtype=False, max_width=width, align="<", html=html)]
     return '\n'.join(lines)
 
 
@@ -201,7 +201,8 @@ class Attr(metaclass=AttrMeta):
 
         Examples
         --------
-        # The first import is to make this example work, it should not be used otherwise
+        The first import is to make this example work, it should not be used otherwise
+
         >>> from sunpy.net.dataretriever import GenericClient
         >>> from sunpy.net import attr, attrs
         >>> attr.Attr.update_values({GenericClient : {

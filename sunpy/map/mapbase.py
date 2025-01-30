@@ -53,8 +53,9 @@ from sunpy.util.decorators import (
     cached_property_based_on,
     check_arithmetic_compatibility,
     deprecate_positional_args_since,
+    deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -132,11 +133,38 @@ class GenericMap(NDData):
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
+
+    Methods and their known behavior with dask arrays
+    -------------------------------------------------
+
+    +-------------------+------------------------------------+
+    | Method            | Preserve laziness with Dask Arrays |
+    +===================+====================================+
+    | `reproject_to`    | No                                 |
+    +-------------------+------------------------------------+
+    | `resample`        | No                                 |
+    +-------------------+------------------------------------+
+    | `rotate`          | No                                 |
+    +-------------------+------------------------------------+
+    | `max`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `mean`            | Yes                                |
+    +-------------------+------------------------------------+
+    | `min`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `std`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `superpixel`      | Yes                                |
+    +-------------------+------------------------------------+
+    | `submap`          | Yes                                |
+    +-------------------+------------------------------------+
+
+
     Examples
     --------
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> aia   # doctest: +REMOTE_DATA
     <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
@@ -165,7 +193,7 @@ class GenericMap(NDData):
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
     >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
@@ -202,7 +230,8 @@ class GenericMap(NDData):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
             # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
             # See https://github.com/sunpy/sunpy/issues/7294 for more information.
-            if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
+            # This also applies to older versions of sunkit-magex with ADAPTMap.
+            if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
@@ -237,7 +266,6 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
-
         self.plot_settings = {'cmap': 'gray',
                             'interpolation': 'nearest',
                             'origin': 'lower'
@@ -478,7 +506,7 @@ class GenericMap(NDData):
         --------
         >>> from sunpy.map import Map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         >>> smap.quicklook()  # doctest: +SKIP
 
         (which will open the following content in the default web browser)
@@ -731,24 +759,32 @@ class GenericMap(NDData):
     def std(self, *args, **kwargs):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanstd(self.data, *args, **kwargs)
 
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmean(self.data, *args, **kwargs)
 
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmin(self.data, *args, **kwargs)
 
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmax(self.data, *args, **kwargs)
 
@@ -929,6 +965,19 @@ class GenericMap(NDData):
             self.date
         )
 
+    def _set_reference_date(self, date):
+        """
+        Set the reference date using the same priority as `.GenericMap.reference_date`.
+
+        If a source subclass overrides `.GenericMap.reference_date`, it should override
+        this private method as well.
+        """
+        for keyword in ['date-avg', 'date-obs', 'date-beg', 'date-end']:
+            if keyword in self.meta:
+                self.meta[keyword] = parse_time(date).utc.isot
+                return
+        self._set_date(date)
+
     @property
     def date(self):
         """
@@ -969,6 +1018,22 @@ class GenericMap(NDData):
             time = self._default_time
 
         return time
+
+    def _set_date(self, date):
+        """
+        Set the observation time by setting DATE-OBS.
+
+        If a source subclass overrides `.GenericMap.date`, it should override
+        this private method as well.
+
+        Notes
+        -----
+        This method will additionally always remove DATE_OBS (note the underscore),
+        if present.
+        """
+        if 'date_obs' in self.meta:
+            del self.meta['date_obs']
+        self.meta['date-obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -1203,9 +1268,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1306,14 +1373,14 @@ class GenericMap(NDData):
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lon
 
@@ -1401,7 +1468,7 @@ class GenericMap(NDData):
         -----
         In many cases this is a simple rotation matrix, hence the property name.
         It general it does not have to be a pure rotation matrix, and can encode
-        other transformations e.g., skews for non-orthgonal coordinate systems.
+        other transformations e.g., skews for non-orthogonal coordinate systems.
         """
         if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
             return np.array(
@@ -1461,12 +1528,12 @@ class GenericMap(NDData):
         """
         Return any PV values in the metadata.
         """
-        pattern = re.compile('pv[0-9]_[0-9]a', re.IGNORECASE)
+        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
         pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
 
         pv_values = []
         for k in pv_keys:
-            i, m = int(k[2]), int(k[4])
+            i, m = int(k[2]), int(k[4:])
             pv_values.append((i, m, self.meta[k]))
         return pv_values
 
@@ -1569,18 +1636,18 @@ class GenericMap(NDData):
         Parameters
         ----------
         filepath : `str`
-            Location to save file to.
+            Location to save the file to.
+            If ``filepath`` ends with ".asdf" and ``filetype="auto"``, an ASDF file will be created.
         filetype : `str`, optional
-            Any supported file extension, defaults to ``"auto"``.
+            The file format to save the map in. Defaults to ``"auto"`` which infers
+            the format from the file extension. Supported formats include FITS, JP2, and ASDF.
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
-            By default, a FITS file is written with the map in its primary HDU.
-            If a type is given, a new HDU of this type will be created.
-            If a HDU instance is given, its data and header will be updated from the map.
-            Then that HDU instance will be written to the file.
-            The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
+            For FITS files, this specifies the type of HDU to write. By default, the map is saved
+            in the primary HDU. If an HDU type or instance is provided, the map data and header will
+            be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
         kwargs :
-            Any additional keyword arguments are passed to
-            `~sunpy.io._file_tools_write_file`.
+            Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`
+            or `asdf.AsdfFile.write_to`.
 
         Notes
         -----
@@ -1588,16 +1655,26 @@ class GenericMap(NDData):
         of the given data casted to uint8 values in order to support
         the JPEG2000 format.
 
+        Saving with the ``.asdf`` extension will save the map as an ASDF file, storing the map's
+        attributes under the key ``'sunpymap'`` in the ASDF tree.
+
         Examples
         --------
         >>> from astropy.io.fits import CompImageHDU
         >>> from sunpy.map import Map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
+        >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> aia_map.save("aia171.asdf")  # doctest: +REMOTE_DATA
         """
-        write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        if filetype.lower() == "asdf" or (filetype.lower() == "auto" and str(filepath).lower().endswith(".asdf")):
+            import asdf
+            asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
+        else:
+            write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
+
+
+
 
 # #### Image processing routines #### #
 
@@ -1609,6 +1686,8 @@ class GenericMap(NDData):
         Uses the same parameters and creates the same coordinate lookup points
         as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -1679,6 +1758,8 @@ class GenericMap(NDData):
         neither an angle or a rotation matrix are specified, the map will be
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -1872,6 +1953,8 @@ class GenericMap(NDData):
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
 
+        This method **does** preserve dask arrays.
+
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
@@ -1905,7 +1988,7 @@ class GenericMap(NDData):
         >>> from astropy.coordinates import SkyCoord
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> aia.submap(bl, top_right=tr)   # doctest: +REMOTE_DATA
@@ -2109,6 +2192,8 @@ class GenericMap(NDData):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
+        This method **does** preserve dask arrays.
+
         Parameters
         ----------
         dimensions : tuple
@@ -2134,10 +2219,6 @@ class GenericMap(NDData):
         -------
         out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
-
-        References
-        ----------
-        | `Summarizing blocks of an array using a moving window <https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -2251,7 +2332,7 @@ class GenericMap(NDData):
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
-                                                           obstime=self.date,
+                                                           obstime=self.reference_date,
                                                            rsun=self.rsun_meters,
                                                            observer=self.observer_coordinate,
                                                            system=system,
@@ -2307,6 +2388,32 @@ class GenericMap(NDData):
             self.observer_coordinate,
             resolution=resolution,
             rsun=self.rsun_meters,
+            **kwargs
+        )
+
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.wcs,
             **kwargs
         )
 
@@ -2409,6 +2516,54 @@ class GenericMap(NDData):
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
 
+
+    def _update_contour_args(self, contour_args):
+        """
+        Updates ``contour_args`` with values from ``plot_settings``.
+
+        Parameters
+        ----------
+        contour_args : dict
+            A dictionary of arguments to be used for contour plotting.
+
+        Returns
+        -------
+        dict
+            The updated ``contour_args`` dictionary.
+
+        Notes
+        -----
+        - 'cmap': Set to `None` to avoid the error "ValueError: Either colors or cmap must be None".
+        - 'interpolation': Removed because Matplotlib's contour function raises the warning
+        "The following kwargs were not used by contour: 'interpolation'".
+        - 'origin': If `'origin': 'lower'` is present, it is replaced with `'origin': None`,
+        as `None` is the default value for Matplotlib's contour plots.
+        """
+        plot_settings = self.plot_settings.copy()
+        contour_args_copy = contour_args.copy()
+        contour_args.update(plot_settings)
+        # Define default settings for normal plots and contour-specific updates
+        original_plot_defaults = {
+            'origin': 'lower',
+        }
+        default_contour_param = {
+            'origin': None,
+        }
+        # Replace conflicting settings with contour defaults
+        for key in original_plot_defaults:
+            if key in contour_args and contour_args[key] == original_plot_defaults[key]:
+                contour_args[key] = default_contour_param[key]
+        # 'cmap' cannot be used for contour plots when levels are not None,
+        # which is the case in composite maps.
+        contour_args['cmap'] = None
+        # custom 'norm' cannot be passed through plot_settings
+        contour_args['norm'] = None
+        # If 'draw_contour' is used, setting 'norm' and 'cmap' to None ensures the method arguments are applied.
+        contour_args.update(contour_args_copy)
+        contour_args.pop('interpolation')
+        return contour_args
+
+
     def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
@@ -2438,6 +2593,8 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         corresponding matplotlib method.
         """
+        contour_args = self._update_contour_args(contour_args)
+
         axes = self._check_axes(axes)
         levels = self._process_levels_arg(levels)
 
@@ -2620,13 +2777,9 @@ class GenericMap(NDData):
 
             # WCSAxes has unit identifiers on the tick labels, so no need
             # to add unit information to the label
-            spatial_units = [None, None]
             ctype = axes.wcs.wcs.ctype
-
-            axes.set_xlabel(axis_labels_from_ctype(ctype[0],
-                                                   spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(ctype[1],
-                                                   spatial_units[1]))
+            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
+            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
@@ -2683,6 +2836,7 @@ class GenericMap(NDData):
 
         return ret
 
+    @deprecated(since="6.1", alternative="sunpy.map.GenericMap.find_contours")
     def contour(self, level, **kwargs):
         """
         Returns coordinates of the contours for a given level value.
@@ -2691,7 +2845,7 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        level : float, astropy.units.Quantity
+        level : float, `~astropy.units.Quantity`
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
@@ -2708,13 +2862,19 @@ class GenericMap(NDData):
         >>> import astropy.units as u
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
-        >>> print(contours[0])  # doctest: +REMOTE_DATA
-            <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> contours[0]  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
-        ...
+         (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+         (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+         (713.14112796, -361.95311455), (714.76598031, -363.53013567),
+         (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+         (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+         (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+         (719.59798458, -352.60839064)]>
 
         See Also
         --------
@@ -2732,6 +2892,81 @@ class GenericMap(NDData):
 
         contours = measure.find_contours(self.data, level=level, **kwargs)
         contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        return contours
+
+    def find_contours(self, level, method='contourpy', **kwargs):
+        """
+        Returns coordinates of the contours for a given level value.
+
+        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`contourpy.contour_generator`.
+
+        Parameters
+        ----------
+        level : float, astropy.units.Quantity
+            Value along which to find contours in the array. If the map unit attribute
+            is not `None`, this must be a `~astropy.units.Quantity` with units
+            equivalent to the map data units.
+        method : {'contourpy', 'skimage'}
+            Determines which contouring method is used and should
+            be specified as either 'contourpy' or 'skimage'.
+            Defaults to 'contourpy'.
+        kwargs :
+            Additional keyword arguments passed to either :func:`contourpy.contour_generator`
+            or :func:`skimage.measure.find_contours`, depending on the value of the ``method`` argument.
+
+        Returns
+        -------
+        contours: list of (n,2) `~astropy.coordinates.SkyCoord`
+            Coordinates of each contour.
+
+        Examples
+        --------
+        >>> import astropy.units as u
+        >>> import sunpy.map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> contours = aia.find_contours(50000 * u.DN, method='contourpy')  # doctest: +REMOTE_DATA
+        >>> contours[0]  # doctest: +REMOTE_DATA
+        <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+            (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+            [(713.14112796, -361.95311455), (714.76598031, -363.53013567),
+             (717.17229147, -362.06880784), (717.27714042, -361.9631112 ),
+             (718.43620686, -359.56313541), (718.8672722 , -357.1614    ),
+             (719.58811599, -356.68119768), (721.29217122, -354.76448374),
+             (722.00110323, -352.46446792), (722.08933899, -352.36363319),
+             (722.00223989, -351.99536019), (721.67724425, -352.36263712),
+             (719.59798458, -352.60839064), (717.19243987, -353.75348121),
+             (715.8820808 , -354.75140718), (714.78652558, -355.05102034),
+             (712.68209174, -357.14645009), (712.68639008, -359.54923801),
+             (713.14112796, -361.95311455)]>
+
+        See Also
+        --------
+        :func:`contourpy.contour_generator`
+        :func:`skimage.measure.find_contours`
+        """
+        level = self._process_levels_arg(level)
+        if level.size != 1:
+            raise ValueError("level must be a single scalar value")
+        else:
+            # _process_levels_arg converts level to a 1D array, but
+            # find_contours expects a scalar below
+            level = level[0]
+
+        if method == 'contourpy':
+            from contourpy import contour_generator
+
+            gen = contour_generator(z=self.data, **kwargs)
+            contours = gen.lines(level)
+            contours = [self.wcs.array_index_to_world(c[:, 1], c[:, 0]) for c in contours]
+        elif method == 'skimage':
+            from skimage import measure
+
+            contours = measure.find_contours(self.data, level=level, **kwargs)
+            contours = [self.wcs.array_index_to_world(c[:, 0], c[:, 1]) for c in contours]
+        else:
+            raise ValueError(f"Unknown method '{method}'. Use 'contourpy' or 'skimage'.")
+
         return contours
 
     def _check_axes(self, axes, warn_different_wcs=False):
@@ -2773,6 +3008,8 @@ class GenericMap(NDData):
             This method requires the optional package `reproject` to be installed.
 
         Additional keyword arguments are passed through to the reprojection function.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------

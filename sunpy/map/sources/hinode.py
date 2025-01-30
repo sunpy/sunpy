@@ -2,7 +2,7 @@
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
@@ -36,12 +36,12 @@ class XRTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`_
-    * `XRT Instrument Page <http://xrt.cfa.harvard.edu>`_
-    * `Fits header reference <http://hinode.nao.ac.jp/uploads/2016/04/22/SB_MW_Key13.pdf>`_
-    * `Hinode User Guide <http://hinode.nao.ac.jp/en/for-researchers/analysis-guide/>`_
-    * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
-    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/abs/1011.2867>`_
+    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`__
+    * `XRT Instrument Page <https://xrt.cfa.harvard.edu/>`__
+    * `Fits header reference <https://hinode.nao.ac.jp/uploads/2016/04/22/SB_MW_Key13.pdf>`__
+    * `Hinode User Guide <https://hinode.nao.ac.jp/en/for-researchers/analysis-guide/>`__
+    * `XRT Analysis Guide <https://xrt.cfa.harvard.edu/science/tutorials.php>`__
+    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/abs/1011.2867>`__
     """
     filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
                                   "Be_thin", "C_poly", "Open"]
@@ -59,6 +59,18 @@ class XRTMap(GenericMap):
         self.plot_settings['cmap'] = 'hinodexrt'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle SOTMap-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def _timesys(self):
@@ -167,6 +179,18 @@ class SOTMap(GenericMap):
                  }
 
         self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle SOTMap-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def detector(self):

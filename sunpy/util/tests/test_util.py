@@ -55,13 +55,13 @@ def test_expand_list():
     assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 
-@pytest.mark.parametrize(('input_data', 'expected_output'), (
+@pytest.mark.parametrize(('input_data', 'expected_output'), [
     (['a1234', 'b', [], (['c', 'd']), (), ['e'], b'fghj'], ['a1234', 'b', 'c', 'd', 'e', b'fghj']),
     (iter(['c', 'd']), ['c', 'd']),
     (zip(['1', '2'], ['3', '4']), ['1', '3', '2', '4']),
     (Results(["a", "b", "c"]), ["a", "b", "c"]),
     ([open(get_test_filepath('aia_171_level1.fits'), 'rb')], open(get_test_filepath('aia_171_level1.fits'), 'rb').readlines())
-))
+])
 def test_expand_list_generator(input_data, expected_output):
     assert list(util.expand_list_generator(input_data)) == expected_output
 

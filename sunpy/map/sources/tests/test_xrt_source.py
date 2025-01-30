@@ -8,7 +8,9 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import XRTMap
+from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
@@ -23,11 +25,27 @@ def test_fits_to_xrt(xrt_map):
     assert isinstance(xrt_map, XRTMap)
 
 
+def test_xrt_coordinate_system(xrt_map):
+    assert xrt_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
+
+
 def test_is_datasource_for(xrt_map):
     """Test the is_datasource_for method of XRTMap.
     Note that header data to be provided as an argument
     can be a MetaDict object."""
     assert xrt_map.is_datasource_for(xrt_map.data, xrt_map.meta)
+
+
+def test_reference_date(xrt_map):
+    assert xrt_map.reference_date.isot == "2006-11-11T00:00:19.141"
+
+
+def test_date(xrt_map):
+    assert xrt_map.date.isot == "2006-11-11T00:00:19.141"
+
+
+def test_private_date_setters(xrt_map):
+    _test_private_date_setters(xrt_map)
 
 
 def test_observatory(xrt_map):
