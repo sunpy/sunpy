@@ -1889,6 +1889,12 @@ def test_parse_fits_units(units_string, expected_unit):
     assert out_unit == expected_unit
 
 
+@pytest.mark.parametrize('units_string', ['DN / electron', 'electron', 'Mx'])
+def test_parse_nonfits_units(units_string):
+    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string'):
+        assert GenericMap._parse_fits_unit(units_string) is None
+
+
 def test_only_cd():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
