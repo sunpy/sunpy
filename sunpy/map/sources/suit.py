@@ -1,14 +1,12 @@
 """
 SUIT Map sub class definitions
 """
-from sunpy.map.sources.source_type import source_stretch
-import numpy as np
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
+from astropy.visualization import AsinhStretch, ImageNormalize
+
 from sunpy.map.mapbase import GenericMap
-from matplotlib import colors
-from astropy.visualization import ImageNormalize
-from astropy.visualization import AsinhStretch
+from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ["SUITMap"]
 __author__ = ["Rahul Gopalakrishnan"]

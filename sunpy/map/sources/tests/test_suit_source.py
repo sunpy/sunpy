@@ -1,15 +1,12 @@
 """
 Test cases for SUITMap subclass.
 """
-import copy
 import pytest
+
 import astropy.units as u
 
-from sunpy.coordinates import sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suit import SUITMap
-from sunpy.sun import constants
-
 
 __author__ = "Rahul Gopalakrishnan (rahulg.astro@gmail.com)"
 
