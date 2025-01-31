@@ -56,8 +56,9 @@ class UnifiedResponse(Sequence):
         self._errors = {}
         for result in results:
             if isinstance(result, Exception):
-                if hasattr(result.client.__class__, '__name__'):
-                    self._errors[result.client.__class__.__name__] = result
+                if hasattr(result.client, '__name__'):
+                    print(f"Error: {result} for {result.client.__name__}")
+                    self._errors[result.client.__name__] = result
 
                 result = QueryResponseTable([], client=result.client)
             else:
@@ -68,8 +69,9 @@ class UnifiedResponse(Sequence):
                 if isinstance(result, QueryResponseColumn):
                     result = result.as_table()
 
-                if hasattr(result.client.__class__, '__name__'):
-                    self._errors[result.client.__class__.__name__] = None
+                if hasattr(result.client, '__class__'):
+                    client_name = result.client.__class__.__name__
+                    self._errors[client_name] = None
 
 
                 if not isinstance(result, QueryResponseTable):
@@ -211,8 +213,11 @@ class UnifiedResponse(Sequence):
             if block.client.info_url is not None:
                 ret += f'Source: {block.client.info_url}\n'
             size = block.total_size()
-            if self.errors[block.client.__class__.__name__] is not None:
-                ret += f'Error: {repr(self._errors[block.client.__class__.__name__])}\n'
+
+            if hasattr(block.client, '__name__'):
+                if self.errors[block.client.__name__] is not None:
+                    ret += f'Error: {repr(self._errors[block.client.__name__])}\n'
+
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
             ret += '\n'
@@ -558,11 +563,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         results = []
         for client in candidate_widget_types:
             try:
-                tmpclient  = client()
+                tmpclient  = client()   # client instance
                 result = tmpclient.search(*query)
                 results.append(result)
             except Exception as e:
-                e.client = client
+                print(f"{client} will be excluded from the search results.")
+                print(client.__name__, client.info_url)
+                e.client = client   # client class not instance
                 results.append(e)
 
         return results
