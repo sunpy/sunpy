@@ -35,7 +35,6 @@ __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
 
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth', 'get_horizons_coord', 'get_sscweb_coord']
-           'get_horizons_coord',"get_sscweb_coord"]
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
