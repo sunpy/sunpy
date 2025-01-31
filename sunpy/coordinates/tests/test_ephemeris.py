@@ -18,6 +18,7 @@ from sunpy.coordinates.ephemeris import (
 )
 from sunpy.coordinates.frames import GeocentricSolarEcliptic
 from sunpy.coordinates.tests.strategies import times
+from sunpy.time import TimeRange
 
 # Ensure all of these tests are run on the same parallel worker
 # There are online flakey tests that are not parallel safe
@@ -188,9 +189,7 @@ def test_consistency_with_horizons(use_DE440s, obstime):
 
 @pytest.mark.remote_data
 def test_get_sscweb_coord():
-    from sunpy.time import TimeRange
     time = TimeRange("2020-04-04T00:00:00.000", "2020-04-04T00:02:00.000")
-
     location = get_sscweb_coord('sdo', time)
     assert isinstance(location,SkyCoord)
     assert isinstance(location.frame,GeocentricSolarEcliptic)

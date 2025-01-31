@@ -13,6 +13,7 @@ from sunpy.time import TimeRange
 def _create_xml_request(name, time_range, system):
     """
     Create an XML request payload for SSCWeb to fetch location data.
+    As Per the documentation (https://sscweb.gsfc.nasa.gov/WebServices/REST/)
 
     Parameters
     ----------
@@ -36,13 +37,13 @@ def _create_xml_request(name, time_range, system):
     ET.SubElement(time_interval, "Start").text = start_time
     ET.SubElement(time_interval, "End").text = end_time
     satellites = ET.SubElement(data_request, "Satellites")
-    ET.SubElement(satellites, "Id").text = name
+    ET.SubElement(satellites, "Id").text = name.lower()
     ET.SubElement(satellites, "ResolutionFactor").text = "1"
     output_options = ET.SubElement(data_request, "OutputOptions")
     coordinate_components = ["Lat", "Lon"]
     for component in coordinate_components:
         coordinate_option = ET.SubElement(output_options, "CoordinateOptions")
-        ET.SubElement(coordinate_option, "CoordinateSystem").text = system
+        ET.SubElement(coordinate_option, "CoordinateSystem").text = system.capitalize()
         ET.SubElement(coordinate_option, "Component").text = component
     return ET.tostring(ET.ElementTree(data_request).getroot(), encoding="unicode")
 
@@ -50,7 +51,7 @@ def _send_requests(xml):
     """
     Send the XML request to SSCWeb API to fetch location data.
 
-    Parameters:
+    Parameters
     ----------
     xml : str
         XML request payload.
@@ -60,12 +61,13 @@ def _send_requests(xml):
     requests.Response
         The HTTP response object from the SSCWeb server.
     """
-    session = requests.Session()
     url = "https://sscweb.gsfc.nasa.gov/WS/sscr/2/locations"
+
     headers = {
-        'Content-Type': 'application/xml',
-        'Accept': 'application/xml',
-    }
-    session.headers.update(headers)
-    response = session.post(url, data=xml)
+            'Content-Type': 'application/xml',
+            'Accept': 'application/xml',
+        }
+    with requests.Session() as session:
+        session.headers.update(headers)
+        response = session.post(url, data=xml)
     return response
