@@ -9,7 +9,6 @@ import requests
 
 from sunpy.time import TimeRange
 
-
 __all__ = ["_create_xml_request", "_send_requests"]
 
 def _create_xml_request(name, time_range, system):
