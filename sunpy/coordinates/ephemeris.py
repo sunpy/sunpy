@@ -423,7 +423,6 @@ def get_sscweb_coord(body, time, system="Gse"):
     Query the location of the SDO spacecraft:
 
     >>> get_sscweb_coord('sdo', time)  # doctest: +REMOTE_DATA
-    INFO: Obtained SSCWeb location for SDO (2) [sunpy.coordinates.ephemeris]
     <SkyCoord (GeocentricSolarEcliptic: obstime=['2020-04-04T04:00:00.000' '2020-04-04T04:01:00.000'
     '2020-04-04T04:02:00.000']): (lon, lat) in deg
         [(130.36632, 0.8609663), (130.53755, 1.0435528),
