@@ -336,6 +336,11 @@ def test_combined_response():
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
 
+    # Testing that the entire time range is covered
+    t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
+    t2 = TimeRange('2020-01-01', '2020-01-03 00:00:10')
+    assert t1 == t2
+
 @pytest.mark.remote_data
 def test_combine_attr():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
