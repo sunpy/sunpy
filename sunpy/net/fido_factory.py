@@ -11,6 +11,7 @@ import os
 import re
 from pathlib import Path
 from textwrap import dedent
+from collections import defaultdict
 from collections.abc import Sequence
 
 import numpy as np
@@ -55,7 +56,9 @@ class UnifiedResponse(Sequence):
         self._numfile = 0
         self._combine = combine
         if self._combine:
-            combined_results = {}
+            combined_results = defaultdict(list)
+        else:
+            combined_results = None
 
         for result in results:
             if isinstance(result, QueryResponseRow):
@@ -69,7 +72,9 @@ class UnifiedResponse(Sequence):
                     f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
             if self._combine:
-                combined_results[result.client.__class__.__name__] = combined_results.get(result.client.__class__.__name__, []) + [result]
+                client_key = result.client.__class__
+                combined_results[client_key].append(result)
+                # combined_results[result.client.__class__.__name__] = combined_results.get(result.client.__class__.__name__, []) + [result]
             else:
                 self._list.append(result)
                 self._numfile += len(result)
@@ -77,14 +82,27 @@ class UnifiedResponse(Sequence):
 
 
         if self._combine:
-            for client, client_results in combined_results.items():
-                if len(results) == 1:
-                    self._list.append(results[0])
-                    self._numfile += len(results[0])
+            print("Combining results")
+            # for client, client_results in combined_results.items():
+            #     if len(client_results) == 1:
+            #         self._list.append(results[0])
+            #         self._numfile += len(results[0])
+            #     else:
+            #         new_result = vstack(client_results, metadata_conflicts='silent')
+            #         self._list.append(new_result)
+            #         self._numfile += len(new_result)
+
+            for client_cls, client_results in combined_results.items():
+                if len(client_results) == 1:
+                    # Single result for this client: no need to merge
+                    new_result = client_results[0]
                 else:
+                    print(client_results, type(client_results), len(client_results))
+                    # Merge results from the same client
                     new_result = vstack(client_results, metadata_conflicts='silent')
-                    self._list.append(new_result)
-                    self._numfile += len(new_result)
+
+            self._list.append(new_result)
+            self._numfile += len(new_result)
 
 
     def __len__(self):
