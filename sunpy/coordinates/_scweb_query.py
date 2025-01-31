@@ -21,7 +21,7 @@ def _create_xml_request(name, time_range, system):
     time_range : sunpy.time.TimeRange
         The time range for which to fetch location data.
 
-    Returns:
+    Returns
     -------
     str
         XML string formatted for SSCWeb API requests.
