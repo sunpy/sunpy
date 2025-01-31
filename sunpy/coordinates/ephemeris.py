@@ -426,6 +426,8 @@ def get_sscweb_coord(body, time, system="Gse"):
     INFO: Obtained SSCWeb location for SDO (2) [sunpy.coordinates.ephemeris]
     <SkyCoord (GeocentricSolarEcliptic: obstime=['2020-04-04T04:00:00.000' '2020-04-04T04:01:00.000'
     '2020-04-04T04:02:00.000']): (lon, lat) in deg
+        [(130.36632, 0.8609663), (130.53755, 1.0435528),
+        (130.70879, 1.2261274)]>
     """
     xml_repr = _create_xml_request(body,time,system)
     response = _send_requests(xml_repr)
