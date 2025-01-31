@@ -1,1 +1,1 @@
-Adds the ability to combine responses from the same client into a single Table for `~sunpy.net.Fido.search`
+Now responses from the same client are combined a single response for `~sunpy.net.Fido.search`.
