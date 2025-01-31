@@ -10,7 +10,7 @@ import requests
 from sunpy.time import TimeRange
 
 
-def _create_xml_request(name, time_range,system):
+def _create_xml_request(name, time_range, system):
     """
     Create an XML request payload for SSCWeb to fetch location data.
 
