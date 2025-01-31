@@ -556,7 +556,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for client in candidate_widget_types:
             tmpclient  = client()
             result = tmpclient.search(*query)
-            print("Result Object", result.client.__class__.__name__)
             results.append(result)
 
         # This method is called by `search` and the results are fed into a
