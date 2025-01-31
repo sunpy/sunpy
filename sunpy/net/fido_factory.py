@@ -560,7 +560,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             try:
                 tmpclient  = client()
                 result = tmpclient.search(*query)
-                # result.client = client
                 results.append(result)
             except Exception as e:
                 e.client = client
