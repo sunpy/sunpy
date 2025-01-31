@@ -185,6 +185,7 @@ def test_consistency_with_horizons(use_DE440s, obstime):
     e2 = get_horizons_coord('Mars barycenter', obstime)
     assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)
 
+
 @pytest.mark.remote_data
 def test_get_sscweb_coord():
     from sunpy.time import TimeRange
