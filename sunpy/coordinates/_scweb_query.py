@@ -14,7 +14,7 @@ def _create_xml_request(name, time_range, system):
     """
     Create an XML request payload for SSCWeb to fetch location data.
 
-    Parameters:
+    Parameters
     ----------
     name : str
         Name of the satellite or spacecraft.
