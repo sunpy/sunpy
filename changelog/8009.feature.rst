@@ -1,2 +1,2 @@
-Enhanced :meth:`~sunpy.net.Fido.search` to be robust against individual client failures. If a single client fails to respond,
-the search will continue with other clients, ensuring that the functionality is not disrupted by errors from a single external client.
+Enhanced :meth:`~sunpy.net.Fido.search` to be robust against individual client failures.
+If a single client fails to respond, the search will continue with the other clients.
