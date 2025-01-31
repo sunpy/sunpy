@@ -395,7 +395,6 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     return coord.transform_to(HeliographicStonyhurst).reshape(obstime.shape)
 
 
-
 def get_sscweb_coord(body,time,system = "Gse"):
     """
     Returns a `~astropy.coordinates.SkyCoord` representation of the location of a body available on SSCWeb
