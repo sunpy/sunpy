@@ -404,7 +404,7 @@ def get_sscweb_coord(body, time, system="Gse"):
     body : `str`
         The name of the body for which to calculate positions. The list of available bodies can be found at
         https://sscweb.gsfc.nasa.gov/scansat.shtml.
-    time : `~sunpy.time.timeRange.Timerange`
+    time : `sunpy.time.TimeRange`
         The time range over which to query the body's location.
     system : `str`, optional
         The coordinate system to use for the output. Defaults to "GSE".
