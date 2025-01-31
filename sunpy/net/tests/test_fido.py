@@ -78,6 +78,7 @@ def test_online_fido(query):
     unifiedresp = Fido.search(query)
     check_response(query, unifiedresp)
 
+
 @pytest.mark.remote_data
 @mock.patch("sunpy.net.vso.vso.VSOClient.search", side_effect=ConnectionError('VSO is down'))
 def test_fido_client_error(vso_search):
