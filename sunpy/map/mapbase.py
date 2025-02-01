@@ -794,18 +794,26 @@ class GenericMap(NDData):
                         'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            unit = u.Unit(unit_str, parse_strict='silent')
+        unit = u.Unit(unit_str, parse_strict='silent')
+        for base in unit.bases:
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            if u.DN not in unit.bases:
+            if base is u.DN:
+                continue
+            try:
+                if isinstance(base, u.UnrecognizedUnit):
+                    raise ValueError
+
+                # Also rejects a unit that is not in the FITS standard but is equivalent to one (e.g., Mx)
+                if u.Unit(base.to_string(format='fits')) is not base:  # to_string() can raise ValueError
+                    raise ValueError
+            except ValueError:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                               f'See {_META_FIX_URL} for how to fix metadata before loading it '
                                'with sunpy.map.Map.\n'
                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                                'the FITS unit standards.')
-                unit = None
+                return None
         return unit
 
     @property
@@ -1074,12 +1082,17 @@ class GenericMap(NDData):
     @property
     def measurement(self):
         """
-        Measurement wavelength.
+        The measurement type of the observation.
 
-        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
-        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
-        defaults to dimensionless units.
+        The measurement type can be described by a `str` or a
+        `~astropy.units.Quantity`. If the latter, it is typically equal to
+        `.GenericMap.wavelength`.
+
+        See Also
+        --------
+        wavelength : The wavelength of the observation.
         """
+
         return self.wavelength
 
     @property
