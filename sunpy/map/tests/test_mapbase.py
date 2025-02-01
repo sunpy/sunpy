@@ -944,6 +944,7 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
 def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     # Put the reference pixel at the top-right of the bottom-left pixel
@@ -958,6 +959,7 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_superpixel_simple_map(simple_map):
     # Put the reference pixel at the top-right of the bottom-left pixel
     simple_map.meta['crpix1'] = 1.5
@@ -977,7 +979,7 @@ def test_superpixel_simple_map(simple_map):
                       [-0.5 * u.pix, -1 * u.pix])
     assert superpix_map.reference_coordinate == simple_map.reference_coordinate
 
-
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize('f', [np.sum, np.mean])
 def test_superpixel_dims_values(aia171_test_map, f):
     dimensions = (2, 2) * u.pix
@@ -994,6 +996,7 @@ def test_superpixel_dims_values(aia171_test_map, f):
     assert_quantity_allclose(superpix_map.data[0, 0], expected)
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize(("f", "dimensions"), [(np.sum, (2, 3)*u.pix),
                                                (np.mean, (3, 2)*u.pix)])
 def test_superpixel_metadata(generic_map, f, dimensions):
@@ -1020,6 +1023,7 @@ def test_superpixel_metadata(generic_map, f, dimensions):
             assert superpix_map.meta[key] == generic_map.meta[key]
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_superpixel_masked(aia171_test_map_with_mask):
     input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
     dimensions = (2, 2) * u.pix
@@ -1042,6 +1046,15 @@ def test_superpixel_masked(aia171_test_map_with_mask):
     assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
 
 
+def test_superpixel_masked_conservative_mask_warning(aia171_test_map_with_mask):
+    with pytest.warns(SunpyUserWarning, match="which may not be ideal"):
+        aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.sum, conservative_mask=False)
+
+    with pytest.warns(SunpyUserWarning, match="which may not be ideal"):
+        aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.mean, conservative_mask=True)
+
+
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
     input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
     dimensions = (2, 2) * u.pix
@@ -1061,7 +1074,7 @@ def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
     expected_mask = np.any(reshaped_mask, axis=(1, 3))
     assert np.array_equal(superpix_map.mask, expected_mask)
 
-
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_superpixel_units(generic_map):
     new_dims = (2, 2) * u.pix
     super1 = generic_map.superpixel(new_dims)
@@ -1074,6 +1087,7 @@ def test_superpixel_units(generic_map):
     assert super1.meta == super2.meta
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_superpixel_fractional_inputs(generic_map):
     super1 = generic_map.superpixel((2, 3) * u.pix)
     super2 = generic_map.superpixel((2.2, 3.2) * u.pix)
@@ -1081,6 +1095,7 @@ def test_superpixel_fractional_inputs(generic_map):
     assert super1.meta == super2.meta
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
 @settings(
     max_examples=10,
@@ -1101,6 +1116,7 @@ def test_resample_rotated_map_pc(pc, method, simple_map):
         new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
 @settings(
     max_examples=10,
