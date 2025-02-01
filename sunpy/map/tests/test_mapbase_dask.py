@@ -37,6 +37,7 @@ with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
             aia_wcs = astropy.wcs.WCS(header=hdu[0].header)
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize(("func", "args"), [
     ("max", {}),
     ("mean", {}),
