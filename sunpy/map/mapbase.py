@@ -2806,11 +2806,26 @@ class GenericMap(NDData):
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
         if autoalign == 'reproject':
-            # Set plot limits based on the extent of the map using metadata
-            naxis1 = self.meta.get('naxis1', self.data.shape[1])
-            naxis2 = self.meta.get('naxis2', self.data.shape[0])
+            target_wcs = copy.deepcopy(axes.wcs)
 
-            target_wcs = axes.wcs
+            # Pull the reprojection extent from the plot limits
+            xlim, ylim = axes.get_xlim(), axes.get_ylim()
+
+            # If the plot limits are at the default values, use the pixel shape of the target WCS
+            if xlim == (0, 1) and ylim == (0, 1) and target_wcs.pixel_shape is not None:
+                xlim = (-0.5, target_wcs.pixel_shape[0] - 0.5)
+                ylim = (-0.5, target_wcs.pixel_shape[1] - 0.5)
+
+            # Expand the reprojection extent to whole pixels
+            left = int(np.floor(xlim[0] + 0.5))
+            bottom = int(np.floor(ylim[0] + 0.5))
+            right = int(np.ceil(xlim[1] - 0.5))
+            top = int(np.ceil(ylim[1] - 0.5))
+
+            # Modify the target WCS so that the reprojection extent starts at (0, 0)
+            target_wcs.wcs.crpix -= (left, bottom)
+            target_wcs.pixel_shape = (right - left + 1, top - bottom + 1)
+
             reprojected_map = self.reproject_to(target_wcs)
             data = reprojected_map.data
             new_meta = self.meta.copy()
