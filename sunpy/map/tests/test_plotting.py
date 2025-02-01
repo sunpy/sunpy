@@ -168,6 +168,7 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @figure_test
 def test_plot_aia171_superpixel(aia171_test_map):
     aia171_test_map.superpixel((3, 2) * u.pix, offset=(4, 4) * u.pix).plot()
@@ -190,6 +191,7 @@ def test_plot_resample(carrington_map):
         ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @figure_test
 def test_plot_superpixel(carrington_map):
     # Test that super-pixelling a map preserves the coordinate system correctly.
@@ -207,12 +209,14 @@ def test_plot_superpixel(carrington_map):
         ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @figure_test
 def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel(
         (9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @figure_test
 def test_plot_masked_aia171_superpixel_conservative_mask_true(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel(

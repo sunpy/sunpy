@@ -1825,6 +1825,7 @@ def test_draw_carrington_map(carrington_map):
     return fig
 
 
+@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @pytest.mark.parametrize('method', _rotation_registry.keys())
 @figure_test
 def test_derotating_nonpurerotation_pcij(aia171_test_map, method):
