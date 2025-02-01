@@ -1,1 +1,0 @@
-Added a function :func:`sunpy.visualization.show_hpr_impact_angle` to modify a plot axis of a `~sunpy.coordinates.HelioprojectiveRadial` `~sunpy.map.Map` to show impact angle rather than declination for the tick labels.

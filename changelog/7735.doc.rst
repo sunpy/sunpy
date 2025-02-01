@@ -1,1 +1,0 @@
-Added a gallery example (:ref:`sphx_glr_generated_gallery_map_track_active_region.py`) showcasing how to track an active region.

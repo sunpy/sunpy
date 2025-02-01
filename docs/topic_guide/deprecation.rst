@@ -67,6 +67,7 @@ If functionality is planned for deprecation, the following steps are taken:
 
 A deprecation warning must be introduced in one LTS release before the deprecated code is removed.
 For example:
+
     - A deprecation warning is introduced in ``sunpy`` 6.1.
     - The code that is being removed, can only be removed in ``sunpy`` 7.1, after the 7.0 LTS release.
 

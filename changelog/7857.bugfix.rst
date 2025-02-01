@@ -1,1 +1,0 @@
-Fixed a bug with axis labels when plotting a `~sunpy.map.Map` that could conflict with automatic label positioning in astropy 7.0.

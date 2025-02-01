@@ -321,6 +321,10 @@
       "Daily Sunspot Drawings"
     ],
     [
+      "Photonfocus_MV1-D2080",
+      "None"
+    ],
+    [
       "RHESSI",
       "None"
     ],
@@ -635,6 +639,10 @@
       "None"
     ],
     [
+      "NFI-0",
+      "None"
+    ],
+    [
       "PHOENIX",
       "PHOENIX detector on flight #3 of FOXSI"
     ],
@@ -648,6 +656,10 @@
     ],
     [
       "PTMC",
+      "None"
+    ],
+    [
+      "Polar",
       "None"
     ],
     [
@@ -732,7 +744,19 @@
     ],
     [
       "T1-HALPHA",
-      "T1 H\u03b1 Fulldisk"
+      "T1 Ha Full-disk Imager"
+    ],
+    [
+      "T4-CAK",
+      "T4 Ca K Line Center Full Disk Imager"
+    ],
+    [
+      "T4-CONTINUUM",
+      "Continuum(Green) Full-disk Imager"
+    ],
+    [
+      "T4-GBAND",
+      "G-Band Full-disk Imager"
     ],
     [
       "TM-1001",
@@ -755,6 +779,10 @@
       "Indian GONG+ site"
     ],
     [
+      "Unpolarized",
+      "None"
+    ],
+    [
       "VAULT-1999",
       "Very High Angular Resolution Ultraviolet Telescope (1999 flight)"
     ],
@@ -773,6 +801,18 @@
     [
       "WBS",
       "Wide Band Spectrometer"
+    ],
+    [
+      "WFI-1",
+      "None"
+    ],
+    [
+      "WFI-2",
+      "None"
+    ],
+    [
+      "WFI-3",
+      "None"
     ],
     [
       "WISPR",
@@ -997,10 +1037,6 @@
       "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
     ],
     [
-      "ROB",
-      "Royal Observatory of Belgium Solar Influences Data Center"
-    ],
-    [
       "SAO",
       "Smithsonian Astrophysical Observatory"
     ],
@@ -1136,6 +1172,26 @@
     ],
     [
       "PTMC",
+      "None"
+    ],
+    [
+      "PUNCH-1",
+      "None"
+    ],
+    [
+      "PUNCH-2",
+      "None"
+    ],
+    [
+      "PUNCH-3",
+      "None"
+    ],
+    [
+      "PUNCH-4",
+      "None"
+    ],
+    [
+      "PUNCH-MOSAIC",
       "None"
     ],
     [

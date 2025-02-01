@@ -334,6 +334,17 @@ def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
 
 
 @figure_test
+def test_map_draw_extent(aia171_test_map):
+    cropped_test_map = aia171_test_map.submap([0, 58]*u.pixel,
+                                              top_right=[80, 75]*u.pixel)
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    cropped_test_map.draw_extent(axes=ax, color="k")
+    return fig
+
+
+@figure_test
 def test_plot_autoalign(aia171_test_map):
     aia171_test_map._data = aia171_test_map.data.astype('float32')
     rotated_map = aia171_test_map.rotate(30*u.deg, order=3)

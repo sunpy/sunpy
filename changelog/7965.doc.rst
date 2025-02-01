@@ -1,1 +1,0 @@
-The gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_STEREO_SECCHI_starfield.py` now queries the Gaia star catalogue directly instead of going through Vizier.

@@ -1,1 +1,0 @@
-Update our dependancy policy to follow `SPEC 0 <https://scientific-python.org/specs/spec-0000/>`__ rather than the older NEP 29. The only difference between the old (NEP 29) policy and the new (SPEC 0) policy is that we only support Python versions for 3 years after their initial release, rather than 4.

@@ -19,7 +19,7 @@ authors = authors.decode('utf-8')
 # 1 author per line
 authors = authors.split('\n')[:-1]
 # Use tab between number of commits and name to get name
-authors = [author.split('\t')[1] for author in authors]
+authors = [author.split('\t')[1] for author in authors if "[bot]" not in author]
 # Remove initials
 authors = [remove_initials(auth) for auth in authors]
 # List of authors to ignore because they are bots

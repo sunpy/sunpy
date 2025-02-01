@@ -1,1 +1,0 @@
-Added correct unit fallback for LASCO JPEG2000 files from the Helioviewer.

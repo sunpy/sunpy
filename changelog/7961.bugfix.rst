@@ -1,3 +1,0 @@
-Fixed two bugs associated with the handling of WCS ``PVi_m`` values by `~sunpy.map.Map`.
-``PVi_m`` values were incorrectly retrieved from the first alternative WCS description (e.g., ``PV1_1A``) instead of the primary WCS description (e.g., ``PV1_1``).
-Also, ``PVi_m`` values were misassigned when ``m`` was a two-digit number (i.e., 10 through 99).

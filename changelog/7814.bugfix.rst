@@ -1,1 +1,0 @@
-Fixed a calculation bug when using `~sunpy.coordinates.PlanarScreen` when it is both tilted (the plane is not perpendicular to the observer-Sun direction) and offset (the plane does not go through Sun center).

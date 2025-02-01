@@ -1,1 +1,0 @@
-`sunpy.map.MapSequence` unable to set the normalization for data that was UINT8 (JPEG2000) causing the animations to break.

@@ -55,7 +55,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -794,18 +794,26 @@ class GenericMap(NDData):
                         'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            unit = u.Unit(unit_str, parse_strict='silent')
+        unit = u.Unit(unit_str, parse_strict='silent')
+        for base in unit.bases:
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            if u.DN not in unit.bases:
+            if base is u.DN:
+                continue
+            try:
+                if isinstance(base, u.UnrecognizedUnit):
+                    raise ValueError
+
+                # Also rejects a unit that is not in the FITS standard but is equivalent to one (e.g., Mx)
+                if u.Unit(base.to_string(format='fits')) is not base:  # to_string() can raise ValueError
+                    raise ValueError
+            except ValueError:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                               f'See {_META_FIX_URL} for how to fix metadata before loading it '
                                'with sunpy.map.Map.\n'
                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                                'the FITS unit standards.')
-                unit = None
+                return None
         return unit
 
     @property
@@ -1074,12 +1082,17 @@ class GenericMap(NDData):
     @property
     def measurement(self):
         """
-        Measurement wavelength.
+        The measurement type of the observation.
 
-        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
-        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
-        defaults to dimensionless units.
+        The measurement type can be described by a `str` or a
+        `~astropy.units.Quantity`. If the latter, it is typically equal to
+        `.GenericMap.wavelength`.
+
+        See Also
+        --------
+        wavelength : The wavelength of the observation.
         """
+
         return self.wavelength
 
     @property
@@ -1268,9 +1281,11 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -2386,6 +2401,32 @@ class GenericMap(NDData):
             self.observer_coordinate,
             resolution=resolution,
             rsun=self.rsun_meters,
+            **kwargs
+        )
+
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.wcs,
             **kwargs
         )
 

@@ -1,1 +1,0 @@
-Add a link to the VSO Health Report in the Fido Results when using the VSOClient.

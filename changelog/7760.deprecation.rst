@@ -1,2 +1,0 @@
-:meth:`sunpy.map.GenericMap.contour` is deprecated in favor of :meth:`sunpy.map.GenericMap.find_contours`.
-Note that ContourPy, now used for contour generation, may produce different results and does not support all scikit-image keyword arguments.

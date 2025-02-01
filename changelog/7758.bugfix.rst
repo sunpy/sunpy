@@ -1,3 +1,0 @@
-Fixed incorrect ``reference_date`` for SDO/AIA and SDO/HMI data to use the ``T_OBS`` keyword instead of the ``DATE-OBS`` keyword.
-
-For AIA images, the location of SDO has been shifted up to a second in time, which corresponds to a shift in Heliographic Longitude by only 4 milliarcseconds.

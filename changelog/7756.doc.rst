@@ -1,1 +1,0 @@
-Added a gallery example (:ref:`sphx_glr_generated_gallery_saving_and_loading_data_load_adapt_fits_into_map.py`) showcasing how to load an Air Force Data Assimilative Photospheric Flux Transport (ADAPT) FITS file into a list of `sunpy.map.Map`.

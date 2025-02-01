@@ -1,1 +1,0 @@
-Added support within `~.parse_time` for the timestamp ``%Y%m%d%H%M`` ,``%Y%m%dT%H%M`` and ``%Y%m%d_%H%M``.
