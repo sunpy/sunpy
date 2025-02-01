@@ -2266,7 +2266,7 @@ class GenericMap(NDData):
                 "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
                 "False for mean/median/std/min/max."
                 )
-                
+
         if self.mask is not None:
             if conservative_mask:
                 reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
