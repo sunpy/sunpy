@@ -137,17 +137,21 @@ def _regex_parse_time(inp, format):
 def find_time(string, format):
     """
     Return iterator of occurrences of date formatted with format in string.
-
-    Currently supported format codes:
     """
     re_format = format
     for key, value in REGEX.items():
         re_format = re_format.replace(key, value)
     matches = re.finditer(re_format, string)
     for match in matches:
+        matchstr = string[slice(*match.span())]
+        # Process the matched string to handle 24:00:00 and microseconds
+        adjusted_str, add_one_day = _regex_parse_time(matchstr, format)
+        if adjusted_str is None:
+            continue  # Skip if parsing failed after adjustments
         try:
-            matchstr = string[slice(*match.span())]
-            dt = datetime.strptime(matchstr, format)
+            dt = datetime.strptime(adjusted_str, format)
+            if add_one_day:
+                dt += datetime.timedelta(days=1)
         except ValueError:
             continue
         else:
