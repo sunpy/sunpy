@@ -54,7 +54,7 @@
   "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "47a0270b7442614eed65f9416f8ca11478d46e21187ca9a5bd2ded86c70dec99",
   "sunpy.map.tests.test_plotting.test_map_draw_extent": "f987c66a132e92c7f40c92e7733cfc92c0cb1d7c33a79376c0edfad71ee655ab",
   "sunpy.map.tests.test_plotting.test_plot_autoalign": "352a8c7ece7f3439750a199cfa345d1ef23e6c14d545a94f67a6eb2e2257e898",
-  "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject": "695d475c574a02c93d1a00028555f1390b9a38cdf0410b87e58c51c6aa5cfef8",
+  "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject": "3d7e99c30fdaa361c4aca380cbe0fced706de9a31e5924b48744db4d0808a407",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_limit_larger_in_negative_direction": "ddeaa368e32d5943b1fe470b96c9c02ae0cd9f9f533dbe8760f73794d768d153",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_limit_larger_in_positive_direction": "86485c035e41738deae3690104c3e97fe44a7cd50537332b0f1b9ed86c77e5a2",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_limits_not_set": "41a408df8b5a5c17b64f962dba5d6bb05ad970f9ed2c6162d562112629eed3fa",
