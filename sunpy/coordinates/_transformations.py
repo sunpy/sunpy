@@ -315,14 +315,19 @@ def _check_observer_defined(frame):
                                "but this is valid for only HeliographicCarrington frames.")
 
 
-def _times_are_equal(time_1, time_2):
-    # Checks whether times are equal
-    if isinstance(time_1, Time) and isinstance(time_2, Time):
-        # We explicitly perform the check in TAI to avoid possible numerical precision differences
-        # between a time in UTC and the same time after a UTC->TAI->UTC conversion
-        return np.all(time_1.tai == time_2.tai)
+def time_comparator(time_1, time_2, atol=1e-9):
+    # Convert the TAI times to Unix time (which is based on UTC)
+    tai_1 = time_1.tai.unix
+    tai_2 = time_2.tai.unix
+    # Check if the difference between the two times is within the tolerance
+    return abs(tai_1 - tai_2) <= atol
 
-    # We also deem the times equal if they are both None
+
+def _times_are_equal(time_1, time_2):
+    # If both inputs are valid Time objects, compare them
+    if isinstance(time_1, Time) and isinstance(time_2, Time):
+        return time_comparator(time_1, time_2)
+    # If both times are None, consider them equal
     return time_1 is None and time_2 is None
 
 
