@@ -26,6 +26,12 @@ def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
+@pytest.fixture
+def aia171_test_submap(aia171_test_map):
+    # Used for autoalign=reproject figure tests
+    return aia171_test_map.submap((20, 20)*u.pix, width=90*u.pix, height=80*u.pix)
+
+
 @figure_test
 def test_plot_rotated_aia171(aia171_test_map):
     # Check that plotting a rotated map and a rectangle works as expected
@@ -359,68 +365,48 @@ def test_plot_autoalign_reproject(aia171_test_map):
 
 
 @figure_test
-def test_plot_autoalign_reproject_limit_larger_in_negative_direction(aia171_test_map, hmi_test_map):
-
-    aia_sub_map = aia171_test_map.submap((150, 150)*u.pix, width=700*u.pix, height=600*u.pix)
-    hmi_test_map.plot_settings['cmap'] = "hmimag"
-    hmi_test_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
-
+def test_plot_autoalign_reproject_limit_larger_in_negative_direction(aia171_test_submap, hmi_test_map_modified):
     # Plot limits are larger than the inherent size of the axes WCS in the negative direction
     fig = plt.figure()
-    ax = fig.add_subplot(projection=aia_sub_map)
-    aia_sub_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
-    ax.set_xlim(-300, 500)
-    ax.set_ylim(-200, 400)
-    hmi_test_map.plot(axes=ax, autoalign='reproject')
+    ax = fig.add_subplot(projection=aia171_test_submap)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    ax.set_xlim(-40, 60)
+    ax.set_ylim(-30, 40)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
     return fig
 
 
 @figure_test
-def test_plot_autoalign_reproject_limit_larger_in_positive_direction(aia171_test_map, hmi_test_map):
-
-    aia_sub_map = aia171_test_map.submap((150, 150)*u.pix, width=700*u.pix, height=600*u.pix)
-    hmi_test_map.plot_settings['cmap'] = "hmimag"
-    hmi_test_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
-
+def test_plot_autoalign_reproject_limit_larger_in_positive_direction(aia171_test_submap, hmi_test_map_modified):
     # Plot limits are larger than the inherent size of the axes WCS in the positive direction
     fig = plt.figure()
-    ax = fig.add_subplot(projection=aia_sub_map)
-    aia_sub_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
-    ax.set_xlim(200, 900)
-    ax.set_ylim(300, 700)
-    hmi_test_map.plot(axes=ax, autoalign='reproject')
+    ax = fig.add_subplot(projection=aia171_test_submap)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    ax.set_xlim(30, 110)
+    ax.set_ylim(40, 90)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
     return fig
 
 
 @figure_test
-def test_plot_autoalign_reproject_limits_not_set(aia171_test_map, hmi_test_map):
-
-    aia_sub_map = aia171_test_map.submap((150, 150)*u.pix, width=700*u.pix, height=600*u.pix)
-    hmi_test_map.plot_settings['cmap'] = "hmimag"
-    hmi_test_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
-
+def test_plot_autoalign_reproject_limits_not_set(aia171_test_submap, hmi_test_map_modified):
     # Plot limits are not already set
     fig = plt.figure()
-    ax = fig.add_subplot(projection=aia_sub_map.wcs)
-    hmi_test_map.plot(axes=ax, autoalign='reproject')
+    ax = fig.add_subplot(projection=aia171_test_submap.wcs)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
     return fig
 
 
 @figure_test
-def test_plot_autoalign_reproject_no_inherent_size(aia171_test_map, hmi_test_map):
-
-    aia_sub_map = aia171_test_map.submap((150, 150)*u.pix, width=700*u.pix, height=600*u.pix)
-    hmi_test_map.plot_settings['cmap'] = "hmimag"
-    hmi_test_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
-
+def test_plot_autoalign_reproject_no_inherent_size(aia171_test_submap, hmi_test_map_modified):
     # Axes WCS has no inherent size
-    wcs = deepcopy(aia_sub_map.wcs)
+    wcs = copy.deepcopy(aia171_test_submap.wcs)
     wcs.pixel_shape = (0, 0)
 
     fig = plt.figure()
     ax = fig.add_subplot(projection=wcs)
-    aia_sub_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
-    hmi_test_map.plot(axes=ax, autoalign='reproject')
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
     return fig
 
 
