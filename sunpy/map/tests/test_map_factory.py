@@ -61,20 +61,15 @@ def test_read_asdf_and_verify(tmpdir):
 
 def test_map_meta_changes_in_asdf(tmpdir):
     map = sunpy.map.Map(AIA_171_IMAGE)
-
-    #changing meta_data
     map = map.rotate(90 * u.deg)
 
     assert "pc1_2" in map.meta.added_items
     assert "crota2" in map.meta.removed_items
     assert "crval1" in map.meta.modified_items
 
-    #saving this map in asdf
     map.save(f"{tmpdir}/check.asdf")
-
     map_in_asdf = sunpy.map.Map(f"{tmpdir}/check.asdf")
 
-    #comparing the meta_data for both maps
     assert dict(map_in_asdf.meta) == dict(map.meta)
 
 
