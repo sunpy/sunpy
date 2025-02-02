@@ -2842,7 +2842,7 @@ class GenericMap(NDData):
             reprojected_map = self.reproject_to(target_wcs)
 
             # Place the reprojected map correctly in non-shifted pixel coordinates
-            imshow_args['extent'] = (left - 0.5, right - 0.5, bottom - 0.5, top - 0.5)
+            imshow_args['extent'] = (left - 0.5, right + 0.5, bottom - 0.5, top + 0.5)
             ret = axes.imshow(reprojected_map.data, **imshow_args)
         elif autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
