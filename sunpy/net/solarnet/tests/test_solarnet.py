@@ -35,6 +35,7 @@ def test_solarnet_attrs(client):
     assert a.solarnet.Dataset in attrs.keys()
     assert len(attrs[a.solarnet.Dataset]) > 0
 
+
 @pytest.mark.remote_data
 def test_fetch(client,tmpdir):
     query = client.search(a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV"))
