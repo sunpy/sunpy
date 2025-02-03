@@ -15,7 +15,7 @@ base_url = "https://solarnet2.oma.be/service/api/svo/{}"
 
 class SolarnetClient(BaseClient):
     """
-    Provides access to query and download from Solarnet API.
+    Provides access to query and download from the SOLARNET Virtual Observatory.
 
     Methods
     -------
