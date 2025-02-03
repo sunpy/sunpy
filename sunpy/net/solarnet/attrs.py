@@ -57,6 +57,7 @@ def _apply(wlk,query,imap):
 def _apply(wlk,query,imap):
     imap["detector__iexact"] = query.value
 
+
 @walker.add_applier(Limit)
 def _apply(wlk,query,imap):
     imap["limit"] = int(query.value)
