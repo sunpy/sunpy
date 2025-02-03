@@ -52,6 +52,7 @@ def test_fetch(client,tmpdir):
     # Verify the file has been deleted
     assert not expected_file.exists()
 
+
 @pytest.mark.remote_data
 def test_default_limit(client):
     query = [a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA),a.Time("2020/02/04","2022/02/04")]
