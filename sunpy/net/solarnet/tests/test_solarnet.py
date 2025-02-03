@@ -28,6 +28,7 @@ def test_can_handle_query(client):
     assert not client._can_handle_query(a.solarnet.Limit(10))
     assert client._can_handle_query(a.solarnet.Dataset.eui_level_2)
 
+
 def test_solarnet_attrs(client):
     attrs = client.load_solarnet_values()
     assert a.solarnet.Dataset in attrs.keys()
