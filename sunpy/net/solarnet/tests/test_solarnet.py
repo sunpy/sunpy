@@ -15,6 +15,7 @@ from sunpy.net.solarnet import SolarnetClient
 def client():
     return SolarnetClient()
 
+
 @pytest.mark.remote_data
 def test_search(client):
     query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]
