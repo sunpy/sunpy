@@ -30,6 +30,7 @@ def _create(wlk, query):
     wlk.apply(query, map_)
     return [map_]
 
+
 @walker.add_applier(AttrAnd)
 def _apply(wlk, query, imap):
     for iattr in query.attrs:
