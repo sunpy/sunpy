@@ -46,7 +46,7 @@ class SolarnetClient(BaseClient):
 
     def search(self, *query):
         """
-        Search the Solarnet database for datasets matching the query.
+        Searches the SVO for datasets matching the query.
 
         Parameters
         ----------
