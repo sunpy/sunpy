@@ -2,6 +2,8 @@ from sunpy.net._attrs import Detector, Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 
+__all__ = ["Dataset", "Limit"]
+
 class Dataset(SimpleAttr):
     """
     Name of the dataset required.
