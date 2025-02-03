@@ -1,3 +1,4 @@
+
 """
 This module provides general net utility functions.
 """
@@ -7,8 +8,7 @@ import shutil
 from unicodedata import normalize
 from email.parser import FeedParser
 from urllib.parse import urlparse
-
-from astropy.utils.data import download_file as astropy_download_file
+from urllib.request import urlopen
 
 from sunpy.util import replacement_filename
 
@@ -161,44 +161,36 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
         shutil.copyfileobj(opn, fd)
     return path
 
-def download_file(url, directory, default="file", overwrite=False, cache=False):
+
+def download_file(url, directory, default="file", overwrite=False):
     """
-    Download a file from a URL into a directory using Astropy's download_file.
+    Download a file from a url into a directory.
+
+    Tries the "Content-Disposition", if unavailable, extracts name from the URL.
+    If this fails, the ``default`` keyword will be used.
 
     Parameters
     ----------
     url : `str`
-        The file URL to download.
+        The file URL download.
     directory : `str`
-        The directory path to download the file into.
+        The directory path to download the file in to.
     default : `str`, optional
-        The name to use if the URL does not contain a filename. Defaults to "file".
+        The name to use if the first two methods fail. Defaults to "file".
     overwrite : `bool`, optional
-        If `True`, will overwrite a file of the same name. Defaults to `False`.
-    cache : `bool`, optional
-        If `True`, uses Astropy's caching mechanism. Defaults to `True`.
+        If `True` will overwrite a file of the same name. Defaults to `False`.
 
     Returns
     -------
     `str`:
         The file path for the downloaded file.
     """
-    parsed_url = urlparse(url)
-    # will have to workaround to see if this is the correct way of getting file_name
-    filename = parsed_url.path.split("/")[-1] or default
-    local_path = os.path.join(directory, filename)
-
-    if overwrite and os.path.exists(local_path):
-        local_path = replacement_filename(local_path)
-
+    opn = urlopen(url)
     try:
-        cache_path = astropy_download_file(url, pkgname="sunpy" ,cache=cache, show_progress=True)
-        shutil.copyfile(cache_path,local_path)
-        return local_path
-
-    except Exception as e:
-        raise RuntimeError(f"Failed to download file: {e}")
-
+        path = download_fileobj(opn, directory, url, default, overwrite)
+    finally:
+        opn.close()
+    return path
 
 # These two functions were in the stdlib cgi module which was deprecated in Python 3.11
 # They are copied here under the terms of the PSF Licence 2.0
