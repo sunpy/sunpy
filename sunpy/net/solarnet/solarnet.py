@@ -10,7 +10,7 @@ from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.solarnet.attrs import Dataset, walker
 from sunpy.util.parfive_helpers import Downloader, Results
 
-base_url = "https://solarnet2.oma.be/service/api/svo/{}"
+_BASE_URL = "https://solarnet2.oma.be/service/api/svo/{}"
 
 
 class SolarnetClient(BaseClient):
