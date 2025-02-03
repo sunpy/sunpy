@@ -41,7 +41,6 @@ def test_fetch(client,tmpdir):
     query = client.search(a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV"))
     path = Path(tmpdir) / "test_file_1"
 
-    #calling fetch
     client.fetch(query[0],path =path)
     assert path.exists()
     expected_file_name = str(query[0]["name"]) + ".fits"
