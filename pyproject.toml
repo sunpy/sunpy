@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "setuptools>=62.1",
-  "setuptools_scm[toml]>=6.2",
+  "setuptools_scm[toml]>=8.0.0",
   "wheel",
   "extension-helpers",
   # Comments on numpy build requirement range:
@@ -165,7 +165,7 @@ exclude = ["sunpy._dev*"]
 "*" = ["*.c", "*.h"]
 
 [tool.setuptools_scm]
-write_to = "sunpy/_version.py"
+version_file = "sunpy/_version.py"
 
 [project.entry-points."asdf.resource_mappings"]
 sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
