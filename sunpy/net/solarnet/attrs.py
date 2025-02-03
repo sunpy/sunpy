@@ -36,6 +36,7 @@ def _apply(wlk, query, imap):
     for iattr in query.attrs:
         wlk.apply(iattr, imap)
 
+
 @walker.add_applier(Wavelength)
 def _apply(wlk,query,imap):
     imap["wavelnth"] = int(query.min.value)
