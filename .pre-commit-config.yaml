@@ -25,7 +25,8 @@ repos:
       - id: mixed-line-ending
   - repo: https://github.com/crate-ci/typos
     rev: dictgen-v0.3.1
-    exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
+    hooks:
+      - id: typos
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
