@@ -46,6 +46,7 @@ def _apply(wlk,query,imap):
 def _apply(wlk,query,imap):
     imap["datasets"] = f"metadata_{query.value}"
 
+
 @walker.add_applier(Time)
 def _apply(wlk,query,imap):
     imap["date_end__gte"] = query.start.value
