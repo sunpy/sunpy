@@ -41,6 +41,7 @@ def _apply(wlk, query, imap):
 def _apply(wlk,query,imap):
     imap["wavelnth"] = int(query.min.value)
 
+
 @walker.add_applier(Dataset)
 def _apply(wlk,query,imap):
     imap["datasets"] = f"metadata_{query.value}"
