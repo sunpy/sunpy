@@ -191,7 +191,6 @@ class SolarnetClient(BaseClient):
         To get the names of available datasets.
         Make a GET request to https://solarnet.oma.be/service/api/svo/dataset to do so.
         """
-
         dir = os.path.dirname(os.path.realpath(__file__))
         url = "https://solarnet.oma.be/service/api/svo/dataset"
         response = requests.get(url, params={"limit": 100})
