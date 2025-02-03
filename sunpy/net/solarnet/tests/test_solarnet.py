@@ -8,12 +8,16 @@ import astropy.units as u
 import sunpy.net.attrs as a
 from sunpy.net import Fido
 from sunpy.net.base_client import QueryResponseTable
-from sunpy.net.solarnet import SolarnetClient
+from sunpy.net.solarnet import SOLARNETClient
 
 
 @pytest.fixture
 def client():
-    return SolarnetClient()
+    return SOLARNETClient()
+
+
+def test_info_url(client):
+    assert client.info_url == 'https://solarnet2.oma.be'
 
 
 @pytest.mark.remote_data
@@ -41,28 +45,29 @@ def test_fetch(client,tmpdir):
     query = client.search(a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV"))
     path = Path(tmpdir) / "test_file_1"
 
-    client.fetch(query[0],path =path)
+    client.fetch(query[0] , path=path)
     assert path.exists()
     expected_file_name = str(query[0]["name"]) + ".fits"
     expected_file = path / expected_file_name
     assert expected_file.exists()
-    os.remove(expected_file)
-
-    # Verify the file has been deleted
-    assert not expected_file.exists()
 
 
 @pytest.mark.remote_data
 def test_default_limit(client):
-    query = [a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA),a.Time("2020/02/04","2022/02/04")]
-    url = client.search(*query)
-    assert len(url) == 20
+    search = client.search(a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA), a.Time("2020/02/04","2022/02/04"))
+    assert len(search) == 20
 
 
 @pytest.mark.remote_data
 def test_complex_query():
-    query = [a.solarnet.Dataset.lyra_level_2 & a.solarnet.Limit(2) | a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(3)]
-    url = Fido.search(*query)
-    assert len(url) == 2
-    assert len(url[0]) == 2
-    assert len(url[1]) == 3
+    search = Fido.search(a.solarnet.Dataset.lyra_level_2 & a.solarnet.Limit(2) | a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(3))
+	# We have two results as they are not combined
+    assert len(search) == 2
+    # We limited the first query to 2
+    assert len(search[0]) == 2
+    # We limited the second query to 3
+    assert len(search[1]) == 3
+    assert "lyra_20100106-000000_lev2_std" in url[0]["name"]
+    assert "solo_L2_eui-fsi304-image_20200512T085922556_V06" in url[1]["name"]
+    assert "metadata_lyra_level_2" in url[0]["datasets"]
+    assert "metadata_eui_level_2"  in url[1]["datasets"]

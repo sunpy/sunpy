@@ -14,7 +14,7 @@ VSOClient.create_parse_vso_values()
 print("Updating JSOC json...\nThis may take some time...")
 JSOCClient.create_parse_jsoc_values()
 
-print("Updating solarnet json...\nThis may take some time...")
+print("Updating SOLARNET json...\nThis may take some time...")
 SolarnetClient.create_parse_solarnet_values()
 
 print("Updating CDAWeb json...\nThis may take some time...")
