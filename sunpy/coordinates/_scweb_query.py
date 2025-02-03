@@ -7,8 +7,9 @@ import xml.etree.ElementTree as ET
 
 import requests
 
-from sunpy.time import TimeRange
 from astropy.time import Time
+
+from sunpy.time import TimeRange
 
 __all__ = ["_create_xml_request", "_send_requests"]
 
@@ -31,10 +32,10 @@ def _create_xml_request(name, time_range, system):
     """
     if not (isinstance(time_range, TimeRange) or isinstance(time_range, Time)):
         raise ValueError("time_range must be a SunPy TimeRange or astorpy time object.")
-    
+
     if isinstance(time_range,Time):
         time_range = TimeRange(time_range[0],time_range[1])
-        
+
     start_time = time_range.start.isot
     end_time = time_range.end.isot
     data_request = ET.Element("DataRequest", xmlns="http://sscweb.gsfc.nasa.gov/schema")
