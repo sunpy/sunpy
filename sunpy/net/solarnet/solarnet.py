@@ -13,8 +13,6 @@ from sunpy.util.parfive_helpers import Downloader, Results
 base_url = "https://solarnet2.oma.be/service/api/svo/{}"
 
 
-
-
 class SolarnetClient(BaseClient):
     """
     Provides access to query and download from Solarnet API.
