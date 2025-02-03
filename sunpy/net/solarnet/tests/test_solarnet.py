@@ -58,6 +58,7 @@ def test_default_limit(client):
     url = client.search(*query)
     assert len(url) == 20
 
+
 @pytest.mark.remote_data
 def test_complex_query():
     query = [a.solarnet.Dataset.lyra_level_2 & a.solarnet.Limit(2) | a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(3)]
