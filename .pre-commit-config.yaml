@@ -23,16 +23,9 @@ repos:
         exclude: ""
       - id: end-of-file-fixer
       - id: mixed-line-ending
-<<<<<<<
   - repo: https://github.com/crate-ci/typos
     rev: dictgen-v0.3.1
-=======
-        exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
->>>>>>>
-    hooks:
-      - id: typos
+    exclude: ".*(.fits|.fts|.fit|.header|.txt|tca.*)$"
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
