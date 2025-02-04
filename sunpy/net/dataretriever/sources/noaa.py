@@ -135,8 +135,8 @@ class SRSClient(GenericClient):
     """
     Provides access to the NOAA SWPC solar region summary data.
 
-    The data is now retrieved from the NOAA NCEI HTTPS archive:
-    `https://www.ngdc.noaa.gov/stp/space-weather/swpc-products/daily_reports/solar_region_summaries/`__.
+    `The data is retrieved from NOAA's NCEI archive
+    <https://www.ngdc.noaa.gov/stp/space-weather/swpc-products/daily_reports/solar_region_summaries/>`__.
 
     Notes
     -----
