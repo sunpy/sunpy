@@ -1,0 +1,1 @@
+Fixes the issue https://github.com/sunpy/sunpy/issues/8022. Updated the SRSClient to use the new HTTPS endpoint instead of the outdated FTP link used earlier which caused a CI test to fail.
