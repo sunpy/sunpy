@@ -29,13 +29,10 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py311-oldestdeps
+        - linux: py313
           libraries:
             apt:
               - libopenjp2-7
-          deps:
-              - pytest==6.2.4
-              - tox-pypi-filter==0.1.0
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
