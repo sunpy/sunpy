@@ -330,7 +330,7 @@ def test_fido_indexing(queries):
         assert len(res) != 1
 
 @pytest.mark.remote_data
-def test_combined_response():
+def test_combined_response_vsoc():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
                   a.Instrument('AIA'), combine=True)
     assert len(results) == 1
@@ -340,6 +340,52 @@ def test_combined_response():
     t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
     t2 = TimeRange('2020-01-01', '2020-01-03 00:00:10')
     assert t1 == t2
+
+@pytest.mark.remote_data
+def test_combined_response_jsoc():
+    # Combining attributes other than time
+    results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+            a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'), combine=True)
+    print(results)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')),
+                           a.jsoc.Series('hmi.m_45s'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+    # Testing that the entire time range is covered
+    max_time = None
+    min_time = None
+    for t in results['jsoc']['T_REC']:
+        if max_time is None or t > max_time:
+            max_time = t
+        if min_time is None or t < min_time:
+            min_time = t
+
+    print(max_time, min_time)
+    t1 = TimeRange(min_time, max_time)
+    print("hi")
+    t2 = TimeRange('2020-01-01 00:00:45', '2020-01-03 00:00:45')
+    print(t1, t2)
+    assert t1.start.iso == t2.start.iso
+    assert t1.end.iso == t2.end.iso
+
+
+@pytest.mark.remote_data
+def test_combined_response_lyra():
+    # To check if the dataretrivers are working correctly on combining the results
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 23:59:59.999') | a.Time('2020-01-03', '2020-01-03 23:59:59.999')), a.Instrument.lyra)
+    print(results)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+
+    # Testing that the entire time range is covered
+    t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
+    t2 = TimeRange('2020-01-01', '2020-01-03 23:59:59.999')
+    print(t1, t2)
+    t1 == t2
 
 @pytest.mark.remote_data
 def test_combine_attr():
@@ -357,7 +403,6 @@ def test_combine_attr():
                   a.Instrument('AIA'), combine=False)
     assert len(results) == 2
     assert isinstance(results[0], QueryResponseTable)
-
 
 
 
