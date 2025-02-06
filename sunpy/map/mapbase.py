@@ -2729,14 +2729,12 @@ class GenericMap(NDData):
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
             axes (e.g., a difference in rotation angle).
 
-            - If ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
-              instead of the default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True`
-              is equivalent to specifying ``pcolormesh``.
-            - If ``reproject``, the map's data will be automatically reprojected to match the
-              WCS of the target axes using the :meth:`~sunpy.map.GenericMap.reproject_to` method,
-              ensuring proper alignment.
-            - If ``False``, no auto-alignment is performed, and the map is plotted using the
-              default method without any adjustments.
+            - If ``True`` or ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
+              to transform each pixel of the map to a quadrilateral in the axes WCS, which is
+              computationally intensive and not recommended for interactive plots.
+            - If ``reproject``, the map is reprojected to the axes WCS.  The reprojection extent
+              can be explicitly specified through the ``extent`` keyword argument ([left, right,
+              bottom, top] in pixel coordinates), otherwise the current axes limits are used.
 
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
@@ -2753,10 +2751,6 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive.  If the plot will
-        be interactive, the alternative approach of preprocessing the map (e.g.,
-        de-rotating it) to match the desired axes will result in better performance.
-
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
@@ -2822,12 +2816,17 @@ class GenericMap(NDData):
             target_wcs = copy.deepcopy(axes.wcs)
 
             # Pull the reprojection extent from the plot limits
-            xlim, ylim = axes.get_xlim(), axes.get_ylim()
+            if 'extent' in imshow_args:
+                # Use an explicitly specified reprojection extent
+                xlim, ylim = imshow_args['extent'][0:2], imshow_args['extent'][2:4]
+            else:
+                # Pull the reprojection extent from the plot limits
+                xlim, ylim = axes.get_xlim(), axes.get_ylim()
 
-            # If the plot limits are at the default values, use the pixel shape of the target WCS
-            if xlim == (0, 1) and ylim == (0, 1) and target_wcs.pixel_shape is not None:
-                xlim = (-0.5, target_wcs.pixel_shape[0] - 0.5)
-                ylim = (-0.5, target_wcs.pixel_shape[1] - 0.5)
+                # If the plot limits are at the default values, use the pixel shape of the target WCS
+                if xlim == (0, 1) and ylim == (0, 1) and target_wcs.pixel_shape is not None:
+                    xlim = (-0.5, target_wcs.pixel_shape[0] - 0.5)
+                    ylim = (-0.5, target_wcs.pixel_shape[1] - 0.5)
 
             # Expand the reprojection extent to whole pixels
             left = int(np.floor(xlim[0] + 0.5))

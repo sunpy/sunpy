@@ -1,2 +1,1 @@
-Added a new option ``autoalign='reproject'`` to :meth:`~sunpy.map.GenericMap.plot`.
-This option allows for automatic reprojection of a map's data to match the WCS of the target axes, using the :meth:`~sunpy.map.GenericMap.reproject_to` method.
+Added a new auto-alignment option ``autoalign='reproject'`` to :meth:`~sunpy.map.GenericMap.plot`, which performs a reprojection to the axes WCS.

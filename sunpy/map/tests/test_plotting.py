@@ -411,6 +411,18 @@ def test_plot_autoalign_reproject_no_inherent_size(aia171_test_submap, hmi_test_
 
 
 @figure_test
+def test_plot_autoalign_reproject_with_extent(aia171_test_submap, hmi_test_map_modified):
+    # Use extent to set the plot limits
+    wcs = copy.deepcopy(aia171_test_submap.wcs)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=wcs)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject', extent=[30, 110, 40, 90])
+    return fig
+
+
+@figure_test
 def test_plot_autoalign_pixel_alignment(aia171_test_map):
     # Verify that autoalign=True does not affect pixel alignment
     x, y = (z.value for z in aia171_test_map.reference_pixel)
