@@ -53,7 +53,6 @@ def mapsequence_different(aia171_test_map):
     return sunpy.map.Map([aia171_test_map, aia171_test_map.superpixel((4, 4) * u.pix)], sequence=True)
 
 
-@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_deprecations(mapsequence_all_the_same,
                       mapsequence_different):
     # TODO: Remove this in v7.1
@@ -76,7 +75,6 @@ def test_deprecations(mapsequence_all_the_same,
             sunpy.map.MapSequence(derotate=True)
 
 
-@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_as_array_different_shapes(mapsequence_different):
     # Should raise a ValueError if the mapsequence has differently shaped maps
     with pytest.raises(ValueError, match='Not all maps have the same shape.'):

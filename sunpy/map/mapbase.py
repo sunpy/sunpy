@@ -2260,14 +2260,14 @@ class GenericMap(NDData):
         reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
         new_array = func(func(reshaped_data, axis=3), axis=1)
 
-        if conservative_mask ^ (func in [np.sum, np.prod]):
-            warn_user(
-                f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
-                "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
-                "False for mean/median/std/min/max."
-                )
-
         if self.mask is not None:
+            if conservative_mask ^ (func in [np.sum, np.prod]):
+                warn_user(
+                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                    "False for mean/median/std/min/max."
+                    )
+
             if conservative_mask:
                 reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
                 new_mask = np.any(reshaped_mask, axis=(3, 1))
