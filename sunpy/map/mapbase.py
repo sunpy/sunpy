@@ -2228,10 +2228,10 @@ class GenericMap(NDData):
             The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
+        conservative_mask : bool, optional
             If `True`, a superpixel is masked if any of its constituent pixels are masked.
             If `False`, a superpixel is masked only if all of its constituent pixels are masked.
             Default is `False`.
-            If `True`, mask propagation is enabled. A superpixel will be masked if any of its constituent pixels are masked. The default is `False`.
 
         Returns
         -------
