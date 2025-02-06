@@ -2201,7 +2201,8 @@ class GenericMap(NDData):
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum, conservative_mask: bool = False):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
+                   conservative_mask: bool = False):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -2227,7 +2228,9 @@ class GenericMap(NDData):
             The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
-        conservative_mask : bool, optional
+            If `True`, a superpixel is masked if any of its constituent pixels are masked.
+            If `False`, a superpixel is masked only if all of its constituent pixels are masked.
+            Default is `False`.
             If `True`, mask propagation is enabled. A superpixel will be masked if any of its constituent pixels are masked. The default is `False`.
 
         Returns
