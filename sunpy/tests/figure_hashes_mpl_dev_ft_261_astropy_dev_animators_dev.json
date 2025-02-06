@@ -59,6 +59,7 @@
   "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_limit_larger_in_positive_direction": "86485c035e41738deae3690104c3e97fe44a7cd50537332b0f1b9ed86c77e5a2",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_limits_not_set": "76e72ff5a6a4c0a697c1433671130ce735de82277843c62ac85fa462387ccae3",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_no_inherent_size": "28081ab5c79ce394a648ae4e3f31abf686edc7709b94e76681323f8617f81d9b",
+  "sunpy.map.tests.test_plotting.test_plot_autoalign_reproject_with_extent": "a743da2103569ab58f027b9adbfd0a5a617f82ed17bae84a91b84586d9f46eb5",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_pixel_alignment": "dd407fa27c34d512e5a98f811a2533868b0dab67895c4d4f2b53b4bc52f781b0",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hgs": "90452e9e8f248f8798a794ba70e157bf0eb87a083bda55a8ffc846c2024b1363",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hpc_interpolation": "adca79ed26b0139f29c5c0bec63d1a818fe8ba0cd718923d952210e6e8ca801c",
