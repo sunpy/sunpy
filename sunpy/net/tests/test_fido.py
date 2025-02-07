@@ -301,6 +301,10 @@ def test_fido_indexing(queries):
         assert len(table.columns) == 1
 
     aa = res[:, 0]
+
+    if(len(aa) == 1):
+        print("here aa = res[:, 0]", aa)
+
     assert isinstance(aa, UnifiedResponse)
     assert len(aa) == 2
     assert len(aa[0]) == 1
@@ -566,7 +570,10 @@ def test_path_format_keys():
     t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
                              '!excite!': ['cat', 'rabbit']})
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
-    unif = UnifiedResponse(t1, t2)
+    # Need to pass combine=False otherwise combine=True will take union of the
+    # columns for multiple tables which will not have the same keys
+    # because path_format_keys() takes intersection of the keys in the tables
+    unif = UnifiedResponse(t1, t2, combine=False)
     assert unif.path_format_keys() == {'_excite_'}
 
 

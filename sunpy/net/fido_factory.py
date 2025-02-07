@@ -45,7 +45,7 @@ class UnifiedResponse(Sequence):
     index the second dimension with ``::2``.
     """
 
-    def __init__(self, *results, combine=False):
+    def __init__(self, *results, combine=True):
         """
         Parameters
         ----------
@@ -174,7 +174,7 @@ class UnifiedResponse(Sequence):
         if isinstance(ret, QueryResponseTable | QueryResponseColumn | QueryResponseRow):
             return ret
 
-        return UnifiedResponse(*ret)
+        return UnifiedResponse(*ret, combine=self._combine)
 
     def path_format_keys(self):
         """
