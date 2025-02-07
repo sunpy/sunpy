@@ -105,6 +105,8 @@ linkcheck_anchors = False
 
 # -- General configuration ---------------------------------------------------
 
+# Wrap large function/method signatures
+maximum_signature_line_length = 80
 # sphinxext-opengraph
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
