@@ -93,7 +93,7 @@ class CORMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod
@@ -131,7 +131,7 @@ class HIMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod

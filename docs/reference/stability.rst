@@ -60,15 +60,15 @@ The classification is as follows:
       </tr>
       <tr>
         <td align='center'><span class="mature"></span></td>
-        <td>Mature.  Additions/improvements possible, but no major changes planned. </td>
+        <td>Mature. Additions/improvements possible, but no major changes planned. </td>
       </tr>
       <tr>
         <td align='center'><span class="pendingdep"></span></td>
-        <td>Pending deprecation.  Might be deprecated in a future version.</td>
+        <td>Pending deprecation. Might be deprecated in a future version.</td>
       </tr>
       <tr>
         <td align='center'><span class="deprecated"></span></td>
-        <td>Deprecated.  Might be removed in a future version.</td>
+        <td>Deprecated. Might be removed in a future version.</td>
       </tr>
     </table>
 

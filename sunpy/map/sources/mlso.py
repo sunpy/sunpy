@@ -25,7 +25,7 @@ class KCorMap(GenericMap):
     Notes
     -----
     Observer location: The standard K-Cor metadata does not include the full 3D
-    location of the observer.  There are 2D Carrington heliographic coordinates, but
+    location of the observer. There are 2D Carrington heliographic coordinates, but
     using them is not recommended because the calculation of Carrington longitude
     differs from ``sunpy`` (see :ref:`sunpy-topic-guide-coordinates-carrington`).
     Instead, we assume the default observer location to be the geographic location of MLSO.

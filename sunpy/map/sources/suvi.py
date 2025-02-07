@@ -50,7 +50,7 @@ class SUVIMap(GenericMap):
 
     Observer location: We use the ECEF coordinates provided in the FITS header for the spacecraft
     location even when coordinates in other frames are provided due to accuracy concerns over the
-    coordinate transformations used in the SUVI data pipeline.  There could still be a small
+    coordinate transformations used in the SUVI data pipeline. There could still be a small
     discrepancy because the definition of the ECEF frame used by SUVI may not exactly match the
     definition of the ITRS frame used by SunPy to interpret the header values.
 

@@ -190,7 +190,7 @@ class LASCOMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @property

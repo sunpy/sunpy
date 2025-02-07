@@ -89,7 +89,7 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     Computes the change in longitude over a duration for a given latitude.
 
     Since the Sun is not a rigid body, different heliographic latitudes rotate with
-    different periods.  This is known as solar differential rotation.
+    different periods. This is known as solar differential rotation.
 
     Parameters
     ----------
@@ -109,9 +109,9 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
     frame_time : `str`
         If ``'sidereal'``, returns the change in longitude as referenced to distant
-        stars.  If ``'synodic'``, returns the apparent change in longitude as
+        stars. If ``'synodic'``, returns the apparent change in longitude as
         observed by the average orbital motion of Earth, which results in a slower
-        rotation rate.  Defaults to ``'sidereal'``.
+        rotation rate. Defaults to ``'sidereal'``.
 
     Returns
     -------

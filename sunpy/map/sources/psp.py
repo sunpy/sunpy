@@ -20,7 +20,7 @@ class WISPRMap(GenericMap):
     Notes
     -----
     By default, plotting of this map will set the lower bound to zero
-    (i.e., clip out negative values for pixels).  You can change this bound
+    (i.e., clip out negative values for pixels). You can change this bound
     by modifying ``.plot_settings['norm'].vmin``.
 
     References

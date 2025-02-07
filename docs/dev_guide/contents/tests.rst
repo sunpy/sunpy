@@ -100,7 +100,7 @@ You will see something like the following in your terminal::
     Starting the sunpy test suite:
     ...
 
-    The tests will run and will report any fails.  You can report these through the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__ and we will strive to help.
+    The tests will run and will report any fails. You can report these through the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__ and we will strive to help.
 
 It is possible to run this command in a situation where not all packages are installed.
 If this is the case, you will see the following when you run the test suite::

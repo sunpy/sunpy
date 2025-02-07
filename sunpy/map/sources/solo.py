@@ -27,7 +27,7 @@ class EUIMap(GenericMap):
     ----------
     * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`__
     * `EUI Instrument Page <https://www.sidc.be/EUI/about/instrument>`__
-    * `Instrument Paper: :cite:t:`rochus_solar_2020`
+    * Instrument Paper: :cite:t:`rochus_solar_2020`
     """
 
     def __init__(self, data, header, **kwargs):

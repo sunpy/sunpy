@@ -35,7 +35,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     Note that the data is re-binned from the original 128 into the following 8 pre-determined energy channels.
     The rebinning method treats the counts in each of the original 128 channels as
-    all having the energy of the average energy of that channel.  For example, the
+    all having the energy of the average energy of that channel. For example, the
     counts in an 14.5--15.6 keV original channel would all be accumulated into the
     15--25 keV rebinned channel.
 

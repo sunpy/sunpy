@@ -152,7 +152,7 @@ class LYRATimeSeries(GenericTimeSeries):
         start_str = metadata.get('date-obs', metadata.get('date_obs', ''))
         start = parse_time(start_str)
 
-        # First column are times.  For level 2 data, the units are [s].
+        # First column are times. For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
             times = start + TimeDelta(fits_record.field(0)*u.second)
@@ -160,7 +160,7 @@ class LYRATimeSeries(GenericTimeSeries):
             td = [int(n) for n in fits_record.field(0)]
             times = start + TimeDelta(td*u.minute)
         else:
-            raise ValueError("Time unit in LYRA fits file not recognised.  "
+            raise ValueError("Time unit in LYRA fits file not recognised. "
                              "Value = {}".format(hdulist[1].header['TUNIT1']))
 
         # Rest of columns are the data
