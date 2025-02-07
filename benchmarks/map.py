@@ -1,3 +1,5 @@
+from asv_runner.benchmarks.mark import skip_benchmark
+
 import astropy.units as u
 
 import sunpy.data.sample
@@ -14,6 +16,9 @@ class Creation:
     def time_create_map(self, name):
         sunpy.map.Map(self.filename)
 
+    # Skipped due to a bug in pympler.asizeof
+    # https://github.com/pympler/pympler/issues/151
+    @skip_benchmark
     def mem_create_map(self, name):
         return sunpy.map.Map(self.filename)
 
