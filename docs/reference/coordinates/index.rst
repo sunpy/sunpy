@@ -99,7 +99,7 @@ Supported Coordinate Systems
 
 For a description of these coordinate systems, see :cite:t:`thompson_coordinate_2006`
 and :cite:t:`franz_heliospheric_2002`
-(and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
+(and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`__).
 
 Reference/API
 =============
@@ -135,6 +135,6 @@ Attribution
 
 Some of this documentation was adapted from Astropy under the terms of the `BSD
 License
-<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
+<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`__.
 
 This sub-package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.

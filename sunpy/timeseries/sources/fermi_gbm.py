@@ -56,11 +56,11 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
-    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
-    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
-    * `GBM Instrument Papers <https://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
+    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`__
+    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`__
+    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`__
+    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`__
+    * `GBM Instrument Papers <https://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.

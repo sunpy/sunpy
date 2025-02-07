@@ -241,8 +241,8 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
 
     References
     ----------
-    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
-    * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`_
+    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`__
+    * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`__
 
     Examples
     --------

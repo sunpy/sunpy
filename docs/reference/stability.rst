@@ -106,4 +106,4 @@ The current planned and existing sub-packages are:
     </table>
 
 
-Taken with love from the `Astropy project. <https://github.com/astropy/astropy/blob/master/LICENSE.rst>`_
+Taken with love from the `Astropy project. <https://github.com/astropy/astropy/blob/master/LICENSE.rst>`__

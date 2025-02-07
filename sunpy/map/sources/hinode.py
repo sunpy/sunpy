@@ -142,10 +142,10 @@ class SOTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
-    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`_
-    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`_
-    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
+    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`__
+    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`__
+    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`__
+    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`__
     """
     # TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation

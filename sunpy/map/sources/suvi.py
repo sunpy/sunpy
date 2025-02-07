@@ -58,15 +58,15 @@ class SUVIMap(GenericMap):
 
     References
     ----------
-    * `GOES-R Mission <https://www.goes-r.gov>`_
-    * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
-    * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
+    * `GOES-R Mission <https://www.goes-r.gov>`__
+    * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`__
+    * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`__
     * Recommended instrument paper: :cite:t:`seaton_observations_2018`
-    * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`_
-    * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`_
-    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`_
-    * `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`_
-    * `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`_
+    * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`__
+    * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`__
+    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`__
+    * `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`__
+    * `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`__
     """
 
     def __init__(self, data, header, **kwargs):

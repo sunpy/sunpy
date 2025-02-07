@@ -46,11 +46,11 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
-    * `Recent solar indices <https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json>`_
-    * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`_
-    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
-    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
+    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`__
+    * `Recent solar indices <https://services.swpc.noaa.gov/json/solar-cycle/observed-solar-cycle-indices.json>`__
+    * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`__
+    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`__
+    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
@@ -197,9 +197,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     The following predicted values are available.
 
     * The predicted RI sunspot number is the official International Sunspot
-      Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+      Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`__ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`__ and the units are in sfu.
 
     .. note::
         See the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py`
@@ -214,10 +214,10 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
-    * `Predicted solar indices <https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json>`_
-    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
-    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
+    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`__
+    * `Predicted solar indices <https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json>`__
+    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`__
+    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`__
     """
 
     # Class attributes used to specify the source class of the TimeSeries

@@ -46,9 +46,9 @@ class LYRATimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`_
-    * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
-    * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
+    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`__
+    * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`__
+    * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.

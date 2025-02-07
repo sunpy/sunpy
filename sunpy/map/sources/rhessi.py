@@ -23,7 +23,7 @@ class RHESSIMap(GenericMap):
 
     References
     ----------
-    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
+    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`__
     * :cite:t:`lin_reuven_2002`
 
     .. warning::

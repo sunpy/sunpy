@@ -30,7 +30,7 @@ class TimeUTime(TimeFromEpoch):
 
     References
     ----------
-    * `anytim routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/utplot/anytim.pro>`_
+    * `anytim routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/utplot/anytim.pro>`__
 
     Examples
     --------
@@ -74,7 +74,7 @@ class TimeTaiSeconds(TimeFromEpoch):
 
     References
     ----------
-    * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`_
+    * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`__
 
     Examples
     --------

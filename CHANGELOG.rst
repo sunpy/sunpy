@@ -476,7 +476,7 @@ Removals
   Use the `astropy.io.fits` module instead for more generic functionality to read FITS files. (`#6432 <https://github.com/sunpy/sunpy/pull/6432>`__)
 - The ``sunpy.physics.solar_rotation`` sub-module has been removed, having been moved to `sunkit_image.coalignment`. (`#6433 <https://github.com/sunpy/sunpy/pull/6433>`__)
 - Most of the `sunpy.visualization.animator` subpackage has been removed, with the exception of `~sunpy.visualization.animator.MapSequenceAnimator`
-  It has been moved into the standalone `mpl-animators <https://pypi.org/project/mpl-animators>`_ package
+  It has been moved into the standalone `mpl-animators <https://pypi.org/project/mpl-animators>`__ package
   Please update your imports to replace ``sunpy.visualization.animator`` with ``mpl_animators``. (`#6434 <https://github.com/sunpy/sunpy/pull/6434>`__)
 - Remove ``GenericMap.shift`` method and the ``GenericMap.shifted_value``.
   Use `~sunpy.map.GenericMap.shift_reference_coord` instead. (`#6437 <https://github.com/sunpy/sunpy/pull/6437>`__)
@@ -891,7 +891,7 @@ Deprecations
   :func:`sunpy.image.resample.resample` is deprecated. Use "nearest" instead,
   which has the same effect. (`#5480 <https://github.com/sunpy/sunpy/pull/5480>`__)
 - The `sunpy.visualization.animator` subpackage has been spun out into the
-  standalone `mpl-animators <https://pypi.org/project/mpl-animators>`_ package,
+  standalone `mpl-animators <https://pypi.org/project/mpl-animators>`__ package,
   with the exception of `~sunpy.visualization.animator.MapSequenceAnimator`.
   Please update your imports to replace ``sunpy.visualization.animator`` with
   ``mpl_animators``.
@@ -1321,7 +1321,7 @@ Backwards Incompatible Changes
 ------------------------------
 
 - Support for Python 3.6 and Numpy 1.15 has been dropped in line with
-  `NEP 29 <https://numpy.org/neps/nep-0029-deprecation_policy.html>`_.
+  `NEP 29 <https://numpy.org/neps/nep-0029-deprecation_policy.html>`__.
   The minimum supported version of Astropy is now 4.0, and the minimum version of scipy is now 1.2. (`#4284 <https://github.com/sunpy/sunpy/pull/4284>`__)
 - Changed :func:`sunpy.coordinates.sun.B0` return type from `~astropy.coordinates.Angle`
   to `~astropy.coordinates.Latitude`. (`#4323 <https://github.com/sunpy/sunpy/pull/4323>`__)

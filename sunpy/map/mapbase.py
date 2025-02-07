@@ -1721,7 +1721,7 @@ class GenericMap(NDData):
 
         References
         ----------
-        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
+        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`__
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -2315,7 +2315,7 @@ class GenericMap(NDData):
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
-        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
+        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`__
 
         Parameters
         ----------

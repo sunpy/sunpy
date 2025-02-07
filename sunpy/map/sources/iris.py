@@ -28,8 +28,8 @@ class SJIMap(GenericMap):
 
     References
     ----------
-    * `IRIS Mission Page <https://iris.lmsal.com>`_
-    * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`_
+    * `IRIS Mission Page <https://iris.lmsal.com>`__
+    * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`__
     * :cite:t:`de_pontieu_interface_2014`
     """
     @property

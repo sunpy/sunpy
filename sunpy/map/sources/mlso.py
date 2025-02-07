@@ -32,8 +32,8 @@ class KCorMap(GenericMap):
 
     References
     ----------
-    * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`_
-    * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`_
+    * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`__
+    * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`__
     """
 
     # MLSO location per Wikipedia (https://en.wikipedia.org/wiki/Mauna_Loa_Solar_Observatory)
