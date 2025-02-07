@@ -124,6 +124,11 @@ In addition, a reference section must be provided with links to the following re
 
 Examples can be found in any class defined in any Python file in ``sunpy/map/sources/`` such as `~sunpy.map.sources.AIAMap`.
 
+Citing Papers
+-------------
+
+If you want to cite a published paper or any source with a bibtex reference, please add the bibtex entry to :file:`docs/references.bib` and add a citation to the docstring, e.g., `` :cite:t:`franz_heliospheric_2002` ``.
+
 Sphinx
 ======
 
