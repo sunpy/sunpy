@@ -127,7 +127,12 @@ Examples can be found in any class defined in any Python file in ``sunpy/map/sou
 Citing Papers
 -------------
 
-If you want to cite a published paper or any source with a bibtex reference, please add the bibtex entry to :file:`docs/references.bib` and add a citation to the docstring, e.g., `` :cite:t:`franz_heliospheric_2002` ``.
+If you want to cite a published paper or any source with a bibtex reference, one may add it to the bibtex file under :file:`docs/references.bib`.
+Then you can add a citation to the docstring like so:
+
+.. code-block:: rst
+
+    :cite:t:`franz_heliospheric_2002`
 
 Sphinx
 ======

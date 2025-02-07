@@ -86,7 +86,6 @@ It includes an interface for searching and downloading data from multiple data p
     :hidden:
 
     tutorial/index
-    tutorial/installation
     generated/gallery/index
     how_to/index
     topic_guide/index

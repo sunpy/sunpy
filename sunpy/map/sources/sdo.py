@@ -40,7 +40,7 @@ class AIAMap(GenericMap):
     * `Instrument Page <https://aia.lmsal.com>`__
     * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`__
     * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`__
-    * Instrument Papers: :cite:t:`lemen_atmospheric_2012`
+    * Instrument Paper - :cite:t:`lemen_atmospheric_2012`
     * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`__
     """
 
