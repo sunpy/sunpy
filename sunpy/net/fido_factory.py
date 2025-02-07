@@ -593,15 +593,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # UnifiedResponse object.
         return results
 
-        # def _make_query_to_client(self, *query):
-        # for client in candidate_widget_types:
-        #     tmpclient = client()
-        #     results.append(tmpclient.search(*query))
-
-        # # This method is called by `search` and the results are fed into a
-        # # UnifiedResponse object.
-        # return results
-
     def __repr__(self):
         return object.__repr__(self) + "\n" + self._print_clients()
 
