@@ -143,6 +143,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinxcontrib.bibtex',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -268,7 +269,7 @@ hoverxref_role_types = {
 
 # -- Options for HTML output ---------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
+# The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
 html_theme = "sunpy"
 
@@ -297,6 +298,8 @@ graphviz_dot_args = [
 # the docs. For more options, see:
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autoclass_content
 autoclass_content = "both"
+
+bibtex_bibfiles = ['references.bib']
 
 # -- Sphinx Gallery ------------------------------------------------------------
 
