@@ -39,19 +39,19 @@ class SOLARNETClient(BaseClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SOLARNETClient:
-    Source: https://solarnet2.oma.be/
+    Source: https://solarnet2.oma.be
     <BLANKLINE>
-    index       datasets                              name
-    ----- -------------------- --------------------------------------------------
-        0 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06
-        1 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122606952_V06
+    index       datasets                              name                        detector
+    ----- -------------------- -------------------------------------------------- --------
+        0 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06  HRI_EUV
+        1 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122606952_V06  HRI_EUV
     <BLANKLINE>
     <BLANKLINE>
     """
 
     @property
     def info_url(self):
-        return 'https://solarnet2.oma.be/'
+        return 'https://solarnet2.oma.be'
 
     def search(self, *query):
         """
@@ -77,13 +77,13 @@ class SOLARNETClient(BaseClient):
         Results from 1 Provider:
         <BLANKLINE>
         3 Results from the SOLARNETClient:
-        Source: https://solarnet2.oma.be/
+        Source: https://solarnet2.oma.be
         <BLANKLINE>
-        index        datasets                    name
-        ----- --------------------- -----------------------------
-            0 metadata_lyra_level_2 lyra_20100106-000000_lev2_std
-            1 metadata_lyra_level_2 lyra_20100107-000000_lev2_std
-            2 metadata_lyra_level_2 lyra_20100108-000000_lev2_std
+        index        datasets                    name             detector
+        ----- --------------------- ----------------------------- --------
+            0 metadata_lyra_level_2 lyra_20100106-000000_lev2_std  HRI_EUV
+            1 metadata_lyra_level_2 lyra_20100107-000000_lev2_std  HRI_EUV
+            2 metadata_lyra_level_2 lyra_20100108-000000_lev2_std  HRI_EUV
         <BLANKLINE>
         <BLANKLINE>
         """
@@ -99,7 +99,8 @@ class SOLARNETClient(BaseClient):
             results.append({
                 "index": i,
                 "datasets": source,
-                "name": os.path.splitext(os.path.basename(self.links[i]))[0]
+                "name": os.path.splitext(os.path.basename(self.links[i]))[0],
+                "detector": block["detector__iexact"] if "detector__iexact" in block else "Not specified"
             })
         return QueryResponseTable(results, client=self)
 
@@ -149,7 +150,7 @@ class SOLARNETClient(BaseClient):
         Results : `parfive.Results`
             A `parfive.Results` instance or `None` if no URLs to download
         """
-        downloader = Downloader(progress=progress, overwrite=overwrite, max_splits=1)
+        downloader = Downloader(progress=progress, overwrite=overwrite, max_splits=2)
         link_name = link.split('/')[-1]
         if path is None:
             default_dir = config.get("downloads", "download_dir")
@@ -186,7 +187,7 @@ class SOLARNETClient(BaseClient):
             A `parfive.Results` instance or `None` if no URLs to download
         """
         indices = (
-            [query_results[0]] if len(query_results) == 3
+            [query_results[0]] if len(query_results) == 4
             else [i["index"] for i in query_results]
         )
         for index in indices:

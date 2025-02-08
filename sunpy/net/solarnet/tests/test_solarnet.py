@@ -1,7 +1,7 @@
-import os
 from pathlib import Path
 
 import pytest
+from parfive import Results
 
 import astropy.units as u
 
@@ -26,7 +26,8 @@ def test_search(client):
     url = client.search(*query)
     assert isinstance(url,QueryResponseTable)
     assert len(url) == 2
-
+    assert "metadata_eui_level_2" in url["datasets"]
+    assert "HRI_EUV" in url["detector"]
 
 def test_can_handle_query(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
@@ -39,9 +40,14 @@ def test_solarnet_attrs(client):
     assert a.solarnet.Dataset in attrs.keys()
     assert len(attrs[a.solarnet.Dataset]) > 0
 
+@pytest.mark.remote_data
+def test_fetch_return_type():
+    qr = Fido.search(a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(1))
+    res = Fido.fetch(qr)
+    assert isinstance(res, Results)
 
 @pytest.mark.remote_data
-def test_fetch(client,tmpdir):
+def test_fetch_path_specified(client,tmpdir):
     query = client.search(a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV"))
     path = Path(tmpdir) / "test_file_1"
 
@@ -67,7 +73,7 @@ def test_complex_query():
     assert len(search[0]) == 2
     # We limited the second query to 3
     assert len(search[1]) == 3
-    assert "lyra_20100106-000000_lev2_std" in url[0]["name"]
-    assert "solo_L2_eui-fsi304-image_20200512T085922556_V06" in url[1]["name"]
-    assert "metadata_lyra_level_2" in url[0]["datasets"]
-    assert "metadata_eui_level_2"  in url[1]["datasets"]
+    assert "lyra_20100106-000000_lev2_std" in search[0]["name"]
+    assert "solo_L2_eui-fsi304-image_20200512T085922556_V06" in search[1]["name"]
+    assert "metadata_lyra_level_2" in search[0]["datasets"]
+    assert "metadata_eui_level_2"  in search[1]["datasets"]
