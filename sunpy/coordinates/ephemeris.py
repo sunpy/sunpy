@@ -407,7 +407,7 @@ def get_sscweb_coord(body, time, system="Gse"):
     time : `sunpy.time.TimeRange` or an `astropy.time.Time` object
         The time range over which to query the body's location.
     system : `str`, optional
-        The coordinate system to use for the output. Defaults to "GSE".
+        The coordinate system to use for the output. Defaults to "Gse".
 
     Returns
     -------
