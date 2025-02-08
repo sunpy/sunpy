@@ -39,8 +39,8 @@ def _create_xml_request(name, time_range, system):
     data_request = ET.Element("DataRequest", xmlns="http://sscweb.gsfc.nasa.gov/schema")
     ET.SubElement(data_request, "Description")
     time_interval = ET.SubElement(data_request, "TimeInterval")
-    ET.SubElement(time_interval, "Start").text = start_time
-    ET.SubElement(time_interval, "End").text = end_time
+    ET.SubElement(time_interval, "Start").text = time_range.start.isot
+    ET.SubElement(time_interval, "End").text = time_range.end.isot
     satellites = ET.SubElement(data_request, "Satellites")
     ET.SubElement(satellites, "Id").text = name.lower()
     ET.SubElement(satellites, "ResolutionFactor").text = "1"
