@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
+import astropy.units as u
 from astropy.io import fits
 from astropy.wcs import WCS
 
@@ -56,6 +57,20 @@ def test_read_asdf_and_verify(tmpdir):
     assert isinstance(loaded_asdf_map.data, np.ndarray)
     assert isinstance(loaded_asdf_map.meta, dict)
     assert isinstance(loaded_asdf_map, sunpy.map.sources.AIAMap)
+
+
+def test_map_meta_changes_in_asdf(tmpdir):
+    map = sunpy.map.Map(AIA_171_IMAGE)
+    map = map.rotate(90 * u.deg)
+
+    assert "pc1_2" in map.meta.added_items
+    assert "crota2" in map.meta.removed_items
+    assert "crval1" in map.meta.modified_items
+
+    map.save(f"{tmpdir}/check.asdf")
+    map_in_asdf = sunpy.map.Map(f"{tmpdir}/check.asdf")
+
+    assert dict(map_in_asdf.meta) == dict(map.meta)
 
 
 def test_mapsequence(eit_fits_directory):

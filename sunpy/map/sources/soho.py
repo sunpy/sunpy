@@ -28,9 +28,9 @@ class EITMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
-    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
 
     """
 
@@ -115,7 +115,7 @@ class LASCOMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
     """
 
     def __init__(self, data, header, **kwargs):
@@ -190,7 +190,7 @@ class LASCOMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @property
@@ -226,10 +226,10 @@ class MDIMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    * `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
-    * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
-    * `SOHO MDI Instrument Paper <https://doi.org/10.1007/978-94-009-0191-9_5>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO MDI Instrument Page <http://soi.stanford.edu>`__
+    * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`__
+    * :cite:t:`scherrer_solar_1995`
     """
 
     def __init__(self, data, header, **kwargs):

@@ -5,7 +5,7 @@ Testing Guidelines
 ******************
 
 This section describes the testing framework and format standards for tests in sunpy.
-Here we have heavily adapted the `Astropy version <https://docs.astropy.org/en/latest/development/testguide.html>`_, and **it is worth reading that link.**
+Here we have heavily adapted the `Astropy version <https://docs.astropy.org/en/latest/development/testguide.html>`__, and **it is worth reading that link.**
 
 The testing framework used by sunpy is the `pytest`_ framework, accessed through the ``pytest`` command.
 
@@ -100,7 +100,7 @@ You will see something like the following in your terminal::
     Starting the sunpy test suite:
     ...
 
-    The tests will run and will report any fails.  You can report these through the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__ and we will strive to help.
+    The tests will run and will report any fails. You can report these through the `sunpy issue tracker <https://github.com/sunpy/sunpy/issues>`__ and we will strive to help.
 
 It is possible to run this command in a situation where not all packages are installed.
 If this is the case, you will see the following when you run the test suite::
@@ -183,7 +183,7 @@ If you want to create a report in html, you can run::
 Writing tests
 =============
 
-``pytest`` has the following `test discovery rules <https://pytest.org/en/latest/goodpractices.html#conventions-for-python-test-discovery>`_::
+``pytest`` has the following `test discovery rules <https://pytest.org/en/latest/goodpractices.html#conventions-for-python-test-discovery>`__::
 
  * ``test_*.py`` or ``*_test.py`` files
  * ``Test`` prefixed classes (without an ``__init__`` method)
@@ -263,8 +263,8 @@ Tests that create files
 -----------------------
 
 Tests may often be run from directories where users do not have write permissions so tests which create files should always do so in temporary directories.
-This can be done with the `pytest tmpdir function argument <https://pytest.org/en/latest/tmpdir.html>`_ or with Python's built-in `tempfile module
-<https://docs.python.org/3/library/tempfile.html#module-tempfile>`_.
+This can be done with the `pytest tmpdir function argument <https://pytest.org/en/latest/tmpdir.html>`__ or with Python's built-in `tempfile module
+<https://docs.python.org/3/library/tempfile.html#module-tempfile>`__.
 
 Tests that use test data
 ------------------------
@@ -328,7 +328,7 @@ doctests
 --------
 
 Code examples in the documentation will also be run as tests and this helps to validate that the documentation is accurate and up to date.
-sunpy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
+sunpy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`__.
 
 You do not have to do anything extra in order to run any documentation tests.
 Within our ``pyproject.toml`` file we have set default options for ``pytest``, such that you only need to run::

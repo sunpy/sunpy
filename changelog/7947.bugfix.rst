@@ -1,1 +1,0 @@
-Fixed a bug in the HTML representation for `sunpy.timeseries.GenericTimeSeries` that error-ed if the time-series had too many columns.

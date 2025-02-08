@@ -54,13 +54,13 @@ xc = [0, 50, 400] * u.arcsec
 yc = [0, 100, 400] * u.arcsec
 
 ################################################################################
-# Plot the blank map with the specified coordinates.  Note that the marker for
+# Plot the blank map with the specified coordinates. Note that the marker for
 # (0, 0) in helioprojective coordinates is at the center of the solar disk, yet
 # the heliographic equator (zero degrees latitude) does not go through the disk
-# center and instead curves below it.  The reason for that is the observer,
+# center and instead curves below it. The reason for that is the observer,
 # specified as Earth in this example, is almost always at non-zero heliographic
 # latitude, and disk center as seen by such an observer will have that same
-# heliographic latitude.  The :func:`~sunpy.coordinates.sun.B0` function returns
+# heliographic latitude. The :func:`~sunpy.coordinates.sun.B0` function returns
 # Earth's heliographic latitude at a specified time.
 
 coords = SkyCoord(xc, yc, frame=blank_map.coordinate_frame)
