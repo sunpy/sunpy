@@ -210,8 +210,7 @@ class SOLARNETClient(BaseClient):
     @staticmethod
     def create_parse_solarnet_values():
         """
-        To get the names of available datasets.
-        Make a GET request to https://solarnet.oma.be/service/api/svo/dataset to do so.
+        Gets the names of available datasets using https://solarnet.oma.be/service/api/svo/dataset.
         """
         dir = os.path.dirname(os.path.realpath(__file__))
         url = _BASE_URL.format("dataset")
