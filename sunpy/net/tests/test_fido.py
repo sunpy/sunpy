@@ -380,6 +380,7 @@ def test_combined_response_lyra():
     assert t1 == t2
 
 
+
 @pytest.mark.remote_data
 def test_combine_attr():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
