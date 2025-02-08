@@ -244,7 +244,7 @@ labels = {
 def read_chromosphere_data(file=csv_file_path):
     """reads the chromosphere Avrett and Loeser(2008) model data from a CSV file and returns an Astropy Table with units."""
     if not file.exists():
-        raise FileNotFoundError(f"File not found")
+        raise FileNotFoundError("File not found")
 
     df = pd.read_csv(file)
     table = Table.from_pandas(df)
@@ -295,4 +295,3 @@ def plot_chromosphere(data=None, x_param="h", y_param="T", log=True):
 
 
 chromosphere_data = read_chromosphere_data()
-
