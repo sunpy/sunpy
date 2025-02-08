@@ -1044,7 +1044,7 @@ def test_superpixel_masked(aia171_test_map_with_mask):
 
 
 def test_superpixel_masked_conservative_mask_warning(aia171_test_map_with_mask):
-    #Ensures no warning is raised
+
     aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.sum, conservative_mask=True)
 
     aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.mean, conservative_mask=False)
@@ -1059,10 +1059,10 @@ def test_superpixel_masked_conservative_mask_warning(aia171_test_map_with_mask):
 def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
     input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
     dimensions = (2, 2) * u.pix
-    # Test that the mask is respected
+
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
     assert superpix_map.mask is not None
-    # Check the shape of the mask
+
     expected_shape = input_dims * (1 * u.pix / dimensions)
     assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
 
