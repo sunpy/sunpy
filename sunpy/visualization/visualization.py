@@ -70,7 +70,7 @@ def show_hpr_impact_angle(declination_axis):
     instead.
 
     In order to accommodate the FITS-WCS machinery, the declination is used instead
-    of the impact angle (which is the declination plus 90 degrees).  This function
+    of the impact angle (which is the declination plus 90 degrees). This function
     changes the tick-label formatter for an axis so that it adds 90 degrees before
     rendering the labels.
 

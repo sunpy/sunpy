@@ -8,7 +8,7 @@ The purpose of the page is to describe the standards that are expected of all th
 All potential developers should read and abide by the following standards.
 Code which does not follow these standards closely will not be accepted.
 
-We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`__.
 
 Language Standard
 =================
@@ -19,14 +19,14 @@ Language Standard
 * The new Python 3 formatting style should be used (i.e.
   ``"{0:s}".format("spam")`` instead of ``"%s" % "spam"``).
 
-* The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`_, and packages already required by the sunpy core package.
+* The core package and affiliated packages should be importable with no dependencies other than components already in the sunpy core package, the `Python Standard Library <https://docs.python.org/3/library/index.html>`__, and packages already required by the sunpy core package.
   Adding dependencies to sunpy core will be considered but are highly discouraged.
   Such optional dependencies should be recorded in the ``pyproject.toml`` file in the ``project.optional-dependencies`` section.
 
 Coding Style/Conventions
 ========================
 
-* The code will follow the standard `PEP8 Style Guide for Python Code <https://www.python.org/dev/peps/pep-0008/>`_.
+* The code will follow the standard `PEP8 Style Guide for Python Code <https://www.python.org/dev/peps/pep-0008/>`__.
   In particular, this includes using only 4 spaces for indentation, and never tabs.
 
 * **Follow the existing coding style** within a file and avoid making changes that are purely stylistic.
@@ -192,7 +192,7 @@ Data and Configuration
 * We store test data in ``sunpy/data/test`` as long as it is less than about 100 kB.
   These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.get_test_data_filenames` functions.
 
-* We store data used for examples in the `sample-data repository <https://github.com/sunpy/sample-data>`_.
+* We store data used for examples in the `sample-data repository <https://github.com/sunpy/sample-data>`__.
   This data should not be used for unit tests but can be within our documentation.
 
 * All persistent configuration should use the :ref:`customizing-sunpy` mechanism.
@@ -220,7 +220,7 @@ Including C Code
 * If a C extension has a dependency on an external C library, the source code for the library should be bundled with sunpy, provided the license for the C library is compatible with the sunpy license.
   Additionally, the package must be compatible with using a system-installed library in place of the library included in sunpy.
 
-* In cases where C extensions are needed but `Cython`_ cannot be used, the `PEP 7 Style Guide for C Code <https://www.python.org/dev/peps/pep-0007/>`_ is recommended.
+* In cases where C extensions are needed but `Cython`_ cannot be used, the `PEP 7 Style Guide for C Code <https://www.python.org/dev/peps/pep-0007/>`__ is recommended.
 
 * C extensions (`Cython`_ or otherwise) should provide the necessary information for building the extension.
 

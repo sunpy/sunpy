@@ -14,15 +14,15 @@ class TimeUTime(TimeFromEpoch):
     -----
     This format "ignores" leap seconds by treating each day as spanned by exactly
     86400 seconds, which means that this format's second is not actually uniform in
-    duration.  On a day without a leap second, this format's second is equal to an
-    SI second.  On a day with a leap second, this format's second is larger than an
+    duration. On a day without a leap second, this format's second is equal to an
+    SI second. On a day with a leap second, this format's second is larger than an
     SI second by 1/86400 of an SI second.
 
     This format is very similar to the default output format of the ``anytim``
     routine in SSW in that there are exactly 86400 seconds assigned for each day.
     However, ``anytim`` treats the seconds as always equal to an SI second, and thus
     the 86400 seconds span only the first 86400/86401 of the day, and the leap
-    second is skipped over.  This results in discrepancies of up to a second on days
+    second is skipped over. This results in discrepancies of up to a second on days
     with a leap second.
 
     This format is equivalent to `~astropy.time.TimeUnix`, except that the epoch is
@@ -30,7 +30,7 @@ class TimeUTime(TimeFromEpoch):
 
     References
     ----------
-    * `anytim routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/utplot/anytim.pro>`_
+    * `anytim routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/utplot/anytim.pro>`__
 
     Examples
     --------
@@ -55,10 +55,10 @@ class TimeTaiSeconds(TimeFromEpoch):
     SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
 
     1958-01-01 00:00:00 is the defined time when International Atomic Time (TAI)
-    and Universal Time (UT) are synchronized.  A TAI second has the same length as
+    and Universal Time (UT) are synchronized. A TAI second has the same length as
     an SI second, but prior to 1972-01-01, a UT second -- then defined to be 1/86400
-    of an Earth day -- grew to be longer than than an SI second.  1972-01-01
-    00:00:00 UTC is equal to 1972-01-01 00:00:10 TAI.  After 1972-01-01, Coordinated
+    of an Earth day -- grew to be longer than than an SI second. 1972-01-01
+    00:00:00 UTC is equal to 1972-01-01 00:00:10 TAI. After 1972-01-01, Coordinated
     Universal Time (UTC) is defined with seconds that are the same length as SI
     seconds, but now leap seconds are occasionally added to UTC so that it stays
     synchronized with Earth days.
@@ -66,7 +66,7 @@ class TimeTaiSeconds(TimeFromEpoch):
     Notes
     -----
     This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
-    related routines, for times after 1972-01-01.  Be aware that the SSW routines
+    related routines, for times after 1972-01-01. Be aware that the SSW routines
     are not written to provide valid results for times before 1972-01-01.
 
     This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch
@@ -74,7 +74,7 @@ class TimeTaiSeconds(TimeFromEpoch):
 
     References
     ----------
-    * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`_
+    * `anytim2tai routine in SSW <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/time/anytim2tai.pro>`__
 
     Examples
     --------

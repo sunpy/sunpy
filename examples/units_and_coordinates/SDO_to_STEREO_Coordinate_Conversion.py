@@ -31,8 +31,7 @@ maps['AIA'].plot_settings['vmin'] = 0  # set the minimum plotted pixel value
 ###############################################################################
 # We will be transforming coordinates where the formation height of 304 A
 # emission makes a difference, so we set the reference solar radius to 4 Mm
-# above the solar surface (see `Alissandrakis 2019
-# <https://doi.org/10.1007/s11207-019-1552-1>`__).
+# above the solar surface (see :cite:t:`alissandrakis_measurement_2019`).
 
 for m in maps.values():
     m.meta['rsun_ref'] = (constants.radius + 4*u.Mm).to_value('m')
@@ -78,7 +77,7 @@ ax.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)
 
 ###############################################################################
 # We can transform the coordinate of the feature to see its representation as
-# seen by STEREO EUVI.  The original coordinate did not contain a distance from
+# seen by STEREO EUVI. The original coordinate did not contain a distance from
 # the observer, so it is converted to a 3D coordinate assuming that it has a
 # radius from Sun center equal to the reference solar radius of the coordinate
 # frame, which we set earlier to be the formation height of 304 A emission.
@@ -86,7 +85,7 @@ ax.plot_coord(feature_aia, 'bx', fillstyle='none', markersize=20)
 print(feature_aia.transform_to(maps['EUVI'].coordinate_frame))
 
 ###############################################################################
-# Now we can plot this box on both the AIA and EUVI images.  Note that using
+# Now we can plot this box on both the AIA and EUVI images. Note that using
 # :meth:`~sunpy.map.GenericMap.draw_quadrangle` means that the plotted
 # rectangle will be automatically warped appropriately to account for the
 # different coordinate frames.
@@ -103,7 +102,7 @@ maps['AIA'].draw_quadrangle(aia_bottom_left, top_right=aia_top_right, axes=ax2)
 
 ###############################################################################
 # We can now zoom in on the region in the EUVI image, and we also draw an X
-# at the feature marked earlier.  We do not need to explicitly transform the
+# at the feature marked earlier. We do not need to explicitly transform the
 # feature coordinate to the matching coordinate frame; that is performed
 # automatically by :meth:`~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 

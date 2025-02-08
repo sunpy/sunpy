@@ -105,6 +105,8 @@ linkcheck_anchors = False
 
 # -- General configuration ---------------------------------------------------
 
+# Wrap large function/method signatures
+maximum_signature_line_length = 80
 # sphinxext-opengraph
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
@@ -141,6 +143,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinxcontrib.bibtex',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -266,7 +269,7 @@ hoverxref_role_types = {
 
 # -- Options for HTML output ---------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
+# The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
 html_theme = "sunpy"
 
@@ -295,6 +298,8 @@ graphviz_dot_args = [
 # the docs. For more options, see:
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autoclass_content
 autoclass_content = "both"
+
+bibtex_bibfiles = ['references.bib']
 
 # -- Sphinx Gallery ------------------------------------------------------------
 

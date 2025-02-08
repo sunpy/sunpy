@@ -301,7 +301,7 @@ class MapFactory(BasicRegistrationFactory):
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type.
+        # matches the arguments. If it does, use that type.
         for pair in data_header_pairs:
             if isinstance(pair, GenericMap):
                 new_maps.append(pair)

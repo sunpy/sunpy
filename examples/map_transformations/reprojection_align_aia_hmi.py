@@ -6,9 +6,9 @@ Aligning AIA and HMI Data with Reproject
 This example shows how to reproject one image to be aligned with another image.
 
 Here we use the `reproject <https://reproject.readthedocs.io/en/stable/>`__
-package to transform one image to the reference frame of another image.  The
+package to transform one image to the reference frame of another image. The
 reference frames are defined by the respective World Coordinate System (WCS)
-information.  This is a very generic way of aligning data, and can be very
+information. This is a very generic way of aligning data, and can be very
 accurate.
 
 You will need ``reproject`` v0.6 or higher installed.
@@ -25,7 +25,7 @@ import sunpy.data.sample
 import sunpy.map
 
 ######################################################################
-# We use the AIA image and HMI image from the sample data.  For the
+# We use the AIA image and HMI image from the sample data. For the
 # HMI map, we use the special HMI color map, which expects the plotted
 # range to be -1500 to 1500.
 

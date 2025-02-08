@@ -1344,7 +1344,7 @@ def test_hg_data_to_pix(heliographic_test_map):
 def test_more_than_two_dimensions():
     """
     Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    loaded. We need to load a >2-dim dataset with a TELESCOP header
     """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.

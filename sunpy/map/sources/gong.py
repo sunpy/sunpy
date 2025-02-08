@@ -100,10 +100,10 @@ class GONGHalphaMap(GenericMap):
 
     References
     ----------
-    * `GONG H-Alpha Page <https://nso.edu/data/nisp-data/h-alpha/>`_
-    * `GONG H-Alpha Observation Details <https://nispdata.nso.edu/webProdDesc2/presenter.php?file=halpha_fulldisk_images_overview.html&echoExact=0&name=Overview%20:%20GONG%20H-alpha%20Full-disk%20Images>`_
-    * `GONG Header Keywords <https://gong.nso.edu/data/HEADER_KEY.html>`_
-    * `DOI:/10.25668/as28-7p13 <https://doi.org/10.25668/as28-7p13>`_
+    * `GONG H-Alpha Page <https://nso.edu/data/nisp-data/h-alpha/>`__
+    * `GONG H-Alpha Observation Details <https://nispdata.nso.edu/webProdDesc2/presenter.php?file=halpha_fulldisk_images_overview.html&echoExact=0&name=Overview%20:%20GONG%20H-alpha%20Full-disk%20Images>`__
+    * `GONG Header Keywords <https://gong.nso.edu/data/HEADER_KEY.html>`__
+    * `GONG H-alpha Full-disk Images. <https://doi.org/10.25668/as28-7p13>`__
     """
 
     @classmethod
