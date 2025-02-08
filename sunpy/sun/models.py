@@ -255,12 +255,15 @@ def read_chromosphere_data(file=csv_file_path):
 
     return table
 
-def plot_chromosphere(data, x_param="h", y_param="T", log=False):
+def plot_chromosphere(data=None, x_param="h", y_param="T", log=True):
     """
-    plots the solar chromosphere's 1D model for any two parameters.
-    if log=True, it will plot log10(y_values).
-    defaults to plotting Temperature (T) vs Height (h).
+    Plots the solar chromosphere's 1D model for any two parameters.
+    If log=True, it will plot log10(y_values).
+    Defaults to plotting Temperature (T) vs Height (h).
     """
+    if data is None:
+        data = read_chromosphere_data()  # Automatically load the data
+
     if x_param not in data.colnames or y_param not in data.colnames:
         print("\nInvalid parameter(s). Please choose from:", list(data.colnames))
         return
@@ -290,4 +293,6 @@ def plot_chromosphere(data, x_param="h", y_param="T", log=False):
     plt.tight_layout()
     plt.show()
 
+
 chromosphere_data = read_chromosphere_data()
+plot_chromosphere()
