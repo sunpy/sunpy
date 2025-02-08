@@ -302,9 +302,6 @@ def test_fido_indexing(queries):
 
     aa = res[:, 0]
 
-    if(len(aa) == 1):
-        print("here aa = res[:, 0]", aa)
-
     assert isinstance(aa, UnifiedResponse)
     assert len(aa) == 2
     assert len(aa[0]) == 1
@@ -345,11 +342,11 @@ def test_combined_response_vso_time():
     t2 = TimeRange('2020-01-01', '2020-01-03 00:00:10')
     assert t1 == t2
 
+
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
     results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'), combine=True)
-    print(results)
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
 
@@ -366,11 +363,8 @@ def test_combined_response_jsoc():
         if min_time is None or t < min_time:
             min_time = t
 
-    print(max_time, min_time)
     t1 = TimeRange(min_time, max_time)
-    print("hi")
     t2 = TimeRange('2020-01-01 00:00:45', '2020-01-03 00:00:45')
-    print(t1, t2)
     assert t1.start.iso == t2.start.iso
     assert t1.end.iso == t2.end.iso
 
@@ -383,6 +377,7 @@ def test_combined_response_lyra():
     t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
     t2 = TimeRange('2020-01-01', '2020-01-03 23:59:59.999')
     assert t1 == t2
+
 
 @pytest.mark.remote_data
 def test_combine_attr():
@@ -400,7 +395,6 @@ def test_combine_attr():
                   a.Instrument('AIA'), combine=False)
     assert len(results) == 2
     assert isinstance(results[0], QueryResponseTable)
-
 
 
 @no_vso
