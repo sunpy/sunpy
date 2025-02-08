@@ -343,6 +343,7 @@ def test_combined_response_vso_time():
     assert t1 == t2
 
 
+
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
     results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
