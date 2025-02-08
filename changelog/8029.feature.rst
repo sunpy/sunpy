@@ -1,1 +1,1 @@
-Now responses from the same client are combined a single response for `~sunpy.net.Fido.search`.
+Search results from the same underlying client are combined where possible into a single response when you use `~sunpy.net.Fido.search`.
