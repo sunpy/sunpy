@@ -343,7 +343,6 @@ def test_combined_response_vso_time():
     assert t1 == t2
 
 
-
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
     results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
@@ -378,7 +377,6 @@ def test_combined_response_lyra():
     t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
     t2 = TimeRange('2020-01-01', '2020-01-03 23:59:59.999')
     assert t1 == t2
-
 
 
 @pytest.mark.remote_data
