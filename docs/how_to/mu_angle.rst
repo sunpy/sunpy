@@ -4,11 +4,10 @@
 Calculate the heliocentric angle
 ********************************
 
-`The following is based on a Stack Exchange answer <https://astronomy.stackexchange.com/a/48172
->__`.
+`The following is based on a Stack Exchange answer <https://astronomy.stackexchange.com/a/48172>__`.
 
 The heliocentric angle is the angle between direction from a point on the surface of the body toward the observer, with respect to the local vertical of that body.
-The range of value is between 0:math:`^\circ` (at the center) and 90:math:`^\circ` (at the edge).
+The range of value is between 0 :math:`^\circ` (at the center) and 90 :math:`^\circ` (at the edge).
 If one takes the :math:`\cos` of this value, this is referred to as :math:`\mu`.
 
 It is worked out using the following equation:
