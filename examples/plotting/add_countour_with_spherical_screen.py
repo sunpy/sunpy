@@ -4,9 +4,8 @@ Using SphericalScreen to account for differing observers
 ========================================================
 
 In this example, we try to show that `~sunpy.coordinates.SphericalScreen`
-can be used as a general method to transform the coordinates(change
-the frame of reference i.e. the observer) from one image to another
-as seen by a new observer, even without reprojection.
+can be used to transform the coordinates (i.e., change the frame of reference, the observer)
+without having to do a reprojection.
 """
 # sphinx_gallery_thumbnail_number = 1
 import matplotlib.pyplot as plt
