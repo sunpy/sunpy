@@ -46,7 +46,7 @@ class ParfiveDownloader(DownloaderBase):
         path = Path(path)
         filename = path.name
         directory = path.parent
-        downloader.enqueue_file(url, directory, filename,**kwargs)
+        downloader.enqueue_file(url, directory, filename, **kwargs)
         try:
             output = downloader.download()
         except Exception as e:
