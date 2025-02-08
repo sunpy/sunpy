@@ -437,7 +437,6 @@ def get_sscweb_coord(body, time, system="Gse"):
     latitude_values = np.array([float(lat.text) for lat in coordinates.findall('.//ns:Latitude', namespace)]) * u.deg
     longitude_values = np.array([float(lon.text) for lon in coordinates.findall('.//ns:Longitude', namespace)]) * u.deg
 
-    # Extract time values
     times = root.findall(".//ns:Time", namespace)
     time_values = Time([time.text for time in times])
 
