@@ -434,7 +434,6 @@ def get_sscweb_coord(body, time, system="Gse"):
     root = ET.fromstring(response.text)
     coordinates = root.find('.//ns:Coordinates', namespace)
 
-    # Extract latitude and longitude
     latitude_values = np.array([float(lat.text) for lat in coordinates.findall('.//ns:Latitude', namespace)]) * u.deg
     longitude_values = np.array([float(lon.text) for lon in coordinates.findall('.//ns:Longitude', namespace)]) * u.deg
 
