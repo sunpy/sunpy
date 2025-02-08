@@ -1,4 +1,4 @@
-from asv_runner.benchmarks.mark import skip_benchmark
+from asv_runner.benchmarks.mark import SkipNotImplemented, skip_benchmark
 
 import astropy.units as u
 
@@ -49,7 +49,7 @@ class Rotate:
 
     def setup(self, aiamap, method, order):
         if method == 'opencv' and order not in {0, 1, 3}:
-            raise NotImplementedError
+            raise SkipNotImplemented
 
     def time_rotate(self, aiamap, method, order):
         aiamap.rotate(30*u.deg, method=method, order=order)

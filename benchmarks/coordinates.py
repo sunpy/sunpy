@@ -1,3 +1,5 @@
+from asv_runner.benchmarks.mark import SkipNotImplemented
+
 import astropy.units as u
 from astropy.coordinates import HCRS, ITRS, HeliocentricMeanEcliptic, SphericalRepresentation
 
@@ -27,7 +29,7 @@ class TransformationHeliographic:
 
     def setup(self, frames, src, dest):
         if src == dest:
-            raise NotImplementedError
+            raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
@@ -52,7 +54,7 @@ class TransformationEcliptic:
 
     def setup(self, frames, src, dest):
         if src == dest:
-            raise NotImplementedError
+            raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
@@ -77,7 +79,7 @@ class TransformationMagnetic:
 
     def setup(self, frames, src, dest):
         if src == dest:
-            raise NotImplementedError
+            raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
