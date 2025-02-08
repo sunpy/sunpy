@@ -31,7 +31,7 @@ def _create_xml_request(name, time_range, system):
         XML string formatted for SSCWeb API requests.
     """
     if not (isinstance(time_range, TimeRange) or isinstance(time_range, Time)):
-        raise ValueError("time_range must be a SunPy TimeRange or astorpy time object.")
+        raise ValueError("time_range must be a sunpy.time.TimeRange or astropy.time.Time")
 
     if isinstance(time_range,Time):
         time_range = TimeRange(time_range[0],time_range[1])
