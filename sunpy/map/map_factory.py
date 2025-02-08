@@ -60,7 +60,7 @@ class MapFactory(BasicRegistrationFactory):
         - A tuple containing a data array and a header (for modifying header before passing to `Map`).
         - A `MetaDict` object, which includes data and metadata as a dictionary-like object.
         - An `astropy.wcs.WCS` object, which represents the World Coordinate System for the data.
-        - A glob pattern to match multiple FITS files (e.g., `eit_*.fits`).
+        - A glob pattern to match multiple FITS files (e.g., ``eit_*.fits``).
         - A URL pointing to a FITS file (can be remote).
         - A combination of any of the above inputs.
 
