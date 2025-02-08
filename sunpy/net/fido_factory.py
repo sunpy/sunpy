@@ -585,8 +585,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         results = []
         for client in candidate_widget_types:
             tmpclient  = client()
-            result = tmpclient.search(*query)
-            results.append(result)
+            results.append(tmpclient.search(*query))
 
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.
