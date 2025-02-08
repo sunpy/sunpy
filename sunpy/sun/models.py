@@ -14,11 +14,15 @@ References
 ----------
 * `Turck-Chieze et al. (1988), *ApJ*, **335**, 415-424 <https://doi.org/10.1086/166936>`__
 """
+import pathlib
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import astropy.units as u
 from astropy.coordinates import Longitude
-from astropy.table import QTable
+from astropy.table import QTable, Table
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
@@ -206,3 +210,90 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
         rotation -= 0.9856 * u.deg / u.day * duration
 
     return Longitude(rotation.to(u.deg))
+
+##this code block add 1d structure of the chromosphere using Avrett and Loeser(2008) paper
+
+
+CHROMO_DATA_DIR = pathlib.Path(__file__).parent.absolute() / 'data'
+csv_file_path = CHROMO_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
+
+COLUMN_UNITS = {
+    "h": u.km,
+    "m": u.g / u.cm**2,
+    "T": u.K,
+    "V": u.km / u.s,
+    "p_g": u.dyne / u.cm**2,
+    "p_tot": u.dyne / u.cm**2,
+    "n_H": u.cm**-3,
+    "n_HI": u.cm**-3,
+    "n_e": u.cm**-3,
+}
+
+COLUMN_LABELS = {
+    "h": "Height (h)",
+    "m": "Column Density (m)",
+    "T": "Temperature (T)",
+    "V": "Velocity (V)",
+    "p_g": "Gas Pressure (p_g)",
+    "p_tot": "Total Pressure (p_tot)",
+    "n_H": "Neutral Hydrogen Density (n_H)",
+    "n_HI": "Ionized Hydrogen Density (n_HI)",
+    "n_e": "Electron Density (n_e)",
+}
+
+def read_chromosphere_data(file=csv_file_path):
+    """Reads the chromosphere Avrett (2008) model data from a CSV file and returns an Astropy Table with units."""
+    if not file.exists():
+        raise FileNotFoundError(f"File not found: {file}")
+
+    df = pd.read_csv(file)
+    table = Table.from_pandas(df)
+
+    for col, unit in COLUMN_UNITS.items():
+        if col in table.colnames:
+            table[col].unit = unit
+
+    return table
+
+
+def plot_chromosphere(data, x_param=None, y_param=None, log=False):
+    """
+    Plots the solar chromosphere's 1D model for any two parameters.
+    If log=True, it will plot log10(y_values).
+    """
+    if x_param is None or y_param is None:
+        print("\nPlease specify the column names for x and y parameters.")
+
+        return
+
+    if x_param not in data.colnames or y_param not in data.colnames:
+        print("\nInvalid parameter(s).")
+
+        return
+
+    x_values = data[x_param]
+    y_values = data[y_param]
+
+    if log:
+        y_values = np.log10(y_values)
+        y_label = f"log10({COLUMN_LABELS.get(y_param, y_param)})"
+    else:
+        y_label = COLUMN_LABELS.get(y_param, y_param)
+
+    x_label = COLUMN_LABELS.get(x_param, x_param)
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(x_values, y_values, marker="o", linestyle="-", color="b", label=f"{y_label} vs {x_label}")
+
+    x_unit = data[x_param].unit if data[x_param].unit else "No Unit"
+    y_unit = data[y_param].unit if data[y_param].unit else "No Unit"
+
+    plt.xlabel(f"{x_label} ({x_unit})")
+    plt.ylabel(f"{y_label} ({y_unit})")
+    plt.title(f"Solar Chromosphere: {y_label} vs {x_label}")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+chromosphere_data = read_chromosphere_data()
