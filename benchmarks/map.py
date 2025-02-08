@@ -4,6 +4,7 @@ import astropy.units as u
 
 import sunpy.data.sample
 import sunpy.map
+from sunpy.coordinates import propagate_with_solar_surface
 
 
 class Creation:
@@ -55,3 +56,26 @@ class Rotate:
 
     def peakmem_rotate(self, aiamap, method, order):
         aiamap.rotate(30*u.deg, method=method, order=order)
+
+
+class Reproject:
+    params = ['interpolation', 'adaptive']
+    param_names = ['algorithm']
+
+    def setup_cache(self):
+        maps = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.HMI_LOS_IMAGE)
+        return maps
+
+    def time_reproject_to(self, maps, algorithm):
+        maps[1].reproject_to(maps[0].wcs, algorithm=algorithm)
+
+    def peakmem_reproject_to(self, maps, algorithm):
+        maps[1].reproject_to(maps[0].wcs, algorithm=algorithm)
+
+    def time_reproject_to_plus_diffrot(self, maps, algorithm):
+        with propagate_with_solar_surface():
+            maps[1].reproject_to(maps[0].wcs, algorithm=algorithm)
+
+    def peakmem_reproject_to_plus_diffrot(self, maps, algorithm):
+        with propagate_with_solar_surface():
+            maps[1].reproject_to(maps[0].wcs, algorithm=algorithm)
