@@ -27,7 +27,7 @@ new_frame = NorthOffsetFrame(north=north)
 
 ##############################################################################
 # Let's plot the normal Heliographic Stonyhurst coordinate frame as a white
-# grid and the modified coordinate frame as a blue grid.  If the north pole of
+# grid and the modified coordinate frame as a blue grid. If the north pole of
 # this new frame were placed at a point of interest, the lines of longitude
 # form great circles radially away from the point, and the lines of latitude
 # measure angular distance from the point.

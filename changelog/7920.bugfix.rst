@@ -1,1 +1,0 @@
-Fixed unit conversion for wavelength in `sunpy.net.dataretriever.sources.goes.SUVIClient`.

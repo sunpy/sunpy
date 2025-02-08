@@ -383,6 +383,15 @@ def test_default_coordinate_system(generic_map):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
+def test_coordinate_system_solar_x_solar_y(generic_map):
+    generic_map.meta['ctype1'] = 'SOLAR-X'
+    generic_map.meta['ctype2'] = 'SOLAR-Y'
+    with pytest.warns(SunpyDeprecationWarning, match="CTYPE1 value 'solar-x'/'solar_x' is deprecated") :
+        with pytest.warns(SunpyDeprecationWarning, match="CTYPE2 value 'solar-y'/'solar_y' is deprecated") :
+            assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+
 def test_carrington_longitude(generic_map):
     assert u.allclose(generic_map.carrington_longitude, sun.L0(generic_map.date))
 
@@ -1335,7 +1344,7 @@ def test_hg_data_to_pix(heliographic_test_map):
 def test_more_than_two_dimensions():
     """
     Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    loaded. We need to load a >2-dim dataset with a TELESCOP header
     """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
@@ -1878,6 +1887,12 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
 def test_parse_fits_units(units_string, expected_unit):
     out_unit = GenericMap._parse_fits_unit(units_string)
     assert out_unit == expected_unit
+
+
+@pytest.mark.parametrize('units_string', ['DN / electron', 'electron', 'Mx'])
+def test_parse_nonfits_units(units_string):
+    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string'):
+        assert GenericMap._parse_fits_unit(units_string) is None
 
 
 def test_only_cd():

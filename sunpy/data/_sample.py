@@ -154,7 +154,7 @@ def _get_sample_files(filename_list, no_download=False, force_download=False):
     Returns
     -------
     `list` of `pathlib.Path`
-        List of disk locations corresponding to the list of filenames.  An entry
+        List of disk locations corresponding to the list of filenames. An entry
         will be ``None`` if ``no_download == True`` and the file is not present.
 
     Raises

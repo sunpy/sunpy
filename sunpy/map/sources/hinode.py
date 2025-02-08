@@ -2,7 +2,7 @@
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
@@ -59,6 +59,18 @@ class XRTMap(GenericMap):
         self.plot_settings['cmap'] = 'hinodexrt'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle SOTMap-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def _timesys(self):
@@ -130,10 +142,10 @@ class SOTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
-    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`_
-    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`_
-    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
+    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`__
+    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`__
+    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`__
+    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`__
     """
     # TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation
@@ -167,6 +179,18 @@ class SOTMap(GenericMap):
                  }
 
         self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle SOTMap-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def detector(self):

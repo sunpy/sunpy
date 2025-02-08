@@ -1,1 +1,0 @@
-Fixed a bug where custom values in the ``plot_settings`` dictionary were not being correctly applied in the :meth:`sunpy.map.GenericMap.draw_contours` method.

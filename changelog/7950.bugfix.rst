@@ -1,1 +1,0 @@
-Fix :meth:`sunpy.data.data_manager.manager.DataManager.get` now automatically redownloads files if they are accidentally deleted.

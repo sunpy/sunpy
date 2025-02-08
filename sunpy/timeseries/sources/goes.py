@@ -42,10 +42,10 @@ class XRSTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `GOES Mission Homepage <https://www.goes.noaa.gov>`_
-    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
-    * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
-    * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
+    * `GOES Mission Homepage <https://www.goes.noaa.gov>`__
+    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`__
+    * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`__
+    * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`__
 
     Notes
     -----
@@ -83,7 +83,7 @@ class XRSTimeSeries(GenericTimeSeries):
         if columns is None:
             columns = ["xrsa", "xrsb"]
         axes, columns = self._setup_axes_columns(axes, columns)
-        plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
+        plot_settings = {"xrsa": ["blue", r"0.5$-$4.0 $\mathrm{\AA}$"], "xrsb": ["red", r"1.0$-$8.0 $\mathrm{\AA}$"]}
         data = self.to_dataframe()
         for channel in columns:
             axes.plot(
