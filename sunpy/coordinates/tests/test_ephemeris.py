@@ -197,7 +197,7 @@ def test_get_sscweb_coord():
     assert_quantity_allclose(location.lat, [0.8609663, 1.0435528, 1.2261274] * u.deg)
     assert location.shape == (3,)
 
-    #check for case independence and Timerange
+    # Check for case independence and Timerange
     time = TimeRange("2020-04-04T00:00:00.000","2020-04-04T00:02:00.000")
     location2 = get_sscweb_coord('SDO', time)
     assert_quantity_allclose(location.lon, location2.lon)
