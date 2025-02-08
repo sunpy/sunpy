@@ -428,7 +428,7 @@ def get_sscweb_coord(body, time, system="Gse"):
         [(130.36632, 0.8609663), (130.53755, 1.0435528),
         (130.70879, 1.2261274)]>
     """
-    xml_repr = _create_xml_request(body,time,system)
+    xml_repr = _create_xml_request(body, time, system)
     response = _send_requests(xml_repr)
     namespace = {'ns': 'http://sscweb.gsfc.nasa.gov/schema'}
     root = ET.fromstring(response.text)
