@@ -1,7 +1,7 @@
 """
-=============================================
-Add contours to a map using a SphericalScreen
-=============================================
+========================================================
+Using SphericalScreen to account for differing observers 
+========================================================
 
 In this example, we try to show that `~sunpy.coordinates.SphericalScreen`
 can be used as a general method to transform the coordinates(change
