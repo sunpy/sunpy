@@ -217,7 +217,7 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 CHROMO_DATA_DIR = pathlib.Path(__file__).parent.absolute() / 'data'
 csv_file_path = CHROMO_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
 
-COLUMN_UNITS = {
+units = {
     "h": u.km,
     "m": u.g / u.cm**2,
     "T": u.K,
@@ -229,7 +229,7 @@ COLUMN_UNITS = {
     "n_e": u.cm**-3,
 }
 
-COLUMN_LABELS = {
+labels = {
     "h": "Height (h)",
     "m": "Column Density (m)",
     "T": "Temperature (T)",
@@ -242,33 +242,27 @@ COLUMN_LABELS = {
 }
 
 def read_chromosphere_data(file=csv_file_path):
-    """Reads the chromosphere Avrett (2008) model data from a CSV file and returns an Astropy Table with units."""
+    """reads the chromosphere Avrett and Loeser(2008) model data from a CSV file and returns an Astropy Table with units."""
     if not file.exists():
         raise FileNotFoundError(f"File not found: {file}")
 
     df = pd.read_csv(file)
     table = Table.from_pandas(df)
 
-    for col, unit in COLUMN_UNITS.items():
+    for col, unit in units.items():
         if col in table.colnames:
             table[col].unit = unit
 
     return table
 
-
-def plot_chromosphere(data, x_param=None, y_param=None, log=False):
+def plot_chromosphere(data, x_param="h", y_param="T", log=False):
     """
-    Plots the solar chromosphere's 1D model for any two parameters.
-    If log=True, it will plot log10(y_values).
+    plots the solar chromosphere's 1D model for any two parameters.
+    if log=True, it will plot log10(y_values).
+    defaults to plotting Temperature (T) vs Height (h).
     """
-    if x_param is None or y_param is None:
-        print("\nPlease specify the column names for x and y parameters.")
-
-        return
-
     if x_param not in data.colnames or y_param not in data.colnames:
-        print("\nInvalid parameter(s).")
-
+        print("\nInvalid parameter(s). Please choose from:", list(data.colnames))
         return
 
     x_values = data[x_param]
@@ -276,11 +270,11 @@ def plot_chromosphere(data, x_param=None, y_param=None, log=False):
 
     if log:
         y_values = np.log10(y_values)
-        y_label = f"log10({COLUMN_LABELS.get(y_param, y_param)})"
+        y_label = f"log10({labels.get(y_param, y_param)})"
     else:
-        y_label = COLUMN_LABELS.get(y_param, y_param)
+        y_label = labels.get(y_param, y_param)
 
-    x_label = COLUMN_LABELS.get(x_param, x_param)
+    x_label = labels.get(x_param, x_param)
 
     plt.figure(figsize=(8, 5))
     plt.plot(x_values, y_values, marker="o", linestyle="-", color="b", label=f"{y_label} vs {x_label}")
