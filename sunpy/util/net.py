@@ -1,4 +1,3 @@
-
 """
 This module provides general net utility functions.
 """
