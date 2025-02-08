@@ -191,7 +191,7 @@ def test_get_sscweb_coord():
     time = Time(["2020-04-04T00:00:00.000", "2020-04-04T00:02:00.000"])
     location = get_sscweb_coord('sdo', time)
     assert isinstance(location,SkyCoord)
-    assert isinstance(location.frame,GeocentricSolarEcliptic)
+    assert isinstance(location.frame, GeocentricSolarEcliptic)
     assert_quantity_allclose(location.lon, [130.36632, 130.53755, 130.70879] * u.deg)
     assert_quantity_allclose(location.lat, [0.8609663, 1.0435528, 1.2261274] * u.deg)
     assert location.shape == (3,)
