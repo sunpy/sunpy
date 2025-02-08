@@ -333,6 +333,7 @@ def test_fido_indexing(queries):
     if isinstance(res, UnifiedResponse):
         assert len(res) != 1
 
+
 @pytest.mark.remote_data
 def test_combined_response_vso_time():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
