@@ -11,7 +11,7 @@ from asdf.resource import DirectoryResourceMapping
 def get_resource_mappings():
     """
     Get the resource mapping instances for myschemas
-    and manifests.  This method is registered with the
+    and manifests. This method is registered with the
     asdf.resource_mappings entry point.
 
     Returns

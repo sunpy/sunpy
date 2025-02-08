@@ -287,7 +287,7 @@ class DataAttr(Attr):
         super().__init_subclass__(**kwargs)
         # Because __new__() is defined, this will block natural introspection of the arguments for
         # __init__() in all subclasses because the signature of __new__() takes precedence over the
-        # signature of __init__().  We add a __new__() to all subclasses that do not explicitly
+        # signature of __init__(). We add a __new__() to all subclasses that do not explicitly
         # define it with a signature that matches __init__().
         if '__new__' not in cls.__dict__:
             unsigned_new = cls.__new__  # the inherited __new__()
