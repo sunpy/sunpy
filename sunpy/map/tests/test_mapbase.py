@@ -1044,14 +1044,12 @@ def test_superpixel_masked(aia171_test_map_with_mask):
 
 
 def test_superpixel_masked_conservative_mask_warning(aia171_test_map_with_mask):
-
+    #Ensures no warning is raised for the following cases
     aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.sum, conservative_mask=True)
-
     aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.mean, conservative_mask=False)
 
     with pytest.warns(SunpyUserWarning, match="which may not be ideal"):
         aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.sum, conservative_mask=False)
-
     with pytest.warns(SunpyUserWarning, match="which may not be ideal"):
         aia171_test_map_with_mask.superpixel((2, 2)*u.pix, func=np.mean, conservative_mask=True)
 
