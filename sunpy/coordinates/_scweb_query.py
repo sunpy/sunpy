@@ -56,7 +56,7 @@ def _create_xml_request(name, time_range, system):
 
 def _send_requests(xml):
     """
-    Send the XML request to SSCWeb API to fetch location data.
+    Send the XML request to `SSCWeb API <https://sscweb.gsfc.nasa.gov/WS/sscr/2/locations>`__ to fetch location data.
 
     Parameters
     ----------
