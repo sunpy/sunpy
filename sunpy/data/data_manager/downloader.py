@@ -41,7 +41,7 @@ class ParfiveDownloader(DownloaderBase):
     using :mod:`parfive`.
     """
 
-    def download(self, url, path,**kwargs):
+    def download(self, url, path, **kwargs):
         downloader = Downloader()
         path = Path(path)
         filename = path.name
