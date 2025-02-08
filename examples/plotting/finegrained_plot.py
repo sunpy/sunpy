@@ -31,7 +31,7 @@ title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 # times we want more control over the Stonyhurst type. The example below illustrates
 # some aspects of how a map plot can be altered as desired. For more information
 # regarding the axis and grid settings, go to `Ticks, tick labels and grid lines
-# <https://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`_ in astropy.
+# <https://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`__ in astropy.
 
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(projection=aiamap_sub)
@@ -49,9 +49,6 @@ lat.set_ticks_visible(False)
 lat.set_ticklabel_visible(False)
 lon.set_ticklabel_visible(False)
 
-lon.coord_wrap = 180 * u.deg
-lon.set_major_formatter('dd')
-
 # Plot the Heliographic Stonyhurst grid
 overlay.grid(color='tab:blue', linewidth=2, linestyle='dashed')
 # Switch off the helioprojective grid
@@ -62,7 +59,7 @@ tx, ty = ax.coords
 # Use integer coordinates for either axis.
 tx.set_major_formatter('s')
 ty.set_major_formatter('s')
-ax.set_title(fr'AIA 171 $\AA$ {title_obsdate}')
+ax.set_title(fr'AIA 171 $\mathrm{{\AA}}$ {title_obsdate}')
 ax.set_ylabel('Helioprojective Latitude [arcsec]')
 ax.set_xlabel('Helioprojective Longitude [arcsec]')
 plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)

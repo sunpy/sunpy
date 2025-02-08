@@ -6,7 +6,7 @@ Based on Michiel van Noort's IDL DLM library 'f0' which contains
 a cleaned up version of the original anarw routines.
 */
 
-#define Py_LIMITED_API 0x030A0000
+#define Py_LIMITED_API 0x030B0000
 
 // Needed due to https://github.com/numpy/numpy/issues/16970
 struct _typeobject {
@@ -17,6 +17,8 @@ struct _typeobject {
 #define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
 #include <numpy/arrayobject.h> 	// For numpy
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "time.h"
 #include "types.h"
 #include "anarw.h"

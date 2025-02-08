@@ -4,7 +4,7 @@ This is a set of three directives that allow us to insert metadata
 about doctests into the .rst files so the testing framework knows
 which tests to skip.
 This is quite different from the doctest extension in Sphinx itself,
-which actually does something.  For astropy, all of the testing is
+which actually does something. For astropy, all of the testing is
 centrally managed from py.test and Sphinx is not used for running
 tests.
 """

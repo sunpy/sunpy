@@ -108,7 +108,7 @@ class BasicRegistrationFactory:
         WidgetType : `type`
             Widget to register.
         validation_function : `function`, optional
-            Function to validate against.  Defaults to None, which indicates
+            Function to validate against. Defaults to None, which indicates
             that a classmethod in validation_functions is used. Defaults to `None`.
         is_default : `bool`, optional
             Sets WidgetType to be the default widget. Defaults to `False`.

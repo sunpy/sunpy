@@ -79,7 +79,7 @@ class GenericTimeSeries:
 
     References
     ----------
-    * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
+    * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`__
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
@@ -300,7 +300,7 @@ class GenericTimeSeries:
                 axs.plot(
                     dat.index,
                     dat[self.columns[i]].values,
-                    color=cols[i],
+                    color=cols[i%len(cols)],
                     label=self.columns[i],
                 )
                 if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
@@ -311,7 +311,7 @@ class GenericTimeSeries:
                 axs[i].plot(
                     dat.index,
                     dat[self.columns[i]].values,
-                    color=cols[i],
+                    color=cols[i%len(cols)],
                     label=self.columns[i],
                 )
                 if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
@@ -332,7 +332,7 @@ class GenericTimeSeries:
                     dat[self.columns[i]].values[~np.isnan(dat[self.columns[i]].values)],
                     log=True,
                     bins="scott",
-                    color=cols[i],
+                    color=cols[i%len(cols)],
                 )
                 plt.title(self.columns[i] + " [click for other channels]")
                 plt.xlabel(self.units[self.columns[i]])

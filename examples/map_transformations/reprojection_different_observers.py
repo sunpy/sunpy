@@ -4,7 +4,7 @@ Reprojecting Images to Different Observers
 ==========================================
 
 This example demonstrates how you can reproject images to the view from
-different observers.  We use data from these two instruments:
+different observers. We use data from these two instruments:
 
 * AIA on SDO, which is in orbit around Earth
 * EUVI on STEREO A, which is in orbit around the Sun away from the Earth
@@ -92,8 +92,7 @@ outmap.plot(axes=ax2, title='EUVI image as seen from SDO')
 map_euvi.draw_limb(color='blue')
 
 # Set the HPC grid color to black as the background is white
-ax2.coords[0].grid_lines_kwargs['edgecolor'] = 'k'
-ax2.coords[1].grid_lines_kwargs['edgecolor'] = 'k'
+ax2.grid(color='k')
 
 ######################################################################
 # AIA as Seen from Mars

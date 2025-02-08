@@ -193,8 +193,8 @@ def _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape):
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
                                               reference_pixel[1].to_value(u.pixel) + 1)
 
-    meta_wcs['cdelt1'] = scale[0].to_value(meta_wcs['cunit1']/u.pixel)
-    meta_wcs['cdelt2'] = scale[1].to_value(meta_wcs['cunit2']/u.pixel)
+    meta_wcs['cdelt1'] = scale[0].to_value(u.Unit(meta_wcs['cunit1']) / u.pixel)
+    meta_wcs['cdelt2'] = scale[1].to_value(u.Unit(meta_wcs['cunit2']) / u.pixel)
     return meta_wcs
 
 
@@ -402,7 +402,7 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
 
     The header uses the plate carrée projection ("CAR" in FITS-WCS) with the
     position angle (``psi``) on the horizontal axis and impact angle (``theta``) on
-    the vertical axis.  To accommodate the FITS-WCS machinery, the vertical axis is
+    the vertical axis. To accommodate the FITS-WCS machinery, the vertical axis is
     actually the declination (``delta``), which is the impact angle minus 90 degrees.
 
     Parameters
@@ -414,9 +414,9 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
     theta_binsize : `~astropy.units.Quantity`
         The size of each pixel in the impact-angle direction.
     theta_min : `~astropy.units.Quantity`
-        The minimum impact angle.  Defaults to 0 arcsec.
+        The minimum impact angle. Defaults to 0 arcsec.
     psi_center : `~astropy.units.Quantity`
-        The center of the map in position angle.  Defaults to 180 degrees.
+        The center of the map in position angle. Defaults to 180 degrees.
 
     Returns
     -------
