@@ -18,7 +18,6 @@ TEST_AIA_IMAGE_URI = "s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.f
 pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 
 
-@pytest.mark.remote_data
 def test_read_file_network_fits():
     # Aim is to verify that we can read a files from a URL
     # but it is mocked to prevent network access
