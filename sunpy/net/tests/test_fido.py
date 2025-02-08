@@ -347,7 +347,6 @@ def test_combined_response_vso_time():
 
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
-    # Combining attributes other than time
     results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'), combine=True)
     print(results)
