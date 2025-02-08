@@ -202,5 +202,5 @@ def test_get_sscweb_coord():
     location2 = get_sscweb_coord('SDO', time)
     assert_quantity_allclose(location.lon, location2.lon)
     assert_quantity_allclose(location.lat, location2.lat)
-    assert_array_equal(location2.obstime,location.obstime)
+    assert_array_equal(location2.obstime, location.obstime)
     assert location.shape == location2.shape
