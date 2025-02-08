@@ -84,7 +84,6 @@ def test_online_fido(query):
 def test_fido_client_error(vso_search):
     results = Fido.search(a.Time("2016/10/01", "2016/10/02"), a.Instrument.aia)
     assert len(results.errors) > 0
-    print(results.errors)
     assert isinstance(results.errors["VSOClient"], ConnectionError)
 <<<<<<< HEAD
 =======
