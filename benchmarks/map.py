@@ -1,4 +1,7 @@
+from io import BytesIO
+
 from asv_runner.benchmarks.mark import SkipNotImplemented, skip_benchmark
+from matplotlib.figure import Figure
 
 import astropy.units as u
 
@@ -79,3 +82,26 @@ class Reproject:
     def peakmem_reproject_to_plus_diffrot(self, maps, algorithm):
         with propagate_with_solar_surface():
             maps[1].reproject_to(maps[0].wcs, algorithm=algorithm)
+
+
+class Autoalign:
+    params = [False, True, 'pcolormesh']
+    param_names = ['autoalign']
+
+    def setup_cache(self):
+        maps = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.HMI_LOS_IMAGE)
+        return maps
+
+    def time_autoalign(self, maps, autoalign):
+        fig = Figure()
+        ax = fig.add_subplot(projection=maps[0])
+        maps[1].plot(axes=ax, autoalign=autoalign)
+        buf = BytesIO()
+        fig.savefig(buf, format='png')
+
+    def peakmem_autoalign(self, maps, autoalign):
+        fig = Figure()
+        ax = fig.add_subplot(projection=maps[0])
+        maps[1].plot(axes=ax, autoalign=autoalign)
+        buf = BytesIO()
+        fig.savefig(buf, format='png')
