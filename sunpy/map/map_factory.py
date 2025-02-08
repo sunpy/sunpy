@@ -55,10 +55,10 @@ class MapFactory(BasicRegistrationFactory):
     \\*inputs
         Inputs to parse for map objects. This can be one or more of the following:
 
-        - A string or `Path` object pointing to a FITS file.
+        - A string or `~pathlib.Path` object pointing to a FITS file.
         - A directory containing FITS files (if there is more than one FITS file in the directory, it will return a list of Map objects).
-        - A tuple containing a data array and a header (for modifying header before passing to `Map`).
-        - A `MetaDict` object, which includes data and metadata as a dictionary-like object.
+        - A tuple containing a data array and a header (for modifying the data or header).
+        - A `~sunpy.util.metadata.MetaDict` object, which includes data and metadata as a dictionary-like object.
         - An `astropy.wcs.WCS` object, which represents the World Coordinate System for the data.
         - A glob pattern to match multiple FITS files (e.g., ``eit_*.fits``).
         - A URL pointing to a FITS file (can be remote).
