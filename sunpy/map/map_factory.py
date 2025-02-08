@@ -54,7 +54,7 @@ class MapFactory(BasicRegistrationFactory):
     ----------
     \\*inputs
         Inputs to parse for map objects. This can be one or more of the following:
-    
+
         - A string or `Path` object pointing to a FITS file.
         - A directory containing FITS files (if there is more than one FITS file in the directory, it will return a list of Map objects).
         - A tuple containing a data array and a header (for modifying header before passing to `Map`).
