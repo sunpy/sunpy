@@ -74,7 +74,6 @@ class UnifiedResponse(Sequence):
             if self._combine:
                 client_key = result.client.__class__
                 combined_results[client_key].append(result)
-                # combined_results[result.client.__class__.__name__] = combined_results.get(result.client.__class__.__name__, []) + [result]
             else:
                 self._list.append(result)
                 self._numfile += len(result)
