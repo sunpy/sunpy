@@ -36,8 +36,6 @@ def _create_xml_request(name, time_range, system):
     if isinstance(time_range,Time):
         time_range = TimeRange(time_range[0],time_range[1])
 
-    start_time = time_range.start.isot
-    end_time = time_range.end.isot
     data_request = ET.Element("DataRequest", xmlns="http://sscweb.gsfc.nasa.gov/schema")
     ET.SubElement(data_request, "Description")
     time_interval = ET.SubElement(data_request, "TimeInterval")
