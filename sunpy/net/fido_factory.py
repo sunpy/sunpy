@@ -56,27 +56,24 @@ class UnifiedResponse(Sequence):
         self._errors = {}
         for result in results:
             if isinstance(result, Exception):
-                if hasattr(result.client, '__name__'):
-                    print(f"Error: {result} for {result.client.__name__}")
-                    self._errors[result.client.__name__] = result
+                print(f"Error: {result} for {result.client.__name__}")
+                self._errors[result.client.__name__] = result
 
                 result = QueryResponseTable([], client=result.client)
-            else:
 
-                if isinstance(result, QueryResponseRow):
-                    result = result.as_table()
+            if isinstance(result, QueryResponseRow):
+                result = result.as_table()
 
-                if isinstance(result, QueryResponseColumn):
-                    result = result.as_table()
+            if isinstance(result, QueryResponseColumn):
+                result = result.as_table()
 
-                if hasattr(result.client, '__class__'):
-                    client_name = result.client.__class__.__name__
-                    self._errors[client_name] = None
+            client_name = result.client.__class__.__name__
+            self._errors[client_name] = None
 
 
-                if not isinstance(result, QueryResponseTable):
-                    raise TypeError(
-                        f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
+            if not isinstance(result, QueryResponseTable):
+                raise TypeError(
+                    f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
             self._list.append(result)
             self._numfile += len(result)
@@ -564,8 +561,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for client in candidate_widget_types:
             try:
                 tmpclient  = client()   # client instance
-                result = tmpclient.search(*query)
-                results.append(result)
+                results.append(tmpclient.search(*query))
             except Exception as e:
                 print(f"{client} will be excluded from the search results.")
                 print(client.__name__, client.info_url)
