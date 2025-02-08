@@ -53,6 +53,7 @@ def _create_xml_request(name, time_range, system):
         ET.SubElement(coordinate_option, "Component").text = component
     return ET.tostring(ET.ElementTree(data_request).getroot(), encoding="unicode")
 
+
 def _send_requests(xml):
     """
     Send the XML request to SSCWeb API to fetch location data.
