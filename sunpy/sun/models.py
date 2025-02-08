@@ -295,4 +295,4 @@ def plot_chromosphere(data=None, x_param="h", y_param="T", log=True):
 
 
 chromosphere_data = read_chromosphere_data()
-plot_chromosphere()
+
