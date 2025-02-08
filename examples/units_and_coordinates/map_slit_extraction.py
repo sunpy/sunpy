@@ -30,7 +30,7 @@ line_coords = SkyCoord([-1024, -908], [20, 633], unit=(u.arcsec, u.arcsec),
 ###############################################################################
 # Next we call the :func:`sunpy.map.pixelate_coord_path` function with the map
 # and the coordinate path to obtain the coordinates of the map pixels that
-# intersect that path.  We pass those coordinates to
+# intersect that path. We pass those coordinates to
 # :func:`sunpy.map.sample_at_coords` to extract the values for those map
 # pixels.
 intensity_coords = sunpy.map.pixelate_coord_path(aia_map, line_coords)

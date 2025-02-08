@@ -72,7 +72,7 @@ hpr_header = make_hpr_header(
 outmap = aia_map.reproject_to(hpr_header)
 
 ###############################################################################
-# Now we plot the reprojected map.  First we add an overlay for the original
+# Now we plot the reprojected map. First we add an overlay for the original
 # helioprojective Cartesian frame, but disable its associated ticks and labels.
 
 fig = plt.figure()
@@ -95,7 +95,7 @@ for coord in overlay:
 ###############################################################################
 # Due to the FITS WCS machinery, the impact-angle component of helioprojective
 # radial is instead stored as a declination by subtracting 90 degrees, and the
-# vertical axis being declination can be unfamiliar.  To change the declination
+# vertical axis being declination can be unfamiliar. To change the declination
 # tick labels to impact-angle tick labels, we use
 # :func:`~sunpy.visualization.show_hpr_impact_angle` to modify
 # the rendering of the tick labels on the appropriate axis (``ax.coords[1]``).
