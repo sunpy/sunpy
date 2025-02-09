@@ -342,6 +342,17 @@ def test_combined_response_vso_time():
     t2 = TimeRange('2020-01-01', '2020-01-03 00:00:10')
     assert t1 == t2
 
+    # Tables from 2 different providers dont get combines
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Instrument.lasco , combine=True)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
+    assert isinstance(results[1], QueryResponseTable)
+
+
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom) , combine=True)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
+    assert isinstance(results[1], QueryResponseTable)
 
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
