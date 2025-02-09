@@ -82,6 +82,10 @@ class UnifiedResponse(Sequence):
 
         if self._combine:
             for client_cls, client_results in combined_results.items():
+                # Group the results from a client based on provider
+                # For Example: all results from VSOclient which are from the
+                # provider will be grouped together, this is because the results
+                # from the same provider have the same table schema.
                 provider_groups = defaultdict(list)
 
                 hasProvider = True
@@ -93,6 +97,7 @@ class UnifiedResponse(Sequence):
                     if hasProvider:
                         provider_groups[provider].append(client_res)
 
+                # This stacks the results from the same provider(of the same client) together
                 if hasProvider:
                     for provider, client_res in provider_groups.items():
                         new_result = vstack(client_res, metadata_conflicts='silent')
