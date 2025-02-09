@@ -207,7 +207,6 @@ def test_plot_superpixel(carrington_map):
         ax.coords.grid(True, color='tab:red', ls='solid', lw=2, alpha=1)
 
 
-@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 @figure_test
 def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel(

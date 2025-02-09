@@ -2264,7 +2264,7 @@ class GenericMap(NDData):
 
         if self.mask is not None:
             if conservative_mask ^ (func in [np.sum, np.prod]):
-                warn_user(
+                log.info(
                     f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
                     "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
                     "False for mean/median/std/min/max."
