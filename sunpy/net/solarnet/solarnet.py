@@ -1,15 +1,12 @@
 import os
 import json
 import pathlib
-from pathlib import Path
 
 import requests
 
-from sunpy import config
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.solarnet.attrs import Dataset, walker
-from sunpy.util.parfive_helpers import Downloader, Results
 
 _BASE_URL = "https://solarnet2.oma.be/service/api/svo/{}"
 
@@ -41,10 +38,10 @@ class SOLARNETClient(BaseClient):
     2 Results from the SOLARNETClient:
     Source: https://solarnet2.oma.be
     <BLANKLINE>
-    index       datasets                              name                        detector
-    ----- -------------------- -------------------------------------------------- --------
-        0 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06  HRI_EUV
-        1 metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122606952_V06  HRI_EUV
+          datasets                              name                        detector
+    -------------------- -------------------------------------------------- --------
+    metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06  HRI_EUV
+    metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122606952_V06  HRI_EUV
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -79,11 +76,11 @@ class SOLARNETClient(BaseClient):
         3 Results from the SOLARNETClient:
         Source: https://solarnet2.oma.be
         <BLANKLINE>
-        index        datasets                    name             detector
-        ----- --------------------- ----------------------------- --------
-            0 metadata_lyra_level_2 lyra_20100106-000000_lev2_std  HRI_EUV
-            1 metadata_lyra_level_2 lyra_20100107-000000_lev2_std  HRI_EUV
-            2 metadata_lyra_level_2 lyra_20100108-000000_lev2_std  HRI_EUV
+               datasets                    name             detector
+        --------------------- ----------------------------- --------
+        metadata_lyra_level_2 lyra_20100106-000000_lev2_std  HRI_EUV
+        metadata_lyra_level_2 lyra_20100107-000000_lev2_std  HRI_EUV
+        metadata_lyra_level_2 lyra_20100108-000000_lev2_std  HRI_EUV
         <BLANKLINE>
         <BLANKLINE>
         """
@@ -97,12 +94,15 @@ class SOLARNETClient(BaseClient):
 
         for i in range(len(self.links)):
             results.append({
-                "index": i,
                 "datasets": source,
                 "name": os.path.splitext(os.path.basename(self.links[i]))[0],
-                "detector": block["detector__iexact"] if "detector__iexact" in block else "Not specified"
+                "detector": block["detector__iexact"] if "detector__iexact" in block else "Not specified",
+                "url" : self.links[i],
             })
-        return QueryResponseTable(results, client=self)
+
+        qrt = QueryResponseTable(results, client=self)
+        qrt.hide_keys = ["url"]
+        return qrt
 
     def _generate_links(self, block, url):
         """
@@ -128,70 +128,23 @@ class SOLARNETClient(BaseClient):
             links.append(link)
         return links
 
-    def _downloader(self, link, overwrite=False, progress=True, wait=True, path=None):
+    def fetch(self, query_results, downloader, path=None, **kwargs):
         """
-        Download a file from a given link.
-
-        Parameters
-        ----------
-        link : `str`
-            URL of the file to download.
-        overwrite : `bool`, optional
-            Whether to overwrite existing files (default is False).
-        progress : `bool`, optional
-            Show download progress (default is True).
-        wait : `bool`, optional
-            Wait for the download to finish (default is True).
-        path : `str` or `Pathlib.Path`
-            Path to save data to, defaults to SunPy download dir
-
-        Returns
-        -------
-        Results : `parfive.Results`
-            A `parfive.Results` instance or `None` if no URLs to download
-        """
-        downloader = Downloader(progress=progress, overwrite=overwrite, max_splits=2)
-        link_name = link.split('/')[-1]
-        if path is None:
-            default_dir = config.get("downloads", "download_dir")
-            path = os.path.join(default_dir, '{file}')
-        elif isinstance(path, Path):
-            path = str(path)
-        if isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
-
-        file_name = path.format(file=link_name)
-        downloader.enqueue_file(link, filename=file_name, max_splits=1)
-
-        if not wait:
-            return Results()
-        results = downloader.download()
-        return results
-
-    def fetch(self, query_results, overwrite=False, path=None, **kwargs):
-        """
-        Fetch one or more datasets based on query results.
+        Download a set of results.
 
         Parameters
         ----------
         query_results : `~sunpy.net.base_client.QueryResponseTable`
-            Query results to fetch.
-        overwrite : `bool`, optional
-            Whether to overwrite existing files (default is False).
+            Results from a Fido search.
         path : `str` or `pathlib.Path`, optional
             Path to save data to, defaults to SunPy download dir
-
-        Returns
-        -------
-        Results : `parfive.Results`
-            A `parfive.Results` instance or `None` if no URLs to download
+        downloader : `parfive.Downloader`
+            Downloader instance used to download data.
         """
-        indices = (
-            [query_results[0]] if len(query_results) == 4
-            else [i["index"] for i in query_results]
-        )
-        for index in indices:
-            self._downloader(self.links[index], overwrite=overwrite, path=path)
+        for row in query_results:
+            fname = row['url'].split('/')[-1]
+            filepath = str(path).format(file=fname)
+            downloader.enqueue_file(row['url'], filename=filepath)
 
     @staticmethod
     def load_solarnet_values():
@@ -220,8 +173,8 @@ class SOLARNETClient(BaseClient):
         values = {}
         for obj in data.get("objects", []):
             name = obj["name"].replace(" ", "_").lower()
-            description =  obj.get("instrument", {}).get("description") or  obj.get("telescope", {}).get("description")
-            values[name] = description.split(". ")[0]
+            description =  obj.get("description") or  obj.get("telescope", {}).get("description")
+            values[name] = description.split(". ")[0].split(", ")[0]
         with open(os.path.join(dir, 'data', 'datasets.json'), 'w') as attrs_file:
             json.dump(dict(sorted(values.items())), attrs_file, indent=2)
 

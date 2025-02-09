@@ -1,5 +1,5 @@
 from sunpy.net._attrs import Detector, Time, Wavelength
-from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from sunpy.net.attr import AttrAnd, AttrWalker, DataAttr, SimpleAttr
 
 __all__ = ["Dataset", "Limit"]
 
@@ -14,14 +14,6 @@ class Limit(SimpleAttr):
     """
 
 walker = AttrWalker()
-
-@walker.add_creator(AttrOr)
-def _create1(wlk, query):
-    qblocks = []
-    for iattr in query.attrs:
-        qblocks.extend(wlk.create(iattr))
-    return qblocks
-
 
 @walker.add_creator(AttrAnd, DataAttr)
 def _create(wlk, query):
