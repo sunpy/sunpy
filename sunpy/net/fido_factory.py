@@ -56,7 +56,7 @@ class UnifiedResponse(Sequence):
         self._errors = {}
         for result in results:
             if isinstance(result, Exception):
-                print(f"Error: {result} for {result.client.__name__}")
+                print(f"Error: {result} for {result.client.__name__}") # TODO: pass this to logger
                 self._errors[result.client.__name__] = result
 
                 result = QueryResponseTable([], client=result.client)
@@ -563,12 +563,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         results = []
         for client in candidate_widget_types:
             try:
-                tmpclient  = client()   # client instance
+                tmpclient  = client()
                 results.append(tmpclient.search(*query))
             except Exception as e:
-                print(f"{client} will be excluded from the search results.")
-                print(client.__name__, client.info_url)
-                e.client = client   # client class not instance
+                e.client = client
                 results.append(e)
 
         return results
