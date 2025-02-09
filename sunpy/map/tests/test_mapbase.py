@@ -1020,7 +1020,6 @@ def test_superpixel_metadata(generic_map, f, dimensions):
             assert superpix_map.meta[key] == generic_map.meta[key]
 
 
-@pytest.mark.filterwarnings("ignore:Using conservative_mask=")
 def test_superpixel_masked(aia171_test_map_with_mask):
     input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
     dimensions = (2, 2) * u.pix
