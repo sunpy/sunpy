@@ -82,39 +82,26 @@ class UnifiedResponse(Sequence):
 
         if self._combine:
             for client_cls, client_results in combined_results.items():
-                if len(client_results) == 1:
-                    # Single result for this client: no need to merge
-                    new_result = client_results[0]
+                provider_groups = defaultdict(list)
 
-                    self._list.append(new_result)
-                    self._numfile += len(new_result)
+                hasProvider = True
 
-                else:
-                    # Group the results from a client based on provider
-                    # For Example: all results from VSOclient which are from the
-                    # provider JSOC will be grouped together
-                    # This makes the merging of tables easier
-                    provider_groups = defaultdict(list)
+                for client_res in client_results:
+                    provider = client_res['Provider'][0] if 'Provider' in client_res.colnames else None
+                    hasProvider = 'Provider' in client_res.colnames
 
-                    hasProvider = True
-
-                    for client_res in client_results:
-                        provider = client_res['Provider'][0] if 'Provider' in client_res.colnames else None
-                        hasProvider = 'Provider' in client_res.colnames
-
-                        if hasProvider:
-                            provider_groups[provider].append(client_res)
-
-                    # This stacks the results from the same provider(of the same client) together
                     if hasProvider:
-                        for provider, client_res in provider_groups.items():
-                            new_result = vstack(client_res, metadata_conflicts='silent')
-                            self._list.append(new_result)
-                            self._numfile += len(new_result)
-                    else:
-                        new_result = vstack(client_results, metadata_conflicts='silent')
+                        provider_groups[provider].append(client_res)
+
+                if hasProvider:
+                    for provider, client_res in provider_groups.items():
+                        new_result = vstack(client_res, metadata_conflicts='silent')
                         self._list.append(new_result)
                         self._numfile += len(new_result)
+                else:
+                    new_result = vstack(client_results, metadata_conflicts='silent')
+                    self._list.append(new_result)
+                    self._numfile += len(new_result)
 
 
     def __len__(self):
