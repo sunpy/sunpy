@@ -1,17 +1,20 @@
 name: CI benchmarks
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, labeled]
+  pull_request_target:
+    types: [synchronize, reopened, labeled]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  pull-requests: write
+
 jobs:
   benchmarks:
     if: |
-      github.event_name == 'pull_request' &&
+      github.event_name == 'pull_request_target' &&
       contains(github.event.pull_request.labels.*.name, 'Run benchmarks')
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +34,7 @@ jobs:
       - name: Add machine info for ASV
         run: asv machine --yes
       - name: Run benchmarks
+        id: asv
         env:
           OPENBLAS_NUM_THREADS: 1
           MKL_NUM_THREADS: 1
@@ -39,5 +43,18 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           COLUMNS: 150  # set a large terminal width so that large tables are rendered in 2D
         run: |
-          ASV_OPTIONS="--split --show-stderr --factor $ASV_FACTOR --cpu-affinity 0"
-          asv continuous $ASV_OPTIONS ${BASE_SHA} ${GITHUB_SHA}
+          ASV_OPTIONS="--show-stderr --factor $ASV_FACTOR --cpu-affinity 0"
+          echo "TEXT<<EOF" >> $GITHUB_OUTPUT
+          asv continuous $ASV_OPTIONS ${BASE_SHA} ${GITHUB_SHA} 2>&1 | tee -a $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Excerpt the summary
+        id: summary
+        run: |
+          echo "TEXT<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ steps.asv.outputs.TEXT }}" | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Post the summary
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: ${{ steps.summary.outputs.TEXT }}
+          comment-tag: asv_summary
