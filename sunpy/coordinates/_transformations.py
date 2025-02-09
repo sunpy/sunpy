@@ -45,6 +45,7 @@ from astropy.time import Time
 from sunpy import log
 from sunpy.sun import constants
 from sunpy.util.decorators import sunpycontextmanager
+from .ephemeris import get_earth
 from .frames import (
     _J2000,
     GeocentricEarthEquatorial,
@@ -358,17 +359,21 @@ def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
                            " frame needs a specified `obstime`.")
 
     # Import here to avoid a circular import
-    from .sun import L0, earth_distance
+    from .sun import _DLON_MERIDIAN
 
-    # Calculate the difference in light travel time if the observer is at a different distance from
-    # the Sun than the Earth is
-    delta_time = (observer_distance_from_sun - earth_distance(obstime)) / speed_of_light
+    # Calculate the de-tilt longitude of the Earth
+    earth = get_earth(obstime)
+    earth_detilt = earth.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
+    dlon_earth = earth_detilt.represent_as(SphericalRepresentation).lon.to('deg')
 
-    # Calculate the corresponding difference in apparent longitude
-    delta_lon = delta_time * constants.sidereal_rotation_rate
+    # Antedate the observation time to account for light travel time for the Sun-Earth distance
+    antetime = obstime - (observer_distance_from_sun - constants.radius) / speed_of_light
+
+    # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
+    dlon_meridian = _DLON_MERIDIAN + (antetime - _J2000) * constants.sidereal_rotation_rate
 
     # Rotation is only in longitude, so only around the Z axis
-    return rotation_matrix(-(L0(obstime) + delta_lon), 'z')
+    return rotation_matrix(-(dlon_earth - dlon_meridian), 'z')
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
