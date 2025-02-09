@@ -363,10 +363,8 @@ def test_combined_response_jsoc():
         if min_time is None or t < min_time:
             min_time = t
 
-    t1 = TimeRange(min_time, max_time)
-    t2 = TimeRange('2020-01-01 00:00:45', '2020-01-03 00:00:45')
-    assert t1.start.iso == t2.start.iso
-    assert t1.end.iso == t2.end.iso
+    assert min_time == '2020-01-01 00:00:45'
+    assert max_time == '2020-01-03 00:00:45'
 
 
 @pytest.mark.remote_data
@@ -560,7 +558,10 @@ def test_path_format_keys():
     # Need to pass combine=False otherwise combine=True will take union of the
     # columns for multiple tables which will not have the same keys
     # because path_format_keys() takes intersection of the keys in the tables
+    print(t1.path_format_keys(), t2.path_format_keys())
     unif = UnifiedResponse(t1, t2, combine=False)
+
+    # assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
     assert unif.path_format_keys() == {'_excite_'}
 
 
