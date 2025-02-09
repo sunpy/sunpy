@@ -88,17 +88,13 @@ class UnifiedResponse(Sequence):
                 # from the same provider have the same table schema.
                 provider_groups = defaultdict(list)
 
-                hasProvider = True
-
                 for client_res in client_results:
-                    provider = client_res['Provider'][0] if 'Provider' in client_res.colnames else None
-                    hasProvider = 'Provider' in client_res.colnames
-
-                    if hasProvider:
+                    if 'Provider' in client_res.colnames:
+                        provider = client_res['Provider'][0]
                         provider_groups[provider].append(client_res)
 
                 # This stacks the results from the same provider(of the same client) together
-                if hasProvider:
+                if 'Provider' in client_results[0].colnames:
                     for provider, client_res in provider_groups.items():
                         new_result = vstack(client_res, metadata_conflicts='silent')
                         self._list.append(new_result)
