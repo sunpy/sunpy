@@ -53,8 +53,16 @@ class MapFactory(BasicRegistrationFactory):
     Parameters
     ----------
     \\*inputs
-        Inputs to parse for map objects. See the examples section for a
-        detailed list of accepted inputs.
+        Inputs to parse for map objects. This can be one or more of the following:
+
+        - A string or `~pathlib.Path` object pointing to a FITS file.
+        - A directory containing FITS files (if there is more than one FITS file in the directory, it will return a list of Map objects).
+        - A tuple containing a data array and a header (for modifying the data or header).
+        - A `~sunpy.util.metadata.MetaDict` object, which includes data and metadata as a dictionary-like object.
+        - An `astropy.wcs.WCS` object, which represents the World Coordinate System for the data.
+        - A glob pattern to match multiple FITS files (e.g., ``eit_*.fits``).
+        - A URL pointing to a FITS file (can be remote).
+        - A combination of any of the above inputs.
 
     sequence : `bool`, optional
         Return a `sunpy.map.MapSequence` object comprised of all the parsed maps.
@@ -293,7 +301,7 @@ class MapFactory(BasicRegistrationFactory):
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type.
+        # matches the arguments. If it does, use that type.
         for pair in data_header_pairs:
             if isinstance(pair, GenericMap):
                 new_maps.append(pair)

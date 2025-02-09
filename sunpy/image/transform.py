@@ -33,7 +33,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     rmatrix : `numpy.ndarray` that is 2x2
         Linear transformation rotation matrix.
     order : `int` 0-5, optional
-        Interpolation order to be used, defaults to 3.  The precise meaning depends
+        Interpolation order to be used, defaults to 3. The precise meaning depends
         on the rotation method specified by ``method``.
     scale : `float`
         A scale factor for the image with the default being no scaling.
@@ -64,8 +64,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     -----
     For each NaN pixel in the input image, one or more pixels in the output image
     will be set to NaN, with the size of the pixel region affected depending on the
-    interpolation order.  All currently implemented rotation methods require a
-    convolution step to handle image NaNs.  This convolution normally uses
+    interpolation order. All currently implemented rotation methods require a
+    convolution step to handle image NaNs. This convolution normally uses
     :func:`scipy.signal.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
     installed, the faster |cv2_filter2D|_ is used instead.
 
@@ -114,13 +114,13 @@ def add_rotation_function(name, *, allowed_orders,
 
     Each registered rotation function becomes a selectable option for
     :func:`sunpy.image.transform.affine_transform` and
-    :meth:`sunpy.map.GenericMap.rotate`.  Those two routines are required to handle
+    :meth:`sunpy.map.GenericMap.rotate`. Those two routines are required to handle
     clipping the output image, NaNs in the input image, and NaN as the value to use
     for pixels in the output image that are beyond the extent of the input image.
     If the supplied rotation function cannot provide one or more of these capabilities,
     the decorator is able to provide them instead.
 
-    The decorator requires the parameters listed under ``Parameters``.  The decorated
+    The decorator requires the parameters listed under ``Parameters``. The decorated
     rotation function must accept the parameters listed under ``Other Parameters``
     in that order and return the rotated image.
 
@@ -136,11 +136,11 @@ def add_rotation_function(name, *, allowed_orders,
         ``clip`` input parameter.
     handles_image_nans : `bool`
         Specifies whether the rotation function will internally handle NaNs in the
-        input image.  If ``False``, the rotation function is guaranteed to be
+        input image. If ``False``, the rotation function is guaranteed to be
         provided an image without any NaNs.
     handles_nan_missing : `bool`
         Specifies whether the rotation function will internally handle NaN as the
-        ``missing`` value.  If ``False``, the rotation function will never receive
+        ``missing`` value. If ``False``, the rotation function will never receive
         NaN, but instead receive a value in the input range of the image.
 
     Other Parameters
@@ -161,7 +161,7 @@ def add_rotation_function(name, *, allowed_orders,
     Notes
     -----
     The docstring of the rotation function should be a bulleted list of notes
-    specific to the rotation function.  It will be appended to ``Notes`` section of
+    specific to the rotation function. It will be appended to ``Notes`` section of
     the docstring for :func:`~sunpy.image.transform.affine_transform`.
 
     The rotation function is supplied the input image directly, so the function
@@ -174,7 +174,7 @@ def add_rotation_function(name, *, allowed_orders,
     If the decorator is handling image NaNs on behalf of the rotation function
     (i.e., ``handles_image_nans=False``), pixels in the output image will be set to
     NaN if they are within a certain neighborhood size that depends on the ``order``
-    parameter.  This step requires an additional image convolution, which might be
+    parameter. This step requires an additional image convolution, which might be
     avoidable if the rotation function were able to internally handle image NaNs.
     This convolution normally uses :func:`scipy.signal.convolve2d`, but if
     `OpenCV <https://opencv.org>`__ is installed, the faster |cv2_filter2D|_ is
@@ -311,7 +311,7 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
       the system (e.g., big-endian values on a little-endian system) will be
       copied and byte-swapped prior to rotation.
     * An input image with integer data is cast to floats prior to passing to
-      :func:`~skimage.transform.warp`.  The output image can be re-cast using
+      :func:`~skimage.transform.warp`. The output image can be re-cast using
       :meth:`numpy.ndarray.astype` if desired.
     * Does not let :func:`~skimage.transform.warp` handle clipping due to
       inconsistent handling across interpolation orders
@@ -379,7 +379,7 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
       the system (e.g., big-endian values on a little-endian system) will be
       copied and byte-swapped prior to rotation.
     * An input image with integer data is cast to floats prior to passing to
-      |cv2_warpAffine|_.  The output image can be re-cast using
+      |cv2_warpAffine|_. The output image can be re-cast using
       :meth:`numpy.ndarray.astype` if desired.
     """
     try:
@@ -416,6 +416,6 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
 
 # Generate the string with allowable rotation-function names for use in docstrings
 _rotation_function_names = ", ".join([f"``'{name}'``" for name in _rotation_registry])
-# Insert into the docstring for affine_transform.  We cannot use the add_common_docstring decorator
+# Insert into the docstring for affine_transform. We cannot use the add_common_docstring decorator
 # due to what would be a circular loop in definitions.
 affine_transform.__doc__ = affine_transform.__doc__.format(rotation_function_names=_rotation_function_names)

@@ -4,15 +4,11 @@ Solar Physical Models
 This module contains models of the Sun from various sources:
 
 * ``interior``: `~astropy.table.QTable` of the structure of the solar interior
-  as defined in Table 7 of Turck-Chieze et al. (1988)
+  as defined in Table 7 of :cite:t:`turck-chieze_revisiting_1988`.
 * ``evolution``: `~astropy.table.QTable` of the evolution of the Sun over time
-  as defined in Table 6 of Turck-Chieze et al. (1988)
+  as defined in Table 6 of :cite:t:`turck-chieze_revisiting_1988`.
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
-
-References
-----------
-* `Turck-Chieze et al. (1988), *ApJ*, **335**, 415-424 <https://doi.org/10.1086/166936>`__
 """
 import numpy as np
 
@@ -93,7 +89,7 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     Computes the change in longitude over a duration for a given latitude.
 
     Since the Sun is not a rigid body, different heliographic latitudes rotate with
-    different periods.  This is known as solar differential rotation.
+    different periods. This is known as solar differential rotation.
 
     Parameters
     ----------
@@ -106,16 +102,16 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
         One of:
 
-        | ``howard`` : Use values from Howard et al. (1990)
-        | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
+        | ``howard`` : Use values from :cite:t:`howard_solar_1990`
+        | ``snodgrass`` : Use values from :cite:t:`snodgrass_magnetic_1983`
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
         | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
 
     frame_time : `str`
         If ``'sidereal'``, returns the change in longitude as referenced to distant
-        stars.  If ``'synodic'``, returns the apparent change in longitude as
+        stars. If ``'synodic'``, returns the apparent change in longitude as
         observed by the average orbital motion of Earth, which results in a slower
-        rotation rate.  Defaults to ``'sidereal'``.
+        rotation rate. Defaults to ``'sidereal'``.
 
     Returns
     -------
@@ -142,11 +138,7 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     ========= ======= ====== ====== ==========
 
     1 microrad/s is approximately 4.95 deg/day.
-
-    References
-    ----------
-    * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
-    * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
+    See also the comparisons in :cite:t:`beck_comparison_2000`.
 
     Examples
     --------

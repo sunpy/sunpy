@@ -20,12 +20,12 @@ from astropy.time import Time
 from astropy.utils.decorators import deprecated_renamed_argument
 
 import sunpy
+from sunpy.data import cache
 from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io._header import FileHeader
 from sunpy.timeseries.sources import source_names
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import expand_list
-from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.datatype_factory_base import (
     BasicRegistrationFactory,
     MultipleMatchError,
@@ -36,7 +36,6 @@ from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.io import HDPair, expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
-from sunpy.util.net import download_file
 
 __all__ = ["TimeSeries", "TimeSeriesFactory", "NoTimeSeriesFound", "InvalidTimeSeriesInput", "InvalidTimeSeriesType"]
 
@@ -407,7 +406,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(Request)
     def _parse_url(self, request, **kwargs):
-        path = download_file(request.full_url, get_and_create_download_dir())
+        path = cache.download(request.full_url).absolute()
         return self._parse_path(pathlib.Path(path), **kwargs)
 
     @_parse_arg.register(pathlib.Path)

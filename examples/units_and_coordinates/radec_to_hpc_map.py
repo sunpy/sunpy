@@ -100,7 +100,7 @@ cdelt2 = (np.abs(header['cdelt2'])*u.deg).to(u.arcsec)
 
 ##################################################################################
 # Finally, we need to specify the orientation of the HPC coordinate grid because
-# GCRS north is not in the same direction as HPC north.  For convenience, we use
+# GCRS north is not in the same direction as HPC north. For convenience, we use
 # :func:`~sunpy.coordinates.sun.P` to calculate this relative rotation angle,
 # although due to subtleties in definitions, the returned value is inaccurate by
 # 2 arcmin, equivalent to a worst-case shift of 0.6 arcsec for HPC coordinates

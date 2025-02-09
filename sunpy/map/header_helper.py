@@ -402,7 +402,7 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
 
     The header uses the plate carrée projection ("CAR" in FITS-WCS) with the
     position angle (``psi``) on the horizontal axis and impact angle (``theta``) on
-    the vertical axis.  To accommodate the FITS-WCS machinery, the vertical axis is
+    the vertical axis. To accommodate the FITS-WCS machinery, the vertical axis is
     actually the declination (``delta``), which is the impact angle minus 90 degrees.
 
     Parameters
@@ -414,9 +414,9 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
     theta_binsize : `~astropy.units.Quantity`
         The size of each pixel in the impact-angle direction.
     theta_min : `~astropy.units.Quantity`
-        The minimum impact angle.  Defaults to 0 arcsec.
+        The minimum impact angle. Defaults to 0 arcsec.
     psi_center : `~astropy.units.Quantity`
-        The center of the map in position angle.  Defaults to 180 degrees.
+        The center of the map in position angle. Defaults to 180 degrees.
 
     Returns
     -------

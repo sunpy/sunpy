@@ -33,13 +33,13 @@ class GreatArc:
         Center of the sphere.
 
     points : `None`, `int`, `numpy.ndarray`
-        Number of points along the great arc.  If None, the arc is calculated
-        at 100 equally spaced points from start to end.  If int, the arc is
-        calculated at "points" equally spaced points from start to end.  If a
+        Number of points along the great arc. If None, the arc is calculated
+        at 100 equally spaced points from start to end. If int, the arc is
+        calculated at "points" equally spaced points from start to end. If a
         numpy.ndarray is passed, it must be one dimensional and have values
-        >=0 and <=1.  The values in this array correspond to parameterized
+        >=0 and <=1. The values in this array correspond to parameterized
         locations along the great arc from zero, denoting the start of the arc,
-        to 1, denoting the end of the arc.  Setting this keyword on initializing
+        to 1, denoting the end of the arc. Setting this keyword on initializing
         a GreatArc object sets the locations of the default points along the
         great arc.
 
@@ -51,7 +51,7 @@ class GreatArc:
 
     distances : `~astropy.units.Quantity`
         Distances of the points along the great arc from the start to end
-        coordinate.  The units are defined as those returned after transforming
+        coordinate. The units are defined as those returned after transforming
         the coordinate system of the start coordinate into its Cartesian
         equivalent.
 
@@ -105,7 +105,7 @@ class GreatArc:
         self.default_points = np.linspace(0, 1, 100)
 
         # If the user requests a different set of default parameterized points
-        # on initiation of the object, then these become the default.  This
+        # on initiation of the object, then these become the default. This
         # allows the user to use the methods without having to specify their
         # choice of points over and over again, while also allowing the
         # flexibility in the methods to calculate other values.
@@ -181,9 +181,9 @@ class GreatArc:
         ----------
         points : `None`, `int`, `numpy.ndarray`
             If None, use the default locations of parameterized points along the
-            arc.  If int, the arc is calculated at "points" equally spaced
-            points from start to end.  If a numpy.ndarray is passed, it must be
-            one dimensional and have values >=0 and <=1.  The values in this
+            arc. If int, the arc is calculated at "points" equally spaced
+            points from start to end. If a numpy.ndarray is passed, it must be
+            one dimensional and have values >=0 and <=1. The values in this
             array correspond to parameterized locations along the great arc from
             zero, denoting the start of the arc, to 1, denoting the end of the
             arc.
@@ -207,9 +207,9 @@ class GreatArc:
         ----------
         points : `None`, `int`, `numpy.ndarray`
             If None, use the default locations of parameterized points along the
-            arc.  If int, the arc is calculated at "points" equally spaced
-            points from start to end.  If a numpy.ndarray is passed, it must be
-            one dimensional and have values >=0 and <=1.  The values in this
+            arc. If int, the arc is calculated at "points" equally spaced
+            points from start to end. If a numpy.ndarray is passed, it must be
+            one dimensional and have values >=0 and <=1. The values in this
             array correspond to parameterized locations along the great arc from
             zero, denoting the start of the arc, to 1, denoting the end of the
             arc.
@@ -218,7 +218,7 @@ class GreatArc:
         -------
         distances : `~astropy.units`
             Distances of the points along the great arc from the start to end
-            coordinate.  The units are defined as those returned after
+            coordinate. The units are defined as those returned after
             transforming the coordinate system of the start coordinate into
             its Cartesian equivalent.
         """
@@ -227,16 +227,16 @@ class GreatArc:
     def coordinates(self, points=None):
         """
         Calculates the coordinates on the sphere from the start to the end
-        coordinate for all the parameterized points.  Coordinates are
+        coordinate for all the parameterized points. Coordinates are
         returned in the frame of the start coordinate.
 
         Parameters
         ----------
         points : `None`, `int`, `numpy.ndarray`
             If None, use the default locations of parameterized points along the
-            arc.  If int, the arc is calculated at "points" equally spaced
-            points from start to end.  If a numpy.ndarray is passed, it must be
-            one dimensional and have values >=0 and <=1.  The values in this
+            arc. If int, the arc is calculated at "points" equally spaced
+            points from start to end. If a numpy.ndarray is passed, it must be
+            one dimensional and have values >=0 and <=1. The values in this
             array correspond to parameterized locations along the great arc from
             zero, denoting the start of the arc, to 1, denoting the end of the
             arc.
@@ -322,7 +322,7 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
     Notes
     -----
     ``width`` is always treated as an increase in longitude, but ``bottom_left`` may have a higher
-    value of longitude than ``top_right`` due to the wrapping of the longitude angle.  Appropriate
+    value of longitude than ``top_right`` due to the wrapping of the longitude angle. Appropriate
     care should be taken when using this function's output to define a range of longitudes.
 
     ``height`` is always treated as an increase in latitude, but this function does not enforce
@@ -394,9 +394,9 @@ def solar_angle_equivalency(observer):
 
     .. note::
         This equivalency assumes that the physical distance is perpendicular to
-        the Sun-observer line.  That is, the tangent of the angular separation
+        the Sun-observer line. That is, the tangent of the angular separation
         is equal to the ratio of the physical distance to the Sun-observer
-        distance.  For large physical distances, a different assumption may be
+        distance. For large physical distances, a different assumption may be
         more appropriate.
 
     Parameters
