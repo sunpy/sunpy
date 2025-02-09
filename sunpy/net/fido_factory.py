@@ -84,7 +84,7 @@ class UnifiedResponse(Sequence):
             for client_cls, client_results in combined_results.items():
                 # Group the results from a client based on provider
                 # For Example: all results from VSOclient which are from the
-                # provider will be grouped together, this is because the results
+                # same provider, (say, JSOC) will be grouped together, this is because the results
                 # from the same provider have the same table schema.
                 provider_groups = defaultdict(list)
 
