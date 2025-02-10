@@ -1,0 +1,1 @@
+Fixed a bug where `~sunpy.map.sources.EITMap` and the correct colormaps (e.g., ``sohoeit171``) failed to load for SOHO/EIT level 1 FITS files from SDAC.

@@ -13,7 +13,7 @@ class Generate(Directive):
     Custom directive to include raw output generated using supplied Python code
 
     This directive is similar to the ``raw`` directive, except that the raw content is generated
-    instead of statically provided.  As with the ``raw`` directive, the required argument specifies
+    instead of statically provided. As with the ``raw`` directive, the required argument specifies
     the format of the output (e.g., ``html`` or ``latex``).
 
     The optional flag ``html_border`` surrounds HTML output with a black border for visual
