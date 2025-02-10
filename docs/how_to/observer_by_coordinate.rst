@@ -1,8 +1,8 @@
 .. _sunpy-how-to-observer-by-coordinate:
 
-************************************
-Specifying an Observer by Coordinate
-************************************
+*********************************
+Specify an observer by coordinate
+*********************************
 
 For coordinate frames that include the observer location as part of the definition (e.g., `~sunpy.coordinates.Helioprojective`), there are two main ways to specify the observer location (the ``observer`` frame attribute).
 If it makes sense to designate a planetary body as the observer, one can specify the observer to be that body using a string (e.g., ``observer='earth'``), and the observer will be understood to be situated at the center of that body at the time of the coordinate (the ``obstime`` frame attribute).
