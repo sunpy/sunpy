@@ -1,6 +1,3 @@
-
-
-
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient
 
