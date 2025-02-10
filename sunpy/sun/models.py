@@ -12,9 +12,7 @@ This module contains models of the Sun from various sources:
 """
 import pathlib
 
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 import astropy.units as u
 from astropy.coordinates import Longitude
@@ -203,13 +201,15 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
     return Longitude(rotation.to(u.deg))
 
-##this code block add 1d structure of the chromosphere using Avrett and Loeser(2008) paper
+# This code block adds a 1D structure of the chromosphere
+# using the Avrett & Loeser (2008) paper.
+# Define the data directory and CSV file path
 
-
-CHROMO_DATA_DIR = pathlib.Path(__file__).parent.absolute() / 'data'
+CHROMO_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
 csv_file_path = CHROMO_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
 
-units = {
+# Define units for the dataset columns
+_units = {
     "h": u.km,
     "m": u.g / u.cm**2,
     "T": u.K,
@@ -221,69 +221,47 @@ units = {
     "n_e": u.cm**-3,
 }
 
-labels = {
-    "h": "Height (h)",
-    "m": "Column Density (m)",
-    "T": "Temperature (T)",
-    "V": "Velocity (V)",
-    "p_g": "Gas Pressure (p_g)",
-    "p_tot": "Total Pressure (p_tot)",
-    "n_H": "Neutral Hydrogen Density (n_H)",
-    "n_HI": "Ionized Hydrogen Density (n_HI)",
-    "n_e": "Electron Density (n_e)",
-}
+# Function to read the chromosphere model CSV file
+def _read_chromosphere_data(file=csv_file_path):
+    """Reads the chromosphere Avrett and Loeser (2008) model data from a CSV file and returns an Astropy Table with units.
 
-def read_chromosphere_data(file=csv_file_path):
-    """reads the chromosphere Avrett and Loeser(2008) model data from a CSV file and returns an Astropy Table with units."""
+    Parameters
+    ----------
+    file : Path to CSV
+        The path to the CSV file containing the chromosphere model data.
+        Defaults to `csv_file_path`.
+
+    Returns
+    -------
+    Table
+        An Astropy Table containing the chromosphere model data with units
+        assigned to each column.
+    """
     if not file.exists():
-        raise FileNotFoundError("File not found")
+        raise FileNotFoundError(f"Chromosphere model file not found: {file}")
 
-    df = pd.read_csv(file)
-    table = Table.from_pandas(df)
+    table = Table.read(file, format="csv")  # Read CSV using Astropy
 
-    for col, unit in units.items():
+    # Assign units to columns
+    for col, unit in _units.items():
         if col in table.colnames:
             table[col].unit = unit
 
     return table
 
-def plot_chromosphere(data=None, x_param="h", y_param="T", log=True):
-    """
-    Plots the solar chromosphere's 1D model for any two parameters.
-    If log=True, it will plot log10(y_values).
-    Defaults to plotting Temperature (T) vs Height (h).
-    """
-    if data is None:
-        data = read_chromosphere_data()  # Automatically load the data
+# Public function to get chromosphere data
+def get_chromosphere_data():
+    """Returns the chromosphere model data as an Astropy Table with units."""
+    return _read_chromosphere_data()
 
-    if x_param not in data.colnames or y_param not in data.colnames:
-        print("\nInvalid parameter(s). Please choose from:", list(data.colnames))
-        return
+# Ensure module attributes are dynamically retrieved
+_chromosphere_cache = None
+# Cache to store loaded data
 
-    x_values = data[x_param]
-    y_values = data[y_param]
-
-    if log:
-        y_values = np.log10(y_values)
-        y_label = f"log10({labels.get(y_param, y_param)})"
-    else:
-        y_label = labels.get(y_param, y_param)
-
-    x_label = labels.get(x_param, x_param)
-
-    plt.figure(figsize=(8, 5))
-    plt.plot(x_values, y_values, marker="o", linestyle="-", color="b", label=f"{y_label} vs {x_label}")
-
-    x_unit = data[x_param].unit if data[x_param].unit else "No Unit"
-    y_unit = data[y_param].unit if data[y_param].unit else "No Unit"
-
-    plt.xlabel(f"{x_label} ({x_unit})")
-    plt.ylabel(f"{y_label} ({y_unit})")
-    plt.title(f"Solar Chromosphere: {y_label} vs {x_label}")
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-
-
-chromosphere_data = read_chromosphere_data()
+def __getattr__(name):
+    global _chromosphere_cache
+    if name == "chromosphere_data":
+        if _chromosphere_cache is None:  
+            _chromosphere_cache = get_chromosphere_data()
+        return _chromosphere_cache
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
