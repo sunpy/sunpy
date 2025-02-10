@@ -32,6 +32,7 @@ jobs:
         run: asv machine --yes
       - name: Run benchmarks
         id: asv
+        shell: bash -e {0}
         env:
           OPENBLAS_NUM_THREADS: 1
           MKL_NUM_THREADS: 1
@@ -43,7 +44,10 @@ jobs:
           ASV_OPTIONS="--show-stderr --factor $ASV_FACTOR --cpu-affinity 0"
           echo "TEXT<<EOF" >> $GITHUB_OUTPUT
           asv continuous $ASV_OPTIONS ${BASE_SHA} ${GITHUB_SHA} 2>&1 | tee -a $GITHUB_OUTPUT
+          status=${PIPESTATUS[0]}
           echo "EOF" >> $GITHUB_OUTPUT
+          exit $status
       - name: Post the summary
+        if: always()
         run: |
           echo "${{ steps.asv.outputs.TEXT }}" | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 | tee -a $GITHUB_STEP_SUMMARY
