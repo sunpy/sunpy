@@ -1,0 +1,36 @@
+.. _whatsnew-7.0:
+
+************************
+What's New in sunpy 7.0?
+************************
+
+The SunPy Project is pleased to announce the 7.0 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 7.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+This release of sunpy contains X commits in X merged pull requests closing X issues from X people, X of which are first-time contributors to sunpy.
+
+* X commits have been added since 6.1
+* X issues have been closed since 6.1
+* X pull requests have been merged since 6.1
+* X people have contributed since 6.1
+* X of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+- TBA
+
+Where a * indicates that this release contains their first contribution to sunpy.
+
+Updates to minimum dependencies
+===============================
+
+The minimum required versions of the following packages have been updated:
+
+- python>=3.11
