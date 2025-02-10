@@ -47,6 +47,7 @@ def test_fetch_return_type():
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
 
+
 @pytest.mark.remote_data
 def test_fetch_path_specified(tmpdir):
     query = Fido.search(a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV"))
