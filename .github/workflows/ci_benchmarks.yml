@@ -1,20 +1,17 @@
 name: CI benchmarks
 
 on:
-  pull_request_target:
+  pull_request:
     types: [synchronize, reopened, labeled]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  pull-requests: write
-
 jobs:
   benchmarks:
     if: |
-      github.event_name == 'pull_request_target' &&
+      github.event_name == 'pull_request' &&
       contains(github.event.pull_request.labels.*.name, 'Run benchmarks')
     runs-on: ubuntu-latest
     steps:
@@ -47,14 +44,6 @@ jobs:
           echo "TEXT<<EOF" >> $GITHUB_OUTPUT
           asv continuous $ASV_OPTIONS ${BASE_SHA} ${GITHUB_SHA} 2>&1 | tee -a $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-      - name: Excerpt the summary
-        id: summary
-        run: |
-          echo "TEXT<<EOF" >> $GITHUB_OUTPUT
-          echo "${{ steps.asv.outputs.TEXT }}" | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
       - name: Post the summary
-        uses: thollander/actions-comment-pull-request@v3
-        with:
-          message: ${{ steps.summary.outputs.TEXT }}
-          comment-tag: asv_summary
+        run: |
+          echo "${{ steps.asv.outputs.TEXT }}" | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 | tee -a $GITHUB_STEP_SUMMARY
