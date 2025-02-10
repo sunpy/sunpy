@@ -1,0 +1,3 @@
+Added a FIDO client for retrieving AIA "synoptic" data from the JSOC.
+This dataset is not synoptic like HMI and MDI Synoptic images which are images of the solar surface reconstructed from many observations over a solar rotation but rather a synopsis of AIA data.
+The AIA synoptic data are calibrated Level 1.5 images with reduced 1k x 1k resolution at regular 2-minute cadence.
