@@ -1,7 +1,7 @@
 .. _sunpy-how-to-fix-map-metadata:
 
 *************************
-Fixing incorrect metadata
+Fix incorrect metadata
 *************************
 
 There will be times where you will come across a FITS files with either incorrect, missing or unparsable metadata and reading these files into `~sunpy.map.Map` will cause an error.
