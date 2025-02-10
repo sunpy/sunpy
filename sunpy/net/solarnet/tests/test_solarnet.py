@@ -57,7 +57,6 @@ def test_fetch_path_specified(tmpdir):
     assert len(files) == 1
 
 
-
 @pytest.mark.remote_data
 def test_default_limit(client):
     search = client.search(a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA), a.Time("2020/02/04","2022/02/04"))
