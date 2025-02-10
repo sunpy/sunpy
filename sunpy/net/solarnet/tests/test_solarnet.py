@@ -41,6 +41,7 @@ def test_solarnet_attrs(client):
     assert a.solarnet.Dataset in attrs.keys()
     assert len(attrs[a.solarnet.Dataset]) > 0
 
+
 @pytest.mark.remote_data
 def test_fetch_return_type():
     qr = Fido.search(a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(1))
