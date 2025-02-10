@@ -206,6 +206,7 @@ def testFilesRange_sameDirectory_months_remote():
                      'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
+@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_ftp():
     pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/%Y/%m/%Y%m%dSRS.txt'
