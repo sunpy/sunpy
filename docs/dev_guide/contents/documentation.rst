@@ -127,7 +127,7 @@ Examples can be found in any class defined in any Python file in ``sunpy/map/sou
 Citing Publications
 -------------------
 
-Whenever possible, publications should be cited using BibTeX through the `sphinxcontrib-bibtex` extension.
+Whenever possible, publications should be cited using BibTeX through the :doc:`sphinxcontrib.bibtex <sphinxcontrib_bibtex:index>` extension.
 To do so, first add the appropriate entry in :file:`docs/references.bib`.
 Then, you can add a citation to the docstring like so:
 
@@ -135,7 +135,15 @@ Then, you can add a citation to the docstring like so:
 
     :cite:t:`franz_heliospheric_2002`
 
-For more details on how to cite publications, see the `sphinxcontrib-bibtex documentation <https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html#roles-and-directives>`__.
+to insert a textual citation.
+Similarly, you can use
+
+.. code-block:: rst
+
+    :cite:p:`franz_heliospheric_2002`
+
+to insert a parenthetical citation.
+For more details on how to cite publications with ``sphinxcontrib_bibtex``, see :doc:`this page <sphinxcontrib_bibtex:usage>`.
 
 Sphinx
 ======
