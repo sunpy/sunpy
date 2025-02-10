@@ -122,7 +122,6 @@ Footnotes
 
 .. [#apparent] The term "apparent" (as opposed to "true") is used to indicate that the observer perceives the locations and orientations of objects different from how they truly are due to effects that include light travel time.
 .. [#subEarth] "Sub-Earth" is a special case of "sub-observer", where the observer is at Earth (specifically, Earth center). That is, the sub-Earth point is the point on the Sun's surface "below" the center of the Earth along the Sun-Earth line.
-.. [#AA] Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's Physical Ephemeris in The Astronomical Almanac", `<http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
 
 .. |AA| replace:: *The Astronomical Almanac*
 .. |B0| replace:: B\ :sub:`0`
