@@ -261,7 +261,7 @@ _chromosphere_cache = None
 def __getattr__(name):
     global _chromosphere_cache
     if name == "chromosphere_data":
-        if _chromosphere_cache is None:  
+        if _chromosphere_cache is None:
             _chromosphere_cache = get_chromosphere_data()
         return _chromosphere_cache
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

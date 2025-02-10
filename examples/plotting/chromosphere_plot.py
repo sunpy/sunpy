@@ -12,10 +12,11 @@ a log scale to the y-axis.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from sunpy.sun.models import get_chromosphere_data
+
+import sunpy.sun.models as models
 
 # Load the chromosphere data
-data = get_chromosphere_data()
+data = models.get_chromosphere_data
 
 # Specify x and y parameters
 x_param = "h"   # Height
