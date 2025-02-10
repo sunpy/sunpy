@@ -1,7 +1,7 @@
 .. _sunpy-how-to-custom-timeseries:
 
 **********************************************
-Create a custom `~sunpy.timeseries.Timeseries`
+Create a custom `~sunpy.timeseries.TimeSeries`
 **********************************************
 
 Sometimes you will have data that you want to transform into a TimeSeries.
