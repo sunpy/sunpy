@@ -29,6 +29,7 @@ def test_search():
     assert "metadata_eui_level_2" in url[0]["datasets"]
     assert "HRI_EUV" in url[0]["detector"]
 
+
 def test_can_handle_query(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
     assert not client._can_handle_query(a.solarnet.Limit(10))
