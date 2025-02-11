@@ -112,7 +112,7 @@ class ESPTimeSeries(GenericTimeSeries):
         return fig
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         Parses a EVE ESP level 1 data.
         """
@@ -247,7 +247,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         return fig
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         Parses an EVE CSV file.
         """
