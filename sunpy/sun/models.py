@@ -228,10 +228,6 @@ def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
     QTable
         An Astropy QTable containing the chromosphere model data with units.
 
-    Raises
-    ------
-    FileNotFoundError
-        If the specified data file does not exist.
     """
     ecsv_file = file.with_suffix(".ecsv")
 
@@ -286,10 +282,6 @@ def __getattr__(name):
     QTable
         The cached chromosphere model data if `chromosphere_data` is requested.
 
-    Raises
-    ------
-    AttributeError
-        If the requested attribute does not exist.
     """
     global _chromosphere_cache
     if name == "chromosphere_data":
