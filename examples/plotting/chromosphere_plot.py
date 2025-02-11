@@ -16,7 +16,7 @@ import numpy as np
 import sunpy.sun.models as models
 
 # Load the chromosphere data
-data = models.get_chromosphere_data
+data = models.chromosphere_data
 
 # Specify x and y parameters
 x_param = "h"   # Height
@@ -27,9 +27,9 @@ log = True      # Apply log scale to y-axis
 if x_param not in data.colnames or y_param not in data.colnames:
     raise ValueError(f"Invalid parameters. Available options: {list(data.colnames)}")
 
-# Extract values
-x_values = data[x_param]
-y_values = data[y_param]
+# Extract values (using .value to remove units for calculations)
+x_values = data[x_param].value
+y_values = data[y_param].value
 
 # Apply log scale if needed
 if log:
@@ -42,7 +42,7 @@ else:
 plt.figure(figsize=(8, 5))
 plt.plot(x_values, y_values, marker="o", linestyle="-", color="b", label=f"{y_label} vs {x_param}")
 
-# Handle units
+# Handle units for labels
 x_unit = f"({data[x_param].unit})" if data[x_param].unit else ""
 y_unit = f"({data[y_param].unit})" if data[y_param].unit else ""
 
@@ -58,9 +58,9 @@ x_param = "m"   # Column name for x-axis
 y_param = "n_e" # Column name for y-axis
 log = False     # No log scale
 
-# Extract new values
-x_values = data[x_param]
-y_values = data[y_param]
+# Extract new values (using .value to remove units for calculations)
+x_values = data[x_param].value
+y_values = data[y_param].value
 
 # Update y-axis label
 y_label = y_param
@@ -69,7 +69,7 @@ y_label = y_param
 plt.figure(figsize=(8, 5))
 plt.plot(x_values, y_values, marker="o", linestyle="-", color="r", label=f"{y_label} vs {x_param}")
 
-# Handle units
+# Handle units for labels
 x_unit = f"({data[x_param].unit})" if data[x_param].unit else ""
 y_unit = f"({data[y_param].unit})" if data[y_param].unit else ""
 

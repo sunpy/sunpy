@@ -16,7 +16,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import Longitude
-from astropy.table import QTable, Table
+from astropy.table import QTable
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
@@ -203,10 +203,10 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
 # This code block adds a 1D structure of the chromosphere
 # using the Avrett & Loeser (2008) paper.
-# Define the data directory and CSV file path
 
 CHROMO_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
 csv_file_path = CHROMO_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
+
 
 # Define units for the dataset columns
 _units = {
@@ -223,7 +223,7 @@ _units = {
 
 # Function to read the chromosphere model CSV file
 def _read_chromosphere_data(file=csv_file_path):
-    """Reads the chromosphere Avrett and Loeser (2008) model data from a CSV file and returns an Astropy Table with units.
+    """Reads the chromosphere Avrett and Loeser (2008) model data from a CSV file and returns an Astropy QTable with units.
 
     Parameters
     ----------
@@ -233,25 +233,25 @@ def _read_chromosphere_data(file=csv_file_path):
 
     Returns
     -------
-    Table
-        An Astropy Table containing the chromosphere model data with units
+    QTable
+        An Astropy QTable containing the chromosphere model data with units
         assigned to each column.
     """
     if not file.exists():
         raise FileNotFoundError(f"Chromosphere model file not found: {file}")
 
-    table = Table.read(file, format="csv")  # Read CSV using Astropy
+    table = QTable.read(file, format="csv")  # Read CSV using QTable
 
     # Assign units to columns
     for col, unit in _units.items():
         if col in table.colnames:
-            table[col].unit = unit
+            table[col] *= unit  # QTable stores units with the data
 
     return table
 
 # Public function to get chromosphere data
 def get_chromosphere_data():
-    """Returns the chromosphere model data as an Astropy Table with units."""
+    """Returns the chromosphere model data as an Astropy QTable with units."""
     return _read_chromosphere_data()
 
 # Ensure module attributes are dynamically retrieved
@@ -261,7 +261,7 @@ _chromosphere_cache = None
 def __getattr__(name):
     global _chromosphere_cache
     if name == "chromosphere_data":
-        if _chromosphere_cache is None:
+        if _chromosphere_cache is None:  # Load only once
             _chromosphere_cache = get_chromosphere_data()
         return _chromosphere_cache
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
