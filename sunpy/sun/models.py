@@ -209,10 +209,8 @@ with physical units assigned to relevant columns.
 
 The processed data can be accessed using the `chromosphere_data` attribute.
 """
-
 _MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
 _AVRETT_LOESER_PATH = _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
-
 
 def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
     """
@@ -235,11 +233,19 @@ def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
     FileNotFoundError
         If the specified data file does not exist.
     """
+    ecsv_file = file.with_suffix(".ecsv")
+
+    # If ECSV already exists, load it to avoid redundant processing
+    if ecsv_file.exists():
+        return QTable.read(ecsv_file, format="ascii.ecsv")
+
+    # Ensure the CSV file exists before processing
     if not file.exists():
         raise FileNotFoundError(f"Chromosphere model file not found: {file}")
+
     table = QTable.read(file, format="csv")
 
-
+    # Define units for columns
     units = {
         "h": u.km,
         "m": u.g / u.cm**2,
@@ -252,21 +258,18 @@ def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
         "n_e": u.cm**-3,
     }
 
+    # Assign units to columns
     for col, unit in units.items():
         if col in table.colnames:
             table[col] *= unit
 
-    table.write(file.with_suffix(".ecsv"), format="ascii.ecsv", overwrite=True)
+    # Save as ECSV to retain units
+    table.write(ecsv_file, format="ascii.ecsv", overwrite=True)
 
     return table
 
-
-def get_chromosphere_data():
-    return _read_chromosphere_data()
-
-
+# Cache for loaded data
 _chromosphere_cache = None
-
 
 def __getattr__(name):
     """
@@ -291,6 +294,6 @@ def __getattr__(name):
     global _chromosphere_cache
     if name == "chromosphere_data":
         if _chromosphere_cache is None:
-            _chromosphere_cache = get_chromosphere_data()
+            _chromosphere_cache = _read_chromosphere_data()
         return _chromosphere_cache
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
