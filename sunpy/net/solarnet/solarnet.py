@@ -3,16 +3,18 @@ import json
 import pathlib
 
 import requests
-
+from sunpy.net.dataretriever import GenericClient
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.solarnet.attrs import Dataset, walker
+from sunpy.time import parse_time
+from sunpy.net import attrs as a
 
 _BASE_URL = "https://solarnet2.oma.be/service/api/svo/{}"
 
 __all__ = ["SOLARNETClient"]
 
-class SOLARNETClient(BaseClient):
+class SOLARNETClient(GenericClient):
     """
     Provides access to query and download from the SOLARNET Virtual Observatory (SVO).
 
@@ -38,10 +40,10 @@ class SOLARNETClient(BaseClient):
     2 Results from the SOLARNETClient:
     Source: https://solarnet2.oma.be
     <BLANKLINE>
-          datasets                              name                        detector
-    -------------------- -------------------------------------------------- --------
-    metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122556952_V06  HRI_EUV
-    metadata_eui_level_2 solo_L2_eui-hrieuvopn-image_20200512T122606952_V06  HRI_EUV
+          DATASETS                START                    END           INSTRUMENT
+    -------------------- ----------------------- ----------------------- ----------
+    metadata_eui_level_2 2020-05-12T12:25:56.952 2020-05-12T12:25:58.952        EUI
+    metadata_eui_level_2 2020-05-12T12:26:06.952 2020-05-12T12:26:08.952        EUI
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -76,11 +78,11 @@ class SOLARNETClient(BaseClient):
         3 Results from the SOLARNETClient:
         Source: https://solarnet2.oma.be
         <BLANKLINE>
-               datasets                    name             detector
-        --------------------- ----------------------------- --------
-        metadata_lyra_level_2 lyra_20100106-000000_lev2_std  HRI_EUV
-        metadata_lyra_level_2 lyra_20100107-000000_lev2_std  HRI_EUV
-        metadata_lyra_level_2 lyra_20100108-000000_lev2_std  HRI_EUV
+               DATASETS                START                    END           INSTRUMENT
+        --------------------- ----------------------- ----------------------- ----------
+        metadata_lyra_level_2 2010-01-06T00:00:00.006 2010-01-06T23:59:59.986       LYRA
+        metadata_lyra_level_2 2010-01-07T00:00:00.037 2010-01-07T23:59:59.602       LYRA
+        metadata_lyra_level_2 2010-01-08T00:00:00.102 2010-01-08T23:59:57.445       LYRA
         <BLANKLINE>
         <BLANKLINE>
         """
@@ -92,14 +94,15 @@ class SOLARNETClient(BaseClient):
             source = block.pop("datasets")
         self.links = self._generate_links(block, url)
 
-        for i in range(len(self.links)):
+        for i in self.links:
             results.append({
-                "datasets": source,
-                "name": os.path.splitext(os.path.basename(self.links[i]))[0],
-                "detector": block["detector__iexact"] if "detector__iexact" in block else "Not specified",
-                "url" : self.links[i],
+                "DATASETS": source,
+                "START": parse_time(self.links[i]["start_time"]),
+                "END": parse_time(self.links[i]["end_time"]),
+                "INSTRUMENT" : self.links[i]["instrument"],
+                "url" : self.links[i]["link"],
             })
-
+            
         qrt = QueryResponseTable(results, client=self)
         qrt.hide_keys = ["url"]
         return qrt
@@ -120,31 +123,18 @@ class SOLARNETClient(BaseClient):
         links : `list`
             List of dataset file URLs.
         """
-        links = []
+        links = {}
         req = requests.get(url,params = block)
         data = req.json()["objects"]
         for i in data:
-            link = i["data_location"]["file_url"]
-            links.append(link)
+            links[i["filename"]] = {
+                "start_time" : i["date_beg"],
+                "end_time" : i["date_end"],
+                "instrument" : i["instrume"],
+                "link" : i['data_location']['file_url']
+            }
+
         return links
-
-    def fetch(self, query_results, downloader, path=None, **kwargs):
-        """
-        Download a set of results.
-
-        Parameters
-        ----------
-        query_results : `~sunpy.net.base_client.QueryResponseTable`
-            Results from a Fido search.
-        path : `str` or `pathlib.Path`, optional
-            Path to save data to, defaults to SunPy download dir
-        downloader : `parfive.Downloader`
-            Downloader instance used to download data.
-        """
-        for row in query_results:
-            fname = row['url'].split('/')[-1]
-            filepath = str(path).format(file=fname)
-            downloader.enqueue_file(row['url'], filename=filepath)
 
     @staticmethod
     def load_solarnet_values():
@@ -186,10 +176,7 @@ class SOLARNETClient(BaseClient):
     @classmethod
     def _attrs_module(cls):
         return 'solarnet', 'sunpy.net.solarnet.attrs'
-
-    @staticmethod
-    def _can_handle_query(*query):
-        from sunpy.net import attrs as a
-
-        # Checks for dataset instance in query
+    
+    @classmethod
+    def _can_handle_query(cls, *query):
         return any(isinstance(q, a.solarnet.Dataset) for q in query)
