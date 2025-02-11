@@ -170,7 +170,6 @@ class SOLARNETClient(GenericClient):
 
     @classmethod
     def register_values(cls):
-        #loads the solarnet values
         return cls.load_solarnet_values()
 
     @classmethod

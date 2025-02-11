@@ -29,6 +29,7 @@ def test_search():
     assert "metadata_eui_level_2" in url[0]["datasets"]
     assert "HRI_EUV" in url[0]["detector"]
 
+
 def test_can_handle_query(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
     assert not client._can_handle_query(a.solarnet.Limit(10))
@@ -40,11 +41,13 @@ def test_solarnet_attrs(client):
     assert a.solarnet.Dataset in attrs.keys()
     assert len(attrs[a.solarnet.Dataset]) > 0
 
+
 @pytest.mark.remote_data
 def test_fetch_return_type():
     qr = Fido.search(a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(1))
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
+
 
 @pytest.mark.remote_data
 def test_fetch_path_specified(tmpdir):
@@ -53,7 +56,6 @@ def test_fetch_path_specified(tmpdir):
     files = Fido.fetch(query[0,0] , path=path)
     assert path.exists()
     assert len(files) == 1
-
 
 
 @pytest.mark.remote_data
