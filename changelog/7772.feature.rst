@@ -1,0 +1,1 @@
+Added a new auto-alignment option ``autoalign='reproject'`` to :meth:`~sunpy.map.GenericMap.plot`, which performs a reprojection to the axes WCS.
