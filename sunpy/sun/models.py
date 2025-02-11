@@ -231,17 +231,17 @@ def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
     """
     ecsv_file = file.with_suffix(".ecsv")
 
-    # If ECSV already exists, load it to avoid redundant processing
+
     if ecsv_file.exists():
         return QTable.read(ecsv_file, format="ascii.ecsv")
 
-    # Ensure the CSV file exists before processing
+
     if not file.exists():
         raise FileNotFoundError(f"Chromosphere model file not found: {file}")
 
     table = QTable.read(file, format="csv")
 
-    # Define units for columns
+
     units = {
         "h": u.km,
         "m": u.g / u.cm**2,
@@ -254,17 +254,16 @@ def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
         "n_e": u.cm**-3,
     }
 
-    # Assign units to columns
     for col, unit in units.items():
         if col in table.colnames:
             table[col] *= unit
 
-    # Save as ECSV to retain units
+
     table.write(ecsv_file, format="ascii.ecsv", overwrite=True)
 
     return table
 
-# Cache for loaded data
+
 _chromosphere_cache = None
 
 def __getattr__(name):
