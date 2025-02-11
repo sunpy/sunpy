@@ -201,67 +201,96 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
     return Longitude(rotation.to(u.deg))
 
-# This code block adds a 1D structure of the chromosphere
-# using the Avrett & Loeser (2008) paper.
 
-CHROMO_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
-csv_file_path = CHROMO_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
+"""
+This module provides functions to load and process the 1D solar chromosphere
+model from Avrett & Loeser (2008). The data is stored as an Astropy QTable
+with physical units assigned to relevant columns.
+
+The processed data can be accessed using the `chromosphere_data` attribute.
+"""
+
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
+_AVRETT_LOESER_PATH = _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
 
 
-# Define units for the dataset columns
-_units = {
-    "h": u.km,
-    "m": u.g / u.cm**2,
-    "T": u.K,
-    "V": u.km / u.s,
-    "p_g": u.dyne / u.cm**2,
-    "p_tot": u.dyne / u.cm**2,
-    "n_H": u.cm**-3,
-    "n_HI": u.cm**-3,
-    "n_e": u.cm**-3,
-}
-
-# Function to read the chromosphere model CSV file
-def _read_chromosphere_data(file=csv_file_path):
-    """Reads the chromosphere Avrett and Loeser (2008) model data from a CSV file and returns an Astropy QTable with units.
+def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
+    """
+    Reads the chromosphere model data from a CSV file, assigns physical units
+    to columns, and saves the processed data as an Astropy QTable in ECSV format.
 
     Parameters
     ----------
-    file : Path to CSV
-        The path to the CSV file containing the chromosphere model data.
-        Defaults to `csv_file_path`.
+    file : Path, optional
+        Path to the CSV file containing the chromosphere model data.
+        Defaults to `_AVRETT_LOESER_PATH`.
 
     Returns
     -------
     QTable
-        An Astropy QTable containing the chromosphere model data with units
-        assigned to each column.
+        An Astropy QTable containing the chromosphere model data with units.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the specified data file does not exist.
     """
     if not file.exists():
         raise FileNotFoundError(f"Chromosphere model file not found: {file}")
+    table = QTable.read(file, format="csv")
 
-    table = QTable.read(file, format="csv")  # Read CSV using QTable
 
-    # Assign units to columns
-    for col, unit in _units.items():
+    units = {
+        "h": u.km,
+        "m": u.g / u.cm**2,
+        "T": u.K,
+        "V": u.km / u.s,
+        "p_g": u.dyne / u.cm**2,
+        "p_tot": u.dyne / u.cm**2,
+        "n_H": u.cm**-3,
+        "n_HI": u.cm**-3,
+        "n_e": u.cm**-3,
+    }
+
+    for col, unit in units.items():
         if col in table.colnames:
-            table[col] *= unit  # QTable stores units with the data
+            table[col] *= unit
+
+    table.write(file.with_suffix(".ecsv"), format="ascii.ecsv", overwrite=True)
 
     return table
 
-# Public function to get chromosphere data
+
 def get_chromosphere_data():
-    """Returns the chromosphere model data as an Astropy QTable with units."""
     return _read_chromosphere_data()
 
-# Ensure module attributes are dynamically retrieved
+
 _chromosphere_cache = None
-# Cache to store loaded data
+
 
 def __getattr__(name):
+    """
+    Provides dynamic access to module attributes. Specifically, it initializes
+    and caches the chromosphere model data when requested.
+
+    Parameters
+    ----------
+    name : str
+        The attribute name being accessed.
+
+    Returns
+    -------
+    QTable
+        The cached chromosphere model data if `chromosphere_data` is requested.
+
+    Raises
+    ------
+    AttributeError
+        If the requested attribute does not exist.
+    """
     global _chromosphere_cache
     if name == "chromosphere_data":
-        if _chromosphere_cache is None:  # Load only once
+        if _chromosphere_cache is None:
             _chromosphere_cache = get_chromosphere_data()
         return _chromosphere_cache
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
