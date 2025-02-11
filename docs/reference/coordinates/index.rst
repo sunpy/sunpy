@@ -114,6 +114,7 @@ Reference/API
 
 .. automodapi:: sunpy.coordinates.utils
     :no-inheritance-diagram:
+    :skip: get_new_observer
 
 .. _sunpy-coordinates-other-api:
 

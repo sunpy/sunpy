@@ -1,0 +1,2 @@
+:func:`sunpy.physics.differential_rotation.solar_rotate_coordinate` has been deprecated and replaced by :func:`sunpy.coordinates.utils.solar_coordinate_rotation` and
+:func:`sunpy.physics.differential_rotation.differential_rotate` has been deprecated and replaced by :func:``sunpy.map.maputils.diff_rotation``.

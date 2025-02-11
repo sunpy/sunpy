@@ -6,11 +6,22 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
+from astropy.time import TimeDelta
 
-from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
+import sunpy.sun.models
+from sunpy.coordinates import (
+    Heliocentric,
+    HeliographicStonyhurst,
+    get_body_heliographic_stonyhurst,
+    get_earth,
+    transform_with_sun_center,
+)
 from sunpy.sun import constants
+from sunpy.time import parse_time
+from sunpy.util.exceptions import warn_user
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency',
+            'get_limb_coordinates', 'get_new_observer', 'solar_coordinate_rotation']
 
 
 class GreatArc:
@@ -469,3 +480,177 @@ def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000
                     frame='heliocentric',
                     observer=observer, obstime=observer.obstime)
     return limb
+
+
+def _validate_observer_args(initial_obstime, observer, time):
+    if (observer is not None) and (time is not None):
+        raise ValueError(
+            "Either the 'observer' or the 'time' keyword must be specified, "
+            "but not both simultaneously.")
+    elif observer is not None:
+        # Check that the new_observer is specified correctly.
+        if not (isinstance(observer, BaseCoordinateFrame | SkyCoord)):
+            raise ValueError(
+                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
+        if observer.obstime is None:
+            raise ValueError("The observer 'obstime' property must not be None.")
+    elif observer is None and time is None:
+        raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
+
+
+def get_new_observer(initial_obstime, observer, time):
+    """
+    Helper function that interprets the possible ways of specifying the
+    input to the solar coordinate rotation function.
+
+    If the "observer" argument is not `None`, it is used to specify the location
+    of the new observer in space and time.
+
+    If the "time" argument is not `None`, it is used to calculate the duration
+    over which to the amount of solar rotation is calculated. Note that using
+    the "time" keyword assumes that the new observer is on the Earth. This may
+    be a reasonable assumption depending on the application.
+
+    Either the "observer" or "time" argument must be specified, but both
+    cannot be specified at the same time and both cannot be None.
+
+    Parameters
+    ----------
+    initial_obstime : `~astropy.time.Time`
+        The initial time before solar rotation has been applied.
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
+        The location of the new observer in space and time (the observer must have an
+        interpretable obstime property).
+    time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
+        Used to define the duration over which the amount of solar rotation is
+        calculated. If 'time' is an `~astropy.time.Time` then the time interval is
+        "time - initial_obstime"; if 'time' is `~astropy.time.TimeDelta` or
+        `~astropy.units.Quantity` then the calculation is "initial_obstime + time".
+
+    Returns
+    -------
+    new_observer : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
+        The position of the observer in space and time. If the "time" keyword is used
+        the output is an `~astropy.coordinates.SkyCoord`. If the "observer" keyword
+        is not None the output has the same type as the "observer" keyword. In all cases
+        the output is specified in the heliographic Stonyhurst coordinate system.
+    """
+    _validate_observer_args(initial_obstime, observer, time)
+    # Check the input and create the new observer
+    if observer is not None:
+        new_observer = observer
+    elif time is not None:
+        warn_user("Using 'time' assumes an Earth-based observer.")
+        if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
+            new_observer_time = initial_obstime + time
+        else:
+            new_observer_time = parse_time(time)
+        new_observer = get_earth(new_observer_time)
+    return new_observer
+
+
+def solar_coordinate_rotation(coordinate, observer=None, time=None, **diff_rot_kwargs):
+    """
+    Given a coordinate on the Sun, calculate where that coordinate maps to
+    as seen by a new observer at some later or earlier time, given that
+    the input coordinate rotates according to the solar rotation profile.
+
+    The amount of solar rotation is based on the amount of time between the
+    observation time of the input coordinate and the observation time of the
+    new observer. The new observer is specified in one of two ways, either
+    using the "observer" or "time" keywords.
+
+    If the "observer" keyword is set, it is used to specify the location
+    of the new observer in space and time. The difference between the
+    coordinate time and the new observer time is used to calculate the amount
+    of solar rotation applied, and the location of the new observer in space
+    is used to calculate where the rotated coordinate is as seen from the
+    new observer.
+
+    If the "time" keyword is set, it is used to specify the number of
+    seconds to rotate the coordinate by. Note that using the "time" keyword
+    assumes that the new observer is on the Earth. This may be a reasonable
+    assumption depending on the application.
+
+    Either the "observer" or "time" keyword must be specified, but both
+    cannot be specified at the same time.
+
+    Parameters
+    ----------
+    coordinate : `~astropy.coordinates.SkyCoord`
+        Any valid coordinate which is transformable to Heliographic Stonyhurst.
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
+        The location of the new observer in space and time (the observer must have an
+        interpretable obstime property).
+    time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
+    **diff_rot_kwargs : `dict`
+        Keyword arguments are passed on as keyword arguments to `~sunpy.sun.models.differential_rotation`.
+        Note that the keyword "frame_time" is automatically set to the value
+        "sidereal".
+
+    Returns
+    -------
+    coordinate : `~astropy.coordinates.SkyCoord`
+        The locations of the input coordinates after the application of
+        solar rotation as seen from the point-of-view of the new observer.
+
+    Notes
+    -----
+    The translational motion of the Sun over the time interval will be ignored.
+    See :func:`~sunpy.coordinates.transform_with_sun_center`.
+
+    Examples
+    --------
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import Helioprojective, get_body_heliographic_stonyhurst
+    >>> from sunpy.physics.differential_rotation import solar_coordinate_rotation
+    >>> from sunpy.time import parse_time
+    >>> start_time = parse_time('2010-09-10 12:34:56')
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time,
+    ...              observer="earth", frame=Helioprojective)
+    >>> solar_coordinate_rotation(c, time=start_time + 25*u.hr)  # doctest: +SKIP
+    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
+        (-5.68434189e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (-378.27830452, 105.70767875, 1.00245134)>
+    >>> new_observer = get_body_heliographic_stonyhurst("earth", start_time + 6*u.day)
+    >>> solar_coordinate_rotation(c, observer=new_observer)
+    <SkyCoord (Helioprojective: obstime=2010-09-16T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-16T12:34:56.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
+        (2.65061438e-14, 7.18706547, 1.00534174)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (620.42567049, 126.13662663, 1.00185786)>
+    """
+    # Check the input and create the new observer
+    new_observer = get_new_observer(coordinate.obstime, observer, time)
+
+    # The keyword "frame_time" must be explicitly set to "sidereal"
+    # when using this function.
+    diff_rot_kwargs.update({"frame_time": "sidereal"})
+
+    # Calculate the interval between the start and end time
+    interval = (new_observer.obstime - coordinate.obstime).to(u.s)
+
+    # Compute Stonyhurst Heliographic coordinates - returns (longitude,
+    # latitude). Points off the limb are returned as nan.
+    heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
+
+    # Compute the differential rotation
+    drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+
+    # Rotate the input coordinate as seen by the original observer
+    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
+                                    heliographic_coordinate.lat,
+                                    heliographic_coordinate.radius,
+                                    obstime=coordinate.obstime,
+                                    frame=HeliographicStonyhurst)
+
+    # Calculate where the rotated coordinate appears as seen by new observer
+    # for the coordinate system of the input coordinate. The translational
+    # motion of the Sun will be ignored for the transformation.
+
+    if "observer" in coordinate.frame.frame_attributes.keys():
+        frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
+                                                           obstime=new_observer.obstime)
+    else:
+        frame_newobs = coordinate.frame.replicate_without_data(obstime=new_observer.obstime)
+    with transform_with_sun_center():
+        return heliographic_rotated.transform_to(frame_newobs)

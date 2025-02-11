@@ -23,7 +23,7 @@ from astropy.time import TimeDelta
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.physics.differential_rotation import solar_rotate_coordinate
+from sunpy.coordinates.utils import solar_coordinate_rotation
 from sunpy.sun.models import differential_rotation
 
 ##############################################################################
@@ -71,7 +71,7 @@ aia_map.draw_grid(axes=ax)
 
 for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):
     start_coord = SkyCoord(this_hpc_x, this_hpc_y, frame=aia_map.coordinate_frame)
-    rotated_coord = solar_rotate_coordinate(start_coord, time=future_date)
+    rotated_coord = solar_coordinate_rotation(start_coord, time=future_date)
     coord = SkyCoord([start_coord.Tx, rotated_coord.Tx],
                      [start_coord.Ty, rotated_coord.Ty],
                      frame=aia_map.coordinate_frame)
