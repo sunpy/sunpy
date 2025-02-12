@@ -15,9 +15,9 @@ class TransformationHeliographic:
 
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(np.arange(100001)*u.deg,
-                                       np.linspace(-90, 90, 100001)*u.deg,
-                                       np.linspace(0, 2, 100001)*u.AU)
+        vect = SphericalRepresentation(np.arange(1000001)*u.deg,
+                                       np.linspace(-90, 90, 1000001)*u.deg,
+                                       np.linspace(0, 2, 1000001)*u.AU)
         observer = f.HeliographicStonyhurst(SphericalRepresentation(10*u.deg, 20*u.deg, 1*u.AU), obstime=obstime)
         frames = {
             'HCRS': HCRS(vect, obstime=obstime),
@@ -34,9 +34,10 @@ class TransformationHeliographic:
         if src == dest:
             raise SkipNotImplemented
 
-    def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
         frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
+
+    def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
 
 
@@ -48,7 +49,9 @@ class TransformationEcliptic:
 
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(0*u.deg, 0*u.deg, 1*u.AU)
+        vect = SphericalRepresentation(np.arange(1000001)*u.deg,
+                                       np.linspace(-90, 90, 1000001)*u.deg,
+                                       np.linspace(0, 2, 1000001)*u.AU)
         frames = {
             'HAE': HeliocentricMeanEcliptic(vect, obstime=obstime, equinox='J2000'),
             'HEE': f.HeliocentricEarthEcliptic(vect, obstime=obstime),
@@ -60,6 +63,9 @@ class TransformationEcliptic:
     def setup(self, frames, src, dest):
         if src == dest:
             raise SkipNotImplemented
+
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
@@ -73,7 +79,9 @@ class TransformationMagnetic:
 
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(0*u.deg, 0*u.deg, 1*u.AU)
+        vect = SphericalRepresentation(np.arange(1000001)*u.deg,
+                                       np.linspace(-90, 90, 1000001)*u.deg,
+                                       np.linspace(0, 2, 1000001)*u.AU)
         frames = {
             'GEO': ITRS(vect, obstime=obstime),
             'MAG': f.Geomagnetic(vect, obstime=obstime),
@@ -85,6 +93,9 @@ class TransformationMagnetic:
     def setup(self, frames, src, dest):
         if src == dest:
             raise SkipNotImplemented
+
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
