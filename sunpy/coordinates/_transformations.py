@@ -426,19 +426,6 @@ def hgc_to_hgs(hgccoord, hgsframe):
     return hgsframe._replicate(newrepr, obstime=int_coord.obstime)
 
 
-def _matrix_hcc_to_hpc():
-    # Returns the transformation matrix that permutes/swaps axes from HCC to HPC
-
-    # HPC spherical coordinates are a left-handed frame with these equivalent Cartesian axes:
-    #   HPC_X = -HCC_Z
-    #   HPC_Y = HCC_X
-    #   HPC_Z = HCC_Y
-    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
-    return np.array([[0, 0, -1],
-                     [1, 0, 0],
-                     [0, 1, 0]])
-
-
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Heliocentric, Helioprojective)
 @_transformation_debug("HCC->HPC")
@@ -456,12 +443,15 @@ def hcc_to_hpc(helioccoord, heliopframe):
     int_frame = Heliocentric(obstime=observer.obstime, observer=observer)
     int_coord = helioccoord.transform_to(int_frame)
 
-    # Shift the origin from the Sun to the observer
+    # Permute/swap axes from HCC to HPC equivalent Cartesian, and shift the origin from the Sun to the observer
+    # HPC spherical coordinates are a left-handed frame with these equivalent Cartesian axes:
+    #   HPC_X = -HCC_Z
+    #   HPC_Y = HCC_X
+    #   HPC_Z = HCC_Y
+    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
+    x, y, z = int_coord.cartesian.xyz
     distance = int_coord.observer.radius
-    newrepr = int_coord.cartesian - CartesianRepresentation(0*u.m, 0*u.m, distance)
-
-    # Permute/swap axes from HCC to HPC equivalent Cartesian
-    newrepr = newrepr.transform(_matrix_hcc_to_hpc())
+    newrepr = CartesianRepresentation(-z + distance, x, y)
 
     # Explicitly represent as spherical because external code (e.g., wcsaxes) expects it
     return heliopframe.realize_frame(newrepr.represent_as(SphericalRepresentation))
@@ -480,7 +470,13 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     heliopcoord = heliopcoord.make_3d()
 
     # Permute/swap axes from HPC equivalent Cartesian to HCC
-    newrepr = heliopcoord.cartesian.transform(matrix_transpose(_matrix_hcc_to_hpc()))
+    # HPC spherical coordinates are a left-handed frame with these equivalent Cartesian axes:
+    #   HPC_X = -HCC_Z
+    #   HPC_Y = HCC_X
+    #   HPC_Z = HCC_Y
+    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
+    x, y, z = heliopcoord.cartesian.xyz
+    newrepr = CartesianRepresentation(y, z, -x)
 
     # Transform the HPC observer (in HGS) to the HPC obstime in case it's different
     observer = _transform_obstime(heliopcoord.observer, heliopcoord.obstime)
@@ -587,19 +583,6 @@ def hpc_to_hpc(from_coo, to_frame):
     return hpc
 
 
-def _matrix_hpc_to_hpr():
-    # Returns the transformation matrix that permutes/swaps axes from HPC to HPR
-
-    # HPR spherical coordinates are a right-handed frame with these equivalent Cartesian axes:
-    #   HPR_X = HPC_Z
-    #   HPR_Y = -HPC_Y
-    #   HPR_Z = -HPC_X
-    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
-    return np.array([[0, 0, 1],
-                     [0, -1, 0],
-                     [-1, 0, 0]])
-
-
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Helioprojective, HelioprojectiveRadial)
 @_transformation_debug("HPC->HPR")
@@ -618,7 +601,13 @@ def hpc_to_hpr(hpc_coord, hpr_frame):
     int_coord = hpc_coord.transform_to(int_frame)
 
     # Permute/swap axes from HPC to HPR equivalent Cartesian
-    newrepr = int_coord.cartesian.transform(_matrix_hpc_to_hpr())
+    # HPR spherical coordinates are a right-handed frame with these equivalent Cartesian axes:
+    #   HPR_X = HPC_Z
+    #   HPR_Y = -HPC_Y
+    #   HPR_Z = -HPC_X
+    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
+    x, y, z = int_coord.cartesian.xyz
+    newrepr = CartesianRepresentation(z, -y, -x)
 
     return hpr_frame.realize_frame(newrepr)
 
@@ -634,7 +623,13 @@ def hpr_to_hpc(hpr_coord, hpc_frame):
     _check_observer_defined(hpc_frame)
 
     # Permute/swap axes from HPR to HPC equivalent Cartesian
-    newrepr = hpr_coord.cartesian.transform(matrix_transpose(_matrix_hpc_to_hpr()))
+    # HPR spherical coordinates are a right-handed frame with these equivalent Cartesian axes:
+    #   HPR_X = HPC_Z
+    #   HPR_Y = -HPC_Y
+    #   HPR_Z = -HPC_X
+    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
+    x, y, z = hpr_coord.cartesian.xyz
+    newrepr = CartesianRepresentation(-z, -y, x)
 
     # Transform the HPR observer (in HGS) to the HPR obstime in case it's different
     observer = _transform_obstime(hpr_coord.observer, hpr_coord.obstime)
