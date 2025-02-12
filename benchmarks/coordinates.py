@@ -35,6 +35,8 @@ class TransformationHeliographic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
         frames[src].transform_to(frames[dest])
 
 
