@@ -9,6 +9,12 @@ This module contains models of the Sun from various sources:
   as defined in Table 6 of :cite:t:`turck-chieze_revisiting_1988`.
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
+  
+Additionally, this module provides functions to load and process the 1D solar 
+chromosphere model from Avrett & Loeser (2008). The data is stored as an 
+Astropy `QTable` with physical units assigned to relevant columns.
+
+The processed chromosphere data can be accessed via the `chromosphere_data` attribute.
 """
 import pathlib
 
@@ -202,84 +208,41 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     return Longitude(rotation.to(u.deg))
 
 
-"""
-This module provides functions to load and process the 1D solar chromosphere
-model from Avrett & Loeser (2008). The data is stored as an Astropy QTable
-with physical units assigned to relevant columns.
 
-The processed data can be accessed using the `chromosphere_data` attribute.
-"""
 _MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
-_AVRETT_LOESER_PATH = _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.csv"
+_AVRETT_LOESER_ECSV = _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
 
-def _read_chromosphere_data(file=_AVRETT_LOESER_PATH):
+def _read_chromosphere_data():
     """
-    Reads the chromosphere model data from a CSV file, assigns physical units
-    to columns, and saves the processed data as an Astropy QTable in ECSV format.
-
-    Parameters
-    ----------
-    file : Path, optional
-        Path to the CSV file containing the chromosphere model data.
-        Defaults to `_AVRETT_LOESER_PATH`.
+    Reads the chromosphere model data from an ECSV file.
 
     Returns
     -------
     QTable
-        An Astropy QTable containing the chromosphere model data with units.
+        An Astropy QTable containing the chromosphere model data.
 
     """
-    ecsv_file = file.with_suffix(".ecsv")
+    if not _AVRETT_LOESER_ECSV.exists():
+        raise FileNotFoundError(f"File not found: {_AVRETT_LOESER_ECSV}")
 
-
-    if ecsv_file.exists():
-        return QTable.read(ecsv_file, format="ascii.ecsv")
-
-
-    if not file.exists():
-        raise FileNotFoundError(f"Chromosphere model file not found: {file}")
-
-    table = QTable.read(file, format="csv")
-
-
-    units = {
-        "h": u.km,
-        "m": u.g / u.cm**2,
-        "T": u.K,
-        "V": u.km / u.s,
-        "p_g": u.dyne / u.cm**2,
-        "p_tot": u.dyne / u.cm**2,
-        "n_H": u.cm**-3,
-        "n_HI": u.cm**-3,
-        "n_e": u.cm**-3,
-    }
-
-    for col, unit in units.items():
-        if col in table.colnames:
-            table[col] *= unit
-
-
-    table.write(ecsv_file, format="ascii.ecsv", overwrite=True)
-
-    return table
-
+    return QTable.read(_AVRETT_LOESER_ECSV, format="ascii.ecsv")
 
 _chromosphere_cache = None
 
 def __getattr__(name):
     """
-    Provides dynamic access to module attributes. Specifically, it initializes
-    and caches the chromosphere model data when requested.
+    Provides dynamic access to the chromosphere model data.
 
     Parameters
     ----------
     name : str
-        The attribute name being accessed.
+        The attribute being accessed.
 
     Returns
     -------
     QTable
         The cached chromosphere model data if `chromosphere_data` is requested.
+
 
     """
     global _chromosphere_cache
@@ -287,4 +250,4 @@ def __getattr__(name):
         if _chromosphere_cache is None:
             _chromosphere_cache = _read_chromosphere_data()
         return _chromosphere_cache
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
