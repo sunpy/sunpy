@@ -9,7 +9,15 @@ This module contains models of the Sun from various sources:
   as defined in Table 6 of :cite:t:`turck-chieze_revisiting_1988`.
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
+
+Additionally, this module provides functions to load and process the 1D solar
+chromosphere model from Avrett & Loeser (2008). The data is stored as an
+Astropy `QTable` with physical units assigned to relevant columns.
+
+The processed chromosphere data can be accessed via the `chromosphere_data` attribute.
 """
+import pathlib
+
 import numpy as np
 
 import astropy.units as u
@@ -198,3 +206,48 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
         rotation -= 0.9856 * u.deg / u.day * duration
 
     return Longitude(rotation.to(u.deg))
+
+
+
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
+_AVRETT_LOESER_ECSV = _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
+
+def _read_chromosphere_data():
+    """
+    Reads the chromosphere model data from an ECSV file.
+
+    Returns
+    -------
+    QTable
+        An Astropy QTable containing the chromosphere model data.
+
+    """
+    if not _AVRETT_LOESER_ECSV.exists():
+        raise FileNotFoundError(f"File not found: {_AVRETT_LOESER_ECSV}")
+
+    return QTable.read(_AVRETT_LOESER_ECSV, format="ascii.ecsv")
+
+_chromosphere_cache = None
+
+def __getattr__(name):
+    """
+    Provides dynamic access to the chromosphere model data.
+
+    Parameters
+    ----------
+    name : str
+        The attribute being accessed.
+
+    Returns
+    -------
+    QTable
+        The cached chromosphere model data if `chromosphere_data` is requested.
+
+
+    """
+    global _chromosphere_cache
+    if name == "chromosphere_data":
+        if _chromosphere_cache is None:
+            _chromosphere_cache = _read_chromosphere_data()
+        return _chromosphere_cache
+    raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
