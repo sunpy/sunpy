@@ -366,11 +366,11 @@ def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
     earth_detilt = earth.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
     dlon_earth = earth_detilt.represent_as(SphericalRepresentation).lon.to('deg')
 
-    # Antedate the observation time to account for light travel time for the Sun-Earth distance
-    antetime = obstime - (observer_distance_from_sun - constants.radius) / speed_of_light
+    # Antedate the time offset to J2000.0 to account for light travel time for the Sun-observer distance
+    time_offset = (int_coord.obstime - _J2000).to('s') - (observer_radius - constants.radius) / speed_of_light
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
-    dlon_meridian = _DLON_MERIDIAN + (antetime - _J2000) * constants.sidereal_rotation_rate
+    dlon_meridian = _DLON_MERIDIAN + time_offset * constants.sidereal_rotation_rate
 
     # Rotation is only in longitude, so only around the Z axis
     return rotation_matrix(-(dlon_earth - dlon_meridian), 'z')
