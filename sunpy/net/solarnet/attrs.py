@@ -13,6 +13,24 @@ class Limit(SimpleAttr):
     Sets the max number of results, defaults to 20.
     """
 
+class Target(SimpleAttr):
+    """
+    Indicates the observation region. Flare site used when flare flag is set. 
+    Source of information observation planning database, or telemetry if flare flag is set.
+    some of the targets include 
+    Active Region (AH)
+    Coronal Hole (CH)
+    Flare (FS)
+    Quiet Region (QR)
+    """
+
+class Tags(SimpleAttr):
+    """
+    a simple information associated to a solar observation,
+    for example "moon transit"  etc. 
+    To each metadata instance can be associated 0 or more tags.
+    """
+
 walker = AttrWalker()
 
 @walker.add_creator(AttrAnd, DataAttr)
@@ -21,6 +39,13 @@ def _create(wlk, query):
     wlk.apply(query, map_)
     return [map_]
 
+@walker.add_applier(Target)
+def _apply(wlk,query,imap):
+    imap["target"] = query.value
+
+@walker.add_applier(Tags)
+def _apply(wlk,query,imap):
+    imap["tag"] = query.value
 
 @walker.add_applier(AttrAnd)
 def _apply(wlk, query, imap):

@@ -40,10 +40,10 @@ class SOLARNETClient(GenericClient):
     2 Results from the SOLARNETClient:
     Source: https://solarnet2.oma.be
     <BLANKLINE>
-          DATASETS                START                    END           INSTRUMENT
-    -------------------- ----------------------- ----------------------- ----------
-    metadata_eui_level_2 2020-05-12T12:25:56.952 2020-05-12T12:25:58.952        EUI
-    metadata_eui_level_2 2020-05-12T12:26:06.952 2020-05-12T12:26:08.952        EUI
+          DATASET                 START                     END            INSTRUMENT WAVEMAX WAVEMIN
+    -------------------- ------------------------ ------------------------ ---------- ------- -------
+    metadata_eui_level_2 2020-05-12T12:25:56.952Z 2020-05-12T12:25:58.952Z        EUI    17.8    17.1
+    metadata_eui_level_2 2020-05-12T12:26:06.952Z 2020-05-12T12:26:08.952Z        EUI    17.8    17.1
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -78,11 +78,12 @@ class SOLARNETClient(GenericClient):
         3 Results from the SOLARNETClient:
         Source: https://solarnet2.oma.be
         <BLANKLINE>
-               DATASETS                START                    END           INSTRUMENT
-        --------------------- ----------------------- ----------------------- ----------
-        metadata_lyra_level_2 2010-01-06T00:00:00.006 2010-01-06T23:59:59.986       LYRA
-        metadata_lyra_level_2 2010-01-07T00:00:00.037 2010-01-07T23:59:59.602       LYRA
-        metadata_lyra_level_2 2010-01-08T00:00:00.102 2010-01-08T23:59:57.445       LYRA
+               DATASET                 START                     END            INSTRUMENT WAVEMAX WAVEMIN
+        --------------------- ------------------------ ------------------------ ---------- ------- -------
+        metadata_lyra_level_2 2010-01-06T00:00:00.006Z 2010-01-06T23:59:59.986Z       LYRA   222.0     6.0
+        metadata_lyra_level_2 2010-01-07T00:00:00.037Z 2010-01-07T23:59:59.602Z       LYRA   222.0     6.0
+        metadata_lyra_level_2 2010-01-08T00:00:00.102Z 2010-01-08T23:59:57.445Z       LYRA   222.0     6.0
+
         <BLANKLINE>
         <BLANKLINE>
         """
@@ -92,50 +93,35 @@ class SOLARNETClient(GenericClient):
         if "datasets" in block:
             url = _BASE_URL.format(block["datasets"])
             source = block.pop("datasets")
-        self.links = self._generate_links(block, url)
+        req = requests.get(url,params = block)
+        data = req.json()["objects"]
 
-        for i in self.links:
+
+        for i in data:
             results.append({
-                "DATASETS": source,
-                "START": parse_time(self.links[i]["start_time"]),
-                "END": parse_time(self.links[i]["end_time"]),
-                "INSTRUMENT" : self.links[i]["instrument"],
-                "url" : self.links[i]["link"],
+                "DATASET" :source,
+                "START" : i["date_beg"],
+                "END" : i["date_end"],
+                "INSTRUMENT" :i.get("instrume") or i.get("instrument_name") ,
+                "WAVEMAX" : float(i["wavemax"]),
+                "WAVEMIN" : float(i["wavemin"]),
+                "url" : i['data_location']['file_url'],
+                
             })
+            if "tag" in block:
+                results.append({
+                    "tags":i["tags"]
+                })
+            if "target" in block:
+                results.append({
+                    "target":i["target"]
+                })
+
             
         qrt = QueryResponseTable(results, client=self)
         qrt.hide_keys = ["url"]
         return qrt
-
-    def _generate_links(self, block, url):
-        """
-        Helper function to generate links based on query blocks.
-
-        Parameters
-        ----------
-        block : `dict`
-            Query block parameters.
-        url : `str`
-            Base URL for the query.
-
-        Returns
-        -------
-        links : `list`
-            List of dataset file URLs.
-        """
-        links = {}
-        req = requests.get(url,params = block)
-        data = req.json()["objects"]
-        for i in data:
-            links[i["filename"]] = {
-                "start_time" : i["date_beg"],
-                "end_time" : i["date_end"],
-                "instrument" : i["instrume"],
-                "link" : i['data_location']['file_url']
-            }
-
-        return links
-
+    
     @staticmethod
     def load_solarnet_values():
         """
