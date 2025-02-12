@@ -52,5 +52,5 @@ jobs:
         run: |
           echo "${{ steps.asv.outputs.TEXT }}" \
             | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 \
-            | sed 's/^| +/| ❌;s/^| -/| ✅' \
+            | sed 's/^| +/| ❌/;s/^| -/| ✅/' \
             | tee -a $GITHUB_STEP_SUMMARY
