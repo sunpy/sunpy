@@ -9,9 +9,9 @@ This module contains models of the Sun from various sources:
   as defined in Table 6 of :cite:t:`turck-chieze_revisiting_1988`.
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
-  
-Additionally, this module provides functions to load and process the 1D solar 
-chromosphere model from Avrett & Loeser (2008). The data is stored as an 
+
+Additionally, this module provides functions to load and process the 1D solar
+chromosphere model from Avrett & Loeser (2008). The data is stored as an
 Astropy `QTable` with physical units assigned to relevant columns.
 
 The processed chromosphere data can be accessed via the `chromosphere_data` attribute.
