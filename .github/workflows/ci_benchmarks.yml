@@ -50,4 +50,7 @@ jobs:
       - name: Post the summary
         if: always()
         run: |
-          echo "${{ steps.asv.outputs.TEXT }}" | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 | tee -a $GITHUB_STEP_SUMMARY
+          echo "${{ steps.asv.outputs.TEXT }}" \
+            | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 \
+            | sed 's/^| +/| ❌;s/^| -/| ✅' \
+            | tee -a $GITHUB_STEP_SUMMARY
