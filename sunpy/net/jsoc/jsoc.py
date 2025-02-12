@@ -177,10 +177,15 @@ class JSOCClient(BaseClient):
     get into the queue::
 
         >>> requests.status  # doctest: +SKIP
-        0
+        2
 
-    Once the status code is 0 you can download the data using the `get_request`
-    method::
+    Once the status code is 0 or 2, you can download the data using the `get_request`
+    
+	Status codes:
+	0: Completed, ready to download.
+	2: Pending, but downloadable.
+	6: Not found.
+	method::
 
         >>> res = client.get_request(requests)  # doctest: +SKIP
 
