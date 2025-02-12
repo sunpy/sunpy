@@ -1,3 +1,4 @@
+import numpy as np
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import astropy.units as u
@@ -14,7 +15,9 @@ class TransformationHeliographic:
 
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(0*u.deg, 0*u.deg, 1*u.AU)
+        vect = SphericalRepresentation(np.arange(100001)*u.deg,
+                                       np.linspace(-90, 90, 100001)*u.deg,
+                                       np.linspace(0, 2, 100001)*u.AU)
         observer = f.HeliographicStonyhurst(vect, obstime=obstime)
         frames = {
             'HCRS': HCRS(vect, obstime=obstime),
