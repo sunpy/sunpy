@@ -11,13 +11,14 @@ import os
 import re
 from pathlib import Path
 from textwrap import dedent
+from collections import defaultdict
 from collections.abc import Sequence
 
 import numpy as np
 import parfive
 from packaging.version import Version
 
-from astropy.table import Table
+from astropy.table import Table, vstack
 
 from sunpy import config
 from sunpy.net import attr, vso
@@ -44,7 +45,7 @@ class UnifiedResponse(Sequence):
     index the second dimension with ``::2``.
     """
 
-    def __init__(self, *results):
+    def __init__(self, *results, combine=True):
         """
         Parameters
         ----------
@@ -53,6 +54,12 @@ class UnifiedResponse(Sequence):
         """
         self._list = []
         self._numfile = 0
+        self._combine = combine
+        if self._combine:
+            combined_results = defaultdict(list)
+        else:
+            combined_results = None
+
         for result in results:
             if isinstance(result, QueryResponseRow):
                 result = result.as_table()
@@ -64,8 +71,39 @@ class UnifiedResponse(Sequence):
                 raise TypeError(
                     f"{type(result)} is not derived from sunpy.net.base_client.QueryResponseTable")
 
-            self._list.append(result)
-            self._numfile += len(result)
+            if self._combine:
+                client_key = result.client.__class__
+                combined_results[client_key].append(result)
+            else:
+                self._list.append(result)
+                self._numfile += len(result)
+
+
+
+        if self._combine:
+            for client_cls, client_results in combined_results.items():
+                # Group the results from a client based on provider
+                # For Example: all results from VSOclient which are from the
+                # same provider, (say, JSOC) will be grouped together, this is because the results
+                # from the same provider have the same table schema.
+                provider_groups = defaultdict(list)
+
+                for client_res in client_results:
+                    if 'Provider' in client_res.colnames:
+                        provider = client_res['Provider'][0]
+                        provider_groups[provider].append(client_res)
+
+                # This stacks the results from the same provider(of the same client) together
+                if 'Provider' in client_results[0].colnames:
+                    for provider, client_res in provider_groups.items():
+                        new_result = vstack(client_res, metadata_conflicts='silent')
+                        self._list.append(new_result)
+                        self._numfile += len(new_result)
+                else:
+                    new_result = vstack(client_results, metadata_conflicts='silent')
+                    self._list.append(new_result)
+                    self._numfile += len(new_result)
+
 
     def __len__(self):
         return len(self._list)
@@ -123,7 +161,7 @@ class UnifiedResponse(Sequence):
         if isinstance(ret, QueryResponseTable | QueryResponseColumn | QueryResponseRow):
             return ret
 
-        return UnifiedResponse(*ret)
+        return UnifiedResponse(*ret, combine=self._combine)
 
     def path_format_keys(self):
         """
@@ -265,7 +303,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     """
 
-    def search(self, *query):
+    def search(self, *query, combine=True):
         """
         Query for data in form of multiple parameters.
 
@@ -320,7 +358,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # don't know the full list of supported values we can search for (yet).
         results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
 
-        return UnifiedResponse(*results)
+        return UnifiedResponse(*results, combine=combine)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):

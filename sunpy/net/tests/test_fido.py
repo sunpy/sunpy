@@ -246,7 +246,7 @@ def test_fido_indexing(queries):
     # this.
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
-    res = Fido.search(query1 | query2)
+    res = Fido.search(query1 | query2, combine=False)
     assert len(res) == 2
 
     assert isinstance(res[1:], UnifiedResponse)
@@ -280,6 +280,7 @@ def test_fido_indexing(queries):
         assert len(table.columns) == 1
 
     aa = res[:, 0]
+
     assert isinstance(aa, UnifiedResponse)
     assert len(aa) == 2
     assert len(aa[0]) == 1
@@ -307,6 +308,81 @@ def test_fido_indexing(queries):
 
     if isinstance(res, UnifiedResponse):
         assert len(res) != 1
+
+
+@pytest.mark.remote_data
+def test_combined_response_vso_time():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'), combine=True)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
+    t2 = TimeRange('2020-01-01', '2020-01-03 00:00:10')
+    assert t1 == t2
+
+    # Tables from 2 different providers dont get combines
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Instrument.lasco , combine=True)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
+    assert isinstance(results[1], QueryResponseTable)
+
+
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom) , combine=True)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
+    assert isinstance(results[1], QueryResponseTable)
+
+@pytest.mark.remote_data
+def test_combined_response_jsoc():
+    results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+            a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'), combine=True)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')),
+                           a.jsoc.Series('hmi.m_45s'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+    # Testing that the entire time range is covered
+    max_time = None
+    min_time = None
+    for t in results['jsoc']['T_REC']:
+        if max_time is None or t > max_time:
+            max_time = t
+        if min_time is None or t < min_time:
+            min_time = t
+
+    assert min_time == '2020-01-01 00:00:45'
+    assert max_time == '2020-01-03 00:00:45'
+
+
+@pytest.mark.remote_data
+def test_combined_response_lyra():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 23:59:59.999') | a.Time('2020-01-03', '2020-01-03 23:59:59.999')), a.Instrument.lyra)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+    t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
+    t2 = TimeRange('2020-01-01', '2020-01-03 23:59:59.999')
+    assert t1 == t2
+
+
+@pytest.mark.remote_data
+def test_combine_attr():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'), combine=True)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'), combine=False)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
 
 
 @no_vso
@@ -469,7 +545,13 @@ def test_path_format_keys():
     t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
                              '!excite!': ['cat', 'rabbit']})
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
-    unif = UnifiedResponse(t1, t2)
+    # Need to pass combine=False otherwise combine=True will take union of the
+    # columns for multiple tables which will not have the same keys
+    # because path_format_keys() takes intersection of the keys in the tables
+    print(t1.path_format_keys(), t2.path_format_keys())
+    unif = UnifiedResponse(t1, t2, combine=False)
+
+    # assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
     assert unif.path_format_keys() == {'_excite_'}
 
 
