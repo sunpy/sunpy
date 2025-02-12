@@ -18,7 +18,7 @@ class TransformationHeliographic:
         vect = SphericalRepresentation(np.arange(100001)*u.deg,
                                        np.linspace(-90, 90, 100001)*u.deg,
                                        np.linspace(0, 2, 100001)*u.AU)
-        observer = f.HeliographicStonyhurst(vect, obstime=obstime)
+        observer = f.HeliographicStonyhurst(SphericalRepresentation(10*u.deg, 20*u.deg, 1*u.AU, obstime=obstime), obstime=obstime)
         frames = {
             'HCRS': HCRS(vect, obstime=obstime),
             'HGS': f.HeliographicStonyhurst(vect, obstime=obstime),
