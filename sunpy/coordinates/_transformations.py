@@ -367,7 +367,7 @@ def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
     dlon_earth = earth_detilt.represent_as(SphericalRepresentation).lon.to('deg')
 
     # Antedate the time offset to J2000.0 to account for light travel time for the Sun-observer distance
-    time_offset = (int_coord.obstime - _J2000).to('s') - (observer_radius - constants.radius) / speed_of_light
+    time_offset = (obstime - _J2000).to('s') - (observer_distance_from_sun - constants.radius) / speed_of_light
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
     dlon_meridian = _DLON_MERIDIAN + time_offset * constants.sidereal_rotation_rate
