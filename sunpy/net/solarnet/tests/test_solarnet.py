@@ -26,14 +26,13 @@ def test_search():
     url = Fido.search(*query)
     assert isinstance(url[0],QueryResponseTable)
     assert len(url[0]) == 2
-    assert "metadata_eui_level_2" in url[0]["datasets"]
-    assert "HRI_EUV" in url[0]["detector"]
+    assert "metadata_eui_level_2" in url[0]["DATASET"]
 
 
 def test_can_handle_query(client):
     assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
-    assert not client._can_handle_query(a.solarnet.Limit(10))
-    assert client._can_handle_query(a.solarnet.Dataset.eui_level_2)
+    assert not client._can_handle_query(a.solarnet.Limit(10),a.solarnet.Target.ar)
+    assert client._can_handle_query(a.solarnet.Dataset.swap_level_1)
 
 
 def test_solarnet_attrs(client):
@@ -44,7 +43,7 @@ def test_solarnet_attrs(client):
 
 @pytest.mark.remote_data
 def test_fetch_return_type():
-    qr = Fido.search(a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(1))
+    qr = Fido.search(a.solarnet.Dataset.swap_level_1 & a.solarnet.Limit(1) & a.solarnet.Tags.moon_transit)
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
 
@@ -77,7 +76,5 @@ def test_complex_query():
     # The second query is limited to 3 results
     assert len(search[1]) == 3
 
-    assert "lyra_20100106-000000_lev2_std" in search[0]["name"]
-    assert "solo_L2_eui-fsi304-image_20200512T085922556_V06" in search[1]["name"]
-    assert "metadata_lyra_level_2" in search[0]["datasets"]
-    assert "metadata_eui_level_2"  in search[1]["datasets"]
+    assert "metadata_lyra_level_2" in search[0]["DATASET"]
+    assert "metadata_eui_level_2"  in search[1]["DATASET"]

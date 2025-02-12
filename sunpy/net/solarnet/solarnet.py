@@ -3,12 +3,12 @@ import json
 import pathlib
 
 import requests
-from sunpy.net.dataretriever import GenericClient
-from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient, QueryResponseTable
-from sunpy.net.solarnet.attrs import Dataset, walker
-from sunpy.time import parse_time
+
 from sunpy.net import attrs as a
+from sunpy.net.attr import and_
+from sunpy.net.base_client import QueryResponseTable
+from sunpy.net.dataretriever import GenericClient
+from sunpy.net.solarnet.attrs import Dataset, Tags, Target, walker
 
 _BASE_URL = "https://solarnet2.oma.be/service/api/svo/{}"
 
@@ -40,10 +40,10 @@ class SOLARNETClient(GenericClient):
     2 Results from the SOLARNETClient:
     Source: https://solarnet2.oma.be
     <BLANKLINE>
-          DATASET                 START                     END            INSTRUMENT WAVEMAX WAVEMIN
-    -------------------- ------------------------ ------------------------ ---------- ------- -------
-    metadata_eui_level_2 2020-05-12T12:25:56.952Z 2020-05-12T12:25:58.952Z        EUI    17.8    17.1
-    metadata_eui_level_2 2020-05-12T12:26:06.952Z 2020-05-12T12:26:08.952Z        EUI    17.8    17.1
+      DATASET             START                     END            INSTRUMENT WAVEMAX WAVEMIN  F_SIZE
+    ------------ ------------------------ ------------------------ ---------- ------- ------- -------
+    metadata_xrt 2006-11-23T13:09:43.928Z 2006-11-23T13:09:44.101Z        XRT    33.5    0.88  282240
+    metadata_xrt 2006-11-23T13:10:40.622Z 2006-11-23T13:10:40.927Z        XRT    33.5    0.88 4213440
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -69,7 +69,7 @@ class SOLARNETClient(GenericClient):
         Examples
         --------
         >>> from sunpy.net import Fido, attrs as a
-        >>> query = [a.solarnet.Dataset.lyra_level_2 , a.solarnet.Limit(3) , a.Detector("HRI_EUV")]
+        >>> query = [a.solarnet.Dataset.swap_level_1 , a.solarnet.Limit(2), a.solarnet.Tags.moon_transit]
         >>> search_results = Fido.search(*query)   # doctest: +REMOTE_DATA
         >>> search_results  # doctest: +REMOTE_DATA
         <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -78,12 +78,10 @@ class SOLARNETClient(GenericClient):
         3 Results from the SOLARNETClient:
         Source: https://solarnet2.oma.be
         <BLANKLINE>
-               DATASET                 START                     END            INSTRUMENT WAVEMAX WAVEMIN
-        --------------------- ------------------------ ------------------------ ---------- ------- -------
-        metadata_lyra_level_2 2010-01-06T00:00:00.006Z 2010-01-06T23:59:59.986Z       LYRA   222.0     6.0
-        metadata_lyra_level_2 2010-01-07T00:00:00.037Z 2010-01-07T23:59:59.602Z       LYRA   222.0     6.0
-        metadata_lyra_level_2 2010-01-08T00:00:00.102Z 2010-01-08T23:59:57.445Z       LYRA   222.0     6.0
-
+               DATASET                 START                     END            INSTRUMENT WAVEMAX WAVEMIN  F_SIZE
+        --------------------- ------------------------ ------------------------ ---------- ------- ------- -------
+        metadata_swap_level_1 2009-11-20T08:25:29.027Z 2009-11-20T08:25:30.027Z       SWAP    17.4    17.4 2113920
+        metadata_swap_level_1 2009-11-20T08:25:42.027Z 2009-11-20T08:25:44.027Z       SWAP    17.4    17.4 2113920
         <BLANKLINE>
         <BLANKLINE>
         """
@@ -103,25 +101,16 @@ class SOLARNETClient(GenericClient):
                 "START" : i["date_beg"],
                 "END" : i["date_end"],
                 "INSTRUMENT" :i.get("instrume") or i.get("instrument_name") ,
-                "WAVEMAX" : float(i["wavemax"]),
-                "WAVEMIN" : float(i["wavemin"]),
+                "WAVEMAX" : i["wavemax"],
+                "WAVEMIN" : i["wavemin"],
+                "F_SIZE"  : i["data_location"]["file_size"],
                 "url" : i['data_location']['file_url'],
-                
-            })
-            if "tag" in block:
-                results.append({
-                    "tags":i["tags"]
-                })
-            if "target" in block:
-                results.append({
-                    "target":i["target"]
-                })
 
-            
+            })
         qrt = QueryResponseTable(results, client=self)
         qrt.hide_keys = ["url"]
         return qrt
-    
+
     @staticmethod
     def load_solarnet_values():
         """
@@ -135,7 +124,12 @@ class SOLARNETClient(GenericClient):
         data_sets = pathlib.Path(__file__).parent / "data" / "datasets.json"
         with data_sets.open() as data_values:
             data = json.load(data_values)
-        return {Dataset: list(data.items())}
+        data_set = {Dataset: list(data.items())}
+        target = {Target: [("AR", "Active Region"),("CH","Coronal Hole"),("FS","Flare"),("QR","Quiet Region")]}
+        tags = {Tags:[("moon_transit","moon transit"),("venus_transit","venus transit"),("mercury_transit","mercury transit"),("lovejoy_transit","lovejoy transit")]}
+
+        attrs = data_set | target | tags
+        return attrs
 
     @staticmethod
     def create_parse_solarnet_values():
@@ -161,7 +155,7 @@ class SOLARNETClient(GenericClient):
     @classmethod
     def _attrs_module(cls):
         return 'solarnet', 'sunpy.net.solarnet.attrs'
-    
+
     @classmethod
     def _can_handle_query(cls, *query):
         return any(isinstance(q, a.solarnet.Dataset) for q in query)

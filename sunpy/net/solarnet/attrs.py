@@ -1,7 +1,7 @@
 from sunpy.net._attrs import Detector, Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrWalker, DataAttr, SimpleAttr
 
-__all__ = ["Dataset", "Limit"]
+__all__ = ["Dataset", "Limit" , "Target" , "Tags"]
 
 class Dataset(SimpleAttr):
     """
@@ -15,9 +15,9 @@ class Limit(SimpleAttr):
 
 class Target(SimpleAttr):
     """
-    Indicates the observation region. Flare site used when flare flag is set. 
+    Indicates the observation region. Flare site used when flare flag is set.
     Source of information observation planning database, or telemetry if flare flag is set.
-    some of the targets include 
+    some of the targets include
     Active Region (AH)
     Coronal Hole (CH)
     Flare (FS)
@@ -27,7 +27,7 @@ class Target(SimpleAttr):
 class Tags(SimpleAttr):
     """
     a simple information associated to a solar observation,
-    for example "moon transit"  etc. 
+    for example "moon transit"  etc.
     To each metadata instance can be associated 0 or more tags.
     """
 
@@ -38,14 +38,6 @@ def _create(wlk, query):
     map_ = {}
     wlk.apply(query, map_)
     return [map_]
-
-@walker.add_applier(Target)
-def _apply(wlk,query,imap):
-    imap["target"] = query.value
-
-@walker.add_applier(Tags)
-def _apply(wlk,query,imap):
-    imap["tag"] = query.value
 
 @walker.add_applier(AttrAnd)
 def _apply(wlk, query, imap):
@@ -77,3 +69,11 @@ def _apply(wlk,query,imap):
 @walker.add_applier(Limit)
 def _apply(wlk,query,imap):
     imap["limit"] = int(query.value)
+
+@walker.add_applier(Target)
+def _apply(wlk,query,imap):
+    imap["target__in"] = query.value
+
+@walker.add_applier(Tags)
+def _apply(wlk,query,imap):
+    imap["tag"] = query.value
