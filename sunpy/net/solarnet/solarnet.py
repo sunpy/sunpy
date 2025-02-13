@@ -40,10 +40,10 @@ class SOLARNETClient(GenericClient):
     2 Results from the SOLARNETClient:
     Source: https://solarnet2.oma.be
     <BLANKLINE>
-        Tags                        Resource_uri                              Oid                 Date_beg                 Date_end         Wavemin ... Vers_sw Version Wavelnth          Wcsname          Xposure  F_size
-        ---- --------------------------------------------------------- ------------------ ------------------------ ------------------------ ------- ... ------- ------- -------- ------------------------- ------- -------
-             /service/api/svo/metadata_eui_level_2/20200512T122556952/ 20200512T122556952 2020-05-12T12:25:56.952Z 2020-05-12T12:25:58.952Z    17.1 ...     973      06      174 Helioprojective-cartesian     2.0 7001280
-             /service/api/svo/metadata_eui_level_2/20200512T122606952/ 20200512T122606952 2020-05-12T12:26:06.952Z 2020-05-12T12:26:08.952Z    17.1 ...     973      06      174 Helioprojective-cartesian     2.0 6333120
+        Tags                   Resource_uri                          Oid                Date_beg                 Date_end         Wavemin ...   Ver_rf1         Xcen         Xscale         Ycen          Yscale     F_size
+        ---- ------------------------------------------------ ----------------- ------------------------ ------------------------ ------- ... ------------ ------------- ------------- -------------- ------------- -------
+             /service/api/svo/metadata_xrt/20061123130943928/ 20061123130943928 2006-11-23T13:09:43.928Z 2006-11-23T13:09:44.101Z    0.88 ... v2014-Oct-20 830.976806641 8.22879981995 -162.474563599 8.22879981995  282240
+             /service/api/svo/metadata_xrt/20061123131040622/ 20061123131040622 2006-11-23T13:10:40.622Z 2006-11-23T13:10:40.927Z    0.88 ... v2014-Oct-20 831.645935059 2.05719995499 -157.406402588 2.05719995499 4213440
     <BLANKLINE>
     <BLANKLINE>
     """
