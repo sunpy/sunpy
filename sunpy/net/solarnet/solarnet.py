@@ -88,23 +88,23 @@ class SOLARNETClient(GenericClient):
         results = []
         query = and_(*query)
         block = walker.create(query)[0]
-        
+
         if "datasets" in block:
             url = _BASE_URL.format(block["datasets"])
-            source = block.pop("datasets")
-        
+            block.pop("datasets")
+
         req = requests.get(url, params=block)
         data = req.json()["objects"]
 
         for i in data:
-            # Exclude fits_header and data_location to aviod clumsiness
+            # Exclude fits_header and data_location to avoid clumsiness
             filtered_data = {key.capitalize(): value for key, value in i.items() if key not in ["fits_header", "data_location"]}
 
             filtered_data.update({
                 "F_size": i["data_location"]["file_size"],
                 "url": i["data_location"]["file_url"],
             })
-            
+
             results.append(filtered_data)
 
         qrt = QueryResponseTable(results, client=self)
