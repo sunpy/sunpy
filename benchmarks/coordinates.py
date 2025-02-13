@@ -36,7 +36,7 @@ class TransformationHeliographic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
-        coord = frames[src].realize_frame(self.vect)
+        coord = frames[src].realize_frame(self.vect, copy=True)
         coord.transform_to(frames[dest])
 
 
@@ -65,7 +65,7 @@ class TransformationEcliptic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
-        coord = frames[src].realize_frame(self.vect)
+        coord = frames[src].realize_frame(self.vect, copy=True)
         coord.transform_to(frames[dest])
 
 
@@ -94,5 +94,5 @@ class TransformationMagnetic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
-        coord = frames[src].realize_frame(self.vect)
+        coord = frames[src].realize_frame(self.vect, copy=True)
         coord.transform_to(frames[dest])
