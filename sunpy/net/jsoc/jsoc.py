@@ -179,13 +179,14 @@ class JSOCClient(BaseClient):
         >>> requests.status  # doctest: +SKIP
         2
 
-    Once the status code is 0 or 2, you can download the data using the `get_request` method::
 
+    The status codes represent the following:
 
-    Status codes:
     0: Completed, ready to download.
     2: Pending, but downloadable.
     6: Not found.
+
+    Once the status code is 0 or 2, you can download the data using the ``get_request`` method::
 
         >>> res = client.get_request(requests)  # doctest: +SKIP
 
