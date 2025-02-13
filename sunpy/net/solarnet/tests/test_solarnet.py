@@ -26,7 +26,7 @@ def test_search():
     url = Fido.search(*query)
     assert isinstance(url[0],QueryResponseTable)
     assert len(url[0]) == 2
-    assert "metadata_eui_level_2" in url[0]["DATASET"]
+    assert "/service/api/svo/metadata_eui_level_2/20200512T122556952/" in url[0]["Resource_uri"]
 
 
 def test_can_handle_query(client):
@@ -76,5 +76,5 @@ def test_complex_query():
     # The second query is limited to 3 results
     assert len(search[1]) == 3
 
-    assert "metadata_lyra_level_2" in search[0]["DATASET"]
-    assert "metadata_eui_level_2"  in search[1]["DATASET"]
+    assert "/service/api/svo/metadata_lyra_level_2/20100106000000/" in search[0]["Resource_uri"]
+    assert "/service/api/svo/metadata_eui_level_2/20200512T085922556/"  in search[1]["Resource_uri"]

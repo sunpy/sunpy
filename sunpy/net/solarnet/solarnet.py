@@ -40,10 +40,10 @@ class SOLARNETClient(GenericClient):
     2 Results from the SOLARNETClient:
     Source: https://solarnet2.oma.be
     <BLANKLINE>
-      DATASET             START                     END            INSTRUMENT WAVEMAX WAVEMIN  F_SIZE
-    ------------ ------------------------ ------------------------ ---------- ------- ------- -------
-    metadata_xrt 2006-11-23T13:09:43.928Z 2006-11-23T13:09:44.101Z        XRT    33.5    0.88  282240
-    metadata_xrt 2006-11-23T13:10:40.622Z 2006-11-23T13:10:40.927Z        XRT    33.5    0.88 4213440
+        Tags                        Resource_uri                              Oid                 Date_beg                 Date_end         Wavemin ... Vers_sw Version Wavelnth          Wcsname          Xposure  F_size
+        ---- --------------------------------------------------------- ------------------ ------------------------ ------------------------ ------- ... ------- ------- -------- ------------------------- ------- -------
+             /service/api/svo/metadata_eui_level_2/20200512T122556952/ 20200512T122556952 2020-05-12T12:25:56.952Z 2020-05-12T12:25:58.952Z    17.1 ...     973      06      174 Helioprojective-cartesian     2.0 7001280
+             /service/api/svo/metadata_eui_level_2/20200512T122606952/ 20200512T122606952 2020-05-12T12:26:06.952Z 2020-05-12T12:26:08.952Z    17.1 ...     973      06      174 Helioprojective-cartesian     2.0 6333120
     <BLANKLINE>
     <BLANKLINE>
     """
@@ -75,38 +75,38 @@ class SOLARNETClient(GenericClient):
         <sunpy.net.fido_factory.UnifiedResponse object at ...>
         Results from 1 Provider:
         <BLANKLINE>
-        3 Results from the SOLARNETClient:
+        2 Results from the SOLARNETClient:
         Source: https://solarnet2.oma.be
         <BLANKLINE>
-               DATASET                 START                     END            INSTRUMENT WAVEMAX WAVEMIN  F_SIZE
-        --------------------- ------------------------ ------------------------ ---------- ------- ------- -------
-        metadata_swap_level_1 2009-11-20T08:25:29.027Z 2009-11-20T08:25:30.027Z       SWAP    17.4    17.4 2113920
-        metadata_swap_level_1 2009-11-20T08:25:42.027Z 2009-11-20T08:25:44.027Z       SWAP    17.4    17.4 2113920
+            Tags                      Resource_uri                           Oid               Date_beg                 Date_end         ...          Ttemp2         Wavelnth          Wcsname           F_size
+            ---- ------------------------------------------------------ -------------- ------------------------ ------------------------ ... ----------------------- -------- ------------------------- -------
+                 /service/api/svo/metadata_swap_level_1/20091120082529/ 20091120082529 2009-11-20T08:25:29.027Z 2009-11-20T08:25:30.027Z ... 2009-11-20T08:28:58.000      174 Helioprojective-cartesian 2113920
+                 /service/api/svo/metadata_swap_level_1/20091120082542/ 20091120082542 2009-11-20T08:25:42.027Z 2009-11-20T08:25:44.027Z ... 2009-11-20T08:28:58.000      174 Helioprojective-cartesian 2113920
         <BLANKLINE>
         <BLANKLINE>
         """
         results = []
         query = and_(*query)
         block = walker.create(query)[0]
+        
         if "datasets" in block:
             url = _BASE_URL.format(block["datasets"])
             source = block.pop("datasets")
-        req = requests.get(url,params = block)
+        
+        req = requests.get(url, params=block)
         data = req.json()["objects"]
 
-
         for i in data:
-            results.append({
-                "DATASET" :source,
-                "START" : i["date_beg"],
-                "END" : i["date_end"],
-                "INSTRUMENT" :i.get("instrume") or i.get("instrument_name") ,
-                "WAVEMAX" : i["wavemax"],
-                "WAVEMIN" : i["wavemin"],
-                "F_SIZE"  : i["data_location"]["file_size"],
-                "url" : i['data_location']['file_url'],
+            # Exclude fits_header and data_location to aviod clumsiness
+            filtered_data = {key.capitalize(): value for key, value in i.items() if key not in ["fits_header", "data_location"]}
 
+            filtered_data.update({
+                "F_size": i["data_location"]["file_size"],
+                "url": i["data_location"]["file_url"],
             })
+            
+            results.append(filtered_data)
+
         qrt = QueryResponseTable(results, client=self)
         qrt.hide_keys = ["url"]
         return qrt
