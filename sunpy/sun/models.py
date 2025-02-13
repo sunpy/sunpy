@@ -14,7 +14,9 @@ Additionally, this module provides functions to load and process the 1D solar
 chromosphere model from Avrett & Loeser (2008). The data is stored as an
 Astropy `QTable` with physical units assigned to relevant columns.
 
-The processed chromosphere data can be accessed via the `chromosphere_data` attribute.
+Reference
+    ----------
+    * Model Paper: :cite:t:`pub.1058794093`
 """
 import pathlib
 
@@ -209,45 +211,40 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
 
 
-_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
-_AVRETT_LOESER_ECSV = _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute()/"data"
 
-def _read_chromosphere_data():
-    """
-    Reads the chromosphere model data from an ECSV file.
+# Dictionary mapping model names to file paths
+_CHROMOSPHERE_MODELS = {
+    "avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
+}
 
-    Returns
-    -------
-    QTable
-        An Astropy QTable containing the chromosphere model data.
+# Cache to store loaded models
+_chromosphere_cache = {}
 
-    """
-    if not _AVRETT_LOESER_ECSV.exists():
-        raise FileNotFoundError(f"File not found: {_AVRETT_LOESER_ECSV}")
-
-    return QTable.read(_AVRETT_LOESER_ECSV, format="ascii.ecsv")
-
-_chromosphere_cache = None
+def _read_chromosphere_data(model_name):
+    """Reads the specified chromosphere model data."""
+    return QTable.read(_CHROMOSPHERE_MODELS[model_name], format="ascii.ecsv")
 
 def __getattr__(name):
     """
-    Provides dynamic access to the chromosphere model data.
+    Provides dynamic access to chromosphere models.
 
     Parameters
     ----------
     name : str
-        The attribute being accessed.
+        The requested model name.
 
     Returns
     -------
     QTable
-        The cached chromosphere model data if `chromosphere_data` is requested.
-
-
+        The cached chromosphere model data.
     """
-    global _chromosphere_cache
-    if name == "chromosphere_data":
-        if _chromosphere_cache is None:
-            _chromosphere_cache = _read_chromosphere_data()
-        return _chromosphere_cache
+
+    if name.startswith("chromosphere_"):
+        model_name = name.replace("chromosphere_", "")
+        if model_name in _CHROMOSPHERE_MODELS:
+            if model_name not in _chromosphere_cache:
+                _chromosphere_cache[model_name] = _read_chromosphere_data(model_name)
+            return _chromosphere_cache[model_name]
+
     raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
