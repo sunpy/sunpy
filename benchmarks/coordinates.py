@@ -38,7 +38,7 @@ class TransformationHeliographic:
         # Clear any cached Cartesian representation so that the benchmark is not misled
         if ('CartesianRepresentation', True) in frames[src].cache['representation']:
             del frames[src].cache['representation'][('CartesianRepresentation', True)]
-        if hasattr(frames[src], observer):
+        if hasattr(frames[src], 'observer'):
             if ('CartesianRepresentation', True) in frames[src].observer.cache['representation']:
                 del frames[src].observer.cache['representation'][('CartesianRepresentation', True)]
 
