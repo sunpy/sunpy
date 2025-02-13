@@ -1,6 +1,5 @@
 import numpy as np
 from asv_runner.benchmarks.mark import SkipNotImplemented
-from copy import deepcopy
 
 import astropy.units as u
 from astropy.coordinates import HCRS, ITRS, HeliocentricMeanEcliptic, SphericalRepresentation
@@ -35,11 +34,12 @@ class TransformationHeliographic:
         if src == dest:
             raise SkipNotImplemented
 
-        # Clear any cached Cartesian representation so that the benchmark is not misled
-        #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
-
     def time_transform(self, frames, src, dest):
-        deepcopy(frames[src]).transform_to(frames[dest])
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        if ('CartesianRepresentation', True) in frames[src].cache['representation']:
+            del frames[src].cache['representation'][('CartesianRepresentation', True)]
+
+        frames[src].transform_to(frames[dest])
 
 
 class TransformationEcliptic:
@@ -65,11 +65,12 @@ class TransformationEcliptic:
         if src == dest:
             raise SkipNotImplemented
 
-        # Clear any cached Cartesian representation so that the benchmark is not misled
-        #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
-
     def time_transform(self, frames, src, dest):
-        deepcopy(frames[src]).transform_to(frames[dest])
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        if ('CartesianRepresentation', True) in frames[src].cache['representation']:
+            del frames[src].cache['representation'][('CartesianRepresentation', True)]
+
+        frames[src].transform_to(frames[dest])
 
 
 class TransformationMagnetic:
@@ -95,8 +96,9 @@ class TransformationMagnetic:
         if src == dest:
             raise SkipNotImplemented
 
-        # Clear any cached Cartesian representation so that the benchmark is not misled
-        #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
-
     def time_transform(self, frames, src, dest):
-        deepcopy(frames[src]).transform_to(frames[dest])
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        if ('CartesianRepresentation', True) in frames[src].cache['representation']:
+            del frames[src].cache['representation'][('CartesianRepresentation', True)]
+
+        frames[src].transform_to(frames[dest])
