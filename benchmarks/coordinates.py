@@ -13,20 +13,21 @@ class TransformationHeliographic:
     params = (frame_names, frame_names)
     param_names = ['src', 'dest']
 
+    vect = SphericalRepresentation(np.arange(100001)*u.deg,
+                                   np.linspace(-90, 90, 100001)*u.deg,
+                                   np.linspace(0, 2, 100001)*u.AU)
+
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(np.arange(100001)*u.deg,
-                                       np.linspace(-90, 90, 100001)*u.deg,
-                                       np.linspace(0, 2, 100001)*u.AU)
         observer = f.HeliographicStonyhurst(SphericalRepresentation(10*u.deg, 20*u.deg, 1*u.AU), obstime=obstime)
         frames = {
-            'HCRS': HCRS(vect, obstime=obstime),
-            'HGS': f.HeliographicStonyhurst(vect, obstime=obstime),
-            'HGC': f.HeliographicCarrington(vect, obstime=obstime, observer=observer),
-            'HCC': f.Heliocentric(vect, obstime=obstime, observer=observer),
-            'HPC': f.Helioprojective(vect, obstime=obstime, observer=observer),
-            'HPR': f.HelioprojectiveRadial(vect, obstime=obstime, observer=observer),
-            'HCI': f.HeliocentricInertial(vect, obstime=obstime),
+            'HCRS': HCRS(obstime=obstime),
+            'HGS': f.HeliographicStonyhurst(obstime=obstime),
+            'HGC': f.HeliographicCarrington(obstime=obstime, observer=observer),
+            'HCC': f.Heliocentric(obstime=obstime, observer=observer),
+            'HPC': f.Helioprojective(obstime=obstime, observer=observer),
+            'HPR': f.HelioprojectiveRadial(obstime=obstime, observer=observer),
+            'HCI': f.HeliocentricInertial(obstime=obstime),
         }
         return frames
 
@@ -35,11 +36,8 @@ class TransformationHeliographic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
-        # Clear any cached Cartesian representation so that the benchmark is not misled
-        local_copy = frames[src].copy()
-        local_copy.cache.clear()
-
-        local_copy.transform_to(frames[dest])
+        coord = frames[src].realize_frame(self.vect)
+        coord.transform_to(frames[dest])
 
 
 class TransformationEcliptic:
@@ -48,16 +46,17 @@ class TransformationEcliptic:
     params = (frame_names, frame_names)
     param_names = ['src', 'dest']
 
+    vect = SphericalRepresentation(np.arange(100001)*u.deg,
+                                   np.linspace(-90, 90, 100001)*u.deg,
+                                   np.linspace(0, 2, 100001)*u.AU)
+
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(np.arange(100001)*u.deg,
-                                       np.linspace(-90, 90, 100001)*u.deg,
-                                       np.linspace(0, 2, 100001)*u.AU)
         frames = {
-            'HAE': HeliocentricMeanEcliptic(vect, obstime=obstime, equinox='J2000'),
-            'HEE': f.HeliocentricEarthEcliptic(vect, obstime=obstime),
-            'GSE': f.GeocentricSolarEcliptic(vect, obstime=obstime),
-            'GEI': f.GeocentricEarthEquatorial(vect, obstime=obstime, equinox='J2000'),
+            'HAE': HeliocentricMeanEcliptic(obstime=obstime, equinox='J2000'),
+            'HEE': f.HeliocentricEarthEcliptic(obstime=obstime),
+            'GSE': f.GeocentricSolarEcliptic(obstime=obstime),
+            'GEI': f.GeocentricEarthEquatorial(obstime=obstime, equinox='J2000'),
         }
         return frames
 
@@ -66,11 +65,8 @@ class TransformationEcliptic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
-        # Clear any cached Cartesian representation so that the benchmark is not misled
-        local_copy = frames[src].copy()
-        local_copy.cache.clear()
-
-        local_copy.transform_to(frames[dest])
+        coord = frames[src].realize_frame(self.vect)
+        coord.transform_to(frames[dest])
 
 
 class TransformationMagnetic:
@@ -79,16 +75,17 @@ class TransformationMagnetic:
     params = (frame_names, frame_names)
     param_names = ['src', 'dest']
 
+    vect = SphericalRepresentation(np.arange(100001)*u.deg,
+                                   np.linspace(-90, 90, 100001)*u.deg,
+                                   np.linspace(0, 2, 100001)*u.AU)
+
     def setup_cache(self):
         obstime = '2023-01-01'
-        vect = SphericalRepresentation(np.arange(100001)*u.deg,
-                                       np.linspace(-90, 90, 100001)*u.deg,
-                                       np.linspace(0, 2, 100001)*u.AU)
         frames = {
-            'GEO': ITRS(vect, obstime=obstime),
-            'MAG': f.Geomagnetic(vect, obstime=obstime),
-            'SM': f.SolarMagnetic(vect, obstime=obstime),
-            'GSM': f.GeocentricSolarMagnetospheric(vect, obstime=obstime),
+            'GEO': ITRS(obstime=obstime),
+            'MAG': f.Geomagnetic(obstime=obstime),
+            'SM': f.SolarMagnetic(obstime=obstime),
+            'GSM': f.GeocentricSolarMagnetospheric(obstime=obstime),
         }
         return frames
 
@@ -97,8 +94,5 @@ class TransformationMagnetic:
             raise SkipNotImplemented
 
     def time_transform(self, frames, src, dest):
-        # Clear any cached Cartesian representation so that the benchmark is not misled
-        local_copy = frames[src].copy()
-        local_copy.cache.clear()
-
-        local_copy.transform_to(frames[dest])
+        coord = frames[src].realize_frame(self.vect)
+        coord.transform_to(frames[dest])
