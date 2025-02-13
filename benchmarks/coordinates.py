@@ -36,11 +36,7 @@ class TransformationHeliographic:
 
     def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        if ('CartesianRepresentation', True) in frames[src].cache['representation']:
-            del frames[src].cache['representation'][('CartesianRepresentation', True)]
-        if hasattr(frames[src], 'observer'):
-            if ('CartesianRepresentation', True) in frames[src].observer.cache['representation']:
-                del frames[src].observer.cache['representation'][('CartesianRepresentation', True)]
+        frames[src].cache.clear()
 
         frames[src].transform_to(frames[dest])
 
@@ -70,8 +66,7 @@ class TransformationEcliptic:
 
     def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        if ('CartesianRepresentation', True) in frames[src].cache['representation']:
-            del frames[src].cache['representation'][('CartesianRepresentation', True)]
+        frames[src].cache.clear()
 
         frames[src].transform_to(frames[dest])
 
@@ -101,7 +96,6 @@ class TransformationMagnetic:
 
     def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        if ('CartesianRepresentation', True) in frames[src].cache['representation']:
-            del frames[src].cache['representation'][('CartesianRepresentation', True)]
+        frames[src].cache.clear()
 
         frames[src].transform_to(frames[dest])
