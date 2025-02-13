@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import numpy as np
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
@@ -36,11 +34,11 @@ class TransformationHeliographic:
         if src == dest:
             raise SkipNotImplemented
 
-        # Make a clean copy of the source coordinate so that caching does not affect benchmarks
-        self.frame_src = deepcopy(frames[src])
-
     def time_transform(self, frames, src, dest):
-        self.frame_src.transform_to(frames[dest])
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        frames[src].cache.clear()
+
+        frames[src].transform_to(frames[dest])
 
 
 class TransformationEcliptic:
@@ -66,11 +64,11 @@ class TransformationEcliptic:
         if src == dest:
             raise SkipNotImplemented
 
-        # Make a clean copy of the source coordinate so that caching does not affect benchmarks
-        self.frame_src = deepcopy(frames[src])
-
     def time_transform(self, frames, src, dest):
-        self.frame_src.transform_to(frames[dest])
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        frames[src].cache.clear()
+
+        frames[src].transform_to(frames[dest])
 
 
 class TransformationMagnetic:
@@ -96,8 +94,8 @@ class TransformationMagnetic:
         if src == dest:
             raise SkipNotImplemented
 
-        # Make a clean copy of the source coordinate so that caching does not affect benchmarks
-        self.frame_src = deepcopy(frames[src])
-
     def time_transform(self, frames, src, dest):
-        self.frame_src.transform_to(frames[dest])
+        # Clear any cached Cartesian representation so that the benchmark is not misled
+        frames[src].cache.clear()
+
+        frames[src].transform_to(frames[dest])
