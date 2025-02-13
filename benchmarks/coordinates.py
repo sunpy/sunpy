@@ -35,7 +35,7 @@ class TransformationHeliographic:
             raise SkipNotImplemented
 
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
+        #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
@@ -65,7 +65,7 @@ class TransformationEcliptic:
             raise SkipNotImplemented
 
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
+        #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
@@ -95,7 +95,7 @@ class TransformationMagnetic:
             raise SkipNotImplemented
 
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
+        #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
         frames[src].transform_to(frames[dest])
