@@ -4,10 +4,10 @@
 Plotting the Chromosphere Model
 ***********************************
 
-This example demonstrates how to load and visualize the 
+This example demonstrates how to load and visualize the
 Avrett & Loeser (2008) solar chromosphere model data using Astropy.
 
-You can specify custom x and y parameters and optionally apply 
+You can specify custom x and y parameters and optionally apply
 a log scale to the y-axis.
 
 .. code-block:: python
@@ -16,7 +16,7 @@ a log scale to the y-axis.
     >>> import numpy as np
     >>> import sunpy.sun.models as models
 
-    >>> data = models.chromosphere_avrett_loeser_2008  
+    >>> data = models.chromosphere_avrett_loeser_2008
 
     >>> x_param = "h"
     >>> y_param = "T"
