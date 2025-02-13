@@ -36,9 +36,10 @@ class TransformationHeliographic:
 
     def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        frames[src].cache.clear()
+        local_copy = frames[src].copy()
+        local_copy.cache.clear()
 
-        frames[src].transform_to(frames[dest])
+        local_copy.transform_to(frames[dest])
 
 
 class TransformationEcliptic:
@@ -66,9 +67,10 @@ class TransformationEcliptic:
 
     def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        frames[src].cache.clear()
+        local_copy = frames[src].copy()
+        local_copy.cache.clear()
 
-        frames[src].transform_to(frames[dest])
+        local_copy.transform_to(frames[dest])
 
 
 class TransformationMagnetic:
@@ -96,6 +98,7 @@ class TransformationMagnetic:
 
     def time_transform(self, frames, src, dest):
         # Clear any cached Cartesian representation so that the benchmark is not misled
-        frames[src].cache.clear()
+        local_copy = frames[src].copy()
+        local_copy.cache.clear()
 
-        frames[src].transform_to(frames[dest])
+        local_copy.transform_to(frames[dest])
