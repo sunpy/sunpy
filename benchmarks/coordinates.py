@@ -1,5 +1,6 @@
 import numpy as np
 from asv_runner.benchmarks.mark import SkipNotImplemented
+from copy import deepcopy
 
 import astropy.units as u
 from astropy.coordinates import HCRS, ITRS, HeliocentricMeanEcliptic, SphericalRepresentation
@@ -38,7 +39,7 @@ class TransformationHeliographic:
         #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
-        frames[src].transform_to(frames[dest])
+        deepcopy(frames[src]).transform_to(frames[dest])
 
 
 class TransformationEcliptic:
@@ -68,7 +69,7 @@ class TransformationEcliptic:
         #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
-        frames[src].transform_to(frames[dest])
+        deepcopy(frames[src]).transform_to(frames[dest])
 
 
 class TransformationMagnetic:
@@ -98,4 +99,4 @@ class TransformationMagnetic:
         #frames[src].cache['representation'].pop(('CartesianRepresentation', True), None)
 
     def time_transform(self, frames, src, dest):
-        frames[src].transform_to(frames[dest])
+        deepcopy(frames[src]).transform_to(frames[dest])
