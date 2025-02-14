@@ -3,9 +3,9 @@ Contains helper functions for generating and sending XML payloads to the SSCWeb 
 (https://sscweb.gsfc.nasa.gov/) to retrieve spacecraft location data.
 """
 
-import xml.etree.ElementTree as ET
-
 import requests
+from lxml import etree
+from lxml.builder import E
 
 from astropy.time import Time
 
@@ -37,21 +37,30 @@ def _create_xml_request(name, time_range, system):
     if isinstance(time_range,Time):
         time_range = TimeRange(time_range[0],time_range[1])
 
-    data_request = ET.Element("DataRequest", xmlns="http://sscweb.gsfc.nasa.gov/schema")
-    ET.SubElement(data_request, "Description")
-    time_interval = ET.SubElement(data_request, "TimeInterval")
-    ET.SubElement(time_interval, "Start").text = time_range.start.isot
-    ET.SubElement(time_interval, "End").text = time_range.end.isot
-    satellites = ET.SubElement(data_request, "Satellites")
-    ET.SubElement(satellites, "Id").text = name.lower()
-    ET.SubElement(satellites, "ResolutionFactor").text = "1"
-    output_options = ET.SubElement(data_request, "OutputOptions")
-    coordinate_components = ["Lat", "Lon"]
-    for component in coordinate_components:
-        coordinate_option = ET.SubElement(output_options, "CoordinateOptions")
-        ET.SubElement(coordinate_option, "CoordinateSystem").text = system.capitalize()
-        ET.SubElement(coordinate_option, "Component").text = component
-    return ET.tostring(ET.ElementTree(data_request).getroot(), encoding="unicode")
+    ns = "http://sscweb.gsfc.nasa.gov/schema"
+    xml_request = E.DataRequest(
+        {"xmlns": ns},
+        E.TimeInterval(
+            E.Start(time_range.start.isot),
+            E.End(time_range.end.isot),
+        ),
+        E.Satellites(
+            E.Id(str(name).lower()),
+            E.ResolutionFactor("1"),
+        ),
+        E.OutputOptions(
+            E.CoordinateOptions(
+                E.CoordinateSystem(system.capitalize()),
+                E.Component("Lat"),
+            ),
+            E.CoordinateOptions(
+                E.CoordinateSystem(system.capitalize()),
+                E.Component("Lon"),
+            ),
+        ),
+    )
+
+    return etree.tostring(xml_request, pretty_print=True, encoding="unicode")
 
 
 def _send_requests(xml):
