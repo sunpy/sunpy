@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "setuptools>=62.1",
-  "setuptools_scm[toml]>=8.0.0",
+  "setuptools_scm[toml]>=8.0.1",
   "wheel",
   "extension-helpers",
   # Comments on numpy build requirement range:
