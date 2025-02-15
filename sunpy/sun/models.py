@@ -11,12 +11,9 @@ This module contains models of the Sun from various sources:
   solar differential rotation for different models
 
 Additionally, this module provides functions to load and process the 1D solar
-chromosphere model from Avrett & Loeser (2008). The data is stored as an
+chromosphere model from :cite:t:`pub.1058794093`. The data is stored as an
 Astropy `QTable` with physical units assigned to relevant columns.
 
-Reference
-    ----------
-    * Model Paper: :cite:t:`pub.1058794093`
 """
 import pathlib
 
@@ -30,6 +27,11 @@ from sunpy.sun.constants import sidereal_rotation_rate
 
 __all__ = ["interior", "evolution", "differential_rotation"]
 
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute()/"data"
+_CHROMOSPHERE_MODELS = {
+    "avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
+}
+_MODEL_CACHE = {}
 
 # Radius -  R_sun
 _radius = [0, 0.01, 0.022, 0.061, 0.090, 0.120,
@@ -211,40 +213,27 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
 
 
-_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute()/"data"
-
-# Dictionary mapping model names to file paths
-_CHROMOSPHERE_MODELS = {
-    "avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
-}
-
-# Cache to store loaded models
-_chromosphere_cache = {}
 
 def _read_chromosphere_data(model_name):
-    """Reads the specified chromosphere model data."""
-    return QTable.read(_CHROMOSPHERE_MODELS[model_name], format="ascii.ecsv")
+    """
+    Reads the specified model.
+    """
+    model_path = _CHROMOSPHERE_MODELS[model_name]
+    return QTable.read(model_path, format="ascii.ecsv")
 
 def __getattr__(name):
-    """
-    Provides dynamic access to chromosphere models.
-
-    Parameters
-    ----------
-    name : str
-        The requested model name.
-
-    Returns
-    -------
-    QTable
-        The cached chromosphere model data.
-    """
-
     if name.startswith("chromosphere_"):
         model_name = name.replace("chromosphere_", "")
+
         if model_name in _CHROMOSPHERE_MODELS:
-            if model_name not in _chromosphere_cache:
-                _chromosphere_cache[model_name] = _read_chromosphere_data(model_name)
-            return _chromosphere_cache[model_name]
+            if model_name not in _MODEL_CACHE:
+                _MODEL_CACHE[model_name] = _read_chromosphere_data(model_name)
+            return _MODEL_CACHE[model_name]
+
+        fallback_model = "avrett_loeser_2008"
+        if fallback_model in _CHROMOSPHERE_MODELS:
+            if fallback_model not in _MODEL_CACHE:
+                _MODEL_CACHE[fallback_model] = _read_chromosphere_data(fallback_model)
+            return _MODEL_CACHE[fallback_model]
 
     raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
