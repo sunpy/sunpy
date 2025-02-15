@@ -222,12 +222,12 @@ def _read_model(model_name):
     return QTable.read(model_path, format="ascii.ecsv")
 
 def __getattr__(name):
-    if not name.startswith("chromosphere_"):
-        raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
-
-    model_name = name.replace("chromosphere_", "")
-
-    model_name = model_name if model_name in _MODELS else "avrett_loeser_2008"
+    
+    if name not in _MODELS:
+        print(f"Warning: Model '{name}' is not available. Using the latest model 'avrett_loeser_2008' instead.")
+        model_name = "chromosphere_avrett_loeser_2008"
+    else:
+        model_name = name
 
     if model_name not in _MODEL_CACHE:
         _MODEL_CACHE[model_name] = _read_model(model_name)
