@@ -11,9 +11,9 @@ This module contains models of the Sun from various sources:
   solar differential rotation for different models
 
 Additionally, this module provides functions to load and process the 1D solar
-chromosphere model from :cite:t:`pub.1058794093`. The data is stored as an
-Astropy `QTable` with physical units assigned to relevant columns.
+ models ,which are:
 
+:cite:t: `avrett_loeser_2008`
 """
 import pathlib
 
@@ -28,7 +28,7 @@ from sunpy.sun.constants import sidereal_rotation_rate
 __all__ = ["interior", "evolution", "differential_rotation"]
 
 _MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute()/"data"
-_CHROMOSPHERE_MODELS = {
+_MODELS = {
     "avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
 }
 _MODEL_CACHE = {}
@@ -214,26 +214,22 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
 
 
 
-def _read_chromosphere_data(model_name):
+def _read_model(model_name):
     """
     Reads the specified model.
     """
-    model_path = _CHROMOSPHERE_MODELS[model_name]
+    model_path = _MODELS[model_name]
     return QTable.read(model_path, format="ascii.ecsv")
 
 def __getattr__(name):
-    if name.startswith("chromosphere_"):
-        model_name = name.replace("chromosphere_", "")
+    if not name.startswith("chromosphere_"):
+        raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
 
-        if model_name in _CHROMOSPHERE_MODELS:
-            if model_name not in _MODEL_CACHE:
-                _MODEL_CACHE[model_name] = _read_chromosphere_data(model_name)
-            return _MODEL_CACHE[model_name]
+    model_name = name.replace("chromosphere_", "")
 
-        fallback_model = "avrett_loeser_2008"
-        if fallback_model in _CHROMOSPHERE_MODELS:
-            if fallback_model not in _MODEL_CACHE:
-                _MODEL_CACHE[fallback_model] = _read_chromosphere_data(fallback_model)
-            return _MODEL_CACHE[fallback_model]
+    model_name = model_name if model_name in _MODELS else "avrett_loeser_2008"
 
-    raise AttributeError(f"Module {__name__!r} has no attribute {name!r}")
+    if model_name not in _MODEL_CACHE:
+        _MODEL_CACHE[model_name] = _read_model(model_name)
+
+    return _MODEL_CACHE[model_name]
