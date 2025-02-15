@@ -222,7 +222,7 @@ def _read_model(model_name):
     return QTable.read(model_path, format="ascii.ecsv")
 
 def __getattr__(name):
- 
+
     if name not in _MODELS:
         raise KeyError(f"Error: Model '{name}' is not available.")
 
