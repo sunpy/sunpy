@@ -222,14 +222,11 @@ def _read_model(model_name):
     return QTable.read(model_path, format="ascii.ecsv")
 
 def __getattr__(name):
-    
+ 
     if name not in _MODELS:
-        print(f"Warning: Model '{name}' is not available. Using the latest model 'avrett_loeser_2008' instead.")
-        model_name = "chromosphere_avrett_loeser_2008"
-    else:
-        model_name = name
+        raise KeyError(f"Error: Model '{name}' is not available.")
 
-    if model_name not in _MODEL_CACHE:
-        _MODEL_CACHE[model_name] = _read_model(model_name)
+    if name not in _MODEL_CACHE:
+        _MODEL_CACHE[name] = _read_model(name)
 
-    return _MODEL_CACHE[model_name]
+    return _MODEL_CACHE[name]
