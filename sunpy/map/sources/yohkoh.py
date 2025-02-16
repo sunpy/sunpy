@@ -47,9 +47,9 @@ class SXTMap(GenericMap):
 
     References
     ----------
-    * `Yohkoh Mission Page <http://solar.physics.montana.edu/sxt/>`_
-    * `Fits header reference <http://proba2.oma.be/data/SWAP/level0>`_
-    * `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`_
+    * `Yohkoh Mission Page <http://solar.physics.montana.edu/sxt/>`__
+    * `Fits header reference <http://proba2.oma.be/data/SWAP/level0>`__
+    * `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`__
     """
 
     def __init__(self, data, header, **kwargs):

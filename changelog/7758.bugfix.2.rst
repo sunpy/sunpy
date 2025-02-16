@@ -1,1 +1,0 @@
-Fix :func:`sunpy.physics.differential_rotation.differential_rotate` to update the ``reference_date`` attribute of the input map instead of the ``date``.

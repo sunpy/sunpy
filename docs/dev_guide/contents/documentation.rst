@@ -9,7 +9,7 @@ Overview
 
 All code must be documented and we follow these style conventions described here:
 
-* `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
+* `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`__
 
 We recommend familiarizing yourself with this style.
 
@@ -51,7 +51,7 @@ To still show only the last segment you can add a tilde as prefix:
 will render as `~.GenericMap.peek` or `~.CompositeMap.peek`.
 
 Other packages can also be linked via
-`intersphinx <http://www.sphinx-doc.org/en/master/ext/intersphinx.html>`_:
+`intersphinx <http://www.sphinx-doc.org/en/master/ext/intersphinx.html>`__:
 
 .. code-block:: rst
 
@@ -124,13 +124,34 @@ In addition, a reference section must be provided with links to the following re
 
 Examples can be found in any class defined in any Python file in ``sunpy/map/sources/`` such as `~sunpy.map.sources.AIAMap`.
 
+Citing Publications
+-------------------
+
+Whenever possible, publications should be cited using BibTeX through the :doc:`sphinxcontrib.bibtex <sphinxcontrib_bibtex:index>` extension.
+To do so, first add the appropriate entry in :file:`docs/references.bib`.
+Then, you can add a citation to the docstring like so:
+
+.. code-block:: rst
+
+    :cite:t:`franz_heliospheric_2002`
+
+to insert a textual citation.
+Similarly, you can use
+
+.. code-block:: rst
+
+    :cite:p:`franz_heliospheric_2002`
+
+to insert a parenthetical citation.
+For more details on how to cite publications with ``sphinxcontrib_bibtex``, see :doc:`this page <sphinxcontrib_bibtex:usage>`.
+
 Sphinx
 ======
 
-All of the sunpy documentation (like this page) is built by `Sphinx <https://www.sphinx-doc.org/en/stable/>`_, which is a tool especially well-suited for documenting Python projects.
-Sphinx works by parsing files written using a `a Mediawiki-like syntax <http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`_ called `reStructuredText <http://docutils.sourceforge.net/rst.html>`_.
+All of the sunpy documentation (like this page) is built by `Sphinx <https://www.sphinx-doc.org/en/stable/>`__, which is a tool especially well-suited for documenting Python projects.
+Sphinx works by parsing files written using a `a Mediawiki-like syntax <http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`__ called `reStructuredText <http://docutils.sourceforge.net/rst.html>`__.
 In addition to parsing static files of reStructuredText, Sphinx can also be told to parse code comments.
-In fact, in addition to what you are reading right now, the `Python documentation <https://www.python.org/doc/>`_ was also created using Sphinx.
+In fact, in addition to what you are reading right now, the `Python documentation <https://www.python.org/doc/>`__ was also created using Sphinx.
 
 Usage
 -----
@@ -163,7 +184,7 @@ Then change to the :file:`docs/` directory and run::
 
     make html
 
-For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`_.
+For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`__.
 
 Special Sphinx directives
 -------------------------

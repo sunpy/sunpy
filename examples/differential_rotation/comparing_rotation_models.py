@@ -21,7 +21,7 @@ from sunpy.data.sample import AIA_335_IMAGE
 from sunpy.sun.constants import sidereal_rotation_rate
 
 ##############################################################################
-# First, we use an AIA observation primarily as a pretty background.  We also
+# First, we use an AIA observation primarily as a pretty background. We also
 # define the meridian using a two-element coordinate array of the south pole
 # and the north pole at zero longitude.
 
@@ -30,10 +30,10 @@ meridian = SkyCoord(0*u.deg, [-90, 90]*u.deg, frame=HeliographicStonyhurst,
                     obstime=aiamap.date)
 
 ##############################################################################
-# Next, we calculate the sidereal rotation period of the Sun.  This is the
+# Next, we calculate the sidereal rotation period of the Sun. This is the
 # time for a full rotation relative to an inertial reference frame (e.g.,
 # distant stars), as opposed to the synodic period, which is the apparent
-# rotation period as seen from an Earth-based observer.  Since the Earth
+# rotation period as seen from an Earth-based observer. Since the Earth
 # orbits the Sun in the same direction as the Sun rotates, the Sun appears to
 # rotate slower for an Earth-based observer.
 
@@ -43,7 +43,7 @@ print(sidereal_period)
 ##############################################################################
 # We use `~sunpy.coordinates.metaframes.RotatedSunFrame` to rotate the
 # meridian by one sidereal period using each of the available
-# differential-rotation models.  See
+# differential-rotation models. See
 # :func:`~sunpy.physics.differential_rotation.diff_rot` for details on each
 # model.
 
@@ -56,7 +56,7 @@ for model in ['howard', 'snodgrass', 'allen', 'rigid']:
 ##############################################################################
 # Finally, we plot the differentially rotated meridians over the map, using
 # :meth:`~sunpy.map.GenericMap.draw_quadrangle` to conveniently draw a line
-# of constant longitude in the original frame between two endpoints.  (One
+# of constant longitude in the original frame between two endpoints. (One
 # could instead use :meth:`astropy.visualization.wcsaxes.WCSAxes.plot_coord`,
 # but then ``meridian`` would need to consist of a sequence of many points
 # spanning all latitudes between the two poles to render as desired.)

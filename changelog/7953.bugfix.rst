@@ -1,1 +1,0 @@
-Fixed a bug in :func:`~sunpy.physics.differential_rotation.differential_rotate` that assumed the input map header had ``RSUN_REF`` defined.
