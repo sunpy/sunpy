@@ -10,8 +10,8 @@ This module contains models of the Sun from various sources:
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
 
-Additionally, this module provides functions to load and process the 1D solar
- models ,which are:
+Additionally, this module provides functions to load 1D solar models, 
+which are:
 
 :cite:t: `avrett_loeser_2008`
 """
@@ -22,6 +22,7 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.table import QTable
+import time
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
@@ -222,6 +223,47 @@ def _read_model(model_name):
     return QTable.read(model_path, format="ascii.ecsv")
 
 def __getattr__(name):
+    """
+    Dynamically load a chromosphere model when accessed.
+    Raises an error if the requested model is unavailable.
+    """
+
+    if name == "__test__":
+        failures = []  
+        
+        for model_name in _MODELS:
+            try:
+                model_data = __getattr__(model_name)
+                assert isinstance(model_data, QTable), f"Test Failed: {model_name} should be a QTable object"
+                assert model_name in _MODEL_CACHE, f"Test Failed: {model_name} should be cached"
+                print(f" Passed: Valid model '{model_name}' loaded and cached.")
+            except Exception as e:
+                failures.append(f" Valid Model Loading Failed for {model_name}: {e}")
+
+        for model_name in _MODELS:
+            try:
+                model_data_1 = __getattr__(model_name)
+                model_data_2 = __getattr__(model_name)
+                assert model_data_1 is model_data_2, f"Test Failed: Cache is not returning the same object for {model_name}"
+                print(f"Passed: Cache is working correctly for '{model_name}'.")
+            except Exception as e:
+                failures.append(f"Repeated Access Failed for {model_name}: {e}")
+
+
+        try:
+            for model_name in _MODELS:
+                start_time = time.time()
+                __getattr__(model_name)
+                duration = time.time() - start_time
+                assert duration < 1.0, f"Test Failed: Model '{model_name}' loading took too long!"
+                print(f" Passed: Model '{model_name}' loaded efficiently in {duration:.4f} seconds.")
+        except Exception as e:
+            failures.append(f"Model loading performance test failed: {e}")
+
+        if failures:
+            print("\n".join(failures))
+
+        return "All tests completed."
 
     if name not in _MODELS:
         raise KeyError(f"Error: Model '{name}' is not available.")
@@ -230,3 +272,7 @@ def __getattr__(name):
         _MODEL_CACHE[name] = _read_model(name)
 
     return _MODEL_CACHE[name]
+
+
+if __name__ == "__main__":
+    __getattr__("__test__")

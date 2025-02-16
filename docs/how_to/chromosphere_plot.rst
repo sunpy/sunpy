@@ -16,19 +16,31 @@ Which we will just plot a range of parameters (temperature and density as a func
     >>> data = models.avrett_loeser_2008
 
     >>> x_param = "h"
-    >>> y_param = "T"
+    >>> y_param = ["T","n_e"]
 
     >>> x_values = data[x_param]
-    >>> y_values = data[y_param]
+    >>> y_units = {param: f" ({data[param].unit})" if hasattr(data[param], "unit") else "" for param in y_params}
 
-    >>> x_unit = f"({x_values.unit})" if hasattr(x_values, "unit") else ""
-    >>> y_unit = f"({data[y_param].unit})" if hasattr(data[y_param], "unit") else ""
+    >>> x_unit = f" ({x_values.unit})" if hasattr(x_values, "unit") else ""
+    >>>y_units = {param: f" ({data[param].unit})" if hasattr(data[param], "unit") else "" for param in y_params}
 
-    >>> plt.figure(figsize=(8, 5))
-    >>> plt.plot(x_values, y_values, marker="o", linestyle="-", label=f"{y_param} vs {x_param}")
-    >>> plt.xlabel(f"{x_param} {x_unit}")
-    >>> plt.ylabel(f"{y_param} {y_unit}")
-    >>> plt.title(f"Solar Chromosphere Model: {y_param} vs {x_param}")
-    >>> plt.legend()
-    >>> plt.grid(True)
-    >>> plt.show()
+    >>>plt.figure(figsize=(8, 5))
+
+    >>>plt.plot(x_values, y_values["T"], marker="o", linestyle="-", label=f"Temperature {y_units['T']}")
+
+    >>>plt.plot(x_values, y_values["n_e"], marker="s", linestyle="--", label=f"Density {y_units['n_e']}")
+
+    >>>plt.yscale("log")  
+    >>>plt.xscale("log")  
+
+
+    >>>plt.xlabel(f"{x_param}{x_unit}")
+    >>>plt.ylabel("Temperature & Density (log scale)")
+    >>>plt.title("Solar Chromosphere Model: Temperature & Density vs Height")
+
+    >>>plt.legend()
+    >>>plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+
+    >>>plt.show()
+
+
