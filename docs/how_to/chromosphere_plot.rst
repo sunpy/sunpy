@@ -30,8 +30,8 @@ Which we will just plot a range of parameters (temperature and density as a func
 
     >>>plt.plot(x_values, y_values["n_e"], marker="s", linestyle="--", label=f"Density {y_units['n_e']}")
 
-    >>>plt.yscale("log")  
-    >>>plt.xscale("log")  
+    >>>plt.yscale("log")
+    >>>plt.xscale("log")
 
 
     >>>plt.xlabel(f"{x_param}{x_unit}")
@@ -42,5 +42,3 @@ Which we will just plot a range of parameters (temperature and density as a func
     >>>plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
     >>>plt.show()
-
-

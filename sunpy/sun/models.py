@@ -10,11 +10,12 @@ This module contains models of the Sun from various sources:
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
 
-Additionally, this module provides functions to load 1D solar models, 
+Additionally, this module provides functions to load 1D solar models,
 which are:
 
 :cite:t: `avrett_loeser_2008`
 """
+import time
 import pathlib
 
 import numpy as np
@@ -22,7 +23,6 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.table import QTable
-import time
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
@@ -229,8 +229,8 @@ def __getattr__(name):
     """
 
     if name == "__test__":
-        failures = []  
-        
+        failures = []
+
         for model_name in _MODELS:
             try:
                 model_data = __getattr__(model_name)
