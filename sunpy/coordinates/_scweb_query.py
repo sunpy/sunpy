@@ -60,7 +60,7 @@ def _create_xml_request(name, time_range, system):
         ),
     )
 
-    return etree.tostring(xml_request, pretty_print=True, encoding="unicode")
+    return etree.tostring(xml_request,encoding="unicode")
 
 
 def _send_requests(xml):
