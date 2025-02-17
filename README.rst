@@ -54,7 +54,7 @@
 It includes an interface for searching and downloading data from multiple data providers, data containers for image and time series data, commonly used solar coordinate frames and associated transformations, as well as other functionality needed for solar data analysis.
 
 Usage of Generative AI
-======================
+----------------------
 
 We expect authentic engagement in our community.
 Be wary of posting output from Large Language Models or similar generative AI as comments on GitHub or any other platform, as such comments tend to be formulaic and low quality content.
