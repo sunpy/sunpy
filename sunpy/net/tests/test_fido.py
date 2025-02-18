@@ -268,34 +268,60 @@ def test_fido_indexing(queries):
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
     res = Fido.search(query1 | query2)
+
+    assert isinstance(res[0:1], UnifiedResponse)
+    assert len(res[0:1]) == 1
+
+    assert isinstance(res[0:1, 0], UnifiedResponse)
+    assert len(res[0:1, 0]) == 1
+
+    assert isinstance(res[0][0], QueryResponseRow)
+
+    aa = res[0, 0]
+    assert isinstance(aa, QueryResponseRow)
+
+    aa = res[0, 'Instrument']
+    assert isinstance(aa, QueryResponseColumn)
+
+    aa = res[0, ('Instrument',)]
+    assert isinstance(aa, QueryResponseTable)
+    for table in aa:
+        assert len(table.columns) == 1
+
+    aa = res[0, :]
+    assert isinstance(aa, QueryResponseTable)
+
+    aa = res[0, 1:]
+    assert isinstance(aa, QueryResponseTable)
+
+    if len(res.keys()) == len(res):
+        aa = res[res.keys()[0], 1:]
+        assert isinstance(aa, QueryResponseTable)
+        aa = res[res.keys()[0], 'Instrument']
+        assert isinstance(aa, QueryResponseColumn)
+
+    with pytest.raises(IndexError):
+        res[0, 0, 0]
+
+    with pytest.raises(IndexError):
+        res["saldkal"]
+
+    with pytest.raises(IndexError):
+        res[1.0132]
+
     if(len(res) != 1):
+        assert len(res) == 2
         assert isinstance(res[1:], UnifiedResponse)
         assert len(res[1:]) == 1
-        assert isinstance(res[0:1], UnifiedResponse)
-        assert len(res[0:1]) == 1
 
         assert isinstance(res[1:, 0], UnifiedResponse)
         assert len(res[1:, 0]) == 1
-        assert isinstance(res[0:1, 0], UnifiedResponse)
-        assert len(res[0:1, 0]) == 1
 
-        assert isinstance(res[0][0], QueryResponseRow)
         assert isinstance(res[1][0], QueryResponseRow)
         assert isinstance(res[1, 0:1], QueryResponseTable)
 
-        aa = res[0, 0]
-        assert isinstance(aa, QueryResponseRow)
-
-        aa = res[0, 'Instrument']
-        assert isinstance(aa, QueryResponseColumn)
-
         aa = res[:, 'Instrument']
         assert isinstance(aa, UnifiedResponse)
-        for table in aa:
-            assert len(table.columns) == 1
-
-        aa = res[0, ('Instrument',)]
-        assert isinstance(aa, QueryResponseTable)
         for table in aa:
             assert len(table.columns) == 1
 
@@ -305,59 +331,18 @@ def test_fido_indexing(queries):
         assert len(aa) == 2
         assert len(aa[0]) == 1
 
-        aa = res[0, :]
-        assert isinstance(aa, QueryResponseTable)
-
-        aa = res[0, 1:]
-        assert isinstance(aa, QueryResponseTable)
-
-        if len(res.keys()) == len(res):
-            aa = res[res.keys()[0], 1:]
-            assert isinstance(aa, QueryResponseTable)
-            aa = res[res.keys()[0], 'Instrument']
-            assert isinstance(aa, QueryResponseColumn)
-
-        with pytest.raises(IndexError):
-            res[0, 0, 0]
-
-        with pytest.raises(IndexError):
-            res["saldkal"]
-
-        with pytest.raises(IndexError):
-            res[1.0132]
-
         if isinstance(res, UnifiedResponse):
             assert len(res) != 1
     else:
-        # only 1 result
         assert len(res) == 1
         assert isinstance(res[1:], UnifiedResponse)
         assert len(res[1:]) == 0
-        assert isinstance(res[0:1], UnifiedResponse)
-        assert len(res[0:1]) == 1
 
         assert isinstance(res[1:, 0], UnifiedResponse)
         assert len(res[1:, 0]) == 0
-        assert isinstance(res[0:1, 0], UnifiedResponse)
-        assert len(res[0:1, 0]) == 1
-
-        assert isinstance(res[0][0], QueryResponseRow)
-        # assert isinstance(res[1][0], QueryResponseRow)
-        # assert isinstance(res[1, 0:1], QueryResponseTable)
-
-        aa = res[0, 0]
-        assert isinstance(aa, QueryResponseRow)
-
-        aa = res[0, 'Instrument']
-        assert isinstance(aa, QueryResponseColumn)
 
         aa = res[:, 'Instrument']
         assert isinstance(aa, UnifiedResponse)
-        for table in aa:
-            assert len(table.columns) == 1
-
-        aa = res[0, ('Instrument',)]
-        assert isinstance(aa, QueryResponseTable)
         for table in aa:
             assert len(table.columns) == 1
 
@@ -366,27 +351,6 @@ def test_fido_indexing(queries):
         assert isinstance(aa, UnifiedResponse)
         assert len(aa) == 1
         assert len(aa[0]) == 1
-
-        aa = res[0, :]
-        assert isinstance(aa, QueryResponseTable)
-
-        aa = res[0, 1:]
-        assert isinstance(aa, QueryResponseTable)
-
-        if len(res.keys()) == len(res):
-            aa = res[res.keys()[0], 1:]
-            assert isinstance(aa, QueryResponseTable)
-            aa = res[res.keys()[0], 'Instrument']
-            assert isinstance(aa, QueryResponseColumn)
-
-        with pytest.raises(IndexError):
-            res[0, 0, 0]
-
-        with pytest.raises(IndexError):
-            res["saldkal"]
-
-        with pytest.raises(IndexError):
-            res[1.0132]
 
         if isinstance(res, UnifiedResponse):
             assert len(res) == 1
