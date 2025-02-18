@@ -227,7 +227,7 @@ def __getattr__(name):
     Raises an error if the requested model is unavailable.
     """
     if name not in _MODELS:
-        raise KeyError(f"Error: Model '{name}' is not available.")
+        raise AttributeError(f"Error: Model '{name}' is not available.")
 
     if name not in _MODEL_CACHE:
         _MODEL_CACHE[name] = _read_model(name)
