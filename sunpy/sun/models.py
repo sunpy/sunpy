@@ -13,7 +13,7 @@ This module contains models of the Sun from various sources:
 Additionally, this module provides functions to load 1D solar models,
 which are:
 
-:cite:t: `avrett_loeser_2008`
+* :cite:t: `avrett_loeser_2008` called "avrett_loeser_2008"
 """
 import pathlib
 
@@ -27,7 +27,7 @@ from sunpy.sun.constants import sidereal_rotation_rate
 
 __all__ = ["interior", "evolution", "differential_rotation"]
 
-_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute()/"data"
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
 _MODELS = {
     "avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
 }
@@ -212,8 +212,6 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     return Longitude(rotation.to(u.deg))
 
 
-
-
 def _read_model(model_name):
     """
     Reads the specified model.
@@ -221,9 +219,10 @@ def _read_model(model_name):
     model_path = _MODELS[model_name]
     return QTable.read(model_path, format="ascii.ecsv")
 
+
 def __getattr__(name):
     """
-    Dynamically load a chromosphere model when accessed.
+    Dynamically load a model when accessed.
     Raises an error if the requested model is unavailable.
     """
     if name not in _MODELS:

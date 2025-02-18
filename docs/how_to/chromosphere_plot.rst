@@ -1,13 +1,10 @@
-.. _sunpy-plot-chromosphere-model:
+.. _sunpy-how-to-plot-atmos-model:
+*****************************
+Plot a solar atmosphere model
+*****************************
+Here we will demonstrate how to load and visualize one of the models in `sunpy.sun.models`, in this case :cite:t:`avrett_loeser_2008` solar chromosphere model.
 
-***********************************
-Plotting the Chromosphere Model
-***********************************
-
-This example demonstrates how to load and visualize one of the models in `sunpy.sun.models`, in this case :cite:t:`avrett_loeser_2008` solar chromosphere model.
-Which we will just plot a range of parameters (temperature and density as a function of height).
-
-.. code-block:: python
+.. plot::
 
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
