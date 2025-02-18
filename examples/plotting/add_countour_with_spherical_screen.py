@@ -28,10 +28,13 @@ import sunpy.map
 from sunpy.coordinates.screens import SphericalScreen
 
 ##############################################################################
-# For this example, we will start with the sunpy sample data.
+# We use two AIA images that were not taken at exactly the same time.  We
+# crop the maps to an active region at the eastern limb.
 
-aia193_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 aia171_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+aia193_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
+aia171_map = aia171_map.submap((0, 500)*u.pix, top_right=(250, 750)*u.pix)
+aia193_map = aia193_map.submap((0, 500)*u.pix, top_right=(250, 750)*u.pix)
 
 ##############################################################################
 # First, let's plot the AIA 171 contours on their native map.  The contours
