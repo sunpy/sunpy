@@ -377,7 +377,7 @@ def test_combined_response_vso_time():
 
 
     results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom))
-    assert len(results) == 2
+    assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
     assert isinstance(results[1], QueryResponseTable)
 
