@@ -1,1 +1,0 @@
-Marks `~sunpy.map.tests.test_patterns` as xfail for the tests to pass on windows.
