@@ -1,7 +1,9 @@
 .. _sunpy-how-to-plot-atmos-model:
+
 *****************************
 Plot a solar atmosphere model
 *****************************
+
 Here we will demonstrate how to load and visualize one of the models in `sunpy.sun.models`, in this case :cite:t:`avrett_loeser_2008` solar chromosphere model.
 
 .. plot::
