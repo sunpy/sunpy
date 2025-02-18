@@ -3,9 +3,21 @@
 Overlaying off-disk contours using a screen
 ===========================================
 
-In this example, we try to show that `~sunpy.coordinates.SphericalScreen`
-can be used to transform the coordinates (i.e., change the frame of reference, the observer)
-without having to do a reprojection.
+This example shows how to use a screen to overlay off-disk contours from one
+map onto another map.
+
+When overlaying contours from one data set onto another data set, there is
+almost always some small difference in the coordinate frame of the two data
+sets, namely in the observation time and the observer location.  With the
+slight shift in perspective, any off-disk contours are not plotted by default
+due to the lack of knowledge of where the contour exists in 3D space.  (In
+contrast, on-disk contours do not have this issue because the default
+assumption is that on-disk contours lie on the surface of the Sun.)  To change
+the behavior for off-disk contours, we can use a screen to specify an
+assumption for the 3D location of 2D off-disk points.
+
+See :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
+for a different use case for screens.
 """
 import matplotlib.pyplot as plt
 
