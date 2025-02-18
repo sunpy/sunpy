@@ -24,4 +24,3 @@ Reference
    troubleshooting
    ssw
    internal_api
-   impact_health
