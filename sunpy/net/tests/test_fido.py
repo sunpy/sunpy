@@ -272,74 +272,136 @@ def test_fido_indexing(queries):
     res = Fido.search(query1 | query2)
     if(len(res) != 1):
         print(query1, query2)
-    else:
-        assert len(res) == 1
 
-    assert isinstance(res[1:], UnifiedResponse)
-    assert len(res[1:]) == 1
-    assert isinstance(res[0:1], UnifiedResponse)
-    assert len(res[0:1]) == 1
+        assert isinstance(res[1:], UnifiedResponse)
+        assert len(res[1:]) == 1
+        assert isinstance(res[0:1], UnifiedResponse)
+        assert len(res[0:1]) == 1
 
-    assert isinstance(res[1:, 0], UnifiedResponse)
-    assert len(res[1:, 0]) == 1
-    assert isinstance(res[0:1, 0], UnifiedResponse)
-    assert len(res[0:1, 0]) == 1
+        assert isinstance(res[1:, 0], UnifiedResponse)
+        assert len(res[1:, 0]) == 1
+        assert isinstance(res[0:1, 0], UnifiedResponse)
+        assert len(res[0:1, 0]) == 1
 
-    assert isinstance(res[0][0], QueryResponseRow)
-    assert isinstance(res[1][0], QueryResponseRow)
-    assert isinstance(res[1, 0:1], QueryResponseTable)
+        assert isinstance(res[0][0], QueryResponseRow)
+        assert isinstance(res[1][0], QueryResponseRow)
+        assert isinstance(res[1, 0:1], QueryResponseTable)
 
-    aa = res[0, 0]
-    assert isinstance(aa, QueryResponseRow)
+        aa = res[0, 0]
+        assert isinstance(aa, QueryResponseRow)
 
-    aa = res[0, 'Instrument']
-    assert isinstance(aa, QueryResponseColumn)
-
-    aa = res[:, 'Instrument']
-    assert isinstance(aa, UnifiedResponse)
-    for table in aa:
-        assert len(table.columns) == 1
-
-    aa = res[0, ('Instrument',)]
-    assert isinstance(aa, QueryResponseTable)
-    for table in aa:
-        assert len(table.columns) == 1
-
-    aa = res[:, 0]
-
-    assert isinstance(aa, UnifiedResponse)
-    assert len(aa) == 2
-    assert len(aa[0]) == 1
-
-    aa = res[0, :]
-    assert isinstance(aa, QueryResponseTable)
-
-    aa = res[0, 1:]
-    assert isinstance(aa, QueryResponseTable)
-
-    if len(res.keys()) == len(res):
-        aa = res[res.keys()[0], 1:]
-        assert isinstance(aa, QueryResponseTable)
-        aa = res[res.keys()[0], 'Instrument']
+        aa = res[0, 'Instrument']
         assert isinstance(aa, QueryResponseColumn)
 
-    with pytest.raises(IndexError):
-        res[0, 0, 0]
+        aa = res[:, 'Instrument']
+        assert isinstance(aa, UnifiedResponse)
+        for table in aa:
+            assert len(table.columns) == 1
 
-    with pytest.raises(IndexError):
-        res["saldkal"]
+        aa = res[0, ('Instrument',)]
+        assert isinstance(aa, QueryResponseTable)
+        for table in aa:
+            assert len(table.columns) == 1
 
-    with pytest.raises(IndexError):
-        res[1.0132]
+        aa = res[:, 0]
 
-    if isinstance(res, UnifiedResponse):
-        assert len(res) != 1
+        assert isinstance(aa, UnifiedResponse)
+        assert len(aa) == 2
+        assert len(aa[0]) == 1
+
+        aa = res[0, :]
+        assert isinstance(aa, QueryResponseTable)
+
+        aa = res[0, 1:]
+        assert isinstance(aa, QueryResponseTable)
+
+        if len(res.keys()) == len(res):
+            aa = res[res.keys()[0], 1:]
+            assert isinstance(aa, QueryResponseTable)
+            aa = res[res.keys()[0], 'Instrument']
+            assert isinstance(aa, QueryResponseColumn)
+
+        with pytest.raises(IndexError):
+            res[0, 0, 0]
+
+        with pytest.raises(IndexError):
+            res["saldkal"]
+
+        with pytest.raises(IndexError):
+            res[1.0132]
+
+        if isinstance(res, UnifiedResponse):
+            assert len(res) != 1
+    else:
+        # only 1 result
+        assert len(res) == 1
+        assert isinstance(res[1:], UnifiedResponse)
+        assert len(res[1:]) == 0
+        assert isinstance(res[0:1], UnifiedResponse)
+        assert len(res[0:1]) == 1
+
+        assert isinstance(res[1:, 0], UnifiedResponse)
+        assert len(res[1:, 0]) == 0
+        assert isinstance(res[0:1, 0], UnifiedResponse)
+        assert len(res[0:1, 0]) == 1
+
+        assert isinstance(res[0][0], QueryResponseRow)
+        # assert isinstance(res[1][0], QueryResponseRow)
+        # assert isinstance(res[1, 0:1], QueryResponseTable)
+
+        aa = res[0, 0]
+        assert isinstance(aa, QueryResponseRow)
+
+        aa = res[0, 'Instrument']
+        assert isinstance(aa, QueryResponseColumn)
+
+        aa = res[:, 'Instrument']
+        assert isinstance(aa, UnifiedResponse)
+        for table in aa:
+            assert len(table.columns) == 1
+
+        aa = res[0, ('Instrument',)]
+        assert isinstance(aa, QueryResponseTable)
+        for table in aa:
+            assert len(table.columns) == 1
+
+        aa = res[:, 0]
+
+        assert isinstance(aa, UnifiedResponse)
+        assert len(aa) == 1
+        assert len(aa[0]) == 1
+
+        aa = res[0, :]
+        assert isinstance(aa, QueryResponseTable)
+
+        aa = res[0, 1:]
+        assert isinstance(aa, QueryResponseTable)
+
+        if len(res.keys()) == len(res):
+            aa = res[res.keys()[0], 1:]
+            assert isinstance(aa, QueryResponseTable)
+            aa = res[res.keys()[0], 'Instrument']
+            assert isinstance(aa, QueryResponseColumn)
+
+        with pytest.raises(IndexError):
+            res[0, 0, 0]
+
+        with pytest.raises(IndexError):
+            res["saldkal"]
+
+        with pytest.raises(IndexError):
+            res[1.0132]
+
+        if isinstance(res, UnifiedResponse):
+            assert len(res) == 1
+
+
 
 
 @pytest.mark.remote_data
 def test_combined_response_vso_time():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
-                  a.Instrument('AIA'), combine=True)
+                  a.Instrument('AIA'))
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
 
@@ -348,13 +410,13 @@ def test_combined_response_vso_time():
     assert t1 == t2
 
     # Tables from 2 different providers dont get combines
-    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Instrument.lasco , combine=True)
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Instrument.lasco)
     assert len(results) == 2
     assert isinstance(results[0], QueryResponseTable)
     assert isinstance(results[1], QueryResponseTable)
 
 
-    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom) , combine=True)
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom))
     assert len(results) == 2
     assert isinstance(results[0], QueryResponseTable)
     assert isinstance(results[1], QueryResponseTable)
@@ -362,7 +424,7 @@ def test_combined_response_vso_time():
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
     results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-            a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'), combine=True)
+            a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
 
@@ -387,7 +449,7 @@ def test_combined_response_lyra():
 @pytest.mark.remote_data
 def test_combine_attr():
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
-                  a.Instrument('AIA'), combine=True)
+                  a.Instrument('AIA'))
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
 
@@ -397,7 +459,7 @@ def test_combine_attr():
     assert isinstance(results[0], QueryResponseTable)
 
     results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
-                  a.Instrument('AIA'), combine=False)
+                  a.Instrument('AIA'))
     assert len(results) == 2
     assert isinstance(results[0], QueryResponseTable)
 
@@ -565,7 +627,7 @@ def test_path_format_keys():
     # Need to pass combine=False otherwise combine=True will take union of the
     # columns for multiple tables which will not have the same keys
     # because path_format_keys() takes intersection of the keys in the tables
-    unif = UnifiedResponse(t1, t2, combine=False)
+    unif = UnifiedResponse(t1, t2)
 
     # assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
     assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
