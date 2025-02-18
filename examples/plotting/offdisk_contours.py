@@ -37,7 +37,7 @@ aia171_map = aia171_map.submap((0, 500)*u.pix, top_right=(250, 750)*u.pix)
 aia193_map = aia193_map.submap((0, 500)*u.pix, top_right=(250, 750)*u.pix)
 
 ##############################################################################
-# First, let's plot the AIA 171 contours on their native map.  The contours
+# First, let's plot the AIA 171 contours on their native map. The contours
 # extend off disk due to the coronal loops.
 
 fig = plt.figure()
