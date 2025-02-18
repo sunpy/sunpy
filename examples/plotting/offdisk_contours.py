@@ -28,7 +28,7 @@ import sunpy.map
 from sunpy.coordinates.screens import SphericalScreen
 
 ##############################################################################
-# We use two AIA images that were not taken at exactly the same time.  We
+# We use two AIA images that were not taken at exactly the same time. We
 # crop the maps to an active region at the eastern limb.
 
 aia171_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
