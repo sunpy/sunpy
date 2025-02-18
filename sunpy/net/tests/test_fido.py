@@ -267,12 +267,8 @@ def test_fido_indexing(queries):
     # this.
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
-
-    # TODO: Potentially branch out into two cases
     res = Fido.search(query1 | query2)
     if(len(res) != 1):
-        print(query1, query2)
-
         assert isinstance(res[1:], UnifiedResponse)
         assert len(res[1:]) == 1
         assert isinstance(res[0:1], UnifiedResponse)
