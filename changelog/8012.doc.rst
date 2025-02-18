@@ -1,1 +1,1 @@
-Added an example `examples.plotting.add_countour_with_Spherical_screen` to the gallery to show that `sunpy.coordinates.screens.SphericalScreen` can be used even without reprojection
+Added an example :ref:`sphx_glr_generated_gallery_plotting_offdisk_contours.py` to show how to overlay off-disk contours from one map onto another map.
