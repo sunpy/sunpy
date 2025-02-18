@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "setuptools>=62.1",
-  "setuptools_scm[toml]>=8.0.0",
+  "setuptools_scm[toml]>=8.0.1",
   "wheel",
   "extension-helpers",
   # Comments on numpy build requirement range:
@@ -102,7 +102,7 @@ core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
 # Because of some real *fun* dependancy constraints between aiobotocore, s3fs
 # and boto3 this is the best way to get s3fs and boto3 (needed for cdflib)
-# installed simultaneously.  We only use this extra for tests, but it is
+# installed simultaneously. We only use this extra for tests, but it is
 # provided separate for users who want to opt-in to s3 support. It should not be
 # included in [all] or conda deps.
 s3 = [
@@ -134,6 +134,7 @@ docs = [
   "sphinxext-opengraph>=0.6.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinx-hoverxref>=1.3.0",
+  "sphinxcontrib-bibtex",
 ]
 docs-gallery = [
   "sunpy[docs]",

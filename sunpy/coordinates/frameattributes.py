@@ -32,7 +32,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
     def convert_input(self, value):
         """
         Convert input value to a Time object and validate by running through the
-        Time constructor.  Also check that the input was a scalar.
+        Time constructor. Also check that the input was a scalar.
 
         Parameters
         ----------

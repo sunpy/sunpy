@@ -1,0 +1,53 @@
+name: CI benchmarks
+
+on:
+  pull_request:
+    types: [synchronize, reopened, labeled]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmarks:
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'Run benchmarks')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sunpy repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libopencv-dev
+          python -m pip install --upgrade pip
+          pip install asv virtualenv
+      - name: Add machine info for ASV
+        run: asv machine --yes
+      - name: Run benchmarks
+        id: asv
+        shell: bash -e {0}
+        env:
+          OPENBLAS_NUM_THREADS: 1
+          MKL_NUM_THREADS: 1
+          OMP_NUM_THREADS: 1
+          ASV_FACTOR: 1.1
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          COLUMNS: 150  # set a large terminal width so that large tables are rendered in 2D
+        run: |
+          ASV_OPTIONS="--show-stderr --factor $ASV_FACTOR --cpu-affinity 0"
+          echo "TEXT<<EOF" >> $GITHUB_OUTPUT
+          asv continuous $ASV_OPTIONS ${BASE_SHA} ${GITHUB_SHA} 2>&1 | tee -a $GITHUB_OUTPUT
+          status=${PIPESTATUS[0]}
+          echo "EOF" >> $GITHUB_OUTPUT
+          exit $status
+      - name: Post the summary
+        if: always()
+        run: |
+          echo "${{ steps.asv.outputs.TEXT }}" | egrep "\| *Change *\| *Before *\[|BENCHMARKS NOT SIGNIFICANTLY CHANGED." -A 1000 | tee -a $GITHUB_STEP_SUMMARY

@@ -27,6 +27,7 @@ import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
@@ -1041,6 +1042,26 @@ def test_superpixel_masked(aia171_test_map_with_mask):
     assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
 
 
+def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
+    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    dimensions = (2, 2) * u.pix
+
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
+    assert superpix_map.mask is not None
+
+    expected_shape = input_dims * (1 * u.pix / dimensions)
+    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+
+    # Verify mask values (bin_mask=True)
+    reshaped_mask = reshape_image_to_4d_superpixel(
+        aia171_test_map_with_mask.mask,
+        [dimensions[1].value, dimensions[0].value],
+        [0, 0],
+    )
+    expected_mask = np.any(reshaped_mask, axis=(1, 3))
+    assert np.array_equal(superpix_map.mask, expected_mask)
+
+
 def test_superpixel_units(generic_map):
     new_dims = (2, 2) * u.pix
     super1 = generic_map.superpixel(new_dims)
@@ -1344,7 +1365,7 @@ def test_hg_data_to_pix(heliographic_test_map):
 def test_more_than_two_dimensions():
     """
     Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    loaded. We need to load a >2-dim dataset with a TELESCOP header
     """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.

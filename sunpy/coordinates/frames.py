@@ -53,7 +53,7 @@ def _frame_parameters():
                    "        A representation object or ``None`` to have no data\n"
                    "        (or use the coordinate component arguments, see below).")
     ret['common'] = (f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                     "        The time of the observation.  This is used to determine the\n"
+                     "        The time of the observation. This is used to determine the\n"
                      "        position of solar-system bodies (e.g., the Sun and the Earth) as\n"
                      "        needed to define the origin and orientation of the frame.\n"
                      "    representation_type : `~astropy.coordinates.BaseRepresentation`, str, optional\n"
@@ -103,7 +103,7 @@ def _frame_parameters():
                       "        Defaults to the J2000.0 equinox.")
     ret['magnetic_model'] = ("magnetic_model : `str`\n"
                              "        The IGRF model to use for determining the orientation of\n"
-                             "        Earth's magnetic dipole pole.  The supported options are\n"
+                             "        Earth's magnetic dipole pole. The supported options are\n"
                              "        ``'igrf13'`` (default), ``'igrf12'``, ``'igrf11'``, and\n"
                              "        ``'igrf10'``.")
     ret['igrf_reference'] = ("* `International Geomagnetic Reference Field (IGRF) "
@@ -299,7 +299,7 @@ class HeliographicCarrington(BaseHeliographic):
     - The Z-axis (+90 degrees latitude) is aligned with the Sun's north pole.
     - The X-axis and Y-axis rotate with a period of 25.38 days.
 
-    This system differs from Stonyhurst Heliographic (HGS) in its definition of longitude.  This
+    This system differs from Stonyhurst Heliographic (HGS) in its definition of longitude. This
     longitude is an "apparent" longitude because it takes into account the time it takes for light
     to travel from the Sun's surface to the observer (see :ref:`sunpy-topic-guide-coordinates-carrington`).
     Thus, the observer needs to be specified to be able to transform to any other coordinate frame.
@@ -376,7 +376,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
       perpendicular to the Z-axis.
 
     This frame defaults to a Cartesian component representation, which is known as Heliocentric
-    Cartesian (HCC).  This frame can also be represented using cylindrical components, where
+    Cartesian (HCC). This frame can also be represented using cylindrical components, where
     where ``rho`` is the impact parameter and ``psi`` is the position angle.
     ``psi`` is measured relative to the west limb, rather than solar north, so is shifted
     by 90 degrees compared to the convention of the Heliocentric Radial (HCR) system.
@@ -450,7 +450,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
       values in the direction of the Sun's north pole.
     - ``distance`` is the Sun-observer distance.
 
-    This system is frequently used in a projective form without ``distance`` specified.  For
+    This system is frequently used in a projective form without ``distance`` specified. For
     observations looking very close to the center of the Sun, where the small-angle approximation
     is appropriate, ``Tx`` and ``Ty`` can be approximated as Cartesian components.
 
@@ -596,7 +596,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         A coordinate is visible if it can been seen from the observer (the ``observer``
         frame attribute) assuming that the Sun is an opaque sphere with a fixed radius
-        (the ``rsun`` frame attribute).  The visible side of the Sun is always smaller
+        (the ``rsun`` frame attribute). The visible side of the Sun is always smaller
         than a full hemisphere.
 
         Parameters
@@ -607,7 +607,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
         Notes
         -----
-        If the coordinate is 2D, it is automatically deemed visible.  A 2D coordinate
+        If the coordinate is 2D, it is automatically deemed visible. A 2D coordinate
         describes a look direction from the observer, who would simply see whatever is
         in "front", and thus cannot correspond to a point hidden from the observer.
 
@@ -615,9 +615,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         numerical precision would falsely conclude that a coordinate is not visible.
         For example, a coordinate that is expressly created to be on the solar surface
         may be calculated to be slightly below the surface, and hence not visible if
-        there is no tolerance.  However, a consequence of the ``tolerance`` parameter
+        there is no tolerance. However, a consequence of the ``tolerance`` parameter
         is that a coordinate that is formally on the far side of the Sun but is
-        extremely close to the solar limb can be evaluated as visible.  With the
+        extremely close to the solar limb can be evaluated as visible. With the
         default ``tolerance`` value of 1 meter, a coordinate on the surface of the Sun
         can be up to 11 arcseconds of heliographic longitude past the solar limb and
         still be evaluated as visible.
@@ -700,7 +700,7 @@ class HelioprojectiveRadial(SunPyBaseCoordinateFrame):
 
     .. note::
         The declination angle, rather than the impact angle, is used as a component
-        in order to match the FITS WCS definition.  The impact angle can be readily
+        in order to match the FITS WCS definition. The impact angle can be readily
         retrieved using the `theta` property.
 
     Parameters
@@ -711,7 +711,7 @@ class HelioprojectiveRadial(SunPyBaseCoordinateFrame):
     delta : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
         The declination angle. Not needed if ``data`` is given.
     r: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        The observer-coordinate distance.  Not needed if ``data`` is given.
+        The observer-coordinate distance. Not needed if ``data`` is given.
     {rsun}
     {observer}
     {common}
@@ -783,7 +783,7 @@ class HelioprojectiveRadial(SunPyBaseCoordinateFrame):
 
         If the coordinate is 2D, the default assumption is that the coordinate is on
         the surface of the Sun, and the distance component is calculated
-        accordingly.  Under this assumption, if the 2D coordinate is outside the
+        accordingly. Under this assumption, if the 2D coordinate is outside the
         disk, the distance component will be NaN.
 
         The assumption can be changed using one of the screens in
@@ -953,7 +953,7 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
         The geographic longitude/latitude of the Earth's magnetic north pole.
 
         This position is calculated from the first three coefficients of the selected
-        IGRF model per Franz & Harper (2002).  The small offset between dipole center
+        IGRF model per Franz & Harper (2002). The small offset between dipole center
         and Earth center is ignored.
 
         References
@@ -1007,7 +1007,7 @@ class Geomagnetic(BaseMagnetic):
     Notes
     -----
     The position of Earth's magnetic north pole is calculated from the first three
-    coefficients of the selected IGRF model per Franz & Harper (2002).  The small
+    coefficients of the selected IGRF model per Franz & Harper (2002). The small
     offset between dipole center and Earth center is ignored.
 
     References
@@ -1038,7 +1038,7 @@ class SolarMagnetic(BaseMagnetic):
     Notes
     -----
     The position of Earth's magnetic north pole is calculated from the first three
-    coefficients of the selected IGRF model per Franz & Harper (2002).  The small
+    coefficients of the selected IGRF model per Franz & Harper (2002). The small
     offset between dipole center and Earth center is ignored.
 
     References
@@ -1069,7 +1069,7 @@ class GeocentricSolarMagnetospheric(BaseMagnetic):
     Notes
     -----
     The position of Earth's magnetic north pole is calculated from the first three
-    coefficients of the selected IGRF model per Franz & Harper (2002).  The small
+    coefficients of the selected IGRF model per Franz & Harper (2002). The small
     offset between dipole center and Earth center is ignored.
 
     References

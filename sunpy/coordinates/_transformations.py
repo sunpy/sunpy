@@ -81,9 +81,9 @@ def transform_with_sun_center():
     Context manager for coordinate transformations to ignore the motion of the center of the Sun.
 
     Normally, coordinates refer to a point in inertial space (relative to the barycenter of the
-    solar system).  Transforming to a different observation time does not move the point at all,
+    solar system). Transforming to a different observation time does not move the point at all,
     but rather only updates the coordinate representation as needed for the origin and axis
-    orientations at the new observation time.  However, the center of the Sun moves over time.
+    orientations at the new observation time. However, the center of the Sun moves over time.
     Thus, for example, a coordinate that lies on the surface of the Sun at one observation time
     will not continue to lie on the surface of the Sun at other observation times.
 
@@ -94,7 +94,7 @@ def transform_with_sun_center():
     Notes
     -----
     This context manager accounts only for the motion of the center of the Sun, i.e.,
-    translational motion.  The motion of solar features due to any rotation of the Sun about its
+    translational motion. The motion of solar features due to any rotation of the Sun about its
     rotational axis is not accounted for.
 
     Due to the implementation approach, this context manager modifies transformations between only
@@ -146,14 +146,14 @@ def propagate_with_solar_surface(rotation_model='howard'):
     differential rotation for any change in observation time.
 
     Normally, coordinates refer to a point in inertial space (relative to the
-    barycenter of the solar system).  Transforming to a different observation time
+    barycenter of the solar system). Transforming to a different observation time
     does not move the point at all, but rather only updates the coordinate
     representation as needed for the origin and axis orientations at the new
     observation time.
 
     Under this context manager, transformations will instead treat the coordinate
     as if it were referring to a point on the solar surface instead of a point in
-    inertial space.  If a transformation has a change in observation time, the
+    inertial space. If a transformation has a change in observation time, the
     heliographic longitude of the point will be updated according to the specified
     rotation model.
 
@@ -161,7 +161,7 @@ def propagate_with_solar_surface(rotation_model='howard'):
     ----------
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``,
-        ``'allen'``, and ``'rigid'``.  See the documentation for
+        ``'allen'``, and ``'rigid'``. See the documentation for
         :func:`~sunpy.sun.models.differential_rotation` for the differences
         between these models.
 
@@ -227,7 +227,7 @@ _layer_level = 0
 def _transformation_debug(description):
     """
     Decorator to produce debugging output for a transformation function: its description, inputs,
-    and output.  Unicode box-drawing characters are used.
+    and output. Unicode box-drawing characters are used.
     """
     def decorator(func):
         @wraps(func)
@@ -714,7 +714,7 @@ def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
     rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
     equatorial plane (i.e., the component of the Sun-Earth vector perpendicular to the Z axis).
     Thus, the transformation matrix is the product of the matrix to align the Z axis (by de-tilting
-    the Sun's rotation axis) and the matrix to align the X axis.  The first matrix is independent
+    the Sun's rotation axis) and the matrix to align the X axis. The first matrix is independent
     of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
     vector.
     """

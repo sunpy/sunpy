@@ -30,8 +30,7 @@ plt.show()
 # relative to the AIA instrument on the SDO satellite, which means most
 # of the images are taken with solar North pointed down.
 # The roll angle of the instrument is reported in the FITS header
-# keyword ``CROTA2`` (see Figure 17 of
-# `Couvidat et al. (2016) <https://dx.doi.org/10.1007/s11207-016-0957-3>`_,
+# keyword ``CROTA2`` (see Figure 17 of :cite:t:`couvidat_hmi_2016`
 # which states that "the nominal CROTA2 for HMI is ≈179.93").
 #
 # The order keyword, below, specifies the type of interpolation;

@@ -25,10 +25,10 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     """
     Draws the solar limb as seen by the specified observer.
 
-    The limb is a circle for only the simplest plots.  If the specified
+    The limb is a circle for only the simplest plots. If the specified
     observer of the limb is different from the observer of the coordinate frame
     of the plot axes, not only may the limb not be a true circle, a portion of
-    the limb may be hidden from the observer.  In that case, the circle is
+    the limb may be hidden from the observer. In that case, the circle is
     divided into visible and hidden segments, represented by solid and dotted
     lines, respectively.
 
@@ -67,8 +67,8 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     of the Sun to the map observer) ``visible`` will be ``None``.
 
     To avoid triggering Matplotlib auto-scaling, these patches are added as
-    artists instead of patches.  One consequence is that the plot legend is not
-    populated automatically when the limb is specified with a text label.  See
+    artists instead of patches. One consequence is that the plot legend is not
+    populated automatically when the limb is specified with a text label. See
     :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
     the Matplotlib documentation for examples of creating a custom legend.
     """

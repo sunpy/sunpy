@@ -57,7 +57,7 @@ Currently we have a variety of services that respond or activate on an opened pu
 
 Comments from bots:
 
-* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`_: Performs a PEP8 check on any submitted code. This is updated as the code changes.
+* `pep8speaks <https://github.com/OrkoHunter/pep8speaks>`__: Performs a PEP8 check on any submitted code. This is updated as the code changes.
 
 Checks that appear at the bottom of a pull request:
 
@@ -71,7 +71,7 @@ or at the top under the "Checks" tab:
    :width: 600
    :alt: PR checks tab
 
-* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`_: Runs two figure tests environments ("ci/circleci: py3\_-figure", "ci/circleci: py3\_-figure-devdeps").
+* `figure-tests (CircleCi) <https://circleci.com/gh/sunpy/sunpy/>`__: Runs two figure tests environments ("ci/circleci: py3\_-figure", "ci/circleci: py3\_-figure-devdeps").
 
 * figure_report (Giles): Show the final results and download updated hashes of the figure tests.
 
@@ -79,18 +79,18 @@ or at the top under the "Checks" tab:
 
 * changelog: absent | found (Giles): If a changelog is needed, this will check and will pass if a changelog with the correct number is found.
 
-* `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`_: This builds our documentation.
+* `docs/readthedocs.org:sunpy (Read the Docs) <https://readthedocs.org/projects/sunpy/>`__: This builds our documentation.
   This primary check is to ensure the documentation has rendered correctly.
   Warnings are not checked on this build but under GitHub Actions (see below).
 
-* `CI (GitHub Actions) <https://github.com/sunpy/sunpy/actions>`_: Runs our test suite on multiple operating systems.
+* `CI (GitHub Actions) <https://github.com/sunpy/sunpy/actions>`__: Runs our test suite on multiple operating systems.
   If the minimal "CI / core" tests are successful, the indepth "CI / test", documentation "CI / docs" test and remote data "CI / online" tests will be run.
   You will see multiple jobs within each group.
   Each job corresponds to a tox environment being run on a particular operating system.
 
-* `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage for the submitted code in the pull request.
+* `codecov/patch (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`__: Checks how many lines of the code lack test coverage for the submitted code in the pull request.
 
-* `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage in sunpy overall.
+* `codecov/project (CodeCov) <https://codecov.io/gh/sunpy/sunpy/>`__: Checks how many lines of the code lack test coverage in sunpy overall.
 
 * `pre-commit.ci - pr <https://pre-commit.ci>`__: Checks the code style checks have passed. This CI will automatically fix style issues by commenting ``pre-commit.ci autofix`` on its own line in a comment on the PR.
 

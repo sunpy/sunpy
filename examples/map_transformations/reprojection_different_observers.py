@@ -4,7 +4,7 @@ Reprojecting Images to Different Observers
 ==========================================
 
 This example demonstrates how you can reproject images to the view from
-different observers.  We use data from these two instruments:
+different observers. We use data from these two instruments:
 
 * AIA on SDO, which is in orbit around Earth
 * EUVI on STEREO A, which is in orbit around the Sun away from the Earth
