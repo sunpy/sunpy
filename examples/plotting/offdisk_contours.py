@@ -58,7 +58,7 @@ aia171_map.draw_contours(axes=ax, levels=[1000, 2500] * u.DN, colors="green")
 
 ##############################################################################
 # Finally, let's overlay those contours again, but this time using the
-# `~sunpy.coordinates.SphericalScreen` context manager.  This screen assumes
+# `~sunpy.coordinates.SphericalScreen` context manager. This screen assumes
 # that off-disk points lie on the inside of a spherical screen. Note that the
 # off-disk contours are now visible.
 
