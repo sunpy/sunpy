@@ -119,6 +119,9 @@ ogp_custom_meta_tags = [
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
 
+# Wrap large function/method signatures
+maximum_signature_line_length = 80
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
