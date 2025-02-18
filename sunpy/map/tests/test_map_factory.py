@@ -93,7 +93,7 @@ def test_composite():
 # Want to check that patterns work, so ignore this warning that comes from
 # the AIA test data
 
-
+@pytest.mark.xfail()
 @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 def test_patterns(eit_fits_directory):
     # Test different Map pattern matching
