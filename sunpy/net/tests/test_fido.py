@@ -365,17 +365,8 @@ def test_combined_response_jsoc():
                            a.jsoc.Series('hmi.m_45s'))
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
-    # Testing that the entire time range is covered
-    max_time = None
-    min_time = None
-    for t in results['jsoc']['T_REC']:
-        if max_time is None or t > max_time:
-            max_time = t
-        if min_time is None or t < min_time:
-            min_time = t
-
-    assert min_time == '2020-01-01 00:00:45'
-    assert max_time == '2020-01-03 00:00:45'
+    assert results['jsoc']['T_REC'][0] == '2020.01.01_00:00:45_TAI'
+    assert results['jsoc']['T_REC'][-1] == '2020.01.03_00:00:45_TAI'
 
 
 @pytest.mark.remote_data
