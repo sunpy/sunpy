@@ -94,7 +94,6 @@ It includes an interface for searching and downloading data from multiple data p
     citation
     reference/known_issues
     reference/bibliography
-    reference/impact_health
     reference/stability
     dev_guide/index
 
