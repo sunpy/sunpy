@@ -1,5 +1,7 @@
 import pytest
-import sunpy.sun.models  as sun_models  
+
+import sunpy.sun.models as sun_models
+
 
 @pytest.mark.parametrize("model_name", sun_models._MODELS.keys())
 def test_valid_model_loading(model_name):
@@ -8,7 +10,7 @@ def test_valid_model_loading(model_name):
     """
     model_data = getattr(sun_models, model_name)
     assert model_data is not None, f"Test Failed: {model_name} does not exist."
-    
+
 
 @pytest.mark.parametrize("model_name", sun_models._MODELS.keys())
 def test_cache_functionality(model_name):
@@ -25,8 +27,8 @@ def test_invalid_model_handling():
     Ensure an invalid model raises AttributeError with the correct message.
     """
     with pytest.raises(AttributeError, match="Error: Model 'invalid_model' is not available."):
-        getattr(sun_models, "invalid_model")  
- 
+        getattr(sun_models, "invalid_model")
+
 
 if __name__ == "__main__":
-    pytest.main(["-v"])  
+    pytest.main(["-v"])
