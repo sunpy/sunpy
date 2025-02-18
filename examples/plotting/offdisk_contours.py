@@ -47,7 +47,7 @@ aia171_map.draw_contours(axes=ax, levels=[1000, 2500] * u.DN, colors="green")
 
 ##############################################################################
 # Next, let's try overlaying those same AIA 171 contours on the AIA 193 map.
-# Note that none of the off-disk contours appear.  Again, this is because it
+# Note that none of the off-disk contours appear. Again, this is because it
 # is not well defined where to plot such contours from the vantage point of
 # the AIA 193 map.
 
