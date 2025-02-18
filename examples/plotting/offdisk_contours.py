@@ -12,7 +12,7 @@ sets, namely in the observation time and the observer location.  With the
 slight shift in perspective, any off-disk contours are not plotted by default
 due to the lack of knowledge of where the contour exists in 3D space.  (In
 contrast, on-disk contours do not have this issue because the default
-assumption is that on-disk contours lie on the surface of the Sun.)  To change
+assumption is that on-disk contours lie on the surface of the Sun.) To change
 the behavior for off-disk contours, we can use a screen to specify an
 assumption for the 3D location of 2D off-disk points.
 
