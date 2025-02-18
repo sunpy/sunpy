@@ -309,53 +309,31 @@ def test_fido_indexing(queries):
     with pytest.raises(IndexError):
         res[1.0132]
 
-    if(len(res) != 1):
-        assert len(res) == 2
-        assert isinstance(res[1:], UnifiedResponse)
-        assert len(res[1:]) == 1
+    assert len(res) == (2 if len(res) != 1 else 1)
+    assert isinstance(res[1:], UnifiedResponse)
+    assert len(res[1:]) == (1 if len(res) != 1 else 0)
 
-        assert isinstance(res[1:, 0], UnifiedResponse)
-        assert len(res[1:, 0]) == 1
+    assert isinstance(res[1:, 0], UnifiedResponse)
+    assert len(res[1:, 0]) == (1 if len(res) != 1 else 0)
 
+    if len(res) != 1:
         assert isinstance(res[1][0], QueryResponseRow)
         assert isinstance(res[1, 0:1], QueryResponseTable)
 
-        aa = res[:, 'Instrument']
-        assert isinstance(aa, UnifiedResponse)
-        for table in aa:
-            assert len(table.columns) == 1
+    aa = res[:, 'Instrument']
+    assert isinstance(aa, UnifiedResponse)
+    for table in aa:
+        assert len(table.columns) == 1
 
-        aa = res[:, 0]
+    aa = res[:, 0]
 
-        assert isinstance(aa, UnifiedResponse)
-        assert len(aa) == 2
-        assert len(aa[0]) == 1
-
-        if isinstance(res, UnifiedResponse):
-            assert len(res) != 1
-    else:
-        assert len(res) == 1
-        assert isinstance(res[1:], UnifiedResponse)
-        assert len(res[1:]) == 0
-
-        assert isinstance(res[1:, 0], UnifiedResponse)
-        assert len(res[1:, 0]) == 0
-
-        aa = res[:, 'Instrument']
-        assert isinstance(aa, UnifiedResponse)
-        for table in aa:
-            assert len(table.columns) == 1
-
-        aa = res[:, 0]
-
-        assert isinstance(aa, UnifiedResponse)
-        assert len(aa) == 1
-        assert len(aa[0]) == 1
-
-        if isinstance(res, UnifiedResponse):
-            assert len(res) == 1
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 2 if len(aa) != 1 else 1
+    assert len(aa[0]) == 1
 
 
+    if isinstance(res, UnifiedResponse):
+        assert len(res) == (2 if len(res) != 1 else 1)
 
 
 @pytest.mark.remote_data
@@ -584,9 +562,7 @@ def test_path_format_keys():
     t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
                              '!excite!': ['cat', 'rabbit']})
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
-    # Need to pass combine=False otherwise combine=True will take union of the
-    # columns for multiple tables which will not have the same keys
-    # because path_format_keys() takes intersection of the keys in the tables
+
     unif = UnifiedResponse(t1, t2)
 
     # assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
