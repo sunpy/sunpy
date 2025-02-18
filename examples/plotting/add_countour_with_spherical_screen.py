@@ -1,7 +1,7 @@
 """
-========================================================
-Using SphericalScreen to account for differing observers 
-========================================================
+===========================================
+Overlaying off-disk contours using a screen
+===========================================
 
 In this example, we try to show that `~sunpy.coordinates.SphericalScreen`
 can be used to transform the coordinates (i.e., change the frame of reference, the observer)
