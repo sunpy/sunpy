@@ -1,1 +1,1 @@
-Added support for 1D solar chromosphere models in `sunpy.sun.models`, allowing to easily load and analyze atmospheric structures
+Added support loading atmosphere models in `sunpy.sun.models`, for now only:cite:t:`avrett_loeser_2008`.

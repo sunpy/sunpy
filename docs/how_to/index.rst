@@ -40,7 +40,7 @@ For more complete code examples, see the how-to guides above.
    * - How do I...
      - Solution
    * - create a map from a FITS file
-     - `my_map = Map('file.fits') <sunpy.map>``
+     - `my_map = Map('file.fits') <sunpy.map>`
    * - save a map to a FITS file
      - `my_map.save('another_file.fits') <sunpy.map.GenericMap.save>`
    * - get a quicklook summary of a map
