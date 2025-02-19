@@ -1,1 +1,1 @@
-Added support loading atmosphere models in `sunpy.sun.models`, for now only:cite:t:`avrett_loeser_2008`.
+Added support loading atmosphere models in `sunpy.sun.models`, for now only :cite:t:`avrett_loeser_2008`.
