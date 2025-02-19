@@ -21,6 +21,7 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    fix_map_metadata
    manipulate_grid_lines
    parse_time
+   plot_solar_atmos-model
    read_asdf_file
    remote_data_manager
    search_multiple_wavelengths
@@ -39,7 +40,7 @@ For more complete code examples, see the how-to guides above.
    * - How do I...
      - Solution
    * - create a map from a FITS file
-     - `my_map = Map('file.fits') <sunpy.map>`
+     - `my_map = Map('file.fits') <sunpy.map>``
    * - save a map to a FITS file
      - `my_map.save('another_file.fits') <sunpy.map.GenericMap.save>`
    * - get a quicklook summary of a map

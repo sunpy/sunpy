@@ -12,7 +12,7 @@ Here we will demonstrate how to load and visualize one of the models in `sunpy.s
     >>> import numpy as np
     >>> import sunpy.sun.models as sun_models
 
-    >>> data = models.avrett_loeser_2008
+    >>> data = sun_models.avrett_loeser_2008
 
     >>> x_param = "h"
     >>> y_param = ["T","n_e"]
