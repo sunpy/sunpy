@@ -21,7 +21,7 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    fix_map_metadata
    manipulate_grid_lines
    parse_time
-   plot_solar_atmos-model
+   plot_solar_atmos_model
    read_asdf_file
    remote_data_manager
    search_multiple_wavelengths
