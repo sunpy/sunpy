@@ -80,7 +80,7 @@ class GenericClient(BaseClient):
         \\*args: `tuple`
             `sunpy.net.attrs` objects representing the query.
         \\*\\*kwargs: `dict`
-             Any extra keywords to refine the search.
+            Any extra keywords to refine the search.
 
         Returns
         -------
@@ -108,8 +108,7 @@ class GenericClient(BaseClient):
                 matchdict['Wavelength'] = elem
             else:
                 raise ValueError(
-                    f"GenericClient can not add {elem.__class__.__name__} to the rowdict dictionary to"
-                    "pass to the Client.")
+                    f"GenericClient can not add {elem.__class__.__name__} to the rowdict dictionary to pass to the Client.")
         return matchdict
 
     @classmethod
@@ -242,7 +241,8 @@ class GenericClient(BaseClient):
         metalist = []
         for i in filesmeta:
             rowdict = self.post_search_hook(i, matchdict)
-            metalist.append(rowdict)
+            if rowdict:
+                metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
