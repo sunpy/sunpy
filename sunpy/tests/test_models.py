@@ -16,7 +16,7 @@ def test_cache_functionality():
     """
     Ensure model caching works properly for a specific model.
     """
-    model_name = "avrett_loeser_2008"  
+    model_name = "avrett_loeser_2008"
     model_data_1 = getattr(sun_models, model_name)
     model_data_2 = getattr(sun_models, model_name)
 
