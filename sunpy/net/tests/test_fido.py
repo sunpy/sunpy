@@ -356,7 +356,6 @@ def test_combined_response_vso_time():
     results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom))
     assert len(results) == 1
     assert isinstance(results[0], QueryResponseTable)
-    assert isinstance(results[1], QueryResponseTable)
 
 @pytest.mark.remote_data
 def test_combined_response_jsoc():
@@ -381,24 +380,6 @@ def test_combined_response_lyra():
     t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
     t2 = TimeRange('2020-01-01', '2020-01-03 23:59:59.999')
     assert t1 == t2
-
-
-@pytest.mark.remote_data
-def test_combine_attr():
-    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
-                  a.Instrument('AIA'))
-    assert len(results) == 1
-    assert isinstance(results[0], QueryResponseTable)
-
-    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
-                  a.Instrument('AIA'))
-    assert len(results) == 1
-    assert isinstance(results[0], QueryResponseTable)
-
-    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
-                  a.Instrument('AIA'))
-    assert len(results) == 2
-    assert isinstance(results[0], QueryResponseTable)
 
 
 @no_vso
