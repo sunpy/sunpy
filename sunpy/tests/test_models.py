@@ -20,7 +20,7 @@ def test_cache_functionality():
     model_data_1 = getattr(sun_models, model_name)
     model_data_2 = getattr(sun_models, model_name)
 
-    assert model_data_1 is model_data_2  # Ensure caching is working
+    assert model_data_1 is model_data_2
     assert model_name in sun_models._MODEL_CACHE
 
 
