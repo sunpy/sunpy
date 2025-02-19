@@ -16,7 +16,7 @@ def test_cache_functionality():
     """
     Ensure model caching works properly for a single model.
     """
-    model_name = next(iter(sun_models._MODELS.keys()))  # Pick one model to test
+    model_name = next(iter(sun_models._MODELS.keys()))  
     model_data_1 = getattr(sun_models, model_name)
     model_data_2 = getattr(sun_models, model_name)
     assert model_data_1 is model_data_2
