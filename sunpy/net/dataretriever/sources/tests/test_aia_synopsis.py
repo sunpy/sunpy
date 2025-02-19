@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from hypothesis import given
 
@@ -68,6 +69,34 @@ def test_query(client):
     assert len(qr1) == 9
     assert qr1['Start Time'][0].isot == "2024-08-09T00:00:00.000"
     assert qr1['Start Time'][-1].isot == "2024-08-09T00:00:00.000"
+
+
+@pytest.mark.remote_data
+def test_wavelength_query(client):
+    time_range = TimeRange("2020-01-01", "2020-01-01 00:12")
+    query_result = client.search(
+        a.Time(time_range.start, time_range.end),
+        a.Instrument("AIA"),
+        a.Level("1.5s"),
+        a.Wavelength(1600 * u.angstrom),
+    )
+    assert query_result is not None
+    assert np.all(query_result["Wavelength"] == 1600)
+
+
+@pytest.mark.remote_data
+def test_sample_query(client):
+    time_range = TimeRange("2020-01-01", "2020-01-02")
+    query_result = client.search(
+        a.Time(time_range.start, time_range.end),
+        a.Wavelength(171 * u.angstrom),
+        a.Instrument("AIA"),
+        a.Level("1.5s"),
+        a.Sample(12 * u.hour),
+    )
+    assert query_result is not None
+    assert np.all(query_result["Wavelength"] == 171)
+    assert len(query_result) == 3
 
 
 @pytest.mark.remote_data

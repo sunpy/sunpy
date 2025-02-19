@@ -1,5 +1,10 @@
+import astropy.units as u
+
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.scraper import Scraper
+from sunpy.time import TimeRange
 
 __all__ = ["AIASynopsisClient"]
 
@@ -43,13 +48,49 @@ class AIASynopsisClient(GenericClient):
     <BLANKLINE>
     """
     pattern = ('https://jsoc1.stanford.edu/data/aia/synoptic/'
-               '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{wavelength:04d}}.fits')
-    known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
-    # required = {a.Time, a.Instrument, a.Level}
+               '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{Wavelength:04d}}.fits')
+    required = {a.Time, a.Instrument, a.Level}
 
     @property
     def info_url(self):
         return "https://jsoc1.stanford.edu/data/aia/synoptic/"
+
+    def search(self, *args, **kwargs):
+        """
+        Query this client for a list of results.
+
+        Parameters
+        ----------
+        \\*args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
+        \\*\\*kwargs: `dict`
+            Any extra keywords to refine the search.
+
+        Returns
+        -------
+        A `QueryResponse` instance containing the query result.
+        """
+        # TODO: There has to be a better way than repeating the entire
+        # search method.
+        _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
+        # The scarper can not handle quantities, it uses string matching.
+        if "Wavelength" in matchdict:
+            matchdict["Wavelength"] = str(matchdict["Wavelength"].min.to(u.angstrom).value).strip("0")
+        scraper = Scraper(format=pattern)
+        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+        filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
+        filesmeta = sorted(filesmeta, key=lambda k: k['url'])
+        metalist = []
+        base_time = self.post_search_hook(filesmeta[0], matchdict)['Start Time']
+        for i in filesmeta:
+            rowdict = self.post_search_hook(i, matchdict)
+            # Have to manually deal with sample rate if is it provided
+            if sample_rate := matchdict.get("Sample"):
+                sample_rate = u.Quantity(sample_rate[0], u.s)
+                if (rowdict['Start Time'] - base_time).to(u.second) % sample_rate != 0 * u.s:
+                    continue
+            metalist.append(rowdict)
+        return QueryResponse(metalist, client=self)
 
     @classmethod
     def register_values(cls):
@@ -59,7 +100,6 @@ class AIASynopsisClient(GenericClient):
                 ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
             ],
             a.Source: [("SDO", "The Solar Dynamics Observatory.")],
-            a.Wavelength: [(f"{wv:04d}", f"{wv} Å") for wv in cls.known_wavelengths],
             a.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
             a.Level: [("1.5s", "Level 1.5 data processed for quicker analysis.")],
         }
