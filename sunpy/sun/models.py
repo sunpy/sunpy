@@ -224,6 +224,7 @@ def _read_model(model_name):
     return QTable.read(model_path, format="ascii.ecsv")
 
 
+# See PEP 562 (https://peps.python.org/pep-0562/) for module-level __getattr__()
 def __getattr__(name):
     """
     Dynamically load a model when accessed.
