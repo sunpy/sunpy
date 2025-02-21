@@ -9,8 +9,6 @@ This module contains models of the Sun from various sources:
   as defined in Table 6 of :cite:t:`turck-chieze_revisiting_1988`.
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
-
-* :cite:t: `avrett_loeser_2008` called "avrett_loeser_2008"
 """
 import pathlib
 
