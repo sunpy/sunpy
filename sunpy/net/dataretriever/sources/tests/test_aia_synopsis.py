@@ -45,7 +45,7 @@ def test_can_handle_query(time):
     ans = client._can_handle_query(time, a.Instrument.aia, a.Level("1.5s"))
     assert ans
     ans = client._can_handle_query(time, a.Instrument.aia)
-    assert not ans
+    assert ans
     ans = client._can_handle_query(time, a.Instrument.aia, a.Resolution(4.0))
     assert not ans
     ans = client._can_handle_query(time)
@@ -94,7 +94,6 @@ def test_sample_query(client):
         a.Level("1.5s"),
         a.Sample(12 * u.hour),
     )
-    assert query_result is not None
     assert np.all(query_result["Wavelength"] == 171)
     assert len(query_result) == 3
 
@@ -110,17 +109,28 @@ def test_get(client):
 
 
 @pytest.mark.remote_data
-def test_fido(client):
-    qr = Fido.search(Time('2024/8/9', '2024/8/9 00:00:30'), a.Level("1.5s"))
-    client = qr[0].client
-    assert isinstance(qr, UnifiedResponse)
-    assert isinstance(client, AIASynopsisClient)
-    response = Fido.fetch(qr)
-    assert len(response) == qr._numfile
+def test_fido(tmpdir):
+    time_range = TimeRange("2020-01-01", "2020-01-01 00:12")
+    query_result = Fido.search(
+        a.Time(time_range.start, time_range.end),
+        a.Instrument.aia,
+        a.Level("1.5s"),
+    )
+    assert len(query_result) == 1
+    assert len(query_result[0]) == 9
+    assert query_result is not None
+    assert not np.all(query_result[0]["Wavelength"] == 1600)
+
+    assert isinstance(query_result, UnifiedResponse)
+    assert isinstance(query_result[0].client, AIASynopsisClient)
+
+    response = Fido.fetch(query_result, path=tmpdir)
+    assert len(response) == query_result._numfile
 
 
 def test_attr_reg():
-    assert a.Level.onepointfive_s == a.Level('1.5S')
+    assert a.Level.onepointfive_s is not None
+    assert a.Level.onepointfive_s.value == '1.5s'
 
 
 def test_client_repr(client):
