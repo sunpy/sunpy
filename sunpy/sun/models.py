@@ -32,6 +32,7 @@ _MODEL_CACHE = {}
 
 __all__ = ["interior", "evolution", "differential_rotation"] + list(_MODELS.keys())
 
+
 # See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
 def __dir__():
     return __all__
