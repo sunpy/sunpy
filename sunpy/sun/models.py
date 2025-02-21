@@ -25,7 +25,11 @@ from astropy.table import QTable
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
-__all__ = ["interior", "evolution", "differential_rotation"]
+__all__ = ["interior", "evolution", "differential_rotation"] + list(_MODELS.keys())
+
+# See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
+def __dir__():
+    return __all__
 
 _MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
 _MODELS = {
