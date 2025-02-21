@@ -49,7 +49,7 @@ class AIASynopsisClient(GenericClient):
     """
     pattern = ('https://jsoc1.stanford.edu/data/aia/synoptic/'
                '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{Wavelength:04d}}.fits')
-    required = {a.Time, a.Instrument, a.Level}
+    known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
 
     @property
     def info_url(self):
@@ -99,6 +99,7 @@ class AIASynopsisClient(GenericClient):
             a.Physobs: [
                 ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
             ],
+            a.Wavelength: [(f"{wv:04d}", f"{wv} Å") for wv in cls.known_wavelengths],
             a.Source: [("SDO", "The Solar Dynamics Observatory.")],
             a.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
             a.Level: [("1.5s", "Level 1.5 data processed for quicker analysis.")],
