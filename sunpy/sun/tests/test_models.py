@@ -5,8 +5,8 @@ import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
 
-from sunpy.sun.models import differential_rotation
 import sunpy.sun.models as sun_models
+from sunpy.sun.models import differential_rotation
 
 
 @pytest.fixture

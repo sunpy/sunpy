@@ -13,10 +13,10 @@ Here we will demonstrate how to load and visualize one of the models in `sunpy.s
    >>> import sunpy.sun.models as sun_models
 
    >>> data = sun_models.chromosphere_avrett_loeser_2008
-   
+
    >>> x_param = "h"
    >>> y_param = ["T", "n_e"]
-   
+
    >>> x_unit = f" ({data[x_param].unit})" if hasattr(data[x_param], "unit") else ""
    >>> x_values = data[x_param]
    >>> y_values = {param: data[param] for param in y_param}
@@ -42,4 +42,3 @@ Here we will demonstrate how to load and visualize one of the models in `sunpy.s
    >>> ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
 
    >>> plt.show()
-   
