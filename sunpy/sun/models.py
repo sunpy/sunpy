@@ -10,9 +10,6 @@ This module contains models of the Sun from various sources:
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
 
-Additionally, this module provides functions to load 1D solar models,
-which are:
-
 * :cite:t: `avrett_loeser_2008` called "avrett_loeser_2008"
 """
 import pathlib
@@ -25,17 +22,23 @@ from astropy.table import QTable
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
+
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
+_MODELS = {
+    # :cite:t: `avrett_loeser_2008` called "avrett_loeser_2008"
+    "chromosphere_avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv" 
+ 
+    
+}
+_MODEL_CACHE = {}
+
+
 __all__ = ["interior", "evolution", "differential_rotation"] + list(_MODELS.keys())
 
 # See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
 def __dir__():
     return __all__
 
-_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
-_MODELS = {
-    "avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
-}
-_MODEL_CACHE = {}
 
 # Radius -  R_sun
 _radius = [0, 0.01, 0.022, 0.061, 0.090, 0.120,
