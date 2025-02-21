@@ -22,7 +22,7 @@ from sunpy.sun.constants import sidereal_rotation_rate
 
 _MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
 _MODELS = {
-    # :cite:t: `avrett_loeser_2008` called "avrett_loeser_2008"
+    # :cite:t: `avrett_loeser_2008`
     "chromosphere_avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
 
 
