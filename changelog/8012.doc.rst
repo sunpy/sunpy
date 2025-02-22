@@ -1,0 +1,1 @@
+Added an example :ref:`sphx_glr_generated_gallery_plotting_offdisk_contours.py` to show how to overlay off-disk contours from one map onto another map.
