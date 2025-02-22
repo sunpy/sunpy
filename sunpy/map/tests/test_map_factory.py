@@ -118,7 +118,10 @@ def test_patterns(eit_fits_directory):
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Test that returned maps are sorted
-    files_sorted = sorted(list(pathlib.Path(pattern).parent.glob('*')))
+    # Sorting based on Strings rather than Path Objects which makes the sorting os independent
+    # This was added because on Windows the sorting was different than on Linux
+    # Windows(and possibly other OSs) use a case-insensitive sort, while Linux uses a case-sensitive sort
+    files_sorted = sorted(str(file) for file in pathlib.Path(pattern).parent.glob('*'))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
     assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
