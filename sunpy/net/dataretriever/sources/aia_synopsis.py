@@ -50,6 +50,7 @@ class AIASynopsisClient(GenericClient):
     pattern = ('https://jsoc1.stanford.edu/data/aia/synoptic/'
                '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{Wavelength:04d}}.fits')
     known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
+    required = {a.Time, a.Instrument, a.Level}
 
     @property
     def info_url(self):
