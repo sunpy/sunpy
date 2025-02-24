@@ -161,8 +161,8 @@ class SRSClient(GenericClient):
     <BLANKLINE>
 
     """
-    pattern = ('https://www.ngdc.noaa.gov/stp/space-weather/swpc-products/daily_reports/solar_region_summaries/'
-               '{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt')
+    baseurl = r'https://www.ngdc.noaa.gov/stp/space-weather/swpc-products/daily_reports/solar_region_summaries/%Y/%m/%Y%m%dSRS.txt'
+    pattern = '{}/{year:4d}/{month:2d}/{year:4d}{month:2d}{day:2d}SRS.txt'
 
     @classmethod
     def register_values(cls):
