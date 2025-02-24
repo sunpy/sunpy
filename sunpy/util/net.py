@@ -163,7 +163,7 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     return path
 
 
-@deprecated(since="6.1")
+@deprecated(since="7.0")
 def download_file(url, directory, default="file", overwrite=False):
     """
     Download a file from a url into a directory.
