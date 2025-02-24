@@ -128,7 +128,7 @@ def get_system_filename(sock, url, default="file"):
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
-@deprecated(since="6.1")
+@deprecated(since="7.0")
 def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     """
     Download a file from a url into a directory.
