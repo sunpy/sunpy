@@ -17,5 +17,6 @@ jobs:
     steps:
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref main
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 6.0
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref 6.1
     env:
       GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
