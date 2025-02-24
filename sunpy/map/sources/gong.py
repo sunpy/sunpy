@@ -29,20 +29,22 @@ class GONGSynopticMap(GenericMap):
     GONG Synoptic Map.
 
     The Global Oscillation Network Group (GONG) operates a six-station network of velocity
-    imagers located around the Earth that observe the Sun nearly continuously. GONG
-    produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line with an
-    array of 242×256 pixels covering the solar disk. These magnetograms are used to derive
+    imagers located around the Earth that observe the Sun nearly continuously.
+
+    GONG produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line with an
+    array of 242x256 pixels covering the solar disk. These magnetograms are used to derive
     synoptic maps which show a full-surface picture of the solar magnetic field.
 
     Notes
     -----
     If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
+
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`__
     * `Magnetogram Synoptic Map Images Page <https://gong.nso.edu/data/magmap/>`__
     * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`__
-    * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
+    * `Instrument Paper (pp. 203-208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
     * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
 
@@ -152,18 +154,26 @@ class GONGHalphaMap(GenericMap):
 
 class GONGMagnetogramMap(GenericMap):
     """
-    GONG Magnetogram.
+    GONG Magnetogram Map.
 
-    The Global Oscillation Network Group (GONG) operates a six-station network of magnetographs
-    located around the Earth that observe the Sun nearly continuously.
+    The Global Oscillation Network Group (GONG) operates a six-station network of velocity
+    imagers located around the Earth that observe the Sun nearly continuously.
+
+    GONG produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line with an
+    array of 242x256 pixels covering the solar disk. These magnetograms are used to derive
+    synoptic maps which show a full-surface picture of the solar magnetic field.
 
     References
     ----------
+    * `GONG Page <https://gong.nso.edu/>`__
+    * `GONG Data Archive <https://gong2.nso.edu/archive/patch.pl?menutype=s>`__
+    * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`__
+    * `Instrument Paper (pp. 203-208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
+    * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Datasource."""
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
                 str(header.get('IMTYPE', '')) == 'MAGNETIC')
 
@@ -192,7 +202,6 @@ class GONGMagnetogramMap(GenericMap):
 
     @property
     def scale(self):
-        """Scale."""
         solar_r = (self.meta['SEMIDIAM'] * u.rad).to(u.arcsec)
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r / (self.meta['FNDLMBMA'] * u.pixel))
@@ -208,32 +217,29 @@ class GONGMagnetogramMap(GenericMap):
 
     @property
     def nickname(self):
-        """Nicknames for the different sites, e.g BB for Big Bear."""
+        """
+        Nicknames for the different sites, e.g BB for Big Bear.
+        """
         site = _SITE_NAMES.get(self.meta.get("site", ""), "UNKNOWN")
         return f'{self.observatory}, {site}'
 
     @property
     def spatial_units(self):
-        """Spatial units."""
         return SpatialPair(u.deg, u.deg)
 
     @property
     def _earth_location(self):
-        """Location of the observatory on Earth."""
         return EarthLocation.from_geodetic(lat=self.meta['lat'] * u.rad, lon=self.meta['lon'] * u.rad,
                                            height=self.meta['elev'] * u.m)
 
     @property
     def observer_coordinate(self):
-        """Coordinates of the observer."""
         return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
 
     @property
     def rsun_obs(self):
-        """Solar radius in arcseconds."""
         return (self.meta['semidiam']*u.rad).to(u.arcsec)
 
     @property
     def instrument(self):
-        """Type of instrument used."""
         return 'Magnetogram'

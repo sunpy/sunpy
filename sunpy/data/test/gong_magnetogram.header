@@ -1,0 +1,219 @@
+SIMPLE  =                    T / Fits standard
+BITPIX  =                   16 / Bits per pixel
+NAXIS   =                    2 / Number of axes
+NAXIS1  =                  860 / Axis length
+NAXIS2  =                  860 / Axis length
+EXTEND  =                    F / File may contain extensions
+BSCALE  =      9.5040000000E-2  /  REAL = TAPE*BSCALE + BZERO
+BZERO   =       0.0000000000E0  /
+GONGKEY1= '--------- Gong Keywords Section 1: Solarsoft ----------------'
+ORIGIN  = 'National Solar Observatory -- GONG' / FITS file originator
+OBS-SITE= 'NSO/GONG NETWORK'   / Instrument Site location
+TELESCOP= 'NSO-GONG'           / NSO/GONG Network
+OBS-URL = 'http://gong.nso.edu' / The GONG website
+DATE    = '2025-01-09T01:51:57'
+DATE-OBS= '2025/01/09        ' / GPS date of observation
+TIME-OBS= '01:35:16.008025   ' / GPS time of observation
+DATATYPE= 'REAL*4  '           / Type of data
+WAVELNTH=                676.8 / Wavelength of obs (nm)
+WCSNAME = 'Heliocentric-cartesian (approximate)'
+CTYPE1  = 'GONGX   '           / Coordinate Axis Label
+CTYPE2  = 'GONGY   '           / Coordinate Axis Label
+CRPIX1  =             422.5472 / Current X position for center of solar image
+CRPIX2  =             442.6184 / Current Y position for center of solar image
+CRVAL1  =              0.00000 / Reference Pixel value
+CRVAL2  =              0.00000 / Reference Pixel value
+EPH_RA  =         -1.211079623 / Right Acension (radians)
+EPH_DEC =         -0.385596773 / Declination (radians)
+IMTYPE  = 'MAGNETIC'
+IMG_X0  =             422.5472
+IMG_Y0  =             442.6184
+IMGMN01 =            -259.7798 / Image mean
+IMGRMS01=             339.9994 / Image RMS (Standard Deviation)
+IMGSKW01=              -0.5282 / Image skewness
+IMGMIN01=            -886.8182 / Image Min
+IMGMAX01=            1337.6880 / Image Max
+IMGADV01=             327.9882 / Image Average Deviation
+IMGVAR01=          115599.5859 / Image Variance
+IMGKUR01=              -1.6788 / Image Kurtosis
+GONGKEY2= '--------- Gong Keywords Section 2: Raw ----------------'
+BUNIT   = 'GAUSS   '
+FIX_POL =                    T
+IRAF-TLM= '2025-01-09T01:52:01' / Time of last modification
+IRAF-MAX=           0.00000000 /  DATA MAX
+IRAF-MIN=           0.00000000 /  DATA MIN
+COMPRESS= 'none_1p_64_003'
+ITIME   =         60.003315703 / time between EOI interrupts for OBS type
+ACCUM   =                 1800 / Per minute integrations per image plane
+COUNT   =                  300 / Waveplate index pulses per integration
+TYPE    =                    0 / Observation type
+DTYPE   = 'OBSERVE           ' / Data type
+DAS_STAT=                    0 / DAS status
+CLKMODE =                    2 / Clock mode: 0=gen 1=trans 2=sync-gen
+GPSSTAT =                   81 / GPS receiver time quality error exponent
+PHASE   =                   -1 / GPS Phase Offset
+OSC_DAC =                    0 / Index pulse PID phase offset from GPS (nsec)
+SUNUP   =                    T / Sun is up
+CONNECT =                    T / connected to instrument T/F
+GUIDE   =                    T / Turret is guiding
+VALID   =                    T / Image is valid
+CENTER  =                    T / auto image centering enabled/disabled T/F
+X_CENTER=                  515 / current X position for center of solar image
+Y_CENTER=                  514 / current Y position for center of solar image
+CAL_DONE=                    T / autocal has been initiated today T/F
+HDLVL   =                    1 / % level of hard drive space used
+HDBANK  =                    0 / current hard-drive bank 0=Primary,1=Secondary
+TAPEBANK=                    0 / current tape bank status
+TAPELVL =                    0 / % remaining of tape or hard drive space
+VELOCITY=      11872.576685071 / velocity of the solar disk (meters/sec)
+DIODE1  =                10000 / sum of diode values from phase plane 1
+DIODE2  =                10100 / sum of diode values from phase plane 2
+DIODE3  =                10200 / sum of diode values from phase plane 3
+AUTOCAL =                    T / automatic daily cals enabled/disabled T/F
+MAGNETO =                    T / magnetogram mode on/off T/F
+LAST_PM = '16sep-03oct 2024  ' / date of last Preventative Maintenance
+VERSION = '9.12/4.60 20240614' / Software release version
+AUTOCAL0=                   40 / Site autocal start time (minutes past hour)
+AUTOCAL1=                   59 / Site autocal stop time (minutes past hour)
+CAM_TYPE= 'EVT               ' / Camera manufacture type
+SN_CAM  = '640020            ' / serial number camera
+SN_DAS  = '102               ' / serial number DAS
+SN_MOD  = 'C17099            ' / serial number modulator
+SN_ROT  = '6                 ' / serial number rotator
+CAMX_MIN=                   60 / image x-axis start column
+CAMX_MAX=                  960 / image x-axis stop column
+CAMY_MIN=                    0 / image y-axis start row
+CAMY_MAX=                 1024 / image y-axis stop row
+SITENAME= 'Learmonth WA Aus  ' / Site name
+SITE    = 'LE                ' / Site abbreviation
+TIMEZONE=                  480 / Site timezone (minutes)
+INSTTIME= '20250109 01:35:15 ' / INST COMPUTER TIME
+LON     =          1.991468149 / Site longitude (radians east)
+LAT     =         -0.387785980 / Site latitude (radians north)
+ELEV    =                   14 / Site elevation (meters)
+HORIZON =                   80 / Site horizon limit (degrees from zenith)
+EAST    =                  444 / Site east limb offset (arc-seconds)
+WEST    =                 -254 / Site west limb offset (arc-seconds)
+MOTOR0  =              1043089 / Roll encoder offset
+MOTOR1  =              1420105 / Pitch encoder offset
+MOTOR2  =               591297 / Rotator encoder offset
+MOTOR3  =              2035476 / Wheel 1 encoder offset
+MOTOR4  =              2491271 / Wheel 2 encoder offset
+LHOFS0  =                65226 / Roll low/high offset
+LHOFS1  =                48632 / Pitch low/high offset
+LHOFS2  =                55877 / Rotator low/high offset
+J2000   =       9139.566001885 / Julian 2000 date
+LST     =          4.305955755 / Local apparent sidereal time (radians)
+ZENITH  =          0.706744959 / Zenith distance (radians)
+RA      =         -1.211079623 / Right ascension (radians)
+DEC     =         -0.385596773 / Declination (radians)
+PA      =         -0.034136313 / Solar position angle (radians)
+HA      =         -0.766149929 / Hour angle (radians)
+BETA    =          0.266543380 / Parallactic angle (radians)
+DISTANCE=          0.983369126 / Solar distance(AU)
+RADIUS  =          0.004731100 / Apparent solar radius (radians)
+EROLL   =          0.701329680 / Ephemeris roll angle (radians)
+EPITCH  =          0.095830082 / Ephemeris pitch angle (radians)
+EROTATOR=          0.373306175 / Ephemeris rotator angle (radians)
+ROLL    =          0.700424688 / Roll position (radians)
+PITCH   =          0.097002980 / Pitch position (radians)
+ROTATOR =          0.373305946 / Rotator position (radians)
+WHEEL_1 =                    0 / Calibration wheel 1 position
+WHEEL_2 =                    3 / Calibration wheel 2 position
+CAL_LENS=                    0 / Calibration lens position
+INSTMODE=                    0 / Current calibration state of instrument
+WIND_SPD=          0.000000000 / Wind speed in meters/sec
+WIND_DIR=          0.000000000 / Wind direction in degrees azimuth
+TEMP_RAC=         24.400000000 / Rack Temperature in degrees C
+TEMP_TBL=         21.600000000 / Table Temperature in degrees C
+TEMP_INS=         20.900000000 / Inside Temperature in degrees C
+HUM_INS =          9.500000000 / Inside Relative Humidity in percent
+TEMP_OUT=         34.300000000 / Outside Temperature in degrees C
+HUM_OUT =         40.000000000 / Outside Relative Humidity in percent
+RAD_NET =        951.000000000 / Net Radiation in watts/square meter
+BAROMET =       1008.200000000 / Barometric Pressure in millibars
+GONGKEY3= '--------- Gong Keywords Section 3: Processing History ------------'
+GHISTSEQ=                   30
+GHIST000= 'Task UCOR (25/01/09 09:38:01, VInst)'
+GHIST001= 'input=LE250109013516.fits;drk_image=drk60.fits;clc_f2=1,clc_l2=1'
+GHIST002= ',clc_f1=1,clc_l1=1,clc_fc=0.0000000;no_row_clamp;no_band_clamp;n'
+GHIST003= 'o_column_recursive_clamp;cro_f2=91,cro_l2=950,cro_f1=11,cro_l1=8'
+GHIST004= '70      '
+GHIST005= 'Task UCOR (25/01/09 09:38:01, VInst)'
+GHIST006= 'cal_image=./wlmnbcavg.fits,ipermi=1,cosc=2061.359,pcr=200.,rot=-'
+GHIST007= '21.38885,interp=4;sw_vmbi=yes;cen_opt=1,cen_thres=30000.,cen_sw_'
+GHIST008= 'hd=yes;fnd_use_cen=yes,fndlmbxc=447.0685,fndlmbyc=405.3999,fndlm'
+GHIST009= 'bmi=380.,fndlmbma=380.,fndlmban=0.,fnd_nsmo=1,fnd_nfit=5,fnd_wid'
+GHIST010= 'th=30.,fnd_thres=0.,fnd_pcfit=1.,pixlenx=1.,pixleny=1.,fnd_niter'
+GHIST011= '=2,thr_ot=2664.38,rmserr=2.116147E-4,nit=2,nzc=2868 '
+GHIST012= 'Task EPHEMINTERP (25/01/09 09:38:01, V/local/i)'
+GHIST013= 'input=vmbiLE250109013516.imh,ephem_dir=/local/iraf/extern/grasp/'
+GHIST014= 'pkg/ephem/,update_hdr=yes,refraction=no,verbose=yes'
+GHIST015= 'Task GPFLAT (25/01/09 09:38:03, V/local/i)'
+GHIST016= 'diffuser=flat.fl2.fits,cal_img=flat.fl1.fits,function=chebyshev,'
+GHIST017= 'xorder=5,yorder=5,cross_terms=yes,fcol=INDEF,lcol=INDEF, frow=IN'
+GHIST018= 'DEF,lrow=INDEF'
+GHIST019= 'Task GEOM (25/01/09 09:38:03, VInst)'
+GHIST020= 'edge_type=laplacian,opt_type=ols,kern_width=3,usehdr=yes,auto_ty'
+GHIST021= 'pe=none,xcenter=442.621,ycenter=422.5535,majorax=385.3148,minora'
+GHIST022= 'x=385.1436,angle=54.54029,nfit=5,width=5.,pcfit=1.,pixlenx=1.,pi'
+GHIST023= 'xleny=1.,fcol=1,lcol=860,frow=3,lrow=858,niter=3,finterp_fact=0,'
+GHIST024= 'output=no,resout=no,lmbout=no,updhdr=yes,err_action=skip'
+GHIST025= 'Task HGEOM (25/01/09 09:38:03, VInst)'
+GHIST026= 'mtf_out=no,mtffil=,model_type=legall,ann_ctype=average,auto_exty'
+GHIST027= 'pe=no,extype=2,order=3,drmin=0.2,radlim=0.95,search=major,scale='
+GHIST028= 'yes,max_itr=1,max_zeros=125,reject=yes,thresh=2.5,nterms=5,coeff'
+GHIST029= '1=0.28,coeff2=-0.08,coeff3=0.0125,coeff4=-0.005,coeff5=0.003,coe'
+GHIST030= 'ff6=0.,coeff7=0.,fcol=3,lcol=858,frow=3,lrow=858'
+CENTROXC=             447.0685
+CENTROYC=             405.3999
+FNDLMBXC=             422.5472
+FNDLMBYC=             442.6184
+FNDLMBMI=             385.1659
+FNDLMBMA=             385.3471
+FNDLMBAN=             34.38031
+PIXLENX =                  1.0
+PIXLENY =                  1.0
+DONUT   =                    T
+RIN     =                  0.0
+ROUT    =                  1.0
+SKYVALUE=              -2000.0
+B0      =    -3.93742743916307 / Solar latitude of the sub-earth point (degrees)
+L0      =     330.440576148605 / Solar longitude of the sub-earth point(degrees)
+P_ANGLE =                  0.0 / Pole angle of heliographic north (degrees)
+SEMIDIAM=   0.0047311424793562 / Semi-diameter of the sun (radians)
+DELTA_L0=   -0.329289334098576 / True_anomaly - mean_anomaly (degrees)
+VCOR1   =    -235.721146231621 / Observer's Velocity correction coeff 1 (m/s)
+VCOR2   =    -140.377549573969 / Observer's Velocity correction coeff 2 (m/s)
+VCOR3   =     19.5380279380177 / Observer's Velocity correction coeff 3 (m/s)
+VCOR4   =  0.00527661655619489 / Observer's Velocity correction coeff 4 (m/s)
+WCSDIM  =                    3
+LTV3    =                 -2.0
+LTM1_2  =                  1.0
+LTM2_1  =                  1.0
+LTM3_3  =                  1.0
+WAXMAP01= '1 0 2 0 0 2 '
+WAT0_001= 'system=image'
+WAT1_001= 'wtype=linear label=hplt-tan'
+WAT2_001= 'wtype=linear label=hpln-tan'
+QRREL   = '4.0.0   '
+N_USED  =                    7
+USDIMG01= 'lebqi250109t0131.fits'
+USDIMG02= 'lebqi250109t0132.fits'
+USDIMG03= 'lebqi250109t0133.fits'
+USDIMG04= 'lebqi250109t0135.fits'
+USDIMG05= 'lebqi250109t0137.fits'
+USDIMG06= 'lebqi250109t0138.fits'
+USDIMG07= 'lebqi250109t0139.fits'
+AVGLMBXC=             422.2925
+AVGLMBYC=             442.6917
+AVGLMBMI=             385.1568
+AVGLMBMA=             385.3213
+AVGLMBAN=             34.83733
+COMMENT
+COMMENT This GONG product is produced from the DMAC QuickReduce data stream.
+COMMENT
+COMMENT See http://gong.nso.edu for more information about GONG.
+COMMENT
+PLATFORM= 'Linux ncs-gong-proc2-lx redhat NOAO/IRAF V2.13-BETA'
+FITSWASH= '$RCSfile: mag_header.kw,v $ $Revision: 1.14 $ $Date: 2021/09/16 03:5'
