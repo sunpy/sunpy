@@ -127,6 +127,7 @@ def get_system_filename(sock, url, default="file"):
         name = str(default)
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
+
 @deprecated(since="6.1")
 def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     """
