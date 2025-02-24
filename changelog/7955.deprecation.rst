@@ -1,1 +1,0 @@
-General support within `~sunpy.map.Map` for the non-standard CTYPE values 'SOLAR-X' and 'SOLAR-Y' is now deprecated, and should instead be handled by a source-specific subclass.

@@ -1,8 +1,0 @@
-Dataretriever / "Scraper" clients no longer require the regex-formatted ``baseurl`` and a parse-formatted ``pattern`` variable but instead a single and full ``pattern`` variable written in the ``parse``-format.
-Documentation about how to write the new patterns and about explaining the internal Scraper algorithm is added to the topic guide on adding new sources to Fido.
-
-The internal method on `~sunpy.net.scraper.Scraper` called ``_extract_files_meta`` function no longer requires an extractor pattern.
-
-A new submodule called ``scraper.net.scraper_utils`` is created and Scraper helper functions like ``date_floor()``, ``extract_timestep()``, ``check_timerange()`` and ``get_timerange_from_exdict()`` can be accessed directly from there.
-
-*All* the extracted timeranges have a millisecond subtracted from the end date, i.e. they end on 59:59:59 of the date just before, instead of the inconsistent issue where some could end with 00:00:00 of the end date which lead to undesirable cases like January 1, 2015 data also showing up in the 2014 year-long timerange.

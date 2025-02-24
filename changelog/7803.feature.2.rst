@@ -1,1 +1,0 @@
-Added a function :func:`~sunpy.map.make_hpr_header` to easily make a FITS WCS header for the `~sunpy.coordinates.HelioprojectiveRadial` coordinate frame.

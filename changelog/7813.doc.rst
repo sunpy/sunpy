@@ -1,1 +1,0 @@
-Add clarifications to install instructions about Anaconda and the defaults channel.

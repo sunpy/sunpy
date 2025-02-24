@@ -1,1 +1,0 @@
-Added support for loading files from various cloud services (such as s3) in `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries` using `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`__.
