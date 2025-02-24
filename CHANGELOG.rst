@@ -1,3 +1,50 @@
+6.0.5 (2025-02-24)
+==================
+
+New Features
+------------
+
+- Add a link to the VSO Health Report in the Fido Results when using the VSOClient. (`#7884 <https://github.com/sunpy/sunpy/pull/7884>`__)
+
+
+Bug Fixes
+---------
+
+- Added support within `~.parse_time` for the timestamp ``%Y%m%d%H%M`` ,``%Y%m%dT%H%M`` and ``%Y%m%d_%H%M``. (`#7911 <https://github.com/sunpy/sunpy/pull/7911>`__)
+- Updated the internal CDF reader to handle ``FILLVAL`` only for floating point numbers. (`#7917 <https://github.com/sunpy/sunpy/pull/7917>`__)
+- Fixed unit conversion for wavelength in `sunpy.net.dataretriever.sources.goes.SUVIClient`. (`#7920 <https://github.com/sunpy/sunpy/pull/7920>`__)
+- Fixed a bug in the HTML representation for `sunpy.timeseries.GenericTimeSeries` that error-ed if the time-series had too many columns. (`#7947 <https://github.com/sunpy/sunpy/pull/7947>`__)
+- Fix :meth:`sunpy.data.data_manager.manager.DataManager.get` now automatically redownloads files if they are accidentally deleted. (`#7950 <https://github.com/sunpy/sunpy/pull/7950>`__)
+- Fixed a bug in :func:`~sunpy.physics.differential_rotation.differential_rotate` that assumed the input map header had ``RSUN_REF`` defined. (`#7953 <https://github.com/sunpy/sunpy/pull/7953>`__)
+- Fixed two bugs associated with the handling of WCS ``PVi_m`` values by `~sunpy.map.Map`.
+  ``PVi_m`` values were incorrectly retrieved from the first alternative WCS description (e.g., ``PV1_1A``) instead of the primary WCS description (e.g., ``PV1_1``).
+  Also, ``PVi_m`` values were misassigned when ``m`` was a two-digit number (i.e., 10 through 99). (`#7961 <https://github.com/sunpy/sunpy/pull/7961>`__)
+- Fixed a bug in :func:`~sunpy.time.parse_time` where parsing a list of time strings could incorrectly fail even when parsing the individual elements would succeed. (`#7983 <https://github.com/sunpy/sunpy/pull/7983>`__)
+- Fixed a bug in :func:`~sunpy.time.parse_time` where parsing a list of time strings containing "TAI" did not automatically set the time scale to TAI. (`#7983 <https://github.com/sunpy/sunpy/pull/7983>`__)
+- Examples in docs for `sunpy.net.attr.Attr` are now rendering properly. (`#8002 <https://github.com/sunpy/sunpy/pull/8002>`__)
+- Fixed the unintended `~sunpy.map.Map` behavior where any combination of non-FITS units were allowed as long as one of the non-FITS units was DN.
+  DN is currently the only non-FITS unit permitted in `~sunpy.map.Map`. (`#8037 <https://github.com/sunpy/sunpy/pull/8037>`__)
+- Corrected the NOAA `~.SRSClient` to use a updated HTTPS server instead of the now defunct FTP. (`#8054 <https://github.com/sunpy/sunpy/pull/8054>`__)
+- Fixed a bug where `~sunpy.map.sources.EITMap` and the correct colormaps (e.g., ``sohoeit171``) failed to load for SOHO/EIT level 1 FITS files from SDAC. (`#8070 <https://github.com/sunpy/sunpy/pull/8070>`__)
+
+
+Documentation
+-------------
+
+- The gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_STEREO_SECCHI_starfield.py` now queries the Gaia star catalogue directly instead of going through Vizier. (`#7965 <https://github.com/sunpy/sunpy/pull/7965>`__)
+- Added a note to the docstring of `~sunpy.map.sources.sdo.HMISynopticMap` that documents how the sign of CDELT1 is handled. (`#7973 <https://github.com/sunpy/sunpy/pull/7973>`__)
+- Added a table and notes to show which methods from `~sunpy.map.GenericMap` are expected to preserve laziness with dask arrays. (`#7974 <https://github.com/sunpy/sunpy/pull/7974>`__)
+- Updated :ref:`sphx_glr_generated_gallery_time_series_goes_xrs_nrt_data.py` to plot the largest flares that occurred during GOES XRS NRT data. (`#7981 <https://github.com/sunpy/sunpy/pull/7981>`__)
+
+
+Internal Changes
+----------------
+
+- Fixed some regex bugs in :func:`~sunpy.time.parse_time` that could result in additional, spurious matches for the candidate string format.
+  There is a minor performance impact for each spurious match that is attempted to be used for parsing. (`#7983 <https://github.com/sunpy/sunpy/pull/7983>`__)
+- Added clarification to the docstring for the `.GenericMap.measurement` property about its possible return types. (`#8038 <https://github.com/sunpy/sunpy/pull/8038>`__)
+
+
 6.0.4 (2024-12-06)
 ==================
 
