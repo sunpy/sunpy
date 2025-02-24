@@ -161,6 +161,7 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
         shutil.copyfileobj(opn, fd)
     return path
 
+
 @deprecated(since="6.1")
 def download_file(url, directory, default="file", overwrite=False):
     """
