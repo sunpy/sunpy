@@ -1,3 +1,12 @@
+6.1.1 (2025-02-24)
+==================
+
+Internal Changes
+----------------
+
+- Fixed issue with documentation build. (`#8101 <https://github.com/sunpy/sunpy/pull/8101>`__)
+
+
 6.1.0 (2025-02-24)
 ==================
 
