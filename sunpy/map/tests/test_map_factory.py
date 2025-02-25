@@ -13,7 +13,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
-from sunpy.tests.helpers import figure_test, skip_glymur, asdf_entry_points
+from sunpy.tests.helpers import asdf_entry_points, figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
     SunpyDeprecationWarning,
