@@ -12,7 +12,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
-from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.tests.helpers import asdf_entry_points, figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
     SunpyDeprecationWarning,
@@ -51,6 +51,7 @@ def test_two_map_inputs(args1, args2):
         assert isinstance(out, sunpy.map.GenericMap)
 
 
+@asdf_entry_points
 def test_read_asdf_and_verify(tmpdir):
     loaded_asdf_map = sunpy.map.Map(AIA_ASDF)
     assert isinstance(loaded_asdf_map.data, np.ndarray)
