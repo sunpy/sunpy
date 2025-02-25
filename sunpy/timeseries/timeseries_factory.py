@@ -390,7 +390,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             cls = types[0]
 
-            data_header_unit_tuple = cls._parse_hdus(pairs)
+            data_header_unit_tuple = cls._parse_hdus(pairs,  **kwargs)
             return self._parse_arg(data_header_unit_tuple)
 
     @seconddispatch
@@ -523,7 +523,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = kwargs.pop("meta", None)
         units = kwargs.pop("units", None)
         if filepath:
-            data, meta, units = WidgetType._parse_file(filepath)
+            data, meta, units = WidgetType._parse_file(filepath, **kwargs)
 
         # Now return a TimeSeries from the given file.
         return WidgetType(data, meta, units, **kwargs)
