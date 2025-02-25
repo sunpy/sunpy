@@ -81,7 +81,10 @@ def get_header(filepath):
     from glymur import Jp2k
     jp2 = Jp2k(filepath)
     # We assume that the header is the first XMLBox in the file
-    xml_box = [box for box in jp2.box if box.box_id == 'xml '][0]
+    xml_boxes = [box for box in jp2.box if box.box_id == 'xml ']
+    if not xml_boxes:
+        raise ValueError(f"No 'xml ' box found in JP2 file: {filepath}")
+    xml_box = xml_boxes[0]
     pydict = _parse_xml_metadata(xml_box)
     return [FileHeader(pydict)]
 
