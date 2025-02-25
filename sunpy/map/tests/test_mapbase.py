@@ -30,7 +30,7 @@ from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
@@ -678,6 +678,7 @@ def test_save(aia171_test_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
+@asdf_entry_points
 def test_save_asdf(tmpdir, aia171_test_map):
     outpath = tmpdir/ "save_asdf.asdf"
     aia171_test_map.save(outpath, filetype= "asdf")
