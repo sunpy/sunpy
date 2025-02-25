@@ -1,0 +1,1 @@
+Search results from the same underlying client are combined where possible into a single response when you use `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`.
