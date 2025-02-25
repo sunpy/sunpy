@@ -1,0 +1,1 @@
+deprecated `sunpy.util.net.download_file` and `sunpy.util.net.download_fileobj`
