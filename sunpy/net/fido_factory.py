@@ -214,6 +214,38 @@ class UnifiedResponse(Sequence):
         """
         return type(self)(*[i.show(*cols) for i in self._list])
 
+
+    def show_in_notebook(self, **kwargs):
+        """
+        Display the attrs tables as interactive grids in a Jupyter Notebook.
+
+        This function utilizes the ``itables`` library to render tables as interactive grids.
+
+        .. note::
+            This function requires the optional dependency ``itables``.
+            Ensure it is installed before calling this method.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Additional keyword arguments to customize the ``itables.show`` function.
+
+        """
+        try:
+            from itables import show
+        except ImportError:
+            raise ImportError(
+                "`itables` is required to display tables. "
+                "Install itables using `pip install itables` or `conda install conda-forge::itables`."
+            )
+        for table in self._list:
+            # Identify and exclude multidimensional columns
+            valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
+            filtered_table = table[valid_columns]
+            df = filtered_table.to_pandas()
+            show(df, **kwargs)
+
+
     @property
     def all_colnames(self):
         """
