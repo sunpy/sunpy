@@ -45,7 +45,7 @@ def test_can_handle_query(time):
     ans = client._can_handle_query(time, a.Instrument.aia, a.Level("1.5s"))
     assert ans
     ans = client._can_handle_query(time, a.Instrument.aia)
-    assert ans
+    assert not ans
     ans = client._can_handle_query(time, a.Instrument.aia, a.Resolution(4.0))
     assert not ans
     ans = client._can_handle_query(time)
@@ -110,7 +110,7 @@ def test_get(client):
 
 @pytest.mark.remote_data
 def test_fido(tmpdir):
-    time_range = TimeRange("2020-01-01", "2020-01-01 00:12")
+    time_range = TimeRange("2020-01-01", "2020-01-01 00:00:12")
     query_result = Fido.search(
         a.Time(time_range.start, time_range.end),
         a.Instrument.aia,
