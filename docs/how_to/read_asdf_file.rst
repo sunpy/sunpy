@@ -1,8 +1,8 @@
 .. _sunpy-how-to-read-an-asdf-file:
 
-****************************
-Read an ASDF file into a Map
-****************************
+*****************************************
+Read an ASDF file into a `~sunpy.map.Map`
+*****************************************
 
 `ASDF <https://asdf-standard.readthedocs.io/en/latest/>`__ is a modern file format designed to meet the needs of the astronomy community [citation needed].
 It has deep integration with Python, SunPy, and Astropy, as well as implementations in other languages.

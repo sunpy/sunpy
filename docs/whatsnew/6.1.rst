@@ -82,7 +82,7 @@ With the addition of the ``contourpy`` package, the following new dependency has
 
 - contourpy>=1.0.1
 
-This unifies the contour plotting within `sunpy.map.GenericMap`, :meth`sunpy.map.GenericMap.contour` to be the same as :meth`sunpy.map.GenericMap.draw_contours`.
+This unifies the contour plotting within `sunpy.map.GenericMap`, :meth:`sunpy.map.GenericMap.contour` to be the same as :meth:`sunpy.map.GenericMap.draw_contours`.
 This is package is already a dependency of ``matplotlib``, so no additional installation steps are required.
 
 Support for Reading from Remote Filesysytems

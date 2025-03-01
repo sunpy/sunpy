@@ -27,10 +27,11 @@ import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
@@ -678,6 +679,7 @@ def test_save(aia171_test_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
+@asdf_entry_points
 def test_save_asdf(tmpdir, aia171_test_map):
     outpath = tmpdir/ "save_asdf.asdf"
     aia171_test_map.save(outpath, filetype= "asdf")
@@ -1039,6 +1041,26 @@ def test_superpixel_masked(aia171_test_map_with_mask):
     expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
     assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
     assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+
+
+def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
+    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    dimensions = (2, 2) * u.pix
+
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
+    assert superpix_map.mask is not None
+
+    expected_shape = input_dims * (1 * u.pix / dimensions)
+    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+
+    # Verify mask values (bin_mask=True)
+    reshaped_mask = reshape_image_to_4d_superpixel(
+        aia171_test_map_with_mask.mask,
+        [dimensions[1].value, dimensions[0].value],
+        [0, 0],
+    )
+    expected_mask = np.any(reshaped_mask, axis=(1, 3))
+    assert np.array_equal(superpix_map.mask, expected_mask)
 
 
 def test_superpixel_units(generic_map):
