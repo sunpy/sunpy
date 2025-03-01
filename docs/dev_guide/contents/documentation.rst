@@ -124,15 +124,26 @@ In addition, a reference section must be provided with links to the following re
 
 Examples can be found in any class defined in any Python file in ``sunpy/map/sources/`` such as `~sunpy.map.sources.AIAMap`.
 
-Citing Papers
--------------
+Citing Publications
+-------------------
 
-If you want to cite a published paper or any source with a bibtex reference, one may add it to the bibtex file under :file:`docs/references.bib`.
-Then you can add a citation to the docstring like so:
+Whenever possible, publications should be cited using BibTeX through the :doc:`sphinxcontrib.bibtex <sphinxcontrib_bibtex:index>` extension.
+To do so, first add the appropriate entry in :file:`docs/references.bib`.
+Then, you can add a citation to the docstring like so:
 
 .. code-block:: rst
 
     :cite:t:`franz_heliospheric_2002`
+
+to insert a textual citation.
+Similarly, you can use
+
+.. code-block:: rst
+
+    :cite:p:`franz_heliospheric_2002`
+
+to insert a parenthetical citation.
+For more details on how to cite publications with ``sphinxcontrib_bibtex``, see :doc:`this page <sphinxcontrib_bibtex:usage>`.
 
 Sphinx
 ======

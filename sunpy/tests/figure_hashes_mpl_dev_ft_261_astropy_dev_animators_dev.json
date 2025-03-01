@@ -43,6 +43,7 @@
   "sunpy.map.tests.test_plotting.test_plot_resample": "df6313df2fbf65d1f9aaf018677772c05750dcbd3e0098f34ca41cc40e5d8815",
   "sunpy.map.tests.test_plotting.test_plot_superpixel": "45ebdec700a7699f7aaea6e86b22c049c65ed3c457aa2e0f5b53d135b9f54c79",
   "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "854f60a854e0f3166762c94831445b83f5402a8aa70e34013616f7e4074476fe",
+  "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel_conservative_mask_true": "bfddc88bf59694f4ed3499d14ca85937e70287efaf7e9d3c79ba6c7fc5977ccf",
   "sunpy.map.tests.test_plotting.test_draw_contours_aia": "90f83a5c24fdd88a1d14807034ba2b4ee1644d3f53745935eb8e537a2acc2b9a",
   "sunpy.map.tests.test_plotting.test_draw_contours_different_wcs": "9cbb12775ed1da71226dcc500f434bdf0ece76d54894942fb34c1805d8d11de0",
   "sunpy.map.tests.test_plotting.test_draw_contours_aia_fill": "abd8a02404ddcd6a4490b6b4a7d7bb0987fec7fa74cec9224bf58dcbad19985b",

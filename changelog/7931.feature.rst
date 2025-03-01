@@ -1,1 +1,0 @@
-:meth:`sunpy.time.TimeRange.shift` can now accept inputs of type `datetime.timedelta` and `astropy.units.Quantity`.

@@ -1,7 +1,7 @@
 .. _sunpy-how-to-create-a-map:
 
 *************************
-How to create a sunpy Map
+Create a `~sunpy.map.Map`
 *************************
 
 One of the primary goals of the Map interface is to make it as easy as possible to create a Map.

@@ -2200,7 +2200,8 @@ class GenericMap(NDData):
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
+                   conservative_mask: bool = False):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -2226,6 +2227,10 @@ class GenericMap(NDData):
             The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
+        conservative_mask : bool, optional
+            If `True`, a superpixel is masked if any of its constituent pixels are masked.
+            If `False`, a superpixel is masked only if all of its constituent pixels are masked.
+            Default is `False`.
 
         Returns
         -------
@@ -2254,10 +2259,24 @@ class GenericMap(NDData):
         else:
             data = self.data.copy()
 
-        reshaped = reshape_image_to_4d_superpixel(data,
-                                                  [dimensions[1], dimensions[0]],
-                                                  [offset[1], offset[0]])
-        new_array = func(func(reshaped, axis=3), axis=1)
+        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+        new_array = func(func(reshaped_data, axis=3), axis=1)
+
+        if self.mask is not None:
+            if conservative_mask ^ (func in [np.sum, np.prod]):
+                log.info(
+                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                    "False for mean/median/std/min/max."
+                    )
+
+            if conservative_mask:
+                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+                new_mask = np.any(reshaped_mask, axis=(3, 1))
+            else:
+                new_mask = np.ma.getmaskarray(new_array)
+        else:
+            new_mask = None
 
         # Update image scale and number of pixels
 
@@ -2283,10 +2302,8 @@ class GenericMap(NDData):
         # Create new map instance
         if self.mask is not None:
             new_data = np.ma.getdata(new_array)
-            new_mask = np.ma.getmask(new_array)
         else:
             new_data = new_array
-            new_mask = None
 
         # Create new map with the modified data
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
