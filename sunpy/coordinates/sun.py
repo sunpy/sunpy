@@ -484,7 +484,7 @@ def print_params(t='now'):
 def B0(time='now'):
     """
     Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
-    of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.23 degrees.
+    of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.25 degrees.
 
     Equivalent definitions include:
         * The heliographic latitude of Earth
