@@ -1795,7 +1795,7 @@ def test_plot_composite_map_updated_args(simple_map):
     simple_map.plot_settings['zorder'] = 8
     contour_args = {'norm': 'log',
                     'cmap':'plasma'}
-    updated_args = simple_map._update_contour_args(contour_args)
+    updated_args = simple_map.plotter._update_contour_args(contour_args)
     # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
     # their contour_args values will be used instead of plot_settings value
     assert updated_args ==  {
