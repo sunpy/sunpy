@@ -2,7 +2,8 @@
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]

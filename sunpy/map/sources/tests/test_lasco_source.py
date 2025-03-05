@@ -8,7 +8,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
-from sunpy.map.mapbase import SpatialPair
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
 from .helpers import _test_private_date_setters
