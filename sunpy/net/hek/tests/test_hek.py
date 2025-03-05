@@ -180,7 +180,8 @@ def test_mixed_results_get():
                            attrs.hek.FRM.Name == 'SPoCA')
     assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 89
-    assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L253C063'
+    # We do not check the full timestamp as the last 8 digits change as data is reprocessed.
+    assert result[0]["SOL_standard"].startswith("SOL2013-01-31T20:13:31")
 
 
 @pytest.mark.remote_data
@@ -192,7 +193,8 @@ def test_mixed_results_get_2():
                            attrs.hek.EventType("FL"))
     assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 19
-    assert result[0]["SOL_standard"] == 'SOL2011-08-08T01:30:04L247C075'
+    # We do not check the full timestamp as the last 8 digits change as data is reprocessed.
+    assert result[0]["SOL_standard"].startswith("SOL2011-08-08T01:30:04")
 
 
 @pytest.mark.remote_data
@@ -227,4 +229,4 @@ def test_missing_times():
     client = hek.HEKClient()
     results = client.search(attrs.Time('2024-05-10', '2024-05-12'), attrs.hek.AR.NOAANum == 13664)
     assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
-    assert results["event_peaktime"][6].isot == "2024-05-10T16:08:00.000"
+    assert results["event_peaktime"][3].isot == "2024-05-10T00:13:00.000"

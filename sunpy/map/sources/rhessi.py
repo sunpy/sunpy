@@ -24,8 +24,8 @@ class RHESSIMap(GenericMap):
 
     References
     ----------
-    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-    * Mission Paper `<https://doi.org/10.1023/A:1022428818870>`_
+    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`__
+    * :cite:t:`lin_reuven_2002`
 
     .. warning::
 

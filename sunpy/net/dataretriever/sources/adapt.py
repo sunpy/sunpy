@@ -63,10 +63,9 @@ class ADAPTClient(GenericClient):
     ----------
     `Names and possible attrs values are available <https://gong.nso.edu/adapt/maps/adapt_filename_notes.txt>`__.
     """
-    baseurl = r'https://gong.nso.edu/adapt/maps/gong/%Y/adapt(\d){5}_(\d){2}(\w){1}(\d){3}_(\d){12}_(\w){1}(\d){8}(\w){1}(\d){1}\.fts\.gz'
-    pattern = '{}adapt{ADAPTFileType:1d}{ADAPTLonType:1d}{ADAPTInputSource:1d}{ADAPTDataAssimilation:1d}{ADAPTResolution:1d}' + \
-    '_{ADAPTVersionYear:2d}{ADAPTVersionMonth:1l}{ADAPTRealizations:3d}_{year:4d}{month:2d}{day:2d}{hour:2d}{minute:2d}' + \
-    '_{ADAPTEvolutionMode:1l}{days_since_last_obs:2d}{hours_since_last_obs:2d}{minutes_since_last_obs:2d}{seconds_since_last_obs:2d}{ADAPTHelioData:1l}{ADAPTMagData:1d}.fts.gz'
+    pattern = r'https://gong.nso.edu/adapt/maps/gong/{{year:4d}}/adapt{{ADAPTFileType:1d}}{{ADAPTLonType:1d}}{{ADAPTInputSource:1d}}{{ADAPTDataAssimilation:1d}}{{ADAPTResolution:1d}}' + \
+    '_{{ADAPTVersionYear:2d}}{{ADAPTVersionMonth:1l}}{{ADAPTRealizations:3d}}_{{year:4d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}' + \
+    '_{{ADAPTEvolutionMode:1l}}{{days_since_last_obs:2d}}{{hours_since_last_obs:2d}}{{minutes_since_last_obs:2d}}{{seconds_since_last_obs:2d}}{{ADAPTHelioData:1l}}{{ADAPTMagData:1d}}.fts.gz'
 
     @classmethod
     def _attrs_module(cls):

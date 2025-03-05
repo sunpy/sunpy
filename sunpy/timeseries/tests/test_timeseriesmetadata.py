@@ -85,9 +85,9 @@ def test_create_mithout_metadata():
 def test_create_mithout_metadata_or_timerange():
     # without a timerange we should get errors
     colnames = ['column1', 'column2']
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You cannot create a TimeSeriesMetaData object without specifying a TimeRange"):
         TimeSeriesMetaData(colnames=colnames)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="You cannot create a TimeSeriesMetaData object without specifying a TimeRange"):
         TimeSeriesMetaData()
 
 
@@ -150,7 +150,7 @@ def test_complex_append_md(basic_1_md, basic_2_md, basic_3_md, basic_4_md, compl
 
 def test_append_invalid_timerange(basic_1_md):
     appended = copy.deepcopy(basic_1_md)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Incorrect datetime or data for append to TimeSeriesMetaData."):
         appended.append('not_a_timerange', basic_1_md.metadata[0][1], basic_1_md.metadata[0][2])
 
 

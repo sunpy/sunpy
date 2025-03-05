@@ -1,5 +1,5 @@
 """
-This module provides SunPy specific decorators.
+This module provides sunpy specific decorators.
 """
 from inspect import Parameter, signature
 from functools import wraps
@@ -8,11 +8,20 @@ from contextlib import contextmanager
 import numpy as np
 
 from astropy.utils.decorators import deprecated as _deprecated
+from astropy.utils.decorators import deprecated_renamed_argument as _deprecated_renamed_argument
 
 from sunpy.util.exceptions import SunpyDeprecationWarning, warn_deprecated
 
-__all__ = ['deprecated', 'sunpycontextmanager', 'ACTIVE_CONTEXTS']
-
+__all__ = [
+    'ACTIVE_CONTEXTS',
+    'deprecated',
+    'deprecated_renamed_argument',
+    'deprecate_positional_args_since',
+    'cached_property_based_on',
+    'check_arithmetic_compatibility',
+    'sunpycontextmanager',
+    'add_common_docstring'
+]
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _NOT_FOUND = object()
 # Public dictionary for context (de)activation tracking
@@ -35,10 +44,10 @@ def deprecated(
     Parameters
     ----------
     since : str
-        The release at which this API became deprecated.  This is
+        The release at which this API became deprecated. This is
         required.
     message : str, optional
-        Override the default deprecation message.  The format
+        Override the default deprecation message. The format
         specifier ``func`` may be used for the name of the function,
         and ``alternative`` may be used in the deprecation message
         to insert the name of an alternative to the deprecated
@@ -49,7 +58,7 @@ def deprecated(
         the name is automatically determined from the passed in
         function or class, though this is useful in the case of
         renamed functions, where the new function is just assigned to
-        the name of the deprecated function.  For example::
+        the name of the deprecated function. For example::
 
             def new_function():
                 ...
@@ -57,7 +66,7 @@ def deprecated(
 
     alternative : str, optional
         An alternative function or class name that the user may use in
-        place of the deprecated object.  The deprecation warning will
+        place of the deprecated object. The deprecation warning will
         tell the user about this alternative if provided.
     obj_type : str, optional
         The type of this object, if the automatically determined one
@@ -69,6 +78,90 @@ def deprecated(
     return _deprecated(
         since=since, message=message, name=name, alternative=alternative, pending=False,
         obj_type=obj_type, warning_type=warning_type
+    )
+
+
+def deprecated_renamed_argument(
+    old_name,
+    new_name,
+    since,
+    arg_in_kwargs=False,
+    relax=False,
+    pending=False,
+    warning_type=SunpyDeprecationWarning,
+    alternative="",
+    message="",
+):
+    """
+    Deprecate a _renamed_ or _removed_ function argument.
+
+    The decorator assumes that the argument with the ``old_name`` was removed
+    from the function signature and the ``new_name`` replaced it at the
+    **same position** in the signature. If the ``old_name`` argument is
+    given when calling the decorated function the decorator will catch it and
+    issue a deprecation warning and pass it on as ``new_name`` argument.
+
+    Parameters
+    ----------
+    old_name : str or sequence of str
+        The old name of the argument.
+    new_name : str or sequence of str or None
+        The new name of the argument. Set this to `None` to remove the
+        argument ``old_name`` instead of renaming it.
+    since : str or number or sequence of str or number
+        The release at which the old argument became deprecated.
+    arg_in_kwargs : bool or sequence of bool, optional
+        If the argument is not a named argument (for example it
+        was meant to be consumed by ``**kwargs``) set this to
+        ``True``. Otherwise the decorator will throw an Exception
+        if the ``new_name`` cannot be found in the signature of
+        the decorated function.
+        Default is ``False``.
+    relax : bool or sequence of bool, optional
+        If ``False`` a ``TypeError`` is raised if both ``new_name`` and
+        ``old_name`` are given. If ``True`` the value for ``new_name`` is used
+        and a Warning is issued.
+        Default is ``False``.
+    pending : bool or sequence of bool, optional
+        If ``True`` this will hide the deprecation warning and ignore the
+        corresponding ``relax`` parameter value.
+        Default is ``False``.
+    warning_type : Warning
+        Warning to be issued.
+        Default is `~astropy.utils.exceptions.AstropyDeprecationWarning`.
+    alternative : str, optional
+        An alternative function or class name that the user may use in
+        place of the deprecated object if ``new_name`` is None. The deprecation
+        warning will tell the user about this alternative if provided.
+    message : str, optional
+        A custom warning message. If provided then ``since`` and
+        ``alternative`` options will have no effect.
+
+    Raises
+    ------
+    TypeError
+        If the new argument name cannot be found in the function
+        signature and arg_in_kwargs was False or if it is used to
+        deprecate the name of the ``*args``-, ``**kwargs``-like arguments.
+        At runtime such an Error is raised if both the new_name
+        and old_name were specified when calling the function and
+        "relax=False".
+
+    Notes
+    -----
+    The decorator should be applied to a function where the **name**
+    of an argument was changed but it applies the same logic.
+
+    .. warning::
+        If ``old_name`` is a list or tuple the ``new_name`` and ``since`` must
+        also be a list or tuple with the same number of entries. ``relax`` and
+        ``arg_in_kwarg`` can be a single bool (applied to all) or also a
+        list/tuple with the same number of entries like ``new_name``, etc.
+    """
+    return _deprecated_renamed_argument(
+        old_name=old_name, new_name=new_name, since=since, arg_in_kwargs=arg_in_kwargs,
+        relax=relax, pending=pending, warning_type=warning_type, alternative=alternative,
+        message=message
     )
 
 
@@ -214,7 +307,6 @@ def check_arithmetic_compatibility(func):
             return NotImplemented
         return func(instance, value)
     return inner
-
 
 
 def sunpycontextmanager(func):

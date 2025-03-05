@@ -8,6 +8,7 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import XRTMap
 from .helpers import _test_private_date_setters
 
@@ -22,6 +23,10 @@ def xrt_map():
 def test_fits_to_xrt(xrt_map):
     """Tests the creation of XRTMap using FITS."""
     assert isinstance(xrt_map, XRTMap)
+
+
+def test_xrt_coordinate_system(xrt_map):
+    assert xrt_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 
 def test_is_datasource_for(xrt_map):

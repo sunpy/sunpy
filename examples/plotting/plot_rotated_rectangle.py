@@ -31,7 +31,7 @@ height = 300 * u.arcsec
 ################################################################################
 # We define a custom coordinate frame for the rotated rectangle by providing
 # the center in the AIA 171 coordinate frame and rotation angle to
-# `~astropy.coordinates.SkyOffsetFrame`.  We then define a 2-element
+# `~astropy.coordinates.SkyOffsetFrame`. We then define a 2-element
 # `~astropy.coordinates.SkyCoord` in that custom coordinate frame for the
 # bottom-left and top-right corners of the rectangle.
 

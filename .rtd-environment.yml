@@ -2,8 +2,9 @@ name: rtd_sunpy
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.12
   - pip
   - openjpeg
   - graphviz!=2.42.*,!=2.43.*
   - pycairo
+  - sqlite<3.49.0

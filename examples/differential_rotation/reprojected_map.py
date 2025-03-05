@@ -38,7 +38,7 @@ out_frame = Helioprojective(observer='earth', obstime=out_time,
                             rsun=aiamap.coordinate_frame.rsun)
 
 ##############################################################################
-# Construct a WCS object for the output map.  If one has an actual ``Map``
+# Construct a WCS object for the output map. If one has an actual ``Map``
 # object at the desired output time (e.g., the actual AIA observation at the
 # output time), one can use the WCS object from that ``Map`` object (e.g.,
 # ``mymap.wcs``) instead of constructing a custom WCS.
@@ -50,7 +50,7 @@ header = sunpy.map.make_fitswcs_header(aiamap.data.shape,
 out_wcs = WCS(header)
 
 ##############################################################################
-# Reproject the map from the input frame to the output frame.  We use the
+# Reproject the map from the input frame to the output frame. We use the
 # :func:`~sunpy.coordinates.propagate_with_solar_surface` context manager so
 # that coordinates are treated as points that evolve in time with the
 # rotation of the solar surface rather than as inertial points in space.

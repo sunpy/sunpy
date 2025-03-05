@@ -15,7 +15,7 @@ class SJIMap(GenericMap):
     provides simultaneous spectra and images of the photosphere, chromosphere,
     transition region, and corona with 0.33 to 0.4 arcsec spatial resolution,
     2-second temporal resolution and 1 km/s velocity resolution over a
-    field-of- view of up to 175 arcsec by 175 arcsec.  IRIS consists of a 19-cm
+    field-of- view of up to 175 arcsec by 175 arcsec. IRIS consists of a 19-cm
     UV telescope that feeds a slit-based dual-bandpass imaging spectrograph.
 
     Slit-jaw images in four different passbands (C ii 1330, Si iv 1400,
@@ -29,9 +29,9 @@ class SJIMap(GenericMap):
 
     References
     ----------
-    * `IRIS Mission Page <https://iris.lmsal.com>`_
-    * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`_
-    * `IRIS Instrument Paper <https://doi.org/10.1007/s11207-014-0485-y>`_
+    * `IRIS Mission Page <https://iris.lmsal.com>`__
+    * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`__
+    * :cite:t:`de_pontieu_interface_2014`
     """
     @property
     def detector(self):

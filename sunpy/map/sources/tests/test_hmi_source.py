@@ -94,6 +94,13 @@ def test_measurement(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
     assert hmi_sharp_map.measurement == "hmi"
 
 
+def test_wavelength(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
+    assert hmi_map.wavelength == 6173  # The test file actually has an "" WAVEUNIT key
+    assert hmi_bharp_map.wavelength == 6173 * u.AA
+    assert hmi_cea_sharp_map.wavelength == 6173 * u.AA
+    assert hmi_sharp_map.wavelength == 6173 * u.AA
+
+
 def test_wcs(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     hmi_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

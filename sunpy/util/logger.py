@@ -13,7 +13,7 @@ class SunpyLogger(AstropyLogger):
 
     This inherits the logging enhancements of `~astropy.logger.AstropyLogger`.
     This logger is able to capture and log warnings that are based on
-    `~sunpy.util.exceptions.SunpyWarning`.  Other warnings will be ignored and
+    `~sunpy.util.exceptions.SunpyWarning`. Other warnings will be ignored and
     passed on to other loggers (e.g., from Astropy).
     """
     # Override the existing _showwarning() to capture SunpyWarning instead of AstropyWarning
@@ -27,7 +27,7 @@ class SunpyLogger(AstropyLogger):
         warning = args[0]
         # Deliberately not using isinstance here: We want to display
         # the class name only when it's not the default class,
-        # SunpyWarning.  The name of subclasses of SunpyWarning should
+        # SunpyWarning. The name of subclasses of SunpyWarning should
         # be displayed.
         if type(warning) not in (SunpyWarning,):
             message = f'{warning.__class__.__name__}: {args[0]}'
@@ -37,7 +37,7 @@ class SunpyLogger(AstropyLogger):
         mod_path = args[2]
         # Now that we have the module's path, we look through sys.modules to
         # find the module object and thus the fully-package-specified module
-        # name.  The module.__file__ is the original source file name.
+        # name. The module.__file__ is the original source file name.
         mod_name = None
         mod_path, ext = os.path.splitext(mod_path)
         for name, mod in list(sys.modules.items()):

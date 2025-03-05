@@ -28,8 +28,8 @@ aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.data.max())
 
 ###############################################################################
 # To see all of the colormaps sunpy provides see `sunpy.visualization.colormaps`.
-# Matplotlib provides a number of `colormaps <https://matplotlib.org/examples/color/colormaps_reference.html>`_
-# and `normalizations <https://matplotlib.org/users/colormapnorms.html>`_.
+# Matplotlib provides a number of `colormaps <https://matplotlib.org/examples/color/colormaps_reference.html>`__
+# and `normalizations <https://matplotlib.org/users/colormapnorms.html>`__.
 # For more advanced normalizations see `astropy.visualization`.
 
 fig = plt.figure()

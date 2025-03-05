@@ -54,5 +54,5 @@ def test_rigid(seconds_per_day):
 
 
 def test_fail(seconds_per_day):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="model must equal one of { howard , snodgrass , allen , rigid }"):
         differential_rotation(10 * seconds_per_day, 30 * u.deg, model='garbage')

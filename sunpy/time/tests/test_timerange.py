@@ -37,10 +37,10 @@ def test_timerange_invalid_range():
     mid = '2016/06/04 09:30'
     upper = '2017/03/04 09:30'
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="If b is None a must have two elements"):
         sunpy.time.TimeRange((lower,))
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="If b is None a must have two elements"):
         sunpy.time.TimeRange((lower, mid, upper))
 
 
@@ -162,12 +162,12 @@ def test_split(timerange_a):
 
 
 def test_split_n_0_error(timerange_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="n must be greater than or equal to 1"):
         timerange_a.split(n=0)
 
 
 def test_input_error(timerange_a):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional:"):
         sunpy.time.TimeRange(tbegin_str)
 
 
@@ -239,13 +239,35 @@ def test_previous():
     assert timerange.dt == delta
 
 
-def test_extend():
+@pytest.mark.parametrize(("delta_1", "delta_2"), [
+    (delta, delta),
+    (-delta, delta),
+    (5*u.s, 10*u.s),
+    (5*u.s, delta),
+    (delta, 5*u.s),
+    (timedelta(1,2,3), timedelta(2,2,3)),
+    (timedelta(1,2,3), delta),
+    (delta, timedelta(1,2,3)),
+])
+def test_shift(delta_1, delta_2):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    timerange.extend(delta, delta)
+    timerange.shift(delta_1, delta_2)
     assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.start == start + delta
-    assert timerange.end == end + delta
-    assert timerange.dt == delta
+    assert timerange.start == start + TimeDelta(delta_1)
+    assert timerange.end == end + TimeDelta(delta_2)
+
+
+def test_shift_end_start():
+    # Checks when start + delta_1 > end + delta_2
+    start, end = datetime(2012, 1, 1), datetime(2012, 1, 10)
+    delta_1, delta_2 = timedelta(days=15), timedelta(days=2)
+
+    timerange = sunpy.time.TimeRange(start, end)
+    timerange.shift(delta_1, delta_2)
+    assert isinstance(timerange, sunpy.time.TimeRange)
+    assert timerange.start == Time(end + delta_2)
+    assert timerange.end == Time(start + delta_1)
+    assert timerange.dt == TimeDelta(start + delta_1 - end - delta_2)
 
 
 def test_contains(timerange_a):

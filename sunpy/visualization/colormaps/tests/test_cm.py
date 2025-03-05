@@ -22,16 +22,16 @@ def test_invalid_show_cmaps():
 
 @pytest.mark.parametrize(
     ('f', 'match'),
-    [[ct.aia_color_table, 'Invalid AIA wavelength.'],
-     [ct.eit_color_table, 'Invalid EIT wavelength.'],
-     [ct.sswidl_lasco_color_table, 'Invalid LASCO number.'],
-     [ct.sxt_color_table, 'Invalid SXT filter type number.'],
-     [ct.cor_color_table, 'Invalid COR number.'],
-     [ct.trace_color_table, 'Invalid TRACE filter waveband passed.'],
-     [ct.sot_color_table, r'Invalid \(or not supported\) SOT type.'],
-     [ct.iris_sji_color_table, 'Invalid IRIS SJI waveband.'],
-     [ct.stereo_hi_color_table, 'Valid HI cameras are 1 and 2'],
-     [ct.suvi_color_table, 'Invalid SUVI wavelength.']]
+    [(ct.aia_color_table, 'Invalid AIA wavelength.'),
+     (ct.eit_color_table, 'Invalid EIT wavelength.'),
+     (ct.sswidl_lasco_color_table, 'Invalid LASCO number.'),
+     (ct.sxt_color_table, 'Invalid SXT filter type number.'),
+     (ct.cor_color_table, 'Invalid COR number.'),
+     (ct.trace_color_table, 'Invalid TRACE filter waveband passed.'),
+     (ct.sot_color_table, r'Invalid \(or not supported\) SOT type.'),
+     (ct.iris_sji_color_table, 'Invalid IRIS SJI waveband.'),
+     (ct.stereo_hi_color_table, 'Valid HI cameras are 1 and 2'),
+     (ct.suvi_color_table, 'Invalid SUVI wavelength.')]
 )
 def test_invalid_wavelengths(f, match):
     # Check that accessing non-existent color table values raises a ValueError

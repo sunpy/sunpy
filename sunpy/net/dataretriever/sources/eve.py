@@ -35,9 +35,8 @@ class EVEClient(GenericClient):
     <BLANKLINE>
 
     """
-    baseurl = (r'https://lasp.colorado.edu/eve/data_access/eve_data/quicklook/'
-               r'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
-    pattern = '{}/SpWx/{:4d}/{year:4d}{month:2d}{day:2d}_EVE_L{Level:1d}{}'
+    pattern = ('https://lasp.colorado.edu/eve/data_access/eve_data/quicklook/L0CS/SpWx/'
+               '{{year:4d}}/{{year:4d}}{{month:2d}}{{day:2d}}_EVE_L{{Level:1d}}CS_DIODES_1m.txt')
 
     @property
     def info_url(self):

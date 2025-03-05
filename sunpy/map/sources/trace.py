@@ -31,10 +31,10 @@ class TRACEMap(GenericMap):
 
     References
     ----------
-    * `Mission/Instrument Page <https://sdowww.lmsal.com/TRACE>`_
-    * `Fits headers <https://sdowww.lmsal.com/TRACE/Project/Instrument/cal/>`_
-    * `Analysis Guide <https://sdowww.lmsal.com/TRACE/tag/>`_
-    * `Passband reference <https://sdowww.lmsal.com/TRACE/Project/Instrument/inspass.htm>`_
+    * `Mission/Instrument Page <https://sdowww.lmsal.com/TRACE>`__
+    * `Fits headers <https://sdowww.lmsal.com/TRACE/Project/Instrument/cal/>`__
+    * `Analysis Guide <https://sdowww.lmsal.com/TRACE/tag/>`__
+    * `Passband reference <https://sdowww.lmsal.com/TRACE/Project/Instrument/inspass.htm>`__
 
     .. note::
 
@@ -55,6 +55,18 @@ class TRACEMap(GenericMap):
         self.plotter.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
         self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle TRACEMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def spatial_units(self):

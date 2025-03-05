@@ -96,7 +96,7 @@ def test_can_handle_query(time):
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize(("time", "wave"), ([a.Time('2007/08/13', '2007/08/14'),a.Wavelength(17*u.GHz)],[a.Time('2007/08/13', '2007/08/14'), a.Wavelength(34*u.GHz)]))
+@pytest.mark.parametrize(("time", "wave"), [(a.Time('2007/08/13', '2007/08/14'),a.Wavelength(17*u.GHz)),(a.Time('2007/08/13', '2007/08/14'), a.Wavelength(34*u.GHz))])
 def test_query(time, wave):
     LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, a.Instrument.norh, wave)

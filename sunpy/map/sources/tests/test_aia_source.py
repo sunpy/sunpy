@@ -1,6 +1,7 @@
 """
 Test cases for AIAMap subclass.
 """
+import copy
 
 import pytest
 
@@ -86,4 +87,12 @@ def test_new_instance_preserves_plot_settings(aia_map):
 
 def test_wcs(aia_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    aia_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+    aia_map.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_missing_tobs(aia_map):
+    # Should fall back to base reference_date for reference date if T_OBS is missing
+    new_meta = copy.deepcopy(aia_map.meta)
+    new_meta.pop('T_OBS')
+    new_aia_map = aia_map._new_instance(aia_map.data, new_meta)
+    assert new_aia_map.reference_date == super(type(new_aia_map), new_aia_map).reference_date

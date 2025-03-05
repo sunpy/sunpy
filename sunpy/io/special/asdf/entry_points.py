@@ -11,7 +11,7 @@ from asdf.resource import DirectoryResourceMapping
 def get_resource_mappings():
     """
     Get the resource mapping instances for myschemas
-    and manifests.  This method is registered with the
+    and manifests. This method is registered with the
     asdf.resource_mappings entry point.
 
     Returns
@@ -40,7 +40,9 @@ def get_extensions():
     # order here is important as asdf will pick the first matching
     # extension, start with the newest
     _manifest_uris = [
+        "asdf://sunpy.org/sunpy/manifests/sunpy-1.2.1",
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.2.0",
+        "asdf://sunpy.org/sunpy/manifests/sunpy-1.1.2",
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.1.1",
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.1.0",
         "asdf://sunpy.org/sunpy/manifests/sunpy-1.0.0",

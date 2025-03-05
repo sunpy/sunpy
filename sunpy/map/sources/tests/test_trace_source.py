@@ -3,6 +3,7 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.trace import TRACEMap
 from .helpers import _test_private_date_setters
 
@@ -16,6 +17,10 @@ def trace_map():
 def test_fitstoTRACE(trace_map):
     """Tests the creation of TRACEMap using FITS."""
     assert isinstance(trace_map, TRACEMap)
+
+
+def test_trace_coordinate_system(trace_map):
+    assert trace_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 
 def test_is_datasource_for(trace_map):

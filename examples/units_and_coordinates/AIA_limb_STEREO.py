@@ -41,7 +41,7 @@ hidden.remove()
 
 ##############################################################################
 # Let's plot the helioprojective coordinate grid as seen by SDO on the STEREO
-# image in a cropped view.  Note that only those grid lines that intersect the
+# image in a cropped view. Note that only those grid lines that intersect the
 # edge of the plot will have corresponding ticks and tick labels.
 
 fig = plt.figure()

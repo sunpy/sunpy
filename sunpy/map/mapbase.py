@@ -33,7 +33,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates.wcs_utils
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
-from sunpy import config
+from sunpy import config, log
 # The next two are not used but are called to register functions with external modules
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -81,8 +81,7 @@ corresponds to the coordinate axis for ``x`` and ``axis2`` corresponds to
 
 This class assumes that the metadata adheres to the FITS 4 standard.
 Where the CROTA2 metadata is provided (without PC_ij) it assumes a conversion
-to the standard PC_ij described in section 6.1 of .
-`Calabretta & Greisen (2002) <https://doi.org/10.1051/0004-6361:20021327>`_
+to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representations_2002`.
 
 .. warning::
     If a header has CD_ij values but no PC_ij values, CDELT values are required
@@ -114,11 +113,38 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
+
+    Methods and their known behavior with dask arrays
+    -------------------------------------------------
+
+    +-------------------+------------------------------------+
+    | Method            | Preserve laziness with Dask Arrays |
+    +===================+====================================+
+    | `reproject_to`    | No                                 |
+    +-------------------+------------------------------------+
+    | `resample`        | No                                 |
+    +-------------------+------------------------------------+
+    | `rotate`          | No                                 |
+    +-------------------+------------------------------------+
+    | `max`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `mean`            | Yes                                |
+    +-------------------+------------------------------------+
+    | `min`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `std`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `superpixel`      | Yes                                |
+    +-------------------+------------------------------------+
+    | `submap`          | Yes                                |
+    +-------------------+------------------------------------+
+
+
     Examples
     --------
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> aia   # doctest: +REMOTE_DATA
     <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
@@ -148,7 +174,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
     >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
@@ -157,12 +183,12 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     _registry = dict()
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
-    # Enabling the GenericMap reflected operators is a bit subtle.  The GenericMap
+    # Enabling the GenericMap reflected operators is a bit subtle. The GenericMap
     # reflected operator will be used only if the Quantity non-reflected operator
-    # returns NotImplemented.  The Quantity operator strips the unit from the
+    # returns NotImplemented. The Quantity operator strips the unit from the
     # Quantity and tries to combine the value with the GenericMap using NumPy's
-    # __array_ufunc__().  If NumPy believes that it can proceed, this will result
-    # in an error.  We explicitly set __array_ufunc__ = None so that the NumPy
+    # __array_ufunc__(). If NumPy believes that it can proceed, this will result
+    # in an error. We explicitly set __array_ufunc__ = None so that the NumPy
     # call, and consequently the Quantity operator, will return NotImplemented.
     __array_ufunc__ = None
 
@@ -185,7 +211,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             # NOTE: This conditional is due to overlapping map sources in sunpy and pfsspy that
             # lead to a MultipleMatchError if sunpy.map and pfsspy.map are imported.
             # See https://github.com/sunpy/sunpy/issues/7294 for more information.
-            if f'{cls.__module__}.{cls.__name__}' != "pfsspy.map.GongSynopticMap":
+            # This also applies to older versions of sunkit-magex with ADAPTMap.
+            if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, *, wcs=None, uncertainty=None, mask=None, meta,
@@ -480,7 +507,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         --------
         >>> from sunpy.map import Map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         >>> smap.quicklook()  # doctest: +SKIP
 
         (which will open the following content in the default web browser)
@@ -601,11 +628,11 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Notes
         -----
         ``dateobs`` is always populated with the "canonical" observation time as
-        provided by the `.date` property.  This will commonly be the DATE-OBS key if it
+        provided by the `.date` property. This will commonly be the DATE-OBS key if it
         is in the metadata, but see that property for the logic otherwise.
 
         ``dateavg`` is always populated with the reference date of the coordinate system
-        as provided by the `.reference_date` property.  This will commonly be the
+        as provided by the `.reference_date` property. This will commonly be the
         DATE-AVG key if it is in the metadata, but see that property for the logic
         otherwise.
 
@@ -701,18 +728,18 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Parameters
         ----------
         filepath : `str`
-            Location to save file to.
+            Location to save the file to.
+            If ``filepath`` ends with ".asdf" and ``filetype="auto"``, an ASDF file will be created.
         filetype : `str`, optional
-            Any supported file extension, defaults to ``"auto"``.
+            The file format to save the map in. Defaults to ``"auto"`` which infers
+            the format from the file extension. Supported formats include FITS, JP2, and ASDF.
         hdu_type : `~astropy.io.fits.hdu.base.ExtensionHDU` instance or class, optional
-            By default, a FITS file is written with the map in its primary HDU.
-            If a type is given, a new HDU of this type will be created.
-            If a HDU instance is given, its data and header will be updated from the map.
-            Then that HDU instance will be written to the file.
-            The example below uses `astropy.io.fits.CompImageHDU` to compress the map.
+            For FITS files, this specifies the type of HDU to write. By default, the map is saved
+            in the primary HDU. If an HDU type or instance is provided, the map data and header will
+            be written to that HDU. For example, `astropy.io.fits.CompImageHDU` can be used to compress the map.
         kwargs :
-            Any additional keyword arguments are passed to
-            `~sunpy.io._file_tools_write_file`.
+            Any additional keyword arguments are passed to `~sunpy.io._file_tools.write_file`
+            or `asdf.AsdfFile.write_to`.
 
         Notes
         -----
@@ -720,16 +747,26 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         of the given data casted to uint8 values in order to support
         the JPEG2000 format.
 
+        Saving with the ``.asdf`` extension will save the map as an ASDF file, storing the map's
+        attributes under the key ``'sunpymap'`` in the ASDF tree.
+
         Examples
         --------
         >>> from astropy.io.fits import CompImageHDU
         >>> from sunpy.map import Map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA
+        >>> aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> aia_map.save("aia171.fits", hdu_type=CompImageHDU)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> aia_map.save("aia171.asdf")  # doctest: +REMOTE_DATA
         """
-        write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        if filetype.lower() == "asdf" or (filetype.lower() == "auto" and str(filepath).lower().endswith(".asdf")):
+            import asdf
+            asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
+        else:
+            write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
+
+
+
 
 # #### Image processing routines #### #
 
@@ -741,6 +778,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Uses the same parameters and creates the same coordinate lookup points
         as IDL's congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
+
+        This method **does not** preserve dask arrays.
 
         Parameters
         ----------
@@ -762,7 +801,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         References
         ----------
-        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
+        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`__
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -812,6 +851,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         angle : `~astropy.units.Quantity`
@@ -819,7 +860,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         rmatrix : array-like
             2x2 linear transformation rotation matrix.
         order : int
-            Interpolation order to be used.  The precise meaning depends on the
+            Interpolation order to be used. The precise meaning depends on the
             rotation method specified by ``method``.
             Default: 3
         scale : float
@@ -832,7 +873,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             of the input map.
             Default: `numpy.nan`
         method : {{{rotation_function_names}}}, optional
-            Rotation function to use.  Defaults to ``'scipy'``.
+            Rotation function to use. Defaults to ``'scipy'``.
         clip : `bool`, optional
             If `True`, clips the pixel values of the output image to the range of the
             input image (including the value of ``missing``, if used).
@@ -862,8 +903,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         For each NaN pixel in the input image, one or more pixels in the output image
         will be set to NaN, with the size of the pixel region affected depending on the
-        interpolation order.  All currently implemented rotation methods require a
-        convolution step to handle image NaNs.  This convolution normally uses
+        interpolation order. All currently implemented rotation methods require a
+        convolution step to handle image NaNs. This convolution normally uses
         :func:`scipy.signal.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
         installed, the faster |cv2_filter2D|_ is used instead.
 
@@ -916,7 +957,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if (pad_x > 0 or pad_y > 0) and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             raise ValueError("The underlying data is integers, but the fill value for missing "
                              "pixels cannot be cast to an integer, which is the case for the "
-                             "default fill value of NaN.  Set the `missing` keyword to an "
+                             "default fill value of NaN. Set the `missing` keyword to an "
                              "appropriate integer value for the data set.")
 
         new_data = np.pad(self.data,
@@ -1004,6 +1045,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
 
+        This method **does** preserve dask arrays.
+
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
@@ -1037,7 +1080,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         >>> from astropy.coordinates import SkyCoord
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> aia.submap(bl, top_right=tr)   # doctest: +REMOTE_DATA
@@ -1278,9 +1321,12 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
+                   conservative_mask: bool = False):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
+
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -1302,6 +1348,10 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
+        conservative_mask : bool, optional
+            If `True`, a superpixel is masked if any of its constituent pixels are masked.
+            If `False`, a superpixel is masked only if all of its constituent pixels are masked.
+            Default is `False`.
 
         Returns
         -------
@@ -1330,10 +1380,24 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         else:
             data = self.data.copy()
 
-        reshaped = reshape_image_to_4d_superpixel(data,
-                                                  [dimensions[1], dimensions[0]],
-                                                  [offset[1], offset[0]])
-        new_array = func(func(reshaped, axis=3), axis=1)
+        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+        new_array = func(func(reshaped_data, axis=3), axis=1)
+
+        if self.mask is not None:
+            if conservative_mask ^ (func in [np.sum, np.prod]):
+                log.info(
+                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                    "False for mean/median/std/min/max."
+                    )
+
+            if conservative_mask:
+                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+                new_mask = np.any(reshaped_mask, axis=(3, 1))
+            else:
+                new_mask = np.ma.getmaskarray(new_array)
+        else:
+            new_mask = None
 
         # Update image scale and number of pixels
 
@@ -1359,10 +1423,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # Create new map instance
         if self.mask is not None:
             new_data = np.ma.getdata(new_array)
-            new_mask = np.ma.getmask(new_array)
         else:
             new_data = new_array
-            new_mask = None
 
         # Create new map with the modified data
         new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
@@ -1427,7 +1489,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         Parameters
         ----------
-        level : float, astropy.units.Quantity
+        level : float, `~astropy.units.Quantity`
             Value along which to find contours in the array. If the map unit attribute
             is not `None`, this must be a `~astropy.units.Quantity` with units
             equivalent to the map data units.
@@ -1444,9 +1506,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         >>> import astropy.units as u
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA
-        >>> print(contours[0])  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> contours = aia.contour(50000 * u.DN)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+        >>> contours[0]  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         [(719.59798458, -352.60839064), (717.19243987, -353.75348121),
@@ -1486,6 +1548,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         Additional keyword arguments are passed through to the reprojection function.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         target_wcs : `dict` or `~astropy.wcs.WCS`
@@ -1501,9 +1565,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         outmap : `~sunpy.map.GenericMap`
             The reprojected map
         footprint : `~numpy.ndarray`
-            Footprint of the input arary in the output array.  Values of 0 indicate no
+            Footprint of the input arary in the output array. Values of 0 indicate no
             coverage or valid values in the input image, while values of 1 indicate
-            valid values.  Intermediate values indicate partial coverage.
+            valid values. Intermediate values indicate partial coverage.
             Only returned if ``return_footprint`` is ``True``.
 
         Notes

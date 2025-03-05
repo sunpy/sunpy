@@ -57,6 +57,7 @@ from .frames import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
     SolarMagnetic,
 )
 
@@ -80,9 +81,9 @@ def transform_with_sun_center():
     Context manager for coordinate transformations to ignore the motion of the center of the Sun.
 
     Normally, coordinates refer to a point in inertial space (relative to the barycenter of the
-    solar system).  Transforming to a different observation time does not move the point at all,
+    solar system). Transforming to a different observation time does not move the point at all,
     but rather only updates the coordinate representation as needed for the origin and axis
-    orientations at the new observation time.  However, the center of the Sun moves over time.
+    orientations at the new observation time. However, the center of the Sun moves over time.
     Thus, for example, a coordinate that lies on the surface of the Sun at one observation time
     will not continue to lie on the surface of the Sun at other observation times.
 
@@ -93,7 +94,7 @@ def transform_with_sun_center():
     Notes
     -----
     This context manager accounts only for the motion of the center of the Sun, i.e.,
-    translational motion.  The motion of solar features due to any rotation of the Sun about its
+    translational motion. The motion of solar features due to any rotation of the Sun about its
     rotational axis is not accounted for.
 
     Due to the implementation approach, this context manager modifies transformations between only
@@ -145,14 +146,14 @@ def propagate_with_solar_surface(rotation_model='howard'):
     differential rotation for any change in observation time.
 
     Normally, coordinates refer to a point in inertial space (relative to the
-    barycenter of the solar system).  Transforming to a different observation time
+    barycenter of the solar system). Transforming to a different observation time
     does not move the point at all, but rather only updates the coordinate
     representation as needed for the origin and axis orientations at the new
     observation time.
 
     Under this context manager, transformations will instead treat the coordinate
     as if it were referring to a point on the solar surface instead of a point in
-    inertial space.  If a transformation has a change in observation time, the
+    inertial space. If a transformation has a change in observation time, the
     heliographic longitude of the point will be updated according to the specified
     rotation model.
 
@@ -160,7 +161,7 @@ def propagate_with_solar_surface(rotation_model='howard'):
     ----------
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``,
-        ``'allen'``, and ``'rigid'``.  See the documentation for
+        ``'allen'``, and ``'rigid'``. See the documentation for
         :func:`~sunpy.sun.models.differential_rotation` for the differences
         between these models.
 
@@ -226,7 +227,7 @@ _layer_level = 0
 def _transformation_debug(description):
     """
     Decorator to produce debugging output for a transformation function: its description, inputs,
-    and output.  Unicode box-drawing characters are used.
+    and output. Unicode box-drawing characters are used.
     """
     def decorator(func):
         @wraps(func)
@@ -581,6 +582,68 @@ def hpc_to_hpc(from_coo, to_frame):
     return hpc
 
 
+def _matrix_hpc_to_hpr():
+    # Returns the transformation matrix that permutes/swaps axes from HPC to HPR
+
+    # HPR spherical coordinates are a right-handed frame with these equivalent Cartesian axes:
+    #   HPR_X = HPC_Z
+    #   HPR_Y = -HPC_Y
+    #   HPR_Z = -HPC_X
+    # (HPC_X and HPC_Y are not to be confused with HPC_Tx and HPC_Ty)
+    return np.array([[0, 0, 1],
+                     [0, -1, 0],
+                     [-1, 0, 0]])
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 Helioprojective, HelioprojectiveRadial)
+@_transformation_debug("HPC->HPR")
+def hpc_to_hpr(hpc_coord, hpr_frame):
+    """
+    Convert from Helioprojective Cartesian to Helioprojective Radial.
+    """
+    _check_observer_defined(hpc_coord)
+    _check_observer_defined(hpr_frame)
+
+    # Transform the HPR observer (in HGS) to the HPR obstime in case it's different
+    observer = _transform_obstime(hpr_frame.observer, hpr_frame.obstime)
+
+    # Loopback transform HPC coord to obstime and observer of HPR frame
+    int_frame = Helioprojective(obstime=observer.obstime, observer=observer)
+    int_coord = hpc_coord.transform_to(int_frame)
+
+    # Permute/swap axes from HPC to HPR equivalent Cartesian
+    newrepr = int_coord.cartesian.transform(_matrix_hpc_to_hpr())
+
+    return hpr_frame.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HelioprojectiveRadial, Helioprojective)
+@_transformation_debug("HPR->HPC")
+def hpr_to_hpc(hpr_coord, hpc_frame):
+    """
+    Convert from Helioprojective Radial to Helioprojective Cartesian.
+    """
+    _check_observer_defined(hpr_coord)
+    _check_observer_defined(hpc_frame)
+
+    # Permute/swap axes from HPR to HPC equivalent Cartesian
+    newrepr = hpr_coord.cartesian.transform(matrix_transpose(_matrix_hpc_to_hpr()))
+
+    # Transform the HPR observer (in HGS) to the HPR obstime in case it's different
+    observer = _transform_obstime(hpr_coord.observer, hpr_coord.obstime)
+
+    # Complete the conversion of HPR to HPC at the obstime and observer of the HPR coord
+    int_coord = Helioprojective(newrepr, obstime=observer.obstime, observer=observer)
+
+    # Loopback transform HPC as needed
+    return int_coord.transform_to(hpc_frame)
+
+
+frame_transform_graph._add_merged_transform(HelioprojectiveRadial, Helioprojective, HelioprojectiveRadial)
+
+
 def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
@@ -651,7 +714,7 @@ def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
     rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
     equatorial plane (i.e., the component of the Sun-Earth vector perpendicular to the Z axis).
     Thus, the transformation matrix is the product of the matrix to align the Z axis (by de-tilting
-    the Sun's rotation axis) and the matrix to align the X axis.  The first matrix is independent
+    the Sun's rotation axis) and the matrix to align the X axis. The first matrix is independent
     of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
     vector.
     """
@@ -1249,7 +1312,7 @@ def _make_sunpy_graph():
     # Frames to keep in the transformation graph
     keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
                  'heliographic_stonyhurst', 'heliographic_carrington',
-                 'heliocentric', 'helioprojective',
+                 'heliocentric', 'helioprojective', 'helioprojectiveradial',
                  'heliocentricearthecliptic', 'geocentricsolarecliptic',
                  'heliocentricinertial', 'geocentricearthequatorial',
                  'geomagnetic', 'solarmagnetic', 'geocentricsolarmagnetospheric',
@@ -1322,7 +1385,7 @@ def _tweak_graph(docstr):
 
     # Set the nodes for SunPy frames to be white
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
-                    'Heliocentric', 'Helioprojective',
+                    'Heliocentric', 'Helioprojective', 'HelioprojectiveRadial',
                     'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
                     'HeliocentricInertial', 'GeocentricEarthEquatorial',
                     'Geomagnetic', 'SolarMagnetic', 'GeocentricSolarMagnetospheric']

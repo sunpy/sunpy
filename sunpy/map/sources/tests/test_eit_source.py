@@ -7,6 +7,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import EITMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
@@ -21,6 +22,10 @@ def eit_map():
 def test_fitstoEIT(eit_map):
     """Tests the creation of EITMap using FITS."""
     assert isinstance(eit_map, EITMap)
+
+
+def test_eitmap_coordinate_system(eit_map):
+    assert eit_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 
 def test_reference_date(eit_map):
@@ -71,3 +76,14 @@ def test_old_eit_date():
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observer"):
         eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
+
+
+def test_l1_eit_map():
+    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_171_20070601T120013_L1.header"))
+    assert eit_map.plot_settings["cmap"] == "sohoeit171"
+    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_195_20070601T121346_L1.header"))
+    assert eit_map.plot_settings["cmap"] == "sohoeit195"
+    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_284_20070601T120607_L1.header"))
+    assert eit_map.plot_settings["cmap"] == "sohoeit284"
+    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_304_20070601T121937_L1.header"))
+    assert eit_map.plot_settings["cmap"] == "sohoeit304"

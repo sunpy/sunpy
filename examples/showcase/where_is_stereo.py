@@ -6,7 +6,7 @@ Reproducing the "Where is STEREO Today?" plot
 How to reproduce the "Where is STEREO Today?" plot.
 
 This example uses capabilities in sunpy to reproduce the plot that can be found
-at `<https://stereo-ssc.nascom.nasa.gov/where.shtml>`__.  This example is not
+at `<https://stereo-ssc.nascom.nasa.gov/where.shtml>`__. This example is not
 written as a tutorial, but there are related tutorials for learning about these
 capabilities:
 
@@ -27,7 +27,8 @@ from sunpy.time import parse_time
 ##############################################################################
 # Define the time for the plot as the time when this script is run.
 
-obstime = parse_time('now')
+# This time is fixed as the ephemeris information for STEREO-B is no longer generated
+obstime = parse_time('2024-Oct-17 20:23')
 
 ##############################################################################
 # Define a convenience function to extract the first full orbit from a

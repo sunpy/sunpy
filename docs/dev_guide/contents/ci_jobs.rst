@@ -51,3 +51,9 @@ Currently we have several stages of CI jobs, some run on a pull request and some
       Likely to break due to upstream changes we can't fix and have to wait to be resolved.
     * "conda" - Check the offline test suite when using conda instead of pip/pypi.
       Likely to break due to packaging upstream we can't fix and have to wait to be resolved.
+
+6. "benchmarks" - only upon request on a pull request
+    This runs our suite of ``asv`` benchmarks on a pull request to check whether merging the pull request would increase or decrease performance.
+    This approach to checking for performance changes can have false positives or false negatives, so should not be the sole source of information when evaluating the performance impact of a pull request.
+
+    To enable this build, add the label "Run benchmarks" to the pull request.

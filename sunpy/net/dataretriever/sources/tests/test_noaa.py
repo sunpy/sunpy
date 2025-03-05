@@ -215,6 +215,7 @@ def test_srs_start_or_end_out_of_range(srs_client):
     res = srs_client.search(a.Time('1995/12/30', '1996/01/02'))
     assert len(res) == 1
     cur_year = datetime.date.today().year
+    # Will fail on the first day of the next year.
     res = srs_client.search(a.Time(f'{cur_year}/01/01', f'{cur_year+2}/01/01'))
     assert len(res) > 0
 

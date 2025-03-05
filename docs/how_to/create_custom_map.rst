@@ -1,8 +1,8 @@
 .. _sunpy-how-to-custom-maps:
 
-**************************
-Create Custom Maps by Hand
-**************************
+********************************
+Create a custom `~sunpy.map.Map`
+********************************
 
 It is possible to create Maps using custom data, e.g., from a simulation or an observation from a data source that is not explicitly supported by ``sunpy``.
 To do this, you need to provide `sunpy.map.Map` with both the data array as well as appropriate metadata.

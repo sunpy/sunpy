@@ -24,9 +24,9 @@ class EUVIMap(GenericMap):
 
     References
     ----------
-    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`_
-    * `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
+    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`__
+    * `Instrument Page <http://secchi.lmsal.com/EUVI/>`__
     """
 
     def __init__(self, data, **kwargs):
@@ -76,11 +76,11 @@ class CORMap(GenericMap):
 
     References
     ----------
-    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`_
-    * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`_
-    * `COR2 Instrument Page <https://secchi.nrl.navy.mil//index.php?p=cor2>`_
-    * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`_
+    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`__
+    * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`__
+    * `COR2 Instrument Page <https://secchi.nrl.navy.mil//index.php?p=cor2>`__
+    * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`__
     """
 
     def __init__(self, data, **kwargs):
@@ -93,7 +93,7 @@ class CORMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod
@@ -116,9 +116,9 @@ class HIMap(GenericMap):
 
     References
     ----------
-    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <https://secchi.nrl.navy.mil>`_
-    * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
+    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil>`__
+    * `HI Instrument Page <http://www.stereo.rl.ac.uk>`__
     """
 
     def __init__(self, data, **kwargs):
@@ -131,7 +131,7 @@ class HIMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod

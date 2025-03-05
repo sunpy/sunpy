@@ -77,7 +77,7 @@ Once the ``conda`` installation of ``sunpy`` is removed, the ``pip`` installatio
 
 .. note::
 
-    For those who use ``mamba`` instead of ``conda``, most ``conda`` commands can be translated by simply substituting "mamba" for "conda".  However, ``mamba remove`` does not support the ``--force`` option, so you do in fact have to call ``conda remove``.
+    For those who use ``mamba`` instead of ``conda``, most ``conda`` commands can be translated by simply substituting "mamba" for "conda". However, ``mamba remove`` does not support the ``--force`` option, so you do in fact have to call ``conda remove``.
 
 As a tip, you can follow a similar procedure to incorporate editable installations of other packages (e.g., ``astropy``) in a ``conda`` environment.
 You first install the package via ``conda`` to ensure its dependencies are present, then you remove the package alone without disturbing the dependencies, and finally you perform the editable install of the package from the base directory of your local repository:
