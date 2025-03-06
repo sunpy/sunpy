@@ -12,11 +12,10 @@ from astropy.coordinates import SkyCoord
 import sunpy.map
 import sunpy.net.attrs as a
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.tests.helpers import skip_jsoc
 from sunpy.util.exceptions import SunpyUserWarning
 
 # Ensure all JSOC tests are run on the same parallel worker
-pytestmark = [pytest.mark.xdist_group(name="jsoc"), skip_jsoc]
+pytestmark = [pytest.mark.xdist_group(name="jsoc")]
 
 
 @pytest.fixture
