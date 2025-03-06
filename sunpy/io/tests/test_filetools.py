@@ -21,7 +21,7 @@ pytestmark = pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in heade
 def test_read_file_network_fits():
     # Aim is to verify that we can read a files from a URL
     # but it is mocked to prevent network access
-    url = "https://hesperia.gsfc.nasa.gov/rhessi_extras/imagecube_fits/2015/12/20/20151220_2228_2248/hsi_imagecube_clean_20151220_2228_13tx3e.fits"
+    url = "https://hesperia.gsfc.nasa.gov/rhessi_extras/imagecube_fits_v2/2015/12/20/20151220_2338_0004/hsi_imagecube_clean_20151220_2338_18tx3e.fits"
     with patch("astropy.io.fits.file.download_file", return_value=TEST_AIA_IMAGE) as mock:
         hdulist = read_file(url)
         assert mock.call_args[0][0] == url
