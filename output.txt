@@ -1,3 +1,0 @@
-ruff.....................................................................[42mPassed[m
-isort....................................................................Interrupted (^C): KeyboardInterrupt: 
-Check the log at /home/nabil/.cache/pre-commit/pre-commit.log
