@@ -526,8 +526,17 @@ class JSOCClient(BaseClient):
                         fname = path.strip(ext)
                     else:
                         fname = path
-                    fname = fname.format(file=filename)
-                    fname = os.path.expanduser(fname)
+                   
+
+                    date_value=request.data.get('date') or request.data.get("DATE") or ""
+
+                    try :
+                        fname = fname.format(file=filename,date=date_value)
+                    except KeyError as e :
+                        log.warning(f"Skipping invalid key in path : {e}")
+                        fname=fname.replace(f"{{{e.args[0]}}}","")
+
+                    fname = os.path.expanduser(fname)   
                     paths.append(fname)
 
         dl_set = True
