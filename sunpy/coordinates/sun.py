@@ -33,7 +33,7 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from ._transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
 from .ephemeris import get_body_heliographic_stonyhurst, get_earth
-from .frames import HeliographicStonyhurst
+from .frames import _J2000, HeliographicStonyhurst
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
@@ -508,10 +508,6 @@ def B0(time='now'):
 def _detilt_lon(coord):
     coord_detilt = coord.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
     return coord_detilt.represent_as(SphericalRepresentation).lon.to('deg')
-
-
-# J2000.0 epoch
-_J2000 = Time('J2000.0', scale='tt')
 
 
 # One of the two nodes of intersection between the ICRF equator and Sun's equator in HCRS
