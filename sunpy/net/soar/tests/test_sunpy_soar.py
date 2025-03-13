@@ -41,7 +41,7 @@ def test_search() -> None:
 def test_search_low_latency() -> None:
     time = a.Time("2020-11-13", "2020-11-14")
     level = a.Level("LL02")
-    product = a.soar.Product("mag")
+    product = a.soar.Product("epd-het-asun-rates")
 
     res = Fido.search(time, level, product)
     assert len(res) == 1
@@ -319,7 +319,7 @@ def test_distance_search_insitu():
     product = a.soar.Product("metis-vl-pol-angle")
     distance = a.soar.Distance(0.45 * u.AU, 0.46 * u.AU)
     res = Fido.search(distance & instrument & product & level)
-    assert res.file_num == 248
+    assert res.file_num == 284
 
 
 def test_distance_time_search():
