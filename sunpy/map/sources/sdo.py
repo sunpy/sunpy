@@ -172,7 +172,10 @@ class HMIMap(GenericMap):
             return
         # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
         # The mapbase unit property forces this validation, so we must override it to prevent it.
-        return u.Unit(unit_str)
+        if (parsed_unit := u.Unit(unit_str)) == u.Unit('Mx/cm2'):
+            return parsed_unit
+        else:
+            return super().unit
 
     @property
     def detector(self):
