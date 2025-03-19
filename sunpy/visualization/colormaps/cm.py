@@ -50,7 +50,7 @@ goesrsuvi304 = ct.suvi_color_table(304*u.angstrom)
 
 
 # The color tables below returns one of the fundamental color tables for SOHO
-# LASCO images. These are not the same as those used in SSWIDL.  This is
+# LASCO images. These are not the same as those used in SSWIDL. This is
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
 # compressed and does not display the data well.
 soholasco2 = deepcopy(matplotlib.colormaps["gist_heat"])

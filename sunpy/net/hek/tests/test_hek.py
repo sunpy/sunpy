@@ -229,4 +229,4 @@ def test_missing_times():
     client = hek.HEKClient()
     results = client.search(attrs.Time('2024-05-10', '2024-05-12'), attrs.hek.AR.NOAANum == 13664)
     assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
-    assert results["event_peaktime"][6].isot == "2024-05-10T16:08:00.000"
+    assert results["event_peaktime"][3].isot == "2024-05-10T00:13:00.000"

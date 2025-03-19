@@ -59,8 +59,8 @@ def tmp_config_dir(request):
     tmpdir = tempfile.TemporaryDirectory()
 
     os.environ["SUNPY_CONFIGDIR"] = str(tmpdir.name)
-    astropy.config.paths.set_temp_config._temp_path = str(tmpdir.name)
-    astropy.config.paths.set_temp_cache._temp_path = str(tmpdir.name)
+    astropy.config.paths.set_temp_config._temp_path = pathlib.Path(tmpdir.name)
+    astropy.config.paths.set_temp_cache._temp_path = pathlib.Path(tmpdir.name)
 
     yield
 

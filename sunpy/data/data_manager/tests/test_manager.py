@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import pytest
@@ -48,6 +49,31 @@ def test_wrong_hash_provided(manager):
 
     with pytest.raises(RuntimeError):
         test_foo()
+
+
+def test_defer_download(manager, storage, downloader, data_function, tmpdir):
+    """
+    Test that files are not downloaded immediately if defer_download is True,
+    but are downloaded when get is called.
+    """
+    folder = tmpdir.strpath
+    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH,defer_download=True)
+    def deferred_function():
+        pass
+
+    deferred_function()
+    assert downloader.times_called == 0
+    assert len(storage._store) == 0
+
+def test_defer_download_get(manager, storage, downloader, data_function, tmpdir):
+    folder = tmpdir.strpath
+    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH, defer_download=True)
+    def deferred_function():
+        manager.get('test_file')
+
+    deferred_function()
+    assert downloader.times_called == 1
+    assert len(storage._store) == 1
 
 
 def test_skip_all(manager, storage, downloader, data_function):
@@ -129,7 +155,7 @@ def test_wrong_hash_error(manager, storage):
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("['url1', 'url2'] has already been downloaded, but no file matching the hash asdf can be found.")):
         foo()
 
 
@@ -222,3 +248,22 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
 
     # Storage still contains original test_file
     assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
+
+
+def test_file_deleted_redownload(storage, downloader, data_function):
+    # Checks that if a file is deleted, a warning is raised and the file is re-downloaded.
+
+    data_function()
+    assert len(storage._store) == 1
+    test_file_path = Path(storage._store[0]['file_path'])
+    assert test_file_path.exists()
+
+    os.remove(test_file_path)
+    assert not test_file_path.exists()
+
+    with pytest.warns(SunpyUserWarning, match="Requested file appears to missing and will be redownloaded."):
+        data_function()
+
+    assert downloader.times_called == 2
+    assert len(storage._store) == 1
+    assert test_file_path.exists()

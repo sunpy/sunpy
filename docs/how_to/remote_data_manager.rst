@@ -1,7 +1,7 @@
 .. _sunpy-how-to-the-remote-data-manager:
 
 ***************************
-Use the Remote Data Manager
+Use the remote data manager
 ***************************
 
 Often, data prep or analysis functions require files to be downloaded from a remote server.

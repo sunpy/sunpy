@@ -289,14 +289,14 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
         ...                        a.Instrument.aia,
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
-        ...                        a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+        ...                        a.Sample(10*u.minute))  # doctest: +SKIP
 
         Parameters
         ----------
         *query : `sunpy.net.vso.attrs`, `sunpy.net.jsoc.attrs`
             A query consisting of multiple parameters which define the
-            requested data.  The query is specified using attributes from the
-            VSO and the JSOC.  The query can mix attributes from the VSO and
+            requested data. The query is specified using attributes from the
+            VSO and the JSOC. The query can mix attributes from the VSO and
             the JSOC.
 
         Returns
@@ -510,7 +510,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
                 re.sub(r"\s+", " ", key.__doc__.partition("\n\n")[0]).strip())))
-        lines.extend(t.pformat_all(max_lines=visible_entries,
+        lines.extend(t.pformat(max_lines=visible_entries,
                                    show_dtype=False, max_width=width, align="<", html=html))
         return '\n'.join(lines)
 

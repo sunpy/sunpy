@@ -1,1 +1,0 @@
-Fix filetype detection to use the detected filetype if a known reader is registered.

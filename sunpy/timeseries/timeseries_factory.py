@@ -1,12 +1,14 @@
 """
 This module provides the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
+
 import os
 import copy
 import pathlib
 from collections import OrderedDict
 from urllib.request import Request
 
+import fsspec
 import numpy as np
 import pandas as pd
 
@@ -18,12 +20,12 @@ from astropy.time import Time
 from astropy.utils.decorators import deprecated_renamed_argument
 
 import sunpy
+from sunpy.data import cache
 from sunpy.io._file_tools import UnrecognizedFileTypeError, detect_filetype, read_file
 from sunpy.io._header import FileHeader
 from sunpy.timeseries.sources import source_names
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import expand_list
-from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.datatype_factory_base import (
     BasicRegistrationFactory,
     MultipleMatchError,
@@ -32,12 +34,10 @@ from sunpy.util.datatype_factory_base import (
 )
 from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.io import HDPair, is_url, parse_path, possibly_a_path
+from sunpy.util.io import HDPair, expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
-from sunpy.util.net import download_file
 
-__all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
-           'InvalidTimeSeriesInput', 'InvalidTimeSeriesType']
+__all__ = ["TimeSeries", "TimeSeriesFactory", "NoTimeSeriesFound", "InvalidTimeSeriesInput", "InvalidTimeSeriesType"]
 
 
 class TimeSeriesFactory(BasicRegistrationFactory):
@@ -139,12 +139,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         pairs : `list` or `str`
             List of ``(data, header)`` pairs or ``fname`` if the file is not supported or incorrect.
         """
-        if 'source' not in kwargs.keys() or not kwargs['source']:
+        if "source" not in kwargs.keys() or not kwargs["source"]:
             try:
-                if detect_filetype(fname) == 'cdf':
+                if detect_filetype(fname, **kwargs) == "cdf":
                     # Put import here to ensure there is no import dependency
                     # on cdflib for TimeSeries
                     from sunpy.io._cdf import read_cdf
+
                     return read_cdf(os.fspath(fname), **kwargs)
             except UnrecognizedFileTypeError:
                 pass
@@ -240,7 +241,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = new_meta
         return meta
 
-    def _sanitise_args(self, args):
+    def _sanitise_args(self, args, **kwargs):
         """
         Sanitise a list of args so that a single argument corresponds to either:
 
@@ -255,10 +256,14 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Sanitise the input so that each 'type' of input corresponds to a different
         # class, so single dispatch can be used later
-        i = 0
-        while i < len(args):
-            arg = args[i]
-            if isinstance(arg, np.ndarray | Table | pd.DataFrame):
+        parsed_args = []
+        skip_n_arg = 0
+        for i, arg in enumerate(args):
+            if skip_n_arg:
+                skip_n_arg -= 1
+                continue
+
+            if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
                 # Extract data and metadata
                 # The next item is data
                 data = args[i]
@@ -274,26 +279,34 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     data = pd.DataFrame(data=data[:, 1:], index=Time(data[:, 0]))
 
                 # The next two could be metadata or units
-                for _ in range(2):
-                    j = i+1
+                for z in range(2):
+                    j = i + z + 1
                     if j < len(args):
-                        arg = args[j]
-                        if self._is_units(arg):
-                            units.update(arg)
-                            args.pop(j)
-                        elif self._is_metadata(arg):
-                            meta.update(self._parse_meta(arg))
-                            args.pop(j)
+                        narg = args[j]
+                        if self._is_units(narg):
+                            units.update(narg)
+                            skip_n_arg += 1
+                        elif self._is_metadata(narg):
+                            meta.update(self._parse_meta(narg))
+                            skip_n_arg += 1
 
-                args[i] = (data, meta, units)
+                parsed_args.append((data, meta, units))
 
             elif isinstance(arg, str) and is_url(arg):
-                args[i] = Request(arg)
-            elif possibly_a_path(arg):
-                args[i] = pathlib.Path(arg)
-            i += 1
-
-        return args
+                parsed_args.append(Request(arg))
+            elif possibly_a_path(arg) and not is_uri(arg):
+                parsed_args.append(pathlib.Path(arg))
+            elif is_uri(arg):
+                fsspec_kw = kwargs.get("fsspec_kwargs", {})
+                # Get a list of open file objects (i.e. if given a glob)
+                open_files = fsspec.open_files(arg, **fsspec_kw)
+                # If any of the elements of the list are directories we want to
+                # glob all files in them
+                expanded_files = expand_list([expand_fsspec_open_file(f) for f in open_files])
+                parsed_args += expanded_files
+            else:
+                parsed_args.append(arg)
+        return parsed_args
 
     def _parse_args(self, *args, **kwargs):
         """
@@ -320,7 +333,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
-        args = self._sanitise_args(args)
+        args = self._sanitise_args(args, **kwargs)
         all_ts = []
         for arg in args:
             try:
@@ -338,6 +351,48 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 raise type(e)(msg) from e
         return all_ts
 
+    def _parse_ts_results(self, r, **kwargs):
+        """
+        Prepare parsed result from into correct format for _parse_args.
+        r can be TimeSeries, path, or a data, header pair
+        **kwargs get passed to `_get_matching_widget` and `_check_registered_widgets`
+        """
+        if isinstance(r, GenericTimeSeries):
+            return [r]
+        elif isinstance(r, pathlib.Path):
+            return [self._check_registered_widgets(filepath=r, **kwargs)]
+        else:
+            pairs = r
+            # Pairs may be x long where x is the number of HDUs in the file.
+            headers = [pair.header for pair in pairs]
+
+            types = []
+            for header in headers:
+                try:
+                    match = self._get_matching_widget(meta=header, **kwargs)
+                    if not match == GenericTimeSeries:
+                        types.append(match)
+                except (MultipleMatchError, NoMatchError):
+                    continue
+
+            if not types:
+                # If no specific classes have been found we can read the data
+                # if we only have one data header pair:
+                if len(pairs) == 1:
+                    return [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
+
+                else:
+                    raise NoMatchError(
+                        "Input read by sunpy.io can not find a " "matching class for reading multiple HDUs"
+                    )
+            if len(set(types)) > 1:
+                raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
+
+            cls = types[0]
+
+            data_header_unit_tuple = cls._parse_hdus(pairs)
+            return self._parse_arg(data_header_unit_tuple)
+
     @seconddispatch
     def _parse_arg(self, arg, **kwargs):
         """
@@ -351,51 +406,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(Request)
     def _parse_url(self, request, **kwargs):
-        path = download_file(request.full_url, get_and_create_download_dir())
+        path = cache.download(request.full_url).absolute()
         return self._parse_path(pathlib.Path(path), **kwargs)
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, path, **kwargs):
-        results = parse_path(path, self._read_file)
+        results = parse_path(path, self._read_file, **kwargs)
         all_ts = []
-
-        # r can be either a TimeSeries, path, or a data, header pair
         for r in results:
-            if isinstance(r, GenericTimeSeries):
-                all_ts += [r]
-            elif isinstance(r, pathlib.Path):
-                all_ts += [self._check_registered_widgets(filepath=r, **kwargs)]
-            else:
-                pairs = r
-                # Pairs may be x long where x is the number of HDUs in the file.
-                headers = [pair.header for pair in pairs]
-
-                types = []
-                for header in headers:
-                    try:
-                        match = self._get_matching_widget(meta=header, **kwargs)
-                        if not match == GenericTimeSeries:
-                            types.append(match)
-                    except (MultipleMatchError, NoMatchError):
-                        continue
-
-                if not types:
-                    # If no specific classes have been found we can read the data
-                    # if we only have one data header pair:
-                    if len(pairs) == 1:
-                        all_ts += [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
-                        continue
-                    else:
-                        raise NoMatchError("Input read by sunpy.io can not find a "
-                                           "matching class for reading multiple HDUs")
-                if len(set(types)) > 1:
-                    raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
-
-                cls = types[0]
-
-                data_header_unit_tuple = cls._parse_hdus(pairs)
-                all_ts += self._parse_arg(data_header_unit_tuple)
-
+            all_ts += self._parse_ts_results(r, **kwargs)
         return all_ts
 
     @_parse_arg.register(tuple)
@@ -408,7 +427,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         meta = MetaDict(meta)
         return [self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)]
 
-    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
+    @_parse_arg.register(fsspec.core.OpenFile)
+    def _parse_fsspec_file(self, arg, **kwargs):
+        # TODO: We should probably migrate the whole of the unified IO layer to
+        # use fsspec for everything, but for now we parse the URI through
+        return self._read_file(arg.full_name, **kwargs)
+
+    @deprecated_renamed_argument(
+        "silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning
+    )
     def __call__(self, *args, silence_errors=False, allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
@@ -439,7 +466,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         new_timeseries = self._parse_args(*args, **kwargs)
 
         # Concatenate the timeseries into one if specified.
-        concatenate = kwargs.get('concatenate', False)
+        concatenate = kwargs.get("concatenate", False)
         if concatenate:
             # Merge all these timeseries into one.
             full_timeseries = new_timeseries.pop(0)
@@ -469,9 +496,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError(f"Too many candidate types identified ({n_matches})."
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.")
+            raise MultipleMatchError(
+                f"Too many candidate types identified ({n_matches})."
+                "Specify enough keywords to guarantee unique type "
+                "identification."
+            )
 
         # Only one suitable source class is found
         return candidate_widget_types[0]
@@ -489,10 +518,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each
         # instrument subclass.
-        filepath = kwargs.pop('filepath', None)
-        data = kwargs.pop('data', None)
-        meta = kwargs.pop('meta', None)
-        units = kwargs.pop('units', None)
+        filepath = kwargs.pop("filepath", None)
+        data = kwargs.pop("data", None)
+        meta = kwargs.pop("meta", None)
+        units = kwargs.pop("units", None)
         if filepath:
             data, meta, units = WidgetType._parse_file(filepath)
 
@@ -535,4 +564,4 @@ class NoTimeSeriesFound(ValueError):
 TimeSeriesFactory.__doc__ = TimeSeriesFactory.__doc__.format(source_names=source_names)
 TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
                                default_widget_type=GenericTimeSeries,
-                               additional_validation_functions=['is_datasource_for'])
+                               additional_validation_functions=["is_datasource_for"])

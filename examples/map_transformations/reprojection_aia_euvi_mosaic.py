@@ -162,7 +162,7 @@ array, _ = reproject_and_coadd(maps, out_wcs, shape_out,
                                background_reference=0)
 
 ######################################################################
-# Once again we create a new map, and this time we customise the plot a
+# Once again we create a new map, and this time we customize the plot a
 # little.
 
 outmap = sunpy.map.Map((array, header))
@@ -174,20 +174,11 @@ ax = fig.add_subplot(projection=outmap)
 im = outmap.plot(axes=ax, vmin=400)
 
 lon, lat = ax.coords
-lon.set_coord_type("longitude")
-lon.coord_wrap = 180 * u.deg
-lon.set_format_unit(u.deg)
-lat.set_coord_type("latitude")
-lat.set_format_unit(u.deg)
-
 lon.set_axislabel('Heliographic Longitude', minpad=0.8)
 lat.set_axislabel('Heliographic Latitude', minpad=0.9)
-lon.set_ticks(spacing=25*u.deg, color='k')
-lat.set_ticks(spacing=15*u.deg, color='k')
+lon.set_ticks(spacing=30*u.deg)
+lat.set_ticks(spacing=15*u.deg)
 
 plt.colorbar(im, ax=ax)
-
-# Reset the view to pixel centers
-_ = ax.axis((0, shape_out[1], 0, shape_out[0]))
 
 plt.show()

@@ -25,23 +25,24 @@ class LYRAClient(GenericClient):
     4 Results from the LYRAClient:
     Source: http://proba2.oma.be/lyra/data/bsd
     <BLANKLINE>
-           Start Time               End Time        Instrument ... Provider Level
-    ----------------------- ----------------------- ---------- ... -------- -----
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA ...      ESA     2
-    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA ...      ESA     3
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     2
-    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA ...      ESA     3
+           Start Time               End Time        Instrument  Physobs   Source Provider Level
+    ----------------------- ----------------------- ---------- ---------- ------ -------- -----
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA irradiance PROBA2      ESA     2
+    2016-01-01 00:00:00.000 2016-01-01 23:59:59.999       LYRA irradiance PROBA2      ESA     3
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     2
+    2016-01-02 00:00:00.000 2016-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     3
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
+    Data retrieval status: https://docs.virtualsolar.org/wiki/VSOHealthReport
     Total estimated size: 2.914 Gbyte
     <BLANKLINE>
-           Start Time               End Time        Source ... Extent Type   Size
-                                                           ...              Mibyte
-    ----------------------- ----------------------- ------ ... ----------- --------
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  2328.75
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A 419.0625
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2 ...         N/A  30.9375
+           Start Time               End Time        Source Instrument    Wavelength    Provider  Physobs   Wavetype Extent Type   Size
+                                                                          Angstrom                                               Mibyte
+    ----------------------- ----------------------- ------ ---------- ---------------- -------- ---------- -------- ----------- --------
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  2328.75
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A 419.0625
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  30.9375
     <BLANKLINE>
     <BLANKLINE>
     """

@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "aec53b81aed2e7e534045e59303d82712fe82fb1",
+  "commit": "af9aabb758cb8002fd2a6b53d4055c0d4768decd",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -10,13 +10,20 @@
       "author_name": "The SunPy Community",
       "author_email": "sunpy@googlegroups.com",
       "project_url": "https://sunpy.org",
+      "github_repo": "sunpy/sunpy",
+      "sourcecode_url": "https://github.com/sunpy/sunpy",
+      "download_url": "https://pypi.org/project/sunpy",
+      "documentation_url": "https://docs.sunpy.org",
+      "changelog_url": "https://docs.sunpy.org/en/stable/whatsnew/changelog.html",
+      "issue_tracker_url": "https://github.com/sunpy/sunpy/issues",
       "license": "BSD 2-Clause",
-      "minimum_python_version": "3.10",
+      "minimum_python_version": "3.11",
       "use_compiled_extensions": "y",
       "enable_dynamic_dev_versions": "y",
       "include_example_code": "n",
       "include_cruft_update_github_workflow": "y",
-      "_sphinx_theme": "alabaster",
+      "use_extended_ruff_linting": "n",
+      "_sphinx_theme": "sunpy",
       "_parent_project": "",
       "_install_requires": "",
       "_copy_without_render": [
@@ -24,7 +31,8 @@
         "docs/_static",
         ".github/workflows/sub_package_update.yml"
       ],
-      "_template": "https://github.com/sunpy/package-template"
+      "_template": "https://github.com/sunpy/package-template",
+      "_commit": "af9aabb758cb8002fd2a6b53d4055c0d4768decd"
     }
   },
   "directory": null

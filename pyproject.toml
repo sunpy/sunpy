@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "setuptools>=62.1",
-  "setuptools_scm[toml]>=6.2",
+  "setuptools_scm[toml]>=8.0.1",
   "wheel",
   "extension-helpers",
   # Comments on numpy build requirement range:
@@ -21,19 +21,20 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license = { file = "LICENSE.rst" }
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
 dependencies = [
-  "astropy>=5.3.0",
-  "numpy>=1.23.5",
+  "astropy>=6.0.0",
+  "numpy>=1.24.0",
   "packaging>=23.0",
   "parfive[ftp]>=2.0.0",
-  "pyerfa>=2.0.0.1",
+  "pyerfa>=2.0.1.1",
   "requests>=2.28.0",
+  "fsspec>=2023.3.0",
 ]
 dynamic = ["version"]
 keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
@@ -45,7 +46,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -55,27 +55,25 @@ classifiers = [
 [project.optional-dependencies]
 # The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
 asdf = [
-  "asdf-astropy>=0.4.0",
+  "asdf-astropy>=0.5.0",
   "asdf>=2.13.0",
 ]
 dask = ["dask[array]>=2022.5.2"]
 image = [
-  # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
-  "scipy>=1.9.0,!=1.10.0",
+  "scipy>=1.10.1",
 ]
 jpeg2000 = [
   "glymur>=0.11.0",
   # While a direct dependency of glymur, we import it to save JPEG2000 files.
   # and we had issues with specific versions lxml.
-  "lxml>=4.9.0,!=5.0.0",
+  "lxml>=4.9.1,!=5.0.0",
 ]
 map = [
   "contourpy>=1.0.1",
   "matplotlib>=3.6.0",
   "mpl-animators>=1.0.0",
-  "reproject>=0.9.0",
-  # !=1.10.0 due to https://github.com/scipy/scipy/issues/17718
-  "scipy>=1.9.0,!=1.10.0",
+  "reproject>=0.10.0",
+  "scipy>=1.10.1",
 ]
 opencv = ["opencv-python>=4.6.0.66"]
 net = [
@@ -85,16 +83,16 @@ net = [
   "tqdm>=4.64.0",
   "zeep>=4.1.0",
 ]
-scikit-image = ["scikit-image>=0.19.0"]
+scikit-image = ["scikit-image>=0.20.0"]
 spice = ["spiceypy>=5.0.0"]
 timeseries = [
-  "cdflib>=0.4.4,!=1.0.0",
+  "cdflib>=1.3.2",
   "h5netcdf>=1.0.0",
   # While a not direct dependency
   # We need to raise this to ensure the goes netcdf files open.
-  "h5py>=3.7.0",
+  "h5py>=3.8.0",
   "matplotlib>=3.6.0",
-  "pandas>=1.4.0",
+  "pandas>=1.5.0",
 ]
 visualization = [
   "matplotlib>=3.6.0",
@@ -102,6 +100,15 @@ visualization = [
 ]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
+# Because of some real *fun* dependancy constraints between aiobotocore, s3fs
+# and boto3 this is the best way to get s3fs and boto3 (needed for cdflib)
+# installed simultaneously. We only use this extra for tests, but it is
+# provided separate for users who want to opt-in to s3 support. It should not be
+# included in [all] or conda deps.
+s3 = [
+  "fsspec[s3]>=2023.3.0",
+  "aiobotocore[boto3]>=1.26.41",  # cdflib has it's own special s3 handling which requires boto3
+]
 tests-only = [
   "hvpy>=1.1.0",
   "jplephem>=2.14",
@@ -111,10 +118,10 @@ tests-only = [
   "pytest>=7.1.0",
 ]
 tests = [
-  "sunpy[all,tests-only]",
+  "sunpy[all,s3,tests-only]",
 ]
 docs = [
-  "sphinx>=5.0.0",
+  "sphinx>=6.0.0",
   "sphinx-automodapi>=0.14.1",
   "packaging>=23.0",
   "sunpy[all]",
@@ -127,6 +134,7 @@ docs = [
   "sphinxext-opengraph>=0.6.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinx-hoverxref>=1.3.0",
+  "sphinxcontrib-bibtex",
 ]
 docs-gallery = [
   "sunpy[docs]",
@@ -137,9 +145,9 @@ dev = ["sunpy[docs,tests]"]
 
 [project.urls]
 Homepage = "https://sunpy.org"
-Download = "https://pypi.org/project/sunpy/"
-"Source Code" = "https://github.com/sunpy/sunpy/"
-Documentation = "https://docs.sunpy.org/"
+"Source Code" = "https://github.com/sunpy/sunpy"
+Download = "https://pypi.org/project/sunpy"
+Documentation = "https://docs.sunpy.org"
 Changelog = "https://docs.sunpy.org/en/stable/whatsnew/changelog.html"
 "Issue Tracker" = "https://github.com/sunpy/sunpy/issues"
 
@@ -158,7 +166,7 @@ exclude = ["sunpy._dev*"]
 "*" = ["*.c", "*.h"]
 
 [tool.setuptools_scm]
-write_to = "sunpy/_version.py"
+version_file = "sunpy/_version.py"
 
 [project.entry-points."asdf.resource_mappings"]
 sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
@@ -168,7 +176,7 @@ sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.distutils.bdist_wheel]
 # The Py_LIMITED_API version hex in _pyana.c should match the version specified here
-py-limited-api = "cp310"
+py-limited-api = "cp311"
 
 [tool.extension-helpers]
 use_extension_helpers = "true"

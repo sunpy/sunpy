@@ -30,6 +30,7 @@ goes_filepath = get_test_filepath('go1520110607.fits')
 psp_filepath = get_test_filepath('psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
 swa_filepath = get_test_filepath('solo_L1_swa-pas-mom_20200706_V01.cdf')
 fermi_gbm_filepath = get_test_filepath('gbm.fits')
+hsi_filepath = get_test_filepath('hsi_image_20101016_191218.fits')
 
 
 @pytest.mark.filterwarnings('ignore:Unknown units')
@@ -97,6 +98,13 @@ def test_from_url():
     assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
     assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
 
+@pytest.mark.remote_data
+def test_from_uri():
+    # Test read on PSP file saved on public sumpy s3 repository.
+    uri = ('s3://data.sunpy.org/sunpy/v1/psp_fld_l2_mag_rtn_1min_20200104_v02.cdf')
+    ts = sunpy.timeseries.TimeSeries(uri, fsspec_kwargs={'anon':True})
+    assert isinstance(ts[0], sunpy.timeseries.GenericTimeSeries)
+    assert isinstance(ts[1], sunpy.timeseries.GenericTimeSeries)
 
 def test_read_cdf():
     ts_psp = sunpy.timeseries.TimeSeries(psp_filepath)
@@ -349,7 +357,7 @@ def test_table_to_ts():
     # ToDo: Try an incompatible table
     dual_index_table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
     dual_index_table.add_index(('time', 'intensity'))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column."):
         sunpy.timeseries.TimeSeries((dual_index_table, meta, units))
 
 
@@ -433,3 +441,7 @@ def test_validate_meta_astropy_header():
     header = hdulist[0].header
     hdulist.close()
     assert sunpy.timeseries.TimeSeries._is_metadata(header)
+
+def test_get_matching_widget():
+    with pytest.raises(NoMatchError, match="failed to validate"):
+        sunpy.timeseries.TimeSeries(hsi_filepath)

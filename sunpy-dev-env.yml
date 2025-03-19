@@ -9,6 +9,7 @@ dependencies:
   - beautifulsoup4
   - cdflib
   - drms
+  - fsspec
   - h5netcdf
   - matplotlib-base
   - mpl_animators
@@ -36,6 +37,8 @@ dependencies:
   - opencv
   - libopencv *=headless*
   - spiceypy
+  - s3fs
+  - boto3
 
   # Testing
   - hvpy

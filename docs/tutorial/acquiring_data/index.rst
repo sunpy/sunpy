@@ -1,8 +1,16 @@
+.. doctest-skip-all
+
 .. _sunpy-tutorial-acquiring-data-index:
 
 **************
 Acquiring Data
 **************
+
+.. warning::
+
+    The JSOC suffered extensive water damage and are currently working to fix this.
+    As a result, currently there is no data access.
+    `For more information, please find that here. <https://solarweb1.stanford.edu/JSOC_Emergency_Resources>`__
 
 This section of the tutorial introduces ways to obtain different kind of solar data from different places.
 The main tutorial below focuses on ``Fido``, which is a generic search interface that sunpy provides.
@@ -95,30 +103,21 @@ As an example:
     <BLANKLINE>
     Specifies the Instrument name for the search.
     <BLANKLINE>
-    Attribute Name Client  Full Name                             Description
-    -------------- ------ ------------ ----------------------------------------------------------------
-    adapt          ADAPT  ADAPT        ADvanced Adaptive Prediction Technique.
-    aia            VSO    AIA          Atmospheric Imaging Assembly
-    bcs            VSO    BCS          Bragg Crystal Spectrometer
-    be_continuum   VSO    BE-Continuum INAF-OACT Barra Equatoriale Continuum Instrument
-    be_halpha      VSO    BE-Halpha    INAF-OACT Barra Equatoriale Hα Instrument
-    bigbear        VSO    Big Bear     Big Bear Solar Observatory, California TON and GONG+ sites
-    caii           VSO    CAII         Kanzelhöhe Ca II k Instrument
-    cds            VSO    CDS          Coronal Diagnostic Spectrometer
-    celias         VSO    CELIAS       Charge, Element, and Isotope Analysis System
-    cerrotololo    VSO    Cerro Tololo Cerro Tololo, Chile GONG+ site
-    ...            ...    ...          ...
-    vault_1999     VSO    VAULT-1999   Very High Angular Resolution Ultraviolet Telescope (1999 flight)
-    vault_2002     VSO    VAULT-2002   Very High Angular Resolution Ultraviolet Telescope (2002 flight)
-    vault_2014     VSO    VAULT-2014   Very High Angular Resolution Ultraviolet Telescope (2014 flight)
-    virgo          VSO    VIRGO        Variability of Solar Irradiance and Gravity Oscillations
-    vsm            VSO    vsm          Vector SpecroMagnetograph
-    wbs            VSO    WBS          Wide Band Spectrometer
-    wispr          VSO    WISPR        Wide-Field Imager for Solar Probe Plus
-    x123           VSO    X123         X123 SXR Spectometer
-    xrs            XRS    XRS          GOES X-ray Sensor
-    xrt            VSO    XRT          X-Ray Telescope
-    Length = 108 rows
+           Attribute Name          Client   ...                                   Description
+    --------------------------- ----------- ... --------------------------------------------------------------------------------
+    adapt                       ADAPT       ... ADvanced Adaptive Prediction Technique.
+    aia                         VSO         ... Atmospheric Imaging Assembly
+    bcs                         VSO         ... Bragg Crystal Spectrometer
+    be_continuum                VSO         ... INAF-OACT Barra Equatoriale Continuum Instrument
+    be_halpha                   VSO         ... INAF-OACT Barra Equatoriale Hα Instrument
+    bigbear                     VSO         ... Big Bear Solar Observatory, California TON and GONG+ sites
+    caii                        VSO         ... Kanzelhöhe Ca II k Instrument
+    cds                         VSO         ... Coronal Diagnostic Spectrometer
+    celias                      VSO         ... Charge, Element, and Isotope Analysis System
+    cerrotololo                 VSO         ... Cerro Tololo, Chile GONG+ site
+    chp                         VSO         ... Chromospheric Helium-I Imaging Photometer
+    cook                        VSO         ... None
+    ...
 
 This is a full list of known values, a description, and which clients support those values (if you want to search using a specific data source).
 Printing attributes like this is supported for most attributes, including  client specific ones.
@@ -164,7 +163,7 @@ As an example, specific passbands can be searched for by supplying a `~astropy.u
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 67.789 Mbyte
     <BLANKLINE>
            Start Time               End Time        Source ... Extent Type   Size
@@ -184,7 +183,7 @@ Data of a given cadence can also be specified using the `a.Sample <sunpy.net.att
     Results from 1 Provider:
     <BLANKLINE>
     25 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 1.695 Gbyte
     <BLANKLINE>
            Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs  Wavetype Extent Width Extent Length Extent Type   Size
@@ -240,7 +239,7 @@ In this example we'll search for LYRA or RHESSI data in a given time range:
     2012-03-04 00:00:00.000 2012-03-04 23:59:59.999     RHESSI summary_lightcurve RHESSI     NASA
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs  Extent Type   Size
                                                                            keV                                       Mibyte
@@ -279,7 +278,7 @@ For example, the following code returns a response containing LYRA data from the
     2012-01-02 00:00:00.000 2012-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     2
     <BLANKLINE>
     50 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time               End Time        Source Instrument   Wavelength   Provider  Physobs   Extent Type   Size
                                                                          Angstrom                                     Mibyte
@@ -349,7 +348,7 @@ For example if we did a query for some AIA and HMI data:
     Results from 2 Providers:
     <BLANKLINE>
     41 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     Total estimated size: 2.779 Gbyte
     <BLANKLINE>
            Start Time               End Time        Source Instrument    Wavelength    Provider  Physobs  Wavetype Extent Width Extent Length Extent Type   Size
@@ -378,7 +377,7 @@ For example if we did a query for some AIA and HMI data:
     Length = 41 rows
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time               End Time        Source Instrument    Wavelength    Provider      Physobs       Wavetype Extent Width Extent Length Extent Type   Size
                                                                           Angstrom                                                                                  Mibyte
@@ -406,7 +405,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     Results from 2 Providers:
     <BLANKLINE>
     41 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time       Instrument  Physobs     Wavelength
                                                      Angstrom
@@ -434,7 +433,7 @@ And then we can pick which ones to see with the :meth:`~.UnifiedResponse.show` m
     Length = 41 rows
     <BLANKLINE>
     3 Results from the VSOClient:
-    Source: http://vso.stanford.edu/cgi-bin/search
+    Source: https://sdac.virtualsolar.org/cgi/search
     <BLANKLINE>
            Start Time       Instrument      Physobs          Wavelength
                                                               Angstrom

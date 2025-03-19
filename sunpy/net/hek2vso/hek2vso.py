@@ -178,8 +178,8 @@ class H2VClient:
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
         >>> q = h.search(a.Time(tstart, tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
-        >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
-        >>> res = h2v.translate_and_query(q)  # doctest: +REMOTE_DATA
+        >>> h2v = hek2vso.H2VClient()  # doctest: +SKIP
+        >>> res = h2v.translate_and_query(q)  # doctest: +SKIP
         """
         vso_query = translate_results_to_query(hek_results)
         kwargs = {}

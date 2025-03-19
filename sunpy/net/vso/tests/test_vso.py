@@ -253,6 +253,7 @@ def test_QueryResponse_build_table_with_no_end_time(mocker):
     assert start_time_[0].value == '2016-02-14 08:08:12.000'
 
 
+
 @pytest.mark.remote_data
 def test_vso_hmi(client, tmpdir):
     """
@@ -361,7 +362,9 @@ def test_build_client_params():
         build_client(url="http://notathing.com/")
 
 
+
 @pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore:Can't connect to vso")
 def test_incorrect_content_disposition(client):
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
         results = client.search(
@@ -410,6 +413,7 @@ def test_vso_repr(client):
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
 
 
+
 @pytest.mark.remote_data
 def test_response_block_properties(client):
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
@@ -426,8 +430,8 @@ def test_response_block_properties_table(mocker, mock_response):
     legacy_response = QueryResponse.create(mock_response)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
 
-    print(legacy_response)
-    print(table_response)
+    assert str(legacy_response)
+    assert str(table_response)
 
 
 def test_row_to_table(mocker, mock_build_client, client, mock_table_response):
@@ -447,6 +451,7 @@ def test_iris_filename(client):
     search_results = client.search(a.Time("2018-01-02 15:31:55", "2018-01-02 15:31:55"), a.Instrument.iris)
     filename = client.mk_filename(pattern, search_results[0], None, url)
     assert filename.endswith("iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz")
+
 
 
 @pytest.mark.remote_data

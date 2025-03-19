@@ -145,7 +145,7 @@ SI seconds from 1958-01-01 00:00:00, which includes UTC leap seconds.
 and Universal Time (UT) are synchronized.
 
 This format is equivalent to the output of the SSW ``anytim2tai`` routine, and
-related routines, for times after 1972-01-01.  Be aware that the SSW routines
+related routines, for times after 1972-01-01. Be aware that the SSW routines
 are not written to provide valid results for times before 1972-01-01.
 
 This format is equivalent to `~astropy.time.TimeUnixTai`, except that the epoch

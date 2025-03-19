@@ -7,7 +7,7 @@ How to differentially rotate a coordinate.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate
 metaframe in `sunpy.coordinates` to apply differential rotation to a
-coordinate.  See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on
+coordinate. See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on
 using `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
 import matplotlib.pyplot as plt
@@ -22,7 +22,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
 # First, load an AIA observation and define a coordinate in its coordinate
-# frame (here, helioprojective Cartesian).  The appropriate rate of rotation
+# frame (here, helioprojective Cartesian). The appropriate rate of rotation
 # is determined from the heliographic latitude of the coordinate.
 
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
@@ -31,7 +31,7 @@ point = SkyCoord(187*u.arcsec, 283*u.arcsec, frame=aiamap.coordinate_frame)
 ##############################################################################
 # We can differentially rotate this coordinate by using
 # `~sunpy.coordinates.metaframes.RotatedSunFrame` with an array of observation
-# times.  Let's define a daily cadence for +/- five days.
+# times. Let's define a daily cadence for +/- five days.
 
 durations = np.concatenate([range(-5, 0), range(1, 6)]) * u.day
 diffrot_point = SkyCoord(RotatedSunFrame(base=point, duration=durations))

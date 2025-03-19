@@ -28,9 +28,9 @@ class EITMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
-    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
 
     """
 
@@ -38,9 +38,21 @@ class EITMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
+        self.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation of coordinate_system to handle EITMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def date(self):
@@ -84,7 +96,7 @@ class EITMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
-        return header.get('instrume') == 'EIT'
+        return header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)'
 
 
 class LASCOMap(GenericMap):
@@ -103,7 +115,7 @@ class LASCOMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
     """
 
     def __init__(self, data, header, **kwargs):
@@ -112,6 +124,18 @@ class LASCOMap(GenericMap):
         self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle LASCOMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def spatial_units(self):
@@ -166,8 +190,16 @@ class LASCOMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
+
+    @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is not None and bunit == 0:
+            # The HV JP2 files given to us have a 0 value BUNIT
+            return u.dimensionless_unscaled
+        return super().unit
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -194,10 +226,10 @@ class MDIMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    * `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
-    * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
-    * `SOHO MDI Instrument Paper <https://doi.org/10.1007/978-94-009-0191-9_5>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO MDI Instrument Page <http://soi.stanford.edu>`__
+    * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`__
+    * :cite:t:`scherrer_solar_1995`
     """
 
     def __init__(self, data, header, **kwargs):

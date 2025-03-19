@@ -338,8 +338,8 @@ class VSOClient(BaseClient):
             Methods are a concatenation of one PREFIX followed by any number of
             SUFFIXES i.e. ``PREFIX-SUFFIX_SUFFIX2_SUFFIX3``.
             The full list of
-            `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
-            and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`__
+            and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`__
             are listed on the VSO site.
         site : str
             There are a number of caching mirrors for SDO and other
@@ -475,7 +475,7 @@ class VSOClient(BaseClient):
         # Iterate over the series and make a DRI for each.
         # groupby creates an iterator based on a key function, in this case
         # based on the series (the part before the first ':')
-        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+        for _, fileids in itertools.groupby(series_sorted, key=series_func):
             dris.append(self.make('DataRequestItem',
                                   provider='JSOC',
                                   fileiditem={'fileid': list(fileids)}))
@@ -690,4 +690,4 @@ class VSOClient(BaseClient):
 
     @property
     def info_url(self):
-        return 'http://vso.stanford.edu/cgi-bin/search'
+        return 'https://sdac.virtualsolar.org/cgi/search\nData retrieval status: https://docs.virtualsolar.org/wiki/VSOHealthReport'

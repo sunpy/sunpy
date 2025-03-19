@@ -39,7 +39,7 @@ from sphinx_gallery.sorting import ExplicitOrder
 from sunpy_sphinx_theme import PNG_ICON
 
 from astropy.utils.exceptions import AstropyDeprecationWarning
-
+from astropy.io.fits.verify import VerifyWarning
 import sunpy
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
@@ -68,11 +68,16 @@ import doctest
 
 REMOTE_DATA = doctest.register_optionflag('REMOTE_DATA')
 
-# We want to make sure all the following warnings fail the build
-warnings.filterwarnings("error", category=SunpyDeprecationWarning)
-warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
-warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
-warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+# We want to make sure all the following warnings fail the build on CI but not
+# when actually building docs on RTD.
+if not on_rtd:
+    warnings.filterwarnings("error", category=SunpyDeprecationWarning)
+    warnings.filterwarnings("error", category=SunpyPendingDeprecationWarning)
+    warnings.filterwarnings("error", category=MatplotlibDeprecationWarning)
+    warnings.filterwarnings("error", category=AstropyDeprecationWarning)
+# Raised all by the sample data now and astropy 7,
+# so we want to prevent this failing any of the builds
+warnings.filterwarnings("ignore", category=VerifyWarning)
 
 # -- SunPy Sample Data and Config ----------------------------------------------
 
@@ -100,6 +105,8 @@ linkcheck_anchors = False
 
 # -- General configuration ---------------------------------------------------
 
+# Wrap large function/method signatures
+maximum_signature_line_length = 80
 # sphinxext-opengraph
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
@@ -111,6 +118,9 @@ ogp_custom_meta_tags = [
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
+
+# Wrap large function/method signatures
+maximum_signature_line_length = 80
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
@@ -136,13 +146,14 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'hoverxref.extension',
+    'sphinxcontrib.bibtex',
 ]
 
 # Set automodapi to generate files inside the generated directory
 automodapi_toctreedirnm = "generated/api"
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ["_templates"]  # NOQA: ERA001
+# templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -223,6 +234,7 @@ intersphinx_mapping = {
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
     "contourpy": ("https://contourpy.readthedocs.io/en/stable/", None),
+    "sphinxcontrib_bibtex": ("https://sphinxcontrib-bibtex.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for hoverxref -----------------------------------------------------
@@ -261,7 +273,7 @@ hoverxref_role_types = {
 
 # -- Options for HTML output ---------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
+# The theme to use for HTML and HTML Help pages. See the documentation for
 # a list of builtin themes.
 html_theme = "sunpy"
 
@@ -280,7 +292,7 @@ graphviz_dot_args = [
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ["_static"]  # NOQA: ERA001
+# html_static_path = ["_static"]
 
 # By default, when rendering docstrings for classes, sphinx.ext.autodoc will
 # make docs with the class-level docstring and the class-method docstrings,
@@ -290,6 +302,8 @@ graphviz_dot_args = [
 # the docs. For more options, see:
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autoclass_content
 autoclass_content = "both"
+
+bibtex_bibfiles = ['references.bib']
 
 # -- Sphinx Gallery ------------------------------------------------------------
 

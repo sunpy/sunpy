@@ -31,7 +31,7 @@ _TIMEFORMAT = '%Y%m%d%H%M%S'
 
 class Field(_attr.ValueAttr):
     """
-    A subclass of the value attribute.  Used in defining a decorator for the
+    A subclass of the value attribute. Used in defining a decorator for the
     dummy attribute.
     """
 
@@ -106,7 +106,7 @@ class Quicklook(_attr.SimpleAttr):
         Set to True to retrieve quicklook data if available.
 
         Quicklook items are assumed to be generated with a focus on speed rather
-        than scientific accuracy.  They are useful for instrument planning and
+        than scientific accuracy. They are useful for instrument planning and
         space weather but should not be used for science publication.
         This concept is sometimes called 'browse' or 'near real time' (nrt)
         Quicklook products are *not* searched by default.
