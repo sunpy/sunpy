@@ -1,3 +1,9 @@
+# Due to a limitation of Github Actions where the `schedule` trigger
+# only applies to the default branch, we need a way of triggering the
+# jobs on the other branches.
+# To do this we use a WORKFLOW_TOKEN which is a PAT for the bot account with workflow_dispatch permissions.
+# Therefore, this workflow triggers on main, and dispatches to other branches.
+# https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule
 name: Scheduled build triggerer
 
 on:
@@ -14,15 +20,18 @@ on:
 jobs:
   if: github.repository == 'sunpy/sunpy'
   dispatch_release_branches:
-  strategy:
-    fail-fast: false
-    matrix:
-      include:
-        - branch: 6.0
-        - branch: 6.1
-    runs-on: ubuntu-latest
-    steps:
-      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
-      - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
-    env:
-      GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+    strategy:
+      matrix:
+        include:
+          # We do not include main here as the workflows on main are
+          # triggered by the workflow_run trigger, therefore we only
+          # need to list any non-main branches here.
+          - branch: 6.0
+          - branch: 6.1
+      runs-on: ubuntu-latest
+      fail-fast: false
+      steps:
+        - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
+        - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
