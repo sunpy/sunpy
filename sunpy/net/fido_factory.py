@@ -215,7 +215,7 @@ class UnifiedResponse(Sequence):
         return type(self)(*[i.show(*cols) for i in self._list])
 
 
-    def show_in_notebook(self, **kwargs):
+    def show_in_notebook(self, *cols, **kwargs):
         """
         Display the attrs tables as interactive grids in a Jupyter Notebook.
 
@@ -258,7 +258,12 @@ class UnifiedResponse(Sequence):
 
             # Identify and exclude multidimensional columns
             valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
-            filtered_table = table[valid_columns]
+
+            if cols:
+                selected_columns = [col for col in cols if col in valid_columns]
+            else:
+                selected_columns = valid_columns
+            filtered_table = table[selected_columns]
             df = filtered_table.to_pandas()
             show(df, caption, style="caption-side: top;", **kwargs)
 
