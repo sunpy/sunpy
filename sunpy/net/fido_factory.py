@@ -178,10 +178,7 @@ class UnifiedResponse(Sequence):
     def __repr__(self):
         return object.__repr__(self) + "\n" + str(self)
 
-    def _print_client_names_and_table_length(self, include_repr=True):
-        """
-        Print the names of the clients and the lengths of their respective tables.
-        """
+    def __str__(self):
         nprov = len(self)
         if nprov == 1:
             ret = f'Results from {len(self)} Provider:\n\n'
@@ -194,17 +191,12 @@ class UnifiedResponse(Sequence):
             size = block.total_size()
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
-            if include_repr:
                 ret += '\n'
                 lines = repr(block).split('\n')
                 ret += '\n'.join(lines[1:])
                 ret += '\n\n'
 
         return ret
-
-    def __str__(self):
-        return self._print_client_names_and_table_length()
-
 
     def show(self, *cols):
         """
@@ -246,14 +238,29 @@ class UnifiedResponse(Sequence):
                 "`itables` is required to display tables. "
                 "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
             )
-        caption = self._print_client_names_and_table_length(include_repr=False)
-        print(caption)
-        for table in self._list:
+
+        nprov = len(self)
+        if nprov == 1:
+            print(f'Results from {len(self)} Provider:')
+        else:
+            print(f'Results from {len(self)} Providers:')
+
+        for i , table in enumerate(self._list):
+            block = self[i]
+            caption = f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
+
+            if block.client.info_url is not None:
+                caption += f'Source: {block.client.info_url}\n'
+            size = block.total_size()
+
+            if np.isfinite(size):
+                caption += f'Total estimated size: {size}\n'
+
             # Identify and exclude multidimensional columns
             valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
             filtered_table = table[valid_columns]
             df = filtered_table.to_pandas()
-            show(df, **kwargs)
+            show(df, caption, style="caption-side: top;", **kwargs)
 
 
     @property
