@@ -30,7 +30,7 @@ def uncompress_countrate(compressed_countrate):
 
     References
     ----------
-    `Hsi_obs_summ_decompress.pro <https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    `Hsi_obs_summ_decompress.pro <https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`__
     """
 
     # Ensure uncompressed counts are between 0 and 255
@@ -129,8 +129,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `RHESSI Homepage. <https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-    * `Mission Paper. <https://doi.org/10.1023/A:1022428818870>`_
+    * `RHESSI Homepage. <https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`__
+    * Mission Paper: :cite:t:`lin_reuven_2002`
     """
 
     # Class attributes used to specify the source class of the TimeSeries

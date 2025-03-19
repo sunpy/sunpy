@@ -91,7 +91,7 @@ aiaprep is now deprecated
 
 With the release of the new `aiapy <https://aiapy.readthedocs.io>`__ package, ``sunpy.instr.aia.aiaprep`` will be removed in version 2.1.
 Equivalent functionality is provided by the ``register()`` function in aiapy. For more
-details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`_
+details, see the `example on registering and aligning level 1 AIA images <https://aiapy.readthedocs.io/en/latest/generated/gallery/prepping_level_1_data.html>`__
 in the aiapy documentation.
 
 .. _whatsnew-2.0-pixelindex:

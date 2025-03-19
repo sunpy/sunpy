@@ -48,8 +48,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
         One of:
 
-        | ``howard`` : Use values from Howard et al. (1990)
-        | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
+        | ``howard`` : Use values from :cite:t:`howard_solar_1990`
+        | ``snodgrass`` : Use values from :cite:t:`snodgrass_magnetic_1983`
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
         | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
 
@@ -81,11 +81,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     ========= ======= ====== ====== ==========
 
     1 microrad/s is approximately 4.95 deg/day.
-
-    References
-    ----------
-    * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
-    * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
+    See also the comparisons in :cite:t:`beck_comparison_2000`.
     """
 
     return sunpy.sun.models.differential_rotation(duration, latitude, model=rot_type, frame_time=frame_time)
@@ -132,7 +128,7 @@ def _get_new_observer(initial_obstime, observer, time):
         interpretable obstime property).
     time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
         Used to define the duration over which the amount of solar rotation is
-        calculated.  If 'time' is an `~astropy.time.Time` then the time interval is
+        calculated. If 'time' is an `~astropy.time.Time` then the time interval is
         "time - initial_obstime"; if 'time' is `~astropy.time.TimeDelta` or
         `~astropy.units.Quantity` then the calculation is "initial_obstime + time".
 
@@ -141,7 +137,7 @@ def _get_new_observer(initial_obstime, observer, time):
     new_observer : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
         The position of the observer in space and time. If the "time" keyword is used
         the output is an `~astropy.coordinates.SkyCoord`. If the "observer" keyword
-        is not None the output has the same type as the "observer" keyword.  In all cases
+        is not None the output has the same type as the "observer" keyword. In all cases
         the output is specified in the heliographic Stonyhurst coordinate system.
     """
     _validate_observer_args(initial_obstime, observer, time)
@@ -170,7 +166,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     using the "observer" or "time" keywords.
 
     If the "observer" keyword is set, it is used to specify the location
-    of the new observer in space and time.  The difference between the
+    of the new observer in space and time. The difference between the
     coordinate time and the new observer time is used to calculate the amount
     of solar rotation applied, and the location of the new observer in space
     is used to calculate where the rotated coordinate is as seen from the
@@ -253,7 +249,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
                                     frame=HeliographicStonyhurst)
 
     # Calculate where the rotated coordinate appears as seen by new observer
-    # for the coordinate system of the input coordinate.  The translational
+    # for the coordinate system of the input coordinate. The translational
     # motion of the Sun will be ignored for the transformation.
 
     if "observer" in coordinate.frame.frame_attributes.keys():
@@ -279,7 +275,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     smap : `~sunpy.map.Map`
         The input map from which the pixel coordinates are calculated.
     pixels : `~astropy.units.Quantity`
-        A Quantity array of shape (M, 2) in pixel units.  Values (:, 0) are the x values of the
+        A Quantity array of shape (M, 2) in pixel units. Values (:, 0) are the x values of the
         pixel indices, and values ``[:, 1]`` are the "y" values of the pixel indices.
     observer : `~astropy.coordinates.SkyCoord`
         The location of the observer.
@@ -456,23 +452,23 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         discrepancies on the SunPy issue tracker.
 
     The function transforms the input map data pixels by first rotating each
-    pixel according to solar differential rotation.  The amount of solar
+    pixel according to solar differential rotation. The amount of solar
     differential applied is calculated by the time difference between the
     observation time of map and the new observation time, as specified by either the
     "time" keyword or the "obstime" property of the "observer" keyword.
     The location of the rotated pixels are then transformed to locations on the Sun
-    as seen from the new observer position.  This is desirable since in most cases
+    as seen from the new observer position. This is desirable since in most cases
     the observer does not remain at a fixed position in space. If
     the "time" keyword is used then the new observer position is assumed to
-    be based on the location of the Earth.  If the "observer" keyword is used then
+    be based on the location of the Earth. If the "observer" keyword is used then
     this defines the new observer position.
 
     The function works with full disk maps and maps that contain portions of the
-    solar disk (maps that are entirely off-disk will raise an error).  When the
+    solar disk (maps that are entirely off-disk will raise an error). When the
     input map contains the full disk, the output map has the same dimensions as
-    the input map.  When the input map images only part of the solar disk, only
+    the input map. When the input map images only part of the solar disk, only
     the on-disk pixels are differentially rotated and the output map can have
-    a different dimensions compared to the input map.  In this case any off-disk
+    a different dimensions compared to the input map. In this case any off-disk
     emission shown in the input map is not included in the output map.
 
     Parameters
@@ -485,7 +481,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         of the Earth at the observation time of the new observer.
     time : sunpy-compatible time, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, `None`, optional
         Used to define the duration over which the amount of solar rotation is
-        calculated.  If 'time' is an `~astropy.time.Time` then the time interval
+        calculated. If 'time' is an `~astropy.time.Time` then the time interval
         is difference between 'time' and the map observation time. If 'time' is
         `~astropy.time.TimeDelta` or `~astropy.units.Quantity` then the calculation
         is "initial_obstime + time".
@@ -594,7 +590,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta.pop(key)
 
     # Add a new HGS observer
-    out_meta.update(get_observer_meta(new_observer, out_meta['rsun_ref']*u.m))
+    out_meta.update(get_observer_meta(new_observer, smap.rsun_meters))
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.

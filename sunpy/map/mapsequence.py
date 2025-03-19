@@ -90,9 +90,9 @@ class MapSequence:
         }
 
     def __getitem__(self, key):
-        """Overriding indexing operation.  If the key results in a single map,
-        then a map object is returned.  This allows functions like enumerate to
-        work.  Otherwise, a mapsequence is returned."""
+        """Overriding indexing operation. If the key results in a single map,
+        then a map object is returned. This allows functions like enumerate to
+        work. Otherwise, a mapsequence is returned."""
 
         if isinstance(self.maps[key], GenericMap):
             return self.maps[key]
@@ -526,10 +526,10 @@ class MapSequence:
     def as_array(self):
         """
         If all the map shapes are the same, their image data is rendered
-        into the appropriate numpy object.  If none of the maps have masks,
-        then the data is returned as a (ny, nx, nt) ndarray.  If all the maps
+        into the appropriate numpy object. If none of the maps have masks,
+        then the data is returned as a (ny, nx, nt) ndarray. If all the maps
         have masks, then the data is returned as a (ny, nx, nt) masked array
-        with all the masks copied from each map.  If only some of the maps
+        with all the masks copied from each map. If only some of the maps
         have masked then the data is returned as a (ny, nx, nt) masked array,
         with masks copied from maps as appropriately; maps that do not have a
         mask are supplied with a mask that is full of False entries.
@@ -564,7 +564,7 @@ class MapSequence:
         filepath : `str`
             Template string specifying the file to which each map is saved.
             The string must contain ``"{index}"``, which will be populated with
-            the corresponding index number for each map.  Format specifiers
+            the corresponding index number for each map. Format specifiers
             (e.g., ``"{index:03}"``) can be used.
         filetype : `str`
             'auto' or any supported file extension.

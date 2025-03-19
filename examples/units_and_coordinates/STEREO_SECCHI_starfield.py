@@ -18,10 +18,10 @@ environment: ``conda install -c astropy astroquery`` and an active internet conn
 """
 import hvpy
 import matplotlib.pyplot as plt
-from astroquery.vizier import Vizier
+from astroquery.gaia import Gaia
 
 import astropy.units as u
-from astropy.coordinates import Distance, SkyCoord
+from astropy.coordinates import Distance, Longitude, SkyCoord
 from astropy.time import Time
 
 import sunpy.map
@@ -47,39 +47,48 @@ cor2_map = sunpy.map.Map(cor2_file)
 sun_to_stereo = cor2_map.observer_coordinate.transform_to('hcrs')
 
 ###############################################################################
-# We next reflect the vector to get our search vector which points from STEREO
-# to the Sun.
+# We then calculate the apparent right ascension and declination of the Sun as
+# seen from STEREO.
 
-stereo_to_sun = SkyCoord(-sun_to_stereo.spherical, obstime=sun_to_stereo.obstime, frame='hcrs')
+center_ra = Longitude(sun_to_stereo.ra + 180*u.deg).to_value(u.deg)
+center_dec = -sun_to_stereo.dec.to_value(u.deg)
+print(center_ra, center_dec)
 
 ###############################################################################
-# Let's look up bright stars using the Vizier search capability provided by
+# Let's look up bright stars using the Gaia search capability provided by
 # `astroquery <https://astroquery.readthedocs.io/en/latest/>`__.
-# We will search the GAIA2 star catalog for stars with magnitude
-# brighter than 7.
+# We will search the Gaia DR3 star catalogue for stars with magnitude
+# brighter than 7.5 within 4 degrees of the Sun direction.
 
-vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Gmag': '<7'}, timeout=1200)
-vv.ROW_LIMIT = -1
-result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
+job = Gaia.launch_job(
+    "SELECT ra, dec, phot_g_mean_mag, parallax, pmra, pmdec, radial_velocity, ref_epoch "
+    "FROM gaiadr3.gaia_source "
+    "WHERE phot_g_mean_mag < 7.5 "
+    f"AND CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', {center_ra}, {center_dec}, {4})) = 1"
+)
+result = job.get_results()
 
 ###############################################################################
 # Let's see how many stars we've found.
 
-print(len(result[0]))
+print(len(result))
 
 ###############################################################################
 # Now we load all stars into an array coordinate. The reference epoch for the
-# star positions is J2015.5,so we update these positions to the date of the
+# star positions is J2016.0, so we update these positions to the date of the
 # COR2 observation using :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
+# Some Gaia entries may be missing information on parallax, proper motion, or
+# radial velocity, so we fill those gaps with the fallback assumptions of
+# negligible parallax and zero velocity.
 
-tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
-                    dec=result[0]['DE_ICRS'],
-                    distance=Distance(parallax=u.Quantity(result[0]['Plx'])),
-                    pm_ra_cosdec=result[0]['pmRA'],
-                    pm_dec=result[0]['pmDE'],
-                    radial_velocity=result[0]['RV'],
+tbl_crds = SkyCoord(ra=result['ra'],
+                    dec=result['dec'],
+                    distance=Distance(parallax=u.Quantity(result['parallax'].filled(1e-3))),
+                    pm_ra_cosdec=result['pmra'].filled(0),
+                    pm_dec=result['pmdec'].filled(0),
+                    radial_velocity=result['radial_velocity'].filled(0),
                     frame='icrs',
-                    obstime=Time(result[0]['Epoch'], format='jyear'))
+                    obstime=Time(result['ref_epoch'], format='jyear'))
 tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2_map.date)
 
 ###############################################################################

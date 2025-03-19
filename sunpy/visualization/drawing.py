@@ -9,6 +9,7 @@ import astropy.units as u
 from astropy.constants import R_sun
 from astropy.coordinates import SkyCoord
 from astropy.visualization.wcsaxes.wcsapi import wcsapi_to_celestial_frame
+from astropy.wcs.wcsapi import BaseHighLevelWCS
 
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliocentricInertial, Helioprojective
@@ -16,7 +17,7 @@ from sunpy.coordinates.sun import _angular_radius
 from sunpy.coordinates.utils import get_limb_coordinates
 from sunpy.visualization import wcsaxes_compat
 
-__all__ = ["limb", "equator", "prime_meridian"]
+__all__ = ["limb", "equator", "prime_meridian", "extent"]
 
 
 @u.quantity_input
@@ -24,10 +25,10 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     """
     Draws the solar limb as seen by the specified observer.
 
-    The limb is a circle for only the simplest plots.  If the specified
+    The limb is a circle for only the simplest plots. If the specified
     observer of the limb is different from the observer of the coordinate frame
     of the plot axes, not only may the limb not be a true circle, a portion of
-    the limb may be hidden from the observer.  In that case, the circle is
+    the limb may be hidden from the observer. In that case, the circle is
     divided into visible and hidden segments, represented by solid and dotted
     lines, respectively.
 
@@ -66,8 +67,8 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     of the Sun to the map observer) ``visible`` will be ``None``.
 
     To avoid triggering Matplotlib auto-scaling, these patches are added as
-    artists instead of patches.  One consequence is that the plot legend is not
-    populated automatically when the limb is specified with a text label.  See
+    artists instead of patches. One consequence is that the plot legend is not
+    populated automatically when the limb is specified with a text label. See
     :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
     the Matplotlib documentation for examples of creating a custom legend.
     """
@@ -194,6 +195,44 @@ def prime_meridian(axes, *, rsun: u.m = R_sun, resolution=500, **kwargs):
     return visible, hidden
 
 
+@u.quantity_input
+def extent(axes, wcs, **kwargs):
+    """
+    Draws the extent as defined by a given `~astropy.wcs.WCS` instance.
+
+    Parameters
+    ----------
+    axes : `astropy.visualization.wcsaxes.WCSAxes`
+        The axes to plot the WCS extent on, or "None" to use current axes.
+    wcs : `~astropy.wcs.wcsapi.BaseLowLevelWCS`
+        The WCS that defines the extent to be drawn.
+
+    Returns
+    -------
+    visible : `~matplotlib.patches.Polygon`
+        The patch added to the axes for the visible part of the WCS extent.
+    hidden : `~matplotlib.patches.Polygon`
+        The patch added to the axes for the hidden part of the WCS extent.
+    """
+    if not wcsaxes_compat.is_wcsaxes(axes):
+        raise ValueError('axes must be a WCSAxes')
+    if not isinstance(wcs, BaseHighLevelWCS):
+        raise TypeError("wcs should be a High Level WCS object")
+    axes_frame = wcsapi_to_celestial_frame(axes.wcs)
+    shape = wcs.low_level_wcs.pixel_shape
+    # Traverse the edges of the WCS in pixel space
+    xy_edges = [[np.full(shape[1], -0.5), np.arange(shape[1]) - 0.5],  # left edge
+                [np.arange(shape[0]) - 0.5, np.full(shape[0], shape[1] - 0.5)],  # top edge
+                [np.full(shape[1], shape[0] - 0.5), np.arange(shape[1], 0, -1) - 0.5],  # right edge
+                [np.arange(shape[0], 0, -1) - 0.5, np.full(shape[0], -0.5)]]  # bottom edge
+    edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
+    # Filter out any non-SkyCoord coordinates returned for these pixel axes
+    if not isinstance(edge_coords, SkyCoord):
+        edge_coords = [c for c in edge_coords if isinstance(c, SkyCoord)][0]
+    visible, hidden = _plot_vertices(edge_coords, axes, axes_frame, R_sun, close_path=True, **kwargs)
+    return visible, hidden
+
+
 def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
     """
     Draws the provided SkyCoord on the WCSAxes as `~matplotlib.patches.Polygon`
@@ -211,8 +250,10 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
     Tx = coord.spherical.lon.to_value(u.deg)
     Ty = coord.spherical.lat.to_value(u.deg)
     vertices = np.array([Tx, Ty]).T
-    # Determine which points are visible
-    if hasattr(frame, 'observer'):
+
+    # Determine which points are visible (2D points are always visible)
+    is_2d = (norm := coord.spherical.norm()).unit is u.one and u.allclose(norm, 1*u.one)
+    if not is_2d and hasattr(frame, 'observer'):
         # The reference distance is the distance to the limb for the axes
         # observer
         rsun = getattr(frame, 'rsun', rsun)

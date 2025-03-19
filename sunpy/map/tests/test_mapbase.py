@@ -27,10 +27,11 @@ import sunpy.map
 import sunpy.sun
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
@@ -164,6 +165,37 @@ def test_wcs(aia171_test_map):
     assert set(wcs.wcs.ctype) == {
         aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2}
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
+
+
+def test_wcs_pv():
+    # Test that PVi_m values are preserved in the reconstructed WCS
+    zpn_header = {
+        'ctype1': 'HPLN-ZPN',
+        'ctype2': 'HPLT-ZPN',
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'pv1_0': 0,
+        'pv1_1': 0,
+        'pv1_2': 90,
+        'pv1_3': 180,
+        'pv2_1': 1,
+        'pv2_5': 0.2,
+        'pv2_10': 0.1,
+        'date-obs': '2025-01-01',
+        'hglt_obs': 0,
+        'hgln_obs': 0,
+        'dsun_obs': 1e13,
+    }
+    zpn_map = sunpy.map.Map((np.zeros((10, 10)), zpn_header))
+    pv_values = zpn_map.wcs.wcs.get_pv()
+    assert len(pv_values) == 7
+    assert pv_values[0] == (1, 0, 0)
+    assert pv_values[1] == (1, 1, 0)
+    assert pv_values[2] == (1, 2, 90)
+    assert pv_values[3] == (1, 3, 180)
+    assert pv_values[4] == (2, 1, 1.0)
+    assert pv_values[5] == (2, 5, 0.2)
+    assert pv_values[6] == (2, 10, 0.1)
 
 
 def test_wcs_cache(aia171_test_map):
@@ -350,6 +382,15 @@ def test_default_coordinate_system(generic_map):
     generic_map.meta['ctype1'] = 'HPLN-TAN'
     with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE2 from metadata'):
         assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+
+
+@pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
+def test_coordinate_system_solar_x_solar_y(generic_map):
+    generic_map.meta['ctype1'] = 'SOLAR-X'
+    generic_map.meta['ctype2'] = 'SOLAR-Y'
+    with pytest.warns(SunpyDeprecationWarning, match="CTYPE1 value 'solar-x'/'solar_x' is deprecated") :
+        with pytest.warns(SunpyDeprecationWarning, match="CTYPE2 value 'solar-y'/'solar_y' is deprecated") :
+            assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
 def test_carrington_longitude(generic_map):
@@ -638,6 +679,7 @@ def test_save(aia171_test_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
+@asdf_entry_points
 def test_save_asdf(tmpdir, aia171_test_map):
     outpath = tmpdir/ "save_asdf.asdf"
     aia171_test_map.save(outpath, filetype= "asdf")
@@ -1001,6 +1043,26 @@ def test_superpixel_masked(aia171_test_map_with_mask):
     assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
 
 
+def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
+    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    dimensions = (2, 2) * u.pix
+
+    superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
+    assert superpix_map.mask is not None
+
+    expected_shape = input_dims * (1 * u.pix / dimensions)
+    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+
+    # Verify mask values (bin_mask=True)
+    reshaped_mask = reshape_image_to_4d_superpixel(
+        aia171_test_map_with_mask.mask,
+        [dimensions[1].value, dimensions[0].value],
+        [0, 0],
+    )
+    expected_mask = np.any(reshaped_mask, axis=(1, 3))
+    assert np.array_equal(superpix_map.mask, expected_mask)
+
+
 def test_superpixel_units(generic_map):
     new_dims = (2, 2) * u.pix
     super1 = generic_map.superpixel(new_dims)
@@ -1304,7 +1366,7 @@ def test_hg_data_to_pix(heliographic_test_map):
 def test_more_than_two_dimensions():
     """
     Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header
+    loaded. We need to load a >2-dim dataset with a TELESCOP header
     """
 
     # Data crudely represents 4 stokes, 4 wavelengths with Y,X of 3 and 5.
@@ -1847,6 +1909,12 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
 def test_parse_fits_units(units_string, expected_unit):
     out_unit = GenericMap._parse_fits_unit(units_string)
     assert out_unit == expected_unit
+
+
+@pytest.mark.parametrize('units_string', ['DN / electron', 'electron', 'Mx'])
+def test_parse_nonfits_units(units_string):
+    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string'):
+        assert GenericMap._parse_fits_unit(units_string) is None
 
 
 def test_only_cd():

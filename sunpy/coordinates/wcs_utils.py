@@ -4,6 +4,7 @@ import astropy.wcs.utils
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.wcs import WCS
 from astropy.wcs.utils import obsgeo_to_frame
+from astropy.wcs.wcsapi.fitswcs import custom_ctype_to_ucd_mapping
 
 from sunpy import log
 from .frames import (
@@ -11,6 +12,7 @@ from .frames import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
     SunPyBaseCoordinateFrame,
 )
 
@@ -109,6 +111,7 @@ def _sunpy_frame_class_from_ctypes(ctypes):
 
     mapping = {
         Helioprojective: {'HPLN', 'HPLT'},
+        HelioprojectiveRadial: {'HRLN', 'HRLT'},
         HeliographicStonyhurst: {'HGLN', 'HGLT'},
         HeliographicCarrington: {'CRLN', 'CRLT'},
         Heliocentric: {'SOLX', 'SOLY'},
@@ -176,20 +179,24 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
             wcs.wcs.dateobs = frame.obstime.utc.isot
 
         if isinstance(frame, Helioprojective):
-            xcoord = 'HPLN' + '-' + projection
-            ycoord = 'HPLT' + '-' + projection
+            xcoord = f'HPLN-{projection}'
+            ycoord = f'HPLT-{projection}'
             wcs.wcs.cunit = ['arcsec', 'arcsec']
+        elif isinstance(frame, HelioprojectiveRadial):
+            xcoord = f'HRLN-{projection}'
+            ycoord = f'HRLT-{projection}'
+            wcs.wcs.cunit = ['deg', 'arcsec']
         elif isinstance(frame, Heliocentric):
             xcoord = 'SOLX'
             ycoord = 'SOLY'
             wcs.wcs.cunit = ['deg', 'deg']
         elif isinstance(frame, HeliographicCarrington):
-            xcoord = 'CRLN' + '-' + projection
-            ycoord = 'CRLT' + '-' + projection
+            xcoord = f'CRLN-{projection}'
+            ycoord = f'CRLT-{projection}'
             wcs.wcs.cunit = ['deg', 'deg']
         elif isinstance(frame, HeliographicStonyhurst):
-            xcoord = 'HGLN' + '-' + projection
-            ycoord = 'HGLT' + '-' + projection
+            xcoord = f'HGLN-{projection}'
+            ycoord = f'HGLT-{projection}'
             wcs.wcs.cunit = ['deg', 'deg']
         else:
             # A subclass not supported by the core library
@@ -205,3 +212,6 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
 astropy.wcs.utils.FRAME_WCS_MAPPINGS.append([solar_frame_to_wcs_mapping])
+
+custom_ctype_to_ucd_mapping({"HRLN": "custom:pos.helioprojectiveradial.lon"})
+custom_ctype_to_ucd_mapping({"HRLT": "custom:pos.helioprojectiveradial.lat"})

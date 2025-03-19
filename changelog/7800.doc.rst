@@ -1,1 +1,0 @@
-Reworked the :ref:`sphx_glr_generated_gallery_plotting_screen_blend_mode.py` example so that it no longer requires an additional dependency (``mplcairo``)

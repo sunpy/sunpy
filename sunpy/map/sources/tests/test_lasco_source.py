@@ -8,6 +8,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
+from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
 from sunpy.util.exceptions import SunpyMetadataWarning
@@ -34,6 +35,10 @@ def lasco_helioviewer():
 def test_fitstoLASCO(lasco_map):
     """Tests the creation of LASCOMap using FITS."""
     assert isinstance(lasco_map, LASCOMap)
+
+
+def test_lasco_coordinate_system(lasco_map):
+    assert lasco_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 
 def test_is_datasource_for(lasco_map):

@@ -1,0 +1,100 @@
+SIMPLE  =                    T / Written by IDL:  Wed Nov 22 20:25:49 2023      
+BITPIX  =                  -32 / Real*4 (floating point)                        
+NAXIS   =                    2 / number of array dimensions                     
+NAXIS1  =                 1024 / number of columns                              
+NAXIS2  =                 1024 / number of rows                                 
+FILENAME= 'SOHO_EIT_171_20070601T120013_L1.fits' / FITS file name               
+COMMENT --------- General Description: -----------------------------------------
+DATE    = '2023-11-22T19:25:49.000' / [UTC] FITS file creation date             
+PARENT  = 'efz20070601.120013' / source file                                    
+DATE-OBS= '2007-06-01T11:58:58.884Z' / [UTC] deprecated, same as DATE-BEG       
+DATE-BEG= '2007-06-01T11:58:58.884Z' / [UTC] start time of observation from CORR
+DATE-AVG= '2007-06-01T11:59:05.180' / [UTC] average time of observation         
+TIMESYS = 'UTC     '           / system used for time keywords                  
+LEVEL   = 'L1      '           / data processing level                          
+DATASRC = 'L0 file '           /                                                
+ORIGIN  = 'Institut d''Astrophysique Spatiale' / file generation location       
+CREATOR = 'mk_archive.pro'     /                                                
+TYPE    = 'solar image'        / type of image: solar, calib                    
+COMMENT --------- Instrument and Observation Configuration: --------------------
+OBSRVTRY= 'Solar and Heliospheric Observatory (SOHO)' / satellite name          
+TELESCOP= 'Extreme-ultraviolet Imaging Telescope (EIT)' / telescope/sensor name 
+XPOSURE =              12.5920 / [s] total exposure time (commanded + shutter cl
+CMDXPOS =              10.0000 / [s] commanded exposure time                    
+SHUTCLS =              2.59200 / [s] shutter close time                         
+FILTER  = 'Al +1             ' / focal filter name                              
+WAVELNTH=                  171 / [Angstrom] central wavelength of observation   
+WAVEUNIT= 'Angstrom'           / wavelength unit                                
+OBJECT  = 'full FOV'           / object of observation                          
+SCI_OBJ = 'FULL SUN 171/284/195/304 ' / scientific objective                    
+OBS_PROG= '171_5_284_90_195_10_304_30_AL_1.000 ' / observing program            
+CMP_NO  =                    1 / Unique campaign instance (1=synoptic)          
+COMMENT --------- Description of Data content: -------------------------------- 
+BTYPE   = 'Flux    '           / type of data                                   
+BUNIT   = 'DN/s    '           / units of physical value, after BSCALE, BZERO   
+UCD     = 'phot.count;em.UV.10-50nm' / Unified Content Descriptor               
+COMMENT --------- Image Relative to Detector and Electronics: ----------------- 
+PXBEG1  =                    1 / first readout pixel in dimension 1             
+PXEND1  =                 1024 / last readout pixel in dimension 1              
+PXBEG2  =                   20 / first readout pixel in dimension 2             
+PXEND2  =                 1043 / last readout pixel in dimension 2              
+NBIN1   =                    1 / on-board binning factor along dimension 1      
+NBIN2   =                    1 / on-board binning factor along dimension 2      
+NBIN    =                    1 / total binning factor                           
+COMMENT --------- World Coordinate System Attitude: --------------------------- 
+WCSNAME = 'Helioprojective-cartesian' / name of coordinate system               
+CTYPE1  = 'HPLN-TAN'           / helioprojective longitude (Solar X)            
+CTYPE2  = 'HPLT-TAN'           / helioprojective latitude (Solar Y)             
+CUNIT1  = 'arcsec  '           / units along axis 1                             
+CUNIT2  = 'arcsec  '           / units along axis 2                             
+PC1_1   =        1.00000000000 / WCS coordinate transformation matrix           
+PC1_2   =        0.00000000000 / WCS coordinate transformation matrix           
+PC2_1   =       -0.00000000000 / WCS coordinate transformation matrix           
+PC2_2   =        1.00000000000 / WCS coordinate transformation matrix           
+CDELT1  =        2.62700000000 / [arcsec] pixel scale along axis 1              
+CDELT2  =        2.62700000000 / [arcsec] pixel scale along axis 2              
+CRVAL1  =       -4.01938696289 / [arcsec] value of reference pixel along axis 1 
+CRVAL2  =        23.1175679321 / [arcsec] value of reference pixel along axis 2 
+CRPIX1  =        512.500000000 / [pixel] reference pixel location along axis 1  
+CRPIX2  =        512.500000000 / [pixel] reference pixel location along axis 1  
+CROTA   =       -0.00000000000 / [deg] rotation angle                           
+COMMENT --------- Electronics: ------------------------------------------------ 
+EXPMODE = 'backside          ' / exposure mode                                  
+LYNESYNC= 'no      '           / line synchronization                           
+CAMERERR= 'no      '           / camera error: yes, no                          
+IMAGESEQ=                    0 / image number in sequence                       
+ROUTPORT= 'B       '           / readout port                                   
+NLEBPROC=                    0 / number of LEB processing steps                 
+LEBPROC1=                   26 / no ROI                                         
+LEBPROC2=                   27 / no occ mask                                    
+LEBPROC3=                   12 / Rice                                           
+HZBLOCKS=                   32 / number of horizontal blocks                    
+VTBLOCKS=                   32 / number of vertical blocks                      
+MSBLOCKS=                    0 / number of missing blocks                       
+COMMENT --------- Temperature: ------------------------------------------------ 
+CFTEMP  =              0.00000 / [degree C] CCD cold finger temperature         
+CCDTEMP =             -89.5800 / [DN/100] CCD temperature                       
+COMMENT --------- Solar Ephemeris: -------------------------------------------- 
+SOLAR_B0=            -0.720000 / [deg] s/c tilt of solar North pole             
+RSUN_ARC=        953.987370172 / [arcsec] apparent photospheric solar radius    
+RSUN_OBS=        953.987370172 / [arcsec] apparent photospheric solar radius    
+RSUN_REF=            695699968 / [m] assumed physical solar radius              
+CAR_ROT =        2057.00000000 / Carrington rotation at Earth                   
+DSUN_OBS=        150418548914. / [m], s/c distance from Sun                     
+SC_X0   =              0.00000 / [arcsec] s/c yaw                               
+SC_Y0   =              0.00000 / [arcsec] s/c pitch (-109.14 after 1996/04/16)  
+SC_ROLL =              0.00000 / [degrees] solar north + CCW from nominal       
+HAEX_OBS=       -50238444000.0 / [m] s/c Heliocentric Aries Ecliptic X          
+HAEY_OBS=       -141780912000. / [m] s/c Heliocentric Aries Ecliptic Y          
+HAEZ_OBS=        107676620.000 / [m] s/c Heliocentric Aries Ecliptic Z          
+COMMENT --------- Parameters Closing Metadata: -------------------------------- 
+HISTORY Version 4.0, 2001 December 10                                           
+HISTORY Replaced missing blocks with EIT_DARK                                   
+HISTORY Subtracted dark current, EIT_DARK                                       
+HISTORY Degridded image with EIT_DEGRID                                         
+HISTORY Flat fielded image with EIT_FLAT                                        
+HISTORY Exposure normalized (per sec)                                           
+HISTORY Flux normalized to CLEAR Filter                                         
+HISTORY Flux normalized for time response changes                               
+DATASUM = '2802523163'         / data unit checksum created 2023-11-22T19:25:50 
+CHECKSUM= 'lAcHo4bFl9bFl9bF'   / HDU checksum created 2023-11-22T19:25:50       

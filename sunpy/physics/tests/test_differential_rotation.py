@@ -22,30 +22,31 @@ from sunpy.physics.differential_rotation import (
     differential_rotate,
     solar_rotate_coordinate,
 )
+from sunpy.sun.constants import radius as R_sun
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
-# implementation.  This is not a significant issue for the diff_rot function
+# implementation. This is not a significant issue for the diff_rot function
 # since it is relatively simple and the values it produces can be easily
-# compared to other implementations of the same simple function.  The same
-# cannot be said for the solar_rotate_coordinate function.  This functionality
+# compared to other implementations of the same simple function. The same
+# cannot be said for the solar_rotate_coordinate function. This functionality
 # relies accurate knowledge of the solar ephemeris in particular.
 # There is no reference implementation of the solar_rotate_coordinate function
-# of demonstrated trustworthiness at time of writing in any language.  There
+# of demonstrated trustworthiness at time of writing in any language. There
 # are no known independent values or tests that can be used to test the
-# veracity of the solar_rotate_coordinate function.  This being the case, the
+# veracity of the solar_rotate_coordinate function. This being the case, the
 # solar_rotate_coordinate function is tested against values that it generated.
-# Therefore these tests test for consistency, not accuracy.  Note that when the
+# Therefore these tests test for consistency, not accuracy. Note that when the
 # 0.8.0 branch was released, the solar ephemeris calculation was handed off to
-# the relevant Astropy code.  The solar_rotate_coordinate tests were changed
-# for self-consistency.  Note that the change in position comparing the results
+# the relevant Astropy code. The solar_rotate_coordinate tests were changed
+# for self-consistency. Note that the change in position comparing the results
 # of pre- and 0.8.0 sunpy solar coordinate rotation functionality (rot_hpc
 # and solar_rotate_coordinate respectively) was on the order of 0.5 arcseconds.
 # At time of writing, the difference between the rotation
 # calculated using the pre-0.8.0 rot_hpc function and the SSWIDL equivalent
 # rot_xy.pro for the tests given in pre-0.8.0 were on the order of hundredths
-# of an arcsecond.  I suspect that the reason for the small differences is
+# of an arcsecond. I suspect that the reason for the small differences is
 # because the sunpy's ephemeris and coordinate transformation infrastructure
 # was largely based on that in SSWIDL.
 
@@ -391,3 +392,14 @@ def test_differential_rotation(aia171_test_map):
     with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
+
+
+def test_rsun_fallback(aia171_test_map):
+    # Remove the AIA-specific value of the solar radius
+    assert_quantity_allclose(aia171_test_map.rsun_meters, 696 * u.Mm)
+    del aia171_test_map.meta['rsun_ref'], aia171_test_map.meta['rsun_obs']
+
+    # Confirm that the differentially rotated map has the default value for the solar radius
+    new_observer = get_earth(aia171_test_map.date + 2 * u.day)
+    rot_map = differential_rotate(aia171_test_map, observer=new_observer)
+    assert_quantity_allclose(rot_map.rsun_meters, R_sun)

@@ -1,11 +1,9 @@
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 import numpy as np
 import pandas
 import pytest
-from packaging import version
 
-import astropy
 import astropy.time
 from astropy.time import Time
 
@@ -196,63 +194,68 @@ def test_parse_time_now():
     assert now.scale == 'utc'
 
 
-def test_parse_time_ISO():
-    dt1 = Time('1966-02-03T20:17:40')
-    assert parse_time('1966-02-03').jd == LANDING.jd
-    assert (
-        parse_time('1966-02-03T20:17:40') == dt1
-    )
-    assert (
-        parse_time('19660203T201740') == dt1
-    )
+@pytest.mark.parametrize(('expected', 'time_string'), [
+    ('2007-05-04T21:08:12.999999', '2007-05-04T21:08:12.999999'),
+    ('2007-05-04T21:08:12.999999', '2007/05/04T21:08:12.999999'),
+    ('2007-05-04T21:08:12.999999', '2007-05-04T21:08:12.999999Z'),
+    ('2007-05-04T21:08:12.999999', '20070504T210812.999999'),
+    ('2007-05-04T21:08:12.999999', '2007/05/04 21:08:12.999999'),
+    ('2007-05-04T21:08:12.999999', '2007-05-04 21:08:12.999999'),
+    ('2007-05-04T21:08:12.999999', '2007-May-04 21:08:12.999999'),
+    ('2007-05-04T21:08:12.999999', '04-May-2007 21:08:12.999999'),
+    ('2007-05-04T21:08:12.999999', '2007:124:21:08:12.999999'),
+    ('2007-05-04T21:08:12', '2007-05-04T21:08:12'),
+    ('2007-05-04T21:08:12', '2007/05/04T21:08:12'),
+    ('2007-05-04T21:08:12', '20070504T210812'),
+    ('2007-05-04T21:08:12', '2007/05/04 21:08:12'),
+    ('2007-05-04T21:08:12', '2007-05-04 21:08:12'),
+    ('2007-05-04T21:08:12', '2007-May-04 21:08:12'),
+    ('2007-05-04T21:08:12', '04-May-2007 21:08:12'),
+    ('2007-05-04T21:08:12', '20070504_210812'),
+    ('2007-05-04T21:08:12', '2007:124:21:08:12'),
+    ('2007-05-04T21:08:12', '20070504210812'),
+    ('2007-05-04T21:08:12', '2007.05.04_21:08:12_UTC'),
+    ('2007-05-04T21:08:12', '2007.05.04_21:08:12'),
+    ('2007-05-04T21:08:00', '20070504T2108'),
+    ('2007-05-04T21:08:00', '2007/05/04 21:08'),
+    ('2007-05-04T21:08:00', '2007-05-04 21:08'),
+    ('2007-05-04T21:08:00', '2007-May-04 21:08'),
+    ('2007-05-04T21:08:00', '20070504_2108'),
+    ('2007-05-04T21:08:00', '200705042108'),
+    ('2007-05-04T21:08:00', '2007/05/04T21:08'),
+    ('2007-05-04', '2007-May-04'),
+    ('2007-05-04', '2007-05-04'),
+    ('2007-05-04', '2007/05/04'),
+    ('2007-05-04', '04-May-2007'),
+])
+def test_parse_time_utc(expected, time_string):
+    dt = parse_time(time_string)
+    assert is_time_equal(dt, Time(expected))
+    assert dt.scale == 'utc'
+    assert dt.format == 'isot'
 
-    dt2 = Time('2007-05-04T21:08:12.999999')
-    dt3 = Time('2007-05-04T21:08:12')
-    dt4 = Time('2007-05-04T21:08:00')
-    dt5 = Time('2007-05-04')
-
-    assert parse_time('20070504210812') == dt3
-    assert parse_time('200705042108') == dt4
-
-    lst = [
-        ('2007-05-04T21:08:12.999999', dt2),
-        ('20070504T210812.999999', dt2),
-        ('2007/05/04 21:08:12.999999', dt2),
-        ('2007-05-04 21:08:12.999999', dt2),
-        ('2007/05/04 21:08:12', dt3),
-        ('2007-05-04 21:08:12', dt3),
-        ('2007-05-04 21:08', dt4),
-        ('2007-05-04T21:08:12', dt3),
-        ('20070504T210812', dt3),
-        ('20070504T2108', dt4),
-        ('2007-May-04 21:08:12', dt3),
-        ('2007-May-04 21:08', dt4),
-        ('2007-May-04', dt5),
-        ('2007-05-04', dt5),
-        ('2007/05/04', dt5),
-        ('04-May-2007', dt5),
-        ('04-May-2007 21:08:12.999999', dt2),
-        ('20070504_2108', dt4),
-        ('20070504_210812', dt3),
-        ('2007.05.04_21:08:12_UTC', dt3),
-        ('2007.05.04_21:08:12', dt3),
-    ]
-
-    for k, v in lst:
-        dt = parse_time(k)
-        assert is_time_equal(dt, v)
-        assert dt.format == 'isot'
+    # Confirm that passing the string within a list gives the same answer
+    assert is_time_equal(dt, parse_time([time_string])[0])
 
 
-def test_parse_time_tai():
-    tai_format = Time('2007-05-04T21:08:12', scale='tai')
-    tai_format_micro = Time('2007-05-04T21:08:12.999999', scale='tai')
-    parsed_tai = parse_time('2007.05.04_21:08:12_TAI')
-    parsed_tai_micro = parse_time('2007.05.04_21:08:12.999999_TAI')
-    assert tai_format == parsed_tai
-    assert tai_format.scale == parsed_tai.scale
-    assert tai_format_micro == parsed_tai_micro
-    assert tai_format_micro.scale == parsed_tai_micro.scale
+@pytest.mark.parametrize(('expected', 'time_string'), [
+    ('2007-05-04T21:08:12.999999', '2007.05.04_21:08:12.999999_TAI'),
+    ('2007-05-04T21:08:12', '2007.05.04_21:08:12_TAI'),
+])
+def test_parse_time_tai(expected, time_string):
+    dt = parse_time(time_string)
+    assert is_time_equal(dt, Time(expected, scale='tai'))
+    assert dt.scale == 'tai'
+    assert dt.format == 'isot'
+
+    # Confirm that passing the string within a list gives the same answer
+    assert is_time_equal(dt, parse_time([time_string])[0])
+
+
+def test_parse_astropy_fallback():
+    # If none of our string formats match, parse_time should simply pass through to Time
+    assert parse_time('J2000') == Time('J2000')
+    assert parse_time(['J2000']) == Time(['J2000'])
 
 
 def test_parse_time_leap_second():
@@ -291,11 +294,7 @@ def test_parse_time_astropy_formats(ts, fmt):
     dt = parse_time(ts, format=fmt)
     assert dt.format == fmt
 
-@pytest.mark.xfail(
-    condition=version.parse(astropy.__version__) < version.parse("6.1"),
-    reason="This test fails on Astropy versions below 6.1",
-    strict=True
-)
+
 def test_parse_time_int_float():
     # int and float values are not unique
     # The format has to be mentioned
@@ -358,7 +357,7 @@ def test_parse_time_list_3():
 
 
 def test_is_time():
-    time.is_time(datetime.now(timezone.utc)) is True
+    time.is_time(datetime.now(UTC)) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
     assert time.is_time(Time.now()) is True
 

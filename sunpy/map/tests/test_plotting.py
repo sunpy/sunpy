@@ -214,6 +214,11 @@ def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
 
 
 @figure_test
+def test_plot_masked_aia171_superpixel_conservative_mask_true(aia171_test_map_with_mask):
+    aia171_test_map_with_mask.superpixel((9, 7) * u.pix, offset=(4, 4) * u.pix, conservative_mask=True).plot()
+
+
+@figure_test
 def test_draw_contours_aia(aia171_test_map):
     aia171_test_map.plot()
     aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))
@@ -330,6 +335,17 @@ def test_draw_limb_heliographic_stonyhurst(aia171_test_map):
     aia171_test_map.draw_limb(axes=ax, color='red')
     ax.set_xlim(0, 360)
     ax.set_ylim(0, 180)
+    return fig
+
+
+@figure_test
+def test_map_draw_extent(aia171_test_map):
+    cropped_test_map = aia171_test_map.submap([0, 58]*u.pixel,
+                                              top_right=[80, 75]*u.pixel)
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    cropped_test_map.draw_extent(axes=ax, color="k")
     return fig
 
 

@@ -7,7 +7,7 @@ This example shows how to auto-align two images with different reference frames
 during plotting.
 
 Here we use the optional keyword ``autoalign`` when calling Map's
-:meth:`~sunpy.map.GenericMap.plot` method.  The reference frames are defined by
+:meth:`~sunpy.map.GenericMap.plot` method. The reference frames are defined by
 the respective World Coordinate System (WCS) information.
 
 See :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_hmi.py`
@@ -22,7 +22,7 @@ import sunpy.data.sample
 import sunpy.map
 
 ######################################################################
-# We use the AIA image and HMI image from the sample data.  For the
+# We use the AIA image and HMI image from the sample data. For the
 # HMI map, we use the special HMI color map, which expects the plotted
 # range to be -1500 to 1500.
 
@@ -32,7 +32,7 @@ map_hmi.plot_settings['cmap'] = "hmimag"
 map_hmi.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
 ######################################################################
-# Plot both images side by side.  Note that the HMI image is oriented
+# Plot both images side by side. Note that the HMI image is oriented
 # "upside down" relative to the AIA image.
 
 fig = plt.figure(figsize=(12, 5))
@@ -43,7 +43,7 @@ map_hmi.plot(axes=ax2)
 
 ######################################################################
 # Setting ``autoalign=True`` allows plotting the HMI image onto axes
-# defined by the AIA reference frame.  In contrast to the above code
+# defined by the AIA reference frame. In contrast to the above code
 # block, we intentionally set the ``projection`` for the axes to be
 # the AIA map instead of the HMI map. We also need to manually set
 # the plot limits because Matplotlib gets confused by the off-disk

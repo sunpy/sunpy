@@ -17,6 +17,14 @@ If you have any questions, comments, or just want to say hello, we have an activ
 How to Contribute to sunpy
 ==========================
 
+.. _newcomers_generative_ai:
+
+.. note:: Usage of Generative AI
+
+    We expect authentic engagement in our community.
+    Be wary of posting output from Large Language Models or similar generative AI as comments on GitHub or any other platform, as such comments tend to be formulaic and low quality content.
+    If you use generative AI tools as an aid in developing code or documentation changes, ensure that you fully understand the proposed changes and can explain why they are the correct approach and an improvement to the current state.
+
 Not Code
 --------
 
@@ -100,17 +108,17 @@ In addition, we have several other repositories that have open issues and you mi
 
 Python:
 
-* `ndcube <https://github.com/sunpy/ndcube>`_
-* `drms <https://github.com/sunpy/drms>`_
-* `radiospectra <https://github.com/sunpy/radiospectra>`_
-* `ablog <https://github.com/sunpy/ablog>`_
-* `irispy <https://github.com/sunpy/irispy>`_
-* `sunkit-image <https://github.com/sunpy/sunkit-image>`_
+* `ndcube <https://github.com/sunpy/ndcube>`__
+* `drms <https://github.com/sunpy/drms>`__
+* `radiospectra <https://github.com/sunpy/radiospectra>`__
+* `ablog <https://github.com/sunpy/ablog>`__
+* `irispy <https://github.com/sunpy/irispy>`__
+* `sunkit-image <https://github.com/sunpy/sunkit-image>`__
 
 CSS/HTML:
 
-* `sunpy-sphinx-theme <https://github.com/sunpy/sunpy-sphinx-theme>`_
-* `sunpy.org <https://github.com/sunpy/sunpy.org>`_
+* `sunpy-sphinx-theme <https://github.com/sunpy/sunpy-sphinx-theme>`__
+* `sunpy.org <https://github.com/sunpy/sunpy.org>`__
 
 .. _issues: https://github.com/sunpy/sunpy/issues
 .. _Good First Issue label: https://github.com/sunpy/sunpy/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22Good+First+Issue%22
@@ -202,8 +210,8 @@ You will need to check two things:
    `pytest`_ is the framework we use for this.
 
 2. The changes you have made follow the correct coding style.
-   We follow the `PEP8`_ style for all Python code and depending on your setup, you can use a `linter program <https://realpython.com/python-code-quality/#how-to-improve-python-code-quality>`_ to check your code.
-   For documentation, we follow the `numpydoc style <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_.
+   We follow the `PEP8`_ style for all Python code and depending on your setup, you can use a `linter program <https://realpython.com/python-code-quality/#how-to-improve-python-code-quality>`__ to check your code.
+   For documentation, we follow the `numpydoc style <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`__.
 
 We provide more more detail about our :ref:`test suite and how to write tests <testing>`, and how to :ref:`create and style documentation <docs_guidelines>`.
 

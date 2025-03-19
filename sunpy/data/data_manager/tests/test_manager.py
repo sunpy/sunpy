@@ -248,3 +248,22 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
 
     # Storage still contains original test_file
     assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
+
+
+def test_file_deleted_redownload(storage, downloader, data_function):
+    # Checks that if a file is deleted, a warning is raised and the file is re-downloaded.
+
+    data_function()
+    assert len(storage._store) == 1
+    test_file_path = Path(storage._store[0]['file_path'])
+    assert test_file_path.exists()
+
+    os.remove(test_file_path)
+    assert not test_file_path.exists()
+
+    with pytest.warns(SunpyUserWarning, match="Requested file appears to missing and will be redownloaded."):
+        data_function()
+
+    assert downloader.times_called == 2
+    assert len(storage._store) == 1
+    assert test_file_path.exists()

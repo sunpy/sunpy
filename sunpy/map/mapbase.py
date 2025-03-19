@@ -55,7 +55,7 @@ from sunpy.util.decorators import (
     deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -96,8 +96,7 @@ corresponds to the coordinate axis for ``x`` and ``axis2`` corresponds to
 
 This class assumes that the metadata adheres to the FITS 4 standard.
 Where the CROTA2 metadata is provided (without PC_ij) it assumes a conversion
-to the standard PC_ij described in section 6.1 of .
-`Calabretta & Greisen (2002) <https://doi.org/10.1051/0004-6361:20021327>`_
+to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representations_2002`.
 
 .. warning::
     If a header has CD_ij values but no PC_ij values, CDELT values are required
@@ -132,6 +131,33 @@ class GenericMap(NDData):
     **kwargs :
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
+
+
+    Methods and their known behavior with dask arrays
+    -------------------------------------------------
+
+    +-------------------+------------------------------------+
+    | Method            | Preserve laziness with Dask Arrays |
+    +===================+====================================+
+    | `reproject_to`    | No                                 |
+    +-------------------+------------------------------------+
+    | `resample`        | No                                 |
+    +-------------------+------------------------------------+
+    | `rotate`          | No                                 |
+    +-------------------+------------------------------------+
+    | `max`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `mean`            | Yes                                |
+    +-------------------+------------------------------------+
+    | `min`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `std`             | Yes                                |
+    +-------------------+------------------------------------+
+    | `superpixel`      | Yes                                |
+    +-------------------+------------------------------------+
+    | `submap`          | Yes                                |
+    +-------------------+------------------------------------+
+
 
     Examples
     --------
@@ -175,12 +201,12 @@ class GenericMap(NDData):
     _registry = dict()
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
-    # Enabling the GenericMap reflected operators is a bit subtle.  The GenericMap
+    # Enabling the GenericMap reflected operators is a bit subtle. The GenericMap
     # reflected operator will be used only if the Quantity non-reflected operator
-    # returns NotImplemented.  The Quantity operator strips the unit from the
+    # returns NotImplemented. The Quantity operator strips the unit from the
     # Quantity and tries to combine the value with the GenericMap using NumPy's
-    # __array_ufunc__().  If NumPy believes that it can proceed, this will result
-    # in an error.  We explicitly set __array_ufunc__ = None so that the NumPy
+    # __array_ufunc__(). If NumPy believes that it can proceed, this will result
+    # in an error. We explicitly set __array_ufunc__ = None so that the NumPy
     # call, and consequently the Quantity operator, will return NotImplemented.
     __array_ufunc__ = None
 
@@ -599,11 +625,11 @@ class GenericMap(NDData):
         Notes
         -----
         ``dateobs`` is always populated with the "canonical" observation time as
-        provided by the `.date` property.  This will commonly be the DATE-OBS key if it
+        provided by the `.date` property. This will commonly be the DATE-OBS key if it
         is in the metadata, but see that property for the logic otherwise.
 
         ``dateavg`` is always populated with the reference date of the coordinate system
-        as provided by the `.reference_date` property.  This will commonly be the
+        as provided by the `.reference_date` property. This will commonly be the
         DATE-AVG key if it is in the metadata, but see that property for the logic
         otherwise.
 
@@ -732,24 +758,32 @@ class GenericMap(NDData):
     def std(self, *args, **kwargs):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanstd(self.data, *args, **kwargs)
 
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmean(self.data, *args, **kwargs)
 
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmin(self.data, *args, **kwargs)
 
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
+
+        This method **does** preserve dask arrays.
         """
         return np.nanmax(self.data, *args, **kwargs)
 
@@ -759,18 +793,26 @@ class GenericMap(NDData):
                         'counts / pixel': 'ct/pix',}
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            unit = u.Unit(unit_str, parse_strict='silent')
+        unit = u.Unit(unit_str, parse_strict='silent')
+        for base in unit.bases:
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            if u.DN not in unit.bases:
+            if base is u.DN:
+                continue
+            try:
+                if isinstance(base, u.UnrecognizedUnit):
+                    raise ValueError
+
+                # Also rejects a unit that is not in the FITS standard but is equivalent to one (e.g., Mx)
+                if u.Unit(base.to_string(format='fits')) is not base:  # to_string() can raise ValueError
+                    raise ValueError
+            except ValueError:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                               f'See {_META_FIX_URL} for how to fix metadata before loading it '
                                'with sunpy.map.Map.\n'
                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                                'the FITS unit standards.')
-                unit = None
+                return None
         return unit
 
     @property
@@ -898,7 +940,7 @@ class GenericMap(NDData):
         The reference date for the coordinate system.
 
         This date is used to define the ``obstime`` of the coordinate frame and often
-        the ``obstime`` of the observer.  Be aware that this date can be different from
+        the ``obstime`` of the observer. Be aware that this date can be different from
         the "canonical" observation time (see the `.GenericMap.date` property).
 
         The reference date is determined using this order of preference:
@@ -949,7 +991,7 @@ class GenericMap(NDData):
         The observation time.
 
         This time is the "canonical" way to refer to an observation, which is commonly
-        the start of the observation, but can be a different time.  In comparison, the
+        the start of the observation, but can be a different time. In comparison, the
         `.GenericMap.date_start` property is unambigiously the start of the observation.
 
         The observation time is determined using this order of preference:
@@ -1039,12 +1081,17 @@ class GenericMap(NDData):
     @property
     def measurement(self):
         """
-        Measurement wavelength.
+        The measurement type of the observation.
 
-        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
-        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
-        defaults to dimensionless units.
+        The measurement type can be described by a `str` or a
+        `~astropy.units.Quantity`. If the latter, it is typically equal to
+        `.GenericMap.wavelength`.
+
+        See Also
+        --------
+        wavelength : The wavelength of the observation.
         """
+
         return self.wavelength
 
     @property
@@ -1229,13 +1276,15 @@ class GenericMap(NDData):
             ctype2 = 'HPLT-TAN'
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
-        # "solar-y" ctypes.  This overrides the default assignment and
-        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # "solar-y" ctypes. This overrides the default assignment and
+        # changes it to a ctype that is understood. See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -1392,7 +1441,7 @@ class GenericMap(NDData):
         (i.e. cdelt1, cdelt2).
 
         If the CDij matrix is defined but no CDELTi values are explicitly defined,
-        effective CDELTi values are constructed from the CDij matrix.  The effective
+        effective CDELTi values are constructed from the CDij matrix. The effective
         CDELTi values are chosen so that each row of the PCij matrix has unity norm.
         This choice is optimal if the PCij matrix is a pure rotation matrix, but may not
         be as optimal if the PCij matrix includes any skew.
@@ -1431,7 +1480,7 @@ class GenericMap(NDData):
         -----
         In many cases this is a simple rotation matrix, hence the property name.
         It general it does not have to be a pure rotation matrix, and can encode
-        other transformations e.g., skews for non-orthgonal coordinate systems.
+        other transformations e.g., skews for non-orthogonal coordinate systems.
         """
         if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
             return np.array(
@@ -1491,12 +1540,12 @@ class GenericMap(NDData):
         """
         Return any PV values in the metadata.
         """
-        pattern = re.compile('pv[0-9]_[0-9]a', re.IGNORECASE)
+        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
         pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
 
         pv_values = []
         for k in pv_keys:
-            i, m = int(k[2]), int(k[4])
+            i, m = int(k[2]), int(k[4:])
             pv_values.append((i, m, self.meta[k]))
         return pv_values
 
@@ -1650,6 +1699,8 @@ class GenericMap(NDData):
         as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         dimensions : `~astropy.units.Quantity`
@@ -1670,7 +1721,7 @@ class GenericMap(NDData):
 
         References
         ----------
-        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
+        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`__
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -1720,6 +1771,8 @@ class GenericMap(NDData):
         rotated by the rotation information in the metadata, which should derotate
         the map so that the pixel axes are aligned with world-coordinate axes.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         angle : `~astropy.units.Quantity`
@@ -1727,7 +1780,7 @@ class GenericMap(NDData):
         rmatrix : array-like
             2x2 linear transformation rotation matrix.
         order : int
-            Interpolation order to be used.  The precise meaning depends on the
+            Interpolation order to be used. The precise meaning depends on the
             rotation method specified by ``method``.
             Default: 3
         scale : float
@@ -1740,7 +1793,7 @@ class GenericMap(NDData):
             of the input map.
             Default: `numpy.nan`
         method : {{{rotation_function_names}}}, optional
-            Rotation function to use.  Defaults to ``'scipy'``.
+            Rotation function to use. Defaults to ``'scipy'``.
         clip : `bool`, optional
             If `True`, clips the pixel values of the output image to the range of the
             input image (including the value of ``missing``, if used).
@@ -1770,8 +1823,8 @@ class GenericMap(NDData):
 
         For each NaN pixel in the input image, one or more pixels in the output image
         will be set to NaN, with the size of the pixel region affected depending on the
-        interpolation order.  All currently implemented rotation methods require a
-        convolution step to handle image NaNs.  This convolution normally uses
+        interpolation order. All currently implemented rotation methods require a
+        convolution step to handle image NaNs. This convolution normally uses
         :func:`scipy.signal.convolve2d`, but if `OpenCV <https://opencv.org>`__ is
         installed, the faster |cv2_filter2D|_ is used instead.
 
@@ -1824,7 +1877,7 @@ class GenericMap(NDData):
         if (pad_x > 0 or pad_y > 0) and issubclass(self.data.dtype.type, numbers.Integral) and (missing % 1 != 0):
             raise ValueError("The underlying data is integers, but the fill value for missing "
                              "pixels cannot be cast to an integer, which is the case for the "
-                             "default fill value of NaN.  Set the `missing` keyword to an "
+                             "default fill value of NaN. Set the `missing` keyword to an "
                              "appropriate integer value for the data set.")
 
         new_data = np.pad(self.data,
@@ -1911,6 +1964,8 @@ class GenericMap(NDData):
         are returned. If the rectangle is defined in world coordinates, the
         smallest array which contains all four corners of the rectangle as
         defined in world coordinates is returned.
+
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -2145,9 +2200,12 @@ class GenericMap(NDData):
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
+                   conservative_mask: bool = False):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
+
+        This method **does** preserve dask arrays.
 
         Parameters
         ----------
@@ -2169,6 +2227,10 @@ class GenericMap(NDData):
             The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
+        conservative_mask : bool, optional
+            If `True`, a superpixel is masked if any of its constituent pixels are masked.
+            If `False`, a superpixel is masked only if all of its constituent pixels are masked.
+            Default is `False`.
 
         Returns
         -------
@@ -2197,10 +2259,24 @@ class GenericMap(NDData):
         else:
             data = self.data.copy()
 
-        reshaped = reshape_image_to_4d_superpixel(data,
-                                                  [dimensions[1], dimensions[0]],
-                                                  [offset[1], offset[0]])
-        new_array = func(func(reshaped, axis=3), axis=1)
+        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+        new_array = func(func(reshaped_data, axis=3), axis=1)
+
+        if self.mask is not None:
+            if conservative_mask ^ (func in [np.sum, np.prod]):
+                log.info(
+                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                    "False for mean/median/std/min/max."
+                    )
+
+            if conservative_mask:
+                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+                new_mask = np.any(reshaped_mask, axis=(3, 1))
+            else:
+                new_mask = np.ma.getmaskarray(new_array)
+        else:
+            new_mask = None
 
         # Update image scale and number of pixels
 
@@ -2226,10 +2302,8 @@ class GenericMap(NDData):
         # Create new map instance
         if self.mask is not None:
             new_data = np.ma.getdata(new_array)
-            new_mask = np.ma.getmask(new_array)
         else:
             new_data = new_array
-            new_mask = None
 
         # Create new map with the modified data
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
@@ -2258,7 +2332,7 @@ class GenericMap(NDData):
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
-        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
+        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`__
 
         Parameters
         ----------
@@ -2297,10 +2371,10 @@ class GenericMap(NDData):
         """
         Draws the solar limb as seen by the map's observer.
 
-        The limb is a circle for only the simplest plots.  If the coordinate frame of
+        The limb is a circle for only the simplest plots. If the coordinate frame of
         the limb is different from the coordinate frame of the plot axes, not only
         may the limb not be a true circle, a portion of the limb may be hidden from
-        the observer.  In that case, the circle is divided into visible and hidden
+        the observer. In that case, the circle is divided into visible and hidden
         segments, represented by solid and dotted lines, respectively.
 
         Parameters
@@ -2329,8 +2403,8 @@ class GenericMap(NDData):
         visible ``hidden`` will be ``None``.
 
         To avoid triggering Matplotlib auto-scaling, these patches are added as
-        artists instead of patches.  One consequence is that the plot legend is not
-        populated automatically when the limb is specified with a text label.  See
+        artists instead of patches. One consequence is that the plot legend is not
+        populated automatically when the limb is specified with a text label. See
         :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
         the Matplotlib documentation for examples of creating a custom legend.
         """
@@ -2343,6 +2417,32 @@ class GenericMap(NDData):
             self.observer_coordinate,
             resolution=resolution,
             rsun=self.rsun_meters,
+            **kwargs
+        )
+
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.wcs,
             **kwargs
         )
 
@@ -2643,9 +2743,9 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
+            axes (e.g., a difference in rotation angle). If ``pcolormesh``, this
             method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
+            default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True` is
             equivalent to specifying ``pcolormesh``.
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
@@ -2662,14 +2762,14 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive.  If the plot will
+        The ``autoalign`` functionality is computationally intensive. If the plot will
         be interactive, the alternative approach of preprocessing the map (e.g.,
         de-rotating it) to match the desired axes will result in better performance.
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
-        autoscaling of the plot limits.  The plot limits can be set manually.
+        autoscaling of the plot limits. The plot limits can be set manually.
         To preserve the off-disk parts of the map, using the
         `~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
@@ -2744,7 +2844,7 @@ class GenericMap(NDData):
             imshow_args.setdefault('transform', axes.get_transform(self.wcs))
 
             # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
-            # of a grid pattern when alpha is not 1.  These settings minimize the overlap.
+            # of a grid pattern when alpha is not 1. These settings minimize the overlap.
             if imshow_args.get('alpha', 1) != 1:
                 imshow_args.setdefault('antialiased', True)
                 imshow_args.setdefault('linewidth', 0)
@@ -2938,6 +3038,8 @@ class GenericMap(NDData):
 
         Additional keyword arguments are passed through to the reprojection function.
 
+        This method **does not** preserve dask arrays.
+
         Parameters
         ----------
         target_wcs : `dict` or `~astropy.wcs.WCS`
@@ -2953,9 +3055,9 @@ class GenericMap(NDData):
         outmap : `~sunpy.map.GenericMap`
             The reprojected map
         footprint : `~numpy.ndarray`
-            Footprint of the input arary in the output array.  Values of 0 indicate no
+            Footprint of the input arary in the output array. Values of 0 indicate no
             coverage or valid values in the input image, while values of 1 indicate
-            valid values.  Intermediate values indicate partial coverage.
+            valid values. Intermediate values indicate partial coverage.
             Only returned if ``return_footprint`` is ``True``.
 
         Notes

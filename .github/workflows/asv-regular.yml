@@ -39,7 +39,7 @@ jobs:
       - name: Add machine info for ASV
         run: asv machine --machine GH-Actions --os ubuntu-latest --arch x64 --cpu "2-core unknown" --ram 7GB
       - name: Run benchmarks for commits since v2.1
-        run: taskset -c 0 asv run --skip-existing-successful v3.0.dev..
+        run: taskset -c 0 asv run --skip-existing-successful --steps 50 v3.0.dev..
       - name: Install SSH Client 🔑
         uses: webfactory/ssh-agent@v0.9.0
         with:

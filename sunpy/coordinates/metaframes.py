@@ -32,8 +32,8 @@ def _make_rotatedsun_cls(framecls):
     same class will be returned.
 
     This function is necessary because frame transformations depend
-    on connection between specific frame *classes*.  So each type of frame
-    needs its own distinct rotated-Sun frame class.  This function generates
+    on connection between specific frame *classes*. So each type of frame
+    needs its own distinct rotated-Sun frame class. This function generates
     just that class, as well as ensuring that only one example of such a class
     actually gets created in any given Python session.
     """
@@ -116,14 +116,14 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
     Parameters
     ----------
     representation : `~astropy.coordinates.BaseRepresentation` or ``None``
-        A representation object or ``None`` to have no data.  Alternatively, use coordinate
+        A representation object or ``None`` to have no data. Alternatively, use coordinate
         component keyword arguments, which depend on the base frame.
     base : `~astropy.coordinates.SkyCoord` or low-level coordinate object.
         The coordinate which specifies the base coordinate frame. The frame must be a SunPy frame.
     duration : `~astropy.units.Quantity` or `~astropy.time.TimeDelta`
         The duration of solar rotation (defaults to zero days).
     rotated_time : {parse_time_types}
-        The time to rotate the Sun to.  If provided, ``duration`` will be set to the difference
+        The time to rotate the Sun to. If provided, ``duration`` will be set to the difference
         between this time and the observation time in ``base``.
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``, ``'allen'``, and ``'rigid'``.
@@ -132,8 +132,8 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     Notes
     -----
-    ``RotatedSunFrame`` is a factory class.  That is, the objects that it
-    yields are *not* actually objects of class ``RotatedSunFrame``.  Instead,
+    ``RotatedSunFrame`` is a factory class. That is, the objects that it
+    yields are *not* actually objects of class ``RotatedSunFrame``. Instead,
     distinct classes are created on-the-fly for whatever the frame class is
     of ``base``.
     """
@@ -211,7 +211,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         Returns a coordinate with the current representation and in the base coordinate frame.
 
         This method can be thought of as "removing" the
-        `~sunpy.coordinates.metaframes.RotatedSunFrame` layer.  Be aware that this method is not
+        `~sunpy.coordinates.metaframes.RotatedSunFrame` layer. Be aware that this method is not
         merely a coordinate transformation, because this method changes the location in inertial
         space that is being pointed to.
         """

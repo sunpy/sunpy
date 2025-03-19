@@ -21,6 +21,7 @@ from sunpy.coordinates.frames import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
 )
 from sunpy.coordinates.sun import angular_radius
 from sunpy.time import parse_time
@@ -267,6 +268,64 @@ def test_hpc_is_visible_tolerance():
         pytest.skip("Test already passes prior to increasing the tolerance.")
 
     assert hpc.is_visible(tolerance=1*u.m)
+
+
+# ==============================================================================
+# Helioprojective Radial Tests
+# ==============================================================================
+
+@pytest.mark.parametrize(('args', 'kwargs'),
+                         two_D_parameters + [(None, {'psi': 0 * u.deg,
+                                                     'delta': 0 * u.arcsec})])
+def test_create_hpr_2d(args, kwargs):
+    hpr1 = init_frame(HelioprojectiveRadial, args, kwargs)
+
+    assert isinstance(hpr1, HelioprojectiveRadial)
+    assert isinstance(hpr1._data, UnitSphericalRepresentation)
+
+    assert hpr1.psi.unit is u.deg
+    assert hpr1.delta.unit is u.deg
+    assert_quantity_allclose(hpr1.psi, 0*u.deg)
+    assert_quantity_allclose(hpr1.delta, 0*u.deg)
+
+    assert_quantity_allclose(hpr1.theta, 90*u.deg)
+
+
+@pytest.mark.parametrize(
+    ('args', 'kwargs'),
+    three_D_parameters + [(None, {'psi': 0 * u.deg,
+                                  'delta': 0 * u.arcsec,
+                                  'distance': 1 * u.Mm}),
+                          ([0 * u.deg, 0 * u.arcsec], {'distance': 1 * u.Mm})])
+def test_create_hpr_3d(args, kwargs):
+    hpr1 = init_frame(HelioprojectiveRadial, args, kwargs)
+
+    assert isinstance(hpr1, HelioprojectiveRadial)
+    assert isinstance(hpr1._data, SphericalRepresentation)
+
+    assert hpr1.psi.unit is u.deg
+    assert hpr1.delta.unit is u.deg
+    assert hpr1.distance.unit is u.Mm
+    assert_quantity_allclose(hpr1.psi, 0*u.deg)
+    assert_quantity_allclose(hpr1.delta, 0*u.deg)
+    assert_quantity_allclose(hpr1.distance, 1*u.Mm)
+
+    assert_quantity_allclose(hpr1.theta, 90*u.deg)
+
+    # Since hpr1 is already 3D, make_3d() should simply return the original object
+    hpr2 = hpr1.make_3d()
+    assert hpr2 is hpr1
+
+
+def test_hpr_distance():
+    hpr1 = HelioprojectiveRadial(0*u.deg, -90*u.deg,
+                                 observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+
+    hpr2 = hpr1.make_3d()
+
+    assert_quantity_allclose(hpr2.psi, 0*u.deg)
+    assert_quantity_allclose(hpr2.delta, -90*u.deg)
+    assert_quantity_allclose(hpr2.distance, DSUN_METERS - RSUN_METERS)
 
 
 # ==============================================================================

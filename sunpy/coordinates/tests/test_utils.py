@@ -17,7 +17,7 @@ from sunpy.coordinates.utils import (
 from sunpy.sun import constants
 
 # Test the great arc code against calculable quantities
-# The inner angle is the same between each pair of coordinates.  You can
+# The inner angle is the same between each pair of coordinates. You can
 # calculate these coordinates using the inner angle formulae as listed here:
 # https://en.wikipedia.org/wiki/Great-circle_distance
 

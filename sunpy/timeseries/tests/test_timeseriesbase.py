@@ -68,6 +68,11 @@ def truncation_slice_test_ts_4(eve_test_ts):
     )
 
 
+def test_repr_html(eve_test_ts):
+    with np.errstate(all='ignore'):
+        assert eve_test_ts._repr_html_() is not None
+
+
 def test_truncation_slices(eve_test_ts,
                            truncation_slice_test_ts_1, truncation_slice_test_ts_2,
                            truncation_slice_test_ts_3, truncation_slice_test_ts_4):

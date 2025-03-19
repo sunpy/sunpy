@@ -14,14 +14,66 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 6.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-*Add release stats here.*
+This release of sunpy contains 363 commits in 111 merged pull requests closing 49 issues from 21 people, 12 of which are first-time contributors to sunpy.
+
+* 363 commits have been added since 6.0
+* 49 issues have been closed since 6.0
+* 111 pull requests have been merged since 6.0
+* 21 people have contributed since 6.0
+* 12 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Abinash Mahapatra  *
+-  Advait Pimparkar  *
+-  Ahmad Saeed  *
+-  Akshit Tyagi
+-  Albert Y. Shih
+-  Andrew Leonard
+-  Ankit Khushwaha  *
+-  Diya Khetarpal  *
+-  Jan Gieseler
+-  Nabil Freij
+-  Nakshatra  *
+-  Pratham Hole  *
+-  Raghav Agrawal  *
+-  Saurav Kumar Roy  *
+-  Shane Maloney
+-  Steven Christe
+-  Stuart J. Mumford
+-  Tanish Yelgoe  *
+-  Wenli Mo  *
+-  Will Barnes
+-  William Setterberg  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
 
 Updates to minimum dependencies
 ===============================
 
 The minimum required versions of the following packages have been updated:
 
+- python>=3.11
+- astropy>=6.0.0
+- pyerfa>=2.0.1.1
 - matplotlib>=3.6.0
+- numpy>=1.24.0
+- pandas>=1.5.0
+- sphinx>=6.0.0
+- scipy>=1.10.1
+- scikit-image>=0.20.0
+- h5py>=3.8.0
+- reproject>=0.10.0
+
+Support for helioprojective radial coordinates and maps
+=======================================================
+
+Helioprojective radial (HPR) coordinates are now supported using the `~sunpy.coordinates.HelioprojectiveRadial` coordinate frame, and HPR FITS files are also supported.
+Per the FITS WCS machinery, the impact-angle component (``theta``) is replaced by the a declination component (``delta``) by subtracting 90 degrees from ``theta``.
+An HPR coordinate has a ``theta`` property to quickly obtain the impact angle, and there is a visualization helper function (:func:`~sunpy.visualization.show_hpr_impact_angle`) to modify a plot axis.
+Finally, there is a helper function (:func:`~sunpy.map.make_hpr_header`) to create HPR FITS headers.
+
+.. minigallery:: sunpy.coordinates.HelioprojectiveRadial
 
 Additional new map dependency
 =============================
@@ -30,14 +82,24 @@ With the addition of the ``contourpy`` package, the following new dependency has
 
 - contourpy>=1.0.1
 
-This unifies the contour plotting within `sunpy.map.GenericMap`, :meth`sunpy.map.GenericMap.contour` to be the same as :meth`sunpy.map.GenericMap.draw_contours`.
+This unifies the contour plotting within `sunpy.map.GenericMap`, :meth:`sunpy.map.GenericMap.contour` to be the same as :meth:`sunpy.map.GenericMap.draw_contours`.
 This is package is already a dependency of ``matplotlib``, so no additional installation steps are required.
 
-Support for Reading from Remote Filesysytems
-============================================
+Support for Reading from Remote Filesystems
+===========================================
 
 Support has been added to ``sunpy.map.Map`` and ``sunpy.timeseries.TimeSeries`` to read files from remote filesystems using the `fsspec <https://filesystem-spec.readthedocs.io>`__ library.
 
 Support for S3 filesystems is tested, but other fsspec plugins should work for most filetypes, please open issues if errors are encountered with other filesystems.
 
 You will need to install packages for your desired filesystem so for S3 the ``s3fs`` package needs to be installed (use ``pip install sunpy[all,s3]`` or ``conda install sunpy s3fs boto3`` boto3 is currently needed for reading CDF files).
+
+Drawing the extent of a WCS
+===========================
+
+The extent of any WCS with two celestial axes can now be drawn on a `~astropy.visualization.wcsaxes.WCSAxes` using
+:func:`sunpy.visualization.drawing.extent`.
+Additionally, :meth:`sunpy.map.GenericMap.draw_extent` has been added as a convenience method for drawing the
+extent of any map.
+
+.. minigallery:: sunpy.visualization.drawing.extent

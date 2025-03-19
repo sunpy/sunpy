@@ -33,7 +33,7 @@ cv2_map = hmi_map.rotate(method='opencv')
 
 ###############################################################################
 # Now for a visual comparison, the raw differences, that should highlight the differences.
-# Note that only two comparisons are shown.  Note the scale here is ± 10.
+# Note that only two comparisons are shown. Note the scale here is ± 10.
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
