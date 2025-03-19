@@ -37,19 +37,19 @@ class SUITMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-        filtername = header.get("FTR_NAME").strip()
+        filtername = header.get("FTR_NAME", "").strip()
         filternorms = {
                 "NB01": 0.1,
                 "NB02": 9.0,
-                "NB03":0.25,
-                "NB04":0.2,
-                "NB05":2.0,
-                "NB06":0.25,
-                "NB07":0.25,
-                "NB08":0.1,
-                "BB01":0.8,
-                "BB02":0.4,
-                "BB03":0.8,
+                "NB03": 0.25,
+                "NB04": 0.2,
+                "NB05": 2.0,
+                "NB06": 0.25,
+                "NB07": 0.25,
+                "NB08": 0.1,
+                "BB01": 0.8,
+                "BB02": 0.4,
+                "BB03": 0.8,
                 }
         self.plot_settings["cmap"] = f"suit_{filtername.lower()}"
         self.plot_settings["title"] = f"SUIT {filtername}:{self.wavelength} - {self.reference_date}"
