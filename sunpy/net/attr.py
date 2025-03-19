@@ -181,7 +181,7 @@ class AttrMeta(type):
         except ImportError:
             raise ImportError(
                 "`itables` is required to display tables. "
-                "Install itables using `pip install itables` or `conda install conda-forge::itables`."
+                "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
             )
         table = _create_table(self)
         show(table.to_pandas(), **kwargs)

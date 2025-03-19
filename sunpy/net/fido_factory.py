@@ -236,7 +236,7 @@ class UnifiedResponse(Sequence):
         except ImportError:
             raise ImportError(
                 "`itables` is required to display tables. "
-                "Install itables using `pip install itables` or `conda install conda-forge::itables`."
+                "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
             )
         for table in self._list:
             # Identify and exclude multidimensional columns
