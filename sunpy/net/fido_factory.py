@@ -191,10 +191,10 @@ class UnifiedResponse(Sequence):
             size = block.total_size()
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
-                ret += '\n'
-                lines = repr(block).split('\n')
-                ret += '\n'.join(lines[1:])
-                ret += '\n\n'
+            ret += '\n'
+            lines = repr(block).split('\n')
+            ret += '\n'.join(lines[1:])
+            ret += '\n\n'
 
         return ret
 
