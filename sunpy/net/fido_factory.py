@@ -238,7 +238,9 @@ class UnifiedResponse(Sequence):
                 "`itables` is required to display tables. "
                 "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
             )
-
+        style = "caption-side: top;"
+        style += kwargs.pop("style", '')
+        
         nprov = len(self)
         if nprov == 1:
             print(f'Results from {len(self)} Provider:')
@@ -265,9 +267,6 @@ class UnifiedResponse(Sequence):
                 selected_columns = valid_columns
             filtered_table = table[selected_columns]
             df = filtered_table.to_pandas()
-            style = "caption-side: top;"
-            style += kwargs.pop("style", '')
-            print(style)
             show(df, caption, style=style, **kwargs)
 
 
