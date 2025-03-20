@@ -3,6 +3,7 @@
 import astropy.units as u
 
 from sunpy.map.mapbase import GenericMap
+from matplotlib.colors import LogNorm
 
 __all__ = ['PUNCHMap']
 
@@ -27,6 +28,10 @@ class PUNCHMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
+        self._nickname = self.observatory + ' - ' + self.instrument
+        self.plot_settings["cmap"] = "punch"
+        self.plot_settings["title"] = f"{self._nickname}"
+        self.plot_settings["norm"] = LogNorm(vmin=1.77e-15, vmax=3.7e-11)
 
 
     @property
@@ -34,18 +39,23 @@ class PUNCHMap(GenericMap):
         """
         The reference date for the coordinate system.
         """
-        return self._get_date('T_OBS') or super().reference_date # TODO - standardize reference date FITS header keyword usage
+        return self._get_date('DATE-OBS') or super().reference_date
 
     @property
     def unit(self):
         unit_str = self.meta.get('bunit', self.meta.get("BUNIT"))
         if unit_str is None:
             return
-        return u.Unit(unit_str)
+        return u.def_unit(unit_str)
 
     @property
     def observatory(self):
-        return self.meta.get("INSTRUME") # TODO - individual spacecraft or PUNCH here?
+        return self.meta.get("OBSRVTRY")
+
+    @property
+    def instrument(self):
+        return self.meta.get("INSTRUME")
+
 
     # Used by the Map factory to determine if this subclass should be used
     @classmethod
