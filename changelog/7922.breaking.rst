@@ -1,1 +1,1 @@
-`sunpy.timeseries.GenericTimeSeries.truncate` now truncates the timerange to the nearest time if it's out of range.
+`sunpy.timeseries.GenericTimeSeries.truncate` now truncates the timerange to the nearest time if the input is out of range.

@@ -220,35 +220,35 @@ def test_truncated_both_ts(concatenate_multi_files_ts):
 
 
 @pytest.fixture
-def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
+def tr_all_before_ts(concatenate_multi_files_ts):
     # Time range begins and ends before the data
     a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(2*u.day)
     b = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     tr = TimeRange(a, b)
-    truncated = copy.deepcopy(concatenate_multi_files_ts)
-    return truncated, tr
+    ts = copy.deepcopy(concatenate_multi_files_ts)
+    return ts, tr
 
 
 @pytest.fixture
-def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
+def tr_all_after_ts(concatenate_multi_files_ts):
     # Time range begins and ends after the data
     a = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(2*u.day)
     tr = TimeRange(a, b)
-    truncated = copy.deepcopy(concatenate_multi_files_ts)
-    return truncated, tr
+    ts = copy.deepcopy(concatenate_multi_files_ts)
+    return ts, tr
 
 
-def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts, truncated_new_tr_all_after_ts):
-    truncated_before, time_range_before = truncated_new_tr_all_before_ts
-    truncated_after, time_range_after = truncated_new_tr_all_after_ts
+def test_truncated_outside_tr_ts(tr_all_before_ts, tr_all_after_ts):
+    ts_before, time_range_before = tr_all_before_ts
+    ts_after, time_range_after = tr_all_after_ts
 
-    truncated_before.truncate(time_range_before).to_dataframe().index = truncated_before.to_dataframe().index[0:1]
-    truncated_after.truncate(time_range_after).to_dataframe().index = truncated_after.to_dataframe().index[-1:-2:-1]
+    ts_before.truncate(time_range_before).to_dataframe().index = ts_before.to_dataframe().index[0:1]
+    ts_after.truncate(time_range_after).to_dataframe().index = ts_after.to_dataframe().index[-1:-2:-1]
 
 
 @pytest.fixture
-def truncated_new_tr_partially_ts(esp_test_ts):
+def tr_partially_ts(esp_test_ts):
     start_time_outside = esp_test_ts.time_range.start - TimeDelta(1*u.min)
     center_time = esp_test_ts.time_range.center
     end_time_outside = esp_test_ts.time_range.end + TimeDelta(1*u.min)
@@ -258,14 +258,23 @@ def truncated_new_tr_partially_ts(esp_test_ts):
     return tr_1, tr_2
 
 
-def test_truncated_new_tr_partially_ts(esp_test_ts, truncated_new_tr_partially_ts):
-    tr_1, tr_2 = truncated_new_tr_partially_ts
-    truncated = copy.deepcopy(esp_test_ts)
-    truncated_1 = truncated.truncate(tr_1)
-    truncated_2 = truncated.truncate(tr_2)
+def test_truncated_tr_partially_ts(esp_test_ts, tr_partially_ts):
+    tr_1, tr_2 = tr_partially_ts
+    ts = copy.deepcopy(esp_test_ts)
+    truncated_1 = ts.truncate(tr_1)
+    truncated_2 = ts.truncate(tr_2)
     # Check when TimeRange lie partially inside Timeseries
-    assert truncated_1.time_range == truncated_1.meta.time_range ==  truncated.time_range.split()[0]
-    assert truncated_2.time_range == truncated_2.meta.time_range ==  truncated.time_range.split()[1]
+    assert truncated_1.time_range == truncated_1.meta.time_range ==  ts.time_range.split()[0]
+    assert truncated_2.time_range == truncated_2.meta.time_range ==  ts.time_range.split()[1]
+
+
+def test_truncated_tr_int_None(esp_test_ts):
+    ts = copy.deepcopy(esp_test_ts)
+    ts_size = len(ts.to_dataframe())
+    truncated_ts = ts.truncate(0, None, None)
+    truncated_ts_2 = ts.truncate(int(ts_size / 2), None, None)
+    assert truncated_ts.time_range == truncated_ts.meta.time_range == ts.time_range
+    assert truncated_ts_2.time_range == truncated_ts_2.meta.time_range == ts.time_range.split()[1]
 
 
 def test_extraction(eve_test_ts):

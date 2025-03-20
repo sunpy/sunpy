@@ -547,8 +547,10 @@ class GenericTimeSeries:
             start = a
             end = b
 
-        start, end = (end, start) if start > end else (start, end)
+        if isinstance(start, numbers.Integral) and end is None:
+            end = len(self._data)
 
+        start, end = (end, start) if start > end else (start, end)
         min_time, max_time = self._data.index.min(), self._data.index.max()
         if not (isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral)):
             # Check if the timerange overlaps with the data timerange
