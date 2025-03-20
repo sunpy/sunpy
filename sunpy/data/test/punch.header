@@ -1,0 +1,124 @@
+COMMENT ----- FITS Required ----------------------------------------------------
+SIMPLE  = 'T       '           / Conforms to FITS Standard                      
+BITPIX  =                  -32 / Number of bits per pixel                       
+NAXIS   =                    2 / Number of axes                                 
+NAXIS1  =                 4096 / Length of the first axis                       
+NAXIS2  =                 4096 / Length of the second axis                      
+EXTNAME = 'PRIMARY DATA ARRAY' / Name of this binary table extension            
+LONGSTRN= 'OGIP 1.0'           / The OGIP long string convention may be used    
+COMMENT ----- Documentation, Contact, and Collection Metadata ------------------
+DOI     = 'https://doi.org/TBD' / Data reference DOI                            
+PROJECT = 'PUNCH   '                                                            
+TITLE   = 'PUNCH Level-3 Unpolarized Low Noise Mosaic'                          
+KEYVOCAB= 'Unified Astronomy Thesaurus Keywords'                                
+KEYWORDS= 'Solar Corona (1483), Solar K Corona (2042), Solar F Corona (1991), &'
+CONTINUE  'Solar Coronal Streamers (1486), Solar Coronal Plumes (2039), Solar &'
+CONTINUE  'Wind (1534), Fast Solar Wind (1872), Slow Solar Wind (1873), Solar &'
+CONTINUE  'Coronal Mass Ejection (310), Heliosphere (711), Polarimetry (1278)'  
+LICENSE = 'Creative Commons Attribution 4.0 International | CC BY 4.0'          
+DESCRPTN= 'PUNCH Level-3 data, Composite mosaic in output coordinates'          
+DOC_URL = 'https://punch.spaceops.swri.org'                                     
+COMMENT ----- File Type and Provenance -----------------------------------------
+FILENAME= '' / Name of file                                                     
+LEVEL   = '3       '           / Product Level                                  
+OBSTYPE = 'Unpolarized low noise mosaic' / Plain text observation               
+TYPECODE= 'CA      '           / Observation product type code                  
+OBSCODE = 'M       '           / Observatory spacecraft code                    
+PIPEVRSN= '' / punchbowl software version number                                
+FILEVRSN= '1       '           / File version number                            
+ORIGIN  = 'SwRI    '           / Institution responsible for creating the file  
+COMMENT ----- Temporal Information ---------------------------------------------
+TIMESYS = 'UTC     '           / Principal time system                          
+DATE-BEG= '2024-01-01 00:00:00' / UTC time observation                          
+DATE-OBS= '2024-01-01 00:00:00' / UTC reference time                            
+DATE-AVG= '2024-01-01 00:00:00' / UTC reference time                            
+DATE-END= '2024-01-01 00:00:00' / UTC time of observation end                   
+DATE    = '' / UTC file generation date and time                                
+COMMENT ----- Instrument and Spacecraft State ----------------------------------
+WAVELNTH=                  530 / [nm] average peak response                     
+WAVEUNIT= 'nanometer'          / Unit of observation measurement                
+OBS-MODE= 'Unpolarized'        / Image Mode (Unpolarized, Polar_MZP, Polar_BpB) 
+POLAR   =                 -999 / [deg] Polarizer angle or fill value for clear  
+POLAROFF=                  0.0 / [deg] Offset in degrees of polarizer from POLAR
+POLARREF= 'Instrument'         / Polarizer reference frame (instrument or solar)
+INSTRUME= 'WFI+NFI Mosaic'     / Instrument name                                
+TELESCOP= 'PUNCH 1-2-3-4'      / Satellite name                                 
+OBSRVTRY= 'PUNCH   '           / Observatory name                               
+OBJECT  = 'Heliosphere white light' / Object observed                           
+COMMENT ----- World Coordinate System ------------------------------------------
+WCSAXES =                    2 / Number of coordinate axes                      
+CRPIX1  =                  0.0 / Pixel coordinate of reference point            
+CRPIX2  =                  0.0 / Pixel coordinate of reference point            
+CDELT1  =                  0.1 / [deg] Coordinate increment at reference point  
+CDELT2  =                  0.1 / [deg] Coordinate increment at reference point  
+CUNIT1  = 'deg     '           / Units of coordinate increment and value        
+CUNIT2  = 'deg     '           / Units of coordinate increment and value        
+CTYPE1  = 'HPLN-ARC'           / Coordinate type codezenithal/azimuthal equidist
+CTYPE2  = 'HPLT-ARC'           / Coordinate type codezenithal/azimuthal equidist
+CRVAL1  =                  1.0 / [deg] Coordinate value at reference point      
+CRVAL2  =                  1.0 / [deg] Coordinate value at reference point      
+LONPOLE =                180.0 / [deg] Native longitude of celestial pole       
+LATPOLE =                  1.0 / [deg] Native latitude of celestial pole        
+MJDREF  =                  0.0 / [d] MJD of fiducial time                       
+CRPIX1A =                  0.0 / Pixel coordinate of reference point            
+CRPIX2A =                  0.0 / Pixel coordinate of reference point            
+PC1_1A  =     0.99908342908762 / Coordinate transformation matrix element       
+PC1_2A  =    0.042805393614936 / Coordinate transformation matrix element       
+PC2_1A  =   -0.042805393614936 / Coordinate transformation matrix element       
+PC2_2A  =     0.99908342908762 / Coordinate transformation matrix element       
+CDELT1A =                 -0.1 / [deg] Coordinate increment at reference point  
+CDELT2A =                  0.1 / [deg] Coordinate increment at reference point  
+CUNIT1A = 'deg     '           / Units of coordinate increment and value        
+CUNIT2A = 'deg     '           / Units of coordinate increment and value        
+CTYPE1A = 'RA---ARC'           / Right ascension, zenithal/azimuthal equidistant
+CTYPE2A = 'DEC--ARC'           / Declination, zenithal/azimuthal equidistant pro
+CRVAL1A =      279.43448927389 / [deg] Coordinate value at reference point      
+CRVAL2A =     -22.120766600868 / [deg] Coordinate value at reference point      
+COMMENT ----- Image Statistics and Properties ----------------------------------
+BUNIT   = 'Mean Solar Brightness' / Units of observation                        
+BSUN_DEF=           20090000.0 / [W/m2/sr] Mean Solar Brightness                
+DATAZER =  / number of pixels=0                                                 
+DATASAT =  / number of saturated pixels                                         
+DSATVAL =              65535.0 / saturation value in calibrated units           
+DATAAVG =  / average non-zero pixel value                                       
+DATAMDN =  / median non-zero pixel value                                        
+DATASIG =  / standard deviation of non-zero pixels                              
+DATAP01 =  / 1% of non-zero pixels are LE this value                            
+DATAP10 =  / 10% of non-zero pixels are LE this value                           
+DATAP25 =  / 25% of non-zero pixels are LE this value                           
+DATAP50 =  / 50% of non-zero pixels are LE this value                           
+DATAP75 =  / 75% of non-zero pixels are LE this value                           
+DATAP90 =  / 90% of non-zero pixels are LE this value                           
+DATAP95 =  / 95% of non-zero pixels are LE this value                           
+DATAP98 =  / 98% of non-zero pixels are LE this value                           
+DATAP99 =  / 99% of non-zero pixels are LE this value                           
+DATAMIN =  / minimum valid physical value                                       
+DATAMAX =  / maximum valid physical value                                       
+COMMENT ----- Solar Reference Data ---------------------------------------------
+RSUN_ARC=    975.5043570780699 / [arcsec] photospheric solar radius             
+RSUN_REF=          695700000.0 / [m] assumed physical solar radius              
+SOLAR_EP=   2.4533179869781483 / [deg] S/C ecliptic North to solar North angle  
+CAR_ROT =   2279.3683060731114 / Carrington Rotation number                     
+COMMENT ----- Spacecraft Location & Environment --------------------------------
+GEOD_LAT=  0.0 / [deg] S/C sub-point geodetic latitude                          
+GEOD_LON=  0.0 / [deg] S/C sub-point longitude                                  
+GEOD_ALT=  0.0 / [m] S/C WGS84 altitude                                         
+HGLT_OBS=  0.0 / [deg] S/C heliographic latitude                                
+HGLN_OBS=  0.0 / [deg] S/C heliographic longitude (B0)                          
+CRLT_OBS=  0.0 / [deg] S/C Carrington latitude (B0)                             
+CRLN_OBS=  0.0 / [deg] S/C Carrington longitude                                 
+DSUN_OBS=  0.0 / [m] S/C distance from Sun                                      
+HEEX_OBS=  0.0 / [m] S/C Heliocentric Earth Ecliptic X                          
+HEEY_OBS=  0.0 / [m] S/C Heliocentric Earth Ecliptic Y                          
+HEEZ_OBS=  0.0 / [m] S/C Heliocentric Earth Ecliptic Z                          
+HCIX_OBS=  0.0 / [m] S/C Heliocentric Inertial X                                
+HCIY_OBS=  0.0 / [m] S/C Heliocentric Inertial Y                                
+HCIZ_OBS=  0.0 / [m] S/C Heliocentric Inertial Z                                
+HEQX_OBS=  0.0 / [m] S/C Heliocentric Earth Equatorial X                        
+HEQY_OBS=  0.0 / [m] S/C Heliocentric Earth Equatorial Y                        
+HEQZ_OBS=  0.0 / [m] S/C Heliocentric Earth Equatorial Z                        
+COMMENT ----- Fixity -----------------------------------------------------------
+CHECKSUM= ''                                                                    
+DATASUM = ''                                                                    
+COMMENT ----- History ----------------------------------------------------------
+HISTORY Records of processing from pipeline                                     
