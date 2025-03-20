@@ -27,6 +27,7 @@ def test_reference_date(punch_map):
 def test_date(punch_map):
     assert punch_map.date.isot == "2024-01-01T00:00:00.000"
 
+
 def test_unit(punch_map):
     assert punch_map.unit.name == "Mean Solar Brightness"
 
