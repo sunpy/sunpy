@@ -1,0 +1,97 @@
+name: Cron
+
+on:
+  # Trigger on completion of the scheduled_builds.yml file (only on main)
+  workflow_run:
+    workflows: [Scheduled build triggerer]
+  # Manual runs through the web UI and also non-main cron job triggering
+  workflow_dispatch:
+  # We also want this workflow triggered if the 'Run cron CI' label is added
+  # or present when PR is updated
+  pull_request:
+    types:
+      - synchronize
+      - labeled
+  # We want this workflow to always run on release branches as well as
+  # all tags since we want to be really sure we don't introduce
+  # regressions on the release branches, and it's also important to run
+  # this on pre-release and release tags.
+  push:
+    branches:
+      - 'main'
+      - '*.*'
+      - '!*backport*'
+    tags:
+      - 'v*'
+      - '!*dev*'
+      - '!*pre*'
+      - '!*post*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cron:
+    # Run on all triggers other than pull_request unless there's a label
+    if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.12'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      envs: |
+        - linux: py313-devdeps-online
+          libraries:
+            apt:
+              - libopenjp2-7
+        - linux: core_deps
+        - linux: linkcheck
+          pytest: false
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  sdist_verify:
+    if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -U --user build
+      - run: python -m build . --sdist
+      - run: python -m pip install -U --user twine
+      - run: python -m twine check dist/*
+
+  conda:
+    if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: sunpy-test
+          environment-file: sunpy-dev-env.yml
+          python-version: "3.12"
+      - name: Install sunpy
+        shell: bash -el {0}
+        run: |
+          pip install --no-deps --no-build-isolation .
+      - name: Run test
+        shell: bash -el {0}
+        run: |
+          conda list
+          cd /tmp
+          pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml

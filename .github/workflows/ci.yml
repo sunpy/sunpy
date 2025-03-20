@@ -15,6 +15,9 @@ on:
   pull_request:
   # Allow manual runs through the web UI
   workflow_dispatch:
+  # Trigger on completion of the scheduled_builds.yml file (only on main)
+  workflow_run:
+    workflows: [Scheduled build triggerer]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -106,75 +109,6 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  cron:
-    if: |
-      github.event_name == 'workflow_dispatch' || (
-        github.event_name == 'pull_request' &&
-        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
-      )
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
-    with:
-      default_python: '3.12'
-      submodules: false
-      toxdeps: tox-pypi-filter
-      envs: |
-        - linux: py313-devdeps-online
-          libraries:
-            apt:
-              - libopenjp2-7
-        - linux: core_deps
-        - linux: linkcheck
-          pytest: false
-
-  sdist_verify:
-    if: |
-      github.event_name == 'workflow_dispatch' || (
-        github.event_name == 'pull_request' &&
-        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
-      )
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -U --user build
-      - run: python -m build . --sdist
-      - run: python -m pip install -U --user twine
-      - run: python -m twine check dist/*
-
-  conda:
-    if: |
-      github.event_name == 'workflow_dispatch' || (
-        github.event_name == 'pull_request' &&
-        contains(github.event.pull_request.labels.*.name, 'Run cron CI')
-      )
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          lfs: true
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: sunpy-test
-          environment-file: sunpy-dev-env.yml
-          python-version: "3.12"
-      - name: Install sunpy
-        shell: bash -el {0}
-        run: |
-          pip install --no-deps --no-build-isolation .
-      - name: Run test
-        shell: bash -el {0}
-        run: |
-          conda list
-          cd /tmp
-          pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
-      - uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-
   publish:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
     # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
@@ -217,17 +151,3 @@ jobs:
         SUNPY_NO_BUILD_ANA_EXTENSION: 1
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
-
-  notify:
-    if: always() && github.event_name == 'workflow_dispatch'
-    needs: [publish_pure, online, cron, conda]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: Cadair/matrix-notify-action@main
-        with:
-          matrix_token: ${{ secrets.matrix_access_token }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          homeserver: ${{ secrets.matrix_homeserver }}
-          roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
-          ignore_pattern: '.*Load.*'
-          summarise_success: true
