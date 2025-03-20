@@ -20,6 +20,7 @@ from .soho import *
 from .solo import *
 from .source_type import *
 from .stereo import *
+from .suit import *
 from .suvi import *
 from .trace import *
 from .yohkoh import *
