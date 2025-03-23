@@ -17,32 +17,19 @@ import sunpy
 import sunpy.coordinates
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
-from sunpy.data.test import get_test_filepath
-from sunpy.tests.helpers import figure_test, fix_map_wcs
+from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
-
-pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
-
-
-@pytest.fixture
-def heliographic_test_map():
-    m = sunpy.map.Map(get_test_filepath('heliographic_phase_map.fits.gz'))
-    return fix_map_wcs(m)
-
-
-@pytest.fixture
-def aia171_test_map_with_mask(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0] // 2, 0:shape[1] // 2] = True
-    return sunpy.map.Map(np.ma.array(
-        aia171_test_map.data, mask=mask),
-        aia171_test_map.meta)
 
 
 @figure_test
 def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
+
+
+@pytest.fixture
+def aia171_test_submap(aia171_test_map):
+    # Used for autoalign=reproject figure tests
+    return aia171_test_map.submap((20, 20)*u.pix, width=90*u.pix, height=80*u.pix)
 
 
 @figure_test
@@ -362,8 +349,82 @@ def test_plot_autoalign(aia171_test_map):
 
 
 def test_plot_autoalign_bad_inputs(aia171_test_map):
-    with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, or 'pcolormesh'."):
+    with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, 'pcolormesh' or 'reproject'."):
         aia171_test_map.plot(autoalign='bad')
+
+
+@figure_test
+def test_plot_autoalign_reproject(aia171_test_map):
+    aia171_test_map._data = aia171_test_map.data.astype('float32')
+    rotated_map = aia171_test_map.rotate(30 * u.deg, order=3)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    rotated_map.plot(axes=ax, autoalign='reproject')
+
+    target_wcs = ax.wcs
+    reprojected_map = rotated_map.reproject_to(target_wcs)
+    assert ax.wcs == aia171_test_map.wcs
+    assert reprojected_map.data.shape == (128, 128)
+    return fig
+
+
+@figure_test
+def test_plot_autoalign_reproject_limit_larger_in_negative_direction(aia171_test_submap, hmi_test_map_modified):
+    # Plot limits are larger than the inherent size of the axes WCS in the negative direction
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=aia171_test_submap)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    ax.set_xlim(-40, 60)
+    ax.set_ylim(-30, 40)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
+    return fig
+
+
+@figure_test
+def test_plot_autoalign_reproject_limit_larger_in_positive_direction(aia171_test_submap, hmi_test_map_modified):
+    # Plot limits are larger than the inherent size of the axes WCS in the positive direction
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=aia171_test_submap)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    ax.set_xlim(30, 110)
+    ax.set_ylim(40, 90)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
+    return fig
+
+
+@figure_test
+def test_plot_autoalign_reproject_limits_not_set(aia171_test_submap, hmi_test_map_modified):
+    # Plot limits are not already set
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=aia171_test_submap.wcs)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
+    return fig
+
+
+@figure_test
+def test_plot_autoalign_reproject_no_inherent_size(aia171_test_submap, hmi_test_map_modified):
+    # Axes WCS has no inherent size
+    wcs = copy.deepcopy(aia171_test_submap.wcs)
+    wcs.pixel_shape = (0, 0)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=wcs)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject')
+    return fig
+
+
+@figure_test
+def test_plot_autoalign_reproject_with_extent(aia171_test_submap, hmi_test_map_modified):
+    # Use extent to set the plot limits
+    wcs = copy.deepcopy(aia171_test_submap.wcs)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=wcs)
+    aia171_test_submap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
+    hmi_test_map_modified.plot(axes=ax, autoalign='reproject', extent=[30, 110, 40, 90])
+    return fig
 
 
 @figure_test
