@@ -1,0 +1,9 @@
+Added :class:`~sunpy.coordinates.Rectangle` for defining rectangular regions using  `~astropy.coordinates.SkyCoord` and `~astropy.coordinates.BaseCoordinateFrame` objects.
+This class provides multiple methods for creating rectangles based on different input parameters, including bottom-left and top-right corners, or using a bottom-left or center point with specified width and height.
+By default, the methods returns a Rectangle object, but one can alternatively specify ``as_tuple=True`` to return the corners as a tuple.
+
+Added :meth:`~sunpy.coordinates.Rectangle.from_corners` for creating a rectangle using the bottom-left and top-right coordinates from `~astropy.coordinates.SkyCoord`.
+
+Added :meth:`~sunpy.coordinates.Rectangle.from_bottom_left` for creating a rectangle using the bottom-left corner, width, and height.
+
+Added :meth:`~sunpy.coordinates.Rectangle.from_center` for creating a rectangle using the center coordinate, width, and height.
