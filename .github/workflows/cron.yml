@@ -18,7 +18,6 @@ on:
   # this on pre-release and release tags.
   push:
     branches:
-      - 'main'
       - '*.*'
       - '!*backport*'
     tags:
