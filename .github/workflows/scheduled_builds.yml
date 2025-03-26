@@ -18,9 +18,11 @@ on:
     - cron: '0 7 * * 1,3,5'  # Every Mon,Wed,Fri at 07:00 UTC
 
 jobs:
-  if: github.repository == 'sunpy/sunpy'
   dispatch_release_branches:
+    if: github.repository == 'sunpy/sunpy'
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           # We do not include main here as the workflows on main are
@@ -28,10 +30,8 @@ jobs:
           # need to list any non-main branches here.
           - branch: 6.0
           - branch: 6.1
-      runs-on: ubuntu-latest
-      fail-fast: false
-      steps:
-        - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
-        - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+    steps:
+      - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
+      - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
