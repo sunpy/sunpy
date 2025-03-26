@@ -23,7 +23,6 @@ from sunpy.net.vso.vso import (
     check_connection,
     get_online_vso_url,
 )
-from sunpy.tests.helpers import skip_jsoc
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyConnectionWarning, SunpyDeprecationWarning, SunpyUserWarning
@@ -124,7 +123,7 @@ def test_show(mock_build_client):
     qrshow = qr.show('Start Time', 'Source', 'Type')
     assert str(qrshow) == '<No columns>'
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_path(client, tmpdir):
     """
@@ -254,7 +253,7 @@ def test_QueryResponse_build_table_with_no_end_time(mocker):
     assert start_time_[0].value == '2016-02-14 08:08:12.000'
 
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_vso_hmi(client, tmpdir):
     """
@@ -363,10 +362,10 @@ def test_build_client_params():
         build_client(url="http://notathing.com/")
 
 
-@skip_jsoc
-@pytest.mark.remote_data
-def test_incorrect_content_disposition(client):
 
+@pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore:Can't connect to vso")
+def test_incorrect_content_disposition(client):
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
         results = client.search(
             core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
@@ -414,7 +413,7 @@ def test_vso_repr(client):
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
 
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_response_block_properties(client):
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
@@ -454,7 +453,7 @@ def test_iris_filename(client):
     assert filename.endswith("iris_l2_20180102_153155_3610108077_SJI_1330_t000.fits.gz")
 
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_table_noinfo_required(client):
     res = client.search(a.Time('2017/12/17 00:00:00', '2017/12/17 06:00:00'), a.Instrument('aia'), a.Wavelength(171 * u.angstrom))

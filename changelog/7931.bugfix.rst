@@ -1,1 +1,0 @@
-Fixed a time-ordering bug in :meth:`sunpy.time.TimeRange.shift` when the shifted start time is later than than the shifted end time.
