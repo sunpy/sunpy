@@ -151,3 +151,17 @@ jobs:
         SUNPY_NO_BUILD_ANA_EXTENSION: 1
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
+
+  notify:
+    if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run')
+    needs: [publish_pure, online]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Cadair/matrix-notify-action@main
+        with:
+          matrix_token: ${{ secrets.matrix_access_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          homeserver: ${{ secrets.matrix_homeserver }}
+          roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
+          ignore_pattern: '.*Load.*'
+          summarise_success: true
