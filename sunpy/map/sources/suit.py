@@ -1,8 +1,6 @@
 """
 SUIT Map sub class definitions
 """
-import astropy.units as u
-from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
 from astropy.visualization import AsinhStretch, ImageNormalize
 
 from sunpy.map.mapbase import GenericMap
