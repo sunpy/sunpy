@@ -1,1 +1,0 @@
-Added testing and explicit support for Python 3.12.

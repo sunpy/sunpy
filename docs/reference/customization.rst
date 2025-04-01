@@ -76,7 +76,7 @@ See below for the example config file.
 .. _customizing-with-dynamic-settings:
 
 Dynamic settings
-===================
+================
 
 You can also dynamically change the default settings in a python script or
 interactively from the python shell. All of the settings are stored in a
@@ -90,7 +90,7 @@ the sunpy package. Settings can be modified directly, for example::
 .. sunpyrc-sample:
 
 A sample sunpyrc file
---------------------------------------------------------------------
+---------------------
 
 .. only:: html
 

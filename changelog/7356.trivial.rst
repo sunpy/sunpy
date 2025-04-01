@@ -1,1 +1,0 @@
-Fixed an environment-specific failure of a unit test for :meth:`sunpy.coordinates.Helioprojective.is_visible`.

@@ -16,7 +16,7 @@ import sunpy.map
 # Rotating a map in sunpy has a choice between three libraries: ``scipy`` (the default),
 # ``scikit-image`` and ``opencv``. Furthermore, one can also create a custom rotation
 # function and register it for use with :meth:`~sunpy.map.GenericMap.rotate`,
-# see `Adding a new rotation method <https://docs.sunpy.org/en/latest/dev_guide/contents/map_rotate_custom.html>`__.
+# see :ref:`Adding a new rotation method <sunpy-topic-guide-add-a-new-rotation-method-to-map>`.
 #
 # Defining an appropriate metric to compare different algorithms is
 # challenging. This example will just compare the raw value differences.
@@ -33,7 +33,7 @@ cv2_map = hmi_map.rotate(method='opencv')
 
 ###############################################################################
 # Now for a visual comparison, the raw differences, that should highlight the differences.
-# Note that only two comparisons are shown.  Note the scale here is ± 10.
+# Note that only two comparisons are shown. Note the scale here is ± 10.
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 

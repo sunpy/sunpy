@@ -18,12 +18,10 @@ from sunpy.net import attrs as a
 from sunpy.net import jsoc
 from sunpy.net.base_client import QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
 from sunpy.net.vso import VSOQueryResponseTable
-from sunpy.net.vso.vso import DownloadFailed
-from sunpy.tests.helpers import no_vso, skip_windows
+from sunpy.tests.helpers import no_vso, skip_jsoc, skip_windows
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -133,11 +131,6 @@ def test_save_path_cwd(tmpdir):
         assert pathlib.Path.cwd().joinpath(f).exists()
 
 
-"""
-Factory Tests
-"""
-
-
 @pytest.mark.remote_data
 def test_unified_response():
     start = parse_time("2012/1/1")
@@ -147,7 +140,7 @@ def test_unified_response():
     strings = ['eve', 'SDO', start.strftime(TIMEFORMAT), end.strftime(TIMEFORMAT)]
     assert all(s in qr._repr_html_() for s in strings)
 
-
+@skip_jsoc
 @pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
@@ -170,11 +163,6 @@ def test_fetch():
                      a.Level.zero)
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
-
-
-"""
-UnifiedResponse Tests
-"""
 
 
 @pytest.mark.remote_data
@@ -218,8 +206,8 @@ def test_repr():
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     rep = repr(results)
     rep = rep.split('\n')
-    # 8 header lines, the results table and two blank lines at the end
-    assert len(rep) == 8 + len(list(results)[0]) + 2
+    # 6 preamble lines, 2 table header rule, the results table data and two blank lines at the end
+    assert len(rep) == 6 + 2 + len(results[0]) + 2
 
 
 def filter_queries(queries):
@@ -392,22 +380,6 @@ def results_generator(dl):
     return Results(outputs)
 
 
-@pytest.mark.remote_data
-@mock.patch("sunpy.net.vso.VSOClient.download_all",
-            return_value=Results([], errors=[DownloadFailed(None)]))
-@mock.patch("parfive.Downloader.download", new=results_generator)
-def test_vso_errors_with_second_client(mock_download_all):
-    query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument.goes | a.Instrument.eit)
-    qr = Fido.search(query)
-    res = Fido.fetch(qr)
-    assert len(res.errors) == 1
-    assert len(res) != qr.file_num
-    # Assert that all the XRSClient records are in the output.
-    for resp in qr:
-        if isinstance(resp, XRSClient):
-            assert len(resp) == len(res)
-
-
 def test_downloader_type_error():
     with pytest.raises(TypeError):
         Fido.fetch([], downloader=Results())
@@ -428,6 +400,7 @@ def test_client_fetch_wrong_type(mock_fetch):
         Fido.fetch(qr)
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_vso_fetch_hmi(tmpdir):
     start_time = "2017-01-25"
@@ -446,6 +419,7 @@ def test_fido_no_time(mocker):
     jsoc_mock.assert_called_once()
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 def test_jsoc_missing_email():
     res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
@@ -453,6 +427,7 @@ def test_jsoc_missing_email():
         Fido.fetch(res)
 
 
+@skip_jsoc
 @pytest.mark.remote_data
 @pytest.mark.xdist_group(name="jsoc")
 def test_slice_jsoc(jsoc_test_email):
@@ -469,6 +444,7 @@ def test_fido_repr():
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
 
 
+@skip_jsoc
 @pytest.mark.xdist_group(name="jsoc")
 @pytest.mark.remote_data
 def test_fido_metadata_queries(jsoc_test_email):
@@ -495,3 +471,10 @@ def test_path_format_keys():
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
     unif = UnifiedResponse(t1, t2)
     assert unif.path_format_keys() == {'_excite_'}
+
+
+@pytest.mark.remote_data
+def test_fido_stereo_extent_type():
+    res = Fido.search(a.Time('2008/01/14', '2008/01/14 01:00:00'), a.Instrument.secchi, a.Source('STEREO_A'), a.ExtentType('CORONA'))
+    assert len(res[0]) == 123
+    assert not all(res[0].columns["Extent Type"] == "CORONA")

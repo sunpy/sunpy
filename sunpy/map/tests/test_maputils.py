@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 import pytest
 
@@ -96,12 +98,12 @@ def test_all_coordinates_from_map(sub_smap):
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
     xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[0, 0])
-    assert_quantity_allclose(xpix*u.pix, 0*u.pix, atol=1e-7*u.pix)
-    assert_quantity_allclose(ypix*u.pix, 0*u.pix, atol=1e-7*u.pix)
+    assert_quantity_allclose(xpix, 0, atol=1e-7)
+    assert_quantity_allclose(ypix, 0, atol=1e-7)
 
     xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[-1, -1])
-    assert_quantity_allclose(xpix*u.pix, sub_smap.dimensions[0] - 1*u.pix)
-    assert_quantity_allclose(ypix*u.pix, sub_smap.dimensions[1] - 1*u.pix)
+    assert_quantity_allclose(xpix, sub_smap.shape[1] - 1)
+    assert_quantity_allclose(ypix, sub_smap.shape[0] - 1)
 
 
 def test_all_corner_coordinates_from_map(sub_smap):
@@ -113,12 +115,12 @@ def test_all_corner_coordinates_from_map(sub_smap):
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
     xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[0, 0])
-    assert_quantity_allclose(xpix*u.pix, -0.5*u.pix)
-    assert_quantity_allclose(ypix*u.pix, -0.5*u.pix)
+    assert_quantity_allclose(xpix, -0.5)
+    assert_quantity_allclose(ypix, -0.5)
 
     xpix, ypix = sub_smap.wcs.world_to_pixel(coordinates[-1, -1])
-    assert_quantity_allclose(xpix*u.pix, sub_smap.dimensions[0] - 0.5*u.pix)
-    assert_quantity_allclose(ypix*u.pix, sub_smap.dimensions[1] - 0.5*u.pix)
+    assert_quantity_allclose(xpix, sub_smap.shape[1] - 0.5)
+    assert_quantity_allclose(ypix, sub_smap.shape[0] - 0.5)
 
 
 def test_map_edges(all_off_disk_map):
@@ -185,7 +187,7 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     assert ~coordinate_is_on_solar_disk(off_disk)
 
     # Raise the error
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=re.escape("The input coordinate(s) is of type HeliographicStonyhurst, but must be in the Helioprojective frame.")):
         coordinate_is_on_solar_disk(on_disk.transform_to(HeliographicStonyhurst))
 
     # Check for sets of coordinates

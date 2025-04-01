@@ -50,7 +50,7 @@ class SUVIMap(GenericMap):
 
     Observer location: We use the ECEF coordinates provided in the FITS header for the spacecraft
     location even when coordinates in other frames are provided due to accuracy concerns over the
-    coordinate transformations used in the SUVI data pipeline.  There could still be a small
+    coordinate transformations used in the SUVI data pipeline. There could still be a small
     discrepancy because the definition of the ECEF frame used by SUVI may not exactly match the
     definition of the ITRS frame used by SunPy to interpret the header values.
 
@@ -58,23 +58,23 @@ class SUVIMap(GenericMap):
 
     References
     ----------
-    * `GOES-R Mission <https://www.goes-r.gov>`_
-    * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
-    * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
-    * `Recommended instrument description article <https://doi.org/10.3847/2041-8213/aaa28e>`_
-    * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`_
-    * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`_
-    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`_
-    * `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`_
-    * `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`_
+    * `GOES-R Mission <https://www.goes-r.gov>`__
+    * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`__
+    * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`__
+    * Recommended instrument paper: :cite:t:`seaton_observations_2018`
+    * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`__
+    * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`__
+    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`__
+    * `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`__
+    * `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`__
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings["cmap"] = self._get_cmap_name()
-        self.plot_settings["norm"] = ImageNormalize(
+        self.plotter.plot_settings["cmap"] = self._get_cmap_name()
+        self.plotter.plot_settings["norm"] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
         )
 

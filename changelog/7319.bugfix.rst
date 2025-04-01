@@ -1,1 +1,0 @@
-Long object names are no longer truncated in the logging output of :func:`~sunpy.coordinates.get_horizons_coord`.

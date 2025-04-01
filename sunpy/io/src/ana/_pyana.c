@@ -6,7 +6,7 @@ Based on Michiel van Noort's IDL DLM library 'f0' which contains
 a cleaned up version of the original anarw routines.
 */
 
-#define Py_LIMITED_API 0x030A0000
+#define Py_LIMITED_API 0x030B0000
 
 // Needed due to https://github.com/numpy/numpy/issues/16970
 struct _typeobject {
@@ -14,9 +14,12 @@ struct _typeobject {
 };
 
 #include <Python.h>				// For python extension
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
 #include <numpy/arrayobject.h> 	// For numpy
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "time.h"
 #include "types.h"
 #include "anarw.h"
 
@@ -260,7 +263,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
     int compress = 1, debug=0;
     char *header = NULL;
     // Processed data goes here
-    PyObject *anadata_align;
+    PyArrayObject *anadata_align;
     uint8_t *anadata_bytes;
     // ANA file writing
     int	type, d;
@@ -280,7 +283,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
         if (debug == 1) printf("pyana_fzwrite(): Setting default header\n");
 
         struct timeval *tv_time=NULL;
-        struct tm *tm_time=NULL;
+        struct tm *tm_time;
         // Warning for NULL here is meant to happen, we can ignore it.
         gettimeofday(tv_time, NULL);
         tm_time = gmtime(&(tv_time->tv_sec));
@@ -334,7 +337,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
     // Sanitize data, make a new array from the old array and force the
     // NPY_ARRAY_CARRAY_RO requirement which ensures a C-contiguous and aligned
     // array will be made
-    anadata_align = PyArray_FromArray(anadata, PyArray_DESCR(anadata),NPY_ARRAY_CARRAY_RO);
+    anadata_align = (PyArrayObject*) PyArray_FromArray(anadata, PyArray_DESCR(anadata),NPY_ARRAY_CARRAY_RO);
 
     // Get a pointer to the aligned data
     anadata_bytes = (uint8_t*) PyArray_DATA(anadata_align);
@@ -344,12 +347,10 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
     int *dims = malloc(nd*sizeof(int));
     // Get the dimensions and number of elements
     npy_intp *npy_dims = PyArray_DIMS(anadata_align);
-    //npy_intp npy_nelem = PyArray_SIZE(anadata_align);
 
     if (debug == 1) printf("pyana_fzwrite(): Dimensions: ");
     for (d=0; d<nd; d++) {
         // ANA stores dimensions the other way around?
-        //dims[d] = npy_dims[d];
         dims[d] = npy_dims[nd-1-d];
         if (debug == 1) printf(" %d", dims[d]);
     }
@@ -363,6 +364,5 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
         ana_fzwrite(anadata_bytes, filename, dims, nd, header, type);
 
     free(dims);
-    // If we didn't crash up to here, we're probably ok :P
     return Py_BuildValue("i", 1);
 }

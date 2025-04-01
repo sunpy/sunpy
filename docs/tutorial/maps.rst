@@ -34,7 +34,7 @@ To create a `~sunpy.map.Map` from a sample Atmospheric Imaging Assembly (AIA) im
 
     >>> sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
     PosixPath('.../AIA20110607_063302_0171_lowres.fits')
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
 
 In many cases sunpy automatically detects the type of file as well as the the instrument associated with it.
 In this case, we have a FITS file from the AIA instrument onboard the Solar Dynamics Observatory (SDO).
@@ -52,8 +52,9 @@ To make sure this has all worked correctly, we can take a quick look at ``my_map
     Measurement:                 171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
+    Reference Date:              2011-06-07 06:33:02
     Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
+    Pixel Dimensions:            [1024. 1024.]
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix
@@ -70,7 +71,7 @@ To make sure this has all worked correctly, we can take a quick look at ``my_map
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 This should show a representation of the data as well as some of its associated attributes.
 If you are in a Jupyter Notebook, this will show a rich HTML view of the table along with several quick-look plots.
@@ -136,7 +137,7 @@ The data in a Map is stored as a `numpy.ndarray` object and is accessible throug
        [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
         -127.899666 , -127.899666 ],
        [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-        -128.03072  , -128.03072  ]], dtype=float32)
+        -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 This array can then be indexed like any other NumPy array.
 For example, to get the 0th element in the array:
@@ -144,7 +145,7 @@ For example, to get the 0th element in the array:
 .. code-block:: python
 
     >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
-    -95.92475
+    np.float32(-95.92475)
 
 The first index corresponds to the y direction and the second to the x direction in the two-dimensional pixel coordinate system.
 For more information about indexing, please refer to the `numpy documentation <https://numpy.org/doc/stable/user/basics.indexing.html#indexing-on-ndarrays>`__.
@@ -153,20 +154,20 @@ Data attributes like dimensionality and type are also accessible as attributes o
 
 .. code-block:: python
 
-    >>> my_map.dimensions  # doctest: +REMOTE_DATA
-    PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
-    >>> my_map.dtype  # doctest: +REMOTE_DATA
+    >>> my_map.shape  # doctest: +REMOTE_DATA
+    (1024, 1024)
+    >>> my_map.data.dtype  # doctest: +REMOTE_DATA
     dtype('float32')
 
 Additionally, there are several methods that provide basic summary statistics of the data:
 
 .. code-block:: python
 
-    >>> my_map.min()  # doctest: +REMOTE_DATA
+    >>> my_map.data.min()  # doctest: +REMOTE_DATA
     -129.78036
-    >>> my_map.max()  # doctest: +REMOTE_DATA
+    >>> my_map.data.max()  # doctest: +REMOTE_DATA
     192130.17
-    >>> my_map.mean()  # doctest: +REMOTE_DATA
+    >>> my_map.data.mean()  # doctest: +REMOTE_DATA
     427.02252
 
 .. _sunpy-tutorial-map-coordinates-wcs:
@@ -180,8 +181,8 @@ The coordinate frame of a Map is provided as an attribute,
 .. code-block:: python
 
     >>> my_map.coordinate_frame  # doctest: +REMOTE_DATA
-    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
+    <Helioprojective Frame (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>)>
 
 This tells us that the coordinate system of the image is Helioprojective (HPC) and that it is defined by an observer at a particular location.
 This observer coordinate is also provided as an attribute,
@@ -189,8 +190,8 @@ This observer coordinate is also provided as an attribute,
 .. code-block:: python
 
     >>> my_map.observer_coordinate  # doctest: +REMOTE_DATA
-    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>
 
 This tells us the location of the spacecraft, in this case SDO, when it recorded this particular observation, as derived from the FITS metadata.
 
@@ -199,16 +200,16 @@ Map has several additional coordinate-related attributes that provide the coordi
 .. code-block:: python
 
     >>> my_map.center  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (3.22309951, 1.38578135)>
     >>> my_map.bottom_left_coord  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (-1228.76466158, -1224.62447509)>
     >>> my_map.top_right_coord  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (1235.21095899, 1227.39598836)>
 
 But what if we wanted to know what pixel these physical coordinates correspond to?
@@ -221,12 +222,12 @@ The WCS is accessible as an attribute:
     WCS Keywords
     <BLANKLINE>
     Number of WCS axes: 2
-    CTYPE : 'HPLN-TAN'  'HPLT-TAN'
-    CRVAL : 0.00089530541880571  0.00038493926472939
-    CRPIX : 512.5  512.5
-    PC1_1 PC1_2  : 0.99999706448085  0.0024230207763071
-    PC2_1 PC2_2  : -0.0024230207763071  0.99999706448085
-    CDELT : 0.00066744222222222  0.00066744222222222
+    CTYPE : 'HPLN-TAN' 'HPLT-TAN'
+    CRVAL : 0.00089530541880571 0.00038493926472939
+    CRPIX : 512.5 512.5
+    PC1_1 PC1_2  : 0.99999706448085 0.0024230207763071
+    PC2_1 PC2_2  : -0.0024230207763071 0.99999706448085
+    CDELT : 0.00066744222222222 0.00066744222222222
     NAXIS : 1024  1024
 
 WCS is a fairly complex topic, but all we need to know for now is that the WCS provides the transformation between the pixel coordinates of the image and physical or "world" coordinates.
@@ -245,8 +246,8 @@ The corresponding pixel-to-world transformation should then give us back our cen
 .. code-block:: python
 
     >>> my_map.wcs.pixel_to_world(center_pixel[0], center_pixel[1])  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (3.22309951, 1.38578135)>
 
 As another example, if we transform the center of the lower-left pixel to a world coordinate, it should correspond to bottom left coordinate from above,
@@ -254,8 +255,8 @@ As another example, if we transform the center of the lower-left pixel to a worl
 .. code-block:: python
 
     >>> my_map.wcs.pixel_to_world(0, 0)  # doctest: +REMOTE_DATA
-    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
+        (-0.00406429, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
         (-1228.76466158, -1224.62447509)>
 
 These two methods are extremely useful when trying to understand which pixels correspond to which physical coordinates or when trying to locate the same physical location in images taken by separate spacecraft.
@@ -510,8 +511,9 @@ For example, the following returns the same information as in :ref:`sunpy-tutori
     Measurement:                 171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
+    Reference Date:              2011-06-07 06:33:02
     Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
+    Pixel Dimensions:            [1024. 1024.]
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix
@@ -528,21 +530,18 @@ For example, the following returns the same information as in :ref:`sunpy-tutori
            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
             -127.899666 , -127.899666 ],
            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
-
-MapSequences can hold maps that have different shapes.
-To test if all the maps in a `~sunpy.map.MapSequence` have the same shape:
-
-.. code-block:: python
-
-    >>> map_seq.all_maps_same_shape()  # doctest: +REMOTE_DATA
-    True
+            -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single three dimensional NumPy `~numpy.ndarray`:
 
 .. code-block:: python
 
-    >>> map_seq_array = map_seq.as_array()  # doctest: +REMOTE_DATA
+    >>> map_seq_array = map_seq.data  # doctest: +REMOTE_DATA
+
+.. note::
+
+    MapSequences can hold maps that have different shapes.
+    In the case where not every map has the same shape, trying to cast the sequence as a single three-dimensional array will fail.
 
 Since all of the maps in our sequence of the same shape, the first two dimensions of our combined array will be the same as the component maps while the last dimension will correspond to the number of maps in the map sequence.
 We can confirm this by looking at the shape of the above array.

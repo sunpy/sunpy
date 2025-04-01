@@ -49,10 +49,10 @@ Background information
 The IAU definition
 ------------------
 
-Since the original definition of Carrington coordinates [#Carrington]_, there have been a number of refinements of the definition, but there have been inconsistencies with how those definitions are interpreted.
+Since the original definition of Carrington coordinates :cite:p:`carrington_observations_1863{p. 16 and p.27}`, there have been a number of refinements of the definition, but there have been inconsistencies with how those definitions are interpreted.
 Possible points of contention include the reference epoch, the rotation period, and the handling of observer effects.
 
-The most recent definition was essentially laid down in 2007 by the IAU [#IAU]_:
+The most recent definition was essentially laid down in 2007 by the IAU :cite:p:`seidelmann_iau_working_2007`:
 
 * The reference epoch is J2000.0 TDB (2000 January 1 12:00 TDB).
   The difference between Barycentric Dynamical Time (TDB) and Terrestrial Time (TT) is very small, but both are appreciably different from Coordinated Universal Time (UTC).
@@ -65,7 +65,7 @@ The most recent definition was essentially laid down in 2007 by the IAU [#IAU]_:
 The tuning of |W0|
 ------------------
 
-Importantly, the IAU parameters (specifically, |W0|) were tuned following an investigation by |AA| [#AA]_.
+Importantly, the IAU parameters (specifically, |W0|) were tuned following an investigation by |AA| :cite:p:`urban_investigation_2007`.
 The prescription of |AA| included both the correction for light travel time and the correction for stellar aberration due to Earth's motion.
 When using this prescription, |AA| found that a |W0| value of 84.176 degrees minimized the differences between the modern approach and earlier approaches.
 However, for those purposes where one should use sub-observer Carrington longitudes without the stellar-aberration correction, there will be a discrepancy compared to |AA| and to calculations made using earlier approaches.
@@ -121,10 +121,7 @@ Footnotes
 =========
 
 .. [#apparent] The term "apparent" (as opposed to "true") is used to indicate that the observer perceives the locations and orientations of objects different from how they truly are due to effects that include light travel time.
-.. [#subEarth] "Sub-Earth" is a special case of "sub-observer", where the observer is at Earth (specifically, Earth center).  That is, the sub-Earth point is the point on the Sun's surface "below" the center of the Earth along the Sun-Earth line.
-.. [#Carrington] Carrington (1863), *Observations of the Spots on the Sun*, p. 16 (`<https://archive.org/details/observationsofsp00carr/page/16/mode/1up>`__) and p.27 (`<https://archive.org/details/observationsofsp00carr/page/27/mode/1up>`__)
-.. [#IAU] Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates and rotational elements: 2006", `<http://dx.doi.org/10.1007/s10569-007-9072-y>`__
-.. [#AA] Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's Physical Ephemeris in The Astronomical Almanac", `<http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
+.. [#subEarth] "Sub-Earth" is a special case of "sub-observer", where the observer is at Earth (specifically, Earth center). That is, the sub-Earth point is the point on the Sun's surface "below" the center of the Earth along the Sun-Earth line.
 
 .. |AA| replace:: *The Astronomical Almanac*
 .. |B0| replace:: B\ :sub:`0`

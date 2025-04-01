@@ -68,14 +68,14 @@ class JSOCClient(BaseClient):
 
     Notes
     -----
-    The full list of ``Series`` is available through this `site <http://jsoc.stanford.edu>`_.
+    The full list of ``Series`` is available via ` this page <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
 
     JSOC requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
+    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`__.
 
-    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`_.
-    The tutorials can be `found here <https://docs.sunpy.org/projects/en/stable/tutorial.html>`_.
+    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`__.
+    The tutorials can be :ref:`found here <sunpy-tutorial-acquiring-data-jsoc>`.
     This can be used to build complex queries, by directly inputting the query string.
 
     Examples
@@ -89,11 +89,11 @@ class JSOCClient(BaseClient):
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
         >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-        ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +SKIP
 
         The response object holds the records that your query will return:
 
-        >>> print(response)   # doctest: +REMOTE_DATA
+        >>> print(response)   # doctest: +SKIP
                  T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
         ----------------------- -------- ---------- -------- -------
         2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -123,9 +123,9 @@ class JSOCClient(BaseClient):
     A registered email address is not required if you only need to query for data,
     it is used only if you need to make an export request. For example,::
 
-        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+        >>> client = jsoc.JSOCClient()  # doctest: +SKIP
         >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-        ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +REMOTE_DATA
+        ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +SKIP
 
     The above is a successful query operation, and will return query responses as before.
 
@@ -145,14 +145,14 @@ class JSOCClient(BaseClient):
         >>> import astropy.units as u
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+        >>> client = jsoc.JSOCClient()  # doctest: +SKIP
         >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        ...                          a.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +SKIP
 
         The response object holds the records that your query will return:
 
-        >>> print(response)  # doctest: +REMOTE_DATA
+        >>> print(response)  # doctest: +SKIP
                T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
         -------------------- -------- -------- -------- -------
         2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
@@ -177,10 +177,16 @@ class JSOCClient(BaseClient):
     get into the queue::
 
         >>> requests.status  # doctest: +SKIP
-        0
+        2
 
-    Once the status code is 0 you can download the data using the `get_request`
-    method::
+
+    The status codes represent the following:
+
+    0: Completed, ready to download.
+    2: Pending, but downloadable.
+    6: Not found.
+
+    Once the status code is 0 or 2, you can download the data using the ``get_request`` method::
 
         >>> res = client.get_request(requests)  # doctest: +SKIP
 
@@ -228,11 +234,11 @@ class JSOCClient(BaseClient):
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> client = jsoc.JSOCClient()  # doctest: +SKIP
             >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.Wavelength(304*u.AA),
-            ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Segment('image'))  # doctest: +SKIP
+            >>> print(response)  # doctest: +SKIP
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
             -------------------- -------- -------- -------- -------
             2017-09-06T11:59:59Z  SDO/AIA    AIA_4      304    2194
@@ -254,10 +260,10 @@ class JSOCClient(BaseClient):
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> client = jsoc.JSOCClient()  # doctest: +SKIP
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
-            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
-            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.Series('hmi.v_45s'))  # doctest: +SKIP
+            >>> print(response.show('T_REC', 'WAVELNTH', 'CAR_ROT'))  # doctest: +SKIP
                      T_REC          WAVELNTH CAR_ROT
             ----------------------- -------- -------
             2014.01.01_00:00:45_TAI   6173.0    2145
@@ -282,11 +288,11 @@ class JSOCClient(BaseClient):
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
-            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> client = jsoc.JSOCClient()  # doctest: +SKIP
             >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'),
-            ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
+            ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +SKIP
+            >>> print(response)  # doctest: +SKIP
                    T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
             -------------------- -------- -------- -------- -------
             2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
@@ -329,8 +335,8 @@ class JSOCClient(BaseClient):
 
         Returns
         -------
-        requests : `~drms.client.ExportRequest` object or
-                   a list of  `~drms.client.ExportRequest` objects
+        requests : `~drms.ExportRequest` object or
+                   a list of  `~drms.ExportRequest` objects
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
         """
@@ -449,8 +455,8 @@ class JSOCClient(BaseClient):
 
         Parameters
         ----------
-        requests : `~drms.client.ExportRequest`, `str`, `list`
-            `~drms.client.ExportRequest` objects or `str` request IDs or lists
+        requests : `~drms.ExportRequest`, `str`, `list`
+            `~drms.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
         path : `str`
             Path to save data to, defaults to SunPy download dir.

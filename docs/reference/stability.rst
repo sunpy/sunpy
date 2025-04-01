@@ -56,19 +56,19 @@ The classification is as follows:
       </tr>
       <tr>
         <td align='center'><span class="stable"></span></td>
-        <td>Reasonably stable, any significant changes/additions will generally include backwards-compatiblity.</td>
+        <td>Reasonably stable, any significant changes/additions will generally include backwards-compatibility.</td>
       </tr>
       <tr>
         <td align='center'><span class="mature"></span></td>
-        <td>Mature.  Additions/improvements possible, but no major changes planned. </td>
+        <td>Mature. Additions/improvements possible, but no major changes planned. </td>
       </tr>
       <tr>
         <td align='center'><span class="pendingdep"></span></td>
-        <td>Pending deprecation.  Might be deprecated in a future version.</td>
+        <td>Pending deprecation. Might be deprecated in a future version.</td>
       </tr>
       <tr>
         <td align='center'><span class="deprecated"></span></td>
-        <td>Deprecated.  Might be removed in a future version.</td>
+        <td>Deprecated. Might be removed in a future version.</td>
       </tr>
     </table>
 
@@ -106,4 +106,4 @@ The current planned and existing sub-packages are:
     </table>
 
 
-Taken with love from the `Astropy project. <https://github.com/astropy/astropy/blob/master/LICENSE.rst>`_
+Taken with love from the `Astropy project. <https://github.com/astropy/astropy/blob/master/LICENSE.rst>`__

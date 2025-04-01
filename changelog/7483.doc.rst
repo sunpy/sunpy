@@ -1,1 +1,0 @@
-Fix a VSO doctest due to VSO now returning level one EIT data.

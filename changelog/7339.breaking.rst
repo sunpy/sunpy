@@ -1,1 +1,0 @@
-Arguments for :meth:`~sunpy.map.GenericMap.reproject_to` after the target WCS are now keyword-only.

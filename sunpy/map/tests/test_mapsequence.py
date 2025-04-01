@@ -12,7 +12,9 @@ from astropy.visualization import ImageNormalize
 import sunpy
 import sunpy.data.test
 import sunpy.map
-from sunpy.tests.helpers import figure_test
+from sunpy.data.test import get_test_filepath
+from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 
@@ -47,93 +49,72 @@ def mapsequence_all_the_same_some_have_masks(aia171_test_map, aia171_test_map_wi
 @pytest.fixture()
 def mapsequence_different(aia171_test_map):
     """ Mapsequence allows that the size of the image data in each map be
-    different.  This mapsequence contains such maps."""
+    different. This mapsequence contains such maps."""
     return sunpy.map.Map([aia171_test_map, aia171_test_map.superpixel((4, 4) * u.pix)], sequence=True)
 
 
-def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
-    """Make sure that Mapsequence knows if all the maps have the same shape"""
-    assert mapsequence_all_the_same.all_maps_same_shape()
-    assert not mapsequence_different.all_maps_same_shape()
+def test_deprecations(mapsequence_all_the_same,
+                      mapsequence_different):
+    # TODO: Remove this in v7.1
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="The all_maps_same_shape function is deprecated and will be removed in sunpy 7.1. Use the all_same_shape property instead."):
+        mapsequence_all_the_same.all_maps_same_shape()
+    with pytest.warns(SunpyDeprecationWarning,
+                      match='The at_least_one_map_has_mask function is deprecated and will be removed in sunpy 7.1. Use the mask property instead.'):
+        mapsequence_all_the_same.at_least_one_map_has_mask()
+    with pytest.warns(SunpyDeprecationWarning,
+                      match='The as_array function is deprecated and will be removed in sunpy 7.1. Use the data and mask properties instead.'):
+        with pytest.raises(ValueError, match='Not all maps have the same shape.'):
+            mapsequence_different.as_array()
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="The all_meta function is deprecated and will be removed in sunpy 7.1. Use the meta property instead."):
+        mapsequence_all_the_same.all_meta()
+    with pytest.raises(NotImplementedError):
+        with pytest.warns(SunpyDeprecationWarning,
+                          match='"derotate" was deprecated in version 6.1 and will be removed in a future version.'):
+            sunpy.map.MapSequence(derotate=True)
 
 
-def test_at_least_one_map_has_mask(mapsequence_all_the_same,
-                                   mapsequence_all_the_same_all_have_masks,
-                                   mapsequence_all_the_same_some_have_masks
-                                   ):
-    """ Test that we can detect the presence of at least one masked map."""
-    assert not mapsequence_all_the_same.at_least_one_map_has_mask()
-    assert mapsequence_all_the_same_all_have_masks.at_least_one_map_has_mask()
-    assert mapsequence_all_the_same_some_have_masks.at_least_one_map_has_mask()
+def test_as_array_different_shapes(mapsequence_different):
+    # Should raise a ValueError if the mapsequence has differently shaped maps
+    with pytest.raises(ValueError, match='Not all maps have the same shape.'):
+        mapsequence_different.data
 
 
-def test_as_array(mapsequence_all_the_same,
-                  mapsequence_different,
-                  mapsequence_all_the_same_all_have_masks,
-                  mapsequence_all_the_same_some_have_masks):
-    """Make sure the data in the mapsequence returns correctly, when all the
-    maps have the same shape.  When they don't have the same shape, make
-    sure an error is raised."""
-    # Should raise a ValueError if the mapsequence has differently shaped maps in
-    # it.
-    with pytest.raises(ValueError):
-        mapsequence_different.as_array()
-
+def test_as_array_no_masks(mapsequence_all_the_same):
     # Test the case when none of the maps have a mask
-    returned_array = mapsequence_all_the_same.as_array()
+    returned_array = mapsequence_all_the_same.data
     assert isinstance(returned_array, np.ndarray)
-    assert returned_array.ndim == 3
-    assert len(returned_array.shape) == 3
-    assert returned_array.shape[0] == 128
-    assert returned_array.shape[1] == 128
-    assert returned_array.shape[2] == 2
-    assert np.ma.getmask(returned_array) is np.ma.nomask
+    assert returned_array.shape == (128, 128, 2)
+    assert mapsequence_all_the_same.mask is None
 
+
+def test_as_array_all_masks(mapsequence_all_the_same_all_have_masks):
     # Test the case when all the maps have masks
-    returned_array = mapsequence_all_the_same_all_have_masks.as_array()
-    assert isinstance(returned_array, np.ma.masked_array)
-    data = np.ma.getdata(returned_array)
-    assert data.ndim == 3
-    assert len(data.shape) == 3
-    assert data.shape[0] == 128
-    assert data.shape[1] == 128
-    assert data.shape[2] == 2
-    mask = np.ma.getmask(returned_array)
-    assert mask.ndim == 3
-    assert len(mask.shape) == 3
-    assert mask.shape[0] == 128
-    assert mask.shape[1] == 128
-    assert mask.shape[2] == 2
+    data = mapsequence_all_the_same_all_have_masks.data
+    assert data.shape == (128, 128, 2)
+    mask = mapsequence_all_the_same_all_have_masks.mask
+    assert mask.shape == (128, 128, 2)
     assert mask.dtype == bool
 
-    # Test the case when some of the maps have masks
-    returned_array = mapsequence_all_the_same_some_have_masks.as_array()
-    assert isinstance(returned_array, np.ma.masked_array)
-    data = np.ma.getdata(returned_array)
-    assert data.ndim == 3
-    assert len(data.shape) == 3
-    assert data.shape[0] == 128
-    assert data.shape[1] == 128
-    assert data.shape[2] == 3
-    mask = np.ma.getmask(mapsequence_all_the_same_some_have_masks.as_array())
-    assert mask.ndim == 3
-    assert len(mask.shape) == 3
-    assert mask.shape[0] == 128
-    assert mask.shape[1] == 128
-    assert mask.shape[2] == 3
+
+def test_as_array_some_masks(mapsequence_all_the_same_some_have_masks):
+    data = mapsequence_all_the_same_some_have_masks.data
+    assert data.shape == (128, 128, 3)
+    mask = mapsequence_all_the_same_some_have_masks.mask
+    assert mask.shape == (128, 128, 3)
     assert np.all(mask[0:2, 0:3, 0])
     assert np.all(mask[0:2, 0:3, 1])
     assert np.all(np.logical_not(mask[0:2, 0:3, 2]))
 
 
 def test_all_meta(mapsequence_all_the_same):
-    """Tests that the correct number of map meta objects are returned, and
-    that they are all map meta objects."""
-    meta = mapsequence_all_the_same.all_meta()
+    meta = mapsequence_all_the_same.meta
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
     assert np.all(np.asarray(
-        [meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
+        [meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]
+    ))
 
 
 def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
@@ -155,11 +136,6 @@ def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     assert obtained_out.startswith(object.__repr__(mapsequence_different_maps))
     assert len(mapsequence_different_maps) == 2
     assert expected_out1 in obtained_out or expected_out2 in obtained_out
-
-
-def test_derotate():
-    with pytest.raises(NotImplementedError):
-        sunpy.map.MapSequence(derotate=True)
 
 
 def test_repr_html(mapsequence_all_the_same):
@@ -238,3 +214,32 @@ def test_map_sequence_plot_clip_interval(aia171_test_map):
     # We want to blow the image out to make sure it is clipped on the test data
     animation = seq.plot(clip_interval=(5,75)*u.percent)
     animation._step()
+
+
+@skip_glymur
+def test_mapsequence_plot_uint8_norm():
+    # We want to check the case for images with no norms set
+    # This code used to fail in this case.
+    coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
+    [coconut.plot_settings.pop("norm") for coconut in coconuts]
+    moving_coconut = coconuts.plot()
+    moving_coconut._step()
+
+
+@skip_glymur
+def test_mapsequence_plot_uint8_norm_clip_interval():
+    # This code used to fail in this case.
+    coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
+    [coconut.plot_settings.pop("norm") for coconut in coconuts]
+    moving_coconut = coconuts.plot(clip_interval=(1, 99.99)*u.percent)
+    moving_coconut._step()
+
+
+@skip_glymur
+def test_mapsequence_plot_set_norm_pass_vmin_vmax(aia171_test_map):
+    # CHecking that passing in interval values works if the map has a norm
+    coconuts = sunpy.map.Map([aia171_test_map]*10,sequence=True)
+    moving_coconut = coconuts.plot(clip_interval=(1, 99.99)*u.percent)
+    moving_coconut._step()
+    moving_coconut = coconuts.plot(vmin=100, vmax=1000)
+    moving_coconut._step()

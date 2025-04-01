@@ -10,7 +10,7 @@ Differential rotation using coordinate frames
     >>> # See https://github.com/matplotlib/matplotlib/pull/21634#issuecomment-1004200517
     >>> # for the likely reason this is needed.
     >>> import numpy as np
-    >>> np.set_printoptions(precision=6)
+    >>> _ = np.set_printoptions(precision=6)
 
 Normally, coordinates refer to a point in inertial space (relative to the barycenter of the solar system).
 Transforming to a different observation time does not move the point itself, but if the coordinate frame origin and/or axis change with time, the coordinate representation is updated to account for this change.
@@ -167,7 +167,7 @@ Note that the points closer to the equator (latitude of 0 degrees) have evolved 
     # The next test is run with fixed-precision printing to ensure no whitespace appears when tested
     >>> import numpy as np
     >>> old_floatmode = np.get_printoptions()['floatmode']
-    >>> np.set_printoptions(floatmode='fixed')
+    >>> _ = np.set_printoptions(floatmode='fixed')
 
 In the specific case of `~sunpy.coordinates.frames.HeliographicCarrington`, this frame rotates with the Sun, but in a non-differential manner.
 The Carrington longitude approximately follows the rotation of the Sun.
@@ -192,7 +192,7 @@ Note that equator rotates slightly faster than the Carrington rotation rate (its
 
 .. testcleanup::
 
-    >>> np.set_printoptions(floatmode=old_floatmode)
+    >>> _ = np.set_printoptions(floatmode=old_floatmode)
 
 Be aware that transformations with a change in ``obstime`` will also contend with a translation of the center of the Sun.
 Note that the ``radius`` component above is no longer precisely on the surface of the Sun.
@@ -332,4 +332,4 @@ Here are the examples in our gallery that use `~sunpy.coordinates.metaframes.Rot
 
 ..
     >>> # Reset change to default print options
-    >>> np.set_printoptions(precision=8)
+    >>> _ = np.set_printoptions(precision=8)

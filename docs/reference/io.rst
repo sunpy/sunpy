@@ -1,112 +1,26 @@
-Input/output (`sunpy.io`)
-*************************
+Input/output (``sunpy.io``)
+***************************
 
+The primary focus of ``sunpy.io`` is to provide a common interface for reading and writing.
 ``sunpy.io`` contains readers for files that are commonly used in solar physics.
 
-Unified File Readers
-====================
+These include:
 
-.. automodapi:: sunpy.io
+- Public API
+  - GENX
+  - ANA
+  - NOAA SWPC Solar Region Summary (SRS)
+  - ASDF
 
-.. automodapi:: sunpy.io.ana
+The other readers are intended for use by `sunpy.map` and `sunpy.timeseries` and are not intended to be used directly by users.
 
 Special File Readers
 ====================
 
 .. automodapi:: sunpy.io.special.genx
 
-``sunpy`` has a custom reader for NOAA SWPC Solar Region Summary (SRS) files:
+.. automodapi:: sunpy.io.ana
 
 .. automodapi:: sunpy.io.special.srs
 
-asdf (Advanced Scientific Data Format)
---------------------------------------
-
-`ASDF <https://asdf-standard.readthedocs.io/en/latest/>`__ is a modern file format
-designed to meet the needs of the astronomy community. It has deep integration
-with Python, SunPy, and Astropy, as well as implementations in other languages.
-It can be used to store known Python objects in a portable, well defined file
-format. It is primarily useful for storing complex Astropy and SunPy objects in
-a way that can be loaded back into the same form as they were saved.
-It is designed to be an archive file format, with human readable metadata and a
-simple on-disk layout.
-
-sunpy currently implements support for saving `Map <sunpy.map.GenericMap>` and
-`coordinate frame <sunpy.coordinates.frames>` objects into asdf files. As asdf
-tightly integrates into Python, saving a map to an asdf file will save the
-metadata, data and mask. In comparison, the mask is not currently saved
-to FITS. The following code shows to to save and load a sunpy Map to an asdf
-file
-
-.. doctest-requires:: asdf
-
-  >>> import asdf
-  >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
-  >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-  >>> tree = {'amap': aiamap}  # doctest: +REMOTE_DATA
-  >>> with asdf.AsdfFile(tree) as asdf_file:  # doctest: +REMOTE_DATA
-  ...     asdf_file.write_to("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-  >>> input_asdf = asdf.open("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-  >>> input_asdf['amap']  # doctest: +REMOTE_DATA
-    <sunpy.map.sources.sdo.AIAMap object at ...>
-    SunPy Map
-    ---------
-    Observatory:                 SDO
-    Instrument:          AIA 3
-    Detector:            AIA
-    Measurement:                 171.0 Angstrom
-    Wavelength:          171.0 Angstrom
-    Observation Date:    2011-06-07 06:33:02
-    Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
-    Coordinate System:   helioprojective
-    Scale:                       [2.402792 2.402792] arcsec / pix
-    Reference Pixel:     [511.5 511.5] pix
-    Reference Coord:     [3.22309951 1.38578135] arcsec
-    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
-            -127.96519  , -127.96519  ],
-           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
-            -104.04137  , -127.919716 ],
-           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
-             -37.95505  , -127.87541  ],
-           ...,
-           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
-            -128.01454  , -128.01454  ],
-           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
-            -127.899666 , -127.899666 ],
-           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
-   >>> input_asdf.close()  # doctest: +REMOTE_DATA
-
-When saving a Map to ASDF all maps are saved as a `.GenericMap` and not a specific source class.
-This comes with some trade-offs.
-If you are using custom map sources defined outside of the `sunpy` core package, and these sources are imported after asdf has been invoked for the first time (used, not just imported), then they will not be registered with the asdf converter.
-Also if the custom map subclass is not registered with `sunpy.map.Map` upon loading of the map, it will be returned as a `.GenericMap`.
-This approach has been chosen despite these limitations so that once a map is saved to an ASDF file it can always be loaded back into a map rather than the asdf library returning it as a Python dictionary.
-It also follows the philosophy of the way maps are saved and loaded in the FITS format, where the components of the Map are serialised and the way meta data is handled depends solely on the contents of the ``.meta`` attribute.
-
-Internal API
-============
-
-These are readers and other utilities that are used internally by ``sunpy`` to read files.
-They are not intended to be used directly by users and we do not guarantee that they will
-work for all files of a given type nor will the API be stable.
-
-.. automodapi:: sunpy.io._fits
-
-.. automodapi:: sunpy.io.header
-
-.. automodapi:: sunpy.io._jp2
-
-.. automodapi:: sunpy.io._file_tools
-
-CDF (common data format)
-------------------------
-
-CDF files are commonly used to store timeseries data observed by instruments
-taking in-situ measurements of plasmas throughout the heliosphere.
-sunpy provides support for reading in CDF files that conform to the
-`Space Physics Guidelines for CDF <https://spdf.gsfc.nasa.gov/sp_use_of_cdf.html>`_.
-
-.. automodapi:: sunpy.io._cdf
+.. automodapi:: sunpy.io.special.asdf

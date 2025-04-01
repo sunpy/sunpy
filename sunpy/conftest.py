@@ -12,7 +12,6 @@ import astropy.io.fits
 from astropy.utils import iers
 
 from sunpy.data.test import get_test_data_filenames, get_test_filepath, write_image_file_from_header_file
-from sunpy.map import Map
 from sunpy.util import SunpyUserWarning
 
 # Force MPL to use non-gui backends for testing.
@@ -60,8 +59,8 @@ def tmp_config_dir(request):
     tmpdir = tempfile.TemporaryDirectory()
 
     os.environ["SUNPY_CONFIGDIR"] = str(tmpdir.name)
-    astropy.config.paths.set_temp_config._temp_path = str(tmpdir.name)
-    astropy.config.paths.set_temp_cache._temp_path = str(tmpdir.name)
+    astropy.config.paths.set_temp_config._temp_path = pathlib.Path(tmpdir.name)
+    astropy.config.paths.set_temp_cache._temp_path = pathlib.Path(tmpdir.name)
 
     yield
 
@@ -128,11 +127,11 @@ def sunpy_test_run(request):
 @pytest.fixture(scope='session', autouse=True)
 def hide_parfive_progress(request):
     """
-    Set the PARFIVE_HIDE_PROGESS to hide the parfive progress bar in tests.
+    Set the PARFIVE_HIDE_PROGRESS to hide the parfive progress bar in tests.
     """
-    os.environ["PARFIVE_HIDE_PROGESS"] = "True"
+    os.environ["PARFIVE_HIDE_PROGRESS"] = "True"
     yield
-    del os.environ["PARFIVE_HIDE_PROGESS"]
+    del os.environ["PARFIVE_HIDE_PROGRESS"]
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -191,6 +190,7 @@ def pytest_runtest_teardown(item):
 
 @pytest.fixture(scope="session")
 def aia171_test_map():
+    from sunpy.map import Map
     return Map(get_test_filepath('aia_171_level1.fits'))
 
 

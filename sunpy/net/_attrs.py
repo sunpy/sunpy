@@ -13,7 +13,7 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from .attr import Range, SimpleAttr
 
-__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
+__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample', 'ExtentType', 'Physobs',
            'Level', 'Instrument', 'Wavelength', 'Time', 'Source', 'Provider']
 
 
@@ -125,7 +125,9 @@ class Wavelength(Range):
                 break
         else:
             raise u.UnitsError(f"This unit is not convertible to any of {supported_units}")
-
+        self.unconverted_value = (wavemin, wavemax)
+        # Note that wave.min and wave.max are not rounded
+        # so floating point issues can arise
         wavemin, wavemax = sorted([wavemin.to(unit), wavemax.to(unit)])
         self.unit = unit
 
@@ -162,8 +164,8 @@ class Instrument(SimpleAttr):
 
 class Level(SimpleAttr):
     """
-    Specifies the data processing level to search for.  The data processing
-    level is specified by the instrument PI.  May not work with all archives.
+    Specifies the data processing level to search for. The data processing
+    level is specified by the instrument PI. May not work with all archives.
 
     Parameters
     ----------
@@ -222,7 +224,7 @@ class Resolution(SimpleAttr):
         This attribute is currently implemented for SDO/AIA and HMI only.
         The "resolution" is a function of the highest level of data available.
         If the CCD is 2048x2048, but is binned to 512x512 before downlink,
-        the 512x512 product is designated as '1'.  If a 2048x2048 and 512x512
+        the 512x512 product is designated as '1'. If a 2048x2048 and 512x512
         product are both available, the 512x512 product is designated '0.25'.
 
     References

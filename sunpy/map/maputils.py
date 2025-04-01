@@ -117,7 +117,7 @@ def map_edges(smap):
         hand side pixel locations respectively of the input map.
     """
     # Calculate all the edge pixels
-    nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
+    ny, nx = smap.shape
     top = list(product(np.arange(nx), [ny - 1])) * u.pix
     bottom = list(product(np.arange(nx), [0])) * u.pix
     left_hand_side = list(product([0], np.arange(ny))) * u.pix
@@ -146,7 +146,7 @@ def solar_angular_radius(coordinates):
 
     The tangent vector from the observer to the edge of the Sun forms a
     right-angle triangle with the radius of the Sun as the far side and the
-    Sun-observer distance as the hypotenuse.  Thus, the sine of the angular
+    Sun-observer distance as the hypotenuse. Thus, the sine of the angular
     radius of the Sun is ratio of these two distances.
 
     Parameters
@@ -266,7 +266,7 @@ def coordinate_is_on_solar_disk(coordinates):
     Checks if the helioprojective Cartesian coordinates are on the solar disk.
 
     The check is performed by comparing the coordinate's angular distance
-    to the angular size of the solar radius.  The solar disk is assumed to be
+    to the angular size of the solar radius. The solar disk is assumed to be
     a circle i.e., solar oblateness and other effects that cause the solar disk to
     be non-circular are not taken in to account.
 
@@ -309,7 +309,7 @@ def is_all_off_disk(smap):
     -----
     For coronagraph images such as those from LASCO C2 and C3 the full disk is
     within the field of view of the instrument, even though the solar disk
-    itself is not imaged.  For such images this function will return `False`.
+    itself is not imaged. For such images this function will return `False`.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
@@ -522,7 +522,7 @@ def pixelate_coord_path(smap, coord_path, *, bresenham=False):
     path.
 
     Each pair of consecutive coordinates in the provided coordinate array defines a
-    line segment.  Each pixel that intersects with a line segment has the
+    line segment. Each pixel that intersects with a line segment has the
     coordinates of its center returned in the output.
 
     To obtain the values of these pixels, pass the output to
@@ -536,7 +536,7 @@ def pixelate_coord_path(smap, coord_path, *, bresenham=False):
         The coordinate path.
     bresenham : `bool`
         If ``True``, use Bresenham's line algorithm instead of the default
-        algorithm.  Bresenham's line algorithm is faster, but simplifies each
+        algorithm. Bresenham's line algorithm is faster, but simplifies each
         coordinate-path point to the nearest pixel center and can skip a pixel on
         the path if two of its neighbors are diagonally connected and also on the
         path.

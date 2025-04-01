@@ -11,12 +11,18 @@ import numpy as np
 import numpy.ma as ma
 
 import astropy.units as u
+from astropy.visualization import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import expand_list
+from sunpy.util.decorators import deprecated, deprecated_renamed_argument
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
+
+# NOTE: This is necessary because the deprecated decorator does not currently issue the correct
+# deprecation message. Remove this when that is fixed and/or when the v6.1 deprecations are removed.
+v61_DEPRECATION_MESSAGE = 'The {func} {obj_type} is deprecated and will be removed in sunpy 7.1. Use the {alternative} instead.'
 
 __all__ = ['MapSequence']
 
@@ -48,15 +54,18 @@ class MapSequence:
     To coalign a mapsequence so that solar features remain on the same pixels,
     please see the "Coalignment of MapSequences" note below.
 
+    .. note:: The individual components of a `~sunpy.map.MapSequence` can be coaligned
+              using the functions in `sunkit_image.coalignment` or using the
+              `~sunpy.map.GenericMap.reproject_to` method.
+
     Examples
     --------
     >>> import sunpy.map
     >>> mapsequence = sunpy.map.Map('images/*.fits', sequence=True)   # doctest: +SKIP
-
-    MapSequences can be co-aligned using the routines in `sunkit_image.coalignment`.
     """
 
-    def __init__(self, *args, sortby='date', derotate=False, **kwargs):
+    @deprecated_renamed_argument('derotate', new_name=None, since='6.1',)
+    def __init__(self, *args, sortby='date', derotate=False):
         """Creates a new Map instance"""
 
         self.maps = expand_list(args)
@@ -67,18 +76,23 @@ class MapSequence:
 
         # Optionally sort data
         if sortby is not None:
-            if sortby == 'date':
-                self.maps.sort(key=self._sort_by_date())
-            else:
-                raise ValueError("Only sort by date is supported")
+            if sortby not in self._sort_methods:
+                raise ValueError(f"sortby must be one of the following: {list(self._sort_methods.keys())}")
+            self.maps.sort(key=self._sort_methods[sortby])
 
         if derotate:
-            self._derotate()
+            raise NotImplementedError("This functionality has not yet been implemented.")
+
+    @property
+    def _sort_methods(self):
+        return {
+            "date": lambda m: m.date,
+        }
 
     def __getitem__(self, key):
-        """Overriding indexing operation.  If the key results in a single map,
-        then a map object is returned.  This allows functions like enumerate to
-        work.  Otherwise, a mapsequence is returned."""
+        """Overriding indexing operation. If the key results in a single map,
+        then a map object is returned. This allows functions like enumerate to
+        work. Otherwise, a mapsequence is returned."""
 
         if isinstance(self.maps[key], GenericMap):
             return self.maps[key]
@@ -215,7 +229,7 @@ class MapSequence:
         >>> seq = Map(sunpy.data.sample.HMI_LOS_IMAGE,
         ...           sunpy.data.sample.AIA_1600_IMAGE,
         ...           sunpy.data.sample.EIT_195_IMAGE,
-        ...           sequence=True)  # doctest: +REMOTE_DATA
+        ...           sequence=True)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
         >>> seq.quicklook()  # doctest: +SKIP
 
         (which will open the following content in the default web browser)
@@ -241,15 +255,7 @@ class MapSequence:
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    # Sorting methods
-    @classmethod
-    def _sort_by_date(cls):
-        return lambda m: m.date  # maps.sort(key=attrgetter('date'))
-
-    def _derotate(self):
-        """Derotates the layers in the MapSequence"""
-        raise NotImplementedError("This functionality has not yet been implemented.")
-
+    @deprecated_renamed_argument('resample', new_name=None, since='6.1')
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, clip_interval=None, **kwargs):
         """
@@ -328,8 +334,7 @@ class MapSequence:
         >>> plt.show()   # doctest: +SKIP
 
         """
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
+        axes = self[0]._check_axes(axes)
         fig = axes.get_figure()
 
         if not plot_function:
@@ -346,7 +351,7 @@ class MapSequence:
                                                    self[i].spatial_units[1]))
 
         if resample:
-            if self.all_maps_same_shape():
+            if self.all_same_shape:
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 ani_data = [amap.resample(resample) for amap in self.maps]
             else:
@@ -359,31 +364,21 @@ class MapSequence:
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
-
             im.set_array(ani_data[i].data)
-            im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings['cmap']))
-            norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings['norm']))
-
+            im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings.get('cmap')) or "grey")
+            norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings.get('norm')))
             if clip_interval is not None:
                 vmin, vmax = _clip_interval(ani_data[i].data, clip_interval)
+                if norm is None:
+                    norm = ImageNormalize()
                 norm.vmin=vmin
                 norm.vmax=vmax
-            _handle_norm(norm, kwargs)
+            if norm:
+                _handle_norm(norm, kwargs)
+                im.set_norm(norm)
 
-            # The following explicit call is for bugged versions of Astropy's ImageNormalize
-            norm.autoscale_None(ani_data[i].data)
-            im.set_norm(norm)
-
-            if wcsaxes_compat.is_wcsaxes(axes):
-                im.axes.reset_wcs(ani_data[i].wcs)
-                wcsaxes_compat.default_wcs_grid(axes)
-            else:
-                bl = ani_data[i]._get_lon_lat(ani_data[i].bottom_left_coord)
-                tr = ani_data[i]._get_lon_lat(ani_data[i].top_right_coord)
-                x_range = list(u.Quantity([bl[0], tr[0]]).to(ani_data[i].spatial_units[0]).value)
-                y_range = list(u.Quantity([bl[1], tr[1]]).to(ani_data[i].spatial_units[1]).value)
-
-                im.set_extent(np.concatenate((x_range.value, y_range.value)))
+            im.axes.reset_wcs(ani_data[i].wcs)
+            wcsaxes_compat.default_wcs_grid(axes)
 
             if annotate:
                 annotate_frame(i)
@@ -397,6 +392,7 @@ class MapSequence:
 
         return ani
 
+    @deprecated_renamed_argument('resample', new_name=None, since='6.1')
     def peek(self, resample=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
@@ -463,9 +459,9 @@ class MapSequence:
         from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
         if resample:
-            if self.all_maps_same_shape():
+            if self.all_same_shape:
                 plot_sequence = MapSequence()
-                resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
+                resample = u.Quantity(self.maps[0].shape) * np.array(resample)
                 for amap in self.maps:
                     plot_sequence.maps.append(amap.resample(resample))
             else:
@@ -475,78 +471,115 @@ class MapSequence:
 
         return MapSequenceAnimator(plot_sequence, **kwargs)
 
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='all_same_shape property')
     def all_maps_same_shape(self):
         """
-        Tests if all the maps have the same number pixels in the x and y
-        directions.
+        True if all the maps have the same number pixels along both axes.
+        """
+        return self.all_same_shape
+
+    @property
+    def all_same_shape(self):
+        """
+        True if the data array of each map has the same shape.
         """
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='mask property')
     def at_least_one_map_has_mask(self):
         """
-        Tests if at least one map has a mask.
+        True if at least one map has a mask
         """
-        return np.any([m.mask is not None for m in self.maps])
+        return self.mask is not None
 
+    @property
+    def data(self):
+        """
+        Data array of shape ``(N_y, N_x, N_t)`` where ``(N_y,N_x)`` is the
+        shape of each individual map and ``N_t`` is the number of maps.
+
+        .. note:: If all maps do not have the same shape, a `ValueError` is raised.
+        """
+        if not self.all_same_shape:
+            raise ValueError('Not all maps have the same shape.')
+        data = np.asarray([m.data for m in self.maps])
+        return np.swapaxes(np.swapaxes(data, 0, 1), 1, 2)
+
+    @property
+    def mask(self):
+        """
+        Combined mask with same shape as `~sunpy.map.MapSequence.data` for all maps in the sequence.
+
+        If no map in the sequence has a mask, this returns None.
+        If at least one map in the sequence has a mask, the layers
+        corresponding to those maps without a mask will be all `False`.
+        """
+        if not np.any([m.mask is not None for m in self.maps]):
+            return None
+        mask = np.zeros_like(self.data, dtype=bool)
+        for i, m in enumerate(self):
+            if m.mask is not None:
+                mask[..., i] = m.mask
+        return mask
+
+    @deprecated(since='6.1', alternative='data and mask properties', message=v61_DEPRECATION_MESSAGE)
     def as_array(self):
         """
         If all the map shapes are the same, their image data is rendered
-        into the appropriate numpy object.  If none of the maps have masks,
-        then the data is returned as a (ny, nx, nt) ndarray.  If all the maps
+        into the appropriate numpy object. If none of the maps have masks,
+        then the data is returned as a (ny, nx, nt) ndarray. If all the maps
         have masks, then the data is returned as a (ny, nx, nt) masked array
-        with all the masks copied from each map.  If only some of the maps
+        with all the masks copied from each map. If only some of the maps
         have masked then the data is returned as a (ny, nx, nt) masked array,
         with masks copied from maps as appropriately; maps that do not have a
         mask are supplied with a mask that is full of False entries.
         If all the map shapes are not the same, a ValueError is thrown.
         """
-        if self.all_maps_same_shape():
-            data = np.swapaxes(np.swapaxes(np.asarray(
-                [m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
-            if self.at_least_one_map_has_mask():
-                mask_sequence = np.zeros_like(data, dtype=bool)
-                for im, m in enumerate(self.maps):
-                    if m.mask is not None:
-                        mask_sequence[:, :, im] = m.mask
-                return ma.masked_array(data, mask=mask_sequence)
-            else:
-                return data
+        data = self.data
+        if (mask := self.mask) is not None:
+            return ma.masked_array(data, mask=mask)
         else:
-            raise ValueError('Not all maps have the same shape.')
+            return data
 
+    @deprecated(since='6.1', message=v61_DEPRECATION_MESSAGE, alternative='meta property')
     def all_meta(self):
         """
         Return all the meta objects as a list.
+        """
+        return self.meta
+
+    @property
+    def meta(self):
+        """
+        Metadata objects of each map as a list.
         """
         return [m.meta for m in self.maps]
 
     def save(self, filepath, filetype='auto', **kwargs):
         """
-        Saves the sequence, with one file per map.
-
-        Currently SunPy can save files only in the FITS format.
+        Saves the sequence as one map for FITS file.
 
         Parameters
         ----------
-        filepath : str
-            Location to save the file(s) to.  The string must contain ``"{index}"``,
-            which will be populated with the corresponding index number for each
-            map.  Format specifiers (e.g., ``"{index:03}"``) can be used.
-        filetype : str
+        filepath : `str`
+            Template string specifying the file to which each map is saved.
+            The string must contain ``"{index}"``, which will be populated with
+            the corresponding index number for each map. Format specifiers
+            (e.g., ``"{index:03}"``) can be used.
+        filetype : `str`
             'auto' or any supported file extension.
         kwargs :
             Any additional keyword arguments are passed to
-            `~sunpy.io.write_file`.
+            `~sunpy.map.GenericMap.save`.
 
         Examples
         --------
         >>> from sunpy.map import Map
-        >>> import sunpy.data.sample # doctest: +REMOTE_DATA
+        >>> import sunpy.data.sample # doctest: +SKIP
         >>> smap = Map(sunpy.data.sample.HMI_LOS_IMAGE,
         ...            sunpy.data.sample.AIA_1600_IMAGE,
-        ...            sequence=True)  # doctest: +REMOTE_DATA
+        ...            sequence=True)  # doctest: +SKIP
         >>> smap.save('map_{index:03}.fits')  # doctest: +SKIP
-
         """
         if filepath.format(index=0) == filepath:
             raise ValueError("'{index}' must be appear in the string")

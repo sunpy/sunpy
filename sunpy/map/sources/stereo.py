@@ -24,17 +24,17 @@ class EUVIMap(GenericMap):
 
     References
     ----------
-    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
-    * `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
+    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`__
+    * `Instrument Page <http://secchi.lmsal.com/EUVI/>`__
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
-        self.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
     def _rotation_matrix_from_crota(self):
@@ -76,24 +76,24 @@ class CORMap(GenericMap):
 
     References
     ----------
-    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
-    * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`_
-    * `COR2 Instrument Page <http://secchi.nrl.navy.mil/index.php?p=cor2>`_
-    * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`_
+    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`__
+    * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`__
+    * `COR2 Instrument Page <https://secchi.nrl.navy.mil//index.php?p=cor2>`__
+    * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`__
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
-        self.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod
@@ -116,22 +116,22 @@ class HIMap(GenericMap):
 
     References
     ----------
-    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <https://secchi.nrl.navy.mil>`_
-    * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
+    * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
+    * `STEREO SECCHI <https://secchi.nrl.navy.mil>`__
+    * `HI Instrument Page <http://www.stereo.rl.ac.uk>`__
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
-        self.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
 
     @classmethod

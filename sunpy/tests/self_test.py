@@ -1,4 +1,3 @@
-
 def print_missing_dependencies_report(missing, package="sunpy"):
     printed = False
     required_missing = missing.pop("required")
@@ -8,6 +7,8 @@ def print_missing_dependencies_report(missing, package="sunpy"):
         for dep in required_missing:
             print(f"* {dep}")
     for extra_name, dependencies in missing.items():
+        if "docs" in extra_name:
+            continue
         if not dependencies:
             continue
         printed = True
@@ -47,15 +48,17 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     print("Starting sunpy self test...")
     print()
     print("Checking for packages needed to run sunpy:")
-    missing = missing_dependencies_by_extra(exclude_extras=["asdf", "dask", "dev", "all", "docs"])
-    test_missing = missing.pop("tests")
-    printed = print_missing_dependencies_report(missing)
+    missing_deps = missing_dependencies_by_extra(exclude_extras=["asdf", "dask", "dev", "all", "docs"])
+    missing_tests = missing_deps.pop("tests")
+    missing_tests = {**missing_tests, **missing_deps.pop("tests-only")}
+    printed = print_missing_dependencies_report(missing_deps)
     if not printed:
         print("All required and optional sunpy dependencies are installed.")
-    if test_missing:
+    if missing_tests:
         print("You do not have all the required dependencies installed to run the sunpy test suite.")
         print()
-        print(list(test_missing.keys()))
+        for dep in missing_tests:
+            print(f"  * {dep}")
         print()
         print("If are using conda, you will want to run conda install <package name>")
         print('Otherwise you will want run pip install "sunpy[tests]"')
@@ -63,13 +66,14 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
         return 1
     print()
     print("Starting the sunpy test suite:")
-    test_args = _self_test_args(package=package, online=online,
-                                online_only=online_only, figure_only=figure_only, verbose=verbose)
+    test_args = _self_test_args(
+        package=package, online=online, online_only=online_only, figure_only=figure_only, verbose=verbose
+    )
+
     import pytest
 
     if verbose:
         print(f"Running pytest with arguments: {test_args}")
-
     return pytest.main(test_args)
 
 

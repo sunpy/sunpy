@@ -1,6 +1,6 @@
 """
-This module provides the following sample data files.  When a sample shortname
-is accessed, the corresponding file is downloaded if needed.  All files can be
+This module provides the following sample data files. When a sample shortname
+is accessed, the corresponding file is downloaded if needed. All files can be
 downloaded by calling :func:`~sunpy.data.sample.download_all`.
 
 Summary variables
@@ -59,7 +59,7 @@ def download_all(force_download=False):
     Parameters
     ----------
     force_download : `bool`
-        If ``True``, files are downloaded even if they already exist.  Default is
+        If ``True``, files are downloaded even if they already exist. Default is
         ``False``.
     """
     _get_sample_files(_SAMPLE_DATA.values(), force_download=force_download)

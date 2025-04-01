@@ -7,6 +7,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import EUIMap
+from .helpers import _test_private_date_setters
 
 header_list = [
     get_test_filepath('solo_L1_eui-fsi304-image_20201021T145510206_V03.header'),
@@ -20,6 +21,18 @@ def eui_map(request):
 
 def test_EUIMap(eui_map):
     assert isinstance(eui_map, EUIMap)
+
+
+def test_reference_date(eui_map):
+    assert eui_map.reference_date.isot == "2020-10-21T14:55:13.206"
+
+
+def test_date(eui_map):
+    assert eui_map.date.isot == "2020-10-21T14:55:10.206"
+
+
+def test_private_date_setters(eui_map):
+    _test_private_date_setters(eui_map)
 
 
 def test_is_datasource_for(eui_map):
@@ -49,7 +62,7 @@ def test_level_number(eui_map):
 
 
 def test_unit(eui_map):
-    assert eui_map.unit == u.Unit('ct')
+    assert eui_map.unit == u.Unit('DN')
 
 
 def test_norm_clip(eui_map):

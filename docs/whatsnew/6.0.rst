@@ -14,7 +14,50 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 6.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-**PUT STATS HERE**
+This release of ``sunpy`` contains 795 commits in 177 merged pull requests closing 67 issues from 34 people, 16 of which are first-time contributors to ``sunpy``.
+
+* 795 commits have been added since 5.1
+* 67 issues have been closed since 5.1
+* 177 pull requests have been merged since 5.1
+* 34 people have contributed since 5.1
+* 16 of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+-  Ahmed Hossam  *
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Aniket Mishra  *
+-  Ansh Dixit
+-  Aritra Sinha
+-  Ashish Bastola  *
+-  Benjamin Mampaey
+-  Brett J Graham
+-  Chris R. Gilly  *
+-  Clément Robert  *
+-  Daniel F. Ryan
+-  Daniel Garcia Briseno
+-  David Stansby
+-  Ghaith Kdimati  *
+-  Jayraj Dulange  *
+-  Laura Hayes
+-  Manit Singh  *
+-  Mubin Manasia  *
+-  Nabil Freij
+-  Piyush Sharma  *
+-  Rehan Chalana  *
+-  Samuel Bennett
+-  Samuel J. Van Kooten
+-  Shane Maloney
+-  Sijie Yu  *
+-  Sirjan Hansda  *
+-  Stuart J. Mumford
+-  Will Barnes
+-  Yash Malik  *
+-  Zach Burnett  *
+-  dependabot[bot]
+-  graham  *
+-  pre-commit-ci[bot]
 
 Updates to minimum dependencies
 ===============================
@@ -23,41 +66,117 @@ The minimum required version of Python has been updated to 3.10.
 
 The minimum required versions of core dependencies have been updated:
 
-- astropy >= 5.2.0
+- astropy >= 5.3.0
+- numpy >= 1.23.5
+- packaging >= 23.0
 
 The minimum required versions of these optional dependencies has also been updated:
 
-- asdf >= 2.12.0
-- asdf-astropy >= 0.2.0
+- asdf >= 2.13.0
+- asdf-astropy >= 0.4.0
 - beautifulsoup4 >= 4.11.0
 - cdflib >= 0.4.4
 - dask >= 2022.5.2
+- glymur >= 0.11.0
 - h5netcdf >= 1.0.0
 - h5py >= 3.7.0
 - lxml >= 4.9.0
 - opencv-python >= 4.6.0.66
 - pandas >= 1.4.0
+- python-dateutil >= 2.8.1
 - reproject >= 0.9.0
 - requests >= 2.28
 - scikit-image >= 0.19.0
-- scipy >= 1.8.0
+- scipy >= 1.9.0
 - spiceypy >= 5.0.0
 - tqdm >= 4.64.0
 - zeep >= 4.1.0
 
-Removal of ``sunpy.database``
-=============================
+Overhaul of optional dependencies
+=================================
 
-The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
-It has been deprecated since sunpy 4.1, and since there have been no major objections from the community since then we have completely removed ``sunpy.database`` in sunpy 6.0.
-If you are interested in seeing a replacement for ``sunpy.database``, either inside ``sunpy`` or as a third-party package, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.
+The optional dependencies have been overhauled to make it easier to install ``sunpy`` with only the dependencies you need.
+The following extra group have been added:
 
+- "core" (``pip install "sunpy[core]"``) - installs only the dependencies that are required to import ``sunpy`` or any of its sub-packages.
+- "scikit-image" (``pip install "sunpy[scikit-image]"``) - installs the ``scikit-image`` package used for image processing.
+  This dependency is no longer included in the "image" extra group.
 
-Arguments for :meth:`~sunpy.map.GenericMap.reproject_to`
-========================================================
+Additionally, the "all" (``pip install "sunpy[all]"``) install group is now a meta group that includes all optional dependencies.
+The "dask" group has also been removed.
 
-Arguments for this method have been changed to be keyword only after the target WCS argument.
-This was raising a warning since sunpy 4.1.
+Decoupling dates in `~sunpy.map.Map`
+====================================
+Previously, `~sunpy.map.Map` used the single `~sunpy.map.GenericMap.date` property to serve two, potentially conflicting purposes: the "canonical" observation time and the reference time for the coordinate system.
+In order to properly support map sources where those two times are not the same, there is a new `~sunpy.map.GenericMap.reference_date` property to serve as the reference time for the coordinate system.
+`~sunpy.map.GenericMap.date` continues to serve as the canonical observation time, which is commonly the start of the observation period.
+See the documentation for the respective properties for the logic of parsing the metadata.
+
+An example of a user-facing impact is that, for certain map sources, the time used by the `~sunpy.map.GenericMap.coordinate_frame` and `~sunpy.map.GenericMap.observer_coordinate` properties can be different from the time printed in the default title of plots.
+
+Support for ADvanced Adaptive Prediction Technique (ADAPT) data
+===============================================================
+
+A new map source has been added (`sunpy.map.sources.ADAPTMap`) to support the ADAPT data files.
+In addition, a new client (`sunpy.net.dataretriever.ADAPTClient`) has been added to search and download ADAPT files.
+
+Please note that there are several data arrays within the ADAPT FITS files and `~sunpy.map.Map` will, by default, try to read them all and fail.
+In these cases, you must specify the header-data Pair you want to read.
+For these data, it will always be the first one.
+You can specify this by passing the ``hdus`` keyword argument to `~sunpy.map.Map`,
+
+.. code-block:: python
+
+    >>> sunpy.map.Map("adapt40311_03k012_202401020800_i00005600n1.fts.gz", hdus=0)  # doctest: +SKIP
+
+New `~sunpy.coordinates.PlanarScreen` context manager
+=====================================================
+
+`~sunpy.coordinates.PlanarScreen` provides a context manager for interpreting 2D coordinates as being on the inside of a planar screen.
+The plane goes through Sun center (or some specified distance from Sun center) and is perpendicular to the vector between the specified vantage point and Sun center.
+This replaces the default assumption where 2D coordinates are mapped onto the surface of the Sun and is an alternative to `~sunpy.coordinates.SphericalScreen`.
+
+Method to compute the rotation matrix between two SPICE frames
+==============================================================
+
+A new function `~sunpy.coordinates.spice.get_rotation_matrix` has been implemented to compute the rotation matrix between two SPICE frames.
+
+.. code-block:: python
+
+    >>> from sunpy.coordinates.spice import get_rotation_matrix
+    >>> import astropy.units as u
+
+    >>> source_frame = "J2000"
+    >>> target_frame = "Galactic"
+    >>> from_time = '2001-01-01T00:00:00'
+    >>> rotation_matrix = get_rotation_matrix(source_frame, target_frame, from_time)
+    >>> rotation_matrix
+    array([[-0.05487554, -0.8734371 , -0.48383499],
+           [ 0.49410945, -0.44482959,  0.74698225],
+           [-0.86766614, -0.19807639,  0.45598379]])
+    >>> vec_components = [1, 0, 0] * u.T
+    >>> transformed_matrix = rotation_matrix @ vec_components
+    >>> transformed_matrix
+    <Quantity [-0.05487554,  0.49410945, -0.86766614] T>
+
+Fix filename sanitization for downloaded files from the VSO
+===========================================================
+
+The `.VSOClient` has been sanitizing filenames to ensure that they are valid on all platforms.
+However, we have now fixed the sanitization to be more conservative, to follow the NFKC Unicode normalization, which is the recommended normalization for filenames on most platforms.
+This now does not replace periods, does not change letter case and does not leave Unicode characters decomposed.
+One example is that the letter "ä" will now be preserved in the filename.
+Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" will be preserved instead of being replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits".
+
+.. warning::
+
+    This will most likely force a redownload of files from several data providers.
+
+Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
+======================================================================
+
+:meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
+Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.
 
 Removal of ``sunpy.net.helioviewer.HelioViewerClient``
 ======================================================
@@ -67,24 +186,9 @@ Users should instead use the `hvpy <https://hvpy.readthedocs.io/en/latest/>`__ p
 This package provides a Python wrapper around the Helioviewer API and is maintained by the Helioviewer Project.
 The ``hvpy`` package supersedes the ``sunpy.net.helioviewer`` module.
 
-Arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` are now keywords only
-===================================================================================
+Removal of ``sunpy.database``
+=============================
 
-The arguments for :meth:`sunpy.timeseries.GenericTimeSeries.peek` have been changed to be keyword only.
-This means that you must now specify the arguments by name, rather than by position and has been done to make the API more consistent.
-This has been raising a warning since sunpy 4.1 and is now an error.
-
-Fix filename sanitization for downloaded files from the VSO
-===========================================================
-
-The `.VSOClient` has been sanitizing filenames to ensure that they are valid on all platforms.
-However, we have now fixed the sanitization to be more conservative, to follow the NFKC Unicode normalization, which is the recommended normalization for filenames on most platforms.
-This now does not replace periods, does not change letter case and do not leave Unicode characters decomposed.
-An example of this is that the filename ``ä`` will now be replaced with ``ä`` instead of being left out of the filename.
-Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" used to be replaced with "aia_lev1_171a_2020_06_07t06_33_09_35z_image_lev1.fits" and now will not be.
-
-Deprecate positional arguments in :meth:`sunpy.map.GenericMap.plot`
-===================================================================
-
-The arguments for :meth:`sunpy.map.GenericMap.plot` have been changed to being keyword only.
-Pass them as keyword arguments (e.g., ``..., title=True, ...``) instead.
+The ``sunpy.database`` module has not been actively maintained for over a year now and has a number of outstanding issues.
+It has been deprecated since sunpy 4.1, and since there have been no major objections from the community since then we have completely removed ``sunpy.database`` in sunpy 6.0.
+If you are interested in seeing a replacement for ``sunpy.database``, either inside ``sunpy`` or as a third-party package, please join the discussion thread at https://community.openastronomy.org/t/deprecating-sunpy-database/495.

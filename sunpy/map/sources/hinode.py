@@ -2,7 +2,8 @@
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
@@ -36,12 +37,12 @@ class XRTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`_
-    * `XRT Instrument Page <http://xrt.cfa.harvard.edu>`_
-    * `Fits header reference <http://hinode.nao.ac.jp/uploads/2016/04/22/SB_MW_Key13.pdf>`_
-    * `Hinode User Guide <http://hinode.nao.ac.jp/en/for-researchers/analysis-guide/>`_
-    * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
-    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/abs/1011.2867>`_
+    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`__
+    * `XRT Instrument Page <https://xrt.cfa.harvard.edu/>`__
+    * `Fits header reference <https://hinode.nao.ac.jp/uploads/2016/04/22/SB_MW_Key13.pdf>`__
+    * `Hinode User Guide <https://hinode.nao.ac.jp/en/for-researchers/analysis-guide/>`__
+    * `XRT Analysis Guide <https://xrt.cfa.harvard.edu/science/tutorials.php>`__
+    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/abs/1011.2867>`__
     """
     filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
                                   "Be_thin", "C_poly", "Open"]
@@ -56,9 +57,21 @@ class XRTMap(GenericMap):
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
         super().__init__(data, meta=meta, **kwargs)
-        self.plot_settings['cmap'] = 'hinodexrt'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = 'hinodexrt'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle SOTMap-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def _timesys(self):
@@ -105,10 +118,10 @@ class XRTMap(GenericMap):
         # See Table 1.1 and Section 2.11 of the XRT Analysis Guide.
         unit = super().unit
         if not unit:
-            unit = u.ct
+            unit = u.DN
             history = self.meta.get('HISTORY', '')
             if "xrt_renormalize" in history.lower():
-                unit = u.ct / u.second
+                unit = u.DN / u.second
         return unit
 
     @classmethod
@@ -130,10 +143,10 @@ class SOTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
-    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`_
-    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`_
-    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
+    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`__
+    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`__
+    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`__
+    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`__
     """
     # TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation
@@ -166,7 +179,19 @@ class SOTMap(GenericMap):
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
                  }
 
-        self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+        self.plotter.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle SOTMap-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def detector(self):

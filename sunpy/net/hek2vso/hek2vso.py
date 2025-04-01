@@ -44,7 +44,7 @@ def translate_results_to_query(results):
     19
 
     >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
-    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(HMI: Helioseismic and Magnetic Imager) object at ...>, <sunpy.net.attrs.Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
+    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument: HEK object at ...>, <sunpy.net.attrs.Wavelength(0.0, 0.0, 'Angstrom')>]]
     """
     queries = []
     if isinstance(results, HEKTable):
@@ -178,8 +178,8 @@ class H2VClient:
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
         >>> q = h.search(a.Time(tstart, tend), a.hek.EventType(event_type))  # doctest: +REMOTE_DATA
-        >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
-        >>> res = h2v.translate_and_query(q)  # doctest: +REMOTE_DATA
+        >>> h2v = hek2vso.H2VClient()  # doctest: +SKIP
+        >>> res = h2v.translate_and_query(q)  # doctest: +SKIP
         """
         vso_query = translate_results_to_query(hek_results)
         kwargs = {}

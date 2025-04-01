@@ -10,6 +10,7 @@ from astropy.io import fits
 
 from sunpy.map import Map
 from sunpy.map.sources import WISPRMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -256,11 +257,23 @@ def test_is_datasource_for(wispr_map):
 def test_observer_coordinate(wispr_map):
     obs_coord = wispr_map.observer_coordinate
     assert isinstance(obs_coord, SkyCoord)
-    assert obs_coord.obstime.isot == wispr_map.meta['date-obs']
+    assert obs_coord.obstime.isot == wispr_map.meta['date-avg']
 
 
 def test_observatory(wispr_map):
     assert wispr_map.observatory == "Parker Solar Probe"
+
+
+def test_reference_date(wispr_map):
+    assert wispr_map.reference_date.isot == "2020-01-25T00:08:20.842"
+
+
+def test_date(wispr_map):
+    assert wispr_map.date.isot == "2020-01-25T00:02:29.618"
+
+
+def test_private_date_setters(wispr_map):
+    _test_private_date_setters(wispr_map)
 
 
 def test_measurement(wispr_map):
@@ -299,7 +312,7 @@ def test_detector(wispr_map):
 
 
 def test_unit(wispr_map):
-    assert wispr_map.unit == u.Unit('ct')
+    assert wispr_map.unit == u.Unit('DN')
 
 
 def test_norm_clip(wispr_map):

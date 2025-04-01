@@ -1,5 +1,5 @@
-target-version = "py310"
-line-length = 110
+target-version = "py311"
+line-length = 120
 exclude = [
   ".git,",
   "__pycache__",
@@ -9,36 +9,62 @@ exclude = [
 ]
 
 [lint]
-select = ["E", "F", "W", "UP", "PT"]
+select = [
+  "E",
+  "F",
+  "W",
+  "UP",
+  "PT",
+]
 extend-ignore = [
   # pycodestyle (E, W)
-  "E501", # LineTooLong                             # TODO! fix
+  "E501", # ignore line length will use a formatter instead
+  # pyupgrade (UP)
+  "UP038", # Use | in isinstance - not compatible with models and is slower
   # pytest (PT)
   "PT001", # Always use pytest.fixture()
-  "PT004", # Fixtures which don't return anything should have leading _
-  "PT007", # Parametrize should be lists of tuples  # TODO! fix
-  "PT011", # Too broad exception assert             # TODO! fix
   "PT023", # Always use () on pytest decorators
+  # flake8-pie (PIE)
+  "PIE808", # Disallow passing 0 as the first argument to range
+  # flake8-use-pathlib (PTH)
+  "PTH123", # open() should be replaced by Path.open()
+  # Ruff (RUF)
+  "RUF003", # Ignore ambiguous quote marks, doesn't allow ' in comments
+  "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+  "RUF013", # PEP 484 prohibits implicit `Optional`
+  "RUF015", # Prefer `next(iter(...))` over single element slice
 ]
-
-[flake8-tidy-imports]
-[flake8-tidy-imports.banned-api]
-"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
 
 [lint.per-file-ignores]
-# Part of configuration, not a package.
-"setup.py" = ["INP001"]
-"conftest.py" = ["INP001"]
+"setup.py" = [
+  "INP001", # File is part of an implicit namespace package.
+]
+"conftest.py" = [
+  "INP001", # File is part of an implicit namespace package.
+]
 "docs/conf.py" = [
-  "E402"  # Module imports not at top of file
+  "E402" # Module imports not at top of file
 ]
 "docs/*.py" = [
-  "INP001",  # Implicit-namespace-package. The examples are not a package.
+  "INP001", # File is part of an implicit namespace package.
 ]
-"__init__.py" = ["E402", "F401", "F403"]
-"test_*.py" = ["B011", "D", "E402", "PGH001", "S101"]
+"examples/**.py" = [
+  "T201", # allow use of print in examples
+  "INP001", # File is part of an implicit namespace package.
+]
+"__init__.py" = [
+  "E402", # Module level import not at top of cell
+  "F401", # Unused import
+  "F403", # from {name} import * used; unable to detect undefined names
+  "F405", # {name} may be undefined, or defined from star imports
+]
+"test_*.py" = [
+  "E402", # Module level import not at top of cell
+]
 # Need to import clients to register them, but don't use them in file
-"sunpy/net/__init__.py" = ["F811"]
+"sunpy/net/__init__.py" = [
+  "F811", # Redefinition of unused {name} from {row}
+]
 # These files are allowed to use warnings.warn
 "sunpy/util/exceptions.py" = ["TID251"]
 "sunpy/util/tests/test_logger.py" = ["TID251"]
@@ -46,3 +72,7 @@ extend-ignore = [
 
 [lint.pydocstyle]
 convention = "numpy"
+
+[lint.flake8-tidy-imports]
+[lint.flake8-tidy-imports.banned-api]
+"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"

@@ -58,7 +58,8 @@ class CompositeMap:
     >>> comp_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE,
     ...                          sunpy.data.sample.EIT_195_IMAGE,
     ...                          composite=True)  # doctest: +REMOTE_DATA
-    >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))  # doctest: +REMOTE_DATA
+    >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+    INFO: Missing metadata for solar radius: assuming the standard radius of the photosphere. [sunpy.map.mixins.mapmeta]
     >>> comp_map.peek()  # doctest: +SKIP
 
     """
@@ -154,7 +155,7 @@ class CompositeMap:
         -------
         `list`
             A list of the contour levels of map at index 'index' in the
-            composite map.  If index is None, then the contour levels of all
+            composite map. If index is None, then the contour levels of all
             the maps are returned as a list of lists.
         """
         if index is None:
@@ -173,7 +174,7 @@ class CompositeMap:
         Returns
         -------
         {`dict` | `list`}
-            The plot settings of the map(s) in the composite map.  If None
+            The plot settings of the map(s) in the composite map. If None
             then the plot settings of all the maps are returned in a list.
         """
 
@@ -195,7 +196,7 @@ class CompositeMap:
         -------
         {`float` | `list`}
             The layering order (z-order) of the map(s) in the composite
-            map.  If None then the layering order of all the maps is returned in
+            map. If None then the layering order of all the maps is returned in
             a list.
         """
         if index is None:
@@ -211,7 +212,7 @@ class CompositeMap:
         index : `int`
             The index of the map in the composite map.
         alpha : `float`
-            A float in the range 0 to 1.  Increasing values of alpha decrease
+            A float in the range 0 to 1. Increasing values of alpha decrease
             the transparency of the layer (0 is complete transparency, 1
             indicates the layer will be completely opaque).
 
@@ -238,7 +239,7 @@ class CompositeMap:
         percent : `bool`
             If True, the input 'levels' are interpreted as percentages relative
             to the maximum value of the data in layer 'index' of the composite
-            map.  If False, the contour levels are set directly from 'levels'.
+            map. If False, the contour levels are set directly from 'levels'.
 
         Returns
         -------
@@ -365,7 +366,7 @@ class CompositeMap:
         """Plots the composite map object by calling :meth:`~sunpy.map.GenericMap.plot`
         or :meth:`~sunpy.map.GenericMap.draw_contours`.
 
-        By default, each map is plotted as an image.  If a given map has levels
+        By default, each map is plotted as an image. If a given map has levels
         defined (via :meth:`~sunpy.map.CompositeMap.set_levels`), that map will instead
         be plotted as contours.
 
@@ -444,7 +445,9 @@ class CompositeMap:
             if m.levels is False:
                 # We tell GenericMap.plot() that we need to autoalign the map
                 if wcsaxes_compat.is_wcsaxes(axes):
-                    params['autoalign'] = True
+                    # Set 'autoalign' to True if `m.wcs` differs from `axes.wcs`
+                    # otherwise, False.
+                    params['autoalign'] = not axes.wcs.wcs.compare(m.wcs.wcs, tolerance=0.01)
 
                 # Filter `matplot_args`
                 if params.get('autoalign', None) in (True, 'pcolormesh'):

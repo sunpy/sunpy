@@ -1,1 +1,0 @@
-:meth:`sunpy.map.GenericMap.draw_contours` don't run internal transform code if ``transform`` keyword is provided.

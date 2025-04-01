@@ -1,0 +1,32 @@
+%YAML 1.1
+---
+$schema: "http://stsci.edu/schemas/yaml-schema/draft-01"
+id: "asdf://sunpy.org/sunpy/schemas/generic_map-1.1.1"
+
+title: |
+  Represents the SunPy GenericMap object
+
+description:
+  This object represents the base of the SunPy map tree by serialising the GenericMap class.
+
+type: object
+properties:
+  meta:
+    type: object
+  data:
+    tag: "tag:stsci.edu:asdf/core/ndarray-1.0.0"
+  plot_settings:
+    type: object
+  mask:
+    tag: "tag:stsci.edu:asdf/core/ndarray-1.0.0"
+  unit:
+    anyOf:
+     - tag: "tag:stsci.edu:asdf/unit/unit-1.*"
+     - tag: "tag:astropy.org:astropy/units/unit-1.*"
+  uncertainty:
+    type: object
+
+
+required: [meta, data]
+additionalProperties: False
+...

@@ -1,1 +1,0 @@
-`~sunpy.net.jsoc.attrs.Notify` checks that a valid email address has been given as a value.

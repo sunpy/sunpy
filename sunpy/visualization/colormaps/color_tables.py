@@ -105,7 +105,7 @@ def aia_color_table(wavelength: u.angstrom):
 
     Parameters
     ----------
-    wavelength : `~astropy.units.quantity`
+    wavelength : `~astropy.units.quantity.Quantity`
         Wavelength for the desired AIA color table.
     """
     aia_wave_dict = create_aia_wave_dict()
@@ -154,8 +154,8 @@ def sswidl_lasco_color_table(number):
         raise ValueError("Invalid LASCO number. Valid values are 2, 3.")
 
 
-# Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
-# to explicitly copy the numbers from the IDL calculation.  This is a little
+# Translated from the JP2Gen IDL SXT code lct_yla_gold.pro. Might be better
+# to explicitly copy the numbers from the IDL calculation. This is a little
 # more compact.
 sxt_gold_r = np.concatenate((np.linspace(0, 255, num=185,
                                          endpoint=False), 255 * np.ones(71)))
@@ -212,7 +212,7 @@ def trace_color_table(measurement):
         return cmap_from_rgb_file(f'TRACE {measurement}', f'trace_{measurement}.csv')
     except OSError:
         raise ValueError(
-            "Invalid TRACE filter waveband passed.  Valid values are "
+            "Invalid TRACE filter waveband passed. Valid values are "
             "171, 195, 284, 1216, 1550, 1600, 1700, WL")
 
 
@@ -289,7 +289,7 @@ def iris_sji_color_table(measurement, aialike=False):
     try:
         r, g, b = color_table[measurement]
     except KeyError:
-        raise ValueError("Invalid IRIS SJI waveband.  Valid values are \n" +
+        raise ValueError("Invalid IRIS SJI waveband. Valid values are \n" +
                          str(list(color_table.keys())))
 
     return _cmap_from_rgb(r, g, b, f'IRIS SJI {measurement:s}')
@@ -300,36 +300,34 @@ def hmi_mag_color_table():
     Returns an alternate HMI Magnetogram color table; from Stanford
     University/JSOC.
 
+    This is used by default for the `~sunpy.map.sources.HMISynopticMap`.
+    But by default, for `~sunpy.map.sources.HMIMap` a grayscale colormap is used.
+
     Examples
     --------
-    >>> # Example usage for NRT data:
-    >>> import sunpy.map
-    >>> import matplotlib
-    >>> hmi = sunpy.map.Map('fblos.fits')  # doctest: +SKIP
-    >>> hmi.plot_settings['cmap'] = matplotlib.colormaps['hmimag']  # doctest: +SKIP
-    >>> hmi.peek(vmin=-1500.0, vmax=1500.0)  # doctest: +SKIP
 
-    >>> # OR (for a basic plot with pixel values on the axes)
-    >>> import numpy as np
-    >>> import matplotlib
-    >>> import matplotlib.pyplot as plt
-    >>> import sunpy.map
-    >>> hmi = sunpy.map.Map('fblos.fits')  # doctest: +SKIP
-    >>> plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=matplotlib.colormaps['hmimag'], origin='lower')  # doctest: +SKIP
-    >>> plt.show()  # doctest: +SKIP
+    .. plot::
+        :include-source:
+        :context: close-figs
 
-    >>> # Example usage for science (Level 1.0) data:
-    >>> import numpy as np
-    >>> import matplotlib
-    >>> import sunpy.map
-    >>> hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')  # doctest: +SKIP
-    >>> hmir = hmi.rotate()  # doctest: +SKIP
-    >>> hmir.plot_settings['cmap'] = matplotlib.colormaps['hmimag']  # doctest: +SKIP
-    >>> hmir.peek(vmin=-1500.0, vmax=1500.0)  # doctest: +SKIP
+        import matplotlib.pyplot as plt
+        import astropy.units as u
+
+        import sunpy.map
+        from sunpy.data.sample import HMI_LOS_IMAGE
+
+        smap = sunpy.map.Map(HMI_LOS_IMAGE)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection=smap)
+
+        smap.plot(axes=ax, cmap="hmimag", norm=None, vmin=-1500.0, vmax=1500.0)
+
+        plt.show()
 
     References
     ----------
-    * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`_
+    * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`__
     """
     return cmap_from_rgb_file('SDO HMI magnetogram', 'hmi_mag.csv')
 

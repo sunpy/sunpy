@@ -15,7 +15,7 @@ performing SPICE computations, its API is very different from that of
 This module "wraps" `~spiceypy.spiceypy` functionality so that relevant SPICE
 computations can be accessed using the `~astropy.coordinates.SkyCoord` API.
 When loading a set of kernels, a frame class and corresponding transformations
-are created for each SPICE frame.  One can also query the location of a body
+are created for each SPICE frame. One can also query the location of a body
 as computed via SPICE or retrieve the field of view (FOV) of an instrument.
 
 To facilitate the conversion of a SPICE-based coordinate to the built-in frames
@@ -43,18 +43,18 @@ Examples
 # Developer notes:
 # * We create a public SkyCoord frame for each SPICE frame that is defined in
 #   the kernels, but this does not include built-in SPICE frames (e.g., inertial
-#   frames or IAU_* frames).  The user needs to manually install each built-in
+#   frames or IAU_* frames). The user needs to manually install each built-in
 #   SPICE frame that they want to use because otherwise there are simply too
 #   many.
 # * We also create a private SkyCoord frame for each unique SPICE frame center.
 #   Each SPICE frame defines its center, and typically many frames share the
-#   same center.  By creating these private frames for frame centers, we can
+#   same center. By creating these private frames for frame centers, we can
 #   transform 2D coordinates between frames that share the same center because
 #   the origin does not change.
 # * Any transformation that involves a change in frame center (including even
 #   a change in the body ID that still maps to the same location) will be
 #   treated as a change in origin, and the transformation is routed through
-#   ICRS.  ICRS is a safe frame to use because the SPICE built-in inertial
+#   ICRS. ICRS is a safe frame to use because the SPICE built-in inertial
 #   frame 'J2000' is ICRS, despite its name.
 
 import numpy as np
@@ -77,7 +77,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame']
+__all__ = ['SpiceBaseCoordinateFrame', 'get_body', 'get_fov', 'initialize', 'install_frame', 'get_rotation_matrix']
 
 
 # Note that this epoch is very slightly different from the typical definition of J2000.0 (in TT)
@@ -102,7 +102,7 @@ class SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
     Parameters
     ----------
     obstime : {parse_time_types}
-        The time of the observation.  This is used to determine the
+        The time of the observation. This is used to determine the
         position of solar-system bodies (e.g., the Sun and the Earth) as
         needed to define the origin and orientation of the frame.
     """
@@ -116,7 +116,7 @@ class SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
                        f"Origin: '{cls._center_name}'\n\n"
                        "Parameters\n----------\n"
                        f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                       "    The time of the observation.  This is used to determine the\n"
+                       "    The time of the observation. This is used to determine the\n"
                        "    position of solar-system bodies (e.g., the Sun and the Earth) as\n"
                        "    needed to define the origin and orientation of the frame.\n")
 
@@ -276,7 +276,7 @@ def initialize(kernels):
     location of the meta-kernel file.
 
     This function has simple support for being called multiple times in a session in
-    order to load multiple sets of kernels.  However, there may be unexpected
+    order to load multiple sets of kernels. However, there may be unexpected
     behavior if this function is called after the frame classes start being used.
 
     Examples
@@ -317,7 +317,7 @@ def install_frame(spice_frame):
     """
     Install a specified SPICE frame.
 
-    Installing a SPICE frame creates a corresponding frame class.  All frames
+    Installing a SPICE frame creates a corresponding frame class. All frames
     defined in the kernel pool are already automatically installed in the call
     to :func:`~sunpy.coordinates.spice.initialize`, so this function is used to
     manually install built-in frames, namely inertial or body-fixed (PCK) frames.
@@ -361,7 +361,7 @@ def get_body(body, time, *, spice_frame='J2000', observer=None):
     time : {parse_time_types}
         Time to use in a parse_time-compatible format.
     spice_frame : `str`
-        The SPICE frame name to use for the returned coordinate.  Defaults to
+        The SPICE frame name to use for the returned coordinate. Defaults to
         ``'J2000'``, which is equivalent to Astropy's `~astropy.coordinates.ICRS`.
     observer : `~astropy.coordinates.SkyCoord`
         If `None`, the returned coordinate is the instantaneous or “true” location.
@@ -419,8 +419,8 @@ def get_fov(instrument, time, *, resolution=100):
     """
     Get the field of view (FOV) for an instrument via SPICE.
 
-    Rectangular and polygonal FOVs are represented by their vertices.  Circular FOVs
-    are approximated by a series of points.  This function does not yet support
+    Rectangular and polygonal FOVs are represented by their vertices. Circular FOVs
+    are approximated by a series of points. This function does not yet support
     elliptical FOVs.
 
     .. note::
@@ -436,7 +436,7 @@ def get_fov(instrument, time, *, resolution=100):
     time : {parse_time_types}
         Time to use in a parse_time-compatible format.
     resolution : `int`
-        Number of points to use for a circular FOV.  Defaults to 100.
+        Number of points to use for a circular FOV. Defaults to 100.
 
     Examples
     --------
@@ -467,3 +467,71 @@ def get_fov(instrument, time, *, resolution=100):
                    obstime=obstime,
                    representation_type='unitspherical')
     return fov
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
+    """
+    Get the rotation matrix between the orientations of two SPICE frames.
+
+    Parameters
+    ----------
+    source_frame : `str`
+        The source frame specified by SPICE frame name.
+
+    target_frame : `str`
+        The target frame specified by SPICE frame name.
+
+    from_time : {parse_time_types}
+        The time of the source frame.
+
+    to_time : {parse_time_types}
+        The time of the target frame. Defaults to ``None``, which means
+        ``from_time`` is used.
+
+    Returns
+    -------
+    `~numpy.ndarray`
+        A 3x3 rotation matrix for the change in orientation.
+
+    Examples
+    --------
+    >>> from sunpy.coordinates.spice import get_rotation_matrix
+    >>> source_frame = "J2000"
+    >>> target_frame = "Galactic"
+    >>> from_time = '2001-01-01T00:00:00'
+    >>> rotation_matrix = get_rotation_matrix(source_frame, target_frame, from_time)
+    >>> rotation_matrix
+    array([[-0.05487554, -0.8734371 , -0.48383499],
+           [ 0.49410945, -0.44482959,  0.74698225],
+           [-0.86766614, -0.19807639,  0.45598379]])
+
+    This rotation matrix can be used to re-orient a vector (field), e.g.:
+
+    >>> vec_components = [1, 0, 0] * u.T
+    >>> transformed_matrix = rotation_matrix @ vec_components
+    >>> transformed_matrix
+    <Quantity [-0.05487554, 0.49410945, -0.86766614] T>
+    """
+    source_frame_spice = source_frame.upper()
+    target_frame_spice = target_frame.upper()
+
+    from_time = parse_time(from_time)
+    to_time = parse_time(to_time) if to_time else from_time
+
+    from_time_et = _convert_to_et(from_time)
+    to_time_et = _convert_to_et(to_time)
+
+    # First transformation: from source frame at from_time to J2000
+    from_source_to_j2000 = spiceypy.sxform(source_frame_spice, "J2000", from_time_et)
+
+    # Second transformation: from J2000 at to_time to target frame
+    from_j2000_to_target = spiceypy.sxform("J2000", target_frame_spice, to_time_et)
+
+    # Combine: source -> J2000 -> target
+    combined_transform = spiceypy.mxmg(from_j2000_to_target, from_source_to_j2000)
+
+    # Extract the rotation matrix (upper left 3x3 block)
+    rotation_matrix = combined_transform[:3, :3]
+
+    return rotation_matrix

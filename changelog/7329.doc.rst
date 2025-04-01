@@ -1,1 +1,0 @@
-Added Clarification on setting JSOC Email.

@@ -46,9 +46,9 @@ class LYRATimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`_
-    * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
-    * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
+    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`__
+    * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`__
+    * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
@@ -132,7 +132,7 @@ class LYRATimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod
@@ -152,7 +152,7 @@ class LYRATimeSeries(GenericTimeSeries):
         start_str = metadata.get('date-obs', metadata.get('date_obs', ''))
         start = parse_time(start_str)
 
-        # First column are times.  For level 2 data, the units are [s].
+        # First column are times. For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
             times = start + TimeDelta(fits_record.field(0)*u.second)
@@ -160,7 +160,7 @@ class LYRATimeSeries(GenericTimeSeries):
             td = [int(n) for n in fits_record.field(0)]
             times = start + TimeDelta(td*u.minute)
         else:
-            raise ValueError("Time unit in LYRA fits file not recognised.  "
+            raise ValueError("Time unit in LYRA fits file not recognised. "
                              "Value = {}".format(hdulist[1].header['TUNIT1']))
 
         # Rest of columns are the data

@@ -13,7 +13,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import SphericalScreen
 from sunpy.map import Map
 
 ###############################################################################
@@ -32,7 +32,7 @@ aia = Map(sunpy.data.sample.AIA_171_IMAGE)
 # overlaid. Next, zoom in around the solar flare so the RHESSI contours are
 # visible. Also, specify the RHESSI contour levels to be plotted.
 
-with Helioprojective.assume_spherical_screen(eit.observer_coordinate):
+with SphericalScreen(eit.observer_coordinate):
     aia = aia.reproject_to(eit.wcs)
 
 bottom_left = [200, -800] * u.arcsec

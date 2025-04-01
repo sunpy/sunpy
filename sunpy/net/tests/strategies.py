@@ -74,7 +74,7 @@ def online_instruments():
 
 @st.composite
 def time_attr(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.now(datetime.timezone.utc).year, 1, 1, 0, 0),
+              max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
               min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
@@ -90,7 +90,7 @@ def time_attr(draw, time=Times(
 
 @st.composite
 def goes_time(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.now(datetime.timezone.utc).year, 1, 1, 0, 0),
+              max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
               min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
@@ -116,7 +116,7 @@ def goes_time(draw, time=Times(
 
 @st.composite
 def srs_time(draw, time=Times(
-             max_value=datetime.datetime.now(datetime.timezone.utc),
+             max_value=datetime.datetime.now(datetime.UTC),
              min_value=datetime.datetime(1996, 1, 1)),
              delta=TimeDelta()):
     t1 = draw(time)

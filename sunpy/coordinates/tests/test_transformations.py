@@ -33,7 +33,9 @@ from sunpy.coordinates import (
     HeliographicCarrington,
     HeliographicStonyhurst,
     Helioprojective,
+    HelioprojectiveRadial,
     SolarMagnetic,
+    SphericalScreen,
     propagate_with_solar_surface,
     sun,
     transform_with_sun_center,
@@ -120,6 +122,64 @@ def test_hpc_hpc_null():
     assert hpc_out.observer == hpc_new.observer
 
 
+@pytest.mark.parametrize(('Tx', 'Ty', 'psi', 'delta', 'theta'),
+                         [(0*u.arcsec, 0*u.arcsec, 0*u.deg, -90*u.deg, 0*u.arcsec),
+                          (360*u.arcsec, 0*u.arcsec, 270*u.deg, -89.9*u.deg, 360*u.arcsec),
+                          (0*u.arcsec, -720*u.arcsec, 180*u.deg, -89.8*u.deg, 720*u.arcsec),
+                          (360*u.arcsec, -720*u.arcsec, 206.564946*u.deg, -89.776393*u.deg, 804.984145*u.arcsec)])
+def test_hpc_hpr(Tx, Ty, psi, delta, theta):
+    observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, radius=1*u.AU)
+    hpc = Helioprojective(Tx, Ty, observer=observer)
+
+    hpr = hpc.transform_to(HelioprojectiveRadial(observer=observer))
+    assert_quantity_allclose(hpr.psi, psi)
+    assert_quantity_allclose(hpr.delta, delta)
+    assert_quantity_allclose(hpr.theta, theta)
+
+    hpc_back = hpr.transform_to(hpc)
+    assert_quantity_allclose(hpc_back.Tx, Tx)
+    assert_quantity_allclose(hpc_back.Ty, Ty)
+
+
+def test_hpc_hpc_spherical_screen():
+    D0 = 20*u.R_sun
+    L0 = 67.5*u.deg
+    Tx0 = 45*u.deg
+    observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    # Once our coordinate is placed on the screen, observer_out will be looking
+    # directly along the line containing itself, the coordinate, and the Sun
+    observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=2*D0)
+
+    sc_in = SkyCoord(Tx0, 0*u.deg, observer=observer_in,
+                     frame='helioprojective')
+
+    with SphericalScreen(observer_in):
+        sc_3d = sc_in.make_3d()
+        sc_out = sc_in.transform_to(Helioprojective(observer=observer_out))
+
+    assert quantity_allclose(sc_3d.distance, D0)
+
+    assert quantity_allclose(sc_out.Tx, 0*u.deg, atol=1e-6*u.deg)
+    assert quantity_allclose(sc_out.Ty, 0*u.deg, atol=1e-6*u.deg)
+    # Law of Cosines to compute the coordinate's distance from the Sun, and then
+    # r_expected is the distance from observer_out to the coordinate
+    radius_expected = 2 * D0 - np.sqrt(2 * D0**2 - 2 * D0 * D0 * np.cos(45*u.deg))
+    assert quantity_allclose(sc_out.distance, radius_expected)
+
+    # Now test with a very large screen, letting us approximate the two
+    # observers as being the same (aside from a different zero point for Tx)
+    r_s = 1e9 * u.lightyear
+    with SphericalScreen(observer_in, radius=r_s):
+        sc_3d = sc_in.make_3d()
+        sc_out = sc_in.transform_to(Helioprojective(observer=observer_out))
+
+    assert quantity_allclose(sc_3d.distance, r_s)
+
+    assert quantity_allclose(sc_out.Tx, Tx0 + L0)
+    assert quantity_allclose(sc_out.Ty, 0*u.deg)
+    assert quantity_allclose(sc_out.distance, r_s)
+
+
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
     adate = parse_time('2015/05/01 01:13:00')
@@ -160,7 +220,7 @@ def test_hcrs_hgs_array_obstime():
 
 def test_hgs_hcrs():
     # This test checks the HGS->HCRS transformation by transforming from HGS to
-    # HeliocentricMeanEcliptic (HME).  It will fail if there are errors in Astropy's
+    # HeliocentricMeanEcliptic (HME). It will fail if there are errors in Astropy's
     # HCRS->ICRS or ICRS->HME transformations.
 
     # Use published HGS coordinates in the Astronomical Almanac (2013), pages C6-C7

@@ -1,8 +1,16 @@
+.. doctest-skip-all
+
 .. _sunpy-tutorial-acquiring-data-jsoc:
 
 **************************************
 Finding and Downloading Data from JSOC
 **************************************
+
+.. warning::
+
+    The JSOC suffered extensive water damage and are currently working to fix this.
+    As a result, currently there is no data access.
+    `For more information, please find that here. <https://solarweb1.stanford.edu/JSOC_Emergency_Resources>`__
 
 Joint Science Operations Center (JSOC) contains data products from the Solar Dynamics Observatory, as well as certain other missions and instruments.
 These data are available from the JSOC database, which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`__.
@@ -30,7 +38,7 @@ It can be imported as follows:
 
 .. code-block:: python
 
-   >>> from sunpy.net import Fido, attrs as a
+    >>> from sunpy.net import Fido, attrs as a
 
 The JSOC client handles the particulars of how the data from the data provider is downloaded to your computer.
 
@@ -46,33 +54,31 @@ To search for data in JSOC, your query needs at minimum, a "Series" name and a "
 
 .. code-block:: python
 
-   >>> print(a.jsoc.Series)
-   sunpy.net.jsoc.attrs.Series
-   <BLANKLINE>
-   The JSOC Series to Download.
-   <BLANKLINE>
-             Attribute Name           Client             Full Name                                                Description
-   ---------------------------------- ------ ---------------------------------- --------------------------------------------------------------------------------
-   aia_flatfield                      JSOC   aia.flatfield                      AIA flatfield
-   aia_lev1                           JSOC   aia.lev1                           AIA Level 1
-   aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
-   aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
-   aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
-   aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
-   aia_response                       JSOC   aia.response                       AIA instrument response table
-   aia_temperature_summary_300s       JSOC   aia.temperature_summary_300s       Temperature Statistics from AIA Housekeeping - Thermal Packet
-   hmi_b_135s                         JSOC   hmi.b_135s                         Full-disk Milne-Eddington inversion with the azimuth disambiguation informati...
+    >>> print(a.jsoc.Series)
+    sunpy.net.jsoc.attrs.Series
+    <BLANKLINE>
+    The JSOC Series to Download.
+    <BLANKLINE>
+              Attribute Name           Client ...                                   Description
+    ---------------------------------- ------ ... --------------------------------------------------------------------------------
+    aia_flatfield                      JSOC   ... AIA flatfield
+    aia_lev1                           JSOC   ... AIA Level 1
+    aia_lev1_euv_12s                   JSOC   ... AIA Level 1, 12 second cadence
+    aia_lev1_uv_24s                    JSOC   ... AIA Level 1, 24 second cadence
+    aia_lev1_vis_1h                    JSOC   ... AIA Level 1, 3600 second cadence
+    aia_master_pointing3h              JSOC   ... Master Pointing Parameters
+    aia_response                       JSOC   ... AIA instrument response table
+    aia_temperature_summary_300s       JSOC   ... Temperature Statistics from AIA Housekeeping - Thermal Packet
     ...
 
 Different PrimeKeys are supported by different Series, and you can find out the PrimeKeys supported in any Series by:
 
 .. code-block:: python
 
-   >>> import drms
-
-   >>> client = drms.Client()  # doctest: +REMOTE_DATA
-   >>> print(client.pkeys('hmi.m_720s'))  # doctest: +REMOTE_DATA
-   ['T_REC', 'CAMERA']
+    >>> import drms
+    >>> client = drms.Client()  # doctest: +REMOTE_DATA
+    >>> print(client.pkeys('hmi.m_720s'))  # doctest: +REMOTE_DATA
+    ['T_REC', 'CAMERA']
 
 The most common PrimeKey, that is supported by every Series is Time, that is denoted by ``T_REC`` or ``T_OBS``.
 Hence, Time can always be passed as an attribute while building a query.
@@ -88,8 +94,8 @@ We could ask for all "hmi.v_45s" series data between January 1st 2014 from 00:00
 
 .. code-block:: python
 
-   >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing information on the available online files which fit the criteria specified by the attrs objects in the above call.
 It does not download the files.
@@ -98,39 +104,39 @@ To see a summary of results of our query, simply type the name of the variable s
 
 .. code-block:: python
 
-   >>> res  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   81 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-   ----------------------- -------- ---------- -------- -------
-   2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-                       ...      ...        ...      ...     ...
-   2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   Length = 81 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> res  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+             T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Now, let's break down the arguments of ``Fido.search`` to understand better what we've done.
 The first argument ``a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')`` sets the start and end times for the query (any date/time format understood by sunpy's `~sunpy.time.parse_time` can be used to specify dates and time).
@@ -139,21 +145,21 @@ If you need to pass a Time in some other time scale, such as TAI, pass an `astro
 
 .. code-block:: python
 
-   >>> import astropy.time
+    >>> import astropy.time
 
 Then, the Time attribute can be passed as:
 
 .. code-block:: python
 
-   >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))
-   <sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000)>
+    >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))
+    <sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000)>
 
 The second argument:
 
 .. code-block:: python
 
-   >>> a.jsoc.Series('hmi.v_45s')
-   <sunpy.net.jsoc.attrs.Series(hmi.v_45s: Dopplergrams with a cadence of 45 seconds) object ...>
+    >>> a.jsoc.Series('hmi.v_45s')
+    <sunpy.net.jsoc.attrs.Series(hmi.v_45s: Dopplergrams with a cadence of 45 seconds) object ...>
 
 sets the series we are looking for.
 
@@ -171,37 +177,36 @@ In case of AIA series, ``a.Wavelength()`` can be passed as a PrimeKey:
 
 .. code-block:: python
 
-   >>> import astropy.units as u
-
-   >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...                               a.jsoc.Series('aia.lev1_euv_12s'),
-   ...                               a.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
+    >>> import astropy.units as u
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                               a.jsoc.Series('aia.lev1_euv_12s'),
+    ...                               a.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
 Note that, only Time and Wavelength are in-built attributes here.
 If you need to pass any other PrimeKey, it should be passed like this:
 
 .. code-block:: python
 
-   >>> a.jsoc.PrimeKey('HARPNUM', '4864')
-   <sunpy.net.jsoc.attrs.PrimeKey object at ...>
-   ('HARPNUM', '4864')
+    >>> a.jsoc.PrimeKey('HARPNUM', '4864')
+    <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('HARPNUM', '4864')
 
 If 2 or more PrimeKeys need to be passed together:
 
 .. code-block:: python
 
-   >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')
-   <AttrAnd([<sunpy.net.jsoc.attrs.PrimeKey object at ...>
-   ('HARPNUM', '4864'), <sunpy.net.jsoc.attrs.PrimeKey object at ...>
-   ('CAMERA', '2')])>
+    >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')
+    <AttrAnd([<sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('HARPNUM', '4864'), <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('CAMERA', '2')])>
 
 Also, note that the pre-defined PrimeKeys, Time and Wavelength can also be passed as above, but you need to specify the exact keyword for it:
 
 .. code-block:: python
 
-   >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')
-   (<sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000)>, <sunpy.net.jsoc.attrs.PrimeKey object at ...>
-   ('WAVELNTH', '161'))
+    >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')
+    (<sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000)>, <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('WAVELNTH', '161'))
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a meaningful error will be thrown, which will give you the PrimeKeys supported by that series.
 Hence, by looking at the error, one can easily retry building the query with correct PrimeKeys.
@@ -222,42 +227,41 @@ If you want to get a manual set of keywords in the response object, you can pass
 
 .. code-block:: python
 
-   >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
-   >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   81 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-   TELESCOP  INSTRUME           T_OBS
-   -------- ---------- -----------------------
-    SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI
-        ...        ...                     ...
-    SDO/HMI HMI_FRONT2 2014.01.01_00:53:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
-    SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI
-   Length = 81 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    >>> res.show('TELESCOP', 'INSTRUME', 'T_OBS')  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+    TELESCOP  INSTRUME           T_OBS
+    -------- ---------- -----------------------
+     SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI
+         ...        ...                     ...
+     SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Passing an incorrect keyword won't throw an error, but the corresponding column in the table will not be displayed.
 
@@ -265,40 +269,39 @@ To display all of the columns, we can use ``show()`` without passing any argumen
 
 .. code-block:: python
 
-   >>> res.show()  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   81 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-           DATE                DATE__OBS        ... CALVER64
-   -------------------- ----------------------- ... --------
-   2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z ...     4370
-   2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z ...     4370
-   2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z ...     4370
-   2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z ...     4370
-   2014-01-05T17:50:34Z 2014-01-01T00:02:39.20Z ...     4370
-   2014-01-05T17:51:42Z 2014-01-01T00:03:24.20Z ...     4370
-   2014-01-05T17:52:50Z 2014-01-01T00:04:09.20Z ...     4370
-   2014-01-05T17:53:59Z 2014-01-01T00:04:54.20Z ...     4370
-   2014-01-05T17:55:08Z 2014-01-01T00:05:39.20Z ...     4370
-   2014-01-05T17:56:16Z 2014-01-01T00:06:24.20Z ...     4370
-                       ...                     ... ...      ...
-   2014-01-05T19:05:49Z 2014-01-01T00:52:09.20Z ...     4370
-   2014-01-05T17:35:43Z 2014-01-01T00:52:54.20Z ...     4370
-   2014-01-05T17:36:54Z 2014-01-01T00:53:39.20Z ...     4370
-   2014-01-05T17:38:01Z 2014-01-01T00:54:24.20Z ...     4370
-   2014-01-05T17:39:09Z 2014-01-01T00:55:09.20Z ...     4370
-   2014-01-05T17:40:17Z 2014-01-01T00:55:54.20Z ...     4370
-   2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z ...     4370
-   2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z ...     4370
-   2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z ...     4370
-   2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z ...     4370
-   2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z ...     4370
-   Length = 81 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> res.show()  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+            DATE                DATE__OBS                DATE-OBS        ...                        CODEVER3                        CALVER64
+    -------------------- ----------------------- ----------------------- ... ------------------------------------------------------ --------
+    2014-01-05T17:46:02Z 2013-12-31T23:59:39.20Z 2013-12-31T23:59:39.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:47:10Z 2014-01-01T00:00:24.20Z 2014-01-01T00:00:24.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:48:18Z 2014-01-01T00:01:09.20Z 2014-01-01T00:01:09.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:49:25Z 2014-01-01T00:01:54.20Z 2014-01-01T00:01:54.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:50:34Z 2014-01-01T00:02:39.20Z 2014-01-01T00:02:39.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:51:42Z 2014-01-01T00:03:24.20Z 2014-01-01T00:03:24.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:52:50Z 2014-01-01T00:04:09.20Z 2014-01-01T00:04:09.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:53:59Z 2014-01-01T00:04:54.20Z 2014-01-01T00:04:54.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:55:08Z 2014-01-01T00:05:39.20Z 2014-01-01T00:05:39.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:56:16Z 2014-01-01T00:06:24.20Z 2014-01-01T00:06:24.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+                     ...                     ...                     ... ...                                                    ...      ...
+    2014-01-05T17:35:43Z 2014-01-01T00:52:54.20Z 2014-01-01T00:52:54.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:36:54Z 2014-01-01T00:53:39.20Z 2014-01-01T00:53:39.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:38:01Z 2014-01-01T00:54:24.20Z 2014-01-01T00:54:24.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:39:09Z 2014-01-01T00:55:09.20Z 2014-01-01T00:55:09.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:40:17Z 2014-01-01T00:55:54.20Z 2014-01-01T00:55:54.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:41:25Z 2014-01-01T00:56:39.20Z 2014-01-01T00:56:39.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:42:33Z 2014-01-01T00:57:24.20Z 2014-01-01T00:57:24.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:43:41Z 2014-01-01T00:58:09.20Z 2014-01-01T00:58:09.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:44:52Z 2014-01-01T00:58:54.20Z 2014-01-01T00:58:54.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    2014-01-05T17:46:03Z 2014-01-01T00:59:39.20Z 2014-01-01T00:59:39.20Z ... $Id: polcal.c,v 1.5 2013/12/22 22:54:08 couvidat Exp $     4370
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Using Segments
 --------------
@@ -312,67 +315,67 @@ A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained
 
 .. code-block:: python
 
-   >>> client = drms.Client()  # doctest: +REMOTE_DATA
-   >>> si = client.info('hmi.sharp_720s')  # doctest: +REMOTE_DATA
-   >>> print(si.segments.index.values)  # doctest: +REMOTE_DATA
-   ['magnetogram' 'bitmap' 'Dopplergram' 'continuum' 'inclination' 'azimuth'
-    'field' 'vlos_mag' 'dop_width' 'eta_0' 'damping' 'src_continuum'
-    'src_grad' 'alpha_mag' 'chisq' 'conv_flag' 'info_map' 'confid_map'
-    'inclination_err' 'azimuth_err' 'field_err' 'vlos_err' 'alpha_err'
-    'field_inclination_err' 'field_az_err' 'inclin_azimuth_err'
-    'field_alpha_err' 'inclination_alpha_err' 'azimuth_alpha_err' 'disambig'
-    'conf_disambig']
+    >>> client = drms.Client()  # doctest: +REMOTE_DATA
+    >>> si = client.info('hmi.sharp_720s')  # doctest: +REMOTE_DATA
+    >>> print(si.segments.index.values)  # doctest: +REMOTE_DATA
+    ['magnetogram' 'bitmap' 'Dopplergram' 'continuum' 'inclination' 'azimuth'
+        'field' 'vlos_mag' 'dop_width' 'eta_0' 'damping' 'src_continuum'
+        'src_grad' 'alpha_mag' 'chisq' 'conv_flag' 'info_map' 'confid_map'
+        'inclination_err' 'azimuth_err' 'field_err' 'vlos_err' 'alpha_err'
+        'field_inclination_err' 'field_az_err' 'inclin_azimuth_err'
+        'field_alpha_err' 'inclination_alpha_err' 'azimuth_alpha_err' 'disambig'
+        'conf_disambig']
 
 Also, if you provide an incorrect segment name, it will throw a meaningful error, specifying which segment values are supported by the given series:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.sharp_720s'),
-   ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
-   Traceback (most recent call last):
-   ...
-   ValueError: Unexpected Segments were passed. The series hmi.sharp_720s contains the following Segments ['magnetogram', 'bitmap', 'Dopplergram', 'continuum', 'inclination', 'azimuth', 'field', 'vlos_mag', 'dop_width', 'eta_0', 'damping', 'src_continuum', 'src_grad', 'alpha_mag', 'chisq', 'conv_flag', 'info_map', 'confid_map', 'inclination_err', 'azimuth_err', 'field_err', 'vlos_err', 'alpha_err', 'field_inclination_err', 'field_az_err', 'inclin_azimuth_err', 'field_alpha_err', 'inclination_alpha_err', 'azimuth_alpha_err', 'disambig', 'conf_disambig']
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
+    Traceback (most recent call last):
+    ...
+    ValueError: Unexpected Segments were passed. The series hmi.sharp_720s contains the following Segments ['magnetogram', 'bitmap', 'Dopplergram', 'continuum', 'inclination', 'azimuth', 'field', 'vlos_mag', 'dop_width', 'eta_0', 'damping', 'src_continuum', 'src_grad', 'alpha_mag', 'chisq', 'conv_flag', 'info_map', 'confid_map', 'inclination_err', 'azimuth_err', 'field_err', 'vlos_err', 'alpha_err', 'field_inclination_err', 'field_az_err', 'inclin_azimuth_err', 'field_alpha_err', 'inclination_alpha_err', 'azimuth_alpha_err', 'disambig', 'conf_disambig']
 
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.sharp_720s'),
-   ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   61 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
-   ----------------------- -------- --------- -------- -------
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-                       ...      ...       ...      ...     ...
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   Length = 61 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    61 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+                T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
+    ----------------------- -------- --------- -------- -------
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+                        ...      ...       ...      ...     ...
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    Length = 61 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Using Keywords
 --------------
@@ -383,10 +386,10 @@ A list of supported keywords of a series, say ``hmi.sharp_720s`` can be obtained
 
 .. code-block:: python
 
-   >>> client = drms.Client()  # doctest: +REMOTE_DATA
-   >>> keywords = client.keys('hmi.sharp_720s')  # doctest: +REMOTE_DATA
-   >>> print(keywords)  # doctest: +REMOTE_DATA
-   ['cparms_sg000', 'magnetogram_bzero', 'magnetogram_bscale', 'cparms_sg001', 'bitmap_bzero', 'bitmap_bscale', 'cparms_sg002', 'Dopplergram_bzero', 'Dopplergram_bscale', 'cparms_sg003', 'continuum_bzero', 'continuum_bscale', 'cparms_sg004', 'inclination_bzero', 'inclination_bscale', 'cparms_sg005', 'azimuth_bzero', 'azimuth_bscale', 'cparms_sg006', 'field_bzero', 'field_bscale', 'cparms_sg007', ... 'ERRJHT', 'ERRVF']
+    >>> client = drms.Client()  # doctest: +REMOTE_DATA
+    >>> keywords = client.keys('hmi.sharp_720s')  # doctest: +REMOTE_DATA
+    >>> print(keywords)  # doctest: +REMOTE_DATA
+    ['cparms_sg000', 'magnetogram_bzero', 'magnetogram_bscale', 'cparms_sg001', 'bitmap_bzero', 'bitmap_bscale', 'cparms_sg002', 'Dopplergram_bzero', 'Dopplergram_bscale', 'cparms_sg003', 'continuum_bzero', 'continuum_bscale', 'cparms_sg004', 'inclination_bzero', 'inclination_bscale', 'cparms_sg005', 'azimuth_bzero', 'azimuth_bscale', 'cparms_sg006', 'field_bzero', 'field_bscale', 'cparms_sg007', ... 'ERRJHT', 'ERRVF']
 
 Each keyword needs to be compared to a value, e.g., ``a.jsoc.Keyword("bitmap_bzero") == 0`` or ``a.jsoc.Keyword("bitmap_bzero") > 1``.
 
@@ -394,103 +397,101 @@ An example of this is:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero') == 0) # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   61 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
-   ----------------------- -------- --------- -------- -------
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-                       ...      ...       ...      ...     ...
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   Length = 61 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),a.jsoc.Keyword('bitmap_bzero') == 0) # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    61 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+             T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
+    ----------------------- -------- --------- -------- -------
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+                        ...      ...       ...      ...     ...
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    Length = 61 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 You can pass multiple keywords and they will be chained together inside the query:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.sharp_720s'),
-   ...             a.jsoc.Keyword('bitmap_bzero') == 0, a.jsoc.Keyword('continuum_bscale') > 0) # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   61 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
-   ----------------------- -------- --------- -------- -------
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-                       ...      ...       ...      ...     ...
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
-   Length = 61 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Keyword('bitmap_bzero') == 0, a.jsoc.Keyword('continuum_bscale') > 0) # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    61 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+             T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
+    ----------------------- -------- --------- -------- -------
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+                        ...      ...       ...      ...     ...
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:24:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    Length = 61 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 If you provide a keyword without a comparison it will raise an error:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.sharp_720s'),
-   ...             a.jsoc.Keyword('bitmap_bzero'))  # doctest: +REMOTE_DATA
-   Traceback (most recent call last):
-   ...
-   ValueError: Keyword 'bitmap_bzero' needs to have a comparison to a value.
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Keyword('bitmap_bzero'))  # doctest: +REMOTE_DATA
+    Traceback (most recent call last):
+    ...
+    ValueError: Keyword 'bitmap_bzero' needs to have a comparison to a value.
 
 If you provide an incorrect keyword name it will also raise a error:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.sharp_720s'),
-   ...             a.jsoc.Keyword('bac') == 0)  # doctest: +REMOTE_DATA
-   Traceback (most recent call last):
-   ...
-   ValueError: Keyword: 'bac' is not supported by series: hmi.sharp_720s
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Keyword('bac') == 0)  # doctest: +REMOTE_DATA
+    Traceback (most recent call last):
+    ...
+    ValueError: Keyword: 'bac' is not supported by series: hmi.sharp_720s
 
 Using Sample
 ------------
@@ -500,25 +501,25 @@ In other words, if you need to query for "hmi.v_45s" series data between January
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 1 Provider:
-   <BLANKLINE>
-   7 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-   ----------------------- -------- ---------- -------- -------
-   2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:20:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:30:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:39:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:49:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    7 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:20:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:30:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:39:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:49:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    <BLANKLINE>
+    <BLANKLINE>
 
 Note that the argument passed in ``a.Sample()`` must be an Astropy quantity, convertible into seconds.
 
@@ -530,68 +531,68 @@ Let's look for 2 different series data at the same time:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 2 Providers:
-   <BLANKLINE>
-   81 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-   ----------------------- -------- ---------- -------- -------
-   2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-                       ...      ...        ...      ...     ...
-   2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   Length = 81 rows
-   <BLANKLINE>
-   2107 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-          T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
-   -------------------- -------- -------- -------- -------
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_4       94    2145
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_1      131    2145
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_2      193    2145
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_2      211    2145
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_4      304    2145
-   2014-01-01T00:00:01Z  SDO/AIA    AIA_1      335    2145
-   2014-01-01T00:00:13Z  SDO/AIA    AIA_4       94    2145
-   2014-01-01T00:00:13Z  SDO/AIA    AIA_1      131    2145
-   2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
-                    ...      ...      ...      ...     ...
-   2014-01-01T00:59:49Z  SDO/AIA    AIA_2      211    2145
-   2014-01-01T00:59:49Z  SDO/AIA    AIA_4      304    2145
-   2014-01-01T00:59:49Z  SDO/AIA    AIA_1      335    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_4       94    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_1      131    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_3      171    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_2      193    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_2      211    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_4      304    2145
-   2014-01-01T01:00:01Z  SDO/AIA    AIA_1      335    2145
-   Length = 2107 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 2 Providers:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
+    <BLANKLINE>
+    2107 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+            T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+    -------------------- -------- -------- -------- -------
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_4       94    2145
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_1      131    2145
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_2      193    2145
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_2      211    2145
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_1      335    2145
+    2014-01-01T00:00:13Z  SDO/AIA    AIA_4       94    2145
+    2014-01-01T00:00:13Z  SDO/AIA    AIA_1      131    2145
+    2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+                        ...      ...      ...      ...     ...
+    2014-01-01T00:59:49Z  SDO/AIA    AIA_2      211    2145
+    2014-01-01T00:59:49Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T00:59:49Z  SDO/AIA    AIA_1      335    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_4       94    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_1      131    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_2      193    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_2      211    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_4      304    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_1      335    2145
+    Length = 2107 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 The two series names are joined together by the operator ``|``.
 This is the "OR" operator.
@@ -601,69 +602,69 @@ Let's say you want all the "hmi.v_45s" data from two separate days:
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
-   ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
-   ...             a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
-   <sunpy.net.fido_factory.UnifiedResponse object at ...>
-   Results from 2 Providers:
-   <BLANKLINE>
-   81 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-   ----------------------- -------- ---------- -------- -------
-   2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-                       ...      ...        ...      ...     ...
-   2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   Length = 81 rows
-   <BLANKLINE>
-   81 Results from the JSOCClient:
-   Source: http://jsoc.stanford.edu
-   <BLANKLINE>
-            T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-   ----------------------- -------- ---------- -------- -------
-   2014.01.02_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-                       ...      ...        ...      ...     ...
-   2014.01.02_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   2014.01.02_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
-   Length = 81 rows
-   <BLANKLINE>
-   <BLANKLINE>
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
+    ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 2 Providers:
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.01_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
+    <BLANKLINE>
+    81 Results from the JSOCClient:
+    Source: http://jsoc.stanford.edu
+    <BLANKLINE>
+                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+    ----------------------- -------- ---------- -------- -------
+    2014.01.02_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.02_00:54:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:54:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:55:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.02_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
+    <BLANKLINE>
+    <BLANKLINE>
 
 Each of the arguments in this query style can be thought of as setting conditions that the returned records must satisfy.
 
@@ -679,17 +680,17 @@ you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch
 
 .. code-block:: python
 
-   >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
-   ...             a.jsoc.Notify('solar@example.com')  # doctest: +SKIP
-   >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
+    ...             a.jsoc.Notify('solar@example.com')  # doctest: +SKIP
+    >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
 
 To export a request for download, you must have used the `sunpy.net.jsoc.attrs.Notify` attribute at search time to specify your email address.
 
 .. note::
 
-   **Only complete searches can be downloaded from JSOC**
-   This means that no slicing operations performed on the results object will affect the number of files downloaded.
+    **Only complete searches can be downloaded from JSOC**
+    This means that no slicing operations performed on the results object will affect the number of files downloaded.
 
 Using JSOCClient for complex usage
 ==================================
@@ -706,9 +707,8 @@ It can be imported as follows:
 
 .. code-block:: python
 
-   >>> from sunpy.net import jsoc
-
-   >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+    >>> from sunpy.net import jsoc
+    >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
 
 This creates your client object.
 
@@ -723,9 +723,9 @@ Please note you can search without this but right now, you can not add the email
 
 .. code-block:: python
 
-   >>> res = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-   ...                     a.jsoc.Series('hmi.v_45s'),
-   ...                     a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
+    >>> res = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                     a.jsoc.Series('hmi.v_45s'),
+    ...                     a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
 Apart from the function name, everything is the same.
 You need to pass the same values in the `~sunpy.net.jsoc.JSOCClient.search` as you did in `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`.
@@ -740,25 +740,25 @@ The download request can be staged like this:
 
 .. code-block:: python
 
-   >>> requests = client.request_data(res)  # doctest: +SKIP
-   >>> print(requests)  # doctest: +SKIP
-   <ExportRequest id="JSOC_20170713_1461", status=0>
+    >>> requests = client.request_data(res)  # doctest: +SKIP
+    >>> print(requests)  # doctest: +SKIP
+    <ExportRequest id="JSOC_20170713_1461", status=0>
 
 The function `~sunpy.net.jsoc.JSOCClient.request_data` stages the request.
-It returns a `drms.client.ExportRequest` object, which has many attributes.
+It returns a `drms.ExportRequest` object, which has many attributes.
 The most important ones are ``id`` and ``status``.
 Only when the status is 0, we can move to the third step, i.e., downloading the data.
 
-If you are making more than 1 query at a time, it will return a list of `~drms.client.ExportRequest` objects.
+If you are making more than 1 query at a time, it will return a list of `~drms.ExportRequest` objects.
 Hence, access the list elements accordingly.
 You can get the id and status of the request (if it is not a list) by:
 
 .. code-block:: python
 
-   >>> requests.id  # doctest: +SKIP
-   JSOC_20170713_1461
-   >>> requests.status  # doctest: +SKIP
-   0
+    >>> requests.id  # doctest: +SKIP
+    JSOC_20170713_1461
+    >>> requests.status  # doctest: +SKIP
+    0
 
 Downloading data
 ----------------
@@ -767,10 +767,10 @@ Once the status code is 0 you can download the data using the `~sunpy.net.jsoc.J
 
 .. code-block:: python
 
-   >>> res = client.get_request(requests)  # doctest: +SKIP
+    >>> res = client.get_request(requests)  # doctest: +SKIP
 
 This returns a Results instance which can be used to watch the progress of the download:
 
 .. code-block:: python
 
-   >>> res.wait(progress=True)   # doctest: +SKIP
+    >>> res.wait(progress=True)   # doctest: +SKIP

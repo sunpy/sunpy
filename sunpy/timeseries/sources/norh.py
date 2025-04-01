@@ -44,9 +44,9 @@ class NoRHTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Nobeyama Radioheliograph Homepage <https://solar.nro.nao.ac.jp/norh/>`_
-    * `Analysis Manual <https://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`_
-    * `Nobeyama Correlation Plots <https://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
+    * `Nobeyama Radioheliograph Homepage <https://solar.nro.nao.ac.jp/norh/>`__
+    * `Analysis Manual <https://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`__
+    * `Nobeyama Correlation Plots <https://solar.nro.nao.ac.jp/norh/html/cor_plot/>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
@@ -125,7 +125,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod

@@ -43,4 +43,4 @@ If you would prefer a visual Git interface, you can try `Github Desktop <https:/
     #. Open-source projects are about communication and collaboration.
     #. `Join the SunPy Matrix Chat channel <https://matrix.to/#/+sunpy:openastronomy.org>`__.
 
-This guide is partially based on Astropy's `Development Workflow <https://docs.astropy.org/en/latest/development/workflow/development_workflow.html>`__.
+This guide is partially based on Astropy's `Development Workflow <https://docs.astropy.org/en/latest/development/quickstart.html>`__.

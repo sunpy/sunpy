@@ -26,7 +26,7 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 # value. Pixels with intensity values greater than this are included in the
 # mask, while all other pixels are excluded.
 
-mask = aiamap.data < aiamap.max() * 0.10
+mask = aiamap.data < aiamap.data.max() * 0.10
 
 ##############################################################################
 # Mask is a `bool` array. It can be used to modify the original map object

@@ -32,8 +32,8 @@ def _make_rotatedsun_cls(framecls):
     same class will be returned.
 
     This function is necessary because frame transformations depend
-    on connection between specific frame *classes*.  So each type of frame
-    needs its own distinct rotated-Sun frame class.  This function generates
+    on connection between specific frame *classes*. So each type of frame
+    needs its own distinct rotated-Sun frame class. This function generates
     just that class, as well as ensuring that only one example of such a class
     actually gets created in any given Python session.
     """
@@ -116,14 +116,14 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
     Parameters
     ----------
     representation : `~astropy.coordinates.BaseRepresentation` or ``None``
-        A representation object or ``None`` to have no data.  Alternatively, use coordinate
+        A representation object or ``None`` to have no data. Alternatively, use coordinate
         component keyword arguments, which depend on the base frame.
     base : `~astropy.coordinates.SkyCoord` or low-level coordinate object.
-        The coordinate which specifies the base coordinate frame.  The frame must be a SunPy frame.
-    duration : `~astropy.units.Quantity`
+        The coordinate which specifies the base coordinate frame. The frame must be a SunPy frame.
+    duration : `~astropy.units.Quantity` or `~astropy.time.TimeDelta`
         The duration of solar rotation (defaults to zero days).
     rotated_time : {parse_time_types}
-        The time to rotate the Sun to.  If provided, ``duration`` will be set to the difference
+        The time to rotate the Sun to. If provided, ``duration`` will be set to the difference
         between this time and the observation time in ``base``.
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``, ``'allen'``, and ``'rigid'``.
@@ -132,8 +132,8 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     Notes
     -----
-    ``RotatedSunFrame`` is a factory class.  That is, the objects that it
-    yields are *not* actually objects of class ``RotatedSunFrame``.  Instead,
+    ``RotatedSunFrame`` is a factory class. That is, the objects that it
+    yields are *not* actually objects of class ``RotatedSunFrame``. Instead,
     distinct classes are created on-the-fly for whatever the frame class is
     of ``base``.
     """
@@ -154,7 +154,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     def __new__(cls, *args, **kwargs):
         # We don't want to call this method if we've already set up
-        # an rotated-Sun frame for this class.
+        # a rotated-Sun frame for this class.
         if not (issubclass(cls, RotatedSunFrame) and cls is not RotatedSunFrame):
             # We get the base argument, and handle it here.
             base_frame = kwargs.get('base', None)
@@ -178,13 +178,21 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
 
     def __init__(self, *args, **kwargs):
         # Validate inputs
-        if kwargs['base'].obstime is None:
+        base_frame = kwargs.get('base')
+        if base_frame is None or base_frame.obstime is None:
             raise ValueError("The base coordinate frame must have a defined `obstime`.")
 
-        if 'rotated_time' in kwargs:
-            rotated_time = parse_time(kwargs['rotated_time'])
-            kwargs['duration'] = (rotated_time - kwargs['base'].obstime).to('day')
-            kwargs.pop('rotated_time')
+        duration = kwargs.pop('duration', None)
+        rotated_time = kwargs.pop('rotated_time', None)
+
+        if duration is not None and rotated_time is not None:
+            raise ValueError("Specify either `duration` or `rotated_time`, not both.")
+
+        if duration is not None:
+            rotated_time = base_frame.obstime + duration
+
+        if rotated_time is not None:
+            kwargs['duration'] = (parse_time(rotated_time) - base_frame.obstime).to('day')
 
         super().__init__(*args, **kwargs)
 
@@ -203,7 +211,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         Returns a coordinate with the current representation and in the base coordinate frame.
 
         This method can be thought of as "removing" the
-        `~sunpy.coordinates.metaframes.RotatedSunFrame` layer.  Be aware that this method is not
+        `~sunpy.coordinates.metaframes.RotatedSunFrame` layer. Be aware that this method is not
         merely a coordinate transformation, because this method changes the location in inertial
         space that is being pointed to.
         """

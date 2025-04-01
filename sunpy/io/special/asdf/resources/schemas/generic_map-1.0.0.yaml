@@ -28,5 +28,5 @@ properties:
 
 
 required: [meta, data]
-allowAdditionalProperties: False
+additionalProperties: False
 ...

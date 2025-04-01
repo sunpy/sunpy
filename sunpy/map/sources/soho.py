@@ -29,9 +29,9 @@ class EITMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
-    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
 
     """
 
@@ -39,9 +39,21 @@ class EITMap(GenericMap):
         super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation of coordinate_system to handle EITMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def date(self):
@@ -85,7 +97,7 @@ class EITMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
-        return header.get('instrume') == 'EIT'
+        return header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)'
 
 
 class LASCOMap(GenericMap):
@@ -104,15 +116,27 @@ class LASCOMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
-        self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+
+    @property
+    def coordinate_system(self):
+        """
+        Override the default implementation to handle LASCOMAP-specific logic for CTYPE values.
+        """
+        ctype1, ctype2 = self.meta['ctype1'], self.meta['ctype2']
+        if ctype1.lower() in ("solar-x", "solar_x"):
+            ctype1 = 'HPLN-TAN'
+        if ctype2.lower() in ("solar-y", "solar_y"):
+            ctype2 = 'HPLT-TAN'
+        return SpatialPair(ctype1, ctype2)
 
     @property
     def spatial_units(self):
@@ -136,13 +160,25 @@ class LASCOMap(GenericMap):
 
     @property
     def date(self):
-        date = self.meta.get('date-obs', self.meta.get('date_obs'))
-        # In case someone fixes the header
-        if 'T' in date:
-            return parse_time(date)
+        if date := self.meta.get('date-obs', self.meta.get('date_obs')):
+            # If the header has already been fixed, no need to concatenate
+            if (time := self.meta.get('time-obs', self.meta.get('time_obs'))) and 'T' not in date:
+                date = f"{date}T{time}"
+            date = parse_time(date)
+        return date or super().date
 
-        time = self.meta.get('time-obs', self.meta.get('time_obs'))
-        return parse_time(f"{date}T{time}")
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            time_key = 'time-obs'
+            del self.meta['time-obs']
+        if 'time_obs' in self.meta:
+            time_key = 'time_obs'
+            del self.meta['time_obs']
+        date_key = 'date-obs' if 'date-obs' in self.meta else 'date_obs'
+        if time_key in self.meta:
+            self.meta[date_key], self.meta[time_key] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta[date_key] = parse_time(date).utc.isot
 
     @property
     def nickname(self):
@@ -155,8 +191,16 @@ class LASCOMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        # TODO: This needs to do more than white-light. Should give B, pB, etc.
         return "white-light"
+
+    @property
+    def unit(self):
+        bunit = self.meta.get('bunit', None)
+        if bunit is not None and bunit == 0:
+            # The HV JP2 files given to us have a 0 value BUNIT
+            return u.dimensionless_unscaled
+        return super().unit
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -183,25 +227,25 @@ class MDIMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
-    * `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
-    * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
-    * `SOHO MDI Instrument Paper <https://doi.org/10.1007/978-94-009-0191-9_5>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO MDI Instrument Page <http://soi.stanford.edu>`__
+    * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`__
+    * :cite:t:`scherrer_solar_1995`
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Magnetic field maps, not intensity maps
-            self._set_symmetric_vmin_vmax()
+            self.plotter._set_symmetric_vmin_vmax()
 
     @property
     def _date_obs(self):
-        if 'T' in self.meta['date-obs']:
+        if 'T' in self.meta.get('date-obs', ''):
             # Helioviewer MDI files have the full date in DATE_OBS, but we still
             # want to let normal FITS files use DATE-OBS
             return parse_time(self.meta['date-obs'])
-        else:
+        elif 'date_obs' in self.meta:
             return parse_time(self.meta['date_obs'])
 
     @property
@@ -266,6 +310,7 @@ class MDISynopticMap(MDIMap):
 
     See the docstring of `MDIMap` for information on the MDI instrument.
     """
+
     @property
     def date(self):
         """
@@ -273,9 +318,10 @@ class MDISynopticMap(MDIMap):
 
         This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        time = self._get_date('date-obs')
-        if time is None:
-            return self._get_date('t_obs')
+        return self._get_date('date-obs') or self._get_date('t_obs') or super().date
+
+    def _set_date(self, date):
+        self.meta['date-obs'] = self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def spatial_units(self):

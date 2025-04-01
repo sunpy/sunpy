@@ -24,8 +24,8 @@ class RHESSIMap(GenericMap):
 
     References
     ----------
-    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-    * Mission Paper `<https://doi.org/10.1023/A:1022428818870>`_
+    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`__
+    * :cite:t:`lin_reuven_2002`
 
     .. warning::
 
@@ -35,7 +35,7 @@ class RHESSIMap(GenericMap):
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['cmap'] = 'rhessi'
+        self.plotter.plot_settings['cmap'] = 'rhessi'
 
     def _get_cmap_name(self):
         return "rhessi"

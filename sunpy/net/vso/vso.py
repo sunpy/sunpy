@@ -199,30 +199,6 @@ class VSOClient(BaseClient):
 
             Now deprecated, will be removed in sunpy 7.0.
 
-        Examples
-        --------
-        Query all data from the EIT instrument 2010-01-01T00:00 and
-        2010-01-01T01:00.
-
-        >>> from sunpy.net import vso, attrs as a
-        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
-        >>> client.search(a.Time("2010/01/01", "2010/01/01 01:00"),
-        ...               a.Instrument.eit)   # doctest:  +REMOTE_DATA
-        <sunpy.net.vso.table_response.VSOQueryResponseTable object at ...>
-            Start Time               End Time        Source ... Extent Type   Size
-                                                            ...              Mibyte
-        ----------------------- ----------------------- ------ ... ----------- -------
-        2010-01-01 00:00:08.000 2010-01-01 00:00:20.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:10:55.000 2010-01-01 00:11:07.000   SOHO ...    FULLDISK  4.2002
-        2010-01-01 00:12:08.000 2010-01-01 00:12:20.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:22:57.000 2010-01-01 00:23:09.000   SOHO ...    FULLDISK  4.2002
-        2010-01-01 00:24:10.000 2010-01-01 00:24:22.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:34:55.000 2010-01-01 00:35:07.000   SOHO ...    FULLDISK  4.2002
-        2010-01-01 00:36:08.000 2010-01-01 00:36:20.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:46:56.000 2010-01-01 00:47:08.000   SOHO ...    FULLDISK  4.2002
-        2010-01-01 00:48:09.000 2010-01-01 00:48:21.000   SOHO ...    FULLDISK 2.01074
-        2010-01-01 00:58:58.000 2010-01-01 00:59:11.000   SOHO ...    FULLDISK  4.2002
-
         Returns
         -------
         out : `~sunpy.net.vso.table_response.VSOQueryResponseTable`
@@ -362,8 +338,8 @@ class VSOClient(BaseClient):
             Methods are a concatenation of one PREFIX followed by any number of
             SUFFIXES i.e. ``PREFIX-SUFFIX_SUFFIX2_SUFFIX3``.
             The full list of
-            `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
-            and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`__
+            and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`__
             are listed on the VSO site.
         site : str
             There are a number of caching mirrors for SDO and other
@@ -499,7 +475,7 @@ class VSOClient(BaseClient):
         # Iterate over the series and make a DRI for each.
         # groupby creates an iterator based on a key function, in this case
         # based on the series (the part before the first ':')
-        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+        for _, fileids in itertools.groupby(series_sorted, key=series_func):
             dris.append(self.make('DataRequestItem',
                                   provider='JSOC',
                                   fileiditem={'fileid': list(fileids)}))
@@ -714,4 +690,4 @@ class VSOClient(BaseClient):
 
     @property
     def info_url(self):
-        return 'http://vso.stanford.edu/cgi-bin/search'
+        return 'https://sdac.virtualsolar.org/cgi/search\nData retrieval status: https://docs.virtualsolar.org/wiki/VSOHealthReport'

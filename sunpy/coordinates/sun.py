@@ -56,7 +56,7 @@ def angular_radius(t='now'):
 
     The tangent vector from the Earth to the edge of the Sun forms a
     right-angle triangle with the radius of the Sun as the far side and the
-    Sun-Earth distance as the hypotenuse.  Thus, the sine of the angular
+    Sun-Earth distance as the hypotenuse. Thus, the sine of the angular
     radius of the Sun is ratio of these two distances.
 
     Parameters
@@ -82,14 +82,14 @@ def sky_position(t='now', equinox_of_date=True):
     """
     Returns the apparent position of the Sun (right ascension and declination) on the
     celestial sphere using the equatorial coordinate system, referred to the true equinox of date
-    (as default).  Corrections for nutation and aberration (for Earth motion) are included.
+    (as default). Corrections for nutation and aberration (for Earth motion) are included.
 
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     equinox_of_date : `bool`
-        If True, output is referred to the true equinox of date.  Otherwise, output is referred to
+        If True, output is referred to the true equinox of date. Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     ra = apparent_rightascension(t, equinox_of_date=equinox_of_date)
@@ -106,7 +106,7 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
     * Fractional numbers to ``crot``
     * Integer numbers to ``crot`` and a Carrington longitude to ``longitude``
 
-    Inputs can be arrays.  If both ``crot`` and ``longitude`` are provided, the
+    Inputs can be arrays. If both ``crot`` and ``longitude`` are provided, the
     output shape will be the broadcasted combination.
     The round-trip from this method to `carrington_rotation_number` has
     absolute errors of < 0.11 seconds.
@@ -163,7 +163,7 @@ def carrington_rotation_time(crot, longitude: u.deg = None):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t='now'):
     """
-    Return the Carrington rotation number.  Each whole rotation number marks when the Sun's prime
+    Return the Carrington rotation number. Each whole rotation number marks when the Sun's prime
     meridian coincides with the central meridian as seen from Earth, with the first rotation
     starting on 1853 November 9.
 
@@ -197,7 +197,7 @@ def carrington_rotation_number(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_longitude(t='now'):
     """
-    Returns the Sun's true geometric longitude, referred to the mean equinox of date.  No
+    Returns the Sun's true geometric longitude, referred to the mean equinox of date. No
     corrections for nutation or aberration are included.
 
     Parameters
@@ -219,7 +219,7 @@ def true_longitude(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_longitude(t='now'):
     """
-    Returns the Sun's apparent longitude, referred to the true equinox of date.  Corrections for
+    Returns the Sun's apparent longitude, referred to the true equinox of date. Corrections for
     nutation and aberration (for Earth motion) are included.
 
     Parameters
@@ -244,7 +244,7 @@ def apparent_longitude(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_latitude(t='now'):
     """
-    Returns the Sun's true geometric latitude, referred to the mean equinox of date.  No
+    Returns the Sun's true geometric latitude, referred to the mean equinox of date. No
     corrections for nutation or aberration are included.
 
     Parameters
@@ -266,7 +266,7 @@ def true_latitude(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_latitude(t='now'):
     """
-    Returns the Sun's apparent latitude, referred to the true equinox of date.  Corrections for
+    Returns the Sun's apparent latitude, referred to the true equinox of date. Corrections for
     nutation and aberration (for Earth motion) are included.
 
     Parameters
@@ -287,7 +287,7 @@ def apparent_latitude(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def mean_obliquity_of_ecliptic(t='now'):
     """
-    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.  No correction for
+    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition. No correction for
     nutation is included.
 
     Parameters
@@ -305,7 +305,7 @@ def mean_obliquity_of_ecliptic(t='now'):
 def true_rightascension(t='now', equinox_of_date=True):
     """
     Returns the Sun's true geometric right ascension relative to Earth, referred to the mean equinox
-    of date (as default).  No corrections for nutation or aberration are included.  The correction
+    of date (as default). No corrections for nutation or aberration are included. The correction
     due to light travel time would be negligible, so the output is also the astrometric right
     ascension.
 
@@ -314,7 +314,7 @@ def true_rightascension(t='now', equinox_of_date=True):
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     equinox_of_date : `bool`
-        If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
+        If True, output is referred to the mean equinox of date. Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
@@ -341,7 +341,7 @@ def true_rightascension(t='now', equinox_of_date=True):
 def true_declination(t='now', equinox_of_date=True):
     """
     Returns the Sun's true geometric declination relative to Earth, referred to the mean equinox
-    of date (as default).  No corrections for nutation or aberration are included.  The correction
+    of date (as default). No corrections for nutation or aberration are included. The correction
     due to light travel time would be negligible, so the output is also the astrometric declination.
 
     Parameters
@@ -349,7 +349,7 @@ def true_declination(t='now', equinox_of_date=True):
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     equinox_of_date : `bool`
-        If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
+        If True, output is referred to the mean equinox of date. Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
@@ -373,7 +373,7 @@ def true_declination(t='now', equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_obliquity_of_ecliptic(t='now'):
     """
-    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.  Correction for
+    Returns the true obliquity of the ecliptic, using the IAU 2006 definition. Correction for
     nutation is included.
 
     Parameters
@@ -397,14 +397,14 @@ def true_obliquity_of_ecliptic(t='now'):
 def apparent_rightascension(t='now', equinox_of_date=True):
     """
     Returns the Sun's apparent right ascension relative to Earth, referred to the true equinox
-    of date (as default).  Corrections for nutation or aberration (for Earth motion) are included.
+    of date (as default). Corrections for nutation or aberration (for Earth motion) are included.
 
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     equinox_of_date : `bool`
-        If True, output is referred to the true equinox of date.  Otherwise, output is referred to
+        If True, output is referred to the true equinox of date. Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
@@ -429,14 +429,14 @@ def apparent_rightascension(t='now', equinox_of_date=True):
 def apparent_declination(t='now', equinox_of_date=True):
     """
     Returns the Sun's apparent declination relative to Earth, referred to the true equinox
-    of date (as default).  Corrections for nutation or aberration (for Earth motion) are included.
+    of date (as default). Corrections for nutation or aberration (for Earth motion) are included.
 
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     equinox_of_date : `bool`
-        If True, output is referred to the true equinox of date.  Otherwise, output is referred to
+        If True, output is referred to the true equinox of date. Otherwise, output is referred to
         the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
@@ -459,7 +459,7 @@ def apparent_declination(t='now', equinox_of_date=True):
 def print_params(t='now'):
     """
     Print out a summary of solar ephemeris. 'True' values are true geometric values referred to the
-    mean equinox of date, with no corrections for nutation or aberration.  'Apparent' values are
+    mean equinox of date, with no corrections for nutation or aberration. 'Apparent' values are
     referred to the true equinox of date, with corrections for nutation and aberration (for Earth
     motion).
 
@@ -484,7 +484,7 @@ def print_params(t='now'):
 def B0(time='now'):
     """
     Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
-    of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.23 degrees.
+    of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.25 degrees.
 
     Equivalent definitions include:
         * The heliographic latitude of Earth
@@ -541,13 +541,13 @@ def L0(time='now',
     time : {parse_time_types}
         Time to use in a parse_time-compatible format
     light_travel_time_correction : `bool`
-        If True, apply the correction for light travel time from Sun to Earth.  Defaults to True.
+        If True, apply the correction for light travel time from Sun to Earth. Defaults to True.
     nearest_point : `bool`
         If True, calculate the light travel time to the nearest point on the Sun's surface rather
         than the light travel time to the center of the Sun (i.e., a difference of the solar
-        radius).  Defaults to True.
+        radius). Defaults to True.
     aberration_correction : `bool`
-        If True, apply the stellar-aberration correction due to Earth's motion.  Defaults to False.
+        If True, apply the stellar-aberration correction due to Earth's motion. Defaults to False.
 
     Returns
     -------
@@ -556,25 +556,23 @@ def L0(time='now',
 
     Notes
     -----
-    This longitude is calculated using current IAU values (Seidelmann et al. 2007 and later), which
+    This longitude is calculated using current IAU values (:cite:t:`seidelmann_iau_working_2007` and later), which
     do not include the effects of light travel time and aberration due to Earth's motion (see that
-    paper's Appendix).  This function then, by default, applies the light-travel-time correction
+    paper's Appendix). This function then, by default, applies the light-travel-time correction
     for the nearest point on the Sun's surface, but does not apply the stellar-aberration correction
     due to Earth's motion.
 
-    We do not apply the stellar-abberation correction by default because it should not be applied
-    for purposes such as co-aligning images that are each referenced to Sun-disk center.  Stellar
+    We do not apply the stellar-aberration correction by default because it should not be applied
+    for purposes such as co-aligning images that are each referenced to Sun-disk center. Stellar
     aberration does not shift the apparent positions of solar features relative to the Sun-disk
     center.
 
     The Astronomical Almanac applies the stellar-aberration correction in their printed published
-    L0 values (see also Urban & Kaplan 2007).  Applying the stellar-aberration correction due to
+    L0 values (see also Urban & Kaplan 2007). Applying the stellar-aberration correction due to
     Earth's motion decreases the apparent Carrington longitude by ~20.5 arcseconds.
 
     References
     ----------
-    * Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
-      and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`__
     * Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's
       Physical Ephemeris in The Astronomical Almanac"
       `(link) <https://apps.dtic.mil/sti/pdfs/ADA482955.pdf>`__
@@ -653,7 +651,7 @@ def earth_distance(time='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def orientation(location, time='now'):
     """
-    Return the orientation angle for the Sun from a specified Earth location and time.  The
+    Return the orientation angle for the Sun from a specified Earth location and time. The
     orientation angle is the angle between local zenith and solar north, measured eastward from
     local zenith.
 
@@ -724,7 +722,7 @@ def eclipse_amount(observer, *, moon_radius: Literal['IAU', 'minimum'] = 'IAU'):
     Return the percentage of the Sun that is eclipsed by the Moon.
 
     The occultation of the solar disk by the Moon is calculated using the
-    simplifying assumption that the Moon has a constant radius.  Since the Moon has
+    simplifying assumption that the Moon has a constant radius. Since the Moon has
     an irregular profile of peaks and valleys, the output can be slightly inaccurate
     for the start/end of partial solar eclipses (a.k.a. penumbral contacts) and the
     start/end of total solar eclipses (a.k.a. umbral contacts).
@@ -745,12 +743,12 @@ def eclipse_amount(observer, *, moon_radius: Literal['IAU', 'minimum'] = 'IAU'):
     The apparent location of the Moon accounts for the effect of light travel time.
 
     The location of the Moon is appreciably inaccurate with Astropy's built-in
-    ephemeris, so it is highly recommended to use a JPL ephemeris instead.  See
+    ephemeris, so it is highly recommended to use a JPL ephemeris instead. See
     :ref:`astropy-coordinates-solarsystem`.
 
     Using the mean minimum radius for the Moon will result in slightly more accurate
     estimates of the start/end of total solar eclipses, at the expense of slightly
-    more inaccurate estimates for the amount of partial solar eclipses.  See
+    more inaccurate estimates for the amount of partial solar eclipses. See
     `this page <https://eclipse.gsfc.nasa.gov/SEmono/reference/radius.html>`__
     for relevant discussion.
 

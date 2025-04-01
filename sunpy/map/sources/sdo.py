@@ -10,6 +10,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ['AIAMap', 'HMIMap', 'HMISynopticMap']
 
@@ -31,17 +32,17 @@ class AIAMap(GenericMap):
     -----
     Observer location: The standard AIA FITS header provides the spacecraft location in multiple
     coordinate systems, including Heliocentric Aries Ecliptic (HAE) and Heliographic Stonyhurst
-    (HGS).  SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
+    (HGS). SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
     HGS coordinates, but other software packages may make different choices.
 
     References
     ----------
-    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
-    * `Instrument Page <https://aia.lmsal.com>`_
-    * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`_
-    * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`_
-    * `Instrument Paper <https://doi.org/10.1007/s11207-011-9776-8>`_
-    * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`_
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
+    * `Instrument Page <https://aia.lmsal.com>`__
+    * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`__
+    * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`__
+    * Instrument Paper - :cite:t:`lemen_atmospheric_2012`
+    * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`__
     """
 
     def __init__(self, data, **kwargs):
@@ -49,8 +50,8 @@ class AIAMap(GenericMap):
 
         # Fill in some missing info
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
@@ -69,6 +70,19 @@ class AIAMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['t_obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -102,9 +116,9 @@ class HMIMap(GenericMap):
 
     References
     ----------
-    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
-    * `Instrument Page <http://hmi.stanford.edu>`_
-    * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
+    * `Instrument Page <http://hmi.stanford.edu>`__
+    * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`__
     """
 
     def __init__(self, data, **kwargs):
@@ -112,10 +126,20 @@ class HMIMap(GenericMap):
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Avoid JP2K images not having a norm due to UNIT8 data
             # This means they are not scaled correctly.
-            if self.plot_settings.get('norm') is not None:
+            if self.plotter.plot_settings.get('norm') is not None:
                 # Magnetic field maps, not intensity maps
-                self._set_symmetric_vmin_vmax()
+                self.plotter._set_symmetric_vmin_vmax()
         self._nickname = self.detector
+
+    @property
+    def waveunit(self):
+        """
+        The `~astropy.units.Unit` of the wavelength of this observation.
+
+        Most HMI files seem to not have a parseable WAVEUNIT key so if it cannot be found
+        we default to Angstrom
+        """
+        return super().waveunit or u.Angstrom
 
     @property
     def measurement(self):
@@ -130,6 +154,18 @@ class HMIMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('telescop', '').split('/')[0]
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -151,6 +187,13 @@ class HMISynopticMap(HMIMap):
 
     See `~sunpy.map.sources.sdo.HMIMap` for information on the HMI instrument.
 
+    Notes
+    -----
+    The sign of ``CDELT1`` in the header of (some) HMI synoptic maps is negative,
+    but needs to be positive for the underlying data array in order to agree with
+    HMI magnetograms as well as JSOC-hosted PNGs of the synoptic maps. Accordingly,
+    we use the absolute value of ``CDELT1`` to force positivity.
+
     References
     ----------
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
@@ -159,8 +202,8 @@ class HMISynopticMap(HMIMap):
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
-        self.plot_settings['cmap'] = 'hmimag'
-        self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+        self.plotter.plot_settings['cmap'] = 'hmimag'
+        self.plotter.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
 
     @property
     def spatial_units(self):
@@ -189,14 +232,21 @@ class HMISynopticMap(HMIMap):
     def date(self):
         """
         Image observation time.
-
-        This is taken from the 'DATE-OBS' or 'T_OBS' keywords.
         """
-        date = self._get_date('DATE-OBS')
-        if date is None:
-            return self._get_date('T_OBS')
-        else:
-            return date
+        return self._get_date('T_OBS') or super().date
+
+    def _set_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
+
+    @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+        """
+        return self._get_date('T_OBS') or super().reference_date
+
+    def _set_reference_date(self, date):
+        self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
     def unit(self):

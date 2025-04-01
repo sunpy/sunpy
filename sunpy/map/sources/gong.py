@@ -5,14 +5,14 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import EarthLocation, SkyCoord
-from astropy.time import Time
 
 from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
+from sunpy.time import parse_time
 
 __all__ = ['GONGSynopticMap', 'GONGHalphaMap']
 
-from sunpy.map.mixins.mapmeta import SpatialPair
 
 _SITE_NAMES = {
     'LE': 'Learmonth',
@@ -37,14 +37,13 @@ class GONGSynopticMap(GenericMap):
     Notes
     -----
     If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
-
     References
     ----------
-    * `GONG Page <https://gong.nso.edu/>`_
-    * `Magnetogram Synoptic Map Images Page <https://gong.nso.edu/data/magmap/>`_
-    * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`_
-    * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`_
-    * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`_
+    * `GONG Page <https://gong.nso.edu/>`__
+    * `Magnetogram Synoptic Map Images Page <https://gong.nso.edu/data/magmap/>`__
+    * `FITS header keywords <https://gong.nso.edu/data/DMAC_documentation/General/fitsdesc.html>`__
+    * `Instrument Paper (pp. 203–208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
+    * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
 
     @classmethod
@@ -54,7 +53,26 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def date(self):
-        return Time(f"{self.meta.get('date-obs')} {self.meta.get('time-obs')}")
+        # The FITS file has a date that is made from the date-obs and time-obs keywords
+        # Which is not what date-obs is supposed to be.
+        if date_obs := self.meta.get('date-obs'):
+            if time_obs := self.meta.get('time-obs'):
+                date_obs = f"{date_obs} {time_obs}"
+            date_obs = parse_time(date_obs)
+        return date_obs or super().date
+
+    def _set_date(self, date):
+        if 'time-obs' in self.meta:
+            self.meta['date-obs'], self.meta['time-obs'] = parse_time(date).utc.isot.split('T')
+        else:
+            self.meta['date-obs'] = parse_time(date).utc.isot
+
+    @property
+    def reference_date(self):
+        return self.date
+
+    def _set_reference_date(self, date):
+        self._set_date(date)
 
     @property
     def scale(self):
@@ -82,10 +100,10 @@ class GONGHalphaMap(GenericMap):
 
     References
     ----------
-    * `GONG H-Alpha Page <https://nso.edu/data/nisp-data/h-alpha/>`_
-    * `GONG H-Alpha Observation Details <https://nispdata.nso.edu/webProdDesc2/presenter.php?file=halpha_fulldisk_images_overview.html&echoExact=0&name=Overview%20:%20GONG%20H-alpha%20Full-disk%20Images>`_
-    * `GONG Header Keywords <https://gong.nso.edu/data/HEADER_KEY.html>`_
-    * `DOI:/10.25668/as28-7p13 <https://doi.org/10.25668/as28-7p13>`_
+    * `GONG H-Alpha Page <https://nso.edu/data/nisp-data/h-alpha/>`__
+    * `GONG H-Alpha Observation Details <https://nispdata.nso.edu/webProdDesc2/presenter.php?file=halpha_fulldisk_images_overview.html&echoExact=0&name=Overview%20:%20GONG%20H-alpha%20Full-disk%20Images>`__
+    * `GONG Header Keywords <https://gong.nso.edu/data/HEADER_KEY.html>`__
+    * `GONG H-alpha Full-disk Images. <https://doi.org/10.25668/as28-7p13>`__
     """
 
     @classmethod
@@ -93,12 +111,16 @@ class GONGHalphaMap(GenericMap):
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
                 str(header.get('IMTYPE', '')).startswith('H-ALPHA'))
 
-
     @property
     def scale(self):
         solar_r = self.meta['SOLAR-R'] * u.arcsec
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r/ (self.meta['FNDLMBMA'] * u.pixel))
+
+    @property
+    def rsun_obs(self):
+        # Header contains a radius keyword which seems to have a higher priority but for GONG Ha is in pixels
+        return self.meta['SOLAR-R'] * u.arcsec
 
     @property
     def coordinate_system(self):

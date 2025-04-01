@@ -1,6 +1,7 @@
 """
 Test cases for AIAMap subclass.
 """
+import copy
 
 import pytest
 
@@ -11,6 +12,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.tests.helpers import SKIP_GLYMUR
+from .helpers import _test_private_date_setters
 
 params = [get_test_filepath("aia_171_level1.fits")]
 if not SKIP_GLYMUR:
@@ -24,9 +26,21 @@ def aia_map(request):
     return Map(request.param)
 
 
-def test_AIAMap(aia_map):
+def test_aia_map(aia_map):
     """Tests the creation of AIAMap"""
     assert isinstance(aia_map, AIAMap)
+
+
+def test_reference_date(aia_map):
+    assert aia_map.reference_date.isot in ["2011-02-15T00:00:01.340", "2013-06-24T17:31:31.840"]
+
+
+def test_date(aia_map):
+    assert aia_map.date.isot in ["2011-02-15T00:00:00.340", "2013-06-24T17:31:30.840"]
+
+
+def test_private_date_setters(aia_map):
+    _test_private_date_setters(aia_map)
 
 
 def test_is_datasource_for(aia_map):
@@ -74,3 +88,11 @@ def test_new_instance_preserves_plot_settings(aia_map):
 def test_wcs(aia_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     aia_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_missing_tobs(aia_map):
+    # Should fall back to base reference_date for reference date if T_OBS is missing
+    new_meta = copy.deepcopy(aia_map.meta)
+    new_meta.pop('T_OBS')
+    new_aia_map = aia_map._new_instance(aia_map.data, new_meta)
+    assert new_aia_map.reference_date == super(type(new_aia_map), new_aia_map).reference_date

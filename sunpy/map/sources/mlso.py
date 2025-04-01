@@ -25,15 +25,15 @@ class KCorMap(GenericMap):
     Notes
     -----
     Observer location: The standard K-Cor metadata does not include the full 3D
-    location of the observer.  There are 2D Carrington heliographic coordinates, but
+    location of the observer. There are 2D Carrington heliographic coordinates, but
     using them is not recommended because the calculation of Carrington longitude
     differs from ``sunpy`` (see :ref:`sunpy-topic-guide-coordinates-carrington`).
     Instead, we assume the default observer location to be the geographic location of MLSO.
 
     References
     ----------
-    * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`_
-    * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`_
+    * `COSMO Mission Page <https://www2.hao.ucar.edu/cosmo>`__
+    * `KCOR Instrument Page <https://www2.hao.ucar.edu/mlso/instruments/mlso-kcor-coronagraph>`__
     """
 
     # MLSO location per Wikipedia (https://en.wikipedia.org/wiki/Mauna_Loa_Solar_Observatory)
@@ -44,12 +44,12 @@ class KCorMap(GenericMap):
 
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
-        self.plot_settings['norm'].vmin = 0.0
+        self.plotter.plot_settings['norm'].vmin = 0.0
 
     def _get_cmap_name(self):
         """Build the default color map name."""
@@ -73,7 +73,7 @@ class KCorMap(GenericMap):
 
     @property
     def _default_observer_coordinate(self):
-        return SkyCoord(self._earth_location.get_itrs(self.date)).heliographic_stonyhurst
+        return SkyCoord(self._earth_location.get_itrs(self.reference_date)).heliographic_stonyhurst
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

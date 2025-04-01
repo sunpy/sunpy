@@ -7,20 +7,26 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.proba2 import SWAPMap
-
-header_files = [
-    'SWAP/resampled0_swap.header',
-    'SWAP/resampled1_swap.header',
-    'SWAP/resampled2_swap.header',
-    'SWAP/resampled3_swap.header',
-]
+from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
 
 
-@pytest.fixture(scope="module", params=header_files)
-def swap_map(request):
-    return get_dummy_map_from_header(get_test_filepath(request.param))
+@pytest.fixture()
+def swap_map():
+    return get_dummy_map_from_header(get_test_filepath("SWAP/resampled0_swap.header"))
+
+
+def test_reference_date(swap_map):
+    assert swap_map.reference_date.isot == "2011-10-04T23:56:41.222"
+
+
+def test_date(swap_map):
+    assert swap_map.date.isot == "2011-10-04T23:56:41.222"
+
+
+def test_private_date_setters(swap_map):
+    _test_private_date_setters(swap_map)
 
 
 def test_fitstoSWAP(swap_map):

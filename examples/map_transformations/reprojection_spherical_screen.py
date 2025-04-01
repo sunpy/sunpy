@@ -5,7 +5,7 @@ Reprojecting Using a Spherical Screen
 
 This example demonstrates how you can reproject an image as if it lies on the
 inside of a spherical screen and the observer is not at the center of the
-sphere.  This functionality is primarily for visualization purposes, since
+sphere. This functionality is primarily for visualization purposes, since
 features in the image are unlikely to actually lie on this spherical screen.
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6
@@ -19,11 +19,11 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import SphericalScreen
 from sunpy.data.sample import AIA_171_IMAGE
 
 ######################################################################
-# We will use one of the AIA images from the sample data.  We fix the
+# We will use one of the AIA images from the sample data. We fix the
 # range of values for the Map's normalizer.
 
 aia_map = sunpy.map.Map(AIA_171_IMAGE)
@@ -61,7 +61,7 @@ out_header = sunpy.map.make_fitswcs_header(
 ######################################################################
 # If you reproject the AIA Map to the perspective of the new observer,
 # the default assumption is that the image lies on the surface of the
-# Sun.  However, the parts of the image beyond the solar disk cannot
+# Sun. However, the parts of the image beyond the solar disk cannot
 # be mapped to the surface of the Sun, and thus do not show up in the
 # output.
 
@@ -75,11 +75,11 @@ plt.show()
 ######################################################################
 # You can use the different assumption that the image lies on the
 # surface of a spherical screen centered at AIA, with a radius equal
-# to the Sun-AIA distance.  The curvature of the spherical screen is
+# to the Sun-AIA distance. The curvature of the spherical screen is
 # not obvious in this plot due to the relatively small field of view
 # of AIA (compared to, say, a coronagraph).
 
-with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate):
+with SphericalScreen(aia_map.observer_coordinate):
     outmap_screen_all = aia_map.reproject_to(out_header)
 
 fig = plt.figure()
@@ -92,8 +92,7 @@ plt.show()
 # be used for only off-disk parts of the image, and continue to map
 # on-disk parts of the image to the surface of the Sun.
 
-with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate,
-                                             only_off_disk=True):
+with SphericalScreen(aia_map.observer_coordinate, only_off_disk=True):
     outmap_screen_off_disk = aia_map.reproject_to(out_header)
 
 fig = plt.figure()

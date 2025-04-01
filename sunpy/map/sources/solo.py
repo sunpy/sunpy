@@ -26,14 +26,14 @@ class EUIMap(GenericMap):
     References
     ----------
     * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`__
-    * `EUI Instrument Page <https://wwwbis.sidc.be/EUI/EUI/EUI/EUI/EUI/>`__
-    * `Instrument Paper <https://doi.org/10.1051/0004-6361/201936663>`__
+    * `EUI Instrument Page <https://www.sidc.be/EUI/about/instrument>`__
+    * Instrument Paper: :cite:t:`rochus_solar_2020`
     """
 
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
@@ -45,11 +45,6 @@ class EUIMap(GenericMap):
         if self.meta.get('level'):
             # The level number is prepended by the letter L
             return int(self.meta.get('level')[1:])
-
-    @property
-    def date(self):
-        # Prioritize date-average over date-obs
-        return self.date_average or super().date
 
     @property
     def waveunit(self):

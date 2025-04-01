@@ -1,1 +1,0 @@
-Added the ability for `sunpy.map.Map` to load files from a generator.

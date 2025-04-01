@@ -163,38 +163,112 @@ class MapMetaMixin:
         return time
 
     @property
+    def reference_date(self):
+        """
+        The reference date for the coordinate system.
+
+        This date is used to define the ``obstime`` of the coordinate frame and often
+        the ``obstime`` of the observer.  Be aware that this date can be different from
+        the "canonical" observation time (see the `.GenericMap.date` property).
+
+        The reference date is determined using this order of preference:
+
+        1. The ``DATE-AVG`` key in the meta.
+        2. The ``DATE-OBS`` key in the meta.
+        3. The ``DATE-BEG`` key in the meta.
+        4. The ``DATE-END`` key in the meta.
+        5. The `.GenericMap.date` property as a fallback (which, if not
+           overridden, would be the current time if the above keywords are missing).
+
+        See Also
+        --------
+        date : The observation time.
+        date_start : The start time of the observation.
+        date_end : The end time of the observation.
+        date_average : The average time of the observation.
+
+        Notes
+        -----
+        The FITS standard implies that, but does not expressly require, the DATE-AVG keyword
+        to be the reference date.
+        """
+        return (
+            self._get_date('date-avg') or
+            self._get_date('date-obs') or
+            self._get_date('date-beg') or
+            self._get_date('date-end') or
+            self.date
+        )
+
+    def _set_reference_date(self, date):
+        """
+        Set the reference date using the same priority as `.GenericMap.reference_date`.
+
+        If a source subclass overrides `.GenericMap.reference_date`, it should override
+        this private method as well.
+        """
+        for keyword in ['date-avg', 'date-obs', 'date-beg', 'date-end']:
+            if keyword in self.meta:
+                self.meta[keyword] = parse_time(date).utc.isot
+                return
+        self._set_date(date)
+
+    @property
     def date(self):
         """
-        Image observation time.
+        The observation time.
 
-        For different combinations of map metadata this can return either
-        the start time, end time, or a time between these. It is recommended
-        to use `~sunpy.map.GenericMap.date_average`,
-        `~sunpy.map.GenericMap.date_start`, or `~sunpy.map.GenericMap.date_end`
-        instead if you need one of these specific times.
+        This time is the "canonical" way to refer to an observation, which is commonly
+        the start of the observation, but can be a different time.  In comparison, the
+        `.GenericMap.date_start` property is unambigiously the start of the observation.
 
-        Taken from, in order of preference:
+        The observation time is determined using this order of preference:
 
-        1. The DATE-OBS FITS keyword
-        2. `~sunpy.map.GenericMap.date_average`
-        3. `~sunpy.map.GenericMap.date_start`
-        4. `~sunpy.map.GenericMap.date_end`
+        1. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
+        2. `.GenericMap.date_start`
+        3. `.GenericMap.date_average`
+        4. `.GenericMap.date_end`
         5. The current time
+
+        See Also
+        --------
+        reference_date : The reference date for the the coordinate system
+        date_start : The start time of the observation.
+        date_end : The end time of the observation.
+        date_average : The average time of the observation.
         """
-        time = self._date_obs
-        time = time or self.date_average
-        time = time or self.date_start
-        time = time or self.date_end
+        time = (
+            self._date_obs or
+            self.date_start or
+            self.date_average or
+            self.date_end
+        )
 
         if time is None:
             if self._default_time is None:
                 warn_metadata("Missing metadata for observation time, "
                               "setting observation time to current time. "
-                              "Set the 'DATE-AVG' FITS keyword to prevent this warning.")
+                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
 
         return time
+
+    def _set_date(self, date):
+        """
+        Set the observation time by setting DATE-OBS.
+
+        If a source subclass overrides `.GenericMap.date`, it should override
+        this private method as well.
+
+        Notes
+        -----
+        This method will additionally always remove DATE_OBS (note the underscore),
+        if present.
+        """
+        if 'date_obs' in self.meta:
+            del self.meta['date_obs']
+        self.meta['date-obs'] = parse_time(date).utc.isot
 
     @property
     def detector(self):
@@ -301,7 +375,7 @@ class MapMetaMixin:
         """
         The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
-        top_right = np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1
+        top_right = np.array([self.shape[1], self.shape[0]]) - 1
         return self.wcs.pixel_to_world(*top_right)
 
     @property
@@ -312,7 +386,7 @@ class MapMetaMixin:
         If the array has an even number of pixels in a given dimension,
         the coordinate returned lies on the edge between the two central pixels.
         """
-        center = (np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1) / 2.
+        center = (np.array([self.shape[1], self.shape[0]]) - 1) / 2.
         return self.wcs.pixel_to_world(*center)
 
     def _rsun_meters(self, dsun=None):
@@ -444,12 +518,17 @@ class MapMetaMixin:
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
+
+        Notes
+        -----
+        The ``obstime`` for this coordinate uses the `.reference_date` property, which
+        may be different from the `.date` property.
         """
         warning_message = []
         for keys, kwargs in self._supported_observer_coordinates:
             missing_keys = set(keys) - self.meta.keys()
             if not missing_keys:
-                sc = SkyCoord(obstime=self.date, **kwargs)
+                sc = SkyCoord(obstime=self.reference_date, **kwargs)
                 # If the observer location is supplied in Carrington coordinates,
                 # the coordinate's `observer` attribute should be set to "self"
                 if isinstance(sc.frame, HeliographicCarrington):
@@ -479,7 +558,7 @@ class MapMetaMixin:
             warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
                                + warning_message + [""])
             warn_metadata("\n".join(warning_message), stacklevel=3)
-            return get_earth(self.date)
+            return get_earth(self.reference_date)
 
     @property
     def heliographic_latitude(self):
@@ -494,14 +573,14 @@ class MapMetaMixin:
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date,
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
                                            rsun=self.rsun_meters)
         return self.observer_coordinate.transform_to(hgc_frame).lon
 
@@ -589,7 +668,7 @@ class MapMetaMixin:
         -----
         In many cases this is a simple rotation matrix, hence the property name.
         It general it does not have to be a pure rotation matrix, and can encode
-        other transformations e.g., skews for non-orthgonal coordinate systems.
+        other transformations e.g., skews for non-orthogonal coordinate systems.
         """
         if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
             return np.array(
@@ -661,19 +740,24 @@ class MapMetaMixin:
     @staticmethod
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
-                        'dn': 'ct',
-                        'dn/s': 'ct/s',
                         'counts / pixel': 'ct/pix',}
+        # TODO: HACK WORKAROUND
+        if isinstance(unit_str, u.Unit | u.CompositeUnit | u.IrreducibleUnit):
+            unit_str = unit_str.to_string()
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
         unit = u.Unit(unit_str, format='fits', parse_strict='silent')
         if isinstance(unit, u.UnrecognizedUnit):
-            warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                          f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                          'with sunpy.map.Map.\n'
-                          'See https://fits.gsfc.nasa.gov/fits_standard.html for '
-                          'the FITS unit standards.')
-            unit = None
+            unit = u.Unit(unit_str, parse_strict='silent')
+            # NOTE: Special case DN here as it is not part of the FITS standard, but
+            # is widely used and is also a recognized astropy unit
+            if u.DN not in unit.bases:
+                warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
+                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
+                               'with sunpy.map.Map.\n'
+                               'See https://fits.gsfc.nasa.gov/fits_standard.html for '
+                               'the FITS unit standards.')
+                unit = None
         return unit
 
     @property
@@ -688,7 +772,6 @@ class MapMetaMixin:
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-
         return self._parse_fits_unit(unit_str)
 
     @property

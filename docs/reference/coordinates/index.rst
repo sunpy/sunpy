@@ -67,6 +67,10 @@ Supported Coordinate Systems
      - HPC
      - `~sunpy.coordinates.frames.Helioprojective`
      -
+   * - Helioprojective Radial
+     - HPR
+     - `~sunpy.coordinates.frames.HelioprojectiveRadial`
+     - Uses declination (-90 deg at disk center) rather than impact angle (0 deg at disk center)
    * - Geocentric Earth Equatorial (Mean)
      - GEI
      - `~sunpy.coordinates.frames.GeocentricEarthEquatorial`
@@ -93,11 +97,9 @@ Supported Coordinate Systems
      -
 
 
-For a description of these coordinate systems,
-see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
-and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
-(and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
-
+For a description of these coordinate systems, see :cite:t:`thompson_coordinate_2006`
+and :cite:t:`franz_heliospheric_2002`
+(and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`__).
 
 Reference/API
 =============
@@ -122,16 +124,17 @@ The parts of the following modules that are useful to a typical user are already
 
 .. automodapi:: sunpy.coordinates.frames
 
+.. automodapi:: sunpy.coordinates.screens
+
 .. automodapi:: sunpy.coordinates.metaframes
 
 .. automodapi:: sunpy.coordinates.wcs_utils
-
 
 Attribution
 ===========
 
 Some of this documentation was adapted from Astropy under the terms of the `BSD
 License
-<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
+<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`__.
 
 This sub-package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.

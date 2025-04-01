@@ -1,14 +1,17 @@
+import re
+
 import numpy as np
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import Time
 from astropy.wcs import WCS
 
 import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
-from sunpy.map.header_helper import make_heliographic_header
+from sunpy.map.header_helper import make_heliographic_header, make_hpr_header
 from sunpy.util.metadata import MetaDict
 
 
@@ -215,21 +218,34 @@ def test_unit_as_string(map_data, hpc_coord):
     # Test that unit can be passed in as a string
     map_unit = u.Unit('ct / (pix s)')
     header = make_fitswcs_header(map_data, hpc_coord, unit=map_unit.to_string())
-    assert header['bunit'] == map_unit.to_string('fits')
+    assert header['bunit'] == map_unit.to_string(format='fits')
 
 
-def test_invalid_inputs(map_data, hcc_coord, hpc_coord_notime, hpc_coord):
-    # Raise the HCC error
-    with pytest.raises(ValueError):
-        make_fitswcs_header(map_data, hcc_coord)
+@pytest.mark.parametrize(('input_unit','output_string'),
+                         [('DN', 'DN'), (u.DN, 'DN'), ('DN / s', 'DN / s')])
+def test_make_fitswcs_header_handles_dn(input_unit, output_string, map_data, hpc_coord):
+    header = make_fitswcs_header(map_data, hpc_coord, unit=input_unit)
+    assert header['bunit'] == output_string
 
-    # Check for when coordinate argument isn't given as an `astropy.coordinate.SkyCoord`
-    with pytest.raises(ValueError):
-        make_fitswcs_header(map_data, map_data)
+@pytest.mark.parametrize(
+    ("coordinate_input", "expected_error_message"),
+    [
+        ("hcc_coord", "This function does not currently support heliocentric coordinates."),
+        ("map_data", "coordinate needs to be a coordinate frame or an SkyCoord instance."),
+        ("hpc_coord_notime", "The coordinate needs an observation time, `obstime`.")
+    ]
+)
+def test_invalid_inputs(coordinate_input, expected_error_message, map_data, hcc_coord, hpc_coord_notime, hpc_coord):
+    coordinates = {
+        "hcc_coord": hcc_coord,
+        "map_data": map_data,
+        "hpc_coord_notime": hpc_coord_notime,
+    }
+    coord = coordinates[coordinate_input]
 
-    # Check for when an observation time isn't given
-    with pytest.raises(ValueError):
-        make_fitswcs_header(map_data, hpc_coord_notime)
+
+    with pytest.raises(ValueError, match=re.escape(expected_error_message)):
+        make_fitswcs_header(map_data, coord)
 
     # Check arguments not given as astropy Quantities
     with pytest.raises(TypeError):
@@ -290,3 +306,18 @@ def test_make_heliographic_header_invalid_inputs(aia171_test_map):
     header_test_below = make_heliographic_header(aia171_test_map.date, aia171_test_map.observer_coordinate, [90, 180], frame='carrington', map_center_longitude=-1*u.deg)
     assert header_test_above['crval1'] == 1.0
     assert header_test_below['crval1'] == 359.0
+
+
+def test_make_hpr_header(hgs_coord):
+    header = make_hpr_header(hgs_coord, (100, 720), theta_binsize=0.1*u.deg)
+    assert header['ctype1'] == 'HRLN-CAR'
+    assert header['ctype2'] == 'HRLT-CAR'
+    assert header['naxis1'] == 720
+    assert header['naxis2'] == 100
+    assert header['crpix1'] == 360.5
+    assert header['crpix2'] == 900.5
+    assert header['crval1'] == 180.0
+    assert header['crval2'] == 0.0
+    assert header['hgln_obs'] == -50.0
+    assert header['hglt_obs'] == 50.0
+    assert Time(header['date-obs']) == hgs_coord.obstime

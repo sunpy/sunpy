@@ -6,7 +6,7 @@ Obtaining solar-eclipse information
 How to obtain information about a solar eclipse
 
 The function :func:`sunpy.coordinates.sun.eclipse_amount` returns how much of
-the Sun is occulted by the Moon at the specified time(s).  This example
+the Sun is occulted by the Moon at the specified time(s). This example
 showcases how one can use the the output of this function to calculate the
 start/end times of an eclipse and to plot the eclipse amount as a function of
 time.
@@ -80,13 +80,13 @@ def plot_eclipse_timeseries(location, time):
 
 
 ##############################################################################
-# Plot the timeseries for the 2023 annular eclipse.  Note that the eclipse
+# Plot the timeseries for the 2023 annular eclipse. Note that the eclipse
 # amount reaches a maximum of only ~90%, as expected.
 
 plot_eclipse_timeseries(location, max2023)
 
 ##############################################################################
-# Plot the timeseries for the 2024 total eclipse.  Since the eclipse amount
+# Plot the timeseries for the 2024 total eclipse. Since the eclipse amount
 # reaches 100%, the above function also calculates the start/end of total
 # eclipse.
 

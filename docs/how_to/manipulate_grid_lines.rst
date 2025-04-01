@@ -1,8 +1,8 @@
 .. _how-to-manipulate-grid-lines-in-image-plots:
 
-*****************************************
-Manipulate grids lines when plotting Maps
-*****************************************
+*******************************************************
+Manipulate grids lines when plotting a `~sunpy.map.Map`
+*******************************************************
 
 Underneath the hood, `sunpy.map.GenericMap.plot` uses `~astropy.visualization.wcsaxes.WCSAxes` to have to ability to plot images in world coordinates.
 This means that sometimes the standard matplotlib methods to manipulate grid lines may not work as expected.

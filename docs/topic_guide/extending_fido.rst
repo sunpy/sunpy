@@ -17,30 +17,99 @@ The main place this is done is when constructing a `~.UnifiedResponse` object, w
 
 .. _sunpy-topic-guide-new-source-for-fido-add-new-scraper-client:
 
-Writing a new "scraper" client
-==============================
+An explanation of how "scraper" clients work
+============================================
 
 A "scraper" Fido client (also sometimes referred to as a "data retriever" client) is a Fido client which uses the URL `~sunpy.net.scraper.Scraper` to find files on remote servers.
-If the data provider you want to integrate does not provide a tree of files with predictable URLs then a "full" client is more likely to provide the functionality you need.
 
-A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these three components:
+A new "scraper" client inherits from `~sunpy.net.dataretriever.client.GenericClient` and requires a minimum of these two components:
 
 * A class method :meth:`~sunpy.net.base_client.BaseClient.register_values`; this registers the "attrs" that are supported by the client.
   It returns a dictionary where keys are the supported attrs and values are lists of tuples.
   Each `tuple` contains the "attr" value and its description.
-* A class attribute ``baseurl``; this is a regular expression which is used to match the URLs supported by the client.
-* A class attribute ``pattern``; this is a template used to extract the metadata from URLs matched by ``baseurl``.
-  The extraction uses the `~sunpy.extern.parse.parse` format.
+* A class attribute ``pattern``; this is a string used to match all URLs supported by the client and extract necessary metadata from the matched URLs.
+  The time and other metadata attributes for extraction are written within double curly-braces ``{{}}`` in a `parse <https://github.com/r1chardj0n3s/parse/>`__ format.
+  Single curly braces ``{}`` are only used for regular placeholders for Python format strings, each respective value passed as ``kwargs`` to the Scraper.
+  An example of how such a pattern looks like is given in the algorithm explanation below.
 
+.. warning::
+
+    The scraper class has supported regex-based patterns for a long time
+    However, that is in the process of being replaced with parse-style patterns.
+    This is supported by the ``format`` keyword argument to the scraper.
+    The regex-style patterns have be deprecated and will be removed in the future.
+
+Each such client relies on the `~sunpy.net.scraper.Scraper` to be able to query for files using the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
+
+The general algorithm to explain how the `~sunpy.net.scraper.Scraper` is able to do this is:
+A brief explanation of how the Scraper works is as follows:
+
+1. Drop the filename from the pattern and generate a list of directories to search for files.
+2. For each directory, get a list of files present in it.
+3. For each file, check if it matches the pattern.
+4. For each file that matches the pattern, check if it is in the timerange. If it is, add it to the output.
+
+For a more verbose in-depth explanation on how this is accomplished internally:
+
+The scraper takes as input the generalized ``pattern`` of how a desired file path looks like, in the ``parse`` format.
+Upon initialization, a version of the pattern following the datetime format is also internally generated, called the ``datetime_pattern``.
+
+.. code-block:: python
+
+    >>> from sunpy.net import Scraper
+    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+    ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
+    >>> s = Scraper(format=pattern, instrument='swap')
+    >>> s.datetime_pattern
+    'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
+
+The smallest unit of time / time-step for that directory-pattern (the full ``datetime_pattern`` except the filename at the end) is then internally detected from ``datetime_pattern`` by using :meth:`~sunpy.net.scraper_utils.extract_timestep`.
+
+.. code-block:: python
+
+    >>> from sunpy.net.scraper_utils import extract_timestep
+    >>> extract_timestep(s.datetime_pattern)
+    relativedelta(seconds=+1)
+
+After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for each time between start and stop, in increments of timestep, the time is first "floored" according to the pattern via :meth:`~sunpy.net.scraper_utils.date_floor` and a corresponding directory-pattern is generated.
+
+.. code-block:: python
+
+    >>> from sunpy.time import TimeRange
+    >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-03T00:00:00')
+    >>> s.range(timerange)
+    ['http://proba2.oma.be/swap/data/bsd/2015/01/01/',
+    'http://proba2.oma.be/swap/data/bsd/2015/01/02/',
+    'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
+
+These locations, provided by the filled pattern, are visited and a list of files at each location is obtained.
+This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
+
+Each filename is then parsed against the remaining portion of the pattern to determine if it matches.
+Each such file is then checked for lying in the intended timerange using the :meth:`~sunpy.net.scraper._check_timerange` method which in turn uses :meth:`sunpy.net.scraper_utils.get_timerange_from_exdict` to get the covered timerange for each file.
+Files that meet these criteria are added to the output.
+
+.. code-block:: python
+
+    >>> s.filelist(timerange) # doctest: +REMOTE_DATA
+    ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
+    'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
+    '...',
+    'http://proba2.oma.be/swap/data/bsd/2015/01/02/swap_lv1_20150102_233313.fits']
+
+Writing a new "scraper" client
+==============================
+
+The `~sunpy.net.scraper` allows us to write Fido clients for a variety of sources.
 For a simple example of a scraper client, we can look at the implementation of `sunpy.net.dataretriever.sources.eve.EVEClient` in sunpy.
+
 A version without documentation strings is reproduced below:
 
 .. code-block:: python
 
     class EVEClient(GenericClient):
-        baseurl = (r'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
-                    r'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
-        pattern = '{}/SpWx/{:4d}/{year:4d}{month:2d}{day:2d}_EVE_L{Level:1d}{}'
+        pattern = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+               '{{year:4d}}/{{year:4d}}{{month:2d}}{{day:2d}}_EVE_L{{Level:1d}}CS_DIODES_1m.txt')
 
         @classmethod
         def register_values(cls):
@@ -53,10 +122,10 @@ A version without documentation strings is reproduced below:
             return adict
 
 This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
-`~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``baseurl`` pattern specifies where in the pattern the time information is located, using `strptime <https://strftime.org/>`__ notation.
-The ``pattern`` attribute is used to populate the results table from the URLs matched with the ``baseurl``.
-It includes some of the time definitions, as well as names of attrs (in this case "Level").
-The supported time keys are: 'year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond'.
+`~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``pattern`` specifies where in the URL the time information is located, using `parse <https://github.com/r1chardj0n3s/parse/>`__ notation.
+The ``pattern`` attribute is first filled in with the calculated time-based values, and then used to populate the results table from the URLs matched with the ``pattern``.
+It includes some of the time definitions, as well as the name of any other attrs which appear in the URL (in this case "Level").
+The supported time keys (to be used within ``{{}}``!) are: 'year:4d', 'year:2d', 'month:2d'. 'month_name:l', 'month_name_abbr:l', 'day:2d', 'day_of_year:3d', 'hour:2d', 'minute:2d', 'second:2d', 'microsecond:6d', 'millisecond:3d' and 'week_number:2d'.
 
 The attrs returned in the ``register_values()`` method are used to match your client to a search, as well as adding their values to the attr.
 This means that after this client has been imported, running ``print(a.Provider)`` will show that the ``EVEClient`` has registered a provider value of ``LASP``.
@@ -103,18 +172,14 @@ Examples
 
 Suppose any file of a data archive can be described by this URL ``https://some-domain.com/%Y/%m/%d/satname_{SatelliteNumber}_{Level}_%y%m%d%H%M%S_{any-2-digit-number}.fits``:
 
-``baseurl`` becomes ``r'https://some-domain.com/%Y/%m/%d/satname_(\d){2}_(\d){1}_(\d){12}_(\d){2}\.fits'``.
+The ``format`` pattern becomes ``r'https://some-domain.com/{{year:4d}}/{{month:2d}}{{day:2d}}/satname_{SatelliteNumber:2d}_{Level:1d}_{{year:2d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}{{second:2d}}_{{:2d}}.fits'``.
+The datetime values and any other metadata attributes that we wish to extract are written within double curly-braces ``{{}}``.
+These metadata attributes are the desired keys for the returned dictionary and they should match with the ``attr.__name__``.
+Note that the pattern can be used to omit parts of the filename which are dynamic but are not needed to be extracted.
+For example, ``{{:2d}}`` is used in the above example to match any 2-digit number in the filename.
+Similarly ``{{}}`` can be used to match a string of any length starting from its position in the filename.
 
-Note all variables in the filename are converted to regex that will match any possible value for it.
-A character enclosed within ``()`` followed by a number enclosed within ``{}`` is used to match the specified number of occurrences of that special sequence.
-For example, ``%y%m%d%H%M%S`` is a twelve digit variable (with 2 digits for each item) and thus represented by ``r'(\d){12}'``.
-Note that ``\`` is used to escape the special character ``.``.
-
-``pattern`` becomes ``'{}/{year:4d}/{month:2d}{day:2d}/satname_{SatelliteNumber:2d}_{Level:1d}_{:6d}{hour:2d}{minute:2d}{second:2d}_{:2d}.fits'``.
-Note the sole purpose of ``pattern`` is to extract the information from matched URL, using `~sunpy.extern.parse.parse`.
-So the desired key names for returned dictionary should be written in the ``pattern`` within ``{}``, and they should match with the ``attr.__name__``.
-
-``register_values()`` can be written as:
+Finally, ``register_values()`` can be written as:
 
 .. code-block:: python
 
@@ -382,6 +447,7 @@ A simple example, which just checks the type of ``attrs`` and not their values w
         return supported_attrs.issuperset(query_attrs)
 
 Note, that this method is a class method, it gets called without instantiating your client to speed up the dispatching.
+If you are using the `~sunpy.net.dataretriever.client.GenericClient` as a base class, you do not need to implement this method, as it is already implemented in the base class.
 
 Writing a Fetch Method
 ----------------------

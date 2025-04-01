@@ -42,10 +42,10 @@ class XRSTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `GOES Mission Homepage <https://www.goes.noaa.gov>`_
-    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
-    * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
-    * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
+    * `GOES Mission Homepage <https://www.goes.noaa.gov>`__
+    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`__
+    * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`__
+    * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`__
 
     Notes
     -----
@@ -83,7 +83,7 @@ class XRSTimeSeries(GenericTimeSeries):
         if columns is None:
             columns = ["xrsa", "xrsb"]
         axes, columns = self._setup_axes_columns(axes, columns)
-        plot_settings = {"xrsa": ["blue", r"0.5--4.0 $\AA$"], "xrsb": ["red", r"1.0--8.0 $\AA$"]}
+        plot_settings = {"xrsa": ["blue", r"0.5$-$4.0 $\mathrm{\AA}$"], "xrsb": ["red", r"1.0$-$8.0 $\mathrm{\AA}$"]}
         data = self.to_dataframe()
         for channel in columns:
             axes.plot(
@@ -148,10 +148,10 @@ class XRSTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        if sunpy.io.detect_filetype(filepath) == "hdf5":
+        if sunpy.io._file_tools.detect_filetype(filepath) == "hdf5":
             return cls._parse_netcdf(filepath)
         try:
-            hdus = sunpy.io.read_file(filepath)
+            hdus = sunpy.io._file_tools.read_file(filepath)
         except UnrecognizedFileTypeError:
             raise ValueError(
                 f"{Path(filepath).name} is not supported. Only fits and netCDF (nc) can be read.")
@@ -168,7 +168,6 @@ class XRSTimeSeries(GenericTimeSeries):
         hdulist : `astropy.io.fits.HDUList`
             A HDU list.
         """
-
         header = MetaDict(OrderedDict(hdulist[0].header))
         if len(hdulist) == 4:
             if is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%Y'):
@@ -228,12 +227,12 @@ class XRSTimeSeries(GenericTimeSeries):
                 raise ValueError(f"No flux data (either a_flux or xrsa_flux) found in file: {filepath}")
             flux_name_a = flux_name.name
             flux_name_b = flux_name_a.replace("a", "b")
-            xrsa = np.array(h5nc[flux_name_a])
-            xrsb = np.array(h5nc[flux_name_b])
+            xrsa = np.asarray(h5nc[flux_name_a])
+            xrsb = np.asarray(h5nc[flux_name_b])
             flux_flag_a = h5nc.variables.get("a_flags") or h5nc.variables.get("xrsa_flags") or h5nc.variables.get("xrsa_flag")
             flux_flag_b = h5nc.variables.get("b_flags") or h5nc.variables.get("xrsb_flags") or h5nc.variables.get("xrsb_flag")
-            xrsa_quality = np.array(h5nc[flux_flag_a.name])
-            xrsb_quality = np.array(h5nc[flux_flag_b.name])
+            xrsa_quality = np.asarray(h5nc[flux_flag_a.name])
+            xrsb_quality = np.asarray(h5nc[flux_flag_b.name])
             start_time_str = h5nc["time"].attrs["units"]
             # h5netcdf < 0.14 return bytes instead of a str
             if isinstance(start_time_str, bytes):
@@ -244,8 +243,8 @@ class XRSTimeSeries(GenericTimeSeries):
             detector_info = False
             if "xrsa_primary_chan" in h5nc:
                 detector_info = True
-                xrsa_primary_chan = np.array(h5nc["xrsa_primary_chan"])
-                xrsb_primary_chan = np.array(h5nc["xrsb_primary_chan"])
+                xrsa_primary_chan = np.asarray(h5nc["xrsa_primary_chan"])
+                xrsb_primary_chan = np.asarray(h5nc["xrsb_primary_chan"])
         try:
             times = times.datetime
         except ValueError:
@@ -280,7 +279,6 @@ class XRSTimeSeries(GenericTimeSeries):
             data["xrsb_primary_chan"] = xrsb_primary_chan
             units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
                           "xrsb_primary_chan": u.dimensionless_unscaled})
-
         data = data.replace(-9999, np.nan)
         return data, header, units
 
@@ -297,7 +295,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
         if "filepath" in kwargs.keys():
             try:
-                if sunpy.io.detect_filetype(kwargs["filepath"]) == "hdf5":
+                if sunpy.io._file_tools.detect_filetype(kwargs["filepath"]) == "hdf5":
                     with h5netcdf.File(kwargs["filepath"], mode="r", **cls._netcdf_read_kw) as f:
                         summary = f.attrs["summary"]
                         if not isinstance(summary, str):

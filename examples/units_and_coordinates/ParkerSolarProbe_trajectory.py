@@ -20,7 +20,7 @@ from sunpy.time import parse_time
 
 ##############################################################################
 # We use :func:`~sunpy.coordinates.get_horizons_coord` to query JPL Horizons
-# for the trajectory of Parker Solar Probe (PSP).  Let's request 50 days on
+# for the trajectory of Parker Solar Probe (PSP). Let's request 50 days on
 # either side of PSP's 14th closest approach to the Sun.
 
 perihelion_14 = parse_time('2022-12-11 13:16')
@@ -30,7 +30,7 @@ psp = get_horizons_coord('Parker Solar Probe',
                           'step': '180m'})
 
 ##############################################################################
-# We also obtain the location of Earth at PSP perihelion.  We could query
+# We also obtain the location of Earth at PSP perihelion. We could query
 # JPL Horizons again, but :func:`~sunpy.coordinates.get_body_heliographic_stonyhurst` returns
 # a comparably accurate location using the Astropy ephemeris.
 
@@ -45,13 +45,13 @@ def coord_to_polar(coord):
     return coord.lon.to_value('rad'), coord.radius.to_value('AU')
 
 ##############################################################################
-# Finally, we plot the trajectory on a polar plot.  Be aware that the
+# Finally, we plot the trajectory on a polar plot. Be aware that the
 # orientation of the Stonyhurst heliographic coordinate system rotates
 # over time such that the Earth is always at zero longitude.
 # Accordingly, when we directly plot the trajectory, it does not appear
 # as a simple ellipse because each trajectory point has a different
 # observation time and thus a different orientation of the coordinate
-# system.  To see the elliptical orbit, the trajectory can be
+# system. To see the elliptical orbit, the trajectory can be
 # transformed to the coordinate frame of Earth at the single time of
 # PSP perihelion (``earth``), so that the trajectory is represented in
 # a non-rotating coordinate frame.

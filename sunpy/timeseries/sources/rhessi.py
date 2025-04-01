@@ -30,13 +30,13 @@ def uncompress_countrate(compressed_countrate):
 
     References
     ----------
-    `Hsi_obs_summ_decompress.pro <https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    `Hsi_obs_summ_decompress.pro <https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`__
     """
 
     # Ensure uncompressed counts are between 0 and 255
     if (compressed_countrate.min() < 0) or (compressed_countrate.max() > 255):
         raise ValueError(
-            f'Exepected uncompressed counts {compressed_countrate} to in range 0-255')
+            f'Expected uncompressed counts {compressed_countrate} to in range 0-255')
 
     # TODO Must be a better way than creating entire lookup table on each call
     ll = np.arange(0, 16, 1)
@@ -102,6 +102,10 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     Each spectrometer is coupled to a set of grids with different pitches which enable
     fourier-style imaging as the spacecraft spins.
 
+    Summary lightcurves are quicklook data products intended for rapid assessment and
+    are not science-quality data. They are uncorrected for instrumental effects and
+    backgrounds.
+
     RHESSI provides summary lightcurves in the following passbands:
 
     * 3 - 6 keV
@@ -125,8 +129,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `RHESSI Homepage. <https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-    * `Mission Paper. <https://doi.org/10.1023/A:1022428818870>`_
+    * `RHESSI Homepage. <https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`__
+    * Mission Paper: :cite:t:`lin_reuven_2002`
     """
 
     # Class attributes used to specify the source class of the TimeSeries
@@ -182,7 +186,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod

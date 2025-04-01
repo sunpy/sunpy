@@ -16,7 +16,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample
-from sunpy.coordinates import Helioprojective
+from sunpy.coordinates import SphericalScreen
 from sunpy.map import Map
 from sunpy.util.config import get_and_create_download_dir
 
@@ -35,8 +35,7 @@ aia_map = Map(sunpy.data.sample.AIA_171_IMAGE)
 #
 # Note that off-disk AIA data are not retained by default because an
 # additional assumption is required to define the location of the AIA
-# emission in 3D space. We can use
-# :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` to
+# emission in 3D space. We can use `~sunpy.coordinates.SphericalScreen` to
 # retain the off-disk AIA data. See
 # :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
 # for more reference.
@@ -51,9 +50,9 @@ projected_header = sunpy.map.make_fitswcs_header(aia_map.data.shape,
                                                  scale=u.Quantity(aia_map.scale),
                                                  instrument=aia_map.instrument,
                                                  wavelength=aia_map.wavelength)
-# We use `assume_spherical_screen` to ensure that the off limb AIA pixels are reprojected
-# otherwise it will only be the on disk pixels that are reprojected.
-with Helioprojective.assume_spherical_screen(aia_map.observer_coordinate):
+# We use `~sunpy.coordinates.SphericalScreen` to ensure that the off limb AIA pixels
+# are reprojected. Otherwise it will only be the on disk pixels that are reprojected.
+with SphericalScreen(aia_map.observer_coordinate):
     aia_reprojected = aia_map.reproject_to(projected_header)
 
 ###############################################################################

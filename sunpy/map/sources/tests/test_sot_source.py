@@ -4,7 +4,9 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.hinode import SOTMap
+from .helpers import _test_private_date_setters
 
 pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
@@ -16,6 +18,10 @@ def sot():
 def test_fitstoSOT(sot):
     """Tests the creation of SOTMap using FITS."""
     assert isinstance(sot, SOTMap)
+
+
+def test_sot_coordinate_system(sot):
+    assert sot.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
 
 
 def test_is_datasource_for(sot):
@@ -33,6 +39,18 @@ def test_observatory(sot):
 def test_detector(sot):
     """Tests the detector property of the SOTMap object"""
     assert sot.detector == "SOT"
+
+
+def test_reference_date(sot):
+    assert sot.reference_date.isot == "2015-10-13T23:13:44.601"
+
+
+def test_date(sot):
+    assert sot.date.isot == "2015-10-13T23:13:44.601"
+
+
+def test_private_date_setters(sot):
+    _test_private_date_setters(sot)
 
 
 def test_measurement(sot):

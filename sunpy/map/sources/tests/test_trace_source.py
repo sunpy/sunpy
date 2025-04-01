@@ -3,7 +3,9 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.trace import TRACEMap
+from .helpers import _test_private_date_setters
 
 pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
@@ -17,11 +19,27 @@ def test_fitstoTRACE(trace_map):
     assert isinstance(trace_map, TRACEMap)
 
 
+def test_trace_coordinate_system(trace_map):
+    assert trace_map.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
+
+
 def test_is_datasource_for(trace_map):
     """Test the is_datasource_for method of TRACEMap.
     Note that header data to be provided as an argument
     can be a MetaDict object."""
     assert trace_map.is_datasource_for(trace_map.data, trace_map.meta)
+
+
+def test_reference_date(trace_map):
+    assert trace_map.reference_date.isot == "2001-01-30T02:58:23.429"
+
+
+def test_date(trace_map):
+    assert trace_map.date.isot == "2001-01-30T02:58:23.429"
+
+
+def test_private_date_setters(trace_map):
+    _test_private_date_setters(trace_map)
 
 
 def test_measurement(trace_map):

@@ -11,6 +11,7 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 import sunpy.io
+import sunpy.io._file_tools
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
@@ -34,7 +35,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     Note that the data is re-binned from the original 128 into the following 8 pre-determined energy channels.
     The rebinning method treats the counts in each of the original 128 channels as
-    all having the energy of the average energy of that channel.  For example, the
+    all having the energy of the average energy of that channel. For example, the
     counts in an 14.5--15.6 keV original channel would all be accumulated into the
     15--25 keV rebinned channel.
 
@@ -55,11 +56,11 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
-    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
-    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
-    * `GBM Instrument Papers <https://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
+    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`__
+    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`__
+    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`__
+    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`__
+    * `GBM Instrument Papers <https://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
@@ -134,7 +135,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         filepath : `str`
             The path to the file you want to parse.
         """
-        hdus = sunpy.io.read_file(filepath)
+        hdus = sunpy.io._file_tools.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod
