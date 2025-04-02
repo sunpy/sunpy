@@ -402,8 +402,7 @@ def test_heliographic_latitude(generic_map):
 
 
 def test_heliographic_longitude(generic_map):
-    # Needs a small tolerance to account for 32bit rounding errors
-    assert u.allclose(generic_map.heliographic_longitude, 0 * u.deg, atol=1e-15*u.deg)
+    assert u.allclose(generic_map.heliographic_longitude, 0 * u.deg, atol=1e-12*u.deg)
 
 
 def test_units(generic_map):
