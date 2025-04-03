@@ -15,6 +15,7 @@ __all__ = [
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
     'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table',
+    'punch_color_table',
 ]
 
 
@@ -376,3 +377,7 @@ def euvi_color_table(wavelength: u.angstrom):
             "Invalid EUVI wavelength. Valid values are "
             "171, 195, 284, 304."
         )
+
+
+def punch_color_table():
+    return cmap_from_rgb_file("PUNCH", "punch.csv")
