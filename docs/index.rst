@@ -96,3 +96,13 @@ It includes an interface for searching and downloading data from multiple data p
     reference/bibliography
     reference/stability
     dev_guide/index
+
+.. image:: https://github.com/sunpy/sunpy-contribution-statistics/blob/cache/cache/sunpy_user_stats_light.png?raw=true
+    :class: only-light
+    :target: https://docs.sunpy.org/en/latest/reference/impact_health.html
+    :alt: sunpy User Statistics
+
+.. image:: https://github.com/sunpy/sunpy-contribution-statistics/blob/cache/cache/sunpy_user_stats_dark.png?raw=true
+    :class: only-dark
+    :target: https://docs.sunpy.org/en/latest/reference/impact_health.html
+    :alt: sunpy User Statistics
