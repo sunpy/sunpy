@@ -8,11 +8,11 @@ from astropy.coordinates import EarthLocation, SkyCoord
 
 from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.time import parse_time
 
 __all__ = ['GONGSynopticMap', 'GONGHalphaMap']
 
-from sunpy.map.mapbase import SpatialPair
 
 _SITE_NAMES = {
     'LE': 'Learmonth',
