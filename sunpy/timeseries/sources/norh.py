@@ -116,7 +116,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         return fig
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         This method parses NoRH FITS files.
 
