@@ -1,9 +1,10 @@
 """PUNCH Map subclass definitions"""
 
+from matplotlib.colors import LogNorm
+
 import astropy.units as u
 
 from sunpy.map.mapbase import GenericMap
-from matplotlib.colors import LogNorm
 
 __all__ = ['PUNCHMap']
 
