@@ -27,6 +27,7 @@ class PUNCHMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
         self.nickname = f"{self.observatory} - {self.instrument}"
         self.plot_settings["cmap"] = "punch"
 
