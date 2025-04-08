@@ -19,6 +19,7 @@ from sunpy.util import expand_list
 from sunpy.util.decorators import deprecated, deprecated_renamed_argument
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
+from sunpy.visualization.plotter.mpl_plotter import MapPlotter
 
 # NOTE: This is necessary because the deprecated decorator does not currently issue the correct
 # deprecation message. Remove this when that is fixed and/or when the v6.1 deprecations are removed.
@@ -69,6 +70,7 @@ class MapSequence:
         """Creates a new Map instance"""
 
         self.maps = expand_list(args)
+        self._plotter = MapPlotter
 
         for m in self.maps:
             if not isinstance(m, GenericMap):
@@ -334,7 +336,7 @@ class MapSequence:
         >>> plt.show()   # doctest: +SKIP
 
         """
-        axes = self[0]._check_axes(axes)
+        axes = self[0]._plotter._check_axes(axes)
         fig = axes.get_figure()
 
         if not plot_function:
