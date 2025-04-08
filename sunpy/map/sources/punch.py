@@ -1,7 +1,5 @@
 """PUNCH Map subclass definitions"""
 
-from matplotlib.colors import LogNorm
-
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
