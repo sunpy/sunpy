@@ -3,8 +3,10 @@
 from matplotlib.colors import LogNorm
 
 import astropy.units as u
+from astropy.visualization import ImageNormalize, LogStretch
 
 from sunpy.map.mapbase import GenericMap
+from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['PUNCHMap']
 
@@ -31,7 +33,8 @@ class PUNCHMap(GenericMap):
         self.nickname = f"{self.observatory} - {self.instrument}"
         self.plot_settings["cmap"] = "punch"
 
-        self.plot_settings["norm"] = LogNorm()
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
 
     @property
