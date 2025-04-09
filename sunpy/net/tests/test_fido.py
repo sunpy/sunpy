@@ -178,8 +178,16 @@ def test_show_in_notebook(mocker):
     results = Fido.search(a.Time('2012/1/1', '2012/1/2'), a.Instrument.aia | a.Instrument.hmi)
     assert isinstance(results, UnifiedResponse)
     mock_datagrid =  mocker.patch("itables.show")
-    results.show_in_notebook()
+    column = "Start Time"
+    results.show_in_notebook(column)
     assert mock_datagrid.call_count == 2
+
+    # Test for column filtering and keyword arguments
+    args, kwargs = mock_datagrid.call_args
+    df_passed = args[0]
+    assert list(df_passed.columns) == [column]
+    assert df_passed.size == 156
+    assert kwargs["style"] == "caption-side: top;" # default style
 
 
 @pytest.mark.remote_data
