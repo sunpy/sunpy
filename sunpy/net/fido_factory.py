@@ -240,7 +240,7 @@ class UnifiedResponse(Sequence):
             )
         style = "caption-side: top;"
         style += kwargs.pop("style", '')
-        
+
         nprov = len(self)
         if nprov == 1:
             print(f'Results from {len(self)} Provider:')
