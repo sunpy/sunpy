@@ -8,7 +8,6 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
 __author__ = 'Pritish C. (VaticanCameos)'
@@ -26,16 +25,12 @@ def hmi_bharp_map():
 
 @pytest.fixture
 def hmi_cea_sharp_map():
-    # "Mx/cm^2" as a valid FITS unit.
-    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string'):
-        return get_dummy_map_from_header(get_test_filepath('hmi_cea_sharp_magnetogram.header'))
+    return get_dummy_map_from_header(get_test_filepath('hmi_cea_sharp_magnetogram.header'))
 
 
 @pytest.fixture
 def hmi_sharp_map():
-    # "Mx/cm^2" as a valid FITS unit.
-    with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string'):
-        return get_dummy_map_from_header(get_test_filepath('hmi_sharp_magnetogram.header'))
+    return get_dummy_map_from_header(get_test_filepath('hmi_sharp_magnetogram.header'))
 
 
 def test_fitstoHMI(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
@@ -99,6 +94,12 @@ def test_wavelength(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
     assert hmi_bharp_map.wavelength == 6173 * u.AA
     assert hmi_cea_sharp_map.wavelength == 6173 * u.AA
     assert hmi_sharp_map.wavelength == 6173 * u.AA
+
+
+def test_unit(hmi_cea_sharp_map, hmi_sharp_map):
+    """Test that HMI source handles units not in FITS standard"""
+    assert hmi_cea_sharp_map.unit == u.Unit('Mx/cm2')
+    assert hmi_sharp_map.unit == u.Unit('Mx/cm2')
 
 
 def test_wcs(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
