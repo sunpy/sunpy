@@ -48,6 +48,20 @@ def aia171_roll_map(aia171_test_map):
 
 
 @pytest.fixture
+def hmi_test_map_modified(aia171_test_map, hmi_test_map):
+    # Adjust the metadata for the HMI test map to enable compositing/reprojecting
+    hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
+    hmi_test_map.meta['t_obs'] = aia171_test_map.meta['t_obs']
+
+    del hmi_test_map.meta['crln_obs']
+    del hmi_test_map.meta['crlt_obs']
+    hmi_test_map.meta['hgln_obs'] = aia171_test_map.observer_coordinate.lon.to_value('deg')
+    hmi_test_map.meta['hglt_obs'] = aia171_test_map.observer_coordinate.lat.to_value('deg')
+
+    return hmi_test_map
+
+
+@pytest.fixture
 def heliographic_test_map():
     (data, header), = read_file(get_test_filepath('heliographic_phase_map.fits.gz'))
 
