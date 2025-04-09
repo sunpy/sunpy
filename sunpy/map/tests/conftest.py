@@ -42,6 +42,12 @@ def aia171_test_map():
     return sunpy.map.Map((data, header))
 
 
+@pytest.fixture(scope="session")
+def aia171_d_test_map():
+    from sunpy.map import Map
+    return Map(get_test_filepath('aia_171_level1.fits'))
+
+
 @pytest.fixture
 def aia171_roll_map(aia171_test_map):
     return aia171_test_map.rotate(-45*u.deg)
