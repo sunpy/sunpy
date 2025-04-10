@@ -133,7 +133,7 @@ It may be possible your idea may be outside of the scope of the repository you a
 Setting up a development environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The instructions in this following section are based upon two resources:
+The instructions in the following section are based upon two resources:
 
 * `Astropy Contributing Quickstart <https://docs.astropy.org/en/latest/development/quickstart.html>`__
 * `Astropy Contribution Example <https://docs.astropy.org/en/latest/development/git_edit_workflow_examples.html>`__
