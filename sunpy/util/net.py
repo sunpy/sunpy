@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 
 from sunpy.util import replacement_filename
+from sunpy.util.decorators import deprecated
 
 __all__ = ['parse_header', 'slugify', 'get_content_disposition', 'get_filename',
            'get_system_filename', 'download_file', 'download_fileobj']
@@ -127,6 +128,7 @@ def get_system_filename(sock, url, default="file"):
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
+@deprecated(since="7.0", alternative="parfive.Downloader.simple_download")
 def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     """
     Download a file from a url into a directory.
@@ -161,6 +163,7 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     return path
 
 
+@deprecated(since="7.0", alternative="parfive.Downloader.simple_download")
 def download_file(url, directory, default="file", overwrite=False):
     """
     Download a file from a url into a directory.
