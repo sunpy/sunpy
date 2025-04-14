@@ -50,7 +50,7 @@ PARSE_TIME_CONVERSIONS = {
 DEPRECATED_MESSAGE = (
     "pattern has been replaced with the format keyword. "
     "This comes with a new syntax and there is a migration guide available at "
-    "https://docs.sunpy.org/en/stable/how_to/scraper_migration.html."
+    "https://docs.sunpy.org/en/latest/topic_guide/scraper_migration.html."
 )
 
 class Scraper:
