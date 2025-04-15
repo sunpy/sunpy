@@ -16,11 +16,11 @@ class SUITMap(GenericMap):
 
     The Solar Ultraviolet Imaging Telescope (SUIT) is one of the remote sensing
     payloads on board the Aditya-L1 mission of the Indian Space Research Organization (ISRO)
-    that was launched on September 02, 2023. SUIT is designed to provide near-simultaneous full-disk
+    that was launched on September 2, 2023 and located at the first Lagrange point.
+    SUIT is designed to provide near-simultaneous full-disk
     and region-of-interest images of the Sun at various heights, slicing through the photosphere
-    and chromosphere, employing an array of 11 scientifically calibrated filters (3 broad-band & 8 narrow-band)
+    and chromosphere, employing an array of 11 scientifically calibrated filters (3 broad-band and 8 narrow-band)
     strategically positioned within the wavelength range of 200 to 400 nanometers.
-    Located at the first Lagrange point, SUIT observes the Sun 24x7, without any interruption.
 
     The SUIT data is available to download from the PRADAN interface of ISRO.
 
