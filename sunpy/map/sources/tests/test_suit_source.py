@@ -44,6 +44,9 @@ def test_detector(suit_map):
     """Tests the detector property of the SUITMap object."""
     assert suit_map.detector == "SUIT"
 
+def test_instrument(suit_map):
+    """Tests the instrument property of the SUITMap object."""
+    assert suit_map.instrument == "SUIT"
 
 def test_norm_clip(suit_map):
     """Check for norm clipping"""
