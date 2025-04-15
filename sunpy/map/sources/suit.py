@@ -56,7 +56,7 @@ class SUITMap(GenericMap):
 
     @property
     def instrument(self):
-        return "Solar Ultraviolet Imaging Telescope (Aditya-L1)"
+        return "SUIT"
 
     @property
     def detector(self):
