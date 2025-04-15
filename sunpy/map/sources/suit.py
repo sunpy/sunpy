@@ -1,5 +1,5 @@
 """
-SUIT Map sub class definitions
+SUIT map subclass definitions
 """
 from astropy.visualization import AsinhStretch, ImageNormalize
 
