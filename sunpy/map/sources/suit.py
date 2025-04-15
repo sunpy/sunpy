@@ -48,7 +48,6 @@ class SUITMap(GenericMap):
                 "BB03": 0.8,
                 }
         self.plot_settings["cmap"] = f"suit_{filtername.lower()}"
-        self.plot_settings["title"] = f"SUIT {filtername}:{self.wavelength} - {self.reference_date}"
         self.plot_settings["norm"] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(filternorms.get(filtername, 0.2))), clip=False)
 
     @property
