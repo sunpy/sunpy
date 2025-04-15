@@ -7,8 +7,6 @@ from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ["SUITMap"]
-__author__ = ["Rahul Gopalakrishnan"]
-__email__ = ["rahulg.astro@gmail.com"]
 
 class SUITMap(GenericMap):
     """
