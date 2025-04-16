@@ -96,6 +96,9 @@ euvi284 = ct.euvi_color_table(284*u.angstrom)
 euvi304 = ct.euvi_color_table(304*u.angstrom)
 euvi171 = ct.euvi_color_table(171*u.angstrom)
 
+punch = ct.punch_color_table()
+punch.name = "PUNCH"
+
 cmlist = {
     'goes-rsuvi94': goesrsuvi94,
     'goes-rsuvi131': goesrsuvi131,
@@ -158,6 +161,7 @@ cmlist = {
     'solar orbiterfsi304': solofsi304,
     'solar orbiterhri_euv174': solohri_euv174,
     'solar orbiterhri_lya1216': solohri_lya1216,
+    'punch': punch,
 }
 
 # Register the colormaps with matplotlib so matplotlib.colormaps['sdoaia171'] works
