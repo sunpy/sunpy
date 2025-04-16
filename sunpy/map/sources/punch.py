@@ -12,8 +12,11 @@ class PUNCHMap(GenericMap):
     """
     PUNCH Map.
 
-    The Polarimeter to Unify the Corona and Heliosphere (PUNCH) is a constellation observatory consisting of four satellites, together imaging the solar corona in polarized white light.
-    Coordinated observations from three Wide Field Imagers (WFIs) and one Near Field Imager (NFI) are processed and meshed into one virtual observatory with a field of view spanning 45-degrees in radius away from the Sun.
+    The Polarimeter to Unify the Corona and Heliosphere (PUNCH) is a constellation observatory
+    consisting of four satellites, together imaging the solar corona in polarized white light.
+    Coordinated observations from three Wide Field Imagers (WFIs) and one Near Field Imager (NFI)
+    are processed and meshed into one virtual observatory with a field of view spanning
+    45-degrees in radius away from the Sun.
 
     PUNCH launched and began operations on 11 March 2025.
 
