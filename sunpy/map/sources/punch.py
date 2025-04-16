@@ -51,5 +51,4 @@ class PUNCHMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if data, header corresponds to a PUNCH image."""
         # Returns True only if this is data and header from PUNCH
-        instrument = str(header.get('instrume', ''))
-        return instrument.startswith('NFI') or instrument.startswith('WFI') or header.get('obsrvtry', '').startswith('PUNCH')
+        return header.get('obsrvtry', '').startswith('PUNCH')
