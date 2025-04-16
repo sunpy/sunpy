@@ -1,8 +1,16 @@
+.. doctest-skip-all
+
 .. _sunpy-tutorial-acquiring-data-jsoc:
 
 **************************************
 Finding and Downloading Data from JSOC
 **************************************
+
+.. warning::
+
+    The JSOC suffered extensive water damage and are currently working to fix this.
+    As a result, currently there is no data access.
+    `For more information, please find that here. <https://solarweb1.stanford.edu/JSOC_Emergency_Resources>`__
 
 Joint Science Operations Center (JSOC) contains data products from the Solar Dynamics Observatory, as well as certain other missions and instruments.
 These data are available from the JSOC database, which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`__.
@@ -51,18 +59,17 @@ To search for data in JSOC, your query needs at minimum, a "Series" name and a "
     <BLANKLINE>
     The JSOC Series to Download.
     <BLANKLINE>
-                Attribute Name           Client             Full Name                                                Description
-    ---------------------------------- ------ ---------------------------------- --------------------------------------------------------------------------------
-    aia_flatfield                      JSOC   aia.flatfield                      AIA flatfield
-    aia_lev1                           JSOC   aia.lev1                           AIA Level 1
-    aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
-    aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
-    aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
-    aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
-    aia_response                       JSOC   aia.response                       AIA instrument response table
-    aia_temperature_summary_300s       JSOC   aia.temperature_summary_300s       Temperature Statistics from AIA Housekeeping - Thermal Packet
-    hmi_b_135s                         JSOC   hmi.b_135s                         Full-disk Milne-Eddington inversion with the azimuth disambiguation informati...
-        ...
+              Attribute Name           Client ...                                   Description
+    ---------------------------------- ------ ... --------------------------------------------------------------------------------
+    aia_flatfield                      JSOC   ... AIA flatfield
+    aia_lev1                           JSOC   ... AIA Level 1
+    aia_lev1_euv_12s                   JSOC   ... AIA Level 1, 12 second cadence
+    aia_lev1_uv_24s                    JSOC   ... AIA Level 1, 24 second cadence
+    aia_lev1_vis_1h                    JSOC   ... AIA Level 1, 3600 second cadence
+    aia_master_pointing3h              JSOC   ... Master Pointing Parameters
+    aia_response                       JSOC   ... AIA instrument response table
+    aia_temperature_summary_300s       JSOC   ... Temperature Statistics from AIA Housekeeping - Thermal Packet
+    ...
 
 Different PrimeKeys are supported by different Series, and you can find out the PrimeKeys supported in any Series by:
 

@@ -6,7 +6,7 @@ Visualizing 3D stereoscopic images
 How to make an anaglyph 3D image from a stereoscopic observation
 
 We use a stereoscopic observation from July 2023, when the STEREO-A spacecraft
-and the SDO spacecraft were close in heliographic longitude.  See the
+and the SDO spacecraft were close in heliographic longitude. See the
 `Wikipedia page on anaglyph 3D <https://en.wikipedia.org/wiki/Anaglyph_3D>`__,
 which typically requires red-cyan glasses to visualize.
 """
@@ -23,7 +23,7 @@ import sunpy.map
 from sunpy.coordinates import SphericalScreen
 
 ##############################################################################
-# Download co-temporal SDO/AIA image STEREO/EUVI images.  The EUVI map does
+# Download co-temporal SDO/AIA image STEREO/EUVI images. The EUVI map does
 # not explicitly define their reference radius of the Sun, so we set it to be
 # the same as for the AIA map to silence some informational messages.
 
@@ -34,7 +34,7 @@ euvi_map.meta['rsun_ref'] = aia_map.meta['rsun_ref']
 
 ##############################################################################
 # Verify that the angular separation between the two vantage points is a few
-# degrees.  If the angular separation much larger, the 3D effect will be bad.
+# degrees. If the angular separation much larger, the 3D effect will be bad.
 
 print(euvi_map.observer_coordinate.separation(aia_map.observer_coordinate))
 
@@ -65,14 +65,14 @@ euvi_map = reproject_to_1au(euvi_map)
 aia_map = reproject_to_1au(aia_map)
 
 ##############################################################################
-# Define linear scaling for the two images so that they look the same.  The
+# Define linear scaling for the two images so that they look the same. The
 # values here are empirical.
 
 euvi_norm = Normalize(vmin=750, vmax=1e4, clip=True)
 aia_norm = Normalize(vmin=0, vmax=2.1e3, clip=True)
 
 ##############################################################################
-# Plot the two maps side by side.  Those who are able to see 3D images by
+# Plot the two maps side by side. Those who are able to see 3D images by
 # defocusing their eyes can see the 3D effect without the later anaglyph
 # image.
 
@@ -93,7 +93,7 @@ ax2.set_title('SDO/AIA')
 
 ##############################################################################
 # We will make a color anaglyph 3D image by creating two colormaps based on an
-# initial colormap (here, ``'sdoaia171'``).  The left-eye colormap is just the
+# initial colormap (here, ``'sdoaia171'``). The left-eye colormap is just the
 # red channel, and the right-eye colormap is just the green and blue channels.
 # Thus, we zero out the appropriate channels in the two colormaps.
 
@@ -105,10 +105,10 @@ cmap_left._segmentdata['green'] = [(0, 0, 0), (1, 0, 0)]
 cmap_right._segmentdata['red'] = [(0, 0, 0), (1, 0, 0)]
 
 ##############################################################################
-# Finally, we build the anaglyph 3D image.  To easily plot in RGB color
-# channels, we will be passing a NxMx3 array to matplotlib's ``imshow``.  That
+# Finally, we build the anaglyph 3D image. To easily plot in RGB color
+# channels, we will be passing a NxMx3 array to matplotlib's ``imshow``. That
 # array needs to be manually normalized (to be between 0 and 1) and colorized
-# (mapped into the 3 color channels).  The colorizing actually adds a fourth
+# (mapped into the 3 color channels). The colorizing actually adds a fourth
 # layer for the alpha layer, so we discard that layer.
 
 fig = plt.figure()

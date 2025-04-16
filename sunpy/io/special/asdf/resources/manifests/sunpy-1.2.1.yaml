@@ -1,0 +1,48 @@
+%YAML 1.1
+---
+id: asdf://sunpy.org/sunpy/manifests/sunpy-1.2.1
+extension_uri: asdf://sunpy.org/extensions/sunpy-1.2.1
+title: SunPy ASDF Manifest
+description: ASDF schemas and tags for SunPy classes.
+asdf_standard_requirement:
+  gte: 1.6.0
+
+tags:
+  - tag_uri: "tag:sunpy.org:sunpy/map/generic_map-1.2.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/generic_map-1.2.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geocentricearthequatorial-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/geocentricearthequatorial-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarecliptic-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/geocentricsolarecliptic-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geocentricsolarmagnetospheric-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/geocentricsolarmagnetospheric-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/geomagnetic-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/geomagnetic-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/heliocentric-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/heliocentric-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/heliocentricearthecliptic-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/heliocentricearthecliptic-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/heliocentricinertial-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/heliocentricinertial-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_carrington-1.3.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/heliographic_carrington-1.3.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.2.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/heliographic_stonyhurst-1.2.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/helioprojective-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/helioprojective-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/helioprojectiveradial-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/helioprojectiveradial-1.1.0"
+
+  - tag_uri: "tag:sunpy.org:sunpy/coordinates/frames/solarmagnetic-1.1.0"
+    schema_uri: "asdf://sunpy.org/sunpy/schemas/solarmagnetic-1.1.0"

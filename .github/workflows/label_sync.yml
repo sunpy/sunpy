@@ -1,0 +1,23 @@
+name: Label Sync
+on:
+  workflow_dispatch:
+  schedule:
+    #        ┌───────── minute (0 - 59)
+    #        │ ┌───────── hour (0 - 23)
+    #        │ │ ┌───────── day of the month (1 - 31)
+    #        │ │ │ ┌───────── month (1 - 12 or JAN-DEC)
+    #        │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
+    - cron: '0 0 * * *' # run every day at midnight UTC
+
+# Give permissions to write issue labels
+permissions:
+  issues: write
+
+jobs:
+  label_sync:
+    runs-on: ubuntu-latest
+    name: Label Sync
+    steps:
+      - uses: srealmoreno/label-sync-action@850ba5cef2b25e56c6c420c4feed0319294682fd
+        with:
+          config-file: https://raw.githubusercontent.com/sunpy/.github/main/labels.yml

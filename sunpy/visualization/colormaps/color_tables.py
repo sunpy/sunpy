@@ -105,7 +105,7 @@ def aia_color_table(wavelength: u.angstrom):
 
     Parameters
     ----------
-    wavelength : `~astropy.units.quantity`
+    wavelength : `~astropy.units.quantity.Quantity`
         Wavelength for the desired AIA color table.
     """
     aia_wave_dict = create_aia_wave_dict()
@@ -154,8 +154,8 @@ def sswidl_lasco_color_table(number):
         raise ValueError("Invalid LASCO number. Valid values are 2, 3.")
 
 
-# Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
-# to explicitly copy the numbers from the IDL calculation.  This is a little
+# Translated from the JP2Gen IDL SXT code lct_yla_gold.pro. Might be better
+# to explicitly copy the numbers from the IDL calculation. This is a little
 # more compact.
 sxt_gold_r = np.concatenate((np.linspace(0, 255, num=185,
                                          endpoint=False), 255 * np.ones(71)))
@@ -212,7 +212,7 @@ def trace_color_table(measurement):
         return cmap_from_rgb_file(f'TRACE {measurement}', f'trace_{measurement}.csv')
     except OSError:
         raise ValueError(
-            "Invalid TRACE filter waveband passed.  Valid values are "
+            "Invalid TRACE filter waveband passed. Valid values are "
             "171, 195, 284, 1216, 1550, 1600, 1700, WL")
 
 
@@ -289,7 +289,7 @@ def iris_sji_color_table(measurement, aialike=False):
     try:
         r, g, b = color_table[measurement]
     except KeyError:
-        raise ValueError("Invalid IRIS SJI waveband.  Valid values are \n" +
+        raise ValueError("Invalid IRIS SJI waveband. Valid values are \n" +
                          str(list(color_table.keys())))
 
     return _cmap_from_rgb(r, g, b, f'IRIS SJI {measurement:s}')

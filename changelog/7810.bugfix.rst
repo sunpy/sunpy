@@ -1,3 +1,0 @@
-All map sources that override ``date`` or ``reference_date`` now fall back to
-the corresponding properties on `sunpy.map.GenericMap` if the needed source-specific metadata for these
-properties cannot be found.

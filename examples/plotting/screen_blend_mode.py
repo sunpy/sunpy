@@ -41,7 +41,7 @@ a171.plot(axes=ax1, clip_interval=(1, 99.999)*u.percent)
 a131.plot(axes=ax2, clip_interval=(1, 99.9)*u.percent)
 
 ###############################################################################
-# Now let's prepare for the computation of the blended image.  We plot both
+# Now let's prepare for the computation of the blended image. We plot both
 # maps using the desired plot settings in order to obtain the ``matplotlib``
 # image instances for future use.
 
@@ -55,9 +55,9 @@ im131 = a131.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
 
 ###############################################################################
 # We use those ``matplotlib`` image instances to obtain RGB data arrays after
-# normalization (including clipping) and the color maps have been applied.  We
+# normalization (including clipping) and the color maps have been applied. We
 # need to provide the current ``matplotlib`` renderer and turn off resampling
-# to screen pixels.  To facilitate later arithmetic, we then scale the data
+# to screen pixels. To facilitate later arithmetic, we then scale the data
 # arrays from being integers ranging 0-255 to being floats ranging 0.0-1.0.
 
 renderer = fig2.canvas.get_renderer()

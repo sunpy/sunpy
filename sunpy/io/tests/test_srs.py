@@ -112,7 +112,7 @@ def test_tdec_too_small_dict_example(data_lines, expected_pattern_dict, column_n
     """
     keys_to_keep = ['Nmbr', 'Location']
     filtered_dict = {key: value for key, value in expected_pattern_dict.items() if key in keys_to_keep}
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="The remaining columns are not a subset of the columns in ``pattern_dict``."):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, filtered_dict)
 
 
@@ -135,7 +135,7 @@ def test_tdec_col_not_empty(expected_pattern_dict, column_name_to_drop):
         '8000  S14W96   232',
         '3020 N20E20  210 additional_info',
     ]
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not all rows have the same number of values as the remaining columns."):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
 
 
@@ -147,7 +147,7 @@ def test_tdec_col_not_match_pattern(expected_pattern_dict, column_name_to_drop):
         'NMBR  LOCATION  LO  COMMENT',
         '8000  S14W926   232',
     ]
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="not all rows match the provided pattern."):
         _ = srs._try_drop_empty_column(column_name_to_drop, data_lines, expected_pattern_dict)
 
 
@@ -155,5 +155,5 @@ def test_tdec_colname_not_exist(data_lines, expected_pattern_dict):
     """
     Try remove column name that does not exist in data
     """
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="The column 'nonexistent_column_name' does not exist."):
         _ = srs._try_drop_empty_column('nonexistent_column_name', data_lines, expected_pattern_dict)

@@ -15,7 +15,7 @@ from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.util.exceptions import SunpyUserWarning
 
 # Ensure all JSOC tests are run on the same parallel worker
-pytestmark = pytest.mark.xdist_group(name="jsoc")
+pytestmark = [pytest.mark.xdist_group(name="jsoc")]
 
 
 @pytest.fixture
@@ -307,8 +307,7 @@ def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     files = client.get_request(req)
     assert len(files) == 6
     m = sunpy.map.Map(files, sequence=True)
-    assert m.all_maps_same_shape()
-    assert m.as_array().shape == (1085, 1085, 6)
+    assert m.data.shape == (1085, 1085, 6)
 
 
 def test_row_and_warning(mocker, client, jsoc_response_double):

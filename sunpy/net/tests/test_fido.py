@@ -131,11 +131,6 @@ def test_save_path_cwd(tmpdir):
         assert pathlib.Path.cwd().joinpath(f).exists()
 
 
-"""
-Factory Tests
-"""
-
-
 @pytest.mark.remote_data
 def test_unified_response():
     start = parse_time("2012/1/1")
@@ -168,11 +163,6 @@ def test_fetch():
                      a.Level.zero)
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
-
-
-"""
-UnifiedResponse Tests
-"""
 
 
 @pytest.mark.remote_data
@@ -216,8 +206,8 @@ def test_repr():
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     rep = repr(results)
     rep = rep.split('\n')
-    # 8 header lines, the results table and two blank lines at the end
-    assert len(rep) == 8 + len(list(results)[0]) + 2
+    # 6 preamble lines, 2 table header rule, the results table data and two blank lines at the end
+    assert len(rep) == 6 + 2 + len(results[0]) + 2
 
 
 def filter_queries(queries):
@@ -227,9 +217,9 @@ def filter_queries(queries):
 @pytest.mark.remote_data
 def test_path(tmp_path):
     results = Fido.search(
-        a.Time("2022/1/1", "2022/1/1"), a.Instrument.aia)
+        a.Time("2025/1/1", "2025/1/1"), a.Instrument.aia)
     file = Fido.fetch(results, path=tmp_path / "{file}")
-    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2022_01_01T00_00_00.62Z.image_lev1.fits"))]
+    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025-01-01T00_00_00.63Z.image_lev1.fits"))]
 
 
 @pytest.mark.remote_data
@@ -410,6 +400,7 @@ def test_client_fetch_wrong_type(mock_fetch):
         Fido.fetch(qr)
 
 
+
 @pytest.mark.remote_data
 def test_vso_fetch_hmi(tmpdir):
     start_time = "2017-01-25"
@@ -428,11 +419,13 @@ def test_fido_no_time(mocker):
     jsoc_mock.assert_called_once()
 
 
+
 @pytest.mark.remote_data
 def test_jsoc_missing_email():
     res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
     with pytest.raises(ValueError, match=r"A registered email is required to get data from JSOC.*"):
         Fido.fetch(res)
+
 
 
 @pytest.mark.remote_data
@@ -449,6 +442,7 @@ def test_slice_jsoc(jsoc_test_email):
 def test_fido_repr():
     output = repr(Fido)
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
+
 
 
 @pytest.mark.xdist_group(name="jsoc")

@@ -135,7 +135,8 @@ class SRSClient(GenericClient):
     """
     Provides access to the NOAA SWPC solar region summary data.
 
-    Uses the `ftp archive <https://www.ngdc.noaa.gov/stp/spaceweather.html>`__.
+    `The data is retrieved from NOAA's NCEI archive
+    <https://www.ngdc.noaa.gov/stp/space-weather/swpc-products/daily_reports/solar_region_summaries/>`__.
 
     Notes
     -----
@@ -160,10 +161,8 @@ class SRSClient(GenericClient):
     <BLANKLINE>
 
     """
-    pattern = ('ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/'
+    pattern = ('https://www.ngdc.noaa.gov/stp/space-weather/swpc-products/daily_reports/solar_region_summaries/'
                '{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt')
-    # Server does not support the normal aioftp passive command.
-    enqueue_file_kwargs = {"passive_commands": ["pasv"]}
 
     @classmethod
     def register_values(cls):

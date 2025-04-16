@@ -45,7 +45,7 @@ class SphericalScreen(BaseScreen):
 
     The radius of the screen is the distance between the specified ``center`` and Sun center.
     This ``center`` does not have to be the same as the observer location for the coordinate
-    frame.  If they are the same, then this context manager is equivalent to assuming that the
+    frame. If they are the same, then this context manager is equivalent to assuming that the
     helioprojective "zeta" component is zero.
     This replaces the default assumption where 2D coordinates are mapped onto the surface of the
     Sun.
@@ -61,7 +61,7 @@ class SphericalScreen(BaseScreen):
         screen center to the Sun.
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
-        still mapped onto the surface of the Sun.  Defaults to `False`.
+        still mapped onto the surface of the Sun. Defaults to `False`.
 
     See Also
     --------
@@ -142,7 +142,7 @@ class PlanarScreen(BaseScreen):
         that the plane goes through Sun center
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
-        still mapped onto the surface of the Sun.  Defaults to `False`.
+        still mapped onto the surface of the Sun. Defaults to `False`.
 
     See Also
     --------
@@ -187,10 +187,10 @@ class PlanarScreen(BaseScreen):
         super().__init__(**kwargs)
 
     def calculate_distance(self, frame):
-        direction = self._vantage_point.transform_to(frame).cartesian
-        direction = CartesianRepresentation(1, 0, 0) * frame.observer.radius - direction
-        direction /= direction.norm()
-        d_from_plane = (frame.observer.radius - self._distance_from_center) * direction.x
+        obs_to_vantage = self._vantage_point.transform_to(frame).cartesian
+        vantage_to_sun = CartesianRepresentation(1, 0, 0) * frame.observer.radius - obs_to_vantage
+        direction = vantage_to_sun / vantage_to_sun.norm()
+        d_from_plane = frame.observer.radius * direction.x - self._distance_from_center
         rep = frame.represent_as(UnitSphericalRepresentation)
         distance = d_from_plane / rep.dot(direction)
         return distance

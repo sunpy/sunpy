@@ -1,0 +1,2 @@
+Added support for conservative mask propagation in :meth:`sunpy.map.GenericMap.superpixel` by introducing a new ``conservative_mask`` keyword argument, which defaults to ``False``.
+When ``conservative_mask=True``, the superpixel is masked if any of its constituent pixels are masked.

@@ -86,9 +86,9 @@ def test_simple_write_compressed_difftypeinst(tmpdir):
     data, header = _fits.read(TEST_AIA_IMAGE)[0]
     outfile_type = str(tmpdir / "test_type.fits")
     outfile_inst = str(tmpdir / "test_inst.fits")
-    _fits.write(outfile_type, data, header, hdu_type=fits.CompImageHDU)
-    _fits.write(outfile_inst, data, header, hdu_type=fits.CompImageHDU())
-    assert fits.FITSDiff(outfile_type, outfile_inst, ignore_comments=['PCOUNT']).identical
+    _fits.write(outfile_type, data, header, hdu_type=fits.CompImageHDU, output_verify="silentfix")
+    _fits.write(outfile_inst, data, header, hdu_type=fits.CompImageHDU(), output_verify="silentfix")
+    assert fits.FITSDiff(outfile_type, outfile_inst, ignore_comments=["SIMPLE"]).identical
 
 
 @pytest.mark.parametrize(
@@ -105,7 +105,7 @@ def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
     hdu.header['HELLO'] = 'world'  # should be in the written file
     hdu.header['TELESCOP'] = 'other'  # should be replaced with 'SDO/AIA'
     hdu.header['NAXIS'] = 5  # should be replaced with 2
-    _fits.write(str(outfile), data, header, hdu_type=hdu)
+    _fits.write(str(outfile), data, header, hdu_type=hdu, output_verify="silentfix")
     assert outfile.exists()
     with fits.open(str(outfile)) as hdul:
         assert len(hdul) == 2

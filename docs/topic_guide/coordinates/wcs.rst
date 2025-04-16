@@ -18,7 +18,7 @@ If you want to obtain a un-realized coordinate frame corresponding to a `~sunpy.
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
 
-    >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> amap.observer_coordinate  # doctest: +REMOTE_DATA
     <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.880, rsun=696000.0 km): (lon, lat, radius) in (deg, deg, m)
         (-0.00406429, 0.04787238, 1.51846026e+11)>
