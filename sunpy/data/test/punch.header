@@ -74,8 +74,7 @@ CTYPE2A = 'DEC--ARC'           / Declination, zenithal/azimuthal equidistant pro
 CRVAL1A =      279.43448927389 / [deg] Coordinate value at reference point      
 CRVAL2A =     -22.120766600868 / [deg] Coordinate value at reference point      
 COMMENT ----- Image Statistics and Properties ----------------------------------
-BUNIT   = 'W/(m2 sr)'          / Units of observation                           
-BSUN_DEF=           20090000.0 / [W/m2/sr] Mean Solar Brightness                
+BUNIT   = '20090000.0 W/(m2 sr)' / Units of observation - Mean Solar Brightness 
 DATAZER =  / number of pixels=0                                                 
 DATASAT =  / number of saturated pixels                                         
 DSATVAL =              65535.0 / saturation value in calibrated units           

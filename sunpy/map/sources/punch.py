@@ -45,7 +45,7 @@ class PUNCHMap(GenericMap):
         if unit_str is None:
             return
         parsed_unit = u.Unit(unit_str)
-        if parsed_unit == u.Unit('W/(m2 sr)') or parsed_unit == u.Unit('sqrt(DN)'):
+        if parsed_unit == u.Unit("2.009e+07 W / (sr m2)") or parsed_unit == u.Unit("sqrt(DN)"):
              return parsed_unit
         else:
              return super().unit
