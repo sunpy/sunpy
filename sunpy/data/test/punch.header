@@ -1,4 +1,3 @@
-COMMENT ----- FITS Required ----------------------------------------------------
 SIMPLE  = 'T       '           / Conforms to FITS Standard                      
 BITPIX  =                  -32 / Number of bits per pixel                       
 NAXIS   =                    2 / Number of axes                                 
@@ -75,7 +74,7 @@ CTYPE2A = 'DEC--ARC'           / Declination, zenithal/azimuthal equidistant pro
 CRVAL1A =      279.43448927389 / [deg] Coordinate value at reference point      
 CRVAL2A =     -22.120766600868 / [deg] Coordinate value at reference point      
 COMMENT ----- Image Statistics and Properties ----------------------------------
-BUNIT   = 'Mean Solar Brightness' / Units of observation                        
+BUNIT   = 'W/(m2 sr)'          / Units of observation                           
 BSUN_DEF=           20090000.0 / [W/m2/sr] Mean Solar Brightness                
 DATAZER =  / number of pixels=0                                                 
 DATASAT =  / number of saturated pixels                                         
