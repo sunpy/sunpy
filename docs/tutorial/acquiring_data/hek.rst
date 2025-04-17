@@ -64,7 +64,7 @@ The first thing we need to do is access the results from the HEK client, the onl
 
 .. code-block:: python
 
-   >>> len(result['hek'])  # doctest: +REMOTE_DATA
+   >>> len(result["hek"])  # doctest: +REMOTE_DATA
    19
 
 This object is an `astropy.table.Table` object with the columns which correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html.
@@ -232,43 +232,43 @@ and as a check:
 
    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
    <QueryResponseColumn name='fl_peakflux' dtype='object' length=17>
-      None
-      None
-      None
-      None
-      None
-      None
-      None
-   2326.86
-   1698.83
-      None
-      None
-   2360.49
-   3242.64
-   1375.93
-   6275.98
-   923.984
-   1019.83
+                   None
+                   None
+                   None
+                   None
+                   None
+                   None
+                   None
+   2326.86 DN / (pix s)
+   1698.83 DN / (pix s)
+                   None
+                   None
+   2360.49 DN / (pix s)
+   3242.64 DN / (pix s)
+   1375.93 DN / (pix s)
+   6275.98 DN / (pix s)
+   923.984 DN / (pix s)
+   1019.83 DN / (pix s)
 
-   >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='event_coord1' dtype='float64' length=17>
-    51.0
-    51.0
-    51.0
-   924.0
-   924.0
-   924.0
-    69.0
-   883.2
-   883.2
-    69.0
-    69.0
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
+   >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
+   <QueryResponseColumn name='event_coord' dtype='object' length=17>
+      <SkyCoord (Helioprojective: obstime=2011-08-08 01:30:04.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (51., 151.)>
+      <SkyCoord (Helioprojective: obstime=2011-08-08 01:30:04.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (51., 151.)>
+      <SkyCoord (Helioprojective: obstime=2011-08-08 01:30:04.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (51., 151.)>
+     <SkyCoord (Helioprojective: obstime=2011-08-09 02:30:04.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (924., 217.)>
+     <SkyCoord (Helioprojective: obstime=2011-08-09 02:30:04.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (924., 217.)>
+     <SkyCoord (Helioprojective: obstime=2011-08-09 02:30:04.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (924., 217.)>
+                                                                                      <SkyCoord (ICRS): (ra, dec) in deg\n    (69., 15.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 07:22:38.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 07:22:44.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+                                                                                      <SkyCoord (ICRS): (ra, dec) in deg\n    (69., 17.)>
+                                                                                      <SkyCoord (ICRS): (ra, dec) in deg\n    (69., 14.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 07:55:59.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+    <SkyCoord (Helioprojective: obstime=2011-08-09 07:59:49.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 192.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 08:00:03.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 08:00:20.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 08:00:53.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+    <SkyCoord (Helioprojective: obstime=2011-08-09 08:01:21.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 192.)>
 
 Note that some of the fluxes are returned as "None".
 This is because some feature recognition methods for flares do not report the peak flux.
@@ -281,23 +281,24 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000))  # doctest: +REMOTE_DATA
 
    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='fl_peakflux' dtype='float64' length=7>
-   2326.86
-   1698.83
-   2360.49
-   3242.64
-   1375.93
-   6275.98
-   1019.83
-   >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='event_coord1' dtype='float64' length=7>
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
+   <QueryResponseColumn name='fl_peakflux' dtype='object' length=7>
+   2326.86 DN / (pix s)
+   1698.83 DN / (pix s)
+   2360.49 DN / (pix s)
+   3242.64 DN / (pix s)
+   1375.93 DN / (pix s)
+   6275.98 DN / (pix s)
+   1019.83 DN / (pix s)
+
+   >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
+   <QueryResponseColumn name='event_coord' dtype='object' length=7>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 07:22:38.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 07:22:44.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 07:55:59.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+    <SkyCoord (Helioprojective: obstime=2011-08-09 07:59:49.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 192.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 08:00:03.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09 08:00:20.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+    <SkyCoord (Helioprojective: obstime=2011-08-09 08:01:21.000, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec\n    (883.2, 192.)>
 
 In this case none of the peak fluxes are returned with the value `None`.
 Since we are using an ``and`` logical operator we need a result from the ``(a.hek.FL.PeakFlux > 1000)`` filter.

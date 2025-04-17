@@ -1,17 +1,35 @@
 import copy
+import json
 
 import numpy as np
 import pytest
+from regions import SkyRegion
 
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 from astropy.time import Time
 
-from sunpy.net import attr, attrs, hek
+from sunpy.net import Fido, attr, attrs, hek
+from sunpy.net.hek.utils import COORD_FILE_PATH, UNIT_FILE_PATH
 
 
 @pytest.fixture
 def foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
 
+
+@pytest.fixture
+def read_unit_attributes():
+    with open(UNIT_FILE_PATH) as unit_file:
+        unit_properties = json.load(unit_file)
+    return unit_properties
+
+
+@pytest.fixture
+def read_coord_attributes():
+    with open(COORD_FILE_PATH) as coord_file:
+        coord_properties = json.load(coord_file)
+    return coord_properties
 
 class HEKResult:
     """
@@ -222,6 +240,27 @@ def test_query_multiple_operators():
                             attrs.hek.OBS.Observatory == "GOES")
     assert len(results) == 7
 
+@pytest.mark.remote_data
+def test_astropy_unit_parsing(hek_result, read_unit_attributes, read_coord_attributes):
+    unit_properties = read_unit_attributes
+    coord_properties = read_coord_attributes
+    unit_attributes_with_unit = [prop for prop in unit_properties["attributes"] if prop.get("unit_prop") is not None]
+    coord_attributes_with_unit = [prop for prop in coord_properties["attributes"] if not prop.get("is_chaincode", False) and not prop.get("is_unit_prop" ,False)]
+
+    for attribute in unit_attributes_with_unit + coord_attributes_with_unit:
+        if attribute["name"] in hek_result.colnames:
+            assert all([value in ['', None] or isinstance(value, u.Quantity) for value in hek_result[attribute['name']]])
+
+
+@pytest.mark.remote_data
+def test_chaincode_parsing(hek_result, read_coord_attributes):
+    coord_properties = read_coord_attributes
+    chaincode_properties = [prop for prop in coord_properties["attributes"] if prop.get("is_chaincode", False)]
+
+    for attribute in chaincode_properties:
+        if attribute["name"] in hek_result.colnames:
+            assert all([value in ['', None] or isinstance(value, SkyRegion) for value in hek_result[attribute['name']]])
+
 
 @pytest.mark.remote_data
 def test_missing_times():
@@ -230,3 +269,109 @@ def test_missing_times():
     results = client.search(attrs.Time('2024-05-10', '2024-05-12'), attrs.hek.AR.NOAANum == 13664)
     assert isinstance(results["event_peaktime"][0], np.ma.core.MaskedConstant)
     assert results["event_peaktime"][3].isot == "2024-05-10T00:13:00.000"
+
+
+@pytest.mark.remote_data
+def test_merging_event_coords():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    client = hek.HEKClient()
+    result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
+
+    coord1 = -2.91584*u.arcsec
+    coord2 = 940.667*u.arcsec
+    time='2011-08-09 06:00:08.000'
+    frame='helioprojective'
+    event_coord = SkyCoord(coord1, coord2, obstime=time, frame=frame)
+
+    assert result['event_coord'][0] == event_coord
+
+
+@pytest.mark.remote_data
+def test_obs_meanwavel():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    client = hek.HEKClient()
+    result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
+
+    assert result['obs_meanwavel'][0] == 193.0*u.angstrom
+
+
+@pytest.mark.remote_data
+def test_parse_times():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    client = hek.HEKClient()
+    result = client.search(attrs.Time(tstart,tend), attrs.hek.EventType('CH'))
+
+    for idx in range(len(result)):
+        assert isinstance(result['event_starttime'][idx], Time)
+        assert isinstance(result['event_endtime'][idx], Time)
+
+
+@pytest.mark.remote_data
+def test_ssw_latest_events_flares():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FRM.Name == 'SSW Latest Events')
+    assert len(result[0]) == 2
+
+
+@pytest.mark.remote_data
+def test_not_ssw_latest_events_flares():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FRM.Name != 'SSW Latest Events')
+    assert len(result[0]) == 19
+
+
+@pytest.mark.remote_data
+def test_flares_peak_flux():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.FL.PeakFlux > 4000.0)
+    assert len(result[0]) == 1
+    for row in result[0]['fl_peakflux']:
+        assert row.value > 4000.0
+
+
+@pytest.mark.remote_data
+def test_flares_peak_flux_and_position():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), attrs.hek.Event.Coord1 > 800, attrs.hek.FL.PeakFlux > 1000)
+    assert len(result[0]) == 7
+
+    for row in result[0]['event_coord']:
+        assert row.Tx > 800*u.arcsec
+
+    for row in result[0]['fl_peakflux']:
+        assert row.value > 1000.0
+
+
+@pytest.mark.remote_data
+def test_flares_python_logical_ops():
+    tstart = '2011/08/09 07:23:56'
+    tend = '2011/08/09 12:40:29'
+    event_type = 'FL'
+    result = Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type), (attrs.hek.Event.Coord1 > 50) and (attrs.hek.FL.PeakFlux > 1000))
+    assert len(result[0]) == 7
+
+    for row in result[0]['event_coord']:
+        assert row.Tx > 50*u.arcsec
+
+    for row in result[0]['fl_peakflux']:
+        assert row.value > 1000.0
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("event_type", ['AR', 'CE', 'CD', 'CW', 'FI', 'FE', 'FA', 'LP', 'OS', 'SS', 'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO', 'HY', 'BU', 'EE', 'PB', 'PT'])
+def test_event_types(event_type):
+    tstart = '2017/09/06 11:59:04'
+    tend = '2017/09/06 17:05:04'
+
+    # Just to make sure there is no errors happens
+    Fido.search(attrs.Time(tstart,tend), attrs.hek.EventType(event_type))
