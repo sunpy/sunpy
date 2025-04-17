@@ -52,8 +52,9 @@ To make sure this has all worked correctly, we can take a quick look at ``my_map
     Measurement:                 171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
+    Reference Date:              2011-06-07 06:33:02
     Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
+    Pixel Dimensions:            [1024. 1024.]
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix
@@ -153,21 +154,21 @@ Data attributes like dimensionality and type are also accessible as attributes o
 
 .. code-block:: python
 
-    >>> my_map.dimensions  # doctest: +REMOTE_DATA
-    PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
-    >>> my_map.dtype  # doctest: +REMOTE_DATA
+    >>> my_map.shape  # doctest: +REMOTE_DATA
+    (1024, 1024)
+    >>> my_map.data.dtype  # doctest: +REMOTE_DATA
     dtype('float32')
 
 Additionally, there are several methods that provide basic summary statistics of the data:
 
 .. code-block:: python
 
-    >>> my_map.min()  # doctest: +REMOTE_DATA
-    np.float32(-129.78036)
-    >>> my_map.max()  # doctest: +REMOTE_DATA
-    np.float32(192130.17)
-    >>> my_map.mean()  # doctest: +REMOTE_DATA
-    np.float32(427.02252)
+    >>> my_map.data.min()  # doctest: +REMOTE_DATA
+    -129.78036
+    >>> my_map.data.max()  # doctest: +REMOTE_DATA
+    192130.17
+    >>> my_map.data.mean()  # doctest: +REMOTE_DATA
+    427.02252
 
 .. _sunpy-tutorial-map-coordinates-wcs:
 
@@ -510,8 +511,9 @@ For example, the following returns the same information as in :ref:`sunpy-tutori
     Measurement:                 171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
+    Reference Date:              2011-06-07 06:33:02
     Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
+    Pixel Dimensions:            [1024. 1024.]
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix

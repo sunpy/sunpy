@@ -1,0 +1,1 @@
+Fixed bug where conversion of results from the HEKClient to Astropy Time failed when some values where empty or missing for the values of event_strattime, event_endtime or event_peaktime
