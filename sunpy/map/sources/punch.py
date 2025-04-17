@@ -44,7 +44,11 @@ class PUNCHMap(GenericMap):
         unit_str = self.meta.get('bunit', self.meta.get("BUNIT"))
         if unit_str is None:
             return
-        return u.def_unit(unit_str)
+        parsed_unit = u.Unit(unit_str)
+        if parsed_unit == u.Unit('W/(m2 sr)') or parsed_unit == u.Unit('sqrt(DN)'):
+             return parsed_unit
+        else:
+             return super().unit
 
     # Used by the Map factory to determine if this subclass should be used
     @classmethod

@@ -29,7 +29,7 @@ def test_date(punch_map):
 
 
 def test_unit(punch_map):
-    assert punch_map.unit.name == "Mean Solar Brightness"
+    assert punch_map.unit == u.Unit("W / (sr m2)")
 
 
 def test_is_datasource_for(punch_map):
