@@ -565,9 +565,10 @@ class Scraper:
                             metadict['month'] = datetime.strptime(metadict['month_name_abbr'], '%b').month
                     if matcher is not None:
                         for k in metadict:
-                            if k in matcher and str(metadict[k]) not in matcher[k]:
-                                append = False
-                                break
+                            if match := matcher.get(k):
+                                if str(metadict[k]) not in match:
+                                    append = False
+                                    break
                     if append:
                         metalist.append(metadict)
             return metalist
