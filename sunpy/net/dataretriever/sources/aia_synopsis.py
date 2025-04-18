@@ -50,7 +50,6 @@ class AIASynopsisClient(GenericClient):
     pattern = ('https://jsoc1.stanford.edu/data/aia/synoptic/'
                '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{Wavelength:04d}}.fits')
     known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
-    required = {a.Time, a.Instrument, a.Level}
 
     @property
     def info_url(self):
@@ -71,11 +70,10 @@ class AIASynopsisClient(GenericClient):
         -------
         A `QueryResponse` instance containing the query result.
         """
-        # TODO: There has to be a better way than repeating the entire
-        # search method.
+        # TODO: There has to be a better way than repeating the entire search method.
         _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
-        # The scarper can not handle quantities, it uses string matching.
         if "Wavelength" in matchdict:
+            # The scarper can not handle quantities, it uses string matching.
             matchdict["Wavelength"] = str(matchdict["Wavelength"].min.to(u.angstrom).value).strip("0")
         scraper = Scraper(format=pattern)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
@@ -106,3 +104,12 @@ class AIASynopsisClient(GenericClient):
             a.Level: [("1.5s", "Level 1.5 data processed for quicker analysis.")],
         }
         return adict
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        # Import here to prevent circular imports
+        from sunpy.net import attrs as a
+
+        required = {a.Time, a.Instrument, a.Level}
+        optional = {a.Wavelength, a.Sample}
+        return cls.check_attr_types_in_query(query, required, optional)
