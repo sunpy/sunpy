@@ -1,0 +1,1 @@
+Add a GONG magnetogram map source for more information see `GONG <https://gong.nso.edu/>`__.
