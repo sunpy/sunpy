@@ -15,12 +15,12 @@ __all__ = ['GONGSynopticMap', 'GONGHalphaMap', 'GONGMagnetogramMap']
 
 
 _SITE_NAMES = {
-    'LE': 'Learmonth',
-    'UD': 'Udaipur',
-    'TD': 'El Teide',
-    'CT': 'Cerro Tololo',
-    'BB': 'Big Bear',
-    'ML': 'Mauna Loa'
+    'LE': 'Learmonth, (AUS)',
+    'UD': 'Udaipur, (IND)',
+    'TD': 'El Teide, (ESP)',
+    'CT': 'Cerro Tololo, (CHL)',
+    'BB': 'Big Bear, (USA)',
+    'ML': 'Mauna Loa, (USA)'
 }
 
 
@@ -159,9 +159,7 @@ class GONGMagnetogramMap(GenericMap):
     The Global Oscillation Network Group (GONG) operates a six-station network of velocity
     imagers located around the Earth that observe the Sun nearly continuously.
 
-    GONG produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line with an
-    array of 242x256 pixels covering the solar disk. These magnetograms are used to derive
-    synoptic maps which show a full-surface picture of the solar magnetic field.
+    GONG produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line.
 
     References
     ----------
@@ -171,6 +169,13 @@ class GONGMagnetogramMap(GenericMap):
     * `Instrument Paper (pp. 203-208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
     * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+
+        self.plot_settings['vmin'] = -500
+        self.plot_settings['vmax'] = 500
+
+
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -183,8 +188,10 @@ class GONGMagnetogramMap(GenericMap):
         # Which is not what date-obs is supposed to be.
         if date_obs := self.meta.get('date-obs'):
             if time_obs := self.meta.get('time-obs'):
-                date_obs = f"{date_obs} {time_obs}"
-            date_obs = parse_time(date_obs)
+                date_obs_str = f"{date_obs} {time_obs}"
+                # Time in header is GPS and there no GPS scale in astropy so parse as TAI and add offset
+                # https://gssc.esa.int/navipedia/index.php/Transformations_between_Time_Systems#GNSS_–_TAI
+                date_obs = (parse_time(date_obs_str, scale='tai') + 19 *u.s).utc
         return date_obs or super().date
 
     def _set_date(self, date):
@@ -222,6 +229,10 @@ class GONGMagnetogramMap(GenericMap):
         """
         site = _SITE_NAMES.get(self.meta.get("site", ""), "UNKNOWN")
         return f'{self.observatory}, {site}'
+
+    @property
+    def telescope(self):
+        return self.meta['TELESCOP'].replace('-', '/')
 
     @property
     def spatial_units(self):
