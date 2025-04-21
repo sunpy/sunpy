@@ -8,9 +8,9 @@ from regions import SkyRegion
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
+from astropy.utils.data import get_pkg_data_filename
 
 from sunpy.net import Fido, attr, attrs, hek
-from sunpy.net.hek.utils import COORD_FILE_PATH, UNIT_FILE_PATH
 
 
 @pytest.fixture
@@ -20,14 +20,18 @@ def foostrwrap(request):
 
 @pytest.fixture
 def read_unit_attributes():
-    with open(UNIT_FILE_PATH) as unit_file:
+    unit_properties_filename = get_pkg_data_filename('data/unit_properties.json',
+                                                     package='sunpy.hek.data')
+    with open(unit_properties_filename) as unit_file:
         unit_properties = json.load(unit_file)
     return unit_properties
 
 
 @pytest.fixture
 def read_coord_attributes():
-    with open(COORD_FILE_PATH) as coord_file:
+    coord_properties_filename = get_pkg_data_filename('data/coord_properties.json',
+                                                      package='sunpy.hek.data')
+    with open(coord_properties_filename) as coord_file:
         coord_properties = json.load(coord_file)
     return coord_properties
 
