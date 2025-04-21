@@ -29,7 +29,6 @@ EXTRA_DEPS = [
     'reproject',
     'scipy',
     'zeep',
-    'regions',
 ]
 
 EXTRA_ALL_GROUPS = [

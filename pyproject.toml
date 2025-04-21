@@ -82,7 +82,6 @@ net = [
   "python-dateutil>=2.8.1",
   "tqdm>=4.64.0",
   "zeep>=4.1.0",
-  "regions>=0.8",
 ]
 scikit-image = ["scikit-image>=0.20.0"]
 spice = ["spiceypy>=5.0.0"]
@@ -141,6 +140,7 @@ docs-gallery = [
   "sunpy[docs]",
   "astroquery>=0.4.6",
   "jplephem>=2.14",
+  "regions>=0.8",
 ]
 dev = ["sunpy[docs,tests]"]
 
