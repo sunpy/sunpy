@@ -15,7 +15,13 @@ from sunpy import log
 from sunpy.net import attr
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.hek import attrs
-from sunpy.net.hek.utils import freeze, parse_times, parse_values_to_quantities
+from sunpy.net.hek.utils import (
+    _freeze,
+    _map_chain_code_columns_to_coordinates,
+    _map_columns_to_quantities,
+    _map_columns_to_times,
+    _map_event_coord_columns_to_coordinates,
+)
 from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
 
@@ -116,8 +122,11 @@ class HEKClient(BaseClient):
             if not result['overmax']:
                 if len(results) > 0:
                     table = astropy.table.Table(dict_keys_same(results))
-                    table = parse_times(table)
-                    table = parse_values_to_quantities(table)
+                    # NOTE: The order of operations here is important.
+                    _map_event_coord_columns_to_coordinates(table)
+                    _map_chain_code_columns_to_coordinates(table)
+                    _map_columns_to_quantities(table)
+                    _map_columns_to_times(table)
                     return table
                 else:
                     return astropy.table.Table()
@@ -162,7 +171,7 @@ class HEKClient(BaseClient):
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
-        return list(unique(chain.from_iterable(responses), freeze))
+        return list(unique(chain.from_iterable(responses), _freeze))
 
     def fetch(self, *args, **kwargs):
         """
