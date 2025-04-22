@@ -177,7 +177,7 @@ class GONGMagnetogramMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
-                str(header.get('IMTYPE', '')) == 'MAGNETIC')
+                str(header.get('IMTYPE', '')) == 'MAGNETIC') and (str(header.get('DTYPE', '')) == 'OBSERVE')
 
     @property
     def date(self):
@@ -228,9 +228,6 @@ class GONGMagnetogramMap(GenericMap):
         site = _SITE_NAMES.get(self.meta.get("site", ""), "UNKNOWN")
         return f'{self.observatory}, {site}'
 
-    @property
-    def telescope(self):
-        return self.meta['TELESCOP'].replace('-', '/')
 
     @property
     def spatial_units(self):
