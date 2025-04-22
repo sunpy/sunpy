@@ -33,11 +33,14 @@ def test_measurement(gong_magnetogram):
 
 
 def test_reference_date(gong_magnetogram):
-    assert gong_magnetogram.reference_date.isot == "2025-01-09T01:35:16.008"
+    # 2025-01-09T01:51:57
+    assert gong_magnetogram.reference_date.isot == "2025-01-09T01:34:58.008"
 
 
 def test_date(gong_magnetogram):
-    assert gong_magnetogram.date.isot == "2025-01-09T01:35:16.008"
+    # The time in the GONG header is in a ISO format but in GPS scale
+    # GPS time (date-obs) 2025-01-09T01:51:57 should be UTC 2025-01-09T01:34:58.008 (-18 seconds)
+    assert gong_magnetogram.date.isot == "2025-01-09T01:34:58.008"
 
 
 def test_private_date_setters(gong_magnetogram):
