@@ -140,7 +140,6 @@ docs-gallery = [
   "sunpy[docs]",
   "astroquery>=0.4.6",
   "jplephem>=2.14",
-  "regions>=0.8",
 ]
 dev = ["sunpy[docs,tests]"]
 

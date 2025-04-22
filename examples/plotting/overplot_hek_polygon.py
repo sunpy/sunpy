@@ -45,7 +45,7 @@ for i, response in enumerate(responses):
 # Next let's get the boundary of the coronal hole.
 
 ch = responses[response_index]
-ch_boundary = responses[response_index]["hpc_boundcc"].vertices
+ch_boundary = responses[response_index]["hpc_boundcc"]
 
 ##############################################################################
 # The coronal hole was detected at different time than the AIA image was
