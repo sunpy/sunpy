@@ -11,6 +11,9 @@ from sunpy.net.hek.utils import _parse_unit
     ('HMI pixel', 0.5*u.arcsec/u.pixel),
     ('HMI pixels', 0.5*u.arcsec/u.pixel),
     ('ma/m2', u.milliampere/u.m**2),
+    ('deg deg', u.deg),
+    ('arcsec, arcsec', u.arcsec),
+    ('arcsec,arcsec', u.arcsec),
 ])
 def test_parse_unit(input_unit, expected_unit):
     assert _parse_unit(input_unit) == expected_unit
