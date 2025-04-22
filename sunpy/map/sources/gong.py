@@ -5,6 +5,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import EarthLocation, SkyCoord
+from astropy.visualization import ImageNormalize
 
 from sunpy.coordinates import get_earth
 from sunpy.map import GenericMap
@@ -171,11 +172,8 @@ class GONGMagnetogramMap(GenericMap):
     """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
-        self.plot_settings['vmin'] = -500
-        self.plot_settings['vmax'] = 500
-
-
+        half_abs_max = 0.5 * np.nanmax(np.abs(self.data))
+        self.plot_settings['norm'] = ImageNormalize(clip=False, vmin=-half_abs_max, vmax=half_abs_max)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
