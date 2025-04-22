@@ -90,7 +90,7 @@ def _map_columns_to_quantities(table):
             continue
         if attr.get("is_chaincode", False):
             continue
-        mask = [r is None for r in table[name]]
+        mask = np.array([r is None for r in table[name]])
         # NOTE: Fill with missing values explicitly because None cannot be cast
         # to a all dtypes.
         data = np.where(mask, missing_values.get(attr['type'], None), table[name])
@@ -98,7 +98,7 @@ def _map_columns_to_quantities(table):
             if unit_prop not in table.colnames:
                 log.debug(f"Missing unit property {unit_prop} for {name}. Using event_coordunit.")
                 unit_prop = "event_coordunit"
-            units = np.array(list(map(_parse_unit, table[unit_prop])))
+            units = np.array([_parse_unit(_u) if _u is not None else '' for _u in table[unit_prop]])
             default_unit = u.dimensionless_unscaled if mask.all() else units[~mask][0]
             units = np.where(mask, default_unit, units).tolist()
             # NOTE: This is done per entry because each entry could have a different unit
@@ -122,11 +122,13 @@ def _map_event_coord_columns_to_coordinates(table):
     """
     # TODO: Confirm that this is the right thing to do. Previous iterations of this
     # code set the frame to ICRS if the event_coordunit was anything but arcsec.
+    # See https://www.lmsal.com/hek/VOEvent_Spec.html for more information.
     frame_mapping = {
         "UTC-HGS-TOPO": sunpy.coordinates.HeliographicStonyhurst,
         "UTC-HPC-TOPO": sunpy.coordinates.Helioprojective,
         "UTC-HGC-TOPO": sunpy.coordinates.HeliographicCarrington,
         "UTC-HCR-TOPO": sunpy.coordinates.Heliocentric,
+        "UTC-HRC-TOPO": sunpy.coordinates.Heliocentric,  # Possibly a misspelling of HCR?
     }
     event_coords = []
     for row in table:
@@ -135,7 +137,7 @@ def _map_event_coord_columns_to_coordinates(table):
             data.append(row["event_coord3"])
         # NOTE: "event_coordunit" can be space or comma-separated string representing the different
         # units of the different coordinate columns or just a single unit string.
-        coord_unit = [_parse_unit(unit_string) for unit_string in re.split(r'[, ]', row["event_coordunit"])]
+        coord_unit = [_parse_unit(unit_string) for unit_string in re.split(r',\s*|\s+', row["event_coordunit"])]
         if len(coord_unit) == 1:
             coord_unit = len(data) * coord_unit
         data = [d*_u for d, _u in zip(data, coord_unit)]
@@ -148,11 +150,16 @@ def _map_event_coord_columns_to_coordinates(table):
         representation_type = "spherical"
         # TODO: Confirm whether this is the right way to represent heliocentric radial coordinates or whether
         # this is even what "heliocentric" refers to.
-        if isinstance(frame_type, sunpy.coordinates.Heliocentric):
+        if isinstance(frame, sunpy.coordinates.Heliocentric):
             representation_type = "cylindrical"
             # NOTE: See entry for Heliocentric Radial in this table:
             # https://docs.sunpy.org/en/stable/reference/coordinates/index.html#supported-coordinate-systems
-            data[1] += 90*u.deg
+            data[0] += 90*u.deg
+            # The HCC frame expects the data in the reverse order that the HEK returns them.
+            data = data[::-1]
+            # NOTE: There seem to be cases where event_coord3 is missing for the case of a Heliocentric frame
+            if len(data) == 2:
+                data.append(1*u.R_sun)
         event_coord = SkyCoord(*data, frame=frame, representation_type=representation_type)
         event_coords.append(event_coord)
     table.add_column(Column(data=event_coords, name="event_coord"))
@@ -186,10 +193,10 @@ def _map_chain_code_columns_to_coordinates(table):
         'icrs': ICRS,
     }
     frame_unit_mapping = {
-        'helioprojective': 'arcsec',
-        'heliographic_stonyhurst': 'deg',
-        'heliocentric': ['R_sun', 'deg', 'R_sun'],
-        'heliographic_carrington': 'deg',
+        'helioprojective': [u.arcsec, u.arcsec],
+        'heliographic_stonyhurst': [u.deg, u.deg],
+        'heliocentric': [u.R_sun, u.deg],
+        'heliographic_carrington': [u.deg, u.deg],
     }
     for attr in _get_coord_attributes():
         if not attr.get('is_chaincode', False):
@@ -205,14 +212,10 @@ def _map_chain_code_columns_to_coordinates(table):
         if attr['frame'] == 'heliocentric':
             frame_kwargs['representation_type'] = 'cylindrical'
         frame = frame_class_mapping[attr['frame']](**frame_kwargs)
-        units = frame_unit_mapping.get(
-            attr['frame'],
-            list(map(_parse_unit, table['event_coordunit']))
-        )
         coord_data = []
         shape = (1, 2)  # Only used if all entries are masked
         for row in table[name]:
-            if row == '':
+            if row == '' or row is None:
                 data = None
             elif is_point:
                 data = np.array(parse('POINT({})', row)[0].split(), dtype=float)
@@ -222,6 +225,14 @@ def _map_chain_code_columns_to_coordinates(table):
                 data = np.array([r.split() for r in data.split(',')], dtype=float)
                 shape = data.shape
             coord_data.append(data)
+        # NOTE: Units are cast to arrays of shape (n_rows,2) to make broadcasting
+        # to data arrays easier.
+        if attr['frame'] in frame_unit_mapping:
+            units = np.array([frame_unit_mapping[attr['frame']]]*len(coord_data))
+        else:
+            units = np.array(list(map(_parse_unit, table['event_coordunit'])))
+            units = np.repeat(units[:, np.newaxis], 2, axis=1)
+        # NOTE: The units are not used in the case of a point because the coordinates
         # NOTE: Filling in masked values with data of appropriate shape allows for
         # broadcasting of coordinate frame information later on if all shapes are the
         # same.
@@ -238,8 +249,6 @@ def _map_chain_code_columns_to_coordinates(table):
             # object.
             if not frame.shape:
                 frame = len(coord_data) * [frame]
-            if attr['frame'] in frame_unit_mapping:
-                units = len(coord_data) * [units]
             coordinates = [_build_masked_coordinate(c, frame[i], units[i]) for i,c in enumerate(coord_data)]
             # NOTE: This is expressed explicitly as a column to avoid stacking the coordinates along the
             # dimension that corresponds to the chaincode.
@@ -253,16 +262,22 @@ def _map_chain_code_columns_to_coordinates(table):
 def _build_masked_coordinate(data, frame, unit):
     # NOTE: Take the transpose so that entries in the list correspond to
     # components of the coordinate.
-    coord_data = [Masked(c, mask=np.isnan(c)) for c in np.array(data).T]
+    coord_data = []
+    for _d, _u in zip(np.array(data).T, unit.T):
+        # NOTE: This complexity is to allow for broadcasting of units in cases where
+        # there is a single unit or an array of units against a data array that may
+        # be multidimensional.
+        data = np.stack((_d * _u).ravel()).reshape(_d.shape)
+        coord_data.append(Masked(data, mask=np.isnan(_d)))
     if frame.name == 'heliocentric':
         # There is a 90 degree offset between Heliocentric radial and the
         # cylindrical representation of the Heliocentric as defined in sunpy.
         # See https://docs.sunpy.org/en/stable/reference/coordinates/index.html#supported-coordinate-systems.
-        coord_data[-1] += 90
+        coord_data[-1] += 90*u.deg
         # The HEK only returns two coordinates, but a Heliocentric frame requires three.
         # Here, we assume that z=1 R_sun.
-        coord_data += [1]
-    return SkyCoord(*coord_data, frame=frame, unit=unit)
+        coord_data += [1*u.R_sun]
+    return SkyCoord(*coord_data, frame=frame)
 
 
 def _parse_unit(unit_string):
@@ -299,6 +314,7 @@ def _parse_unit(unit_string):
         "ergs": u.erg,
         "radians": u.rad,
         "hz": u.Hertz,
+        "rsun": u.R_sun,
     }
     enabled_units = [
         u.def_unit("cubic centimeter", represents=u.cm**3),
@@ -314,7 +330,7 @@ def _parse_unit(unit_string):
     # a single string. However, this logic should not be applied to custom units which contain
     # spaces, e.g. those custom units enabled above.
     if unit_string not in aliases and unit_string not in [eu.name for eu in enabled_units]:
-        split_unit_string = re.split(r'[, ]', unit_string)
+        split_unit_string = re.split(r',\s*|\s+', unit_string)
         if len(split_unit_string) > 1:
             log.debug(f"Multiple units found in {unit_string}. Using only the first unit.")
             unit_string = split_unit_string[0]
