@@ -152,13 +152,7 @@ Let's look further at the FRM attribute:
    <BLANKLINE>
    class FRM(builtins.object)
     |  Data descriptors defined here:
-    |
-    |  __dict__
-    |      dictionary for instance variables (if defined)
-    |
-    |  __weakref__
-    |      list of weak references to the object (if defined)
-    |
+    ...
     |  ----------------------------------------------------------------------
     |  Data and other attributes defined here:
     |
