@@ -72,6 +72,8 @@ map = [
   "contourpy>=1.0.1",
   "matplotlib>=3.6.0",
   "mpl-animators>=1.0.0",
+  # "ndcube>=2.2.0",
+  "ndcube@git+https://github.com/sunpy/ndcube@main",
   "reproject>=0.10.0",
   "scipy>=1.10.1",
 ]

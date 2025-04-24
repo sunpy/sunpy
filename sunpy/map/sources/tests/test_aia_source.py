@@ -87,7 +87,7 @@ def test_new_instance_preserves_plot_settings(aia_map):
 
 def test_wcs(aia_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    aia_map.pixel_to_world(0*u.pix, 0*u.pix)
+    aia_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
 
 
 def test_missing_tobs(aia_map):

@@ -1,0 +1,1 @@
+Fixed a bug that interfered with :func:`astropy.wcs.utils.celestial_frame_to_wcs` when working with a custom subclass of :class:`~sunpy.coordinates.frames.SunPyBaseCoordinateFrame`.
