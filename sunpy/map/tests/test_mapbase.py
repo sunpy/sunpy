@@ -1058,7 +1058,7 @@ def test_superpixel_masked(aia171_test_map_with_mask):
 
 
 def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_dims = u.Quantity(aia171_test_map_with_mask.shape, unit=u.pix)
     dimensions = (2, 2) * u.pix
 
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
@@ -1795,8 +1795,8 @@ def test_plot_composite_map_updated_args(simple_map):
     simple_map.plot_settings['zorder'] = 8
     contour_args = {'norm': 'log',
                     'cmap':'plasma'}
-    updated_args = simple_map._update_contour_args(contour_args)
-    # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
+    updated_args = simple_map.plotter._update_contour_args(contour_args)
+    # Since 'norm' and 'cmap' are explicitly provided in contour_args of draw_contours,
     # their contour_args values will be used instead of plot_settings value
     assert updated_args ==  {
         'alpha': 0.7,
