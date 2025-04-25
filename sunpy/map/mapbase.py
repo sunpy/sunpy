@@ -43,11 +43,17 @@ from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
 from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
-from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring, deprecated
+from sunpy.util.decorators import (
+    ACTIVE_CONTEXTS,
+    add_common_docstring,
+    check_arithmetic_compatibility,
+    deprecated,
+)
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization.plotter.mpl_plotter import MapPlotter
+from .mixins.mapmeta import PixelPair
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -149,15 +155,15 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     <sunpy.map.sources.sdo.AIAMap object at ...>
     SunPy Map
     ---------
-    Observatory:                 SDO
+    Observatory:         SDO
     Instrument:          AIA 3
     Detector:            AIA
-    Measurement:                 171.0 Angstrom
+    Measurement:         171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
-    Reference Date:              2011-06-07 06:33:02
-    Exposure Time:               0.234256 s
-    Pixel Dimensions:            [1024. 1024.]
+    Reference Date:      2011-06-07 06:33:02
+    Exposure Time:       0.234256 s
+    Dimension:           [1024. 1024.] pix
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix
@@ -563,6 +569,62 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
+    def _new_instance_from_op(self, new_data):
+        """
+        Helper function for creating new map instances after arithmetic
+        operations.
+        """
+        new_meta = copy.deepcopy(self.meta)
+        new_meta['bunit'] = new_data.unit.to_string('fits')
+        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
+
+    def __neg__(self):
+        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
+
+    @check_arithmetic_compatibility
+    def __pow__(self, value):
+        new_data = self.quantity ** value
+        return self._new_instance_from_op(new_data)
+
+    @check_arithmetic_compatibility
+    def __add__(self, value):
+        new_data = self.quantity + value
+        return self._new_instance_from_op(new_data)
+
+    def __radd__(self, value):
+        return self.__add__(value)
+
+    def __sub__(self, value):
+        return self.__add__(-value)
+
+    def __rsub__(self, value):
+        return self.__neg__().__add__(value)
+
+    @check_arithmetic_compatibility
+    def __mul__(self, value):
+        new_data = self.quantity * value
+        return self._new_instance_from_op(new_data)
+
+    def __rmul__(self, value):
+        return self.__mul__(value)
+
+    @check_arithmetic_compatibility
+    def __truediv__(self, value):
+        return self.__mul__(1/value)
+
+    @check_arithmetic_compatibility
+    def __rtruediv__(self, value):
+        new_data = value / self.quantity
+        return self._new_instance_from_op(new_data)
+
+    def _set_symmetric_vmin_vmax(self):
+        """
+        Set symmetric vmin and vmax about zero
+        """
+        threshold = np.nanmax(abs(self.data))
+        self.plot_settings['norm'].vmin = -threshold
+        self.plot_settings['norm'].vmax = threshold
+
     def _as_mpl_axes(self):
         """
         Compatibility hook for Matplotlib and WCSAxes.
@@ -584,6 +646,51 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # This code is reused from Astropy
         return WCSAxes, {'wcs': self.wcs}
 
+    # Some numpy extraction
+    @property
+    def dimensions(self):
+        """
+        The dimensions of the array (x axis first, y axis second).
+        """
+        return PixelPair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
+
+    @property
+    def dtype(self):
+        """
+        The `numpy.dtype` of the array of the map.
+        """
+        return self.data.dtype
+
+    @property
+    def ndim(self):
+        """
+        The value of `numpy.ndarray.ndim` of the data array of the map.
+        """
+        return self.data.ndim
+
+    def std(self, *args, **kwargs):
+        """
+        Calculate the standard deviation of the data array, ignoring NaNs.
+        """
+        return np.nanstd(self.data, *args, **kwargs)
+
+    def mean(self, *args, **kwargs):
+        """
+        Calculate the mean of the data array, ignoring NaNs.
+        """
+        return np.nanmean(self.data, *args, **kwargs)
+
+    def min(self, *args, **kwargs):
+        """
+        Calculate the minimum value of the data array, ignoring NaNs.
+        """
+        return np.nanmin(self.data, *args, **kwargs)
+
+    def max(self, *args, **kwargs):
+        """
+        Calculate the maximum value of the data array, ignoring NaNs.
+        """
+        return np.nanmax(self.data, *args, **kwargs)
 
     @u.quantity_input
     def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
@@ -619,7 +726,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return new_map
 
     @property
-    # TODO FIX THIS
+    # TODO: FIX THIS
     #@cached_property_based_on('_meta_hash')
     def wcs(self):
         """
@@ -645,6 +752,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         DATE-END key is in the metadata.
         """
         self._validate_meta()
+
         w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
@@ -661,6 +769,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
         w2.wcs.cunit = self.spatial_units
+        w2.wcs.dateobs = self.date.isot
         w2.wcs.aux.rsun_ref = self.rsun_meters.to_value(u.m)
 
         w2.wcs.dateobs = self.date.utc.isot
@@ -1087,17 +1196,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Reference Date:              2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
-        Pixel Dimensions:            [335. 335.]
+        Reference Date:      2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [335. 335.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [126.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         array([[ 450.4546 ,  565.81494,  585.0416 , ..., 1005.28284,  977.8161 ,
@@ -1117,17 +1226,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Reference Date:              2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
-        Pixel Dimensions:            [6. 6.]
+        Reference Date:      2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [6. 6.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [511.5 511.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         array([[-95.92475   ,   7.076416  ,  -1.9656711 ,  -2.9485066 ,
@@ -1148,17 +1257,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Reference Date:              2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
-        Pixel Dimensions:            [5. 5.]
+        Reference Date:      2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [5. 5.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [125.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         array([[565.81494, 585.0416 , 656.4552 , 670.18854, 678.4286 ],
@@ -1172,17 +1281,17 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:                 SDO
+        Observatory:         SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:                 171.0 Angstrom
+        Measurement:         171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Reference Date:              2011-06-07 06:33:02
-        Exposure Time:               0.234256 s
-        Pixel Dimensions:            [70. 69.]
+        Reference Date:      2011-06-07 06:33:02
+        Exposure Time:       0.234256 s
+        Dimension:           [70. 69.] pix
         Coordinate System:   helioprojective
-        Scale:                       [2.402792 2.402792] arcsec / pix
+        Scale:               [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [1.5 0.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         array([[209.89908, 213.9748 , 256.76974, ..., 560.41016, 497.23666,
@@ -1357,6 +1466,10 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         -------
         out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
+
+        References
+        ----------
+        | `Summarizing blocks of an array using a moving window <https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when

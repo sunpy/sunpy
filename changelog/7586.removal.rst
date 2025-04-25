@@ -1,0 +1,1 @@
+Remove `sunpy.map.GenericMap.reproject_to` in favor of `ndcube.NDCube.reproject_to`.
