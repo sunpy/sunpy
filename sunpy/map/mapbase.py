@@ -1779,59 +1779,24 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
             warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
 
-        try:
-            import reproject
-        except ImportError as exc:
-            raise ImportError("This method requires the optional package `reproject`.") from exc
-
         if not isinstance(target_wcs, astropy.wcs.WCS):
-<<<<<<< HEAD
-            target_wcs = astropy.wcs.WCS(target_wcs)
-
-        # Select the desired reprojection algorithm
-        functions = {'interpolation': reproject.reproject_interp,
-                     'adaptive': reproject.reproject_adaptive,
-                     'exact': reproject.reproject_exact}
-        if algorithm not in functions:
-            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
-        func = functions[algorithm]
-
-        # reproject does not automatically grab the array shape from the WCS instance
-        if target_wcs.array_shape is not None:
-            reproject_args.setdefault('shape_out', target_wcs.array_shape)
-
-        # Reproject the array
-        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
-=======
             target_wcs = astropy.wcs.WCS(header=target_wcs)
-        # Check rsun mismatch
-        rsun_target = target_wcs.wcs.aux.rsun_ref * u.m
-        if self.rsun_meters != rsun_target:
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} rsun_meters of target WCS."
-                      "This might cause unexpected results during reprojection.")
+
         reproject_outputs = super().reproject_to(target_wcs,
                                                  algorithm=algorithm,
                                                  return_footprint=return_footprint,
                                                  **reproject_args)
->>>>>>> a555e3c3b (Adds unit to Rsun check)
-        if return_footprint:
-            output_array, footprint = output_array
 
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, meta=target_wcs.to_header(),
+        outmap = GenericMap(reproject_outputs, meta=target_wcs.to_header(),
                             plot_settings=self.plotter.plot_settings)
 
-        # Check rsun mismatch
+        # check for rsun outmap
         if self.rsun_meters != outmap.rsun_meters:
             warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {outmap.rsun_meters} rsun_meters of target WCS."
                       "This might cause unexpected results during reprojection.")
 
-        if return_footprint:
-            return outmap, footprint
-        return outmap
-
+        return reproject_outputs
 
 GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
 
