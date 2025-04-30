@@ -431,7 +431,7 @@ class JSOCClient(BaseClient):
 
         defaults = {'max_splits': 1} | kwargs
         # Make response iterable
-        if not np.isiterable(responses):
+        if not np.iterable(responses):
             responses = [responses]
 
         # Add them to the response for good measure
@@ -488,7 +488,7 @@ class JSOCClient(BaseClient):
             max_splits = 1
 
         # Convert Responses to a list if not already
-        if isinstance(requests, str) or not np.isiterable(requests):
+        if isinstance(requests, str) or not np.iterable(requests):
             requests = [requests]
 
         # Ensure all the requests are drms ExportRequest objects

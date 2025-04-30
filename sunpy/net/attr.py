@@ -224,7 +224,7 @@ class Attr(metaclass=AttrMeta):
         """
         for client, attr_dict in adict.items():
             for attr, attr_values in attr_dict.items():
-                if not np.isiterable(attr_values) or isinstance(attr_values, str):
+                if not np.iterable(attr_values) or isinstance(attr_values, str):
                     raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
                                      "The value is not iterable or just a string.")
 
