@@ -20,6 +20,7 @@ from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
+from astropy.wcs import InconsistentAxisTypesError
 
 import sunpy
 import sunpy.coordinates
@@ -211,6 +212,22 @@ def test_wcs_cache(aia171_test_map):
 
     new_wcs = aia171_test_map.wcs
     assert new_wcs.wcs.crpix[0] == new_crpix
+
+
+def test_wcs_error_not_cached(aia171_test_map):
+    # Create a cached value for the property
+    _ = aia171_test_map.wcs
+
+    # Modify the WCS in a bad way
+    aia171_test_map.meta['ctype1'] = 'HPLN-ARC'
+
+    # Try and fail to recalculate the property
+    with pytest.raises(InconsistentAxisTypesError):
+        _ = aia171_test_map.wcs
+
+    # Try again and fail again to recalculate the property
+    with pytest.raises(InconsistentAxisTypesError):
+        _ = aia171_test_map.wcs
 
 
 def test_obs_coord_cache(aia171_test_map):
