@@ -177,11 +177,11 @@ def cached_property_based_on(attr_name):
             if (old_attr_val is _NOT_FOUND or
                     new_attr_val != old_attr_val or
                     prop_key not in cache):
-                # Store the new attribute value
-                cache[attr_name] = new_attr_val
                 # Recompute the property
                 new_val = prop(instance)
                 cache[prop_key] = new_val
+                # Store the new attribute value after the property is computed successfully
+                cache[attr_name] = new_attr_val
 
             return cache[prop_key]
         return inner
