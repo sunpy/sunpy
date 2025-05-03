@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+from matplotlib.transforms import Transform
 
 try:
     from dask.array import Array as DaskArray
@@ -2762,7 +2763,7 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive. If the plot will
+        The ``autoalign`` functionality can be intensive to render. If the plot is to
         be interactive, the alternative approach of preprocessing the map (e.g.,
         de-rotating it) to match the desired axes will result in better performance.
 
@@ -2841,17 +2842,29 @@ class GenericMap(NDData):
                 if item in imshow_args:
                     del imshow_args[item]
 
-            imshow_args.setdefault('transform', axes.get_transform(self.wcs))
-
             # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
             # of a grid pattern when alpha is not 1. These settings minimize the overlap.
             if imshow_args.get('alpha', 1) != 1:
                 imshow_args.setdefault('antialiased', True)
                 imshow_args.setdefault('linewidth', 0)
 
-            ret = axes.pcolormesh(np.arange(data.shape[1] + 1) - 0.5,
-                                  np.arange(data.shape[0] + 1) - 0.5,
-                                  data, **imshow_args)
+            # Transform the data corners to the pixel space of the axes
+            self_y, self_x = np.indices((data.shape[0] + 1, data.shape[1] + 1)) - 0.5
+            axes_x, axes_y = astropy.wcs.utils.pixel_to_pixel(self.wcs, axes.wcs, self_x, self_y)
+
+            # Create a lookup table for matplotlib to use
+            class PrecomputedTransform(Transform):
+                input_dims = 2
+                output_dims = 2
+                def transform_non_affine(self, values):
+                    ix, iy = (values + 0.5).astype(int).T
+                    return np.stack([axes_x[iy, ix], axes_y[iy, ix]], axis=1)
+
+            # Define the mesh in data coordinates in case the transformation results in NaNs
+            ret = axes.pcolormesh(self_x, self_y, data,
+                                  shading='flat',
+                                  transform=PrecomputedTransform() + axes.transData,
+                                  **imshow_args)
         else:
             ret = axes.imshow(data, **imshow_args)
 

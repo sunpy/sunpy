@@ -54,7 +54,7 @@
   "sunpy.map.tests.test_plotting.test_draw_limb_different_observer": "bba8a5d3d8e5e3e3a7d36060d9730e4545c5250367902cf97048c33049f330f3",
   "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "fcbf6be2894be891f458d2bc305702564cb451052bc727b0175e7b6ad527801c",
   "sunpy.map.tests.test_plotting.test_map_draw_extent": "c51113113a46c838b07b049a3f17940184b99b0a56200fbd63e6cf2bf1e3c86c",
-  "sunpy.map.tests.test_plotting.test_plot_autoalign": "dc61f7444a64f9c5c8830dbad0efed15812fd4f55b237cb9cc4cd2f7b2a05975",
+  "sunpy.map.tests.test_plotting.test_plot_autoalign": "197f06eced7fe4bf8496cf5f3ba4e4cc379ac108be0f212d605007c1e3db062c",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_pixel_alignment": "dd407fa27c34d512e5a98f811a2533868b0dab67895c4d4f2b53b4bc52f781b0",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hgs": "90452e9e8f248f8798a794ba70e157bf0eb87a083bda55a8ffc846c2024b1363",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_hpc_interpolation": "adca79ed26b0139f29c5c0bec63d1a818fe8ba0cd718923d952210e6e8ca801c",
