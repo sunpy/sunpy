@@ -27,7 +27,7 @@ from astropy.utils.data import download_file
 
 from sunpy import log
 from sunpy.sun.constants import radius as _RSUN
-from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.time.time import _variables_for_parse_time_docstring, parse_time
 from sunpy.util.decorators import add_common_docstring, deprecated, sunpycontextmanager
 from sunpy.util.exceptions import warn_user
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
@@ -144,8 +144,20 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
             self._wrap_angle = None
 
         # If obstime is not provided but observer has an obstime, use that as the obstime
-        if 'obstime' not in kwargs and 'observer' in kwargs and getattr(kwargs['observer'], 'obstime', None) is not None:
+        if ('obstime' not in kwargs
+            and 'observer' in kwargs
+            and getattr(kwargs['observer'], 'obstime', None) is not None):
             kwargs['obstime'] = kwargs['observer'].obstime
+
+        if ('observer' in kwargs
+            and kwargs.get('obstime', None) is not None
+            and getattr(kwargs['observer'], 'obstime', None) is not None):
+            from sunpy.coordinates._transformations import _times_are_equal
+            t1, t2 = parse_time(kwargs['obstime']), parse_time(getattr(kwargs['observer'], 'obstime'))
+            if not _times_are_equal(t1, t2):
+                time_diff = abs(t2.to_datetime() - t1.to_datetime())
+                warn_user("The 'obstime' of the coordinate and the observer differ"
+                          f" by {time_diff}.")
 
         super().__init__(*args, **kwargs)
 
