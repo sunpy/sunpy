@@ -2769,11 +2769,9 @@ class GenericMap(NDData):
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
-        beyond the solar disk may not appear, which may also inhibit Matplotlib's
-        autoscaling of the plot limits. The plot limits can be set manually.
-        To preserve the off-disk parts of the map, using the
-        `~sunpy.coordinates.SphericalScreen` context
-        manager may be appropriate.
+        beyond the solar disk may not appear.  To preserve the off-disk parts of the
+        map, using the `~sunpy.coordinates.SphericalScreen` context manager may be
+        appropriate.
         """
         # Todo: remove this when deprecate_positional_args_since is removed
         # Users sometimes assume that the first argument is `axes` instead of `annotate`
@@ -2865,6 +2863,17 @@ class GenericMap(NDData):
                                   shading='flat',
                                   transform=PrecomputedTransform() + axes.transData,
                                   **imshow_args)
+
+            # Calculate the bounds of the mesh in the pixel space of the axes
+            good = np.logical_and(np.isfinite(axes_x), np.isfinite(axes_y))
+            good_x, good_y = axes_x[good], axes_y[good]
+            min_x, max_x = np.min(good_x), np.max(good_x)
+            min_y, max_y = np.min(good_y), np.max(good_y)
+
+            # Update the plot limits
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
         else:
             ret = axes.imshow(data, **imshow_args)
 

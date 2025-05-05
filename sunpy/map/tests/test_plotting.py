@@ -367,6 +367,20 @@ def test_plot_autoalign_bad_inputs(aia171_test_map):
 
 
 @figure_test
+def test_plot_autoalign_datalim(adjusted_test_maps):
+    # Test whether the plot limits are expanded by the overplotted map
+    aia171_test_map = adjusted_test_maps[0].submap([20, 20]*u.pixel, top_right=[100, 80]*u.pixel)
+    hmi_test_map = adjusted_test_maps[1].submap([0, 0]*u.pixel, top_right=[120, 80]*u.pixel)
+    hmi_test_map.meta['crota2'] = 150
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    hmi_test_map.plot(axes=ax, autoalign=True, alpha=0.75)
+    return fig
+
+
+@figure_test
 def test_plot_autoalign_pixel_alignment(aia171_test_map):
     # Verify that autoalign=True does not affect pixel alignment
     x, y = (z.value for z in aia171_test_map.reference_pixel)
