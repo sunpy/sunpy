@@ -11,9 +11,12 @@ from itertools import chain, count
 from collections import UserList
 from collections.abc import Iterator
 
+import numpy as np
+
 __all__ = ['unique', 'replacement_filename', 'expand_list',
            'expand_list_generator', 'dict_keys_same', 'hash_file', 'get_width',
-           'get_keywords', 'get_set_methods', 'fix_duplicate_notes']
+           'get_keywords', 'get_set_methods', 'fix_duplicate_notes',
+           'grid_perimeter']
 
 def unique(itr, key=None):
     """
@@ -317,3 +320,30 @@ def fix_duplicate_notes(notes_to_add, docstring):
               f"{notes_to_add_data}",
               f"\n\n{docstring[index:]}" if len(docstring) > index else ""]
     return "".join(pieces)
+
+
+def grid_perimeter(nx, ny):
+    """
+    Return a sequence of (x, y) grid points for the perimeter of a grid.
+
+    The sequence represents an open path starting at (0, 0); traversing clockwise
+    through (0, ny), (nx, ny), and (nx, 0); and then returning to (0, 0)
+    exclusive (i.e., stopping at (1, 0)).
+
+    Parameters
+    ----------
+    nx : `int`
+        The number of grid cells in the X direction
+    ny : `int`
+        The number of grid cells in the Y direction
+
+    Returns
+    -------
+    `numpy.ndarray`
+        A Nx2 array of (x, y) grid points, where N is ``2 * (nx + ny)``
+    """
+    edges = [[np.zeros(ny), np.arange(ny)],  # left edge
+             [np.arange(nx), np.full(nx, ny)],  # top edge
+             [np.full(ny, nx), np.arange(ny, 0, -1)],  # right edge
+             [np.arange(nx, 0, -1), np.zeros(nx)]]  # bottom edge
+    return np.hstack(edges).T
