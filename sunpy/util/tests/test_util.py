@@ -1,5 +1,6 @@
 from inspect import cleandoc
 
+import numpy as np
 import pytest
 
 from astropy.io import fits
@@ -215,3 +216,7 @@ def test_notes_combined_no_notes_no_references():
     This should be combined.
     """
     assert updated_documentation == cleandoc(expected_result)
+
+
+def test_grid_perimeter():
+    assert np.all(util.grid_perimeter(2, 3) == [[0, 0], [0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [2, 2], [2, 1], [2, 0], [1, 0]])
