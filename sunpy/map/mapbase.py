@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from matplotlib.transforms import Transform
 
 try:
     from dask.array import Array as DaskArray
@@ -61,6 +60,7 @@ from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
+from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -2846,27 +2846,18 @@ class GenericMap(NDData):
                 imshow_args.setdefault('antialiased', True)
                 imshow_args.setdefault('linewidth', 0)
 
-            # Transform the data corners to the pixel space of the axes
-            self_y, self_x = np.indices((data.shape[0] + 1, data.shape[1] + 1)) - 0.5
-            axes_x, axes_y = astropy.wcs.utils.pixel_to_pixel(self.wcs, axes.wcs, self_x, self_y)
-
-            # Create a lookup table for matplotlib to use
-            class PrecomputedTransform(Transform):
-                input_dims = 2
-                output_dims = 2
-                def transform_non_affine(self, values):
-                    ix, iy = (values + 0.5).astype(int).T
-                    return np.stack([axes_x[iy, ix], axes_y[iy, ix]], axis=1)
+            # Create a lookup table for the transformed data corners for matplotlib to use
+            transform = _PrecomputedPixelCornersTransform(axes, self.wcs)
 
             # Define the mesh in data coordinates in case the transformation results in NaNs
-            ret = axes.pcolormesh(self_x, self_y, data,
+            ret = axes.pcolormesh(transform.data_x, transform.data_y, data,
                                   shading='flat',
-                                  transform=PrecomputedTransform() + axes.transData,
+                                  transform=transform + axes.transData,
                                   **imshow_args)
 
             # Calculate the bounds of the mesh in the pixel space of the axes
-            good = np.logical_and(np.isfinite(axes_x), np.isfinite(axes_y))
-            good_x, good_y = axes_x[good], axes_y[good]
+            good = np.logical_and(np.isfinite(transform.axes_x), np.isfinite(transform.axes_y))
+            good_x, good_y = transform.axes_x[good], transform.axes_y[good]
             min_x, max_x = np.min(good_x), np.max(good_x)
             min_y, max_y = np.min(good_y), np.max(good_y)
 
