@@ -1957,19 +1957,6 @@ def test_only_cd():
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
 
 
-def test_plot_deprecated_positional_args(aia171_test_map):
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
-        aia171_test_map.plot(True)
-
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
-        with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation')
-
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
-        with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation', True)
-
-
 def test_submap_nan_error(aia171_test_map):
     # See https://github.com/sunpy/sunpy/pull/7543#issuecomment-2167019208 for more context
     coord_native = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia171_test_map.coordinate_frame)
