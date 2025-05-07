@@ -27,12 +27,6 @@ repos:
     rev: dictgen-v0.3.1
     hooks:
       - id: typos
-  - repo: https://github.com/woodruffw/zizmor-pre-commit
-    rev: v1.4.1
-    hooks:
-      - id: zizmor
-        # zizmor errored in this file
-        exclude: .github/workflows/scheduled_builds.yml
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
