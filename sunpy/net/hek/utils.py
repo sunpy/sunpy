@@ -3,7 +3,9 @@ import json
 import warnings
 
 import numpy as np
+from packaging.version import Version
 
+import astropy
 from astropy import units as u
 from astropy.coordinates import ICRS, SkyCoord
 from astropy.table import Column, MaskedColumn
@@ -100,7 +102,8 @@ def _map_columns_to_quantities(table):
             units = np.array([_parse_unit(u_) if u_ is not None else '' for u_ in table[unit_prop]])
             default_unit = u.dimensionless_unscaled if mask.all() else units[~mask][0]
             units = np.where(mask, default_unit, units).tolist()
-            # NOTE: This is done per entry because each entry could have a different unit
+            # NOTE: This is done per entry because each entry could, in principle,
+            # have a different (though compatible) unit.
             data = u.Quantity([d*_u for d, _u in zip(data, units)])
         dtype = dtype_aliases.get(attr['type'], attr['type'])
         table[name] = MaskedColumn(data=data, mask=mask, name=name, dtype=dtype)
@@ -266,7 +269,13 @@ def _build_masked_coordinate(data, frame, unit):
         # there is a single unit or an array of units against a data array that may
         # be multidimensional.
         data = np.stack((_d * _u).ravel()).reshape(_d.shape)
-        coord_data.append(Masked(data, mask=np.isnan(_d)))
+        # FIXME: This conditional is because SkyCoords with masked data are only
+        # support in astropy v7 and above. Once our minimum version of astropy
+        # is v7, this can be removed.
+        if Version(astropy.__version__) < Version('7'):
+            coord_data.append(data)
+        else:
+            coord_data.append(Masked(data, mask=np.isnan(_d)))
     if frame.name == 'heliocentric':
         # There is a 90 degree offset between Heliocentric radial and the
         # cylindrical representation of the Heliocentric as defined in sunpy.

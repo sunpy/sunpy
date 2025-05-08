@@ -35,12 +35,38 @@ from sunpy.net.hek.utils import (
     ('deg deg', u.deg),
     ('arcsec, arcsec', u.arcsec),
     ('arcsec,arcsec', u.arcsec),
+    ("arcseconds", u.arcsec),
+    ("degrees", u.deg),
+    ("sec", u.s),
+    ("emx", u.Mx),
+    ("amperes", u.A),
+    ("ergs", u.erg),
+    ("radians", u.rad),
+    ("hz", u.Hertz),
+    ("rsun", u.R_sun),
+    ("cubic centimeter", u.cm**3),
+    ("square centimeter", u.cm**2),
+    ("cubic meter", u.m**3),
+    ("square meter", u.m**2),
+    ("ergs/cm^3", u.erg/u.cm**3),
 ])
 def test_parse_unit(input_unit, expected_unit):
     assert _parse_unit(input_unit) == expected_unit
 
 
+def test_parse_unit_invalid():
+    """
+    Test that an unexpected unit errors in the same way as u.Unit
+    """
+with pytest.raises(ValueError, match=r"'foo' did not parse as unit"):
+    _parse_unit('foo')
+
+
 def map_event_coords_to_column(coord):
+    """
+    Given a coordinate, create a table that mimics what is returned by the HEK. This is to test
+    roundtripping of coordinates through the logic used to parse the "event_coord" columns.
+    """
     frame_sys_mapping = {
         "heliographic_stonyhurst": "UTC-HGS-TOPO",
         "helioprojective": "UTC-HPC-TOPO",
