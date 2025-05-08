@@ -1,4 +1,3 @@
-import copy
 
 import numpy as np
 import pytest
@@ -18,34 +17,15 @@ def foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
 
 
-class HEKResult:
-    """
-    Basic caching class to run the remote query once and return the result many times.
-    """
-
-    def __init__(self):
-        self._result = None
-
-    def get_result(self):
-        if self._result is None:
-            startTime = '2011/08/09 07:23:56'
-            endTime = '2011/08/09 12:40:29'
-            eventType = 'FL'
-            hekTime = attrs.Time(startTime, endTime)
-            hekEvent = attrs.hek.EventType(eventType)
-            h = hek.HEKClient()
-            hek_query = h.search(hekTime, hekEvent)
-            self._result = hek_query
-
-        return copy.deepcopy(self._result)
-
-
-_hek_result = HEKResult()
-
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def hek_result():
-    return _hek_result.get_result()
+    startTime = '2011/08/09 07:23:56'
+    endTime = '2011/08/09 12:40:29'
+    eventType = 'FL'
+    hekTime = attrs.Time(startTime, endTime)
+    hekEvent = attrs.hek.EventType(eventType)
+    h = hek.HEKClient()
+    return h.search(hekTime, hekEvent)
 
 
 def test_eventtype_collide():
@@ -252,7 +232,7 @@ def test_missing_times():
     assert results["event_peaktime"][3].isot == "2024-05-10T00:13:00.000"
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def coronal_hole_search_result():
     client = hek.HEKClient()
     result = client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
