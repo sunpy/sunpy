@@ -1,1 +1,2 @@
-The return from the `~sunpy.net.hek.HEKClient` now updates all possible columns with Astropy units or coordinates objects to express feature/event properties.
+Columns in the results table from the `~sunpy.net.hek.HEKClient` are now returned as `~astropy.units.Quantity`,
+`~astropy.time.Time`, or `~astropy.coordinates.SkyCoord` objects wherever possible.
