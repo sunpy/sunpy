@@ -50,7 +50,7 @@ goesrsuvi304 = ct.suvi_color_table(304*u.angstrom)
 
 
 # The color tables below returns one of the fundamental color tables for SOHO
-# LASCO images. These are not the same as those used in SSWIDL.  This is
+# LASCO images. These are not the same as those used in SSWIDL. This is
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
 # compressed and does not display the data well.
 soholasco2 = deepcopy(matplotlib.colormaps["gist_heat"])
@@ -158,6 +158,17 @@ cmlist = {
     'solar orbiterfsi304': solofsi304,
     'solar orbiterhri_euv174': solohri_euv174,
     'solar orbiterhri_lya1216': solohri_lya1216,
+    'suit_nb01' : ct.suit_color_table('NB01'),
+    'suit_nb02' : ct.suit_color_table('NB02'),
+    'suit_nb03' : ct.suit_color_table('NB03'),
+    'suit_nb04' : ct.suit_color_table('NB04'),
+    'suit_nb05' : ct.suit_color_table('NB05'),
+    'suit_nb06' : ct.suit_color_table('NB06'),
+    'suit_nb07' : ct.suit_color_table('NB07'),
+    'suit_nb08' : ct.suit_color_table('NB08'),
+    'suit_bb01' : ct.suit_color_table('BB01'),
+    'suit_bb02' : ct.suit_color_table('BB02'),
+    'suit_bb03' : ct.suit_color_table('BB03'),
 }
 
 # Register the colormaps with matplotlib so matplotlib.colormaps['sdoaia171'] works

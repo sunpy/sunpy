@@ -30,10 +30,10 @@ class TRACEMap(GenericMap):
 
     References
     ----------
-    * `Mission/Instrument Page <https://sdowww.lmsal.com/TRACE>`_
-    * `Fits headers <https://sdowww.lmsal.com/TRACE/Project/Instrument/cal/>`_
-    * `Analysis Guide <https://sdowww.lmsal.com/TRACE/tag/>`_
-    * `Passband reference <https://sdowww.lmsal.com/TRACE/Project/Instrument/inspass.htm>`_
+    * `Mission/Instrument Page <https://sdowww.lmsal.com/TRACE>`__
+    * `Fits headers <https://sdowww.lmsal.com/TRACE/Project/Instrument/cal/>`__
+    * `Analysis Guide <https://sdowww.lmsal.com/TRACE/tag/>`__
+    * `Passband reference <https://sdowww.lmsal.com/TRACE/Project/Instrument/inspass.htm>`__
 
     .. note::
 

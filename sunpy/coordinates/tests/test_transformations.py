@@ -220,7 +220,7 @@ def test_hcrs_hgs_array_obstime():
 
 def test_hgs_hcrs():
     # This test checks the HGS->HCRS transformation by transforming from HGS to
-    # HeliocentricMeanEcliptic (HME).  It will fail if there are errors in Astropy's
+    # HeliocentricMeanEcliptic (HME). It will fail if there are errors in Astropy's
     # HCRS->ICRS or ICRS->HME transformations.
 
     # Use published HGS coordinates in the Astronomical Almanac (2013), pages C6-C7

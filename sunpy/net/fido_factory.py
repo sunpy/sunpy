@@ -295,8 +295,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ----------
         *query : `sunpy.net.vso.attrs`, `sunpy.net.jsoc.attrs`
             A query consisting of multiple parameters which define the
-            requested data.  The query is specified using attributes from the
-            VSO and the JSOC.  The query can mix attributes from the VSO and
+            requested data. The query is specified using attributes from the
+            VSO and the JSOC. The query can mix attributes from the VSO and
             the JSOC.
 
         Returns

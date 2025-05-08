@@ -1,7 +1,7 @@
 """
 This module provides sunpy specific decorators.
 """
-from inspect import Parameter, signature
+from inspect import cleandoc
 from functools import wraps
 from contextlib import contextmanager
 
@@ -10,13 +10,12 @@ import numpy as np
 from astropy.utils.decorators import deprecated as _deprecated
 from astropy.utils.decorators import deprecated_renamed_argument as _deprecated_renamed_argument
 
-from sunpy.util.exceptions import SunpyDeprecationWarning, warn_deprecated
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = [
     'ACTIVE_CONTEXTS',
     'deprecated',
     'deprecated_renamed_argument',
-    'deprecate_positional_args_since',
     'cached_property_based_on',
     'check_arithmetic_compatibility',
     'sunpycontextmanager',
@@ -44,10 +43,10 @@ def deprecated(
     Parameters
     ----------
     since : str
-        The release at which this API became deprecated.  This is
+        The release at which this API became deprecated. This is
         required.
     message : str, optional
-        Override the default deprecation message.  The format
+        Override the default deprecation message. The format
         specifier ``func`` may be used for the name of the function,
         and ``alternative`` may be used in the deprecation message
         to insert the name of an alternative to the deprecated
@@ -58,7 +57,7 @@ def deprecated(
         the name is automatically determined from the passed in
         function or class, though this is useful in the case of
         renamed functions, where the new function is just assigned to
-        the name of the deprecated function.  For example::
+        the name of the deprecated function. For example::
 
             def new_function():
                 ...
@@ -66,7 +65,7 @@ def deprecated(
 
     alternative : str, optional
         An alternative function or class name that the user may use in
-        place of the deprecated object.  The deprecation warning will
+        place of the deprecated object. The deprecation warning will
         tell the user about this alternative if provided.
     obj_type : str, optional
         The type of this object, if the automatically determined one
@@ -97,7 +96,7 @@ def deprecated_renamed_argument(
 
     The decorator assumes that the argument with the ``old_name`` was removed
     from the function signature and the ``new_name`` replaced it at the
-    **same position** in the signature.  If the ``old_name`` argument is
+    **same position** in the signature. If the ``old_name`` argument is
     given when calling the decorated function the decorator will catch it and
     issue a deprecation warning and pass it on as ``new_name`` argument.
 
@@ -113,13 +112,13 @@ def deprecated_renamed_argument(
     arg_in_kwargs : bool or sequence of bool, optional
         If the argument is not a named argument (for example it
         was meant to be consumed by ``**kwargs``) set this to
-        ``True``.  Otherwise the decorator will throw an Exception
+        ``True``. Otherwise the decorator will throw an Exception
         if the ``new_name`` cannot be found in the signature of
         the decorated function.
         Default is ``False``.
     relax : bool or sequence of bool, optional
         If ``False`` a ``TypeError`` is raised if both ``new_name`` and
-        ``old_name`` are given.  If ``True`` the value for ``new_name`` is used
+        ``old_name`` are given. If ``True`` the value for ``new_name`` is used
         and a Warning is issued.
         Default is ``False``.
     pending : bool or sequence of bool, optional
@@ -163,67 +162,6 @@ def deprecated_renamed_argument(
         relax=relax, pending=pending, warning_type=warning_type, alternative=alternative,
         message=message
     )
-
-
-def deprecate_positional_args_since(func=None, *, since):
-    """
-    Decorator for methods that issues warnings for positional arguments.
-
-    Using the keyword-only argument syntax in pep 3102, arguments after the
-    * will issue a warning when passed as a positional argument.
-
-    Note that when you apply this, you also have to put at * in the signature
-    to create new keyword only parameters!
-
-    Parameters
-    ----------
-    func : callable, default=None
-        Function to check arguments on.
-    since : str
-        The version since when positional arguments will result in error.
-
-    Notes
-    -----
-    Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/utils/validation.py#L40>`__.
-    Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
-    """
-    def _inner_deprecate_positional_args(f):
-        sig = signature(f)
-        kwonly_args = []
-        all_args = []
-
-        for name, param in sig.parameters.items():
-            if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
-                all_args.append(name)
-            elif param.kind == Parameter.KEYWORD_ONLY:
-                kwonly_args.append(name)
-
-        @wraps(f)
-        def inner_f(*args, **kwargs):
-            extra_args = len(args) - len(all_args)
-            if extra_args <= 0:
-                return f(*args, **kwargs)
-
-            # extra_args > 0
-            args_msg = [
-                f"{name}={arg}"
-                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:])
-            ]
-            args_msg = ", ".join(args_msg)
-            warn_deprecated(
-                f"Pass {args_msg} as keyword args. From version "
-                f"{since} passing these as positional arguments "
-                "will result in an error"
-            )
-            kwargs.update(zip(sig.parameters, args))
-            return f(**kwargs)
-
-        return inner_f
-
-    if func is not None:
-        return _inner_deprecate_positional_args(func)
-
-    return _inner_deprecate_positional_args
 
 
 def cached_property_based_on(attr_name):
@@ -270,11 +208,11 @@ def cached_property_based_on(attr_name):
             if (old_attr_val is _NOT_FOUND or
                     new_attr_val != old_attr_val or
                     prop_key not in cache):
-                # Store the new attribute value
-                cache[attr_name] = new_attr_val
                 # Recompute the property
                 new_val = prop(instance)
                 cache[prop_key] = new_val
+                # Store the new attribute value after the property is computed successfully
+                cache[attr_name] = new_attr_val
 
             return cache[prop_key]
         return inner
@@ -364,5 +302,6 @@ class add_common_docstring:
         if self.prepend and isinstance(func.__doc__, str):
             func.__doc__ = self.prepend + func.__doc__
         if self.kwargs:
+            func.__doc__ = cleandoc(func.__doc__)  # not necessary on Python 3.13+
             func.__doc__ = func.__doc__.format(**self.kwargs)
         return func

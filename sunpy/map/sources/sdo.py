@@ -31,17 +31,17 @@ class AIAMap(GenericMap):
     -----
     Observer location: The standard AIA FITS header provides the spacecraft location in multiple
     coordinate systems, including Heliocentric Aries Ecliptic (HAE) and Heliographic Stonyhurst
-    (HGS).  SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
+    (HGS). SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
     HGS coordinates, but other software packages may make different choices.
 
     References
     ----------
-    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
-    * `Instrument Page <https://aia.lmsal.com>`_
-    * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`_
-    * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`_
-    * `Instrument Paper <https://doi.org/10.1007/s11207-011-9776-8>`_
-    * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`_
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
+    * `Instrument Page <https://aia.lmsal.com>`__
+    * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`__
+    * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`__
+    * Instrument Paper - :cite:t:`lemen_atmospheric_2012`
+    * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`__
     """
 
     def __init__(self, data, header, **kwargs):
@@ -114,9 +114,9 @@ class HMIMap(GenericMap):
 
     References
     ----------
-    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
-    * `Instrument Page <http://hmi.stanford.edu>`_
-    * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
+    * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
+    * `Instrument Page <http://hmi.stanford.edu>`__
+    * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`__
     """
 
     def __init__(self, data, header, **kwargs):
@@ -164,6 +164,18 @@ class HMIMap(GenericMap):
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
+
+    @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+        # The mapbase unit property forces this validation, so we must override it to prevent it.
+        if (parsed_unit := u.Unit(unit_str)) == u.Unit('Mx/cm2'):
+            return parsed_unit
+        else:
+            return super().unit
 
     @property
     def detector(self):
@@ -245,15 +257,6 @@ class HMISynopticMap(HMIMap):
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
-
-    @property
-    def unit(self):
-        unit_str = self.meta.get('bunit', None)
-        if unit_str is None:
-            return
-        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
-        # The mapbase unit property forces this validation, so we must override it to prevent it.
-        return u.Unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

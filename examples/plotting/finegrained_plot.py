@@ -31,7 +31,7 @@ title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 # times we want more control over the Stonyhurst type. The example below illustrates
 # some aspects of how a map plot can be altered as desired. For more information
 # regarding the axis and grid settings, go to `Ticks, tick labels and grid lines
-# <https://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`_ in astropy.
+# <https://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`__ in astropy.
 
 fig = plt.figure(figsize=(6, 6))
 ax = fig.add_subplot(projection=aiamap_sub)

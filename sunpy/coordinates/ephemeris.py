@@ -41,7 +41,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
                                      quiet=False):
     """
     Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
-    solar-system body at a specified time.  The location can be corrected for light travel time
+    solar-system body at a specified time. The location can be corrected for light travel time
     to an observer.
 
     Parameters
@@ -55,7 +55,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
         If not None, the returned coordinate is the astrometric location (i.e., accounts for light
         travel time to the specified observer)
     include_velocity : `bool`, optional
-        If True, include the body's velocity in the output coordinate.  Defaults to False.
+        If True, include the body's velocity in the output coordinate. Defaults to False.
     quiet : `bool`, optional
         If True, the function will not emit logger output for light-travel-time corrections.
         Defaults to False.
@@ -67,7 +67,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
 
     Notes
     -----
-    There is no correction for aberration due to observer motion.  For a body close to the Sun in
+    There is no correction for aberration due to observer motion. For a body close to the Sun in
     angular direction relative to the observer, the correction can be negligible because the
     apparent location of the body will shift in tandem with the Sun.
 
@@ -145,7 +145,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
 def get_earth(time='now', *, include_velocity=False):
     """
     Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a specified time in
-    the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.  The longitude will be zero by
+    the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame. The longitude will be zero by
     definition.
 
     Parameters
@@ -198,20 +198,20 @@ def get_earth(time='now', *, include_velocity=False):
 def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False):
     """
     Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
-    solar-system body at a specified time.  This location is the instantaneous or "true" location,
+    solar-system body at a specified time. This location is the instantaneous or "true" location,
     and is not corrected for light travel time or observer motion.
 
     Parameters
     ----------
     body : `str`
-        The solar-system body for which to calculate positions.  One can also use the search form
+        The solar-system body for which to calculate positions. One can also use the search form
         linked below to find valid names or ID numbers.
     id_type : `None`, `str`
         Defaults to `None`, which searches major bodies first, and then searches
-        small bodies (comets and asteroids) if no major body is found.  If
-        ``'smallbody'``, the search is limited to only small bodies.  If
+        small bodies (comets and asteroids) if no major body is found. If
+        ``'smallbody'``, the search is limited to only small bodies. If
         ``'designation'``, the search is limited to only small-body designations.
-        If ``'name'``, the search is limited to only small-body names.  If
+        If ``'name'``, the search is limited to only small-body names. If
         ``'asteroid_name'`` or ``'comet_name'``, the search is limited to only
         asteroid names or only comet names, respectively.
     time : {parse_time_types}, `dict`
@@ -226,7 +226,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         plain number for a number of evenly spaced intervals.
 
     include_velocity : `bool`, optional
-        If True, include the body's velocity in the output coordinate.  Defaults to False.
+        If True, include the body's velocity in the output coordinate. Defaults to False.
 
     Returns
     -------
@@ -241,8 +241,8 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
 
     References
     ----------
-    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
-    * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`_
+    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`__
+    * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`__
 
     Examples
     --------
@@ -379,7 +379,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     else:
         # JPL HORIZONS results are sorted by observation time, so this sorting needs to be undone.
         # Calling argsort() on an array returns the sequence of indices of the unsorted list to put the
-        # list in order.  Calling argsort() again on the output of argsort() reverses the mapping:
+        # list in order. Calling argsort() again on the output of argsort() reverses the mapping:
         # the output is the sequence of indices of the sorted list to put that list back in the
         # original unsorted order.
         unsorted_indices = obstime.argsort().argsort()

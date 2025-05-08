@@ -15,6 +15,7 @@ from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliocentricInertial, Helioprojective
 from sunpy.coordinates.sun import _angular_radius
 from sunpy.coordinates.utils import get_limb_coordinates
+from sunpy.util import grid_perimeter
 from sunpy.visualization import wcsaxes_compat
 
 __all__ = ["limb", "equator", "prime_meridian", "extent"]
@@ -25,10 +26,10 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     """
     Draws the solar limb as seen by the specified observer.
 
-    The limb is a circle for only the simplest plots.  If the specified
+    The limb is a circle for only the simplest plots. If the specified
     observer of the limb is different from the observer of the coordinate frame
     of the plot axes, not only may the limb not be a true circle, a portion of
-    the limb may be hidden from the observer.  In that case, the circle is
+    the limb may be hidden from the observer. In that case, the circle is
     divided into visible and hidden segments, represented by solid and dotted
     lines, respectively.
 
@@ -67,8 +68,8 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
     of the Sun to the map observer) ``visible`` will be ``None``.
 
     To avoid triggering Matplotlib auto-scaling, these patches are added as
-    artists instead of patches.  One consequence is that the plot legend is not
-    populated automatically when the limb is specified with a text label.  See
+    artists instead of patches. One consequence is that the plot legend is not
+    populated automatically when the limb is specified with a text label. See
     :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
     the Matplotlib documentation for examples of creating a custom legend.
     """
@@ -219,13 +220,9 @@ def extent(axes, wcs, **kwargs):
     if not isinstance(wcs, BaseHighLevelWCS):
         raise TypeError("wcs should be a High Level WCS object")
     axes_frame = wcsapi_to_celestial_frame(axes.wcs)
-    shape = wcs.low_level_wcs.pixel_shape
     # Traverse the edges of the WCS in pixel space
-    xy_edges = [[np.full(shape[1], -0.5), np.arange(shape[1]) - 0.5],  # left edge
-                [np.arange(shape[0]) - 0.5, np.full(shape[0], shape[1] - 0.5)],  # top edge
-                [np.full(shape[1], shape[0] - 0.5), np.arange(shape[1], 0, -1) - 0.5],  # right edge
-                [np.arange(shape[0], 0, -1) - 0.5, np.full(shape[0], -0.5)]]  # bottom edge
-    edge_coords = wcs.pixel_to_world(*np.hstack(xy_edges))
+    edge_pixels = grid_perimeter(*wcs.low_level_wcs.pixel_shape) - 0.5
+    edge_coords = wcs.pixel_to_world(*edge_pixels.T)
     # Filter out any non-SkyCoord coordinates returned for these pixel axes
     if not isinstance(edge_coords, SkyCoord):
         edge_coords = [c for c in edge_coords if isinstance(c, SkyCoord)][0]

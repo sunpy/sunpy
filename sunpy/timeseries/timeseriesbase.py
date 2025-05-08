@@ -79,7 +79,7 @@ class GenericTimeSeries:
 
     References
     ----------
-    * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
+    * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`__
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None

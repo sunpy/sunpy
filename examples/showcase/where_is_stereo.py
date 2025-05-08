@@ -6,7 +6,7 @@ Reproducing the "Where is STEREO Today?" plot
 How to reproduce the "Where is STEREO Today?" plot.
 
 This example uses capabilities in sunpy to reproduce the plot that can be found
-at `<https://stereo-ssc.nascom.nasa.gov/where.shtml>`__.  This example is not
+at `<https://stereo-ssc.nascom.nasa.gov/where.shtml>`__. This example is not
 written as a tutorial, but there are related tutorials for learning about these
 capabilities:
 

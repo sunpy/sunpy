@@ -6,13 +6,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
+import astropy.units as u
 from astropy.io import fits
 from astropy.wcs import WCS
 
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
-from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.tests.helpers import asdf_entry_points, figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
     SunpyDeprecationWarning,
@@ -51,11 +52,26 @@ def test_two_map_inputs(args1, args2):
         assert isinstance(out, sunpy.map.GenericMap)
 
 
+@asdf_entry_points
 def test_read_asdf_and_verify(tmpdir):
     loaded_asdf_map = sunpy.map.Map(AIA_ASDF)
     assert isinstance(loaded_asdf_map.data, np.ndarray)
     assert isinstance(loaded_asdf_map.meta, dict)
     assert isinstance(loaded_asdf_map, sunpy.map.sources.AIAMap)
+
+
+def test_map_meta_changes_in_asdf(tmpdir):
+    map = sunpy.map.Map(AIA_171_IMAGE)
+    map = map.rotate(90 * u.deg)
+
+    assert "pc1_2" in map.meta.added_items
+    assert "crota2" in map.meta.removed_items
+    assert "crval1" in map.meta.modified_items
+
+    map.save(f"{tmpdir}/check.asdf")
+    map_in_asdf = sunpy.map.Map(f"{tmpdir}/check.asdf")
+
+    assert dict(map_in_asdf.meta) == dict(map.meta)
 
 
 def test_mapsequence(eit_fits_directory):
@@ -118,7 +134,10 @@ def test_patterns(eit_fits_directory):
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Test that returned maps are sorted
-    files_sorted = sorted(list(pathlib.Path(pattern).parent.glob('*')))
+    # Sorting based on Strings rather than Path Objects which makes the sorting os independent
+    # This was added because on Windows the sorting was different than on Linux
+    # Windows(and possibly other OSs) use a case-insensitive sort, while Linux uses a case-sensitive sort
+    files_sorted = sorted(str(file) for file in pathlib.Path(pattern).parent.glob('*'))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
     assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
