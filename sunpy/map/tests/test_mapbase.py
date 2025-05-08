@@ -43,93 +43,84 @@ from .strategies import matrix_meta
 
 def test_notes_combined():
     map_documentation = """
-    Class Info.
+Class Info.
 
-    Notes
-    -----
-    This is a note.
+Notes
+-----
+This is a note.
 
-    References
-    ----------
-    This is reference.
-    """
-    extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+References
+----------
+This is reference."""
+    extra_note_section = """\nNotes\n-----\nThis should be combined."""
+    updated_documentation = fix_duplicate_notes(extra_note_section, map_documentation)
     expected_result = """
-    Class Info.
+Class Info.
 
-    Notes
-    -----
-    This is a note.
+Notes
+-----
+This is a note.
 
-    This should be combined.
+This should be combined.
 
-    References
-    ----------
-    This is reference.
-    """
-    assert updated_documentation == expected_result
+References
+----------
+This is reference."""
+    assert updated_documentation.strip() == expected_result.strip()
 
 def test_notes_combined_no_references():
     map_documentation = """
-    Class Info.
+Class Info.
 
-    Notes
-    -----
-    This is a note.
-    """
-    extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
-    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+Notes
+-----
+This is a note."""
+    extra_note_section = """\nNotes\n-----\nThis should be combined."""
+    updated_documentation = fix_duplicate_notes(extra_note_section, map_documentation)
     expected_result = """
-    Class Info.
+Class Info.
 
-    Notes
-    -----
-    This is a note.
+Notes
+-----
+This is a note.
 
-    This should be combined.
-    """
-    assert updated_documentation2.strip() == expected_result.strip()
+This should be combined."""
+    assert updated_documentation.strip() == expected_result.strip()
 
 def test_notes_combined_no_existing_notes():
     map_documentation = """
-    Class Info.
+Class Info.
 
-    References
-    ----------
-    This is reference.
-    """
+References
+----------
+This is reference."""
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation = fix_duplicate_notes(extra_note_section, map_documentation)
     expected_result = """
-    Class Info.
+Class Info.
 
-    Notes
-    -----
-    This should be combined.
+Notes
+-----
+This should be combined.
 
-    References
-    ----------
-    This is reference.
-    """
-    assert updated_documentation == expected_result
+References
+----------
+This is reference."""
+    assert updated_documentation.strip() == expected_result.strip()
 
 def test_notes_combined_no_notes_no_references():
     map_documentation = """
-    Class Info.
-    """
+Class Info.
+"""
     extra_note_section= """\nNotes\n-----\nThis should be combined."""
     updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
-    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
     expected_result = """
-    Class Info.
+Class Info.
 
-    Notes
-    -----
-    This should be combined.
-    """
-    assert updated_documentation2.strip() == expected_result.strip()
+Notes
+-----
+This should be combined."""
+    assert updated_documentation.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):
