@@ -56,6 +56,7 @@ class AIASynopsisClient(GenericClient):
     """
     pattern = ('https://jsoc1.stanford.edu/data/aia/synoptic/'
                '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{Wavelength:04d}}.fits')
+    required = {a.Time, a.Instrument, a.Level}
 
     @property
     def info_url(self):
@@ -111,12 +112,3 @@ class AIASynopsisClient(GenericClient):
             a.Level: [("1.5s", "Level 1.5 data processed for quicker analysis.")],
         }
         return adict
-
-    @classmethod
-    def _can_handle_query(cls, *query):
-        # Import here to prevent circular imports
-        from sunpy.net import attrs as a
-
-        required = {a.Time, a.Instrument, a.Level}
-        optional = {a.Wavelength, a.Sample}
-        return cls.check_attr_types_in_query(query, required, optional)
