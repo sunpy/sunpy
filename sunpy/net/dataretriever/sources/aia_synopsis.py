@@ -19,6 +19,11 @@ class AIASynopsisClient(GenericClient):
 
     The AIA synoptic data are calibrated Level 1.5 images with reduced 1k x 1k resolution at regular 2-minute cadence.
 
+    Note
+    ----
+
+    This client does not support multiple wavelengths in a single query. If you want to download multiple wavelengths, you need to do it in separate queries.
+
     References
     ----------
     * `Readme <https://jsoc1.stanford.edu/data/aia/synoptic/README.html>`__
@@ -51,7 +56,6 @@ class AIASynopsisClient(GenericClient):
     """
     pattern = ('https://jsoc1.stanford.edu/data/aia/synoptic/'
                '{{year:4d}}/{{month:2d}}/{{day:2d}}/H{{hour:2d}}00/AIA{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}_{{Wavelength:04d}}.fits')
-    known_wavelengths = [94, 131, 171, 193, 211, 304, 335, 1600, 1700, 4500]
 
     @property
     def info_url(self):
@@ -102,7 +106,6 @@ class AIASynopsisClient(GenericClient):
             a.Physobs: [
                 ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
             ],
-            a.Wavelength: [(f"{wv:04d}", f"{wv} Å") for wv in cls.known_wavelengths],
             a.Source: [("SDO", "The Solar Dynamics Observatory.")],
             a.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
             a.Level: [("1.5s", "Level 1.5 data processed for quicker analysis.")],
