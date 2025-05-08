@@ -231,7 +231,6 @@ def _map_chain_code_columns_to_coordinates(table):
         else:
             units = np.array(list(map(_parse_unit, table['event_coordunit'])))
             units = np.repeat(units[:, np.newaxis], 2, axis=1)
-        # NOTE: The units are not used in the case of a point because the coordinates
         # NOTE: Filling in masked values with data of appropriate shape allows for
         # broadcasting of coordinate frame information later on if all shapes are the
         # same.
