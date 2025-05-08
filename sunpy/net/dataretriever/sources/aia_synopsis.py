@@ -1,3 +1,5 @@
+import numpy as np
+
 import astropy.units as u
 
 from sunpy.net import attrs as a
@@ -33,7 +35,7 @@ class AIASynopsisClient(GenericClient):
     9 Results from the AIASynopsisClient:
     Source: https://jsoc1.stanford.edu/data/aia/synoptic/
     <BLANKLINE>
-           Start Time               End Time        Instrument  Physobs  Source Provider Level wavelength
+           Start Time               End Time        Instrument  Physobs  Source Provider Level Wavelength
     ----------------------- ----------------------- ---------- --------- ------ -------- ----- ----------
     2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S         94
     2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        131
@@ -73,22 +75,24 @@ class AIASynopsisClient(GenericClient):
         # TODO: There has to be a better way than repeating the entire search method.
         _, pattern, matchdict = self.pre_search_hook(*args, **kwargs)
         if "Wavelength" in matchdict:
-            # The scarper can not handle quantities, it uses string matching.
-            matchdict["Wavelength"] = str(matchdict["Wavelength"].min.to(u.angstrom).value).strip("0")
+            # The scarper uses string matching, so we have to convert the wavelength to a string
+            # and remove the trailing zeros to match the pattern on the server.
+            matchdict["Wavelength"] = str(np.round(matchdict["Wavelength"].min.to_value(u.AA, u.equivalencies.spectral()))).replace(".0","")
         scraper = Scraper(format=pattern)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
         filesmeta = scraper._extract_files_meta(tr, matcher=matchdict)
         filesmeta = sorted(filesmeta, key=lambda k: k['url'])
         metalist = []
-        base_time = self.post_search_hook(filesmeta[0], matchdict)['Start Time']
-        for i in filesmeta:
-            rowdict = self.post_search_hook(i, matchdict)
-            # Have to manually deal with sample rate if is it provided
-            if sample_rate := matchdict.get("Sample"):
-                sample_rate = u.Quantity(sample_rate[0], u.s)
-                if (rowdict['Start Time'] - base_time).to(u.second) % sample_rate != 0 * u.s:
-                    continue
-            metalist.append(rowdict)
+        if filesmeta:
+            base_time = self.post_search_hook(filesmeta[0], matchdict)['Start Time']
+            for i in filesmeta:
+                rowdict = self.post_search_hook(i, matchdict)
+                # Have to manually deal with sample rate if is it provided
+                if sample_rate := matchdict.get("Sample"):
+                    sample_rate = u.Quantity(sample_rate[0], u.s)
+                    if (rowdict['Start Time'] - base_time).to(u.second) % sample_rate != 0 * u.s:
+                        continue
+                metalist.append(rowdict)
         return QueryResponse(metalist, client=self)
 
     @classmethod

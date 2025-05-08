@@ -80,8 +80,26 @@ def test_wavelength_query(client):
         a.Level("1.5s"),
         a.Wavelength(1600 * u.angstrom),
     )
-    assert query_result is not None
+    assert len(query_result) == 7
     assert np.all(query_result["Wavelength"] == 1600)
+
+    query_result_meters = client.search(
+        a.Time(time_range.start, time_range.end),
+        a.Instrument("AIA"),
+        a.Level("1.5s"),
+        a.Wavelength((1600*1e-10) * u.meter),
+    )
+    assert len(query_result_meters) == len(query_result)
+    assert np.all(query_result_meters["Wavelength"] == query_result["Wavelength"])
+
+    query_result_ghz = client.search(
+        a.Time(time_range.start, time_range.end),
+        a.Instrument("AIA"),
+        a.Level("1.5s"),
+        a.Wavelength(1873702.8625*u.GHz),
+    )
+    assert len(query_result_ghz) == len(query_result)
+    assert np.all(query_result_ghz["Wavelength"] == query_result["Wavelength"])
 
 
 @pytest.mark.remote_data
