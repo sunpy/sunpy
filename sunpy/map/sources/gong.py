@@ -37,8 +37,6 @@ class GONGSynopticMap(GenericMap):
 
     Notes
     -----
-    If you have ``pfsspy`` installed this map source will be used instead of the one built into ``pfsspy``.
-
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`__
@@ -156,8 +154,8 @@ class GONGMagnetogramMap(GenericMap):
     """
     GONG Magnetogram Map.
 
-    The Global Oscillation Network Group (GONG) operates a six-station network of velocity
-    imagers located around the Earth that observe the Sun nearly continuously.
+    The Global Oscillation Network Group (GONG) operates a six-station network of Doppler
+    imagers distributed around the Earth, that observe the Sun nearly continuously.
 
     GONG produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line.
 
