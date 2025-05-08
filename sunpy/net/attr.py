@@ -20,8 +20,9 @@ import textwrap
 from textwrap import dedent
 from collections import namedtuple, defaultdict
 
+import numpy as np
+
 from astropy.table import Table
-from astropy.utils.misc import isiterable
 
 from sunpy.extern import inflect
 from sunpy.util.functools import seconddispatch
@@ -268,7 +269,7 @@ class Attr(metaclass=AttrMeta):
         """
         for client, attr_dict in adict.items():
             for attr, attr_values in attr_dict.items():
-                if not isiterable(attr_values) or isinstance(attr_values, str):
+                if not np.iterable(attr_values) or isinstance(attr_values, str):
                     raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
                                      "The value is not iterable or just a string.")
 

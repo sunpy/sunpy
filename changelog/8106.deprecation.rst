@@ -1,0 +1,1 @@
+Deprecated `sunpy.util.net.download_file` and `sunpy.util.net.download_fileobj`. Internally sunpy now uses parfive.
