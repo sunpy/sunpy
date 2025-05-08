@@ -132,17 +132,16 @@ def test_path(client, tmpdir):
     """
     with pytest.warns(SunpyDeprecationWarning, match="response_format"):
         qr = client.search(
-            core_attrs.Time('2020-06-07 06:33', '2020-06-07 06:33:13'),
+            core_attrs.Time('2025-03-03 06:33', '2025-03-03 06:33:13'),
             core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
             response_format="table")
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir)
-
     assert len(files) == 1
     # The construction of a VSO filename is BONKERS, so there is no
     # practical way to determine what it should be in this test, so we just
     # put it here.
-    assert "aia.lev1.171A_2020_06_07T06_33_09.35Z.image_lev1.fits" in files[0]
+    assert "aia.lev1.171A_2025_03_03T06_33_09.35Z.image_lev1.fits" in files[0]
 
 
 @pytest.mark.filterwarnings('ignore:ERFA function.*dubious year')
