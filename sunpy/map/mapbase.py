@@ -1655,15 +1655,12 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(target_wcs)
+            target_wcs = astropy.wcs.WCS(header=target_wcs)
 
-        # Select the desired reprojection algorithm
-        functions = {'interpolation': reproject.reproject_interp,
-                     'adaptive': reproject.reproject_adaptive,
-                     'exact': reproject.reproject_exact}
-        if algorithm not in functions:
-            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
-        func = functions[algorithm]
+        reproject_outputs = super().reproject_to(target_wcs,
+                                                 algorithm=algorithm,
+                                                 return_footprint=return_footprint,
+                                                 **reproject_args)
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
@@ -1686,15 +1683,13 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         outmap = GenericMap(output_array, meta=target_wcs.to_header(),
                             plot_settings=self.plotter.plot_settings)
 
-        # Check rsun mismatch
+        # check for rsun outmap
         if self.rsun_meters != outmap.rsun_meters:
             warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {outmap.rsun_meters} rsun_meters of target WCS."
                       "This might cause unexpected results during reprojection.")
 
-        if return_footprint:
-            return outmap, footprint
-        return outmap
+        return reproject_outputs
 
 
 GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
