@@ -43,6 +43,10 @@ def test_date(gong_magnetogram):
     assert gong_magnetogram.date.isot == "2025-01-09T01:34:58.008"
 
 
+def test_nickname(gong_magnetogram):
+    assert gong_magnetogram.nickname == "NSO-GONG, Learmonth, (AUS)"
+
+
 def test_private_date_setters(gong_magnetogram):
     _test_private_date_setters(gong_magnetogram)
 
@@ -56,6 +60,10 @@ def test_unit(gong_magnetogram):
 def test_spatial_units(gong_magnetogram):
     assert gong_magnetogram.spatial_units[0] == u.deg
     assert gong_magnetogram.spatial_units[1] == u.deg
+
+
+def test_rsun_obs(gong_magnetogram):
+    assert u.allclose(gong_magnetogram.rsun_obs, 975.86818683 * u.arcsec)
 
 
 def test_wcs(gong_magnetogram):

@@ -32,11 +32,9 @@ class GONGSynopticMap(GenericMap):
     The Global Oscillation Network Group (GONG) operates a six-station network of velocity
     imagers located around the Earth that observe the Sun nearly continuously. GONG
     produces hourly photospheric magnetograms using the Ni I 676.8 nm spectral line with an
-    array of 242x256 pixels covering the solar disk. These magnetograms are used to derive
+    array of 242 x 256 pixels covering the solar disk. These magnetograms are used to derive
     synoptic maps which show a full-surface picture of the solar magnetic field.
 
-    Notes
-    -----
     References
     ----------
     * `GONG Page <https://gong.nso.edu/>`__
