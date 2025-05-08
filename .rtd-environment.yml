@@ -2,9 +2,7 @@ name: rtd_sunpy
 channels:
   - conda-forge
 dependencies:
-  # Python 3.13 strips indention in docstrings, which breaks our dynamically edited docstrings
-  # https://github.com/python/cpython/issues/81283
-  - python=3.12
+  - python=3.13
   - pip
   - openjpeg
   - graphviz!=2.42.*,!=2.43.*
