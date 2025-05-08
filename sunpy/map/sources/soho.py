@@ -102,6 +102,11 @@ class EITL1Map(EITMap):
     """
     SOHO EIT L1 Image Map.
 
+    See the docstring of `EITMap` for information on the EIT instrument.
+
+    The EIT L1 data is a level 1 data product with very different headers to the normal/older EIT data.
+    This has required a new class to be created to handle the differences.
+
     References
     ----------
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
