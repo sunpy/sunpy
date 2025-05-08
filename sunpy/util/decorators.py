@@ -1,7 +1,7 @@
 """
 This module provides sunpy specific decorators.
 """
-from inspect import Parameter, signature
+from inspect import Parameter, cleandoc, signature
 from functools import wraps
 from contextlib import contextmanager
 
@@ -364,5 +364,6 @@ class add_common_docstring:
         if self.prepend and isinstance(func.__doc__, str):
             func.__doc__ = self.prepend + func.__doc__
         if self.kwargs:
+            func.__doc__ = cleandoc(func.__doc__)  # not necessary on Python 3.13+
             func.__doc__ = func.__doc__.format(**self.kwargs)
         return func
