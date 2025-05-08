@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+from matplotlib.image import AxesImage
 
 try:
     from dask.array import Array as DaskArray
@@ -46,7 +47,7 @@ from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list
+from sunpy.util import MetaDict, expand_list, grid_perimeter
 from sunpy.util.decorators import (
     ACTIVE_CONTEXTS,
     add_common_docstring,
@@ -2741,10 +2742,10 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle). If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle). The options are:
+            * ``"mesh"``, which draws a mesh of the individual map pixels
+            * ``"image"``, which draws the map as a single (warped) image
+            * `True`, which is equivalent to ``"mesh"``
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
@@ -2772,11 +2773,16 @@ class GenericMap(NDData):
         `~sunpy.coordinates.SphericalScreen` context
         manager may be appropriate.
         """
+        if autoalign == 'pcolormesh':
+            warn_user("Specifying 'autoalign=pcolormesh' is deprecated. Specify 'autoalign=mesh' instead.")
+            autoalign = 'mesh'
+
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh','imshow']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+        allowed_autoalign = [False, True, 'mesh', 'image']
+        if autoalign not in allowed_autoalign:
+            raise ValueError(f"The value for `autoalign` must be one of {allowed_autoalign}.")
         if autoalign is True:
-            autoalign = 'pcolormesh'
+            autoalign = 'mesh'
 
         axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
@@ -2818,22 +2824,39 @@ class GenericMap(NDData):
             data = self.data
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
-            
-            
-        if autoalign == 'imshow':            
-            w = data.shape[1]
-            h = data.shape[0]
-           # new_meta = self.meta.copy()
-          #  new_meta['naxis1'] = w
-           # new_meta['naxis2'] = h
-            
-            image = axes.imshow(data, transform=axes.get_transform(self.wcs), **imshow_args)
-            path = matplotlib.path.Path([[-0.5, -0.5], [w-0.5, -0.5], [w-0.5, h-0.5], [-0.5, h-0.5], [-0.5, -0.5]])
-            image.set_clip_path(path, transform=axes.get_transform(self.wcs))
-            
-            ret = image
 
-        elif autoalign == 'pcolormesh':
+        if autoalign == 'image':
+            ny, nx = self.data.shape
+            pixel_perimeter = grid_perimeter(nx, ny) - 0.5
+
+            transform = axes.get_transform(self.wcs) - axes.transData
+            data_perimeter = transform.transform(pixel_perimeter)
+            data_corners = data_perimeter[[0, nx, nx + ny, 2*nx + ny], :]
+
+            if not np.all(np.isfinite(data_perimeter)):
+                raise RuntimeError("Cannot draw an autoaligned image due to its coordinates. Try specifying autoalign=mesh.")
+
+            min_x, min_y = np.min(data_perimeter, axis=0)
+            max_x, max_y = np.max(data_perimeter, axis=0)
+
+            if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0)) and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
+                warn_user("Cannot draw all of the autoaligned image due to the warping required. Specifying autoalign=mesh is recommended.")
+
+            # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
+            old_datalim = copy.deepcopy(axes.dataLim)
+            ret = axes.imshow(data, transform=transform + axes.transData, **imshow_args)
+            axes.dataLim = old_datalim
+
+            # Update the data limits based on the transformed perimeter
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
+            axes._request_autoscale_view()
+
+            # Clip the drawn image based on the transformed perimeter
+            path = matplotlib.path.Path(data_perimeter)
+            ret.set_clip_path(path, axes.transData)
+        elif autoalign == 'mesh':
             # We have to handle an `aspect` keyword separately
             axes.set_aspect(imshow_args.get('aspect', 1))
 

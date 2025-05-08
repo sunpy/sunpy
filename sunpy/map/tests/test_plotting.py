@@ -350,30 +350,20 @@ def test_map_draw_extent(aia171_test_map):
 
 
 @figure_test
-def test_plot_autoalign(aia171_test_map):
+@pytest.mark.parametrize("autoalign", [True, 'mesh', 'image'])
+def test_plot_autoalign(aia171_test_map, autoalign):
     aia171_test_map._data = aia171_test_map.data.astype('float32')
     rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
 
     # Plotting the rotated map on the original projection should appear de-rotated
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_test_map)
-    rotated_map.plot(axes=ax, autoalign=True)
-    return fig
-
-
-@figure_test
-def test_plot_autoalign_imshow(aia171_test_map):
-    aia171_test_map._data = aia171_test_map.data.astype('float32')
-    rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
-
-    fig = Figure()
-    ax = fig.add_subplot(projection=aia171_test_map)
-    rotated_map.plot(axes=ax, autoalign='imshow')
+    rotated_map.plot(axes=ax, autoalign=autoalign)
     return fig
 
 
 def test_plot_autoalign_bad_inputs(aia171_test_map):
-    with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, or 'pcolormesh'."):
+    with pytest.raises(ValueError, match="The value for `autoalign` must be one of [False, True, 'mesh', 'image']."):
         aia171_test_map.plot(autoalign='bad')
 
 
@@ -382,41 +372,25 @@ def test_plot_autoalign_pixel_alignment(aia171_test_map):
     # Verify that autoalign=True does not affect pixel alignment
     x, y = (z.value for z in aia171_test_map.reference_pixel)
 
-    fig = Figure(figsize=(10, 4))
+    fig = Figure(figsize=(15, 4))
 
-    ax1 = fig.add_subplot(121, projection=aia171_test_map)
+    ax1 = fig.add_subplot(131, projection=aia171_test_map)
     aia171_test_map.plot(axes=ax1, autoalign=False, title='autoalign=False')
     ax1.grid(False)
     ax1.set_xlim(x - 2, x + 2)
     ax1.set_ylim(y - 2, y + 2)
 
-    ax2 = fig.add_subplot(122, projection=aia171_test_map)
-    aia171_test_map.plot(axes=ax2, autoalign=True, title='autoalign=True')
+    ax2 = fig.add_subplot(132, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax2, autoalign="mesh", title='autoalign=mesh')
     ax2.grid(False)
     ax2.set_xlim(x - 2, x + 2)
     ax2.set_ylim(y - 2, y + 2)
 
-    return fig
-
-
-@figure_test
-def test_plot_autoalign_imshow_pixel_alignment(aia171_test_map):
-    # Verify that autoalign=True does not affect pixel alignment
-    x, y = (z.value for z in aia171_test_map.reference_pixel)
-
-    fig = Figure(figsize=(10, 4))
-
-    ax1 = fig.add_subplot(121, projection=aia171_test_map)
-    aia171_test_map.plot(axes=ax1, autoalign=False, title='autoalign=False')
-    ax1.grid(False)
-    ax1.set_xlim(x - 2, x + 2)
-    ax1.set_ylim(y - 2, y + 2)
-
-    ax2 = fig.add_subplot(122, projection=aia171_test_map)
-    aia171_test_map.plot(axes=ax2, autoalign='imshow', title="autoalign='imshow'")
-    ax2.grid(False)
-    ax2.set_xlim(x - 2, x + 2)
-    ax2.set_ylim(y - 2, y + 2)
+    ax3 = fig.add_subplot(133, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax3, autoalign="image", title='autoalign=image')
+    ax3.grid(False)
+    ax3.set_xlim(x - 2, x + 2)
+    ax3.set_ylim(y - 2, y + 2)
 
     return fig
 
