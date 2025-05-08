@@ -4,7 +4,6 @@ This module provides general utility functions.
 import os
 import hashlib
 import inspect
-import textwrap
 from io import BytesIO
 from base64 import b64encode
 from shutil import get_terminal_size
@@ -284,38 +283,37 @@ def _figure_to_base64(fig):
     return b64encode(buf.getvalue()).decode('utf-8')
 
 
-def fix_duplicate_notes(subclass_doc, cls_doc):
+def fix_duplicate_notes(notes_to_add, docstring):
     """
-    Returns a new documentation string such that there are notes section duplication in in `~sunpy.map.Map` subclasses.
+    Merges a note section into a docstring that may have a notes section.
 
     Parameters
     ----------
-    subclass_doc : str
-        The documentation that needs to be appended.
-    cls_doc
-        The original class's documentation.
+    notes_to_add : str
+        The notes that need to be added (starting with ``"Notes"``).
+    docstring
+        The original docstring.
 
     Returns
     -------
     str
-        Updated documentation that contains no note section duplication.
+        Updated docstring with a single notes section.
     """
-    existing_notes_pos = cls_doc.find('Notes\n    -----')
-    subclass_notes_pos = subclass_doc.find('Notes\n-----')
-    subclass_notes_data = textwrap.indent(subclass_doc[subclass_notes_pos + len('Notes\n-----'):].strip(), "    ")
-    references_pattern = "References\n    ----------"
-    examples_pattern = "Examples\n   -------"
-    start_index = cls_doc.find(references_pattern if references_pattern in cls_doc else examples_pattern)
-    if start_index!=-1:
-        next_pattern_pos = min(pos for pos in [cls_doc.find(references_pattern, start_index), cls_doc.find(examples_pattern, start_index)] if pos != -1)
-        other_patterns = cls_doc[:next_pattern_pos]
-        if existing_notes_pos!=-1:
-            cls_doc = other_patterns + subclass_notes_data.lstrip() + '\n\n    ' + cls_doc[next_pattern_pos:]
-        else:
-            cls_doc = other_patterns + 'Notes\n    -----\n' + subclass_notes_data + '\n\n    ' + cls_doc[next_pattern_pos:]
-    elif existing_notes_pos != -1:
-        cls_doc +="\n"+subclass_notes_data
-    else:
-        cls_doc += textwrap.indent(subclass_doc, "    ")
+    docstring = inspect.cleandoc(docstring)  # not necessary on Python 3.13+
+    existing_notes_pos = docstring.find('Notes\n-----')
+    new_notes_pos = notes_to_add.find('Notes\n-----')
+    if new_notes_pos == -1:
+        raise RuntimeError("The notes to add does not appear to be a 'Notes' section.")
+    notes_to_add_data = notes_to_add[new_notes_pos + len('Notes\n-----'):].strip()
 
-    return cls_doc
+    # Insert the notes before either numpydoc section that can come after 'Notes', otherwise at end
+    references_pos = docstring.find("References\n----------")
+    examples_pos = docstring.find("Examples\n--------")
+    index = min({len(docstring), references_pos, examples_pos} - {-1})
+
+    pieces = [docstring[:index],
+              "\n\n" if index == len(docstring) else "",
+              "Notes\n-----\n" if existing_notes_pos == -1 else "",
+              f"{notes_to_add_data}",
+              f"\n\n{docstring[index:]}" if len(docstring) > index else ""]
+    return "".join(pieces)
