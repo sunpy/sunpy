@@ -4,7 +4,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
-from astropy.visualization import PowerStretch
+from astropy.visualization import AsinhStretch, PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy import log
@@ -12,7 +12,7 @@ from sunpy.map.mapbase import GenericMap, SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 
-__all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
+__all__ = ['EITMap', 'EITL1Map', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
 
 
 class EITMap(GenericMap):
@@ -36,7 +36,6 @@ class EITMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-
         self._nickname = self.detector
         self.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
         self.plot_settings['norm'] = ImageNormalize(
@@ -96,7 +95,66 @@ class EITMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
-        return header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)'
+        return (header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)'  and header.get('level') is None)
+
+
+class EITL1Map(EITMap):
+    """
+    SOHO EIT L1 Image Map.
+
+    References
+    ----------
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
+    """
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+        self._nickname = self.detector
+        self.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, AsinhStretch(0.0001)), clip=False)
+
+    @property
+    def date(self):
+        # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
+        return self._get_date('date_obs') or super().date
+
+    @property
+    def processing_level(self):
+        """
+        Returns the FITS processing level if present.
+        """
+        return self.meta.get('LEVEL', None)
+
+    @property
+    def detector(self):
+        return "EIT"
+
+    @property
+    def observatory(self):
+        return "SOHO"
+
+    @property
+    def rsun_obs(self):
+        return u.Quantity(self.meta['rsun_obs'], 'arcsec')
+
+    @property
+    def _supported_observer_coordinates(self):
+        return [(
+            ('haex_obs', 'haey_obs', 'haez_obs'),
+            {'x': self.meta.get('haex_obs'),
+            'y': self.meta.get('haey_obs'),
+            'z': self.meta.get('haez_obs'),
+            'unit': u.m,
+            'representation_type': CartesianRepresentation,
+            'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Determines if header corresponds to an EIT L1image"""
+        return (header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)') and header.get('level') == "L1"
 
 
 class LASCOMap(GenericMap):
