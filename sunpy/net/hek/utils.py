@@ -91,8 +91,7 @@ def _map_columns_to_quantities(table):
         if attr.get("is_chaincode", False):
             continue
         mask = np.array([r is None for r in table[name]])
-        # NOTE: Fill with missing values explicitly because None cannot be cast
-        # to a all dtypes.
+        # NOTE: Fill with missing values explicitly because None cannot be cast to all dtypes.
         data = np.where(mask, missing_values.get(attr['type'], None), table[name])
         if unit_prop := attr.get("unit_prop", False):
             if unit_prop not in table.colnames:
