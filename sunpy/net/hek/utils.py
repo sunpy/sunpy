@@ -98,7 +98,7 @@ def _map_columns_to_quantities(table):
             if unit_prop not in table.colnames:
                 log.debug(f"Missing unit property {unit_prop} for {name}. Using event_coordunit.")
                 unit_prop = "event_coordunit"
-            units = np.array([_parse_unit(_u) if _u is not None else '' for _u in table[unit_prop]])
+            units = np.array([_parse_unit(u_) if u_ is not None else '' for u_ in table[unit_prop]])
             default_unit = u.dimensionless_unscaled if mask.all() else units[~mask][0]
             units = np.where(mask, default_unit, units).tolist()
             # NOTE: This is done per entry because each entry could have a different unit
