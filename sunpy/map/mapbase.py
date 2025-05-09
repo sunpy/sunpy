@@ -1684,9 +1684,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                             plot_settings=self.plotter.plot_settings)
 
         # check for rsun outmap
-        if self.rsun_meters != outmap.rsun_meters:
+        if self.rsun_meters != target_wcs.wcs.aux.rsun_ref:
             warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters} != {outmap.rsun_meters} rsun_meters of target WCS."
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {target_wcs.wcs.aux.rsun_ref} rsun_meters of target WCS."
                       "This might cause unexpected results during reprojection.")
 
         return reproject_outputs
