@@ -1667,15 +1667,15 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(header=target_wcs)
 
-        reproject_outputs = super().reproject_to(target_wcs,
-                                                 algorithm=algorithm,
-                                                 return_footprint=return_footprint,
-                                                 **reproject_args)
-
         if self.rsun_meters != target_wcs.wcs.aux.rsun_ref:
             warn_user("rsun mismatch detected: "
                       f"{self.name}.rsun_meters={self.rsun_meters} != {target_wcs.wcs.aux.rsun_ref} rsun_meters of target WCS."
                       "This might cause unexpected results during reprojection.")
+
+        reproject_outputs = super().reproject_to(target_wcs,
+                                                 algorithm=algorithm,
+                                                 return_footprint=return_footprint,
+                                                 **reproject_args)
 
         return reproject_outputs
 
