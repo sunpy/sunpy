@@ -251,11 +251,18 @@ def _map_chain_code_columns_to_coordinates(table):
             if not frame.shape:
                 frame = len(coord_data) * [frame]
             coordinates = [_build_masked_coordinate(c, frame[i], units[i]) for i,c in enumerate(coord_data)]
+            # FIXME: The mask is created this way for astropy versions below v7 because SkyCoords cannot
+            # do not have a mask attribute until v7 and above. Once our minimum version of astropy is v7
+            # this conditional can be removed
+            if Version(astropy.__version__) < Version('7'):
+                mask = [np.isnan(c.cartesian.xyz).all() for c in coordinates]
+            else:
+                mask = [c.mask.all() for c in coordinates]
             # NOTE: This is expressed explicitly as a column to avoid stacking the coordinates along the
             # dimension that corresponds to the chaincode.
             coordinates = MaskedColumn(data=coordinates,
                                        name=name,
-                                       mask=[c.mask.all() for c in coordinates],
+                                       mask=mask,
                                        dtype='object')
         table[name] = coordinates
 
