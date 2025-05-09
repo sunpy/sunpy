@@ -3112,7 +3112,7 @@ class GenericMap(NDData):
         return outmap
 
 
-GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
+GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
 
 
 class InvalidHeaderInformation(ValueError):
