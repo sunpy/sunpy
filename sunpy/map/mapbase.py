@@ -2741,10 +2741,15 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle). If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle).
+
+            - If ``True`` or ``pcolormesh``, this method will use :meth:`~matplotlib.axes.Axes.pcolormesh`
+              to transform each pixel of the map to a quadrilateral in the axes WCS, which is
+              computationally intensive and not recommended for interactive plots.
+            - If ``reproject``, the map is reprojected to the axes WCS.  The reprojection extent
+              can be explicitly specified through the ``extent`` keyword argument ([left, right,
+              bottom, top] in pixel coordinates), otherwise the current axes limits are used.
+
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
@@ -2760,10 +2765,6 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive. If the plot will
-        be interactive, the alternative approach of preprocessing the map (e.g.,
-        de-rotating it) to match the desired axes will result in better performance.
-
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
         beyond the solar disk may not appear, which may also inhibit Matplotlib's
@@ -2773,8 +2774,8 @@ class GenericMap(NDData):
         manager may be appropriate.
         """
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
+        if autoalign not in [False, True, 'pcolormesh', 'reproject']:
+            raise ValueError("The value for `autoalign` must be False, True, 'pcolormesh' or 'reproject'.")
         if autoalign is True:
             autoalign = 'pcolormesh'
 
@@ -2819,7 +2820,38 @@ class GenericMap(NDData):
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
-        if autoalign == 'pcolormesh':
+        if autoalign == 'reproject':
+            target_wcs = copy.deepcopy(axes.wcs)
+
+            # Pull the reprojection extent from the plot limits
+            if 'extent' in imshow_args:
+                # Use an explicitly specified reprojection extent
+                xlim, ylim = imshow_args['extent'][0:2], imshow_args['extent'][2:4]
+            else:
+                # Pull the reprojection extent from the plot limits
+                xlim, ylim = axes.get_xlim(), axes.get_ylim()
+
+                # If the plot limits are at the default values, use the pixel shape of the target WCS
+                if xlim == (0, 1) and ylim == (0, 1) and target_wcs.pixel_shape is not None:
+                    xlim = (-0.5, target_wcs.pixel_shape[0] - 0.5)
+                    ylim = (-0.5, target_wcs.pixel_shape[1] - 0.5)
+
+            # Expand the reprojection extent to whole pixels
+            left = int(np.floor(xlim[0] + 0.5))
+            bottom = int(np.floor(ylim[0] + 0.5))
+            right = int(np.ceil(xlim[1] - 0.5))
+            top = int(np.ceil(ylim[1] - 0.5))
+
+            # Modify the target WCS so that the reprojection extent starts at (0, 0)
+            target_wcs.wcs.crpix -= (left, bottom)
+            target_wcs.pixel_shape = (right - left + 1, top - bottom + 1)
+
+            reprojected_map = self.reproject_to(target_wcs)
+
+            # Place the reprojected map correctly in non-shifted pixel coordinates
+            imshow_args['extent'] = (left - 0.5, right + 0.5, bottom - 0.5, top + 0.5)
+            ret = axes.imshow(reprojected_map.data, **imshow_args)
+        elif autoalign == 'pcolormesh':
             # We have to handle an `aspect` keyword separately
             axes.set_aspect(imshow_args.get('aspect', 1))
 
