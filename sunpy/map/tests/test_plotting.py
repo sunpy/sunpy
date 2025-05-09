@@ -363,7 +363,7 @@ def test_plot_autoalign(aia171_test_map, autoalign):
 
 
 def test_plot_autoalign_bad_inputs(aia171_test_map):
-    with pytest.raises(ValueError, match="The value for `autoalign` must be one of [False, True, 'mesh', 'image']."):
+    with pytest.raises(ValueError, match=r"The value for `autoalign` must be one of \[False, True, 'mesh', 'image'\]."):
         aia171_test_map.plot(autoalign='bad')
 
 

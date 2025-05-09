@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
-from matplotlib.image import AxesImage
 
 try:
     from dask.array import Array as DaskArray
