@@ -2742,9 +2742,11 @@ class GenericMap(NDData):
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
             axes (e.g., a difference in rotation angle). The options are:
+
             * ``"mesh"``, which draws a mesh of the individual map pixels
             * ``"image"``, which draws the map as a single (warped) image
             * `True`, which is equivalent to ``"mesh"``
+
         **imshow_kwargs : `dict`
             Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
 
@@ -2763,6 +2765,11 @@ class GenericMap(NDData):
         The ``autoalign`` functionality is computationally intensive. If the plot will
         be interactive, the alternative approach of preprocessing the map (e.g.,
         de-rotating it) to match the desired axes will result in better performance.
+
+        The ``autoalign='image'`` approach is faster than the ``autoalign='mesh'``, but
+        is not as reliable, depending on the specifics of the map.  If parts of the map
+        cannot be plotted, a warning is emitted.  If the entire map cannot be plotted,
+        an error is raised.
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
