@@ -2773,7 +2773,8 @@ class GenericMap(NDData):
         manager may be appropriate.
         """
         if autoalign == 'pcolormesh':
-            warn_deprecated("Specifying 'autoalign=pcolormesh' is deprecated. Specify 'autoalign=mesh' instead.")
+            warn_deprecated("Specifying `autoalign='pcolormesh'` is deprecated as of 7.0. "
+                            "Specify `autoalign='mesh'` instead.")
             autoalign = 'mesh'
 
         # Set the default approach to autoalignment
@@ -2832,7 +2833,7 @@ class GenericMap(NDData):
             data_perimeter = transform.transform(pixel_perimeter)
 
             if not np.all(np.isfinite(data_perimeter)):
-                raise RuntimeError("Cannot draw an autoaligned image due to its coordinates. "
+                raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
                                    "Try specifying autoalign=mesh.")
 
             min_x, min_y = np.min(data_perimeter, axis=0)

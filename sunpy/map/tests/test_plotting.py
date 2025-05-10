@@ -414,7 +414,6 @@ def test_plot_autoalign_image_incomplete(aia171_test_map):
     })
 
     fig = Figure(figsize=(15, 4))
-    fig = Figure(figsize=(15, 4))
 
     ax1 = fig.add_subplot(131, projection=wcs)
     aia.plot(axes=ax1, autoalign=True, title='autoalign=True')
@@ -425,11 +424,34 @@ def test_plot_autoalign_image_incomplete(aia171_test_map):
     aia.draw_extent(axes=ax2, color='red')
 
     ax3 = fig.add_subplot(133, projection=wcs)
-    with pytest.warns(match="Cannot draw all of"):
+    with pytest.warns(match="Cannot draw all of the autoaligned image"):
         aia.plot(axes=ax3, autoalign="image", title='autoalign=image')
     aia.draw_extent(axes=ax3, color='red')
 
     return fig
+
+
+def test_plot_autoalign_image_fail(aia171_test_map):
+    aia = aia171_test_map.submap([0, 30]*u.pix, top_right=[90, 100]*u.pix)
+    wcs = WCS({
+        'cdelt1': 100,
+        'cdelt2': 100,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': -10,
+        'hglt_obs': 20,
+        'dsun_obs': aia.dsun.value,
+        'rsun_ref': aia.rsun_meters.value,
+        'date-obs': aia.date.isot,
+        'mjd-obs': aia.date.mjd,
+    })
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=wcs)
+    with pytest.raises(RuntimeError, match="Cannot draw an autoaligned image at all"):
+        aia.plot(axes=ax, autoalign='image')
 
 
 def test_plot_unit8(aia171_test_map):
