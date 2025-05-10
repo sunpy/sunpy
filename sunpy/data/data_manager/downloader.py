@@ -41,12 +41,12 @@ class ParfiveDownloader(DownloaderBase):
     using :mod:`parfive`.
     """
 
-    def download(self, url, path):
+    def download(self, url, path, **kwargs):
         downloader = Downloader()
         path = Path(path)
         filename = path.name
         directory = path.parent
-        downloader.enqueue_file(url, directory, filename)
+        downloader.enqueue_file(url, directory, filename, **kwargs)
         try:
             output = downloader.download()
         except Exception as e:
