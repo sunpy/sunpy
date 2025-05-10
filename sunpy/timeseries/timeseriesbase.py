@@ -260,6 +260,36 @@ class GenericTimeSeries:
     def __repr__(self):
         return f"{object.__repr__(self)}\n{self}"
 
+    def __getitem__(self, row_key = None, col_key = None):
+        ts = copy.deepcopy(self)
+
+        if row_key is None:
+            row_key = slice(None)
+        if col_key is None:
+            col_key = slice(None)
+
+        # Row slicing
+        if isinstance(row_key, slice):
+            ts._data = ts._data.iloc[row_key, :]
+        elif isinstance(row_key, TimeRange):
+            ts._data = ts._data.iloc[row_key.start.value:row_key.end.value]
+        elif isinstance(row_key, pd.DatetimeIndex):
+            ts._data[row_key[0]:row_key[-1]]
+        else:
+            if isinstance(row_key, int):
+                col_key = [col_key]
+            ts._data = ts._data.iloc[col_key]
+
+        # Columns slicing
+        if isinstance(col_key, slice):
+            ts._data = ts._data.iloc[:, col_key]
+        else:
+            if isinstance(col_key, str):
+                col_key = [col_key]
+            ts._data = ts._data[row_key]
+
+        return ts
+
     def _repr_html_(self):
         """
         Produces an HTML summary of the timeseries data with plots for use in
