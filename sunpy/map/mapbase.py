@@ -2773,7 +2773,7 @@ class GenericMap(NDData):
         manager may be appropriate.
         """
         if autoalign == 'pcolormesh':
-            warn_user("Specifying 'autoalign=pcolormesh' is deprecated. Specify 'autoalign=mesh' instead.")
+            warn_deprecated("Specifying 'autoalign=pcolormesh' is deprecated. Specify 'autoalign=mesh' instead.")
             autoalign = 'mesh'
 
         # Set the default approach to autoalignment
@@ -2830,16 +2830,19 @@ class GenericMap(NDData):
 
             transform = axes.get_transform(self.wcs) - axes.transData
             data_perimeter = transform.transform(pixel_perimeter)
-            data_corners = data_perimeter[[0, nx, nx + ny, 2*nx + ny], :]
 
             if not np.all(np.isfinite(data_perimeter)):
-                raise RuntimeError("Cannot draw an autoaligned image due to its coordinates. Try specifying autoalign=mesh.")
+                raise RuntimeError("Cannot draw an autoaligned image due to its coordinates. "
+                                   "Try specifying autoalign=mesh.")
 
             min_x, min_y = np.min(data_perimeter, axis=0)
             max_x, max_y = np.max(data_perimeter, axis=0)
 
-            if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0)) and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
-                warn_user("Cannot draw all of the autoaligned image due to the warping required. Specifying autoalign=mesh is recommended.")
+            data_corners = data_perimeter[[0, nx, nx + ny, 2*nx + ny], :]
+            if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
+                    and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
+                warn_user("Cannot draw all of the autoaligned image due to the warping required. "
+                          "Specifying autoalign=mesh is recommended.")
 
             # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
             old_datalim = copy.deepcopy(axes.dataLim)
