@@ -5,12 +5,21 @@ import pytest
 import astropy.units as u
 
 from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 @pytest.fixture
 def shape(aia171_test_map):
     return np.array(aia171_test_map.data.shape)
 
+@pytest.fixture
+def nan_data_array():
+    np.array([
+        [1.0, 2.0, 3.0, 4.0],
+        [5.0, np.nan, 7.0, 8.0],
+        [9.0, 10.0, np.nan, 12.0],
+        [13.0, 14.0, 15.0, 16.0]
+    ], dtype=np.float64)
 
 def resample_meta(aia171_test_map, dimensions, method, center, minusone):
     map_resampled = aia171_test_map.resample(dimensions, method=method)
@@ -35,6 +44,10 @@ def test_resample_linear(aia171_test_map):
 def test_resample_spline(aia171_test_map):
     resample_method(aia171_test_map, 'spline')
 
+def test_resample_spline_with_nanas():
+    with pytest.warns(SunpyUserWarning, match='Input data contains NaN values,'):
+        resampled = resample_method(nan_data_array,'spline')
+    assert np.nan in resampled
 
 def test_reshape(aia171_test_map, shape):
 
