@@ -1,0 +1,1 @@
+SunpyUserwarning warning will be raised when `sunpy.image.resample` method is called on a data having nan.
