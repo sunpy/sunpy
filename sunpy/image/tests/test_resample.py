@@ -18,9 +18,17 @@ def shape(aia171_test_map):
 def nan_data_map(aia171_test_map):
     nan_map = deepcopy(aia171_test_map)
     data = nan_map.data.copy()
-    data[:10, :10] = np.nan
+    data[1 :10] = np.nan
     nan_map._data = data
     return nan_map
+
+@pytest.fixture
+def inf_data_map(aia171_test_map):
+    inf = deepcopy(aia171_test_map)
+    data = inf.data.copy()
+    data[1:10] = np.inf
+    inf._data = data
+    return inf
 
 def resample_meta(aia171_test_map, dimensions, method, center, minusone):
     map_resampled = aia171_test_map.resample(dimensions, method=method)
@@ -45,11 +53,14 @@ def test_resample_linear(aia171_test_map):
 def test_resample_spline(aia171_test_map):
     resample_method(aia171_test_map, 'spline')
 
-def test_resample_spline_with_nanas(nan_data_map):
-    with pytest.warns(SunpyUserWarning, match="Input data contains NaN values, which may cause the entire output to be NaN when using method='spline'"):
+def test_resample_spline_with_nans_and_inf(nan_data_map,inf_data_map):
+    with pytest.warns(SunpyUserWarning, match="Input data contains NaN or INFINITY values, which may cause the entire output to be NaN when using method='spline'"):
         resampled = nan_data_map.resample((64, 64) * u.pix, method='spline')
     assert np.all(np.isnan(resampled.data))
 
+    with pytest.warns(SunpyUserWarning, match="Input data contains NaN or INFINITY values, which may cause the entire output to be NaN when using method='spline'"):
+        resampled = inf_data_map.resample((64, 64) * u.pix, method='spline')
+    assert np.all(np.isnan(resampled.data))
 
 def test_reshape(aia171_test_map, shape):
 
