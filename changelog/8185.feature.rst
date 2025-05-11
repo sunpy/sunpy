@@ -1,1 +1,1 @@
-SunpyUserwarning warning will be raised when `sunpy.image.resample` with spline method is called on a data having nans.
+SunpyUserwarning warning will be raised when `sunpy.image.resample` with spline method is called on a data having nans and infinity.
