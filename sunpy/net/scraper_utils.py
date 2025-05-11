@@ -45,6 +45,7 @@ def extract_timestep(directoryPattern):
     else:
         return None
 
+
 def date_floor(date, timestep):
     """
     Return the "floor" of the given date and timestep.
@@ -79,6 +80,7 @@ def date_floor(date, timestep):
         time_tup[-5:] = [1, 1, 0, 0, 0]
 
     return datetime(*time_tup)
+
 
 def get_timerange_from_exdict(exdict):
     """

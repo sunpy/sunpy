@@ -34,3 +34,36 @@ Updates to minimum dependencies
 The minimum required versions of the following packages have been updated:
 
 - python>=3.11
+
+Access to the JSOC AIA "synoptic" data
+======================================
+
+There is now a FIDO client which will allow someone to download the "synoptic" AIA data from the JSOC.
+This dataset is not synoptic like HMI and MDI Synoptic images which are images of the solar surface reconstructed from many observations over a solar rotation but rather a synopsis of AIA data.
+The AIA synoptic data are calibrated Level 1.5 images with reduced 1k x 1k resolution at regular 2-minute cadence.
+
+.. code-block:: python
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/1 00:01:00"),
+    ...                       a.Instrument.aia, a.Level("1.5s"))  # doctest: +REMOTE_DATA
+    >>> results  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    9 Results from the AIASynopsisClient:
+    Source: https://jsoc1.stanford.edu/data/aia/synoptic/
+    <BLANKLINE>
+           Start Time               End Time        Instrument  Physobs  Source Provider Level Wavelength
+    ----------------------- ----------------------- ---------- --------- ------ -------- ----- ----------
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S         94
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        131
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        171
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        193
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        211
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        304
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S        335
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S       1600
+    2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S       4500
+    <BLANKLINE>
+    <BLANKLINE>
