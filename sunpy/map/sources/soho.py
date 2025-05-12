@@ -36,7 +36,7 @@ class EITMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-        self._nickname = self.detector
+        self._nickname = self.instrument
         self.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
@@ -76,6 +76,11 @@ class EITMap(GenericMap):
 
     @property
     def detector(self):
+        # Even though this is wrong, we need to keep this for backwards compatibility
+        return "EIT"
+
+    @property
+    def instrument(self):
         return "EIT"
 
     @property
@@ -126,16 +131,18 @@ class EITL1Map(EITMap):
         return self.meta.get('LEVEL', None)
 
     @property
-    def date(self):
-        # EIT L1 data has the date in the DATE-OBS keyword
-        # so we need to call out to GenericMap to get the date.
-        return super(EITMap, self).date
+    def instrument(self):
+        """
+        Returns the instrument name.
+        """
+        # EIT L1 has the instrument name in the TELESCOP keyword
+        return self.meta.get('TELESCOP')
 
     @property
-    def observatory(self):
-        # L1 Maps return Solar and Heliospheric Observatory (SOHO) as the observatory.
-        # We override this to return SOHO so it is consistent with the other SOHO maps.
-        return "SOHO"
+    def date(self):
+        # EIT L1 data has the date in the DATE-BEG keyword
+        # so we need to call out to GenericMap to get the date.
+        return super(EITMap, self).date
 
     @property
     def rsun_obs(self):
