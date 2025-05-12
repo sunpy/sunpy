@@ -1625,13 +1625,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         Returns
         -------
-        outmap : `~sunpy.map.GenericMap`
+        reproject_outputs : `~sunpy.map.GenericMap`
             The reprojected map
-        footprint : `~numpy.ndarray`
-            Footprint of the input arary in the output array. Values of 0 indicate no
-            coverage or valid values in the input image, while values of 1 indicate
-            valid values. Intermediate values indicate partial coverage.
-            Only returned if ``return_footprint`` is ``True``.
 
         Notes
         -----
@@ -1684,9 +1679,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                             plot_settings=self.plotter.plot_settings)
 
         # check for rsun outmap
-        if self.rsun_meters != target_wcs.wcs.aux.rsun_ref:
+        if self.rsun_meters.to_value() != target_wcs.wcs.aux.rsun_ref:
             warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters} != {target_wcs.wcs.aux.rsun_ref} rsun_meters of target WCS."
+                      f"{self.name}.rsun_meters={self.rsun_meters.to_value()} != {target_wcs.wcs.aux.rsun_ref} rsun_meters of target WCS."
                       "This might cause unexpected results during reprojection.")
 
         reproject_outputs = super().reproject_to(target_wcs,
