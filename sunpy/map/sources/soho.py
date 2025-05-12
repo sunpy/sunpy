@@ -126,6 +126,12 @@ class EITL1Map(EITMap):
         return self.meta.get('LEVEL', None)
 
     @property
+    def date(self):
+        # EIT L1 data has the date in the DATE-OBS keyword
+        # so we need to call out to GenericMap to get the date.
+        return super(EITMap, self).date
+
+    @property
     def observatory(self):
         # L1 Maps return Solar and Heliospheric Observatory (SOHO) as the observatory.
         # We override this to return SOHO so it is consistent with the other SOHO maps.
