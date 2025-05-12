@@ -2861,6 +2861,9 @@ class GenericMap(NDData):
             ret.sticky_edges.x[:] = [min_x, max_x]
             ret.sticky_edges.y[:] = [min_y, max_y]
             axes.update_datalim([(min_x, min_y), (max_x, max_y)])
+            # Mark a single axis, or all of them, as stale wrt. autoscaling.
+            # No computation is performed until the next autoscaling; thus, separate
+            # calls to control individual axises incur negligible performance cost.
             axes._request_autoscale_view()
 
             # Clip the drawn image based on the transformed perimeter
