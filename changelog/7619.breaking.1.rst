@@ -1,6 +1,6 @@
 The types of many columns in the results table returned by
-Columns which correspond to quantities with units are now returned as `~astropy.unit.Quantity` objects rather
+Columns which correspond to quantities with units are now returned as `~astropy.units.Quantity` objects rather
 than arrays.
-Columns which correspond times are now returned as `~astropy.time.Time` objects rather than strings.
+Columns which correspond to times are now returned as `~astropy.time.Time` objects rather than strings.
 Columns which correspond to coordinates are now returned as `~astropy.coordinates.SkyCoord` objects rather than
 arrays or chain code strings.

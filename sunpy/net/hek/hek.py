@@ -38,7 +38,7 @@ class HEKClient(BaseClient):
 
     .. note:: sunpy parses the raw outputs from the HEK by add units to some columns,
               returning `astropy.time.Time` objects instead of strings, and converting coordinate
-              information to `~astropy.coordinate.SkyCoord` objects wherever possible.
+              information to `~astropy.coordinates.SkyCoord` objects wherever possible.
 
     .. note:: As part of the aforementioned parsing, some columns are dropped from the returned
               table because they are now redundant. For example, columns ``event_coord1``,
