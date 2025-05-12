@@ -7,6 +7,7 @@ import html
 import inspect
 import numbers
 import textwrap
+import warnings
 import itertools
 import webbrowser
 from tempfile import NamedTemporaryFile
@@ -54,7 +55,7 @@ from sunpy.util.decorators import (
     check_arithmetic_compatibility,
     deprecated,
 )
-from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
+from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -2723,8 +2724,7 @@ class GenericMap(NDData):
     def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
-        Plots the map object using matplotlib, in a method equivalent
-        to :meth:`~matplotlib.axes.Axes.imshow` using nearest neighbor interpolation.
+        Plots the map using matplotlib.
 
         Parameters
         ----------
@@ -2746,10 +2746,11 @@ class GenericMap(NDData):
 
             * ``"mesh"``, which draws a mesh of the individual map pixels
             * ``"image"``, which draws the map as a single (warped) image
-            * `True`, which is equivalent to ``"mesh"``
+            * `True`, which automatically determines whether to use ``"mesh"`` or ``"image"``
 
         **imshow_kwargs : `dict`
-            Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
+            Any additional arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`
+            or :meth:`~matplotlib.axes.Axes.pcolormesh`.
 
         Examples
         --------
@@ -2764,13 +2765,14 @@ class GenericMap(NDData):
         Notes
         -----
         The ``autoalign`` functionality can be intensive to render. If the plot is to
-        be interactive, the alternative approach of preprocessing the map (e.g.,
-        de-rotating it) to match the desired axes will result in better performance.
+        be interactive, the alternative approach of preprocessing the map to match the
+        intended axes (e.g., through rotation or reprojection) will result in better
+        plotting performance.
 
-        The ``autoalign='image'`` approach is faster than the ``autoalign='mesh'``, but
-        is not as reliable, depending on the specifics of the map.  If parts of the map
-        cannot be plotted, a warning is emitted.  If the entire map cannot be plotted,
-        an error is raised.
+        The ``autoalign='image'`` approach is usually faster than the
+        ``autoalign='mesh'`` approach, but is not as reliable, depending on the
+        specifics of the map.  If parts of the map cannot be plotted, a warning is
+        emitted.  If the entire map cannot be plotted, an error is raised.
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
@@ -2787,8 +2789,6 @@ class GenericMap(NDData):
         allowed_autoalign = [False, True, 'mesh', 'image']
         if autoalign not in allowed_autoalign:
             raise ValueError(f"The value for `autoalign` must be one of {allowed_autoalign}.")
-        if autoalign is True:
-            autoalign = 'mesh'
 
         axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
@@ -2831,26 +2831,38 @@ class GenericMap(NDData):
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
-        if autoalign == 'image':
+        if autoalign in {True, 'image'}:
             ny, nx = self.data.shape
             pixel_perimeter = grid_perimeter(nx, ny) - 0.5
 
             transform = axes.get_transform(self.wcs) - axes.transData
-            data_perimeter = transform.transform(pixel_perimeter)
-
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=SunpyUserWarning)
+                data_perimeter = transform.transform(pixel_perimeter)
             if not np.all(np.isfinite(data_perimeter)):
-                raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
-                                   "Try specifying autoalign=mesh.")
+                if autoalign == 'image':
+                    raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
+                                       "Try specifying autoalign=mesh.")
+                autoalign = 'mesh'
+            else:
+                min_x, min_y = np.min(data_perimeter, axis=0)
+                max_x, max_y = np.max(data_perimeter, axis=0)
 
-            min_x, min_y = np.min(data_perimeter, axis=0)
-            max_x, max_y = np.max(data_perimeter, axis=0)
+                data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
+                if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
+                        and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
+                    if autoalign == 'image':
+                        warn_user("Cannot draw all of the autoaligned image due to the warping required. "
+                                  "Specifying autoalign=mesh is recommended.")
+                    else:
+                        autoalign = 'mesh'
+            if autoalign == 'mesh':
+                log.info("Using mesh-based autoalignment")
+            elif autoalign is True:
+                log.info("Using image-based autoalignment")
+                autoalign = 'image'
 
-            data_corners = data_perimeter[[0, nx, nx + ny, 2*nx + ny], :]
-            if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
-                    and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
-                warn_user("Cannot draw all of the autoaligned image due to the warping required. "
-                          "Specifying autoalign=mesh is recommended.")
-
+        if autoalign == 'image':
             # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
             old_datalim = copy.deepcopy(axes.dataLim)
             ret = axes.imshow(data, transform=transform + axes.transData, **imshow_args)
@@ -2860,10 +2872,7 @@ class GenericMap(NDData):
             ret.sticky_edges.x[:] = [min_x, max_x]
             ret.sticky_edges.y[:] = [min_y, max_y]
             axes.update_datalim([(min_x, min_y), (max_x, max_y)])
-            # Mark a single axis, or all of them, as stale wrt. autoscaling.
-            # No computation is performed until the next autoscaling; thus, separate
-            # calls to control individual axes incur negligible performance cost.
-            axes._request_autoscale_view()
+            axes.autoscale(enable=None)
 
             # Clip the drawn image based on the transformed perimeter
             path = matplotlib.path.Path(data_perimeter)
