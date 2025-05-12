@@ -1,4 +1,4 @@
-The types of many columns in the results table returned by
+The types of many columns in the results table returned by the HEKClient have been changed.
 Columns which correspond to quantities with units are now returned as `~astropy.units.Quantity` objects rather
 than arrays.
 Columns which correspond to times are now returned as `~astropy.time.Time` objects rather than strings.
