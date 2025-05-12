@@ -1684,12 +1684,10 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                       f"{self.name}.rsun_meters={self.rsun_meters.to_value()} != {target_wcs.wcs.aux.rsun_ref} rsun_meters of target WCS."
                       "This might cause unexpected results during reprojection.")
 
-        reproject_outputs = super().reproject_to(target_wcs,
-                                                 algorithm=algorithm,
-                                                 return_footprint=return_footprint,
-                                                 **reproject_args)
-
-        return reproject_outputs
+        return super().reproject_to(target_wcs,
+                                    algorithm=algorithm,
+                                    return_footprint=return_footprint,
+                                    **reproject_args)
 
 
 GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
