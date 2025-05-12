@@ -115,15 +115,8 @@ class EITL1Map(EITMap):
     """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-        self._nickname = self.detector
-        self.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.0001)), clip=False)
-
-    @property
-    def date(self):
-        # Old EIT data has date-obs in format of dd-JAN-yy so we use date_obs where available
-        return self._get_date('date_obs') or super().date
 
     @property
     def processing_level(self):
@@ -133,11 +126,9 @@ class EITL1Map(EITMap):
         return self.meta.get('LEVEL', None)
 
     @property
-    def detector(self):
-        return "EIT"
-
-    @property
     def observatory(self):
+        # L1 Maps return Solar and Heliospheric Observatory (SOHO) as the observatory.
+        # We override this to return SOHO so it is consistent with the other SOHO maps.
         return "SOHO"
 
     @property
@@ -158,7 +149,7 @@ class EITL1Map(EITMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an EIT L1image"""
+        """Determines if header corresponds to an EIT L1 Image"""
         return (header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)') and header.get('level') == "L1"
 
 
