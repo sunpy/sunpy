@@ -107,7 +107,7 @@ class _PrecomputedPixelCornersTransform(Transform):
     """
     A matplotlib transform that precomputes the pixel->pixel transformation from a
     given data WCS to the WCS of the given WCSAxes, and stores it as a lookup table
-    to avoid redundant coordinate transformations.  This transformation is computed
+    to avoid redundant coordinate transformations. This transformation is computed
     only for the pixel corners of the data WCS (e.g., (-0.5, -0.5) for the bottom-
     left corner), so the transform may not return desired values when called with
     pixel coordinates other than at the corners of pixels.
