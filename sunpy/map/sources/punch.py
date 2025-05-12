@@ -1,6 +1,5 @@
 """PUNCH Map subclass definitions"""
 
-import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
 from sunpy.map.mapbase import GenericMap
@@ -38,17 +37,17 @@ class PUNCHMap(GenericMap):
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
 
-    @property
-    def unit(self):
-        """Units of the observation."""
-        unit_str = self.meta.get('bunit', self.meta.get("BUNIT"))
-        if unit_str is None:
-            return
-        parsed_unit = u.Unit(unit_str)
-        if parsed_unit == u.Unit("2.009e+07 W / (sr m2)") or parsed_unit == u.Unit("sqrt(DN)"):
-             return parsed_unit
-        else:
-             return super().unit
+    # @property
+    # def unit(self):
+    #     """Units of the observation."""
+    #     unit_str = self.meta.get('bunit', self.meta.get("BUNIT"))
+    #     if unit_str is None:
+    #         return
+    #     parsed_unit = u.Unit(unit_str)
+    #     if parsed_unit == u.Unit("2.009e+07 W / (sr m2)") or parsed_unit == u.Unit("sqrt(DN)"):
+    #          return parsed_unit
+    #     else:
+    #          return super().unit
 
     # Used by the Map factory to determine if this subclass should be used
     @classmethod

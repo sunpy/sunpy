@@ -21,11 +21,11 @@ def test_punch_map(punch_map):
 
 def test_reference_date(punch_map):
     """ Tests the reference_date"""
-    assert punch_map.reference_date.isot == "2024-01-01T00:00:00.000"
+    assert punch_map.reference_date.isot == "2025-03-12T03:26:00.000"
 
 
 def test_date(punch_map):
-    assert punch_map.date.isot == "2024-01-01T00:00:00.000"
+    assert punch_map.date.isot == "2025-03-12T03:26:00.000"
 
 
 def test_unit(punch_map):
