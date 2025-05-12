@@ -47,12 +47,15 @@ def test_is_datasource_for(eit_l1_map):
 
 def test_observatory(eit_l1_map):
     """Tests the observatory property of the EITMap object."""
-    assert eit_l1_map.observatory == "SOHO"
+    assert eit_l1_map.observatory == "Solar and Heliospheric Observatory (SOHO)"
 
+def test_instrument(eit_l1_map):
+    """Tests the instrument property of the EITMap object."""
+    assert eit_l1_map.instrument == "Extreme-ultraviolet Imaging Telescope (EIT)"
 
 def test_measurement(eit_l1_map):
     """Tests the measurement property of the EITMap object."""
-    assert eit_l1_map.measurement.value == 171
+    assert eit_l1_map.measurement == 171*u.angstrom
 
 
 def test_rsun(eit_l1_map):
