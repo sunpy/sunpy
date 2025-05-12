@@ -2862,7 +2862,7 @@ class GenericMap(NDData):
             axes.update_datalim([(min_x, min_y), (max_x, max_y)])
             # Mark a single axis, or all of them, as stale wrt. autoscaling.
             # No computation is performed until the next autoscaling; thus, separate
-            # calls to control individual axises incur negligible performance cost.
+            # calls to control individual axes incur negligible performance cost.
             axes._request_autoscale_view()
 
             # Clip the drawn image based on the transformed perimeter
