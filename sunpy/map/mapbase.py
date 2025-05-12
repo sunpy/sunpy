@@ -59,6 +59,7 @@ from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
+from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -2762,7 +2763,7 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive. If the plot will
+        The ``autoalign`` functionality can be intensive to render. If the plot is to
         be interactive, the alternative approach of preprocessing the map (e.g.,
         de-rotating it) to match the desired axes will result in better performance.
 
@@ -2773,11 +2774,9 @@ class GenericMap(NDData):
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
-        beyond the solar disk may not appear, which may also inhibit Matplotlib's
-        autoscaling of the plot limits. The plot limits can be set manually.
-        To preserve the off-disk parts of the map, using the
-        `~sunpy.coordinates.SphericalScreen` context
-        manager may be appropriate.
+        beyond the solar disk may not appear.  To preserve the off-disk parts of the
+        map, using the `~sunpy.coordinates.SphericalScreen` context manager may be
+        appropriate.
         """
         if autoalign == 'pcolormesh':
             warn_deprecated("Specifying `autoalign='pcolormesh'` is deprecated as of 7.0. "
@@ -2883,17 +2882,31 @@ class GenericMap(NDData):
                 if item in imshow_args:
                     del imshow_args[item]
 
-            imshow_args.setdefault('transform', axes.get_transform(self.wcs))
-
             # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
             # of a grid pattern when alpha is not 1. These settings minimize the overlap.
             if imshow_args.get('alpha', 1) != 1:
                 imshow_args.setdefault('antialiased', True)
                 imshow_args.setdefault('linewidth', 0)
 
-            ret = axes.pcolormesh(np.arange(data.shape[1] + 1) - 0.5,
-                                  np.arange(data.shape[0] + 1) - 0.5,
-                                  data, **imshow_args)
+            # Create a lookup table for the transformed data corners for matplotlib to use
+            transform = _PrecomputedPixelCornersTransform(axes, self.wcs)
+
+            # Define the mesh in data coordinates in case the transformation results in NaNs
+            ret = axes.pcolormesh(transform.data_x, transform.data_y, data,
+                                  shading='flat',
+                                  transform=transform + axes.transData,
+                                  **imshow_args)
+
+            # Calculate the bounds of the mesh in the pixel space of the axes
+            good = np.logical_and(np.isfinite(transform.axes_x), np.isfinite(transform.axes_y))
+            good_x, good_y = transform.axes_x[good], transform.axes_y[good]
+            min_x, max_x = np.min(good_x), np.max(good_x)
+            min_y, max_y = np.min(good_y), np.max(good_y)
+
+            # Update the plot limits
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
         else:
             ret = axes.imshow(data, **imshow_args)
 

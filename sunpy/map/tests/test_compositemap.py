@@ -18,21 +18,10 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Missing metadata for observer')
 
 
 @pytest.fixture
-def adjusted_test_maps(aia171_test_map, hmi_test_map):
-    # The test maps have wildly different observation times, which throws off compositing
-    hmi_test_map.meta['date-obs'] = aia171_test_map.meta['date-obs']
-    hmi_test_map.meta['t_obs'] = aia171_test_map.meta['t_obs']
-    # Also set the HMI observer location to be the same as the AIA observer location
-    del hmi_test_map.meta['crln_obs']
-    del hmi_test_map.meta['crlt_obs']
-    hmi_test_map.meta['hgln_obs'] = aia171_test_map.observer_coordinate.lon.to_value('deg')
-    hmi_test_map.meta['hglt_obs'] = aia171_test_map.observer_coordinate.lat.to_value('deg')
-    return aia171_test_map, hmi_test_map
-
-@pytest.fixture
 def composite_test_map(adjusted_test_maps):
     aia171_test_map, hmi_test_map = adjusted_test_maps
     return sunpy.map.Map(aia171_test_map, hmi_test_map, composite=True)
+
 
 @pytest.fixture
 def composite_test_map_prealigned(adjusted_test_maps):
