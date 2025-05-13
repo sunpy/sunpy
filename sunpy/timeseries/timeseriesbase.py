@@ -260,25 +260,28 @@ class GenericTimeSeries:
     def __repr__(self):
         return f"{object.__repr__(self)}\n{self}"
 
-    def __getitem__(self, row_key = None, col_key = None):
+    def __getitem__(self, key = (None, None)):
         ts = copy.deepcopy(self)
+        row_key, col_key = key
 
         if row_key is None:
             row_key = slice(None)
         if col_key is None:
             col_key = slice(None)
-
         # Row slicing
         if isinstance(row_key, slice):
-            ts._data = ts._data.iloc[row_key, :]
+            if isinstance(row_key.start, str):
+                ts._data = ts._data.sort_index().loc[row_key, :]
+            else:
+                ts._data = ts._data.iloc[row_key, :]
         elif isinstance(row_key, TimeRange):
-            ts._data = ts._data.iloc[row_key.start.value:row_key.end.value]
+            ts._data = ts._data.sort_index().loc[row_key.start.value:row_key.end.value]
         elif isinstance(row_key, pd.DatetimeIndex):
             ts._data[row_key[0]:row_key[-1]]
         else:
             if isinstance(row_key, int):
-                col_key = [col_key]
-            ts._data = ts._data.iloc[col_key]
+                row_key = [row_key]
+            ts._data = ts._data.iloc[row_key]
 
         # Columns slicing
         if isinstance(col_key, slice):
@@ -286,7 +289,7 @@ class GenericTimeSeries:
         else:
             if isinstance(col_key, str):
                 col_key = [col_key]
-            ts._data = ts._data[row_key]
+            ts._data = ts._data[col_key]
 
         return ts
 
