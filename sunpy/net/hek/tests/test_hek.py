@@ -4,7 +4,7 @@ import pytest
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
-from astropy.table import MaskedColumn
+from astropy.table import MaskedColumn, Table
 from astropy.time import Time
 
 from sunpy.coordinates import Helioprojective, get_earth
@@ -328,3 +328,30 @@ def test_flares_python_logical_ops(flare_search):
 def test_event_types(event_type):
     # Smoke test for all event types
     _ = Fido.search(attrs.Time('2017/09/06 11:59:04', '2017/09/06 17:05:04'), attrs.hek.EventType(event_type))
+
+
+def test_raw_hek_result_preserved(hek_result):
+    assert hasattr(hek_result, 'raw')
+    assert isinstance(hek_result.raw, Table)
+    # Check that separate event_coord columns are still present
+    removed_columns = ['event_coord1', 'event_coord2', 'event_coord3', 'event_coordsys']
+    for col in removed_columns:
+        assert col in hek_result.raw.colnames
+    # Check that times are still strings
+    assert np.issubdtype(hek_result.raw['event_starttime'].dtype, np.unicode_)
+    assert np.issubdtype(hek_result.raw['event_endtime'].dtype, np.unicode_)
+    # Check that chaincodes are still strings
+    for coord_attr in _get_coord_attributes():
+        if not coord_attr.get('is_chaincode', False):
+            continue
+        assert np.issubdtype(hek_result.raw[coord_attr['name']].dtype, np.dtype('U'))
+    # Check that quantities are still floats and that unit columns still exist
+    for unit_attr in _get_unit_attributes():
+        if (name := unit_attr['name']) not in hek_result.raw.colnames:
+            continue
+        column_dtype = hek_result.raw[name].dtype
+        if unit_attr.get('unit_prop') is not None:
+            # NOTE: Columns have object dtype if there are Nones present
+            assert np.issubdtype(column_dtype, np.float_) | np.issubdtype(column_dtype, np.object_)
+        elif unit_attr.get('is_unit_prop', False):
+            assert np.issubdtype(column_dtype, np.unicode_)

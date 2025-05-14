@@ -89,13 +89,7 @@ class HEKClient(BaseClient):
             results.extend(result['result'])
             if not result['overmax']:
                 if len(results) > 0:
-                    table = astropy.table.Table(dict_keys_same(results))
-                    # NOTE: The order of operations here is important.
-                    _map_event_coord_columns_to_coordinates(table)
-                    _map_chain_code_columns_to_coordinates(table)
-                    _map_columns_to_quantities(table)
-                    _map_columns_to_times(table)
-                    return table
+                    return astropy.table.Table(dict_keys_same(results))
                 else:
                     return astropy.table.Table()
             page += 1
@@ -133,13 +127,13 @@ class HEKClient(BaseClient):
             new.update(elem)
             ndata.append(new)
         if len(ndata) == 1:
-            return HEKTable(self._download(ndata[0]), client=self)
+            return HEKTable._from_search(self._download(ndata[0]), client=self)
         else:
-            return HEKTable(self._merge(self._download(data) for data in ndata), client=self)
+            return HEKTable._from_search(self._merge(self._download(data) for data in ndata), client=self)
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
-        return list(unique(chain.from_iterable(responses), _freeze))
+        return astropy.table.vstack(list(unique(chain.from_iterable(responses), _freeze)))
 
     def fetch(self, *args, **kwargs):
         """
@@ -218,3 +212,21 @@ class HEKTable(QueryResponseTable):
     A container for data returned from HEK searches.
     """
     Row = HEKRow
+
+    @classmethod
+    def _from_search(cls, data, **kwargs):
+        """
+        Create table from HEK search results. This preserves the original HEK response
+        as well as parsing the various coordinate, time, and quantity columns.
+        """
+        # Preserve unparsed HEK output
+        raw_data = data.copy()
+        if len(data) > 0:
+            # NOTE: The order of operations here is important.
+            _map_event_coord_columns_to_coordinates(data)
+            _map_chain_code_columns_to_coordinates(data)
+            _map_columns_to_quantities(data)
+            _map_columns_to_times(data)
+        instance = cls(data=data, **kwargs)
+        instance.raw = raw_data
+        return instance
