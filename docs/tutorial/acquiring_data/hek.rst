@@ -345,6 +345,7 @@ Finally, for greater flexibility, it is possible to pass in a list of HEK result
 
    >>> vso_query = hek2vso.translate_results_to_query(result[0][10])  # doctest: +REMOTE_DATA
    >>> vso_query[0]  # doctest: +REMOTE_DATA
-   [<sunpy.net.attrs.Time(2011-08-09 07:22:44.000, 2011-08-09 07:28:56.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(193.0, 193.0, 'Angstrom')>]
+   [<sunpy.net.attrs.Time(2011-08-09 07:22:44.000, 2011-08-09 07:28:56.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Data from the Atmospheric Imaging Assembly instrument.) object at
+    ...>, <sunpy.net.attrs.Wavelength(193.0, 193.0, 'Angstrom')>]
 
 This function allows users finer-grained control of VSO queries generated from HEK results.

@@ -1,0 +1,1 @@
+Removed the decorator ``sunpy.util.deprecate_positional_args_since()`` due to lack of continued use.

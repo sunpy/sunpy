@@ -1,0 +1,1 @@
+Autoalign plotting for `~sunpy.map.Map` is now significantly faster, especially for interactive plots.
