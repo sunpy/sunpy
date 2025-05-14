@@ -80,7 +80,8 @@ def vso_attribute_parse(phrase):
     >>> len(q)  # doctest: +REMOTE_DATA
     19
     >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
-    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
+    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Data from the Atmospheric Imaging Assembly instrument.) object at
+    ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [a.Time(phrase['event_starttime'],

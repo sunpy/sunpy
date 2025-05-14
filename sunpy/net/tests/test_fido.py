@@ -219,7 +219,7 @@ def test_path(tmp_path):
     results = Fido.search(
         a.Time("2025/1/1", "2025/1/1"), a.Instrument.aia)
     file = Fido.fetch(results, path=tmp_path / "{file}")
-    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025-01-01T00_00_00.63Z.image_lev1.fits"))]
+    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025_01_01T00_00_00.63Z.image_lev1.fits"))]
 
 
 @pytest.mark.remote_data
