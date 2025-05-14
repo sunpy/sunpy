@@ -363,6 +363,53 @@ class MapPlotter:
             cs = axes.contour(x, y, data, levels, **contour_args)
         return cs
 
+    def _update_contour_args(self, contour_args):
+        """
+        Updates ``contour_args`` with values from ``plot_settings``.
+
+        Parameters
+        ----------
+        contour_args : dict
+            A dictionary of arguments to be used for contour plotting.
+
+        Returns
+        -------
+        dict
+            The updated ``contour_args`` dictionary.
+
+        Notes
+        -----
+        - 'cmap': Set to `None` to avoid the error "ValueError: Either colors or cmap must be None".
+        - 'interpolation': Removed because Matplotlib's contour function raises the warning
+        "The following kwargs were not used by contour: 'interpolation'".
+        - 'origin': If `'origin': 'lower'` is present, it is replaced with `'origin': None`,
+        as `None` is the default value for Matplotlib's contour plots.
+        """
+        plot_settings = self.plot_settings.copy()
+        contour_args_copy = contour_args.copy()
+        contour_args.update(plot_settings)
+        # Define default settings for normal plots and contour-specific updates
+        original_plot_defaults = {
+            'origin': 'lower',
+        }
+        default_contour_param = {
+            'origin': None,
+        }
+        # Replace conflicting settings with contour defaults
+        for key in original_plot_defaults:
+            if key in contour_args and contour_args[key] == original_plot_defaults[key]:
+                contour_args[key] = default_contour_param[key]
+        # 'cmap' cannot be used for contour plots when levels are not None,
+        # which is the case in composite maps.
+        contour_args['cmap'] = None
+        # custom 'norm' cannot be passed through plot_settings
+        contour_args['norm'] = None
+        # If 'draw_contour' is used, setting 'norm' and 'cmap' to None ensures the method arguments are applied.
+        contour_args.update(contour_args_copy)
+        contour_args.pop('interpolation')
+        return contour_args
+
+
     @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, **matplot_args):

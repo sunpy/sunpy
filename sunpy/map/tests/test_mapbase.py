@@ -984,7 +984,7 @@ def test_superpixel_masked(aia171_test_map_with_mask):
 
 
 def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_dims = u.Quantity(aia171_test_map_with_mask.shape, unit=u.pix)
     dimensions = (2, 2) * u.pix
 
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
