@@ -2,3 +2,4 @@ The `~sunpy.net.hek.HEKClient` now merges columns ``event_coord1``, ``event_coor
 into a new column called ``event_coord`` that returns a `astropy.coordinates.SkyCoord` object.
 ``event_coord1``, ``event_coord2`` and ``event_coord3`` are all dropped as columns from the table.
 Columns which correspond to only units are also dropped.
+If you need these columns, the unparsed HEK results can be accessed via the ``.raw`` attribute on the HEK result.

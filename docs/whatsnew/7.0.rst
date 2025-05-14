@@ -77,3 +77,4 @@ and `~astropy.coordinates.SkyCoord` objects wherever possible. This allows for e
 of results from the Heliophysics Event Knowledgebase, particular when it comes to coordinates and
 bounding boxes. Users should be aware that some redundant columns are now dropped from the results table,
 for example, those columns which only contained unit information.
+The original, unparsed response from the HEK can be accessed via the ``raw`` property on `~sunpy.net.hek.HEKTable`.
