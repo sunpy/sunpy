@@ -330,6 +330,7 @@ def test_event_types(event_type):
     _ = Fido.search(attrs.Time('2017/09/06 11:59:04', '2017/09/06 17:05:04'), attrs.hek.EventType(event_type))
 
 
+@pytest.mark.remote_data
 def test_raw_hek_result_preserved(hek_result):
     assert hasattr(hek_result, 'raw')
     assert isinstance(hek_result.raw, Table)
