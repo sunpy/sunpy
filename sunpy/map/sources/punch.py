@@ -29,22 +29,8 @@ class PUNCHMap(GenericMap):
         super().__init__(data, header, **kwargs)
         self.nickname = f"{self.observatory} - {self.instrument}"
         self.plot_settings["cmap"] = "punch"
-
         self.plot_settings["norm"] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
-
-
-    # @property
-    # def unit(self):
-    #     """Units of the observation."""
-    #     unit_str = self.meta.get('bunit', self.meta.get("BUNIT"))
-    #     if unit_str is None:
-    #         return
-    #     parsed_unit = u.Unit(unit_str)
-    #     if parsed_unit == u.Unit("2.009e+07 W / (sr m2)") or parsed_unit == u.Unit("sqrt(DN)"):
-    #          return parsed_unit
-    #     else:
-    #          return super().unit
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
