@@ -1,1 +1,1 @@
-Adds support for PUNCH data within the SunPy Map class.
+Added support for PUNCH data within `sunpy.map.Map`.

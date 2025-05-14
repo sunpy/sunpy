@@ -19,9 +19,6 @@ class PUNCHMap(GenericMap):
 
     PUNCH launched and began operations on 11 March 2025.
 
-    Notes
-    -----
-
     References
     ----------
     * `PUNCH Mission Page <https://punch.space.swri.edu>`__
@@ -49,9 +46,7 @@ class PUNCHMap(GenericMap):
     #     else:
     #          return super().unit
 
-    # Used by the Map factory to determine if this subclass should be used
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if data, header corresponds to a PUNCH image."""
-        # Returns True only if this is data and header from PUNCH
         return header.get('obsrvtry', '').startswith('PUNCH')
