@@ -2,6 +2,7 @@ default.extend-ignore-identifiers-re = [
     "NDCube",
     "ANDed", # ANDed
     "arange",
+    "iy",
     "iy1",
     "iy2",
     "EIS",

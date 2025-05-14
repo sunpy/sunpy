@@ -168,6 +168,18 @@ class HMIMap(GenericMap):
         self.meta['T_OBS'] = parse_time(date).utc.isot
 
     @property
+    def unit(self):
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
+        # The mapbase unit property forces this validation, so we must override it to prevent it.
+        if (parsed_unit := u.Unit(unit_str)) == u.Unit('Mx/cm2'):
+            return parsed_unit
+        else:
+            return super().unit
+
+    @property
     def detector(self):
         return self.meta.get("detector", "HMI")
 
@@ -247,15 +259,6 @@ class HMISynopticMap(HMIMap):
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
-
-    @property
-    def unit(self):
-        unit_str = self.meta.get('bunit', None)
-        if unit_str is None:
-            return
-        # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
-        # The mapbase unit property forces this validation, so we must override it to prevent it.
-        return u.Unit(unit_str)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

@@ -4,7 +4,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
-from astropy.visualization import PowerStretch
+from astropy.visualization import AsinhStretch, PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy import log
@@ -13,7 +13,7 @@ from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 
-__all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
+__all__ = ['EITMap', 'EITL1Map', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
 
 
 class EITMap(GenericMap):
@@ -38,7 +38,7 @@ class EITMap(GenericMap):
     def __init__(self, data, **kwargs):
         super().__init__(data, **kwargs)
 
-        self._nickname = self.detector
+        self._nickname = self.instrument
         self.plotter.plot_settings['cmap'] = self._get_cmap_name()
         self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
@@ -78,6 +78,11 @@ class EITMap(GenericMap):
 
     @property
     def detector(self):
+        # Even though this is wrong, we need to keep this for backwards compatibility
+        return "EIT"
+
+    @property
+    def instrument(self):
         return "EIT"
 
     @property
@@ -97,7 +102,70 @@ class EITMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
-        return header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)'
+        return (header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)'  and header.get('level') is None)
+
+
+class EITL1Map(EITMap):
+    """
+    SOHO EIT L1 Image Map.
+
+    See the docstring of `EITMap` for information on the EIT instrument.
+
+    The EIT L1 data is a level 1 data product with very different headers to the normal/older EIT data.
+    This has required a new class to be created to handle the differences.
+
+    References
+    ----------
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
+    """
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, AsinhStretch(0.0001)), clip=False)
+
+    @property
+    def processing_level(self):
+        """
+        Returns the FITS processing level if present.
+        """
+        return self.meta.get('LEVEL', None)
+
+    @property
+    def instrument(self):
+        """
+        Returns the instrument name.
+        """
+        # EIT L1 has the instrument name in the TELESCOP keyword
+        return self.meta.get('TELESCOP')
+
+    @property
+    def date(self):
+        # EIT L1 data has the date in the DATE-BEG keyword
+        # so we need to call out to GenericMap to get the date.
+        return super(EITMap, self).date
+
+    @property
+    def rsun_obs(self):
+        return u.Quantity(self.meta['rsun_obs'], 'arcsec')
+
+    @property
+    def _supported_observer_coordinates(self):
+        return [(
+            ('haex_obs', 'haey_obs', 'haez_obs'),
+            {'x': self.meta.get('haex_obs'),
+            'y': self.meta.get('haey_obs'),
+            'z': self.meta.get('haez_obs'),
+            'unit': u.m,
+            'representation_type': CartesianRepresentation,
+            'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Determines if header corresponds to an EIT L1 Image"""
+        return (header.get('instrume') == 'EIT' or header.get('telescop') == 'Extreme-ultraviolet Imaging Telescope (EIT)') and header.get('level') == "L1"
 
 
 class LASCOMap(GenericMap):
