@@ -27,7 +27,8 @@ Installing miniforge (and conda)
 If you don't already have a Python installation then we recommend installing Python with `miniforge <https://github.com/conda-forge/miniforge/#miniforge>`__.
 Miniforge will install ``conda`` and automatically configure the default channel (a channel is a remote software repository) to be ``conda-forge``, which is where ``sunpy`` is available.
 
-First, download the installer for your system and architecture from the links below:
+You will want to follow the instructions for your operating system and architecture on the `miniforge install page <https://conda-forge.org/download/>`__.
+This will involve downloading a script or executable file and running it.
 
 .. note::
 
@@ -35,54 +36,12 @@ First, download the installer for your system and architecture from the links be
    architectures on linux, you will have to install sunpy from pip on these
    platforms.
 
-.. grid:: 3
+To check that it has installed correctly, open a terminal (or the miniforge Prompt on Windows) and run:
 
-    .. grid-item-card:: Linux
+.. code-block:: bash
 
-        `x86-64 <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh>`__
-
-        `aarch64 <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh>`__
-
-        `ppc64le <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-ppc64le.sh>`__
-
-    .. grid-item-card:: Windows
-        :link: https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe
-
-        `x86-64 <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe>`__
-
-    .. grid-item-card:: Mac
-
-        `arm64 (Apple
-        Silicon) <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-arm64.sh>`__
-
-        `x86-64 <https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-x86_64.sh>`__
-
-Then select your platform to install miniforge:
-
-.. tab-set::
-
-    .. tab-item:: Linux & Mac
-        :sync: platform
-
-        For Linux & Mac, run the downloaded script above using the following command:
-        ``bash <filename>``. The following should work:
-
-        .. code-block:: console
-
-            bash Miniforge3-$(uname)-$(uname -m).sh
-
-        Once the installer has completed, restart your terminal or system if the changes don't take effect.
-
-    .. tab-item:: Windows
-        :sync: platform
-
-        Double click the executable file downloaded from
-        the links above.
-
-        Once the installer has completed you should have a new "miniforge
-        Prompt" entry in your start menu.
-
-In a new terminal (miniforge Prompt on Windows) run ``conda list`` to test that the install has worked.
+    $ conda --version
+    $ conda list
 
 Installing sunpy
 ================
