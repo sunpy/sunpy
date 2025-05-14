@@ -810,19 +810,26 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
             h11s = list(map(float, f.readline().split()[3:]))
 
         decimalyear = self.obstime.utc.decimalyear
-        if decimalyear < 1900.0:
-            raise ValueError
+        output_shape = decimalyear.shape
+        if np.any(decimalyear < 1900.0):
+            raise ValueError("At least one of the dates is earlier than the year 1900, which is unsupported.")
 
-        if decimalyear <= years[-1]:
-            # Use piecewise linear interpolation before the last year
-            g10 = np.interp(decimalyear, years, g10s[:-1])
-            g11 = np.interp(decimalyear, years, g11s[:-1])
-            h11 = np.interp(decimalyear, years, h11s[:-1])
-        else:
-            # Use secular variation beyond the last year
-            g10 = g10s[-2] + (decimalyear - years[-1]) * g10s[-1]
-            g11 = g11s[-2] + (decimalyear - years[-1]) * g11s[-1]
-            h11 = h11s[-2] + (decimalyear - years[-1]) * h11s[-1]
+        # Use piecewise linear interpolation before the last year
+        decimalyear = np.atleast_1d(decimalyear)
+        g10 = np.interp(decimalyear, years, g10s[:-1])
+        g11 = np.interp(decimalyear, years, g11s[:-1])
+        h11 = np.interp(decimalyear, years, h11s[:-1])
+
+        # Use secular variation beyond the last year
+        future = decimalyear > years[-1]
+        if np.sum(future) > 0:
+            g10[future] = g10s[-2] + (decimalyear[future] - years[-1]) * g10s[-1]
+            g11[future] = g11s[-2] + (decimalyear[future] - years[-1]) * g11s[-1]
+            h11[future] = h11s[-2] + (decimalyear[future] - years[-1]) * h11s[-1]
+
+        g10 = g10.reshape(output_shape)
+        g11 = g11.reshape(output_shape)
+        h11 = h11.reshape(output_shape)
 
         return g10, g11, h11
 
