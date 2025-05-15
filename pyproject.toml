@@ -77,6 +77,10 @@ map = [
   "reproject>=0.10.0",
   "scipy>=1.10.1",
 ]
+map-migration = [
+    "sunpy[tests]",
+    "ndcube@git+https://github.com/sunpy/ndcube@main"
+]
 opencv = ["opencv-python>=4.6.0.66"]
 net = [
   "beautifulsoup4>=4.11.0",
