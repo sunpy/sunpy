@@ -2886,6 +2886,9 @@ class GenericMap(NDData):
                 warn_user("The interpolation keyword argument is ignored when using autoalign "
                           "functionality.")
 
+            # Set the zorder to be 0 so that it is treated like an image in ordering
+            imshow_args.setdefault('zorder', 0)
+
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
                 if item in imshow_args:

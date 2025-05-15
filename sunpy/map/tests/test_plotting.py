@@ -358,7 +358,8 @@ def test_plot_autoalign(aia171_test_map, autoalign):
     # Plotting the rotated map on the original projection should appear de-rotated
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_test_map)
-    rotated_map.plot(axes=ax, autoalign=autoalign)
+    ret = rotated_map.plot(axes=ax, autoalign=autoalign)
+    assert ret.zorder == 0
     return fig
 
 
