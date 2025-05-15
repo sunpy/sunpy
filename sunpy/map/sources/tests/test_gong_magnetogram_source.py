@@ -68,4 +68,4 @@ def test_rsun_obs(gong_magnetogram):
 
 def test_wcs(gong_magnetogram):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    gong_magnetogram.pixel_to_world(0*u.pix, 0*u.pix)
+    gong_magnetogram.wcs.pixel_to_world(0*u.pix, 0*u.pix)

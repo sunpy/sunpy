@@ -6,7 +6,7 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.mapmeta import SpatialPair
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.soho import EITL1Map
 from .helpers import _test_private_date_setters
 
@@ -70,7 +70,7 @@ def test_norm_clip(eit_l1_map):
 
 def test_wcs(eit_l1_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    eit_l1_map.pixel_to_world(0*u.pix, 0*u.pix)
+    eit_l1_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
 
 
 def test_l1_eit_l1_map_colormaps():

@@ -162,6 +162,11 @@ class EITL1Map(EITMap):
             'frame': HeliocentricMeanEcliptic})
         ] + super()._supported_observer_coordinates
 
+    # TODO: This is a hack because I couldn't figure out why it broke
+    def _get_cmap_name(self):
+        cmap_string = f"soho{self.detector}{self.wavelength.to_value('AA'):.0f}"
+        return cmap_string.lower()
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT L1 Image"""
