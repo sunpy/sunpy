@@ -6,7 +6,7 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.mapbase import SpatialPair
+from sunpy.map.mapmeta import SpatialPair
 from sunpy.map.sources.soho import EITL1Map
 from .helpers import _test_private_date_setters
 
