@@ -47,7 +47,7 @@ from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list, grid_perimeter
+from sunpy.util import MetaDict, expand_list, extent_in_other_wcs, grid_perimeter
 from sunpy.util.decorators import (
     ACTIVE_CONTEXTS,
     add_common_docstring,
@@ -3166,35 +3166,11 @@ class GenericMap(NDData):
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
 
+        if auto_extent not in ['all', 'edges', 'corners', None]:
+            raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
         if auto_extent is not None:
-            ny, nx = self.data.shape
-            if auto_extent == 'all':
-                pixels = np.indices((nx + 1, ny + 1)) - 0.5
-            elif auto_extent == 'edges':
-                pixels = grid_perimeter(nx, ny).T - 0.5
-            elif auto_extent == 'corners':
-                pixels = np.array([[0, 0, nx, nx], [0, ny, ny, 0]]) - 0.5
-            else:
-                raise ValueError("The allowed options for auto_extent are 'all', 'edges', 'corners', or None.")
-
-            out_xpixels, out_ypixels = astropy.wcs.utils.pixel_to_pixel(self.wcs, target_wcs, *pixels)
-
-            if not np.all(np.logical_and(np.isfinite(out_xpixels), np.isfinite(out_ypixels))):
-                if auto_extent == 'corners':
-                    raise RuntimeError("The extent could not be automatically determined from the corners. "
-                                       "Try specifying 'all' or 'edges'.")
-                elif auto_extent == 'edges':
-                    raise RuntimeError("The extent could not be automatically determined from the edges. "
-                                       "Try specifying 'all'.")
-                else:
-                    raise RuntimeError("The extent could not be automatically determined because all of "
-                                       "the coordinates in the map transformed to NaNs.")
-
-            left = int(np.floor(np.min(out_xpixels) + 0.5))
-            bottom = int(np.floor(np.min(out_ypixels) + 0.5))
-            right = int(np.ceil(np.max(out_xpixels) - 0.5))
-            top = int(np.ceil(np.max(out_ypixels) - 0.5))
-
+            left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
+                                                            method=auto_extent, integers=True)
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 

@@ -13,10 +13,12 @@ from collections.abc import Iterator
 
 import numpy as np
 
+from astropy.wcs.utils import pixel_to_pixel
+
 __all__ = ['unique', 'replacement_filename', 'expand_list',
            'expand_list_generator', 'dict_keys_same', 'hash_file', 'get_width',
            'get_keywords', 'get_set_methods', 'fix_duplicate_notes',
-           'grid_perimeter']
+           'grid_perimeter', 'extent_in_other_wcs']
 
 def unique(itr, key=None):
     """
@@ -347,3 +349,58 @@ def grid_perimeter(nx, ny):
              [np.full(ny, nx), np.arange(ny, 0, -1)],  # right edge
              [np.arange(nx, 0, -1), np.zeros(nx)]]  # bottom edge
     return np.hstack(edges).T
+
+
+def extent_in_other_wcs(original_wcs, target_wcs, *, method, original_shape=None, integers=False):
+    """
+    Returns the pixel extent of one WCS in a different WCS.
+
+    Parameters
+    ----------
+    original_wcs : `~astropy.wcs.WCS`
+        The original WCS
+    target_wcs : `~astropy.wcs.WCS`
+        The target WCS
+    method : `str`
+        The method for determining the extent: 'all', 'edges', or 'corners'
+    original_shape: 2-element tuple
+        The array shape of the original WCS.
+        This is optional if it is already defined in ``original_wcs``
+    integers : `bool`
+        If `True`, round the output appropriately to integer values.
+        Defaults to `False`.
+
+    Returns
+    -------
+    min_x, max_x, min_y, max_y : `float` or `int`
+        The pixel extent
+    """
+    ny, nx = original_wcs.array_shape if original_shape is None else original_shape
+    if method == 'all':
+        pixels = np.indices((nx + 1, ny + 1)).reshape((2, -1)) - 0.5
+    elif method == 'edges':
+        pixels = grid_perimeter(nx, ny).T - 0.5
+    elif method == 'corners':
+        pixels = np.array([[0, 0, nx, nx], [0, ny, ny, 0]]) - 0.5
+    else:
+        raise ValueError("The allowed options for `method` are 'all', 'edges', or 'corners'.")
+
+    xy = np.stack(pixel_to_pixel(original_wcs, target_wcs, *pixels))
+
+    if not np.all(np.isfinite(xy)):
+        if method == 'corners':
+            raise RuntimeError("The extent could not be automatically determined from the corners. "
+                               "Try specifying 'all' or 'edges'.")
+        elif method == 'edges':
+            raise RuntimeError("The extent could not be automatically determined from the edges. "
+                               "Try specifying 'all'.")
+        else:
+            raise RuntimeError("The extent could not be automatically determined because all of "
+                               "the coordinates in the original WCS transformed to NaNs.")
+
+    min_xy = np.min(xy, axis=1)
+    max_xy = np.max(xy, axis=1)
+    if integers:
+        min_xy = (np.floor(min_xy + 0.5)).astype(int)
+        max_xy = (np.ceil(max_xy - 0.5)).astype(int)
+    return [min_xy[0], max_xy[0], min_xy[1], max_xy[1]]
