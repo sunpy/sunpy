@@ -31,8 +31,7 @@ class SOLARNETClient(GenericClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> query = [a.solarnet.Dataset.xrt , a.solarnet.Limit(2), a.solarnet.Target.ar]
-    >>> search_results = Fido.search(*query)   # doctest: +REMOTE_DATA
+    >>> search_results = Fido.search(a.solarnet.Dataset.xrt , a.solarnet.Limit(2), a.solarnet.Target.ar)   # doctest: +REMOTE_DATA
     >>> search_results  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
