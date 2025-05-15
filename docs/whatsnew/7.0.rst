@@ -35,14 +35,16 @@ The minimum required versions of the following packages have been updated:
 
 - python>=3.11
 
-Enhancements to plotting maps with autoalignment
-================================================
+Maps now plot with autoalignment by default
+===========================================
 
-The autoalignment functionality of the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` has been significantly enhanced.
-Autoalignment is useful for plotting a map on coordinate axes that may be in a different projection or even a different coordinate frame, while preserving the appearance of the original map's pixels.
+The "autoalignment" functionality of the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` has been significantly enhanced and is now enabled by default.
+This functionality draws the map's pixels in a coordinate-aware fashion when plotting the map on coordinate axes that may be in a different projection or even a different coordinate frame.
 The previously available mesh-based approach (``autoalign='mesh'``) draws each map pixel individually, and has been sped up dramatically.
 The newly available image-based approach (``autoalign='image'``) draws a warped version of the map as a single image, which is usually faster than the image-based approach, but has some limitations.
-Finally, there is an automatic setting (``autoalign=True``), which makes a determination of whether to use the mesh-based approach or the image-based approach.
+The default setting (``autoalign=True``) makes an automatic determination of whether to use the mesh-based approach or the image-based approach.
+
+.. minigallery:: ../examples/map_transformations/autoalign_aia_hmi.py
 
 This autoalignment functionality is for visualization purposes.
 For other data-analysis needs, such as co-adding images, reprojecting the map using :meth:`~sunpy.map.GenericMap.reproject_to` may be more appropriate.

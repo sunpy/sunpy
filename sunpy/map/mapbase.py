@@ -2721,10 +2721,14 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=True,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map using matplotlib.
+
+        By default, the map's pixels will be drawn in an coordinate-aware fashion, even
+        when the plot axes are a different projection or a different coordinate frame.
+        See the ``autoalign`` keyword and the notes below.
 
         Parameters
         ----------
@@ -2830,6 +2834,11 @@ class GenericMap(NDData):
             data = self.data
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
+
+        # Disable autoalignment if it is not necessary
+        # TODO: revisit tolerance value
+        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+            autoalign = False
 
         if autoalign in {True, 'image'}:
             ny, nx = self.data.shape
