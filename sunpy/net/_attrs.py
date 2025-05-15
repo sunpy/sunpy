@@ -110,7 +110,7 @@ class Wavelength(Range):
             wavemax = wavemin
 
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
-            raise TypeError("Wave inputs must be astropy Quantities")
+            raise TypeError(f"Wave inputs ({[wavemin, wavemax]}) must be astropy Quantities")
 
         if not all([wavemin.isscalar, wavemax.isscalar]):
             raise ValueError("Both wavemin and wavemax must be scalar values")

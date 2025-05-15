@@ -13,7 +13,6 @@ from astropy.visualization.wcsaxes import Quadrangle
 
 import sunpy.visualization.drawing
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -245,9 +244,57 @@ class MapPlotter:
         axes.add_patch(quad)
         return quad
 
+    def _update_contour_args(self, contour_args):
+        """
+        Updates ``contour_args`` with values from ``plot_settings``.
+
+        Parameters
+        ----------
+        contour_args : dict
+            A dictionary of arguments to be used for contour plotting.
+
+        Returns
+        -------
+        dict
+            The updated ``contour_args`` dictionary.
+
+        Notes
+        -----
+        - 'cmap': Set to `None` to avoid the error "ValueError: Either colors or cmap must be None".
+        - 'interpolation': Removed because Matplotlib's contour function raises the warning
+        "The following kwargs were not used by contour: 'interpolation'".
+        - 'origin': If `'origin': 'lower'` is present, it is replaced with `'origin': None`,
+        as `None` is the default value for Matplotlib's contour plots.
+        """
+        plot_settings = self.plot_settings.copy()
+        contour_args_copy = contour_args.copy()
+        contour_args.update(plot_settings)
+        # Define default settings for normal plots and contour-specific updates
+        original_plot_defaults = {
+            'origin': 'lower',
+        }
+        default_contour_param = {
+            'origin': None,
+        }
+        # Replace conflicting settings with contour defaults
+        for key in original_plot_defaults:
+            if key in contour_args and contour_args[key] == original_plot_defaults[key]:
+                contour_args[key] = default_contour_param[key]
+        # 'cmap' cannot be used for contour plots when levels are not None,
+        # which is the case in composite maps.
+        contour_args['cmap'] = None
+        # custom 'norm' cannot be passed through plot_settings
+        contour_args['norm'] = None
+        # If 'draw_contour' is used, setting 'norm' and 'cmap' to None ensures the method arguments are applied.
+        contour_args.update(contour_args_copy)
+        contour_args.pop('interpolation')
+        return contour_args
+
+
     def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
         """
         Draw contours of the data.
+
         Parameters
         ----------
         levels : `~astropy.units.Quantity`
@@ -261,11 +308,13 @@ class MapPlotter:
             Determines the style of the contours:
             - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
             - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
+
         Returns
         -------
         cs : `list`
             The `~matplotlib.contour.QuadContourSet` object, after it has been added to
             ``axes``.
+
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
@@ -274,22 +323,22 @@ class MapPlotter:
         contour_args = self._update_contour_args(contour_args)
 
         axes = self._check_axes(axes)
-        levels = self.smap._process_levels_arg(levels)
+        levels = self._process_levels_arg(levels)
 
         # Pixel indices
-        y, x = np.indices(self.smap.shape)
+        y, x = np.indices(self.data.shape)
 
         # Prepare a local variable in case we need to mask values
-        data = self.smap.data
+        data = self.data
 
         # Transform the indices if plotting to a different WCS
         # We do this instead of using the `transform` keyword argument so that Matplotlib does not
         # get confused about the bounds of the contours
-        if self.smap.wcs is not axes.wcs:
+        if self.wcs is not axes.wcs:
             if "transform" in contour_args:
                 transform_orig = contour_args.pop("transform")
             else:
-                transform_orig = axes.get_transform(self.smap.wcs)
+                transform_orig = axes.get_transform(self.wcs)
             transform = transform_orig - axes.transData  # pixel->pixel transform
             x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
             x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
@@ -300,7 +349,7 @@ class MapPlotter:
         if fill:
             # Ensure we have more than one level if fill is True
             if len(levels) == 1:
-                max_val = np.nanmax(data)
+                max_val = np.nanmax(self.data)
                 # Ensure the existing level is less than max_val
                 if levels[0] < max_val:
                     levels = np.append(levels, max_val)
@@ -415,7 +464,6 @@ class MapPlotter:
 
         return figure
 
-    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
     def plot(self, * , annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
@@ -470,11 +518,6 @@ class MapPlotter:
         :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
         manager may be appropriate.
         """
-        # Users sometimes assume that the first argument is `axes` instead of `annotate`
-        if not isinstance(annotate, bool):
-            raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
-                            "If you are specifying the axes, use `axes=...` to pass it in.")
-
         # Set the default approach to autoalignment
         if autoalign not in [False, True, 'pcolormesh']:
             raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")

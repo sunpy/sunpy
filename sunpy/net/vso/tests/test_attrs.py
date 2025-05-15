@@ -91,11 +91,12 @@ def test_attror_and():
     assert one == other
 
 
-def test_wave_inputQuantity():
-    wrong_type_message = "Wave inputs must be astropy Quantities"
+def test_wave_input_quantity():
+    wrong_type_message = "Wave inputs ([10, 23]) must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
         core_attrs.Wavelength(10, 23)
     assert wrong_type_message in str(excinfo.value)
+    wrong_type_message = "Wave inputs ([<Quantity 10. Angstrom>, 23]) must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
         core_attrs.Wavelength(10 * u.AA, 23)
     assert wrong_type_message in str(excinfo.value)

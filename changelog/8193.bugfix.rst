@@ -1,0 +1,1 @@
+Fixed a bug where the three magnetic coordinate frames (`~sunpy.coordinates.frames.Geomagnetic`, `~sunpy.coordinates.frames.SolarMagnetic`, `~sunpy.coordinates.frames.GeocentricSolarMagnetospheric`) would raise an error if used nontrivially with array ``obstime`` (as opposed to a scalar).

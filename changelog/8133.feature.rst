@@ -1,0 +1,1 @@
+Added support for PUNCH data within `sunpy.map.Map`.

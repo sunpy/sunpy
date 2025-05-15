@@ -21,7 +21,10 @@ import sunpy.visualization.drawing
 m_aia = sunpy.map.Map(sunpy.data.sample.AIA_193_JUN2012)
 m_aia_sub = m_aia.submap(SkyCoord(Tx=-500*u.arcsec, Ty=-500*u.arcsec, frame=m_aia.coordinate_frame),
                          top_right=SkyCoord(Tx=700*u.arcsec, Ty=0*u.arcsec, frame=m_aia.coordinate_frame))
-m_aia_sub.peek()
+
+fig = plt.figure()
+ax = fig.add_subplot(projection=m_aia_sub)
+m_aia_sub.plot(axes=ax)
 
 ################################################################################
 # To show the context of the submap, we can draw the extent of the submap on top

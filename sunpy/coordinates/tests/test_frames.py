@@ -1,5 +1,6 @@
 
 import warnings
+from contextlib import nullcontext
 
 import numpy as np
 import pytest
@@ -490,6 +491,21 @@ def test_heliocentric_radial_psi(x, y, psi):
 # ==============================================================================
 # Magnetic-model coordinate frame tests
 # ==============================================================================
+
+
+@pytest.mark.parametrize(('obstime', 'dipole_lonlat'),
+                         [('2012-07-01', [-72.408328, 80.16423]*u.deg),
+                          ('2012-08-01', [-72.415148, 80.169261]*u.deg),
+                          ('2032-08-01', [-72.576963, 81.212062]*u.deg),
+                          (['2012-07-01', '2012-08-01'], [[-72.408328, 80.16423], [-72.415148, 80.169261]]*u.deg),
+                          (['2012-07-01', '2032-08-01'], [[-72.408328, 80.16423], [-72.576963, 81.212062]]*u.deg),
+                          ('1899-01-01', ValueError),
+                          (['1899-01-01', '2012-07-01'], ValueError)])
+def test_magnetic_model_obstime(obstime, dipole_lonlat):
+    frame = Geomagnetic(obstime=obstime, magnetic_model='igrf13')
+    ctx = pytest.raises(ValueError, match="earlier than the year 1900") if dipole_lonlat is ValueError else nullcontext()
+    with ctx:
+        assert_quantity_allclose(frame.dipole_lonlat, dipole_lonlat.T)
 
 
 def test_magnetic_model_default():

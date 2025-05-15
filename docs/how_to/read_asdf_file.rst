@@ -22,42 +22,43 @@ The following code shows how to save and load a sunpy Map to an ASDF file:
     >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> from sunpy.io import read_file, write_file
 
-    >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> tree = {'amap': aiamap}  # doctest: +REMOTE_DATA
-    >>> with asdf.AsdfFile(tree) as asdf_file:  # doctest: +REMOTE_DATA
-    ...     asdf_file.write_to("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-    >>> input_asdf = asdf.open("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-    >>> input_asdf['amap']  # doctest: +REMOTE_DATA
-    <sunpy.map.sources.sdo.AIAMap object at ...>
-    SunPy Map
-    ---------
-    Observatory:                 SDO
-    Instrument:          AIA 3
-    Detector:            AIA
-    Measurement:                 171.0 Angstrom
-    Wavelength:          171.0 Angstrom
-    Observation Date:    2011-06-07 06:33:02
-    Reference Date:              2011-06-07 06:33:02
-    Exposure Time:               0.234256 s
-    Pixel Dimensions:            [1024. 1024.]
-    Coordinate System:   helioprojective
-    Scale:                       [2.402792 2.402792] arcsec / pix
-    Reference Pixel:     [511.5 511.5] pix
-    Reference Coord:     [3.22309951 1.38578135] arcsec
-    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
-            -127.96519  , -127.96519  ],
-           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
-            -104.04137  , -127.919716 ],
-           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
-             -37.95505  , -127.87541  ],
-           ...,
-           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
-            -128.01454  , -128.01454  ],
-           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
-            -127.899666 , -127.899666 ],
-           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
-            -128.03072  , -128.03072  ]], dtype=float32)
-    >>> input_asdf.close()  # doctest: +REMOTE_DATA
+    >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+
+    # Save the map to an ASDF file
+    >>> aiamap.save("aia171.asdf")  # doctest: +REMOTE_DATA
+
+    # Read the ASDF file back into a map object
+    >>> aiamap_asdf = sunpy.map.Map('aia171.asdf')  # doctest: +REMOTE_DATA
+
+    >>> aiamap_asdf  # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at ...>
+        SunPy Map
+        ---------
+        Observatory:                 SDO
+        Instrument:          AIA 3
+        Detector:            AIA
+        Measurement:                 171.0 Angstrom
+        Wavelength:          171.0 Angstrom
+        Observation Date:    2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Dimension:           [1024. 1024.] pix
+        Coordinate System:   helioprojective
+        Scale:                       [2.402792 2.402792] arcsec / pix
+        Reference Pixel:     [511.5 511.5] pix
+        Reference Coord:     [3.22309951 1.38578135] arcsec
+        array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+                -127.96519  , -127.96519  ],
+            [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+                -104.04137  , -127.919716 ],
+            [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+                -37.95505  , -127.87541  ],
+            ...,
+            [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+                -128.01454  , -128.01454  ],
+            [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+                -127.899666 , -127.899666 ],
+            [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+                -128.03072  , -128.03072  ]], shape=(1024, 1024), dtype=float32)
 
 When saving a Map to ASDF, all maps are saved as a `.GenericMap` and not a specific source class.
 This comes with some trade-offs.

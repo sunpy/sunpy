@@ -741,23 +741,28 @@ class MapMetaMixin:
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
                         'counts / pixel': 'ct/pix',}
-        # TODO: HACK WORKAROUND
-        if isinstance(unit_str, u.Unit | u.CompositeUnit | u.IrreducibleUnit):
-            unit_str = unit_str.to_string()
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            unit = u.Unit(unit_str, parse_strict='silent')
+        unit = u.Unit(unit_str, parse_strict='silent')
+        for base in unit.bases:
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            if u.DN not in unit.bases:
+            if base is u.DN:
+                continue
+            try:
+                if isinstance(base, u.UnrecognizedUnit):
+                    raise ValueError
+
+                # Also rejects a unit that is not in the FITS standard but is equivalent to one (e.g., Mx)
+                if u.Unit(base.to_string(format='fits')) is not base:  # to_string() can raise ValueError
+                    raise ValueError
+            except ValueError:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                               f'See {_META_FIX_URL} for how to fix metadata before loading it '
                                'with sunpy.map.Map.\n'
                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                                'the FITS unit standards.')
-                unit = None
+                return None
         return unit
 
     @property

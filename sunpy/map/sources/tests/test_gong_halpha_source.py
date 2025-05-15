@@ -54,7 +54,7 @@ def test_rsun_obs(gong_halpha):
 
 def test_nickname(gong_halpha):
     """Tests the nickname property of the GONGHalphaMap map."""
-    assert gong_halpha.nickname == "NSO-GONG, Big Bear"
+    assert gong_halpha.nickname == "NSO-GONG, Big Bear, (USA)"
 
 
 def test_earth_location(gong_halpha):

@@ -21,7 +21,7 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
 from sunpy.net.vso import VSOQueryResponseTable
-from sunpy.tests.helpers import no_vso, skip_jsoc, skip_windows
+from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -140,7 +140,7 @@ def test_unified_response():
     strings = ['eve', 'SDO', start.strftime(TIMEFORMAT), end.strftime(TIMEFORMAT)]
     assert all(s in qr._repr_html_() for s in strings)
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
@@ -217,9 +217,9 @@ def filter_queries(queries):
 @pytest.mark.remote_data
 def test_path(tmp_path):
     results = Fido.search(
-        a.Time("2022/1/1", "2022/1/1"), a.Instrument.aia)
+        a.Time("2025/1/1", "2025/1/1"), a.Instrument.aia)
     file = Fido.fetch(results, path=tmp_path / "{file}")
-    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2022_01_01T00_00_00.62Z.image_lev1.fits"))]
+    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025_01_01T00_00_00.63Z.image_lev1.fits"))]
 
 
 @pytest.mark.remote_data
@@ -400,7 +400,7 @@ def test_client_fetch_wrong_type(mock_fetch):
         Fido.fetch(qr)
 
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_vso_fetch_hmi(tmpdir):
     start_time = "2017-01-25"
@@ -419,7 +419,7 @@ def test_fido_no_time(mocker):
     jsoc_mock.assert_called_once()
 
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 def test_jsoc_missing_email():
     res = Fido.search(a.Time("2011/01/01", "2011/01/01 00:01"), a.jsoc.Series.aia_lev1_euv_12s)
@@ -427,7 +427,7 @@ def test_jsoc_missing_email():
         Fido.fetch(res)
 
 
-@skip_jsoc
+
 @pytest.mark.remote_data
 @pytest.mark.xdist_group(name="jsoc")
 def test_slice_jsoc(jsoc_test_email):
@@ -444,7 +444,7 @@ def test_fido_repr():
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
 
 
-@skip_jsoc
+
 @pytest.mark.xdist_group(name="jsoc")
 @pytest.mark.remote_data
 def test_fido_metadata_queries(jsoc_test_email):
