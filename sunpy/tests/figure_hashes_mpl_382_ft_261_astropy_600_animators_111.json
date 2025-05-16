@@ -70,7 +70,7 @@
   "sunpy.map.tests.test_reproject_to.test_reproject_to_auto_extent[all]": "5d4904cc2e5f2eaf6f251e6edd3d75fc461d375751af49a423cae2db6c7eb084",
   "sunpy.timeseries.sources.tests.test_eve.test_esp_peek": "28b1e7af0e1894d22fd9db90d9e2bc5eb76e291c9e41fa1bb1d33d95bd13cce3",
   "sunpy.timeseries.sources.tests.test_eve.test_eve_peek": "2a22f93af44971411800e4fcd0d93d2128fe2b9e6b97e576e8372c2cd12d7d78",
-  "sunpy.timeseries.sources.tests.test_fermi_gbm.test_fermi_gbm_peek": "83f0b53ca6f1cd809bd03e4aff80b3c02c8078e552b0c3e90b2cb3cf26932a51",
+  "sunpy.timeseries.sources.tests.test_fermi_gbm.test_fermi_gbm_peek": "1f80410f92458ad609189f4653928a566e8bea207a8dd6794bd65abf691b3ffc",
   "sunpy.timeseries.sources.tests.test_goes.test_goes_peek": "2f01b5430fe0295b7c8bc5bccef6c3356d5eed62c1236a2790e122fba2ead267",
   "sunpy.timeseries.sources.tests.test_goes.test_goes_ylim": "ae61275b7e1d8bbaf075e267e55592b86895afcbf8f846ae44dd78ecd645f6e9",
   "sunpy.timeseries.sources.tests.test_lyra.test_lyra_peek": "48924d42773a4d834342cdce5ad1e005db9980bf6db6525d97a141a08f411aba",
