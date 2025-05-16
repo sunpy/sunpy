@@ -9,6 +9,7 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
+from typing import Literal
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
@@ -46,7 +47,7 @@ from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list, grid_perimeter
+from sunpy.util import MetaDict, expand_list, extent_in_other_wcs, grid_perimeter
 from sunpy.util.decorators import (
     ACTIVE_CONTEXTS,
     add_common_docstring,
@@ -3084,6 +3085,7 @@ class GenericMap(NDData):
         return axes
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
+                     auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
@@ -3104,6 +3106,14 @@ class GenericMap(NDData):
         return_footprint : `bool`
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
+        auto_extent : ``"all"``, ``"edges"``, ``"corners"``, or ``None``
+            If ``None``, the extent of the reprojected map comes from the target WCS.
+            If not ``None``, the extent of the reprojected map is automatically
+            determined by ensuring that all of the pixels, just the edges, or just the
+            corners of this map are in the contained within the extent.  Compared to the
+            target WCS, the extent will be shifted/expanded/cropped by an integer number
+            of pixels.
+            Defaults to ``None``.
 
         Returns
         -------
@@ -3129,6 +3139,11 @@ class GenericMap(NDData):
         See the respective documentation for these functions for additional keyword
         arguments that are allowed.
 
+        Of the options for the automatic determination of the reprojected extent, both
+        ``"edges"`` and ``"corners"`` will perform the calculation faster than
+        ``"all"``, but at the risk of potentially not including the entire reprojected
+        map.
+
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
@@ -3150,6 +3165,14 @@ class GenericMap(NDData):
         if algorithm not in functions:
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
+
+        if auto_extent not in ['all', 'edges', 'corners', None]:
+            raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
+        if auto_extent is not None:
+            left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
+                                                            method=auto_extent, integers=True)
+            target_wcs.wcs.crpix -= [left, bottom]
+            target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
         # reproject does not automatically grab the array shape from the WCS instance
         if target_wcs.array_shape is not None:

@@ -35,6 +35,13 @@ The minimum required versions of the following packages have been updated:
 
 - python>=3.11
 
+Automatic determination of extent for reprojections
+===================================================
+
+You can now enable the automatic determination of extent for reprojections through the keyword ``auto_extent`` for the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.reproject_to`.
+
+.. minigallery:: ../examples/map_transformations/reprojection_auto_extent.py
+
 Access to the JSOC AIA "synoptic" data
 ======================================
 
