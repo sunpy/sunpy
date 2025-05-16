@@ -49,6 +49,13 @@ The default setting (``autoalign=True``) makes an automatic determination of whe
 This autoalignment functionality is for visualization purposes.
 For other data-analysis needs, such as co-adding images, reprojecting the map using :meth:`~sunpy.map.GenericMap.reproject_to` may be more appropriate.
 
+Automatic determination of extent for reprojections
+===================================================
+
+You can now enable the automatic determination of extent for reprojections through the keyword ``auto_extent`` for the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.reproject_to`.
+
+.. minigallery:: ../examples/map_transformations/reprojection_auto_extent.py
+
 Access to the JSOC AIA "synoptic" data
 ======================================
 
