@@ -39,7 +39,99 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.util.util import fix_duplicate_notes
 from .strategies import matrix_meta
+
+
+def test_notes_combined():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_references():
+    map_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
+
+def test_notes_combined_no_existing_notes():
+    map_documentation = """
+    Class Info.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == expected_result
+
+def test_notes_combined_no_notes_no_references():
+    map_documentation = """
+    Class Info.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
+    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+    """
+    assert updated_documentation2.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):
@@ -1722,7 +1814,7 @@ def test_plot_composite_map_updated_args(simple_map):
     contour_args = {'norm': 'log',
                     'cmap':'plasma'}
     updated_args = simple_map.plotter._update_contour_args(contour_args)
-    # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
+    # Since 'norm' and 'cmap' are explicitly provided in contour_args of draw_contours,
     # their contour_args values will be used instead of plot_settings value
     assert updated_args ==  {
         'alpha': 0.7,
