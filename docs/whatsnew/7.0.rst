@@ -88,3 +88,14 @@ The AIA synoptic data are calibrated Level 1.5 images with reduced 1k x 1k resol
     2016-01-01 00:00:00.000 2016-01-01 00:00:59.999        AIA intensity    SDO     JSOC  1.5S       4500
     <BLANKLINE>
     <BLANKLINE>
+
+
+Improved return types from the `~sunpy.net.hek.HEKClient`
+=========================================================
+
+The `~sunpy.net.hek.HEKClient` now returns `~astropy.units.Quantity`, `~astropy.time.Time`,
+and `~astropy.coordinates.SkyCoord` objects wherever possible. This allows for easier interpretation
+of results from the Heliophysics Event Knowledgebase, particular when it comes to coordinates and
+bounding boxes. Users should be aware that some redundant columns are now dropped from the results table,
+for example, those columns which only contained unit information.
+The original, unparsed response from the HEK can be accessed via the ``raw`` property on `~sunpy.net.hek.HEKTable`.
