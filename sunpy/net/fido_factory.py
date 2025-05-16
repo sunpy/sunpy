@@ -214,6 +214,62 @@ class UnifiedResponse(Sequence):
         """
         return type(self)(*[i.show(*cols) for i in self._list])
 
+
+    def show_in_notebook(self, *cols, **kwargs):
+        """
+        Display the attrs tables as interactive grids in a Jupyter Notebook.
+
+        This function utilizes the ``itables`` library to render tables as interactive grids.
+
+        .. note::
+            This function requires the optional dependency ``itables``.
+            Ensure it is installed before calling this method.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Additional keyword arguments to customize the ``itables.show`` function.
+
+        """
+        try:
+            from itables import show
+        except ImportError:
+            raise ImportError(
+                "`itables` is required to display tables. "
+                "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
+            )
+        style = "caption-side: top;"
+        style += kwargs.pop("style", '')
+
+        nprov = len(self)
+        if nprov == 1:
+            print(f'Results from {len(self)} Provider:')
+        else:
+            print(f'Results from {len(self)} Providers:')
+
+        for i , table in enumerate(self._list):
+            block = self[i]
+            caption = f"{len(block)} Results from the {block.client.__class__.__name__}:\n"
+
+            if block.client.info_url is not None:
+                caption += f'Source: {block.client.info_url}\n'
+            size = block.total_size()
+
+            if np.isfinite(size):
+                caption += f'Total estimated size: {size}\n'
+
+            # Identify and exclude multidimensional columns
+            valid_columns = [name for name in table.colnames if len(table[name].shape) <= 1]
+
+            if cols:
+                selected_columns = [col for col in cols if col in valid_columns]
+            else:
+                selected_columns = valid_columns
+            filtered_table = table[selected_columns]
+            df = filtered_table.to_pandas()
+            show(df, caption, style=style, **kwargs)
+
+
     @property
     def all_colnames(self):
         """
