@@ -13,7 +13,6 @@ from astropy.visualization.wcsaxes import Quadrangle
 
 import sunpy.visualization.drawing
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
@@ -418,7 +417,6 @@ class MapPlotter:
 
         return figure
 
-    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
     def plot(self, * , annotate=True, axes=None, title=True, autoalign=False,
              clip_interval: u.percent = None, **imshow_kwargs):
