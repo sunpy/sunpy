@@ -54,7 +54,7 @@
   "sunpy.map.tests.test_plotting.test_draw_limb_different_observer": "bba8a5d3d8e5e3e3a7d36060d9730e4545c5250367902cf97048c33049f330f3",
   "sunpy.map.tests.test_plotting.test_draw_limb_heliographic_stonyhurst": "fcbf6be2894be891f458d2bc305702564cb451052bc727b0175e7b6ad527801c",
   "sunpy.map.tests.test_plotting.test_map_draw_extent": "c51113113a46c838b07b049a3f17940184b99b0a56200fbd63e6cf2bf1e3c86c",
-  "sunpy.map.tests.test_plotting.test_plot_autoalign[True]": "197f06eced7fe4bf8496cf5f3ba4e4cc379ac108be0f212d605007c1e3db062c",
+  "sunpy.map.tests.test_plotting.test_plot_autoalign[True]": "800c1148cc30e8ddc540aa555a488f9ed8ba654cd3e055bdd4a08238c2542c9e",
   "sunpy.map.tests.test_plotting.test_plot_autoalign[mesh]": "197f06eced7fe4bf8496cf5f3ba4e4cc379ac108be0f212d605007c1e3db062c",
   "sunpy.map.tests.test_plotting.test_plot_autoalign[image]": "800c1148cc30e8ddc540aa555a488f9ed8ba654cd3e055bdd4a08238c2542c9e",
   "sunpy.map.tests.test_plotting.test_plot_autoalign_datalim": "a5af424f5d70394d4e39a7066793463bec0adae17c9ab46a451640957822bc8d",
