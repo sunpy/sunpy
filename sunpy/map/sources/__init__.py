@@ -14,6 +14,7 @@ from .iris import *
 from .mlso import *
 from .proba2 import *
 from .psp import *
+from .punch import *
 from .rhessi import *
 from .sdo import *
 from .soho import *

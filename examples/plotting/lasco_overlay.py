@@ -62,7 +62,7 @@ with SphericalScreen(aia_map.observer_coordinate):
 fig = plt.figure()
 ax = fig.add_subplot(projection=lasco_map)
 lasco_map.plot(axes=ax)
-aia_reprojected.plot(axes=ax, clip_interval=(1, 99.9)*u.percent, autoalign=True)
+aia_reprojected.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
 ax.set_title("AIA and LASCO C2 Overlay")
 
 plt.show()

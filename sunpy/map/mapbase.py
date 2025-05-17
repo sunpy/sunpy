@@ -7,8 +7,10 @@ import html
 import inspect
 import numbers
 import textwrap
+import warnings
 import itertools
 import webbrowser
+from typing import Literal
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
@@ -46,7 +48,7 @@ from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list, grid_perimeter
+from sunpy.util import MetaDict, expand_list, extent_in_other_wcs, grid_perimeter
 from sunpy.util.decorators import (
     ACTIVE_CONTEXTS,
     add_common_docstring,
@@ -54,7 +56,7 @@ from sunpy.util.decorators import (
     check_arithmetic_compatibility,
     deprecated,
 )
-from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
+from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
@@ -2720,11 +2722,14 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=True,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
-        Plots the map object using matplotlib, in a method equivalent
-        to :meth:`~matplotlib.axes.Axes.imshow` using nearest neighbor interpolation.
+        Plots the map using matplotlib.
+
+        By default, the map's pixels will be drawn in an coordinate-aware fashion, even
+        when the plot axes are a different projection or a different coordinate frame.
+        See the ``autoalign`` keyword and the notes below.
 
         Parameters
         ----------
@@ -2746,10 +2751,11 @@ class GenericMap(NDData):
 
             * ``"mesh"``, which draws a mesh of the individual map pixels
             * ``"image"``, which draws the map as a single (warped) image
-            * `True`, which is equivalent to ``"mesh"``
+            * `True`, which automatically determines whether to use ``"mesh"`` or ``"image"``
 
         **imshow_kwargs : `dict`
-            Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
+            Any additional arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`
+            or :meth:`~matplotlib.axes.Axes.pcolormesh`.
 
         Examples
         --------
@@ -2764,13 +2770,14 @@ class GenericMap(NDData):
         Notes
         -----
         The ``autoalign`` functionality can be intensive to render. If the plot is to
-        be interactive, the alternative approach of preprocessing the map (e.g.,
-        de-rotating it) to match the desired axes will result in better performance.
+        be interactive, the alternative approach of preprocessing the map to match the
+        intended axes (e.g., through rotation or reprojection) will result in better
+        plotting performance.
 
-        The ``autoalign='image'`` approach is faster than the ``autoalign='mesh'``, but
-        is not as reliable, depending on the specifics of the map.  If parts of the map
-        cannot be plotted, a warning is emitted.  If the entire map cannot be plotted,
-        an error is raised.
+        The ``autoalign='image'`` approach is usually faster than the
+        ``autoalign='mesh'`` approach, but is not as reliable, depending on the
+        specifics of the map.  If parts of the map cannot be plotted, a warning is
+        emitted.  If the entire map cannot be plotted, an error is raised.
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
@@ -2787,8 +2794,6 @@ class GenericMap(NDData):
         allowed_autoalign = [False, True, 'mesh', 'image']
         if autoalign not in allowed_autoalign:
             raise ValueError(f"The value for `autoalign` must be one of {allowed_autoalign}.")
-        if autoalign is True:
-            autoalign = 'mesh'
 
         axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
@@ -2831,26 +2836,43 @@ class GenericMap(NDData):
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
-        if autoalign == 'image':
+        # Disable autoalignment if it is not necessary
+        # TODO: revisit tolerance value
+        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+            autoalign = False
+
+        if autoalign in {True, 'image'}:
             ny, nx = self.data.shape
             pixel_perimeter = grid_perimeter(nx, ny) - 0.5
 
             transform = axes.get_transform(self.wcs) - axes.transData
-            data_perimeter = transform.transform(pixel_perimeter)
-
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=SunpyUserWarning)
+                data_perimeter = transform.transform(pixel_perimeter)
             if not np.all(np.isfinite(data_perimeter)):
-                raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
-                                   "Try specifying autoalign=mesh.")
+                if autoalign == 'image':
+                    raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
+                                       "Try specifying autoalign=mesh.")
+                autoalign = 'mesh'
+            else:
+                min_x, min_y = np.min(data_perimeter, axis=0)
+                max_x, max_y = np.max(data_perimeter, axis=0)
 
-            min_x, min_y = np.min(data_perimeter, axis=0)
-            max_x, max_y = np.max(data_perimeter, axis=0)
+                data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
+                if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
+                        and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
+                    if autoalign == 'image':
+                        warn_user("Cannot draw all of the autoaligned image due to the warping required. "
+                                  "Specifying autoalign=mesh is recommended.")
+                    else:
+                        autoalign = 'mesh'
+            if autoalign == 'mesh':
+                log.info("Using mesh-based autoalignment")
+            elif autoalign is True:
+                log.info("Using image-based autoalignment")
+                autoalign = 'image'
 
-            data_corners = data_perimeter[[0, nx, nx + ny, 2*nx + ny], :]
-            if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
-                    and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
-                warn_user("Cannot draw all of the autoaligned image due to the warping required. "
-                          "Specifying autoalign=mesh is recommended.")
-
+        if autoalign == 'image':
             # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
             old_datalim = copy.deepcopy(axes.dataLim)
             ret = axes.imshow(data, transform=transform + axes.transData, **imshow_args)
@@ -2860,10 +2882,7 @@ class GenericMap(NDData):
             ret.sticky_edges.x[:] = [min_x, max_x]
             ret.sticky_edges.y[:] = [min_y, max_y]
             axes.update_datalim([(min_x, min_y), (max_x, max_y)])
-            # Mark a single axis, or all of them, as stale wrt. autoscaling.
-            # No computation is performed until the next autoscaling; thus, separate
-            # calls to control individual axes incur negligible performance cost.
-            axes._request_autoscale_view()
+            axes.autoscale(enable=None)
 
             # Clip the drawn image based on the transformed perimeter
             path = matplotlib.path.Path(data_perimeter)
@@ -2876,6 +2895,9 @@ class GenericMap(NDData):
             if imshow_args.get('interpolation', None) not in [None, 'none', 'nearest']:
                 warn_user("The interpolation keyword argument is ignored when using autoalign "
                           "functionality.")
+
+            # Set the zorder to be 0 so that it is treated like an image in ordering
+            imshow_args.setdefault('zorder', 0)
 
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
@@ -3084,6 +3106,7 @@ class GenericMap(NDData):
         return axes
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
+                     auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
@@ -3104,6 +3127,14 @@ class GenericMap(NDData):
         return_footprint : `bool`
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
+        auto_extent : ``"all"``, ``"edges"``, ``"corners"``, or ``None``
+            If ``None``, the extent of the reprojected map comes from the target WCS.
+            If not ``None``, the extent of the reprojected map is automatically
+            determined by ensuring that all of the pixels, just the edges, or just the
+            corners of this map are in the contained within the extent.  Compared to the
+            target WCS, the extent will be shifted/expanded/cropped by an integer number
+            of pixels.
+            Defaults to ``None``.
 
         Returns
         -------
@@ -3129,6 +3160,11 @@ class GenericMap(NDData):
         See the respective documentation for these functions for additional keyword
         arguments that are allowed.
 
+        Of the options for the automatic determination of the reprojected extent, both
+        ``"edges"`` and ``"corners"`` will perform the calculation faster than
+        ``"all"``, but at the risk of potentially not including the entire reprojected
+        map.
+
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         # Check if both context managers are active
@@ -3150,6 +3186,14 @@ class GenericMap(NDData):
         if algorithm not in functions:
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
+
+        if auto_extent not in ['all', 'edges', 'corners', None]:
+            raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
+        if auto_extent is not None:
+            left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
+                                                            method=auto_extent, integers=True)
+            target_wcs.wcs.crpix -= [left, bottom]
+            target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
         # reproject does not automatically grab the array shape from the WCS instance
         if target_wcs.array_shape is not None:
