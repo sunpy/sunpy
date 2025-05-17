@@ -66,10 +66,10 @@ class SOLARNETClient(BaseClient):
 
         Examples
         --------
-        from sunpy.net import Fido, attrs as a
-        query = [a.solarnet.Dataset.swap_level_1 , a.solarnet.Limit(2)]
-        search_results = Fido.search(*query)   # doctest: +REMOTE_DATA
-        print(search_results) # doctest: +REMOTE_DATA
+        >>> from sunpy.net import Fido, attrs as a
+        >>> query = [a.solarnet.Dataset.swap_level_1, a.solarnet.Limit(2)]
+        >>> search_results = Fido.search(*query)   # doctest: +REMOTE_DATA
+        >>> print(search_results)  # doctest: +REMOTE_DATA
         <BLANKLINE>
         Results from 1 Provider:
         <BLANKLINE>
