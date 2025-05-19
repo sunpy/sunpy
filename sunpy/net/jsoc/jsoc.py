@@ -800,11 +800,27 @@ class JSOCClient(BaseClient):
         for series in data_sources:
             info = client.series(rf'{series}\.')
             for item in info:
-                print(f'🛰 Getting info for {series}: {item}')
-                data = client.info(item)
-                series_store.append((data.name, data.note))
-                if not data.segments.empty:
-                    segments.extend((row[0], row[1].iloc[-1]) for row in data.segments.iterrows())
+                try:
+                    print(f'🛰 Getting info for {series}: {item}')
+                    data = client.info(item)
+                    series_store.append((data.name, data.note))
+                    if not data.segments.empty:
+                        segments.extend((row[0], row[1].iloc[-1]) for row in data.segments.iterrows())
+                except Exception as e:
+                    print(f"⚠️  {series} failed with error: {e}")
+                    if item in ["hmi.V_avg120", "mdi.fdV_avg120"]:
+                        # The following is from a private email from JSOC:
+                        #
+                        # So basically the 0xC5 LATIN-1 byte (Angstrom) got copied over, as-is, to the
+                        # hmidb2 database. So hmidb2 is basically corrupt in a strict sense, although in
+                        # practice, the only thing that gets messed up is this series, sometimes,
+                        # because it is both slony-replicated and hmidb has a non-ascii char in it.
+                        #
+                        # Then jsocexintinfo.py asks PostgreSQL to "give me info for hmi.v_avg120, first
+                        # converting to utf8 from ascii". PostgreSQL ignores any byte that is not an
+                        # ascii byte and simply returns it as is. So now jsocexintfo.py has a byte,
+                        # 0xC5, that it expects is a UTF-8 byte, which it isn't.
+                        print(f"🛈 {item} has a known issue with the JSOC database.")
         series_store = list(set(series_store))
         segments = list(set(segments))
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
