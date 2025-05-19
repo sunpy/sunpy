@@ -8,11 +8,15 @@ from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.map
-from sunpy.coordinates import HeliographicStonyhurst
-from sunpy.coordinates.frames import HeliographicCarrington
+from sunpy.coordinates import HeliographicStonyhurst, frames
+from sunpy.coordinates.ephemeris import get_earth
 from sunpy.coordinates.utils import GreatArc
 from sunpy.map.maputils import (
+    _get_bounding_coordinates,
+    _get_extreme_position,
+    _rotate_submap_edge,
     _verify_coordinate_helioprojective,
+    _warp_sun_coordinates,
     all_coordinates_from_map,
     all_corner_coords_from_map,
     all_pixel_indices_from_map,
@@ -21,6 +25,7 @@ from sunpy.map.maputils import (
     contains_limb,
     contains_solar_center,
     coordinate_is_on_solar_disk,
+    diff_rotation,
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
@@ -29,6 +34,7 @@ from sunpy.map.maputils import (
     sample_at_coords,
     solar_angular_radius,
 )
+from sunpy.sun.constants import radius as R_sun
 
 
 @pytest.fixture
@@ -55,7 +61,7 @@ def sub_smap(aia171_test_map):
 def non_helioprojective_map():
     data = np.arange(0, 100).reshape(10, 10)
     coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24',
-                     observer='earth', frame=HeliographicCarrington)
+                     observer='earth', frame=frames.HeliographicCarrington)
     header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
                                                          reference_pixel=[0, 0]*u.pixel,
                                                          scale=[2, 2]*u.arcsec/u.pixel,
@@ -317,3 +323,197 @@ def test_pixelate_coord_path_bresenham(aia171_test_map, x, y, sampled_x, sampled
         sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
         assert np.allclose(sampled_pixels[0], sxx)
         assert np.allclose(sampled_pixels[1], syy)
+
+
+# Testing using observer inputs
+def test_diff_rotation_observer_all_off_disk(all_off_disk_map):
+    # Test a map that is entirely off the disk of the Sun
+    # Should report an error
+    with pytest.raises(ValueError, match="The entire map is off disk. No data to differentially rotate."):
+        diff_rotation(all_off_disk_map)
+
+
+def test_diff_rotation_observer_full_disk(aia171_d_test_map):
+    # Test a full disk map
+    new_observer = get_earth(aia171_d_test_map.date + 6*u.hr)
+    dmap = diff_rotation(aia171_d_test_map, observer=new_observer)
+    assert dmap.data.shape == aia171_d_test_map.data.shape
+    assert dmap.date.isot == new_observer.obstime.isot
+    assert dmap.heliographic_latitude == new_observer.lat
+    assert dmap.heliographic_longitude == new_observer.lon
+
+
+def test_diff_rotation_observer_all_on_disk(all_on_disk_map):
+    # Test a map that is entirely on disk - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_observer = get_earth(all_on_disk_map.date - 48*u.hr)
+    dmap = diff_rotation(all_on_disk_map, observer=new_observer)
+    assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
+    # This rotated map should have a larger extent in the x direction
+    new_observer = get_earth(all_on_disk_map.date + 48*u.hr)
+    dmap = diff_rotation(all_on_disk_map, observer=new_observer)
+    assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
+    assert dmap.date.isot == new_observer.obstime.isot
+    assert dmap.heliographic_latitude == new_observer.lat
+    assert dmap.heliographic_longitude == new_observer.lon
+
+
+def test_diff_rotation_observer_straddles_limb(straddles_limb_map):
+    # Test a map that straddles the limb - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
+    dmap = diff_rotation(straddles_limb_map, observer=new_observer)
+    assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
+    # The output map should have the positional properties of the observer
+    assert dmap.date.isot == new_observer.obstime.isot
+    assert dmap.heliographic_latitude == new_observer.lat
+    assert dmap.heliographic_longitude == new_observer.lon
+
+
+# ----- Testing with time input -----
+def test_diff_rotation_time_full_disk(aia171_d_test_map):
+    # Test a full disk map
+    new_time = aia171_d_test_map.date + 6*u.hr
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = diff_rotation(aia171_d_test_map, time=new_time)
+    assert dmap.data.shape == aia171_d_test_map.data.shape
+    # The output map should have the same time as the new time now.
+    assert dmap.date.isot == new_time.isot
+
+
+def test_diff_rotation_time_all_on_disk(all_on_disk_map):
+    # Test a map that is entirely on disk - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_time = all_on_disk_map.date - 48*u.hr
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = diff_rotation(all_on_disk_map, time=new_time)
+    assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
+    # This rotated map should have a larger extent in the x direction
+    new_time = all_on_disk_map.date + 48*u.hr
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = diff_rotation(all_on_disk_map, time=new_time)
+    assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
+    # The output map should have the same time as the new time now.
+    assert dmap.date.isot == new_time.isot
+
+
+def test_diff_rotation_time_straddles_limb(straddles_limb_map):
+    # Test a map that straddles the limb - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_time = straddles_limb_map.date + 48*u.hr
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = diff_rotation(straddles_limb_map, time=new_time)
+    assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
+    # The output map should have the same time as the new time now.
+    assert dmap.date.isot == new_time.isot
+
+
+def test_diff_rotation_time_off_disk(all_off_disk_map):
+    # Test a map that is entirely off the disk of the Sun
+    # Should report an error
+    new_time = all_off_disk_map.date + 48*u.hr
+    with pytest.raises(ValueError, match="The entire map is off disk. No data to differentially rotate."):
+        diff_rotation(all_off_disk_map, time=new_time)
+
+
+@pytest.mark.array_compare
+def test_differential_rotation_maputil(aia171_d_test_map):
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        rot_map = diff_rotation(aia171_d_test_map, time=2*u.day)
+    return rot_map.data
+
+
+def test_rsun_fallback(aia171_d_test_map):
+    # Remove the AIA-specific value of the solar radius
+    assert_quantity_allclose(aia171_d_test_map.rsun_meters, 696 * u.Mm)
+    del aia171_d_test_map.meta['rsun_ref'], aia171_d_test_map.meta['rsun_obs']
+
+    # Confirm that the differentially rotated map has the default value for the solar radius
+    new_observer = get_earth(aia171_d_test_map.date + 2 * u.day)
+    rot_map = diff_rotation(aia171_d_test_map, observer=new_observer)
+    assert_quantity_allclose(rot_map.rsun_meters, R_sun)
+
+
+def test_rotate_submap_edge(aia171_d_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+
+    observer = get_earth(aia171_d_test_map.date + 2*u.day)
+
+    # For a map that has all the edges off disk, the function should
+    # return just the edges of the map - no solar rotation applied.
+    for this_map in (aia171_d_test_map, all_off_disk_map):
+        edges = map_edges(this_map)
+        for this_edge in range(0, 4):
+            pixels = edges[this_edge]
+            res = _rotate_submap_edge(this_map, pixels, observer)
+            assert all(res.Tx == (this_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+            assert all(res.Ty == (this_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+
+    # For an on disk map, all the edges should change
+    edges = map_edges(all_on_disk_map)
+    for this_edge in range(0, 4):
+        pixels = edges[this_edge]
+        res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
+        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+
+    # For the limb map, two of the edges move and two do not
+    edges = map_edges(straddles_limb_map)
+    for this_edge in (0, 3):  # Top and right edges do not move
+        pixels = edges[this_edge]
+        res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
+        assert all(res.Tx == (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty == (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+
+    for this_edge in (1, 2):  # Bottom and left edges do move
+        pixels = edges[this_edge]
+        res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
+        assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+
+
+def test_get_extreme_position():
+    coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]
+                      * u.arcsec, frame=frames.Helioprojective)
+
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
+        assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
+        assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2
+
+        assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
+        assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
+
+    with pytest.raises(ValueError, match="The \"axis\" argument must be either \"Tx\" or \"Ty\""):
+        _get_extreme_position(coords, 'lon', operator=np.nanmax)
+
+
+def test_get_bounding_coordinates():
+    coords = SkyCoord([-1, 0, 1] * u.arcsec, [-2, 0, 2] * u.arcsec, frame=frames.Helioprojective,
+                      observer=get_earth("1999-09-13 00:00:00"))
+    bl, tr = _get_bounding_coordinates(coords)
+
+    assert bl.Tx == -1*u.arcsec
+    assert bl.Ty == -2*u.arcsec
+    assert bl.observer == coords[0].observer
+
+    assert tr.Tx == 1*u.arcsec
+    assert tr.Ty == 2*u.arcsec
+    assert tr.observer == coords[0].observer
+
+
+def test_warp_sun_coordinates(all_on_disk_map):
+    # Define an observer
+    new_observer = get_earth(all_on_disk_map.date + 6*u.hr)
+
+    dummy_array = np.zeros((500, 2))
+
+    # Call the warp
+    xy2 = _warp_sun_coordinates(dummy_array, all_on_disk_map, new_observer)
+
+    # Test the properties of the output
+    assert xy2.shape == dummy_array.shape
+    assert isinstance(xy2, np.ndarray)
+
+    # Test the values - values are not independently found
+    # We are passing in 500 pairs of (0,0) so all the output pixels should be the same
+    np.testing.assert_almost_equal(xy2[:, 0], -2.08384686, decimal=2)
+    np.testing.assert_almost_equal(xy2[:, 1], -0.23927568, decimal=2)

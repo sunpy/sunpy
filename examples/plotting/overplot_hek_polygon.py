@@ -15,9 +15,9 @@ from astropy.time import TimeDelta
 import sunpy.data.sample
 import sunpy.map
 from sunpy.coordinates import frames
+from sunpy.coordinates.utils import solar_coordinate_rotation
 from sunpy.net import attrs as a
 from sunpy.net import hek
-from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.time import parse_time
 
 ###############################################################################
@@ -61,7 +61,7 @@ ch_boundary = SkyCoord(
     [(float(v[0]), float(v[1])) * u.arcsec for v in p3],
     obstime=ch_date, observer="earth",
     frame=frames.Helioprojective)
-rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, time=aia_map.date)
+rotated_ch_boundary = solar_coordinate_rotation(ch_boundary, time=aia_map.date)
 
 ##############################################################################
 # Now let's plot the rotated coronal hole boundary on the AIA map, and fill

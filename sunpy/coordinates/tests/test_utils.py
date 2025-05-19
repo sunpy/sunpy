@@ -6,13 +6,17 @@ import pytest
 import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time, TimeDelta
 
-from sunpy.coordinates import frames, get_earth, sun
+from sunpy.coordinates import frames, get_earth, sun, transform_with_sun_center
+from sunpy.coordinates.metaframes import RotatedSunFrame
 from sunpy.coordinates.utils import (
     GreatArc,
     get_limb_coordinates,
+    get_new_observer,
     get_rectangle_coordinates,
     solar_angle_equivalency,
+    solar_coordinate_rotation,
 )
 from sunpy.sun import constants
 
@@ -377,3 +381,148 @@ def test_limb_coords():
 
     with pytest.raises(ValueError, match='Observer distance must be greater than rsun'):
         get_limb_coordinates(observer, 1.1 * u.au)
+
+
+# Tests of the helper functions
+def test_get_new_observer(aia171_test_map):
+    initial_obstime = aia171_test_map.date
+    rotation_interval = 2 * u.day
+    new_time = initial_obstime + rotation_interval
+    time_delta = new_time - initial_obstime
+    observer = get_earth(initial_obstime + rotation_interval)
+
+    # The observer time is set along with other definitions of time
+    for time in (rotation_interval, new_time, time_delta):
+        with pytest.raises(ValueError, match="Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously."):
+            new_observer = get_new_observer(initial_obstime, observer, time)
+
+    # Obstime property is present but the value is None
+    observer_obstime_is_none = SkyCoord(12*u.deg, 46*u.deg, frame=frames.HeliographicStonyhurst)
+    with pytest.raises(ValueError, match="The observer 'obstime' property must not be None."):
+        new_observer = get_new_observer(None, observer_obstime_is_none, None)
+
+    # When the observer is set, it gets passed back out
+    new_observer = get_new_observer(initial_obstime, observer, None)
+    assert isinstance(new_observer, SkyCoord)
+    np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value,
+                                   observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value, decimal=3)
+    np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value,
+                                   observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value, decimal=3)
+    np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value,
+                                   observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value, decimal=3)
+
+    # When the time is set, a coordinate for Earth comes back out
+    for time in (rotation_interval, new_time, time_delta):
+        with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+            new_observer = get_new_observer(initial_obstime, None, time)
+        assert isinstance(new_observer, SkyCoord)
+
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value,
+                                       observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value, decimal=3)
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value,
+                                       observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value, decimal=3)
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value,
+                                       observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value, decimal=3)
+
+    # The observer and the time cannot both be None
+    with pytest.raises(ValueError, match="Either the 'observer' or the 'time' keyword must not be None."):
+        new_observer = get_new_observer(initial_obstime, None, None)
+
+
+# Please note the numbers in these tests are not checked for physical
+# accuracy, only that they are the values the function was outputting upon
+# implementation. This is not a significant issue for the diff_rot function
+# since it is relatively simple and the values it produces can be easily
+# compared to other implementations of the same simple function. The same
+# cannot be said for the solar_coordinate_rotation function. This functionality
+# relies accurate knowledge of the solar ephemeris in particular.
+# There is no reference implementation of the solar_coordinate_rotation function
+# of demonstrated trustworthiness at time of writing in any language. There
+# are no known independent values or tests that can be used to test the
+# veracity of the solar_coordinate_rotation function. This being the case, the
+# solar_coordinate_rotation function is tested against values that it generated.
+# Therefore these tests test for consistency, not accuracy. Note that when the
+# 0.8.0 branch was released, the solar ephemeris calculation was handed off to
+# the relevant Astropy code. The solar_coordinate_rotation tests were changed
+# for self-consistency. Note that the change in position comparing the results
+# of pre- and 0.8.0 sunpy solar coordinate rotation functionality (rot_hpc
+# and solar_coordinate_rotation respectively) was on the order of 0.5 arcseconds.
+# At time of writing, the difference between the rotation
+# calculated using the pre-0.8.0 rot_hpc function and the SSWIDL equivalent
+# rot_xy.pro for the tests given in pre-0.8.0 were on the order of hundredths
+# of an arcsecond. I suspect that the reason for the small differences is
+# because the sunpy's ephemeris and coordinate transformation infrastructure
+# was largely based on that in SSWIDL.
+
+def test_solar_coordinate_rotation():
+    # Testing along the Sun-Earth line, observer is on the Earth
+    obs_time = '2010-09-10 12:34:56'
+    observer = get_earth(obs_time)
+    c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obs_time,
+                 observer=observer, frame=frames.Helioprojective)
+    new_time = '2010-09-11 12:34:56'
+    new_observer = get_earth(new_time)
+
+    # Test that when both the observer and the time are specified, an error is raised.
+    with pytest.raises(ValueError, match="Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously."):
+        d = solar_coordinate_rotation(c, observer=observer, time=new_time)
+
+    # Test that the code properly filters the observer keyword
+    with pytest.raises(ValueError, match="The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord."):
+        d = solar_coordinate_rotation(c, observer='earth')
+
+    # Test that the code properly filters the time keyword
+    with pytest.raises(ValueError, match="Input values did not match any of the formats where the format keyword is optional"):
+        with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+            d = solar_coordinate_rotation(c, time='noon')
+
+    # Test that the code gives the same output for multiple different inputs
+    # that define the same observer location and time.
+    for i, definition in enumerate((1 * u.day, TimeDelta(1*u.day), new_time, new_observer)):
+        if i in (0, 1, 2):
+            with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+                d = solar_coordinate_rotation(c, time=definition)
+        else:
+            d = solar_coordinate_rotation(c, observer=definition)
+
+        # Test that a SkyCoordinate is created
+        assert isinstance(d, SkyCoord)
+
+        # Test the coordinate
+        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -386.4519332773052, decimal=1)
+        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 106.1647811048218, decimal=1)
+        np.testing.assert_allclose(d.distance.to(u.km).value, 1.499689e+08, rtol=1e-5)
+
+        # Test that the SkyCoordinate is Helioprojective
+        assert isinstance(d.frame, frames.Helioprojective)
+
+    # Test that the function works correctly with a HGS coordinate.
+    earth_coord = get_earth(Time("2022-03-30"))
+    coord_hpc = SkyCoord(100*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective(observer=earth_coord))
+
+    coord_hgs = coord_hpc.transform_to(frames.HeliographicStonyhurst)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        rotated_coord_hgs = solar_coordinate_rotation(coord_hgs, time=Time("2022-03-31"))
+
+    assert isinstance(rotated_coord_hgs.frame, frames.HeliographicStonyhurst)
+
+
+def test_consistency_with_rotatedsunframe():
+    old_observer = frames.HeliographicStonyhurst(10*u.deg, 20*u.deg, 1*u.AU, obstime='2001-01-01')
+    new_observer = frames.HeliographicStonyhurst(30*u.deg, 40*u.deg, 2*u.AU, obstime='2001-01-08')
+
+    hpc_coord = SkyCoord(100*u.arcsec, 200*u.arcsec, frame='helioprojective',
+                         observer=old_observer, obstime=old_observer.obstime)
+
+    # Perform the differential rotation using solar_coordinate_rotation()
+    result1 = solar_coordinate_rotation(hpc_coord, observer=new_observer)
+
+    # Perform the differential rotation using RotatedSunFrame, with translational motion of the Sun
+    # ignored using transform_with_sun_center()
+    rsf_coord = RotatedSunFrame(base=hpc_coord, rotated_time=new_observer.obstime)
+    with transform_with_sun_center():
+        result2 = rsf_coord.transform_to(result1.replicate_without_data())
+
+    assert_quantity_allclose(result1.Tx, result2.Tx)
+    assert_quantity_allclose(result1.Ty, result2.Ty)
+    assert_quantity_allclose(result1.distance, result2.distance)
