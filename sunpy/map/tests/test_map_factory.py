@@ -281,14 +281,14 @@ def test_uri_pattern():
 
 
 @pytest.mark.remote_data
-@pytest.mark.filterwarnings("ignore:Use timezone-aware objects to represent datetimes")
 def test_uri_directory_pattern():
     """
     Testing publicly accessible s3 directory
     """
-    with pytest.warns(SunpyUserWarning, match='Failed to read'):
-        amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
-        assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
+    with pytest.warns(DeprecationWarning, match='datetime.datetime.utcnow'):
+        with pytest.warns(SunpyUserWarning, match='Failed to read'):
+            amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
+            assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
 
 
 def test_save():
