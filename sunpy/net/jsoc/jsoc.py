@@ -807,7 +807,7 @@ class JSOCClient(BaseClient):
                     segments.extend((row[0], row[1].iloc[-1]) for row in data.segments.iterrows())
         series_store = list(set(series_store))
         segments = list(set(segments))
-        with open(os.path.join(here, 'data', 'attrs.jcson'), 'w') as attrs_file:
+        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
             keyword_info = {
                 "series_store": sorted(series_store),
                 "segments": sorted(segments),
