@@ -339,8 +339,8 @@ def test_raw_hek_result_preserved(hek_result):
     for col in removed_columns:
         assert col in hek_result.raw.colnames
     # Check that times are still strings
-    assert np.issubdtype(hek_result.raw['event_starttime'].dtype, np.unicode_)
-    assert np.issubdtype(hek_result.raw['event_endtime'].dtype, np.unicode_)
+    assert np.issubdtype(hek_result.raw['event_starttime'].dtype, np.str_)
+    assert np.issubdtype(hek_result.raw['event_endtime'].dtype, np.str_)
     # Check that chaincodes are still strings
     for coord_attr in _get_coord_attributes():
         if not coord_attr.get('is_chaincode', False):
@@ -353,6 +353,6 @@ def test_raw_hek_result_preserved(hek_result):
         column_dtype = hek_result.raw[name].dtype
         if unit_attr.get('unit_prop') is not None:
             # NOTE: Columns have object dtype if there are Nones present
-            assert np.issubdtype(column_dtype, np.float_) | np.issubdtype(column_dtype, np.object_)
+            assert np.issubdtype(column_dtype, np.float64) | np.issubdtype(column_dtype, np.object_)
         elif unit_attr.get('is_unit_prop', False):
-            assert np.issubdtype(column_dtype, np.unicode_)
+            assert np.issubdtype(column_dtype, np.str_)
