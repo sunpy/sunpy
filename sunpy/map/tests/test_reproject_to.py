@@ -137,5 +137,10 @@ def test_reproject_to_warn_using_contexts(aia171_test_map, hpc_header):
     with propagate_with_solar_surface():
         with sunpy.coordinates.SphericalScreen(aia171_test_map.observer_coordinate):
             # Check if a warning is raised if both context managers are used at the same time.
-            with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data."):
+            with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and SphericalScreen together results in the loss of off-disk data."):
+                aia171_test_map.reproject_to(hpc_header)
+
+        with sunpy.coordinates.PlanarScreen(aia171_test_map.observer_coordinate):
+            # Check if a warning is raised if both context managers are used at the same time.
+            with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and PlanarScreen together results in the loss of off-disk data."):
                 aia171_test_map.reproject_to(hpc_header)
