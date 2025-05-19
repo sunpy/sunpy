@@ -449,7 +449,9 @@ class CompositeMap:
                     params['autoalign'] = not axes.wcs.wcs.compare(m.wcs.wcs, tolerance=0.01)
 
                 # Filter `matplot_args`
-                if params.get('autoalign', None) in (True, 'pcolormesh'):
+                if params.get('autoalign', None) is True:
+                    accepted_kwargs = ACCEPTED_IMSHOW_KWARGS & ACCEPTED_PCOLORMESH_KWARGS
+                elif params.get('autoalign', None) in ['pcolormesh', 'mesh']:
                     accepted_kwargs = ACCEPTED_PCOLORMESH_KWARGS
                 else:
                     accepted_kwargs = ACCEPTED_IMSHOW_KWARGS

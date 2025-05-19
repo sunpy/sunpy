@@ -5,10 +5,12 @@ import warnings
 
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
 from matplotlib.testing.decorators import check_figures_equal
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.wcs import WCS
 
 import sunpy.coordinates
@@ -137,5 +139,100 @@ def test_reproject_to_warn_using_contexts(aia171_test_map, hpc_header):
     with propagate_with_solar_surface():
         with sunpy.coordinates.SphericalScreen(aia171_test_map.observer_coordinate):
             # Check if a warning is raised if both context managers are used at the same time.
-            with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data."):
+            with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and SphericalScreen together results in the loss of off-disk data."):
                 aia171_test_map.reproject_to(hpc_header)
+
+        with sunpy.coordinates.PlanarScreen(aia171_test_map.observer_coordinate):
+            # Check if a warning is raised if both context managers are used at the same time.
+            with pytest.warns(UserWarning, match="Using propagate_with_solar_surface and PlanarScreen together results in the loss of off-disk data."):
+                aia171_test_map.reproject_to(hpc_header)
+
+
+@figure_test
+@pytest.mark.parametrize('auto_extent', [None, 'corners', 'edges', 'all'])
+def test_reproject_to_auto_extent(aia171_test_map, auto_extent):
+    aia = aia171_test_map.submap([32, 32] * u.pix, top_right=[80, 100]*u.pix)
+
+    header = {
+        'naxis1': 60,
+        'naxis2': 200,
+        'crpix1': 30.5,
+        'crpix2': 100.5,
+        'crval1': -750,
+        'crval2': 0,
+        'cdelt1': 10,
+        'cdelt2': 10,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': 80,
+        'hglt_obs': 10,
+        'rsun_ref': aia.rsun_meters.value,
+        'dsun_obs': aia.dsun.value,
+        'date-obs': aia.date.isot,
+        'mjd-obs': aia.date.mjd,
+    }
+
+    reprojected_aia = aia.reproject_to(header, auto_extent=auto_extent)
+    fig = Figure()
+    ax = fig.add_subplot(projection=reprojected_aia)
+    reprojected_aia.plot(axes=ax, title=f"auto_extent={auto_extent}")
+    aia.draw_extent(axes=ax, color='red')
+    return fig
+
+
+@pytest.mark.parametrize(('auto_extent', 'crpix', 'pixel_shape'), [(None, [5.5, 5.5], [10, 10]),
+                                                                   ('corners', [0.5, 836.5], [241, 1672]),
+                                                                   ('edges', [0.5, 836.5], [482, 1672]),
+                                                                   ('all', [0.5, 836.5], [963, 1672])])
+def test_reproject_to_auto_extent_wcs(aia171_test_map, auto_extent, crpix, pixel_shape):
+    hgs_header = {
+        'naxis1': 15,
+        'naxis2': 12,
+        'crpix1': 0.5,
+        'crpix2': 6.5,
+        'crval1': 0,
+        'crval2': 0,
+        'cdelt1': 10,
+        'cdelt2': 10,
+        'cunit1': 'deg',
+        'cunit2': 'deg',
+        'ctype1': 'HGLN-CAR',
+        'ctype2': 'HGLT-CAR',
+        'rsun_ref': 700000000,
+        'dsun_obs': 150000000000,
+        'date-obs': '2001-01-01',
+    }
+    hgs_map = sunpy.map.Map((np.arange(180).reshape((12, 15)), hgs_header))
+
+    hpc_header = {
+        'naxis1': 10,
+        'naxis2': 10,
+        'crpix1': 5.5,
+        'crpix2': 5.5,
+        'crval1': 0,
+        'crval2': 0,
+        'cdelt1': 1,
+        'cdelt2': 1,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': 0,
+        'hglt_obs': 0,
+        'rsun_ref': 700000000,
+        'dsun_obs': 150000000000,
+        'date-obs': '2001-01-01',
+        'mjd-obs': 51910,
+    }
+
+    reprojected_wcs = hgs_map.reproject_to(hpc_header, auto_extent=auto_extent).wcs
+
+    # These parts of the WCS should not change
+    assert_quantity_allclose(reprojected_wcs.wcs.crval, hgs_map.wcs.wcs.crval)
+    assert_quantity_allclose(reprojected_wcs.wcs.cdelt * u.deg, 1 * u.arcsec)
+
+    # These parts of the WCS should have changed
+    assert_quantity_allclose(reprojected_wcs.wcs.crpix, crpix)
+    assert_quantity_allclose(reprojected_wcs.pixel_shape, pixel_shape)

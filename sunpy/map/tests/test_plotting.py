@@ -288,11 +288,12 @@ def test_quadrangle_no_wcsaxes(aia171_test_map):
 
 
 def test_different_wcs_plot_warning(aia171_test_map, hmi_test_map):
-    aia171_test_map.plot()
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
     with pytest.warns(SunpyUserWarning,
                       match=(r'The map world coordinate system \(WCS\) is different '
                              'from the axes WCS')):
-        hmi_test_map.plot(axes=plt.gca())
+        hmi_test_map.plot(axes=ax, autoalign=False)
 
 
 @figure_test
@@ -358,7 +359,8 @@ def test_plot_autoalign(aia171_test_map, autoalign):
     # Plotting the rotated map on the original projection should appear de-rotated
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_test_map)
-    rotated_map.plot(axes=ax, autoalign=autoalign)
+    ret = rotated_map.plot(axes=ax, autoalign=autoalign)
+    assert ret.zorder == 0
     return fig
 
 
