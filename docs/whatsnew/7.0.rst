@@ -34,6 +34,31 @@ Updates to minimum dependencies
 The minimum required versions of the following packages have been updated:
 
 - python>=3.11
+- astropy>=6.1
+- numpy>=1.25.0
+- parfive>=2.1.0
+- packaging>=23.2
+- requests>=2.32.0
+- fsspec>=2023.6.0
+- asdf>=3.0.0
+- scipy>=1.11.0
+- glymur>=0.13.0
+- contourpy>=1.1.0
+- matplotlib>=3.8.0
+- mpl-animators>=1.2.0
+- reproject>=0.12.0
+- scipy>=1.11.0
+- opencv-python>=4.8.0.74
+- beautifulsoup4>=4.13.0
+- python-dateutil>=2.9.0
+- tqdm>=4.66.0
+- zeep>=4.3.0
+- scikit-image>=0.21.0
+- spiceypy>=6.0.0
+- h5netcdf>=1.2.0
+- h5py>=3.9.0
+- pandas>=2.1.0
+- aiobotocore>=2.6.0
 
 Maps now plot with autoalignment by default
 ===========================================
