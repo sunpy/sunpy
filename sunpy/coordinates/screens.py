@@ -22,7 +22,7 @@ class BaseScreen(abc.ABC):
     @property
     def _context_name(self):
         # Used for setting active context
-        return f'assume_{self.screen_type}_screen'
+        return f"{self.__module__}.{self.__class__.__qualname__}"
 
     @abc.abstractmethod
     @u.quantity_input
@@ -30,12 +30,13 @@ class BaseScreen(abc.ABC):
         ...
 
     def __enter__(self):
-        ACTIVE_CONTEXTS[self._context_name] = True
+        ACTIVE_CONTEXTS.append(self._context_name)
         self._old_assumed_screen = Helioprojective._assumed_screen  # nominally None
         Helioprojective._assumed_screen = self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        ACTIVE_CONTEXTS[self._context_name] = False
+        if (removed := ACTIVE_CONTEXTS.pop()) != self._context_name:
+            raise RuntimeError(f"Cannot remove {self._context_name} from tracking stack because {removed} is last active.")
         Helioprojective._assumed_screen = self._old_assumed_screen
 
 
