@@ -139,7 +139,7 @@ class XRSTimeSeries(GenericTimeSeries):
         return None
 
     @classmethod
-    def _parse_file(cls, filepath):
+    def _parse_file(cls, filepath, **kwargs):
         """
         Parses a GOES/XRS FITS file.
 

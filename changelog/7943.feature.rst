@@ -1,0 +1,2 @@
+Added a function ``sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries.energy_bins`` to create a new `sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries` with user-specified energy bins.
+You can now pass a keyword ``energy_bands`` to create a `sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries` with custom energy bins.
