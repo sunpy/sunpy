@@ -158,3 +158,13 @@ of results from the Heliophysics Event Knowledgebase, particular when it comes t
 bounding boxes. Users should be aware that some redundant columns are now dropped from the results table,
 for example, those columns which only contained unit information.
 The original, unparsed response from the HEK can be accessed via the ``raw`` property on `~sunpy.net.hek.HEKTable`.
+
+Additional new map sources
+==========================
+
+The following new map sources have been added to sunpy:
+
+* Global Oscillation Network Group (GONG) magnetogram
+* Polarimeter to Unify the Corona and Heliosphere (PUNCH)
+* Solar Ultraviolet Imaging Telescope (SUIT)
+* SOHO EIT Level 1 files
