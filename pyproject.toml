@@ -182,6 +182,11 @@ py-limited-api = "cp311"
 use_extension_helpers = "true"
 
 [tool.gilesbot]
+
+  [ tool.gilesbot.milestones ]
+  enabled = true
+  missing_message_long = "This pull request does not have a milestone assigned to it. Only maintainers can change this, so you don't need to worry about it. :smile:"
+
   [tool.gilesbot.circleci_artifacts]
   enabled = true
 
