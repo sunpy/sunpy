@@ -1,1 +1,0 @@
-Fixed an error in the docstring of :func:`~sunpy.coordinates.ephemeris.get_horizons_coord` that mistakenly claimed that JPL Horizons supported the specification of "s" for seconds as the unit for step size, but Horizons does not.
