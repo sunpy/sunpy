@@ -84,13 +84,20 @@ The minimum required versions of the following packages have been updated:
 - pandas>=2.1.0
 - aiobotocore>=2.6.0
 
+Polarimeter to Unify the Corona and Heliosphere (PUNCH) map source
+==================================================================
+
+There is now support for PUNCH level 1 products within sunpy.
+
+.. image:: 7.0-punch.png
+   :alt: A plot from sunpy of a PUNCH level 1 file.
+
 Additional new map sources
 ==========================
 
 The following new map sources have been added to sunpy:
 
 * Global Oscillation Network Group (GONG) magnetogram
-* Polarimeter to Unify the Corona and Heliosphere (PUNCH)
 * Solar Ultraviolet Imaging Telescope (SUIT)
 * SOHO EIT Level 1 files
 
