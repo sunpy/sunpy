@@ -85,6 +85,10 @@
       "HMI vector B Magnetograms remapped to grid in longitude, latitude"
     ],
     [
+      "hmi.bptr_720s_mod",
+      "Full-disk disambiguated vector magnetograms, field components in spherical cordinate"
+    ],
+    [
       "hmi.c_avg120",
       "Temporal averages of HMI continuum photograms over 1/3 CR"
     ],
@@ -637,10 +641,6 @@
       "Dopplergrams with a cadence of 720 seconds, scattered light corrected."
     ],
     [
-      "hmi.v_avg120",
-      "Temporal averages of HMI Vgrams over 1/3 CR"
-    ],
-    [
       "hmi.v_sht_2drls",
       "2d rls inversions for rotation"
     ],
@@ -859,10 +859,6 @@
     [
       "mdi.fd_v_sht_secs",
       "sections of data, discontinuities in between"
-    ],
-    [
-      "mdi.fdv_avg120",
-      "Temporal averages of MDI full-disc Vgrams over 1/3 CR"
     ],
     [
       "mdi.focus",
@@ -1096,11 +1092,19 @@
     ],
     [
       "Bp",
+      "Phi component of field, west is positive"
+    ],
+    [
+      "Bp",
       "Remapped Bp component"
     ],
     [
       "Bp_err",
       "Standard deviation of B_phi"
+    ],
+    [
+      "Bp_err",
+      "Uncertainty of phi component of field"
     ],
     [
       "Br",
@@ -1116,6 +1120,10 @@
     ],
     [
       "Br",
+      "Radial component of field, outward is positive"
+    ],
+    [
+      "Br",
       "Remapped Br component"
     ],
     [
@@ -1125,6 +1133,10 @@
     [
       "Br_err",
       "Standard deviation of B_r"
+    ],
+    [
+      "Br_err",
+      "Uncertainty of radial component of field"
     ],
     [
       "Br_polfil",
@@ -1151,8 +1163,16 @@
       "Remapped Bt component"
     ],
     [
+      "Bt",
+      "Theta component of field, south is positive"
+    ],
+    [
       "Bt_err",
       "Standard deviation of B_theta"
+    ],
+    [
+      "Bt_err",
+      "Uncertainty of theta component of field"
     ],
     [
       "DARK",
@@ -1891,6 +1911,10 @@
       "Carrington latitude"
     ],
     [
+      "lat",
+      "Stonyhurst latitude"
+    ],
+    [
       "lev1_dcon",
       "true continuum scatter light corrected image fits file"
     ],
@@ -1917,6 +1941,10 @@
     [
       "lon",
       "Carrington longitude"
+    ],
+    [
+      "lon",
+      "Stonyhurst longitude"
     ],
     [
       "lookup",
@@ -1975,10 +2003,6 @@
       "Continuum intensity mean"
     ],
     [
-      "mean",
-      "Doppler mean"
-    ],
-    [
       "mesh",
       "radial grid points"
     ],
@@ -2017,10 +2041,6 @@
     [
       "power",
       "Continuum intensity power"
-    ],
-    [
-      "power",
-      "Doppler power"
     ],
     [
       "pxloc.ascii",
