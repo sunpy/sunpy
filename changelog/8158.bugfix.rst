@@ -1,1 +1,0 @@
-Fixed a bug with the caching of `~sunpy.map.Map` properties ``observer_coordinate`` and ``wcs`` where modifying the metadata to be invalid would confuse the cache.

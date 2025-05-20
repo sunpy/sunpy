@@ -1,2 +1,0 @@
-Added a warning about off-disk data when calling the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.reproject_to` under the combined context managers of :func:`~sunpy.coordinates.propagate_with_solar_surface` and :func:`~sunpy.coordinates.screens.PlanarScreen`.
-An analogous warning had already been emitted when combining :func:`~sunpy.coordinates.propagate_with_solar_surface` and :func:`~sunpy.coordinates.screens.SphericalScreen`.

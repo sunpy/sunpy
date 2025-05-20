@@ -1,1 +1,0 @@
-Renamed the mesh-based autoalignment option for the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` from ``autoalign='pcolormesh'`` to ``autoalign='mesh'``.
