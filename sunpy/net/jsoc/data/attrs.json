@@ -641,6 +641,10 @@
       "Dopplergrams with a cadence of 720 seconds, scattered light corrected."
     ],
     [
+      "hmi.v_avg120",
+      "Temporal averages of HMI Vgrams over 1/3 CR"
+    ],
+    [
       "hmi.v_sht_2drls",
       "2d rls inversions for rotation"
     ],
@@ -859,6 +863,10 @@
     [
       "mdi.fd_v_sht_secs",
       "sections of data, discontinuities in between"
+    ],
+    [
+      "mdi.fdv_avg120",
+      "Temporal averages of MDI full-disc Vgrams over 1/3 CR"
     ],
     [
       "mdi.focus",
@@ -2003,6 +2011,10 @@
       "Continuum intensity mean"
     ],
     [
+      "mean",
+      "Doppler mean"
+    ],
+    [
       "mesh",
       "radial grid points"
     ],
@@ -2041,6 +2053,10 @@
     [
       "power",
       "Continuum intensity power"
+    ],
+    [
+      "power",
+      "Doppler power"
     ],
     [
       "pxloc.ascii",
