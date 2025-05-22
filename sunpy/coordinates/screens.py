@@ -2,14 +2,17 @@
 Screen class definitions for making assumptions about off-disk emission
 """
 import abc
+import logging
 
 import numpy as np
 
 import astropy.units as u
 from astropy.coordinates.representation import CartesianRepresentation, UnitSphericalRepresentation
 
-from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
+from sunpy import log
+from sunpy.coordinates import HeliographicStonyhurst, Helioprojective, _transformations
 from sunpy.util.decorators import ACTIVE_CONTEXTS
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['BaseScreen', 'SphericalScreen', 'PlanarScreen']
 
@@ -39,6 +42,75 @@ class BaseScreen(abc.ABC):
             raise RuntimeError(f"Cannot remove {self._context_name} from tracking stack because {removed} is last active.")
         Helioprojective._assumed_screen = self._old_assumed_screen
 
+    def _iterate_calculate_distance(self, coord, distance, screen_frame):
+        """
+        Numerically calculates the distance component to a screen to promote a
+        coordinate from 2D to 3D.
+
+        This method should be used only if the screen has been differentially rotated,
+        since otherwise promoting a coordinate from 2D to 3D is straightforward.
+
+        The approach used for numerical solving is to iterate to the solution starting
+        with an initial guess. For each guess, we construct a 3D coordinate and perform
+        a 3D->2D->3D transformation in the native frame of the screen. The amount that
+        the coordinate shifts in the 3D->2D->3D transformation is related to how far off
+        the guess is: when the shift is zero, the guess is correct. To form the next
+        guess, we linearly interpolate/extrapolate between the latest guess and the
+        closest guess over past iterations to estimate where the shift will be zero.
+
+        The maximum number of iterations is hard-coded to 20, but convergence will
+        typically take no more than 6 iterations. When working with an array coordinate,
+        elements that have converged are skipped in subsequent iterations.
+        """
+        # Check if the logging level is at least DEBUG (for performance reasons)
+        debug_output = log.getEffectiveLevel() <= logging.DEBUG
+
+        log.debug("Differentially rotating the screen")
+        use = np.ones(distance.shape, dtype=bool)
+        delta = np.empty_like(distance)
+        next_distance = np.empty_like(distance)
+        for niter in range(20):
+            # If this is not the first iteration, update best distance and calculate new distance
+            if niter > 0:
+                # Calculate for only those pixels that do not meet the tolerance
+                with np.errstate(invalid='ignore'):
+                    # A tolerance of 1e-11 is larger than numerical-precision errors (~1e-12), and only 1.5 meters at 1 AU
+                    use = np.abs(delta / distance) >= 1e-11*u.one
+                if np.sum(use) == 0:
+                    log.debug(f"Solved for the differentially rotated screen after {niter} iterations")
+                    break
+                # Squash small deltas to avoid warnings from later expressions
+                delta = np.where(use, delta, 0)
+
+                if niter == 1:
+                    # For the second iteration, use a simple guess
+                    best_distance, distance = distance, distance + delta
+                    best_delta = delta.copy()
+                else:
+                    # Starting with the third iteration, linearly interpolate between the latest distance and the best distance
+                    with np.errstate(invalid='ignore'):
+                        next_distance[use] = distance[use] - delta[use] * np.nan_to_num((best_distance[use] - distance[use]) / (best_delta[use] - delta[use]))
+
+                    # Update the best distance (not including the most recent calculation)
+                    best_distance = np.where(np.abs(best_delta) < np.abs(delta), best_distance, distance)
+                    best_delta = np.where(np.abs(best_delta) < np.abs(delta), best_delta, delta)
+                    distance = next_distance.copy()
+
+            # Calculate the corresponding delta of a 3D->2D->3D transformation in the native frame of the screen
+            # If delta is zero in that frame, then the 3D point is exactly on the screen, so the guessed distance is correct
+            other_3d = coord[use].realize_frame(coord[use].represent_as(UnitSphericalRepresentation) * distance[use])
+            native_3d = other_3d.transform_to(screen_frame)
+            native_2d = native_3d.realize_frame(native_3d.represent_as(UnitSphericalRepresentation))
+            delta[use] = self.calculate_distance(native_2d) - native_3d.spherical.distance
+
+            if debug_output:
+                log.debug(f"npoints={np.sum(use)}; max distance={distance.max()}, max delta={delta.max()}"
+                          + (f", best distance={best_distance.max()}, best delta={best_delta.max()}" if niter > 0 else ""))
+        else:
+            warn_user(f"Failed to solve for the differentially rotated screen after {niter+1} iterations")
+
+        return distance
+
 
 class SphericalScreen(BaseScreen):
     """
@@ -67,6 +139,12 @@ class SphericalScreen(BaseScreen):
     See Also
     --------
     sunpy.coordinates.PlanarScreen
+
+    Notes
+    -----
+    If this context manager is combined with the :func:`~sunpy.coordinates.propagate_with_solar_surface`
+    context manager, significantly more computations are required to numerically solve for the
+    distance to the differentially rotated screen.
 
     Examples
     --------
@@ -120,6 +198,12 @@ class SphericalScreen(BaseScreen):
         # Ignore sqrt of NaNs
         with np.errstate(invalid='ignore'):
             distance = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
+
+        # Iterate the calculation if differential rotation is being applied
+        if _transformations._autoapply_diffrot is not None and frame.obstime != self._center.obstime:
+            screen_frame = Helioprojective(observer=self._center, obstime=self._center.obstime)
+            distance = self._iterate_calculate_distance(frame, distance, screen_frame)
+
         return distance
 
 
@@ -148,6 +232,12 @@ class PlanarScreen(BaseScreen):
     See Also
     --------
     sunpy.coordinates.SphericalScreen
+
+    Notes
+    -----
+    If this context manager is combined with the :func:`~sunpy.coordinates.propagate_with_solar_surface`
+    context manager, significantly more computations are required to numerically solve for the
+    distance to the differentially rotated screen.
 
     Examples
     --------
@@ -194,4 +284,10 @@ class PlanarScreen(BaseScreen):
         d_from_plane = frame.observer.radius * direction.x - self._distance_from_center
         rep = frame.represent_as(UnitSphericalRepresentation)
         distance = d_from_plane / rep.dot(direction)
+
+        # Iterate the calculation if differential rotation is being applied
+        if _transformations._autoapply_diffrot is not None and frame.obstime != self._vantage_point.obstime:
+            screen_frame = Helioprojective(observer=self._vantage_point, obstime=self._vantage_point.obstime)
+            distance = self._iterate_calculate_distance(frame, distance, screen_frame)
+
         return distance
