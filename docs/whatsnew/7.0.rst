@@ -105,6 +105,16 @@ You can now enable the automatic determination of extent for reprojections throu
 
 .. minigallery:: ../examples/map_transformations/reprojection_auto_extent.py
 
+Using a screen with differential rotation
+=========================================
+
+When working with off-disk 2D coordinates, applying a screen assumption (:func:`~sunpy.coordinates.PlanarScreen` or :func:`~sunpy.coordinates.SphericalScreen`) is now fully compatible with applying differential rotation (:func:`~sunpy.coordinates.propagate_with_solar_surface`).
+Most usefully, off-disk data will be preserved when reprojecting a map.
+
+.. minigallery:: ../examples/differential_rotation/reprojected_map.py
+
+As a note of caution, drawing gridlines on the differentially rotated screen can take a lot of computing time.
+
 Access to the JSOC AIA "synoptic" data
 ======================================
 
