@@ -15,7 +15,7 @@ from astropy.coordinates import (
 from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy import sun
-from sunpy.coordinates import PlanarScreen, SphericalScreen
+from sunpy.coordinates import PlanarScreen, SphericalScreen, propagate_with_solar_surface
 from sunpy.coordinates.frames import (
     Geomagnetic,
     Heliocentric,
@@ -659,3 +659,16 @@ def test_spherical_screen_askew(off_limb_coord, only_off_disk, distance, non_ear
     with SphericalScreen(non_earth_coord, only_off_disk=only_off_disk):
         olc_3d = off_limb_coord.make_3d()
     assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('screen', 'only_off_disk', 'distance'), [
+    (SphericalScreen, False, [0.98405002, 0.98306592, 0.98253594]*u.AU),
+    (SphericalScreen, True, [0.98405002, 0.97910333, 0.98253594]*u.AU),
+    (PlanarScreen, False, [0.98407381, 0.98306806, 0.98255967]*u.AU),
+    (PlanarScreen, True, [0.98407381, 0.97910333, 0.98255967]*u.AU),
+])
+def test_screen_plus_diffrot(off_limb_coord, screen, only_off_disk, distance):
+    new_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=off_limb_coord.obstime + 1*u.day)
+    with propagate_with_solar_surface(), screen(new_observer, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert_quantity_allclose(olc_3d.distance, distance)
