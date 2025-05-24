@@ -222,3 +222,41 @@ def test_reproject_to_auto_extent_wcs(aia171_test_map, auto_extent, crpix, pixel
     # These parts of the WCS should have changed
     assert_quantity_allclose(reprojected_wcs.wcs.crpix, crpix)
     assert_quantity_allclose(reprojected_wcs.pixel_shape, pixel_shape)
+
+
+@figure_test
+@pytest.mark.parametrize("screen", [sunpy.coordinates.SphericalScreen, sunpy.coordinates.PlanarScreen])
+def test_reproject_to_screen_plus_diffrot(aia171_test_map, screen):
+    new_time = aia171_test_map.date + 5*u.day
+    header = {
+        'naxis1': 150,
+        'naxis2': 150,
+        'crpix1': 75.5,
+        'crpix2': 75.5,
+        'crval1': 0,
+        'crval2': 0,
+        'cdelt1': 20,
+        'cdelt2': 20,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': 0,
+        'hglt_obs': 30,
+        'rsun_ref': aia171_test_map.rsun_meters.value,
+        'dsun_obs': aia171_test_map.dsun.value,
+        'date-obs': new_time.isot,
+        'mjd-obs': new_time.mjd,
+    }
+
+    with sunpy.coordinates.transform_with_sun_center(), screen(aia171_test_map.observer_coordinate, only_off_disk=True):
+        without_diffrot = aia171_test_map.reproject_to(header)
+        with sunpy.coordinates.propagate_with_solar_surface():
+            with_diffrot = aia171_test_map.reproject_to(header)
+
+    fig = Figure(figsize=(11, 4))
+    ax1 = fig.add_subplot(121, projection=without_diffrot)
+    without_diffrot.plot(axes=ax1, title="Without diffrot")
+    ax2 = fig.add_subplot(122, projection=with_diffrot)
+    with_diffrot.plot(axes=ax2, title="With diffrot")
+    return fig
