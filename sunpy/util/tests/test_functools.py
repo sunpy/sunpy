@@ -79,7 +79,6 @@ class TestSingleDispatch(unittest.TestCase):
         if sys.flags.optimize < 2:
             assert g.__doc__ == "Simple test"
 
-    @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
     def test_annotations(self):
         @seconddispatch
         def i(dummy, arg):
