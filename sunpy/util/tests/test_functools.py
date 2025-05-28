@@ -5,8 +5,6 @@ import sys
 import unittest
 import collections
 
-import pytest
-
 from sunpy.util.functools import seconddispatch
 
 
