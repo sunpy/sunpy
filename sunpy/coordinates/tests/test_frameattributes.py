@@ -214,3 +214,22 @@ def test_observer_in_heeq(frame_class):
     frame = frame_class(observer=obs_heeq)
     assert issubclass(frame.observer.representation_type, SphericalRepresentation)
     assert_quantity_allclose(frame.observer.radius, 13*u.AU)
+
+
+@pytest.mark.parametrize(('t_frame', 't_obs', 't_expected'), [('2001-01-01', '2001-01-01', '2001-01-01'),
+                                                              ('2001-01-01', '2022-02-02', '2001-01-01'),
+                                                              ('2001-01-01', None, '2001-01-01'),
+                                                              (None, None, None)])
+def test_observer_match_obstime(t_frame, t_obs, t_expected):
+    t_frame = Time(t_frame) if isinstance(t_frame, str) else t_frame
+    t_obs = Time(t_obs) if isinstance(t_obs, str) else t_obs
+    t_expected = Time(t_expected) if isinstance(t_expected, str) else t_expected
+
+    observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=t_obs)
+    frame = Helioprojective(obstime=t_frame, observer=observer)
+    assert frame.obstime == t_expected
+    assert frame.observer.obstime == t_expected
+
+    # Check that the observer coordinate has been transformed to the matching obstime
+    if t_obs is not None and frame.observer.obstime != t_obs:
+        assert_quantity_allclose(frame.observer.separation_3d(observer), 1*u.m)

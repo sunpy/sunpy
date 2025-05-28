@@ -1,0 +1,2 @@
+When instantiating an observer-based coordinate frame (e.g., `~sunpy.coordinates.frames.Helioprojective`), a coordinate location provided for the ``observer`` frame attribute will now be immediately transformed to the ``obstime`` of the coordinate frame.
+This reduces the chance of a creating a frame with surprising behavior.
