@@ -50,7 +50,6 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import MetaDict, expand_list, extent_in_other_wcs, grid_perimeter
 from sunpy.util.decorators import (
-    ACTIVE_CONTEXTS,
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
@@ -3167,13 +3166,6 @@ class GenericMap(NDData):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        # Check if both context managers are active
-        if "sunpy.coordinates._transformations.propagate_with_solar_surface" in ACTIVE_CONTEXTS:
-            if "sunpy.coordinates.screens.SphericalScreen" in ACTIVE_CONTEXTS:
-                warn_user("Using propagate_with_solar_surface and SphericalScreen together results in the loss of off-disk data.")
-            if "sunpy.coordinates.screens.PlanarScreen" in ACTIVE_CONTEXTS:
-                warn_user("Using propagate_with_solar_surface and PlanarScreen together results in the loss of off-disk data.")
-
         try:
             import reproject
         except ImportError as exc:

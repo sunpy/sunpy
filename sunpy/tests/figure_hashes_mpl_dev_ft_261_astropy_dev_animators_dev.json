@@ -68,6 +68,8 @@
   "sunpy.map.tests.test_reproject_to.test_reproject_to_auto_extent[corners]": "38c68217d6de2ee13fe7937a57281344e5686e68d3cc8367e66f58023e4509a6",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_auto_extent[edges]": "0557a116b9155a6c530763288ed389e20f2c24270b258693cf2678a98fb4c763",
   "sunpy.map.tests.test_reproject_to.test_reproject_to_auto_extent[all]": "ebdec2de9108f377ac54f171863795dd1ba7854a04f174a2fa35a5c6ccaafe9e",
+  "sunpy.map.tests.test_reproject_to.test_reproject_to_screen_plus_diffrot[SphericalScreen]": "635663c210e588cc441d86d3710884a00ce0a23d67a549df274284bfa5a22285",
+  "sunpy.map.tests.test_reproject_to.test_reproject_to_screen_plus_diffrot[PlanarScreen]": "30fae92a5cf0b211b07cf19dcd660351aad5da91b67ce8032d6b1b20e211fe0b",
   "sunpy.timeseries.sources.tests.test_eve.test_esp_peek": "28b1e7af0e1894d22fd9db90d9e2bc5eb76e291c9e41fa1bb1d33d95bd13cce3",
   "sunpy.timeseries.sources.tests.test_eve.test_eve_peek": "2a22f93af44971411800e4fcd0d93d2128fe2b9e6b97e576e8372c2cd12d7d78",
   "sunpy.timeseries.sources.tests.test_fermi_gbm.test_fermi_gbm_peek": "83f0b53ca6f1cd809bd03e4aff80b3c02c8078e552b0c3e90b2cb3cf26932a51",
