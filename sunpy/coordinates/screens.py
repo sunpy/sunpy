@@ -59,7 +59,7 @@ class BaseScreen(abc.ABC):
         closest guess over past iterations to estimate where the shift will be zero.
 
         The maximum number of iterations is hard-coded to 20, but convergence will
-        typically take no more than 6 iterations. When working with an array coordinate,
+        typically take no more than 8 iterations. When working with an array coordinate,
         elements that have converged are skipped in subsequent iterations.
         """
         # Check if the logging level is at least DEBUG (for performance reasons)
@@ -72,16 +72,6 @@ class BaseScreen(abc.ABC):
         for niter in range(20):
             # If this is not the first iteration, update best distance and calculate new distance
             if niter > 0:
-                # Calculate for only those pixels that do not meet the tolerance
-                with np.errstate(invalid='ignore'):
-                    # A tolerance of 1e-11 is larger than numerical-precision errors (~1e-12), and only 1.5 meters at 1 AU
-                    use = np.abs(delta / distance) >= 1e-11*u.one
-                if np.sum(use) == 0:
-                    log.debug(f"Solved for the differentially rotated screen after {niter} iterations")
-                    break
-                # Squash small deltas to avoid warnings from later expressions
-                delta = np.where(use, delta, 0)
-
                 if niter == 1:
                     # For the second iteration, use a simple guess
                     best_distance, distance = distance, distance + delta
@@ -103,12 +93,25 @@ class BaseScreen(abc.ABC):
             native_2d = native_3d.realize_frame(native_3d.represent_as(UnitSphericalRepresentation))
             delta[use] = self.calculate_distance(native_2d) - native_3d.spherical.distance
 
-            if debug_output:
-                log.debug(f"npoints={np.sum(use)}; max distance={distance.max()}, max delta={delta.max()}"
-                          + (f", best distance={best_distance.max()}, best delta={best_delta.max()}" if niter > 0 else ""))
-        else:
-            warn_user(f"Failed to solve for the differentially rotated screen after {niter+1} iterations")
+            # Continue computations on only those elements that do not meet the tolerance
+            # A tolerance of 1e-11 is larger than numerical-precision errors (~1e-12), and only 1.5 meters at 1 AU
+            with np.errstate(invalid='ignore'):
+                use = np.abs(delta / distance) >= 1e-11*u.one
 
+            if debug_output:
+                argmax = np.unravel_index(np.argmax(np.abs(delta)), delta.shape)
+                log.debug("%d points remaining; largest delta is %s at distance %s", np.sum(use), delta[argmax], distance[argmax])
+
+            # Return the solution if all elements have converged
+            if np.sum(use) == 0:
+                log.debug("Solved for the differentially rotated screen after %d iterations", niter + 1)
+                return distance
+
+            # Squash small deltas to avoid warnings from later computations
+            delta = np.where(use, delta, 0)
+
+        warn_user(f"Failed to solve for the differentially rotated screen after {niter + 1} iterations. "
+                  "Using the best guess.")
         return distance
 
 
