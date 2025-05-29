@@ -101,7 +101,7 @@ The following new map sources have been added to sunpy:
 * Solar Ultraviolet Imaging Telescope (SUIT)
 * SOHO EIT Level 1 files
 
-Maps now plots with auto-alignment by default
+Maps now plot with auto-alignment by default
 =============================================
 
 The "auto-alignment" functionality of the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` has been significantly enhanced and is now enabled by default.
@@ -171,6 +171,6 @@ Improved return types from the `~sunpy.net.hek.HEKClient`
 =========================================================
 
 The `~sunpy.net.hek.HEKClient` now returns `~astropy.units.Quantity`, `~astropy.time.Time`, and `~astropy.coordinates.SkyCoord` objects wherever possible.
-This allows for easier interpretation of results from the Heliophysics Event Knowledgebase, particular when it comes to coordinates and bounding boxes.
-Users should be aware that some redundant columns are now dropped from the results table, for example, those columns which only contained unit information.
+This allows for easier interpretation of results from the Heliophysics Event Knowledgebase, particularly when it comes to coordinates and bounding boxes.
+Users should be aware that some redundant columns are now dropped from the results table (e.g. those columns which only contained unit information).
 The original, unparsed response from the HEK can be accessed via the ``raw`` property on `~sunpy.net.hek.HEKTable`.
