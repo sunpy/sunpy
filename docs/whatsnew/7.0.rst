@@ -84,30 +84,21 @@ The minimum required versions of the following packages have been updated:
 - pandas>=2.1.0
 - aiobotocore>=2.6.0
 
-Polarimeter to Unify the Corona and Heliosphere (PUNCH) map source
-==================================================================
+Added support for new observatories
+===================================
 
-There is now support for PUNCH level 3 products within sunpy.
+There is now support for Polarimeter to Unify the Corona and Heliosphere (PUNCH) level 3 products within sunpy.
 
 .. image:: 7.0-punch.png
    :alt: A plot from sunpy of a PUNCH level 3 file.
 
-Solar Ultraviolet Imaging Telescope (SUIT) map source
-=====================================================
+As well as for the Solar Ultraviolet Imaging Telescope (SUIT) onboard the Aditya-L1 mission.
 
-SUIT level 1 products onboard the Aditya-L1 mission are now supported in sunpy.
+Broadened support for existing observatories
+============================================
 
-
-SOHO's Extreme ultraviolet Imaging Telescope (EIT) map source
-=============================================================
-
-There was previously support for older SOHO/EIT files, but now there is also support
-for SOHO/EIT level 1 files.
-
-Global Oscillation Network Group (GONG) magnetogram map source
-==============================================================
-
-Formal support for GONG magnetograms has been added to sunpy.
+Added support for the latest level 1 files for SOHO's Extreme ultraviolet Imaging Telescope (EIT).
+Additionally, support for the Global Oscillation Network Group (GONG) magnetogram files.
 
 Maps now plot with auto-alignment by default
 =============================================
