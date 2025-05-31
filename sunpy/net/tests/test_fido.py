@@ -7,7 +7,7 @@ import hypothesis.strategies as st
 import pytest
 from drms import DrmsQueryError
 from hypothesis import assume, given, settings
-from parfive import Results
+from parfive import Results, SessionConfig
 from parfive.utils import FailedDownload
 
 import astropy.units as u
@@ -24,6 +24,7 @@ from sunpy.net.vso import VSOQueryResponseTable
 from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.parfive_helpers import Downloader
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -216,10 +217,13 @@ def filter_queries(queries):
 
 @pytest.mark.remote_data
 def test_path(tmp_path):
+    # Increase timeout to try and avoid a failure on the CI
+    config = SessionConfig(timeouts=90)
+    downloader = Downloader(config=config)
     results = Fido.search(
         a.Time("2025/1/1", "2025/1/1"), a.Instrument.aia)
-    file = Fido.fetch(results, path=tmp_path / "{file}")
-    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025-01-01T00_00_00.63Z.image_lev1.fits"))]
+    file = Fido.fetch(results, path=tmp_path / "{file}", downloader=downloader)
+    assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025_01_01T00_00_00.63Z.image_lev1.fits"))]
 
 
 @pytest.mark.remote_data

@@ -30,6 +30,7 @@ jobs:
           # need to list any non-main branches here.
           - branch: "6.0"
           - branch: "6.1"
+          - branch: "7.0"
     steps:
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
       - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}

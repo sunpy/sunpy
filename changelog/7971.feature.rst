@@ -1,2 +1,0 @@
-Added "SUITMap" with a custom color scheme for 11 filters of the SUIT instrument.
-For more information about the payload, visit `suit.iucaa.in <https://suit.iucaa.in>`__.
