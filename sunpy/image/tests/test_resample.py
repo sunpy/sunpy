@@ -16,10 +16,9 @@ def shape(aia171_test_map):
 
 @pytest.fixture
 def nan_data_map(aia171_test_map):
-    nan_map = deepcopy(aia171_test_map)
-    data = nan_map.data.copy()
+    data = aia171_test_map.data.copy()
     data[1 :10] = np.nan
-    nan_map._data = data
+    nan_map = aia171_test_map._new_instance(data, aia171_test_map.meta)
     return nan_map
 
 @pytest.fixture
