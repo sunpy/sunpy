@@ -23,10 +23,9 @@ def nan_data_map(aia171_test_map):
 
 @pytest.fixture
 def inf_data_map(aia171_test_map):
-    inf = deepcopy(aia171_test_map)
-    data = inf.data.copy()
+    data = aia171_test_map.data.copy()
     data[1:10] = np.inf
-    inf._data = data
+    inf_map = aia171_test_map._new_instance(data, aia171_test_map.meta)
     return inf
 
 def resample_meta(aia171_test_map, dimensions, method, center, minusone):
