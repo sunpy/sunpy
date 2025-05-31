@@ -68,7 +68,6 @@ class BaseScreen(abc.ABC):
         log.debug("Differentially rotating the screen")
         use = np.ones(distance.shape, dtype=bool)
         delta = np.empty_like(distance)
-        next_distance = np.empty_like(distance)
         for niter in range(20):
             # If this is not the first iteration, update best distance and calculate new distance
             if niter > 0:
@@ -77,14 +76,14 @@ class BaseScreen(abc.ABC):
                     best_distance, distance = distance, distance + delta
                     best_delta = delta.copy()
                 else:
-                    # Starting with the third iteration, linearly interpolate between the latest distance and the best distance
+                    last_distance = distance.copy()
+                    # Starting with the third iteration, linearly interpolate between the last distance and the best distance
                     with np.errstate(invalid='ignore'):
-                        next_distance[use] = distance[use] - delta[use] * np.nan_to_num((best_distance[use] - distance[use]) / (best_delta[use] - delta[use]))
+                        distance[use] = last_distance[use] - delta[use] * np.nan_to_num((best_distance[use] - last_distance[use]) / (best_delta[use] - delta[use]))
 
                     # Update the best distance (not including the most recent calculation)
-                    best_distance = np.where(np.abs(best_delta) < np.abs(delta), best_distance, distance)
+                    best_distance = np.where(np.abs(best_delta) < np.abs(delta), best_distance, last_distance)
                     best_delta = np.where(np.abs(best_delta) < np.abs(delta), best_delta, delta)
-                    distance = next_distance.copy()
 
             # Calculate the corresponding delta of a 3D->2D->3D transformation in the native frame of the screen
             # If delta is zero in that frame, then the 3D point is exactly on the screen, so the guessed distance is correct
@@ -203,7 +202,7 @@ class SphericalScreen(BaseScreen):
             distance = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
 
         # Iterate the calculation if differential rotation is being applied
-        if _transformations._autoapply_diffrot is not None and frame.obstime != self._center.obstime:
+        if _transformations._autoapply_diffrot is not None and np.any(frame.obstime != self._center.obstime):
             screen_frame = Helioprojective(observer=self._center, obstime=self._center.obstime)
             distance = self._iterate_calculate_distance(frame, distance, screen_frame)
 
@@ -289,7 +288,7 @@ class PlanarScreen(BaseScreen):
         distance = d_from_plane / rep.dot(direction)
 
         # Iterate the calculation if differential rotation is being applied
-        if _transformations._autoapply_diffrot is not None and frame.obstime != self._vantage_point.obstime:
+        if _transformations._autoapply_diffrot is not None and np.any(frame.obstime != self._vantage_point.obstime):
             screen_frame = Helioprojective(observer=self._vantage_point, obstime=self._vantage_point.obstime)
             distance = self._iterate_calculate_distance(frame, distance, screen_frame)
 
