@@ -94,6 +94,9 @@ There is now support for Polarimeter to Unify the Corona and Heliosphere (PUNCH)
 
 As well as for the Solar Ultraviolet Imaging Telescope (SUIT) onboard the Aditya-L1 mission.
 
+.. image:: 7.0-suit.png
+   :alt: A plot from sunpy of a SUIT level 1 file.
+
 Broadened support for existing observatories
 ============================================
 
