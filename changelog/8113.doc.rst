@@ -1,1 +1,0 @@
-Fixed a small inaccuracy in the docstring of :func:`sunpy.coordinates.sun.B0` about the range of possible values for B0 angle.

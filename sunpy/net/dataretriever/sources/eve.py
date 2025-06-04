@@ -2,6 +2,7 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
+from sunpy.net import attrs as a
 from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['EVEClient']
@@ -35,6 +36,7 @@ class EVEClient(GenericClient):
     <BLANKLINE>
 
     """
+    required = {a.Time, a.Instrument, a.Level}
     pattern = ('https://lasp.colorado.edu/eve/data_access/eve_data/quicklook/L0CS/SpWx/'
                '{{year:4d}}/{{year:4d}}{{month:2d}}{{day:2d}}_EVE_L{{Level:1d}}CS_DIODES_1m.txt')
 
