@@ -26,3 +26,9 @@ def test_wavelength_attr():
     assert u.allclose(wave.max, 2.e+16*u.Angstrom)
     assert wave.max.unit == u.Angstrom
     assert wave.unconverted_value == (1*u.Mm, 2*u.Mm)
+
+
+def test_instrument_show_in_notebook(mocker):
+    mock_datagrid =  mocker.patch("itables.show")
+    a.Instrument.show_in_notebook()
+    mock_datagrid.assert_called_once()
