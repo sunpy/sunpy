@@ -1,0 +1,1 @@
+Ensure that ``GenericMap`` uses source specific accessor for the ``date-obs`` key. This fixes ``EITMap.reference_date``.
