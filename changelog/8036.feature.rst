@@ -1,2 +1,0 @@
-Added a new autoalignment option for the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` of directly plotting a warped image by specifying ``autoalign='image'``.
-This autoalignment option is faster than the existing option (``autoalign='mesh'``), but does not fully work in all situations.

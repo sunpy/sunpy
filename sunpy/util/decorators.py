@@ -23,8 +23,8 @@ __all__ = [
 ]
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _NOT_FOUND = object()
-# Public dictionary for context (de)activation tracking
-ACTIVE_CONTEXTS = {}
+# Stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
+ACTIVE_CONTEXTS = []
 
 
 def deprecated(
@@ -250,12 +250,12 @@ def check_arithmetic_compatibility(func):
 
 def sunpycontextmanager(func):
     """
-    A decorator that tracks the entry and exit of a context manager,
-    setting the key's value to True on entry and False on exit.
+    A decorator that keeps track of active context managers in a stack.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        ACTIVE_CONTEXTS[func.__name__] = True
+        func_name = f"{func.__module__}.{func.__qualname__}"
+        ACTIVE_CONTEXTS.append(func_name)
         gen = func(*args, **kwargs)
         value = next(gen)
         try:
@@ -264,7 +264,8 @@ def sunpycontextmanager(func):
             gen.throw(e)
         else:
             next(gen, None)
-            ACTIVE_CONTEXTS[func.__name__] = False
+            if (removed := ACTIVE_CONTEXTS.pop()) != func_name:
+                raise RuntimeError(f"Cannot remove {func_name} from tracking stack because {removed} is last active.")
     return contextmanager(wrapper)
 
 

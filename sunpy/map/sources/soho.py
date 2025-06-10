@@ -39,7 +39,7 @@ class EITMap(GenericMap):
         super().__init__(data, **kwargs)
 
         self._nickname = self.instrument
-        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
         self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
@@ -161,11 +161,6 @@ class EITL1Map(EITMap):
             'representation_type': CartesianRepresentation,
             'frame': HeliocentricMeanEcliptic})
         ] + super()._supported_observer_coordinates
-
-    # TODO: This is a hack because I couldn't figure out why it broke
-    def _get_cmap_name(self):
-        cmap_string = f"soho{self.detector}{self.wavelength.to_value('AA'):.0f}"
-        return cmap_string.lower()
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

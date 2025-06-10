@@ -84,9 +84,9 @@ def test_observatory(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
 def test_measurement(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
     """Tests the measurement property of the HMIMap object."""
     assert hmi_map.measurement == "continuum"
-    assert hmi_bharp_map.measurement == "hmi"
-    assert hmi_cea_sharp_map.measurement == "hmi"
-    assert hmi_sharp_map.measurement == "hmi"
+    assert hmi_bharp_map.measurement == "observable"
+    assert hmi_cea_sharp_map.measurement == "observable"
+    assert hmi_sharp_map.measurement == "observable"
 
 
 def test_wavelength(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):

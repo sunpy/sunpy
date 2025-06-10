@@ -27,19 +27,37 @@ def test_deprecated_warning_message(since, warning, message, warning_message):
 
 
 @sunpycontextmanager
-def somefunc():
-    print("Entering")
+def ctx1():
     yield
-    print("Exiting")
 
 
-def test_somefunc_context():
-    # Check that the context is not active before entering
-    assert not ACTIVE_CONTEXTS.get('somefunc' , False)
+@sunpycontextmanager
+def ctx2():
+    yield
 
-    with somefunc():
+
+def test_context_tracking():
+    ctx1_name = f"{ctx1.__module__}.{ctx1.__qualname__}"
+    ctx2_name = f"{ctx2.__module__}.{ctx2.__qualname__}"
+
+    # Check that no sunpy contexts are active before entering
+    assert ACTIVE_CONTEXTS == []
+
+    with ctx1():
         # Check that the context is active while inside
-        assert ACTIVE_CONTEXTS.get('somefunc', False)
+        assert ACTIVE_CONTEXTS == [ctx1_name]
 
-    # Check that the context is not active after exiting
-    assert not ACTIVE_CONTEXTS.get('somefunc' , False)
+        with ctx2():
+            # Check nesting of contexts
+            assert ACTIVE_CONTEXTS == [ctx1_name, ctx2_name]
+
+            with ctx1():
+                # Check a repeated context in the nesting
+                assert ACTIVE_CONTEXTS == [ctx1_name, ctx2_name, ctx1_name]
+
+            # Check that only the last context is removed and not its duplicate
+            assert ACTIVE_CONTEXTS == [ctx1_name, ctx2_name]
+
+        assert ACTIVE_CONTEXTS == [ctx1_name]
+
+    assert ACTIVE_CONTEXTS == []

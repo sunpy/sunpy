@@ -146,7 +146,12 @@ class HMIMap(GenericMap):
         """
         Returns the measurement type.
         """
-        return self.meta.get('content', '').split(" ")[0].lower()
+        content = self.meta.get('content', '').split(" ")
+        if len(content) > 1 and content[0].lower() == 'hmi':
+            # Sharp files have 'HMI' in the CONTENT header, but not all HMI files do.
+            return content[1].lower()
+        else:
+            return content[0].lower()
 
     @property
     def observatory(self):

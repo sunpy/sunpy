@@ -92,7 +92,6 @@ def test_creation_of_composite_maps():
         comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
     assert isinstance(comp, sunpy.map.CompositeMap)
 
-
 @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header",
                             "ignore:Missing metadata for")
 def test_patterns(eit_fits_directory):
@@ -269,6 +268,7 @@ def test_url_pattern():
     amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
     assert isinstance(amap, sunpy.map.GenericMap)
 
+
 @pytest.mark.remote_data
 def test_uri_pattern():
     """
@@ -277,7 +277,9 @@ def test_uri_pattern():
     amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
     assert isinstance(amap, sunpy.map.GenericMap)
 
+
 @pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore:datetime.datetime.utcnow:DeprecationWarning")
 def test_uri_directory_pattern():
     """
     Testing publicly accessible s3 directory
@@ -285,6 +287,7 @@ def test_uri_directory_pattern():
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
         assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
+
 
 def test_save():
     # Test save out
@@ -305,6 +308,7 @@ def test_map_list_urls_cache():
             'https://github.com/sunpy/data/raw/main/sunpy/v1/AIA20110607_063305_0094_lowres.fits']
     with pytest.warns(fits.verify.VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         sunpy.map.Map(urls)
+
 
 @pytest.mark.remote_data
 def test_map_list_uri():
