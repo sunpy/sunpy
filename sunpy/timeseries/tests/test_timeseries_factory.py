@@ -365,7 +365,7 @@ def test_passed_ts():
 def test_invalid_manual_data():
     meta = MetaDict({'key': 'value'})
     data = []
-    with pytest.raises(NoMatchError, match=""):
+    with pytest.raises(NoMatchError, match="One of the files failed to validate with"):
         sunpy.timeseries.TimeSeries(data, meta)
 
 
