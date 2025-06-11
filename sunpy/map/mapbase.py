@@ -1601,6 +1601,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         Reproject the map to a different world coordinate system (WCS)
 
+        .. note::
+            This method requires the optional package `reproject` to be installed
+
         Additional keyword arguments are passed through to the reprojection function.
 
         This method **does not** preserve dask arrays.
@@ -1625,8 +1628,13 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         Returns
         -------
-        reproject_outputs : `~sunpy.map.GenericMap`
-            The reprojected map
+        reprojected_cube : `ndcube.NDCube`
+            A new resultant NDCube object, the supplied ``target_wcs`` will
+            be the ``.wcs`` attribute of the output `~ndcube.NDCube`.
+        footprint : `~numpy.ndarray`
+            Footprint of the input array in the output array.
+            Values of 0 indicate no coverage or valid values in the input
+            image, while values of 1 indicate valid values.
 
         Notes
         -----
