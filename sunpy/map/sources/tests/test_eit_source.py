@@ -76,3 +76,4 @@ def test_old_eit_date():
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observer"):
         eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
+    assert eit_map.reference_date.value == '1996-12-11T19:00:14.254'
