@@ -2,21 +2,25 @@
 Matplotlib plotter class
 """
 import copy
+import warnings
 
+import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import Longitude
-from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import Quadrangle
 
 import sunpy.visualization.drawing
+from sunpy import log
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.util.decorators import deprecate_positional_args_since
-from sunpy.util.exceptions import warn_user
+from sunpy.map.maputils import _clip_interval, _handle_norm
+from sunpy.util import grid_perimeter
+from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
+from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
 __all__ = ['MapPlotter']
 
@@ -86,7 +90,7 @@ class MapPlotter:
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
-        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
+        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`__
 
         Parameters
         ----------
@@ -125,10 +129,10 @@ class MapPlotter:
         """
         Draws the solar limb as seen by the map's observer.
 
-        The limb is a circle for only the simplest plots.  If the coordinate frame of
+        The limb is a circle for only the simplest plots. If the coordinate frame of
         the limb is different from the coordinate frame of the plot axes, not only
         may the limb not be a true circle, a portion of the limb may be hidden from
-        the observer.  In that case, the circle is divided into visible and hidden
+        the observer. In that case, the circle is divided into visible and hidden
         segments, represented by solid and dotted lines, respectively.
 
         Parameters
@@ -157,8 +161,8 @@ class MapPlotter:
         visible ``hidden`` will be ``None``.
 
         To avoid triggering Matplotlib auto-scaling, these patches are added as
-        artists instead of patches.  One consequence is that the plot legend is not
-        populated automatically when the limb is specified with a text label.  See
+        artists instead of patches. One consequence is that the plot legend is not
+        populated automatically when the limb is specified with a text label. See
         :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
         the Matplotlib documentation for examples of creating a custom legend.
         """
@@ -168,6 +172,32 @@ class MapPlotter:
             self.smap.observer_coordinate,
             resolution=resolution,
             rsun=self.smap.rsun_meters,
+            **kwargs
+        )
+
+    def draw_extent(self, *, axes=None, **kwargs):
+        """
+        Draw the extent of the map onto a given axes.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes.Axes`, optional
+            The axes to plot the extent on, or "None" to use current axes.
+
+        Returns
+        -------
+        visible : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the visible part of the WCS extent.
+        hidden : `~matplotlib.patches.Polygon`
+            The patch added to the axes for the hidden part of the WCS extent.
+        """
+        # Put imports here to reduce sunpy.map import time
+        import sunpy.visualization.drawing
+
+        axes = self._check_axes(axes)
+        return sunpy.visualization.drawing.extent(
+            axes,
+            self.smap.wcs,
             **kwargs
         )
 
@@ -245,73 +275,31 @@ class MapPlotter:
         axes.add_patch(quad)
         return quad
 
-    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
+    def _process_levels_arg(self, levels):
         """
-        Draw contours of the data.
-        Parameters
-        ----------
-        levels : `~astropy.units.Quantity`
-            A list of numbers indicating the contours to draw. These are given
-            as a percentage of the maximum value of the map data, or in units
-            equivalent to the `~sunpy.map.GenericMap.unit` attribute.
-        axes : `matplotlib.axes.Axes`
-            The axes on which to plot the contours. Defaults to the current
-            axes.
-        fill : `bool`, optional
-            Determines the style of the contours:
-            - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
-            - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
-        Returns
-        -------
-        cs : `list`
-            The `~matplotlib.contour.QuadContourSet` object, after it has been added to
-            ``axes``.
-        Notes
-        -----
-        Extra keyword arguments to this function are passed through to the
-        corresponding matplotlib method.
+        Accept a percentage or dimensionless or map unit input for contours.
         """
-        contour_args = self._update_contour_args(contour_args)
-
-        axes = self._check_axes(axes)
-        levels = self.smap._process_levels_arg(levels)
-
-        # Pixel indices
-        y, x = np.indices(self.smap.shape)
-
-        # Prepare a local variable in case we need to mask values
-        data = self.smap.data
-
-        # Transform the indices if plotting to a different WCS
-        # We do this instead of using the `transform` keyword argument so that Matplotlib does not
-        # get confused about the bounds of the contours
-        if self.smap.wcs is not axes.wcs:
-            if "transform" in contour_args:
-                transform_orig = contour_args.pop("transform")
+        levels = np.atleast_1d(levels)
+        if not hasattr(levels, 'unit'):
+            if self.smap.unit is None:
+                # No map units, so allow non-quantity through
+                return levels
             else:
-                transform_orig = axes.get_transform(self.smap.wcs)
-            transform = transform_orig - axes.transData  # pixel->pixel transform
-            x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
-            x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
+                raise TypeError("The levels argument has no unit attribute, "
+                                "it should be an Astropy Quantity object.")
 
-            # Mask out the data array anywhere the coordinate arrays are not finite
-            data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
-
-        if fill:
-            # Ensure we have more than one level if fill is True
-            if len(levels) == 1:
-                max_val = np.nanmax(data)
-                # Ensure the existing level is less than max_val
-                if levels[0] < max_val:
-                    levels = np.append(levels, max_val)
-                else:
-                    raise ValueError(
-                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). "
-                        "Contour level must be smaller than the maximum data value to use `fill=True`.")
-            cs = axes.contourf(x, y, data, levels, **contour_args)
+        if levels.unit == u.percent:
+            return 0.01 * levels.to_value('percent') * np.nanmax(self.smap.data)
+        elif self.smap.unit is not None:
+            return levels.to_value(self.smap.unit)
+        elif levels.unit.is_equivalent(u.dimensionless_unscaled):
+            # Handle case where map data has no units
+            return levels.to_value(u.dimensionless_unscaled)
         else:
-            cs = axes.contour(x, y, data, levels, **contour_args)
-        return cs
+            # Map data has no units, but levels doesn't have dimensionless units
+            raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
+                               "or in u.dimensionless_unscaled units.")
+
 
     def _update_contour_args(self, contour_args):
         """
@@ -359,6 +347,77 @@ class MapPlotter:
         contour_args.pop('interpolation')
         return contour_args
 
+
+    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
+        """
+        Draw contours of the data.
+
+        Parameters
+        ----------
+        levels : `~astropy.units.Quantity`
+            A list of numbers indicating the contours to draw. These are given
+            as a percentage of the maximum value of the map data, or in units
+            equivalent to the `~sunpy.map.GenericMap.unit` attribute.
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the contours. Defaults to the current
+            axes.
+        fill : `bool`, optional
+            Determines the style of the contours:
+            - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
+            - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
+
+        Returns
+        -------
+        cs : `list`
+            The `~matplotlib.contour.QuadContourSet` object, after it has been added to
+            ``axes``.
+
+        Notes
+        -----
+        Extra keyword arguments to this function are passed through to the
+        corresponding matplotlib method.
+        """
+        contour_args = self._update_contour_args(contour_args)
+
+        axes = self._check_axes(axes)
+        levels = self.smap._process_levels_arg(levels)
+
+        # Pixel indices
+        y, x = np.indices(self.smap.shape)
+
+        # Prepare a local variable in case we need to mask values
+        data = self.smap.data
+
+        # Transform the indices if plotting to a different WCS
+        # We do this instead of using the `transform` keyword argument so that Matplotlib does not
+        # get confused about the bounds of the contours
+        if self.smap.wcs is not axes.wcs:
+            if "transform" in contour_args:
+                transform_orig = contour_args.pop("transform")
+            else:
+                transform_orig = axes.get_transform(self.smap.wcs)
+            transform = transform_orig - axes.transData  # pixel->pixel transform
+            x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
+            x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
+
+            # Mask out the data array anywhere the coordinate arrays are not finite
+            data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
+
+        if fill:
+            # Ensure we have more than one level if fill is True
+            if len(levels) == 1:
+                max_val = np.nanmax(self.smap.data)
+                # Ensure the existing level is less than max_val
+                if levels[0] < max_val:
+                    levels = np.append(levels, max_val)
+                else:
+                    raise ValueError(
+                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). "
+                        "Contour level must be smaller than the maximum data value to use `fill=True`.")
+            cs = axes.contourf(x, y, data, levels, **contour_args)
+        else:
+            cs = axes.contour(x, y, data, levels, **contour_args)
+        return cs
 
     @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
@@ -415,13 +474,15 @@ class MapPlotter:
 
         return figure
 
-    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
-    def plot(self, * , annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=True,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
-        Plots the map object using matplotlib, in a method equivalent
-        to :meth:`~matplotlib.axes.Axes.imshow` using nearest neighbor interpolation.
+        Plots the map using matplotlib.
+
+        By default, the map's pixels will be drawn in an coordinate-aware fashion, even
+        when the plot axes are a different projection or a different coordinate frame.
+        See the ``autoalign`` keyword and the notes below.
 
         Parameters
         ----------
@@ -439,12 +500,15 @@ class MapPlotter:
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle).  If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`.  Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle). The options are:
+
+            * ``"mesh"``, which draws a mesh of the individual map pixels
+            * ``"image"``, which draws the map as a single (warped) image
+            * `True`, which automatically determines whether to use ``"mesh"`` or ``"image"``
+
         **imshow_kwargs : `dict`
-            Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
+            Any additional arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`
+            or :meth:`~matplotlib.axes.Axes.pcolormesh`.
 
         Examples
         --------
@@ -458,28 +522,31 @@ class MapPlotter:
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive.  If the plot will
-        be interactive, the alternative approach of preprocessing the map (e.g.,
-        de-rotating it) to match the desired axes will result in better performance.
+        The ``autoalign`` functionality can be intensive to render. If the plot is to
+        be interactive, the alternative approach of preprocessing the map to match the
+        intended axes (e.g., through rotation or reprojection) will result in better
+        plotting performance.
+
+        The ``autoalign='image'`` approach is usually faster than the
+        ``autoalign='mesh'`` approach, but is not as reliable, depending on the
+        specifics of the map.  If parts of the map cannot be plotted, a warning is
+        emitted.  If the entire map cannot be plotted, an error is raised.
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
-        beyond the solar disk may not appear, which may also inhibit Matplotlib's
-        autoscaling of the plot limits.  The plot limits can be set manually.
-        To preserve the off-disk parts of the map, using the
-        :meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` context
-        manager may be appropriate.
+        beyond the solar disk may not appear.  To preserve the off-disk parts of the
+        map, using the `~sunpy.coordinates.SphericalScreen` context manager may be
+        appropriate.
         """
-        # Users sometimes assume that the first argument is `axes` instead of `annotate`
-        if not isinstance(annotate, bool):
-            raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
-                            "If you are specifying the axes, use `axes=...` to pass it in.")
+        if autoalign == 'pcolormesh':
+            warn_deprecated("Specifying `autoalign='pcolormesh'` is deprecated as of 7.0. "
+                            "Specify `autoalign='mesh'` instead.")
+            autoalign = 'mesh'
 
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
-        if autoalign is True:
-            autoalign = 'pcolormesh'
+        allowed_autoalign = [False, True, 'mesh', 'image']
+        if autoalign not in allowed_autoalign:
+            raise ValueError(f"The value for `autoalign` must be one of {allowed_autoalign}.")
 
         axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
@@ -501,47 +568,79 @@ class MapPlotter:
 
             # WCSAxes has unit identifiers on the tick labels, so no need
             # to add unit information to the label
-            spatial_units = [None, None]
             ctype = axes.wcs.wcs.ctype
-
-            axes.set_xlabel(axis_labels_from_ctype(ctype[0],
-                                                   spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(ctype[1],
-                                                   spatial_units[1]))
+            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
+            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
         imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
-            if len(clip_interval) == 2:
-                clip_percentages = clip_interval.to('%').value
-                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.smap.data)
-            else:
-                raise ValueError("Clip percentile interval must be specified as two numbers.")
-
+            vmin, vmax = _clip_interval(self.data, clip_interval)
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
-        msg = ('Cannot manually specify {0}, as the norm '
-               'already has {0} set. To prevent this error set {0} on '
-               '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
         if (norm := imshow_args.get('norm', None)) is not None:
-            if 'vmin' in imshow_args:
-                if norm.vmin is not None:
-                    raise ValueError(msg.format('vmin'))
-                norm.vmin = imshow_args.pop('vmin')
-            if 'vmax' in imshow_args:
-                if norm.vmax is not None:
-                    raise ValueError(msg.format('vmax'))
-                norm.vmax = imshow_args.pop('vmax')
+            _handle_norm(norm, imshow_args)
 
         if self.smap.mask is None:
             data = self.smap.data
         else:
             data = np.ma.array(np.asarray(self.smap.data), mask=self.smap.mask)
 
-        if autoalign == 'pcolormesh':
+        # Disable autoalignment if it is not necessary
+        # TODO: revisit tolerance value
+        if autoalign is True and axes.wcs.wcs.compare(self.smap.wcs.wcs, tolerance=0.01):
+            autoalign = False
+
+        if autoalign in {True, 'image'}:
+            ny, nx = self.smap.data.shape
+            pixel_perimeter = grid_perimeter(nx, ny) - 0.5
+
+            transform = axes.get_transform(self.smap.wcs) - axes.transData
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=SunpyUserWarning)
+                data_perimeter = transform.transform(pixel_perimeter)
+            if not np.all(np.isfinite(data_perimeter)):
+                if autoalign == 'image':
+                    raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
+                                       "Try specifying autoalign=mesh.")
+                autoalign = 'mesh'
+            else:
+                min_x, min_y = np.min(data_perimeter, axis=0)
+                max_x, max_y = np.max(data_perimeter, axis=0)
+
+                data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
+                if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
+                        and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
+                    if autoalign == 'image':
+                        warn_user("Cannot draw all of the autoaligned image due to the warping required. "
+                                  "Specifying autoalign=mesh is recommended.")
+                    else:
+                        autoalign = 'mesh'
+            if autoalign == 'mesh':
+                log.info("Using mesh-based autoalignment")
+            elif autoalign is True:
+                log.info("Using image-based autoalignment")
+                autoalign = 'image'
+
+        if autoalign == 'image':
+            # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
+            old_datalim = copy.deepcopy(axes.dataLim)
+            ret = axes.imshow(data, transform=transform + axes.transData, **imshow_args)
+            axes.dataLim = old_datalim
+
+            # Update the data limits based on the transformed perimeter
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
+            axes.autoscale(enable=None)
+
+            # Clip the drawn image based on the transformed perimeter
+            path = mpath.Path(data_perimeter)
+            ret.set_clip_path(path, axes.transData)
+        elif autoalign == 'mesh':
             # We have to handle an `aspect` keyword separately
             axes.set_aspect(imshow_args.get('aspect', 1))
 
@@ -550,22 +649,39 @@ class MapPlotter:
                 warn_user("The interpolation keyword argument is ignored when using autoalign "
                           "functionality.")
 
+            # Set the zorder to be 0 so that it is treated like an image in ordering
+            imshow_args.setdefault('zorder', 0)
+
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
                 if item in imshow_args:
                     del imshow_args[item]
 
-            imshow_args.setdefault('transform', axes.get_transform(self.smap.wcs))
-
             # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
-            # of a grid pattern when alpha is not 1.  These settings minimize the overlap.
+            # of a grid pattern when alpha is not 1. These settings minimize the overlap.
             if imshow_args.get('alpha', 1) != 1:
                 imshow_args.setdefault('antialiased', True)
                 imshow_args.setdefault('linewidth', 0)
 
-            ret = axes.pcolormesh(np.arange(data.shape[1] + 1) - 0.5,
-                                  np.arange(data.shape[0] + 1) - 0.5,
-                                  data, **imshow_args)
+            # Create a lookup table for the transformed data corners for matplotlib to use
+            transform = _PrecomputedPixelCornersTransform(axes, self.smap.wcs)
+
+            # Define the mesh in data coordinates in case the transformation results in NaNs
+            ret = axes.pcolormesh(transform.data_x, transform.data_y, data,
+                                  shading='flat',
+                                  transform=transform + axes.transData,
+                                  **imshow_args)
+
+            # Calculate the bounds of the mesh in the pixel space of the axes
+            good = np.logical_and(np.isfinite(transform.axes_x), np.isfinite(transform.axes_y))
+            good_x, good_y = transform.axes_x[good], transform.axes_y[good]
+            min_x, max_x = np.min(good_x), np.max(good_x)
+            min_y, max_y = np.min(good_y), np.max(good_y)
+
+            # Update the plot limits
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
         else:
             ret = axes.imshow(data, **imshow_args)
 

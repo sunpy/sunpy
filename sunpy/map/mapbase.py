@@ -8,6 +8,7 @@ import numbers
 import textwrap
 import itertools
 import webbrowser
+from typing import Literal
 from numbers import Integral
 from tempfile import NamedTemporaryFile
 
@@ -34,7 +35,6 @@ import sunpy.coordinates.wcs_utils
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config, log
-# The next two are not used but are called to register functions with external modules
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -43,10 +43,10 @@ from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
 from sunpy.map.mixins.mapmeta import MapMetaMixin
 from sunpy.util import MetaDict
-from sunpy.util.decorators import ACTIVE_CONTEXTS, add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring, deprecated
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
+from sunpy.util.util import _figure_to_base64, extent_in_other_wcs, fix_duplicate_notes
 from sunpy.visualization.plotter.mpl_plotter import MapPlotter
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -538,7 +538,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if meta is None:
             meta = copy.deepcopy(getattr(self, 'meta'))
         if new_unit := kwargs.get('unit', None):
-            meta['bunit'] = self._parse_fits_unit(new_unit).to_string()
+            meta['bunit'] = new_unit.to_string()
+
         # NOTE: wcs=None is explicitly passed here because the wcs of a map is
         # derived from the information in the metadata.
         new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
@@ -1100,19 +1101,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [126.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[ 450.4546 ,  565.81494,  585.0416 , ..., 1005.28284,  977.8161 ,
-                1005.28284],
-            [ 474.20004,  516.1865 ,  555.7032 , ..., 1010.1449 , 1010.1449 ,
-                1121.2855 ],
-            [ 548.1609 ,  620.9256 ,  620.9256 , ..., 1074.4924 , 1108.4492 ,
-                1069.6414 ],
-            ...,
-            [ 206.00058,  212.1806 ,  232.78065, ...,  622.12177,  537.6615 ,
-                574.74164],
-            [ 229.32516,  236.07002,  222.5803 , ...,  586.8026 ,  591.2992 ,
-                728.44464],
-            [ 184.20439,  187.92569,  225.1387 , ...,  649.367  ,  686.58   ,
-                673.5554 ]], dtype=float32)
+        ...
+
         >>> aia.submap([0,0]*u.pixel, top_right=[5,5]*u.pixel)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
@@ -1130,18 +1120,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [511.5 511.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[-95.92475   ,   7.076416  ,  -1.9656711 ,  -2.9485066 ,
-                -0.98283553,  -6.0935802 ],
-            [-96.97533   ,  -5.1167884 ,   0.        ,   0.        ,
-                0.9746264 ,   3.8985057 ],
-            [-93.99607   ,   1.0189276 ,  -4.0757103 ,   2.0378551 ,
-                -2.0378551 ,  -7.896689  ],
-            [-96.97533   ,  -8.040668  ,  -2.9238791 ,  -5.1167884 ,
-                -0.9746264 ,  -8.040668  ],
-            [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
-                -3.9313421 ,  -1.0483578 ],
-            [-95.103004  ,   0.        ,  -4.993475  ,   0.        ,
-                -4.0855703 ,  -7.03626   ]], dtype=float32)
+        ...
+
         >>> width = 10 * u.arcsec
         >>> height = 10 * u.arcsec
         >>> aia.submap(bl, width=width, height=height)   # doctest: +REMOTE_DATA
@@ -1161,12 +1141,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [125.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[565.81494, 585.0416 , 656.4552 , 670.18854, 678.4286 ],
-            [516.1865 , 555.7032 , 634.7365 , 661.90424, 587.8105 ],
-            [620.9256 , 620.9256 , 654.8825 , 596.6707 , 531.18243],
-            [667.5083 , 560.52094, 651.22766, 530.28534, 495.39816],
-            [570.15643, 694.5542 , 653.0883 , 699.7374 , 583.11456]],
-            dtype=float32)
+        ...
+
         >>> bottom_left_vector = SkyCoord([0, 10]  * u.deg, [0, 10] * u.deg, frame='heliographic_stonyhurst')
         >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at ...>
@@ -1185,19 +1161,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [1.5 0.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
-        array([[209.89908, 213.9748 , 256.76974, ..., 560.41016, 497.23666,
-                584.86444],
-                [237.85315, 223.74321, 258.0102 , ..., 578.5072 , 643.00977,
-                560.3659 ],
-                [252.67189, 219.53459, 242.31648, ..., 623.3954 , 666.8881 ,
-                625.4665 ],
-                ...,
-                [662.12573, 690.3013 , 702.04114, ..., 464.8968 , 561.1633 ,
-                676.2135 ],
-                [489.49503, 542.75616, 563.0461 , ..., 667.0321 , 748.1919 ,
-                748.1919 ],
-                [435.59155, 455.9701 , 496.7272 , ..., 855.8992 , 789.6689 ,
-                687.7761 ]], dtype=float32)
+        ...
         """
         # Check that we have been given a valid combination of inputs
         # [False, False, False] is valid if bottom_left contains the two corner coords
@@ -1615,6 +1579,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return contours
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
+                     auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
@@ -1635,6 +1600,14 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return_footprint : `bool`
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
+        auto_extent : ``"all"``, ``"edges"``, ``"corners"``, or ``None``
+            If ``None``, the extent of the reprojected map comes from the target WCS.
+            If not ``None``, the extent of the reprojected map is automatically
+            determined by ensuring that all of the pixels, just the edges, or just the
+            corners of this map are in the contained within the extent.  Compared to the
+            target WCS, the extent will be shifted/expanded/cropped by an integer number
+            of pixels.
+            Defaults to ``None``.
 
         Returns
         -------
@@ -1660,12 +1633,13 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         See the respective documentation for these functions for additional keyword
         arguments that are allowed.
 
+        Of the options for the automatic determination of the reprojected extent, both
+        ``"edges"`` and ``"corners"`` will perform the calculation faster than
+        ``"all"``, but at the risk of potentially not including the entire reprojected
+        map.
+
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        # Check if both context managers are active
-        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
-            warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
-
         try:
             import reproject
         except ImportError as exc:
@@ -1681,6 +1655,14 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if algorithm not in functions:
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
+
+        if auto_extent not in ['all', 'edges', 'corners', None]:
+            raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
+        if auto_extent is not None:
+            left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
+                                                            method=auto_extent, integers=True)
+            target_wcs.wcs.crpix -= [left, bottom]
+            target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
         # reproject does not automatically grab the array shape from the WCS instance
         if target_wcs.array_shape is not None:
@@ -1706,7 +1688,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         return outmap
 
 
-GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
+GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
 
 
 class InvalidHeaderInformation(ValueError):

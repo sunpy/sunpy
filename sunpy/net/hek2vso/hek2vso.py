@@ -7,7 +7,6 @@ import sys
 
 from tqdm import tqdm
 
-from astropy import units
 from astropy.utils.decorators import deprecated_renamed_argument
 
 from sunpy.net import attrs as a
@@ -80,14 +79,14 @@ def vso_attribute_parse(phrase):
     >>> len(q)  # doctest: +REMOTE_DATA
     19
     >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
-    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
+    [<sunpy.net.attrs.Time(2011-08-09 07:22:38.000, 2011-08-09 08:32:02.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Data from the Atmospheric Imaging Assembly instrument.) object at
+    ...>, <sunpy.net.attrs.Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
-        query = [a.Time(phrase['event_starttime'],
-                        phrase['event_endtime']),
+        query = [a.Time(phrase['event_starttime'], phrase['event_endtime']),
                  a.Source(phrase['obs_observatory']),
                  a.Instrument(phrase['obs_instrument'])]
-        avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
+        avg_wave_len = phrase['obs_meanwavel']
         query.append(a.Wavelength(avg_wave_len, avg_wave_len))
     except (KeyError, TypeError):
         raise TypeError(f"'{type(phrase)!s}' is an improper data type")

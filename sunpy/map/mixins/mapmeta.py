@@ -14,7 +14,7 @@ from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.decorators import cached_property_based_on
-from sunpy.util.exceptions import warn_metadata, warn_user
+from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
 
 __all__ = ['MapMetaValidationError', 'MapMetaMixin', 'PixelPair', 'SpatialPair']
 
@@ -168,7 +168,7 @@ class MapMetaMixin:
         The reference date for the coordinate system.
 
         This date is used to define the ``obstime`` of the coordinate frame and often
-        the ``obstime`` of the observer.  Be aware that this date can be different from
+        the ``obstime`` of the observer. Be aware that this date can be different from
         the "canonical" observation time (see the `.GenericMap.date` property).
 
         The reference date is determined using this order of preference:
@@ -219,7 +219,7 @@ class MapMetaMixin:
         The observation time.
 
         This time is the "canonical" way to refer to an observation, which is commonly
-        the start of the observation, but can be a different time.  In comparison, the
+        the start of the observation, but can be a different time. In comparison, the
         `.GenericMap.date_start` property is unambigiously the start of the observation.
 
         The observation time is determined using this order of preference:
@@ -309,12 +309,17 @@ class MapMetaMixin:
     @property
     def measurement(self):
         """
-        Measurement wavelength.
+        The measurement type of the observation.
 
-        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
-        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
-        defaults to dimensionless units.
+        The measurement type can be described by a `str` or a
+        `~astropy.units.Quantity`. If the latter, it is typically equal to
+        `.GenericMap.wavelength`.
+
+        See Also
+        --------
+        wavelength : The wavelength of the observation.
         """
+
         return self.wavelength
 
     @property
@@ -466,13 +471,15 @@ class MapMetaMixin:
             ctype2 = 'HPLT-TAN'
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
-        # "solar-y" ctypes.  This overrides the default assignment and
-        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # "solar-y" ctypes. This overrides the default assignment and
+        # changes it to a ctype that is understood. See Thompson, 2006, A.&A.,
         # 449, 791.
         if ctype1.lower() in ("solar-x", "solar_x"):
+            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
             ctype1 = 'HPLN-TAN'
 
         if ctype2.lower() in ("solar-y", "solar_y"):
+            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
             ctype2 = 'HPLT-TAN'
 
         return SpatialPair(ctype1, ctype2)
@@ -629,7 +636,7 @@ class MapMetaMixin:
         (i.e. cdelt1, cdelt2).
 
         If the CDij matrix is defined but no CDELTi values are explicitly defined,
-        effective CDELTi values are constructed from the CDij matrix.  The effective
+        effective CDELTi values are constructed from the CDij matrix. The effective
         CDELTi values are chosen so that each row of the PCij matrix has unity norm.
         This choice is optimal if the PCij matrix is a pure rotation matrix, but may not
         be as optimal if the PCij matrix includes any skew.
@@ -728,12 +735,12 @@ class MapMetaMixin:
         """
         Return any PV values in the metadata.
         """
-        pattern = re.compile('pv[0-9]_[0-9]a', re.IGNORECASE)
+        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
         pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
 
         pv_values = []
         for k in pv_keys:
-            i, m = int(k[2]), int(k[4])
+            i, m = int(k[2]), int(k[4:])
             pv_values.append((i, m, self.meta[k]))
         return pv_values
 
@@ -741,23 +748,28 @@ class MapMetaMixin:
     def _parse_fits_unit(unit_str):
         replacements = {'gauss': 'G',
                         'counts / pixel': 'ct/pix',}
-        # TODO: HACK WORKAROUND
-        if isinstance(unit_str, u.Unit | u.CompositeUnit | u.IrreducibleUnit):
-            unit_str = unit_str.to_string()
         if unit_str.lower() in replacements:
             unit_str = replacements[unit_str.lower()]
-        unit = u.Unit(unit_str, format='fits', parse_strict='silent')
-        if isinstance(unit, u.UnrecognizedUnit):
-            unit = u.Unit(unit_str, parse_strict='silent')
+        unit = u.Unit(unit_str, parse_strict='silent')
+        for base in unit.bases:
             # NOTE: Special case DN here as it is not part of the FITS standard, but
             # is widely used and is also a recognized astropy unit
-            if u.DN not in unit.bases:
+            if base is u.DN:
+                continue
+            try:
+                if isinstance(base, u.UnrecognizedUnit):
+                    raise ValueError
+
+                # Also rejects a unit that is not in the FITS standard but is equivalent to one (e.g., Mx)
+                if u.Unit(base.to_string(format='fits')) is not base:  # to_string() can raise ValueError
+                    raise ValueError
+            except ValueError:
                 warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
                               f'See {_META_FIX_URL} for how to fix metadata before loading it '
                                'with sunpy.map.Map.\n'
                                'See https://fits.gsfc.nasa.gov/fits_standard.html for '
                                'the FITS unit standards.')
-                unit = None
+                return None
         return unit
 
     @property
