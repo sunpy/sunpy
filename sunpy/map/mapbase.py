@@ -930,10 +930,10 @@ class GenericMap(NDData):
     @property
     def _date_obs(self):
         # Get observation date from date-obs, falling back to date_obs
-        time = self._get_date('date-obs')
-        if is_time(self.meta.get('date_obs', None)):
-            time = time or self._get_date('date_obs')
-        return time
+        if is_time(self.meta.get("date-obs", None)):
+            return self._get_date('date-obs')
+        elif is_time(self.meta.get('date_obs', None)):
+            return self._get_date('date_obs')
 
     @property
     def reference_date(self):
@@ -967,7 +967,7 @@ class GenericMap(NDData):
         """
         return (
             self._get_date('date-avg') or
-            self._get_date('date-obs') or
+            self._date_obs or
             self._get_date('date-beg') or
             self._get_date('date-end') or
             self.date
