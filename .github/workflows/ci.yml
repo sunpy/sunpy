@@ -25,13 +25,20 @@ concurrency:
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
+<<<<<<<
+=======
+        - linux: py313
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+>>>>>>>
         - linux: py313
           libraries:
             apt:
@@ -40,8 +47,13 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test:
+<<<<<<<
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+=======
+    needs: [core, sdist_verify]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+>>>>>>>
     with:
       submodules: false
       coverage: codecov
@@ -57,12 +69,21 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+<<<<<<<
+=======
+      posargs: -n auto
+      envs: |
+        - windows: py311
+        - macos: py312
+        - linux: py310-oldestdeps
+        - linux: py313-devdeps
+>>>>>>>
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       default_python: '3.12'
       submodules: false
@@ -159,9 +180,28 @@ jobs:
     steps:
       - uses: Cadair/matrix-notify-action@main
         with:
+<<<<<<<
           matrix_token: ${{ secrets.matrix_access_token }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.matrix_homeserver }}
           roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
           ignore_pattern: '.*Load.*'
           summarise_success: true
+=======
+        contains(github.event.pull_request.labels.*.name, 'Run publish')
+      )
+    needs: [test, docs]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v2
+    with:
+      sdist: true
+      test_extras: 'tests'
+      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
+      submodules: false
+      targets: |
+        - cp3{10,11,12,13}-manylinux*_x86_64
+        - cp3{10,11,12,13}-macosx_x86_64
+        - cp3{10,11,12,13}-macosx_arm64
+        - cp3{10,11,12,13}-win_amd64
+    secrets:
+      pypi_token: ${{ secrets.pypi_token }}
+>>>>>>>
