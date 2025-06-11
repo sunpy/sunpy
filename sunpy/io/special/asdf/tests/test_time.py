@@ -12,3 +12,7 @@ def assert_roundtrip_time(old):
 
 def test_utime():
     assert_roundtrip_time(Time(1231853576.0, format='utime'))
+
+
+def test_tai_seconds():
+    assert_roundtrip_time(Time(1231853576.0, format='tai_seconds'))
