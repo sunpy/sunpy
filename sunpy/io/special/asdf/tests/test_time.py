@@ -4,6 +4,14 @@ from astropy.time import Time
 # This registers TimeUTime in astropy.time.Time
 from sunpy.time import TimeUTime  # NOQA
 
+import pytest
+import astropy.utils
+from astropy.utils import minversion
+
+
+if not minversion("asdf_astropy", "0.8.0"):
+    pytest.skip("these tests require asdf_astropy >= 0.8.0", allow_module_level=True)
+
 
 def assert_roundtrip_time(old):
     new = roundtrip_object(old)
