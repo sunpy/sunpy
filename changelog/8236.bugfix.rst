@@ -1,1 +1,2 @@
-Ensure that ``GenericMap`` uses source specific accessor for the ``date-obs`` key. This fixes ``EITMap.reference_date``.
+Ensure that `~sunpy.map.GenericMap` uses the private accessor for the ``date-obs`` key, which can be overridden by a source subclass.
+This fixes ``EITMap.reference_date``.
