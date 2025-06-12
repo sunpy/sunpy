@@ -17,6 +17,7 @@ from collections import namedtuple
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
@@ -3110,9 +3111,6 @@ class GenericMap(NDData):
         """
         Reproject the map to a different world coordinate system (WCS)
 
-        .. note::
-            This method requires the optional package `reproject` to be installed.
-
         Additional keyword arguments are passed through to the reprojection function.
 
         This method **does not** preserve dask arrays.
@@ -3166,11 +3164,6 @@ class GenericMap(NDData):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        try:
-            import reproject
-        except ImportError as exc:
-            raise ImportError("This method requires the optional package `reproject`.") from exc
-
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(target_wcs)
 
