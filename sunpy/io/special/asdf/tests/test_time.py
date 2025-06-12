@@ -2,13 +2,11 @@ import pytest
 
 from asdf.testing.helpers import roundtrip_object
 from astropy.time import Time
-from astropy.utils import minversion
 
 # This registers TimeUTime in astropy.time.Time
 from sunpy.time import TimeUTime  # NOQA
 
-if not minversion("asdf_astropy", "0.8.0"):
-    pytest.skip("these tests require asdf_astropy >= 0.8.0", allow_module_level=True)
+pytest.importorskip("asdf_astropy", "0.8.0")
 
 
 def assert_roundtrip_time(old):
