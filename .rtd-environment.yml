@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python=3.13
   - pip
+  - numpy<2.3.0
   - openjpeg
   - graphviz!=2.42.*,!=2.43.*
   - pycairo
