@@ -1628,9 +1628,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         Returns
         -------
-        reprojected_cube : `ndcube.NDCube`
-            A new resultant NDCube object, the supplied ``target_wcs`` will
-            be the ``.wcs`` attribute of the output `~ndcube.NDCube`.
+        reprojected_cube : `sunpy.map.GenericMap`
+            A new resultant ~`.sunpy.map.GenericMap` object, the supplied ``target_wcs`` will
+            be the ``.wcs`` attribute of the output.
         footprint : `~numpy.ndarray`
             Footprint of the input array in the output array.
             Values of 0 indicate no coverage or valid values in the input
@@ -1660,16 +1660,11 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(header=target_wcs)
 
-        reproject_outputs = super().reproject_to(target_wcs,
-                                                 algorithm=algorithm,
-                                                 return_footprint=return_footprint,
-                                                 **reproject_args)
-
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
         if auto_extent is not None:
             left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
-                                                            method=auto_extent, integers=True)
+                                                           method=auto_extent, integers=True)
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
@@ -1677,20 +1672,12 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if target_wcs.array_shape is not None:
             reproject_args.setdefault('shape_out', target_wcs.array_shape)
 
-        # Reproject the array
-        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
-        if return_footprint:
-            output_array, footprint = output_array
-
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, meta=target_wcs.to_header(),
-                            plot_settings=self.plotter.plot_settings)
-
         # check for rsun outmap
         if self.rsun_meters.to_value() != target_wcs.wcs.aux.rsun_ref:
             warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters.to_value()} != {target_wcs.wcs.aux.rsun_ref} rsun_meters of target WCS."
-                      "This might cause unexpected results during reprojection.")
+                      f"{self.name}.rsun_meters={self.rsun_meters.to_value()} != {target_wcs.wcs.aux.rsun_ref}"
+                      " rsun_meters of target WCS."
+                      " This might cause unexpected results during reprojection.")
 
         return super().reproject_to(target_wcs,
                                     algorithm=algorithm,
