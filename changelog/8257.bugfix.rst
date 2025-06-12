@@ -1,0 +1,1 @@
+Prevented a potential segmentation fault when calling :func:`~sunpy.time.parse_time` on a list of more than 500 strings in a format not specifically recognized by `sunpy.time` itself and instead has to fall back on recognition by `astropy.time`.
