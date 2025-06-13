@@ -6,12 +6,6 @@
 Acquiring Data
 **************
 
-.. warning::
-
-    The JSOC suffered extensive water damage and are currently working to fix this.
-    As a result, currently there is no data access.
-    `For more information, please find that here. <https://solarweb1.stanford.edu/JSOC_Emergency_Resources>`__
-
 This section of the tutorial introduces ways to obtain different kind of solar data from different places.
 The main tutorial below focuses on ``Fido``, which is a generic search interface that sunpy provides.
 There are some data-provider specific tutorials that you might want to visit after going through this tutorial:
