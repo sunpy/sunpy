@@ -17,8 +17,9 @@ from sunpy.data import cache
 from sunpy.io._file_tools import detect_filetype, read_file
 from sunpy.io._header import FileHeader
 from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapbase import GenericMap, MapMetaValidationError
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.mapsequence import MapSequence
+from sunpy.map.mixins import MapMetaValidationError
 from sunpy.util import expand_list
 from sunpy.util.datatype_factory_base import (
     BasicRegistrationFactory,
@@ -359,7 +360,7 @@ class MapFactory(BasicRegistrationFactory):
         # Only one is found
         WidgetType = candidate_widget_types[0]
 
-        return WidgetType(data, meta, **kwargs)
+        return WidgetType(data, meta=meta, **kwargs)
 
 
 class InvalidMapInput(ValueError):
