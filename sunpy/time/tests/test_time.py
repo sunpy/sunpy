@@ -356,6 +356,13 @@ def test_parse_time_list_3():
     assert np.all(parse_time(tstrings) == Time.strptime(tstrings, '%Y-%b-%d'))
 
 
+def test_parse_time_long_list():
+    # Check whether lists of >500 strings cause a segmentation fault
+    # https://github.com/astropy/astropy/issues/18254
+    assert isinstance(parse_time(['2001-Jan-01']*501), Time)  # sunpy format
+    assert isinstance(parse_time(['J2000.0']*501), Time)  # non-sunpy format
+
+
 def test_is_time():
     time.is_time(datetime.now(timezone.utc)) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
