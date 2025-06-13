@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from astropy import units as u
-from astropy.time import Time
 
 from sunpy import timeseries as ts
 from sunpy.time import parse_time
@@ -44,7 +43,7 @@ goes_data.rename(columns={'0.05-0.4nm': 'xrsa', '0.1-0.8nm': 'xrsb'}, inplace=Tr
 # `sunpy.timeseries.TimeSeries` requires a datetime index, which we can get by
 # parsing the time strings.
 
-goes_data.index = [Time(t).datetime for t in goes_data.index]
+goes_data.index = parse_time(list(goes_data.index)).datetime
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
