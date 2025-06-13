@@ -1,0 +1,1 @@
+Fixed a bug where the time format ``2001-02-03T04:05:06Z`` was being parsed through different code than ``2001-02-03T04:05:06`` or ``2001-02-03T04:05:06.0Z``.
