@@ -905,17 +905,17 @@ def test_rebin_simple_map(simple_map):
     assert list(simple_map.reference_pixel) == [0.5 * u.pix, 0.5 * u.pix]
     # Make the rebin map
     new_dims = (2, 2) * u.pix
-    superpix_map = simple_map.rebin(new_dims)
+    rebin_map = simple_map.rebin(new_dims)
     # Reference pixel should change, but reference coordinate should not
-    assert list(superpix_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
-    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
+    assert list(rebin_map.reference_pixel) == [0 * u.pix, 0 * u.pix]
+    assert rebin_map.reference_coordinate == simple_map.reference_coordinate
 
     # Check that offset works
-    superpix_map = simple_map.rebin(new_dims, offset=[1, 2] * u.pix)
+    rebin_map = simple_map.rebin(new_dims, offset=[1, 2] * u.pix)
     # Reference pixel should change, but reference coordinate should not
-    assert u.allclose(list(superpix_map.reference_pixel),
+    assert u.allclose(list(rebin_map.reference_pixel),
                       [-0.5 * u.pix, -1 * u.pix])
-    assert superpix_map.reference_coordinate == simple_map.reference_coordinate
+    assert rebin_map.reference_coordinate == simple_map.reference_coordinate
 
 
 @pytest.mark.parametrize('f', [np.sum, np.mean])
@@ -1787,7 +1787,6 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):
         new_map = value / aia171_test_map
         check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
-
 
 
 def test_map_arithmetic_pow(aia171_test_map):
