@@ -5,6 +5,7 @@ import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
 
+import sunpy.sun.models as sun_models
 from sunpy.sun.models import differential_rotation
 
 
@@ -56,3 +57,23 @@ def test_rigid(seconds_per_day):
 def test_fail(seconds_per_day):
     with pytest.raises(ValueError, match="model must equal one of { howard , snodgrass , allen , rigid }"):
         differential_rotation(10 * seconds_per_day, 30 * u.deg, model='garbage')
+
+
+@pytest.mark.parametrize("model_name", sun_models._MODELS.keys())
+def test_valid_model_loading(model_name):
+    model_data = getattr(sun_models, model_name)
+    assert model_data is not None
+
+
+def test_cache_functionality():
+    model_name = "chromosphere_avrett_loeser_2008"
+    model_data_1 = getattr(sun_models, model_name)
+    model_data_2 = getattr(sun_models, model_name)
+
+    assert model_data_1 is model_data_2
+    assert model_name in sun_models._MODEL_CACHE
+
+
+def test_invalid_model_handling():
+    with pytest.raises(AttributeError, match="Error: Model 'invalid_model' is not available."):
+        getattr(sun_models, "invalid_model")
