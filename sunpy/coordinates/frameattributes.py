@@ -1,5 +1,7 @@
 import datetime
 
+import numpy as np
+
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, CoordinateAttribute, SkyCoord, TimeAttribute
 from astropy.time import Time
@@ -154,4 +156,15 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                 else:
                     return observer
 
-        return super().__get__(instance, frame_cls=frame_cls)
+        result = super().__get__(instance, frame_cls=frame_cls)
+
+        if instance is not None:
+            # If the observer is a coordinate, make sure its obstime matches the parent obstime
+            if hasattr(result, 'obstime') and np.any(result.obstime != obstime):
+                if result.obstime is not None:
+                    result = result.transform_to(result.replicate_without_data(obstime=obstime))
+                else:
+                    result = result.replicate(obstime=obstime)
+                setattr(instance, '_' + self.name, result)
+
+        return result
