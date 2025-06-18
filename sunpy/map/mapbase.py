@@ -17,6 +17,7 @@ from collections import namedtuple
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
@@ -930,10 +931,10 @@ class GenericMap(NDData):
     @property
     def _date_obs(self):
         # Get observation date from date-obs, falling back to date_obs
-        time = self._get_date('date-obs')
-        if is_time(self.meta.get('date_obs', None)):
-            time = time or self._get_date('date_obs')
-        return time
+        if is_time(self.meta.get("date-obs", None)):
+            return self._get_date('date-obs')
+        elif is_time(self.meta.get('date_obs', None)):
+            return self._get_date('date_obs')
 
     @property
     def reference_date(self):
@@ -967,7 +968,7 @@ class GenericMap(NDData):
         """
         return (
             self._get_date('date-avg') or
-            self._get_date('date-obs') or
+            self._date_obs or
             self._get_date('date-beg') or
             self._get_date('date-end') or
             self.date
@@ -3110,9 +3111,6 @@ class GenericMap(NDData):
         """
         Reproject the map to a different world coordinate system (WCS)
 
-        .. note::
-            This method requires the optional package `reproject` to be installed.
-
         Additional keyword arguments are passed through to the reprojection function.
 
         This method **does not** preserve dask arrays.
@@ -3166,11 +3164,6 @@ class GenericMap(NDData):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        try:
-            import reproject
-        except ImportError as exc:
-            raise ImportError("This method requires the optional package `reproject`.") from exc
-
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(target_wcs)
 

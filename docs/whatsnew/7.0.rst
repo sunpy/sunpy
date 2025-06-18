@@ -14,12 +14,10 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 7.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-This release of sunpy contains 465 commits in 44 merged pull requests closing 15 issues from 25 people, 8 of which are first-time contributors to sunpy.
-
-* 465 commits have been added since 6.1
-* 15 issues have been closed since 6.1
-* 44 pull requests have been merged since 6.1
-* 25 people have contributed since 6.1
+* 515 commits have been added since 6.1
+* 23 issues have been closed since 6.1
+* 63 pull requests have been merged since 6.1
+* 26 people have contributed since 6.1
 * 8 of which are new contributors
 
 The people who have contributed to the code for this release are:
@@ -28,6 +26,7 @@ The people who have contributed to the code for this release are:
 -  Albert Y. Shih
 -  Ankit Khushwaha
 -  Aritra Sinha
+-  Brett J Graham
 -  Chris Lowder  *
 -  Chris R. Gilly
 -  David Pérez-Suárez
@@ -37,6 +36,7 @@ The people who have contributed to the code for this release are:
 -  Hardik  *
 -  Laura Hayes
 -  Manish Tiwari  *
+-  Mingyu Jeon  *
 -  Nabil Freij
 -  Ole Streicher
 -  Pratham Hole
@@ -48,7 +48,6 @@ The people who have contributed to the code for this release are:
 -  Tanish Yelgoe
 -  Will Barnes
 -  _Gagan  *
--  mgjeon  *
 
 Where a * indicates that this release contains their first contribution to sunpy.
 
@@ -84,10 +83,29 @@ The minimum required versions of the following packages have been updated:
 - pandas>=2.1.0
 - aiobotocore>=2.6.0
 
-Maps now plot with autoalignment by default
-===========================================
+Added support for new observatories
+===================================
 
-The "autoalignment" functionality of the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` has been significantly enhanced and is now enabled by default.
+There is now support for Polarimeter to Unify the Corona and Heliosphere (PUNCH) level 3 products within sunpy.
+
+.. image:: 7.0-punch.png
+   :alt: A plot from sunpy of a PUNCH level 3 file.
+
+As well as for the Solar Ultraviolet Imaging Telescope (SUIT) onboard the Aditya-L1 mission.
+
+.. image:: 7.0-suit.png
+   :alt: A plot from sunpy of a SUIT level 1 file.
+
+Broadened support for existing observatories
+============================================
+
+Added support for the latest level 1 files for SOHO's Extreme ultraviolet Imaging Telescope (EIT).
+Additionally, support for the Global Oscillation Network Group (GONG) magnetogram files.
+
+Maps now plot with auto-alignment by default
+=============================================
+
+The "auto-alignment" functionality of the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` has been significantly enhanced and is now enabled by default.
 This functionality draws the map's pixels in a coordinate-aware fashion when plotting the map on coordinate axes that may be in a different projection or even a different coordinate frame.
 The previously available mesh-based approach (``autoalign='mesh'``) draws each map pixel individually, and has been sped up dramatically.
 The newly available image-based approach (``autoalign='image'``) draws a warped version of the map as a single image, which is usually faster than the image-based approach, but has some limitations.
@@ -95,7 +113,7 @@ The default setting (``autoalign=True``) makes an automatic determination of whe
 
 .. minigallery:: ../examples/map_transformations/autoalign_aia_hmi.py
 
-This autoalignment functionality is for visualization purposes.
+This auto-alignment functionality is for visualization purposes.
 For other data-analysis needs, such as co-adding images, reprojecting the map using :meth:`~sunpy.map.GenericMap.reproject_to` may be more appropriate.
 
 Automatic determination of extent for reprojections
@@ -118,9 +136,11 @@ As a note of caution, drawing gridlines on the differentially rotated screen can
 Access to the JSOC AIA "synoptic" data
 ======================================
 
-There is now a FIDO client which will allow someone to download the "synoptic" AIA data from the JSOC.
+It is now possible to  download the "synoptic" AIA data from the JSOC.
 This dataset is not synoptic like HMI and MDI Synoptic images which are images of the solar surface reconstructed from many observations over a solar rotation but rather a synopsis of AIA data.
 The AIA synoptic data are calibrated Level 1.5 images with reduced 1k x 1k resolution at regular 2-minute cadence.
+This is not a DRMS series, it is served by a HTTPS server.
+It supports filtering by a single wavelength or sample rate.
 
 .. code-block:: python
 
@@ -148,13 +168,10 @@ The AIA synoptic data are calibrated Level 1.5 images with reduced 1k x 1k resol
     <BLANKLINE>
     <BLANKLINE>
 
-
 Improved return types from the `~sunpy.net.hek.HEKClient`
 =========================================================
 
-The `~sunpy.net.hek.HEKClient` now returns `~astropy.units.Quantity`, `~astropy.time.Time`,
-and `~astropy.coordinates.SkyCoord` objects wherever possible. This allows for easier interpretation
-of results from the Heliophysics Event Knowledgebase, particular when it comes to coordinates and
-bounding boxes. Users should be aware that some redundant columns are now dropped from the results table,
-for example, those columns which only contained unit information.
+The `~sunpy.net.hek.HEKClient` now returns `~astropy.units.Quantity`, `~astropy.time.Time`, and `~astropy.coordinates.SkyCoord` objects wherever possible.
+This allows for easier interpretation of results from the Heliophysics Event Knowledgebase, particularly when it comes to coordinates and bounding boxes.
+Users should be aware that some redundant columns are now dropped from the results table (e.g. those columns which only contained unit information).
 The original, unparsed response from the HEK can be accessed via the ``raw`` property on `~sunpy.net.hek.HEKTable`.
