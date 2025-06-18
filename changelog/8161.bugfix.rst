@@ -1,1 +1,0 @@
-Fixed a bug where autoalign plotting of a `~sunpy.map.Map` would not expand the plot limits in some cases.

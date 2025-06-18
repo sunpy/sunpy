@@ -1,1 +1,0 @@
-The `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.plot` now performs autoalignment by default (``autoalign=True``) and furthermore automatically determines which autoalignment approach -- mesh-based or image-based -- to use for the situation.
