@@ -1,3 +1,30 @@
+6.1.2 (2025-06-18)
+==================
+
+Bug Fixes
+---------
+
+- Fixed a bug with the caching of `~sunpy.map.Map` properties ``observer_coordinate`` and ``wcs`` where modifying the metadata to be invalid would confuse the cache. (`#8158 <https://github.com/sunpy/sunpy/pull/8158>`__)
+- Fixed a bug where the three magnetic coordinate frames (`~sunpy.coordinates.frames.Geomagnetic`, `~sunpy.coordinates.frames.SolarMagnetic`, `~sunpy.coordinates.frames.GeocentricSolarMagnetospheric`) would raise an error if used nontrivially with array ``obstime`` (as opposed to a scalar). (`#8193 <https://github.com/sunpy/sunpy/pull/8193>`__)
+- Added a warning about off-disk data when calling the `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.reproject_to` under the combined context managers of :func:`~sunpy.coordinates.propagate_with_solar_surface` and :func:`~sunpy.coordinates.screens.PlanarScreen`.
+  An analogous warning had already been emitted when combining :func:`~sunpy.coordinates.propagate_with_solar_surface` and :func:`~sunpy.coordinates.screens.SphericalScreen`. (`#8201 <https://github.com/sunpy/sunpy/pull/8201>`__)
+- Prevented a potential segmentation fault when calling :func:`~sunpy.time.parse_time` on a list of more than 500 strings in a format not specifically recognized by `sunpy.time` itself and instead has to fall back on recognition by `astropy.time`. (`#8257 <https://github.com/sunpy/sunpy/pull/8257>`__)
+
+
+Documentation
+-------------
+
+- Fixed a small inaccuracy in the docstring of :func:`sunpy.coordinates.sun.B0` about the range of possible values for B0 angle. (`#8113 <https://github.com/sunpy/sunpy/pull/8113>`__)
+- Fixed an error in the docstring of :func:`~sunpy.coordinates.ephemeris.get_horizons_coord` that mistakenly claimed that JPL Horizons supported the specification of "s" for seconds as the unit for step size, but Horizons does not. (`#8190 <https://github.com/sunpy/sunpy/pull/8190>`__)
+
+
+Internal Changes
+----------------
+
+- In order to support multiple versions of Python, the indentation of some docstrings is now different when accessed directly (i.e., via ``__doc__``).
+  The docstrings will look exactly the same when viewed in other ways, including in built documentation. (`#8173 <https://github.com/sunpy/sunpy/pull/8173>`__)
+
+
 6.1.1 (2025-02-24)
 ==================
 

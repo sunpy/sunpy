@@ -1,2 +1,0 @@
-In order to support multiple versions of Python, the indentation of some docstrings is now different when accessed directly (i.e., via ``__doc__``).
-The docstrings will look exactly the same when viewed in other ways, including in built documentation.
