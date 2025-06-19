@@ -703,6 +703,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         if wcs is None:
             return
+
         # Unwrap any wrapper classes to FITS WCS
         unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
         # Convert to a header
@@ -710,16 +711,31 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # wcslib ignores NAXIS
         for n in range(1, unwrapped.naxis + 1):
             new_header[f"NAXIS{n}"] = unwrapped._naxis[n-1]
+
         old_wcs_header = self.wcs.to_header()
         # Reduce the new header to just the keys which differ from the current WCS
         # We do this to figure out what's been changed post wcslib doing any
         # conversion (such as arcsec -> deg)
         changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
-        # If the units are different to the original metadata then we override
-        # all the keys from the new WCS header to account for unit conversion.
-        if any([new_header[f"CUNIT{n}"] != self.meta[f"CUNIT{n}"] for n in range(1, 3)]):
-            # TODO: Do we want to make it so we don't change units?
-            changed_header = new_header
+
+        # If the units on the WCS are different from the original
+        # header the map was constructed with then wcslib has changed
+        # them, so we now change them back to match.
+        original_units = sorted([self.meta.original_meta[k] for k in old_wcs_header if k.lower().startswith("cunit")])
+        new_units = sorted([new_header[k] for k in new_header if k.lower().startswith("cunit")])
+        if original_units != new_units:
+            # wcslib uses the following code snippet to scale a header if units are not SI:
+            # https://github.com/astropy/astropy/blob/main/cextern/wcslib/C/wcs.c#L3329-L3343
+            # The keys which need changing are CDELT, CRVAL, optionally CDi_j and CUNIT
+            for i, (original_unit, new_unit) in enumerate(zip(original_units, new_units)):
+                i += 1  # FITS indexing
+                scale_factor = u.Unit(new_unit).to(original_unit)
+                # NOTE: Support CD here if we ever set wcs.cd in the wcs property
+                for key_prefix in ["CDELT", "CRVAL"]:
+                    key = f"{key_prefix}{i}"
+                    changed_header[key] = new_header[key] * scale_factor
+                changed_header[f"CUNIT{i}"] = original_unit
+
         self.meta.update(MetaDict(changed_header))
 
     def save(self, filepath, filetype='auto', **kwargs):
@@ -765,9 +781,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
-
-
-
 
 # #### Image processing routines #### #
 
