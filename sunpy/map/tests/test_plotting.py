@@ -169,8 +169,8 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
 
 
 @figure_test
-def test_plot_aia171_superpixel(aia171_test_map):
-    aia171_test_map.superpixel((3, 2) * u.pix, offset=(4, 4) * u.pix).plot()
+def test_plot_aia171_rebin(aia171_test_map):
+    aia171_test_map.rebin((3, 2) * u.pix, offset=(4, 4) * u.pix).plot()
 
 
 @figure_test
@@ -191,10 +191,10 @@ def test_plot_resample(carrington_map):
 
 
 @figure_test
-def test_plot_superpixel(carrington_map):
+def test_plot_rebin(carrington_map):
     # Test that super-pixelling a map preserves the coordinate system correctly.
     # The two plots should have identical coordinate grids
-    superpix = carrington_map.superpixel([2, 2] * u.pix)
+    superpix = carrington_map.rebin([2, 2] * u.pix)
 
     plt.figure()
     ax1 = plt.subplot(121, projection=carrington_map)
@@ -208,8 +208,8 @@ def test_plot_superpixel(carrington_map):
 
 
 @figure_test
-def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
-    aia171_test_map_with_mask.superpixel(
+def test_plot_masked_aia171_rebin(aia171_test_map_with_mask):
+    aia171_test_map_with_mask.rebin(
         (9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
 
 

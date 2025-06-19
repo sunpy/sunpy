@@ -35,10 +35,9 @@ from astropy.visualization.wcsaxes import WCSAxes
 import sunpy.coordinates.wcs_utils
 from ndcube import NDCube
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
-from sunpy import config, log
+from sunpy import config
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
@@ -1297,116 +1296,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                            frame=frame)
 
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
-
-    @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
-                   conservative_mask: bool = False):
-        """Returns a new map consisting of superpixels formed by applying
-        'func' to the original map data.
-
-        This method **does** preserve dask arrays.
-
-        Parameters
-        ----------
-        dimensions : tuple
-            One superpixel in the new map is equal to (dimension[0],
-            dimension[1]) pixels of the original map.
-            The first argument corresponds to the 'x' axis and the second
-            argument corresponds to the 'y' axis. If non-integer values are provided,
-            they are rounded using `int`.
-        offset : tuple
-            Offset from (0,0) in original map pixels used to calculate where
-            the data used to make the resulting superpixel map starts.
-            If non-integer value are provided, they are rounded using `int`.
-        func
-            Function applied to the original data.
-            The function 'func' must take a numpy array as its first argument,
-            and support the axis keyword with the meaning of a numpy axis
-            keyword (see the description of `~numpy.sum` for an example.)
-            The default value of 'func' is `~numpy.sum`; using this causes
-            superpixel to sum over (dimension[0], dimension[1]) pixels of the
-            original map.
-        conservative_mask : bool, optional
-            If `True`, a superpixel is masked if any of its constituent pixels are masked.
-            If `False`, a superpixel is masked only if all of its constituent pixels are masked.
-            Default is `False`.
-
-        Returns
-        -------
-        out : `~sunpy.map.GenericMap` or subclass
-            A new Map which has superpixels of the required size.
-        """
-
-        # Note: because the underlying ndarray is transposed in sense when
-        #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back.
-        # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers.
-
-        if (offset.value[0] < 0) or (offset.value[1] < 0):
-            raise ValueError("Offset is strictly non-negative.")
-
-        # These are rounded by int() in reshape_image_to_4d_superpixel,
-        # so round here too for use in constructing metadata later.
-        dimensions = [int(dim) for dim in dimensions.to_value(u.pix)]
-        offset = [int(off) for off in offset.to_value(u.pix)]
-
-        # Make a copy of the original data, perform reshaping, and apply the
-        # function.
-        if self.mask is not None:
-            data = np.ma.array(self.data.copy(), mask=self.mask)
-        else:
-            data = self.data.copy()
-
-        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-        new_array = func(func(reshaped_data, axis=3), axis=1)
-
-        if self.mask is not None:
-            if conservative_mask ^ (func in [np.sum, np.prod]):
-                log.info(
-                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
-                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
-                    "False for mean/median/std/min/max."
-                    )
-
-            if conservative_mask:
-                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-                new_mask = np.any(reshaped_mask, axis=(3, 1))
-            else:
-                new_mask = np.ma.getmaskarray(new_array)
-        else:
-            new_mask = None
-
-        # Update image scale and number of pixels
-
-        # create copy of new meta data
-        new_meta = self.meta.copy()
-
-        # Update metadata
-        for key in {'cdelt1', 'cd1_1', 'cd2_1'} & self.meta.keys():
-            new_meta[key] *= dimensions[0]
-        for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
-            new_meta[key] *= dimensions[1]
-        if 'pc1_1' in self.meta:
-            new_meta['pc1_2'] *= dimensions[1] / dimensions[0]
-            new_meta['pc2_1'] *= dimensions[0] / dimensions[1]
-
-        new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
-                               0.5 - offset[0]) / dimensions[0]) + 0.5
-        new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
-                               0.5 - offset[1]) / dimensions[1]) + 0.5
-        new_meta['naxis1'] = new_array.shape[1]
-        new_meta['naxis2'] = new_array.shape[0]
-
-        # Create new map instance
-        if self.mask is not None:
-            new_data = np.ma.getdata(new_array)
-        else:
-            new_data = new_array
-
-        # Create new map with the modified data
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
-        return new_map
 
     @property
     def cmap(self):
