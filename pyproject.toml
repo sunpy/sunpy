@@ -63,7 +63,7 @@ image = [
   "scipy>=1.11.0",
 ]
 jpeg2000 = [
-  "Glymur>=0.13.0",
+  "glymur>=0.13.0",
   # While a direct dependency of glymur, we import it to save JPEG2000 files.
   # and we had issues with specific versions lxml.
   "lxml>=4.9.1,!=5.0.0",
