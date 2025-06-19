@@ -1,18 +1,16 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-import re
 import copy
 import html
 import inspect
 import numbers
 import textwrap
-import warnings
 import itertools
 import webbrowser
 from typing import Literal
+from numbers import Integral
 from tempfile import NamedTemporaryFile
-from collections import namedtuple
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -29,45 +27,31 @@ except ImportError:
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
-from astropy.nddata import NDData
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
 from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
-from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
+from astropy.visualization.wcsaxes import WCSAxes
 
-# The next two are not used but are called to register functions with external modules
-import sunpy.coordinates
-import sunpy.visualization.colormaps
+import sunpy.coordinates.wcs_utils
+from ndcube import NDCube
+from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 from sunpy import config, log
-from sunpy.coordinates import HeliographicCarrington, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.io._file_tools import write_file
-from sunpy.io._fits import extract_waveunit, header_to_fits
-from sunpy.map.maputils import _clip_interval, _handle_norm
-from sunpy.sun import constants
-from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list, extent_in_other_wcs, grid_perimeter
-from sunpy.util.decorators import (
-    add_common_docstring,
-    cached_property_based_on,
-    check_arithmetic_compatibility,
-    deprecated,
-)
-from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_metadata, warn_user
+from sunpy.map.mixins.mapdeprecate import MapDeprecateMixin
+from sunpy.map.mixins.mapmeta import MapMetaMixin
+from sunpy.util import MetaDict
+from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
-from sunpy.visualization.colormaps import cm as sunpy_cm
-from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
+from sunpy.util.util import _figure_to_base64, extent_in_other_wcs, fix_duplicate_notes
+from sunpy.visualization.plotter.mpl_plotter import MapPlotter
 
 TIME_FORMAT = config.get("general", "time_format")
-PixelPair = namedtuple('PixelPair', 'x y')
-SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
-_META_FIX_URL = 'https://docs.sunpy.org/en/stable/how_to/fix_map_metadata.html'
 
 # Manually specify the ``.meta`` docstring. This is assigned to the .meta
 # class attribute in GenericMap.__init__()
@@ -108,14 +92,10 @@ to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representa
     rest will be discarded.
 """
 
-__all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
+__all__ = ['GenericMap']
 
 
-class MapMetaValidationError(AttributeError):
-    pass
-
-
-class GenericMap(NDData):
+class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     """
     A Generic spatially-aware 2D data array
 
@@ -176,8 +156,9 @@ class GenericMap(NDData):
     Measurement:                 171.0 Angstrom
     Wavelength:          171.0 Angstrom
     Observation Date:    2011-06-07 06:33:02
+    Reference Date:              2011-06-07 06:33:02
     Exposure Time:               0.234256 s
-    Dimension:           [1024. 1024.] pix
+    Pixel Dimensions:            [1024. 1024.]
     Coordinate System:   helioprojective
     Scale:                       [2.402792 2.402792] arcsec / pix
     Reference Pixel:     [511.5 511.5] pix
@@ -235,7 +216,19 @@ class GenericMap(NDData):
             if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(self, data, *, wcs=None, uncertainty=None, mask=None, meta,
+                 unit=None, copy=False, plot_settings=None, **kwargs):
+        # Setup some attributes
+        self._metadata_validated = False
+        self._nickname = None
+        # These are placeholders for default attributes, which are only set
+        # once if their data isn't present in the map metadata.
+        self._default_time = None
+        self._default_dsun = None
+        self._default_carrington_longitude = None
+        self._default_heliographic_latitude = None
+        self._default_heliographic_longitude = None
+
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -250,49 +243,55 @@ class GenericMap(NDData):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        params = list(inspect.signature(NDData).parameters)
-        nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
-
-        # Setup some attributes
-        self._nickname = None
-        # These are placeholders for default attributes, which are only set
-        # once if their data isn't present in the map metadata.
-        self._default_time = None
-        self._default_dsun = None
-        self._default_carrington_longitude = None
-        self._default_heliographic_latitude = None
-        self._default_heliographic_longitude = None
+        params = list(inspect.signature(NDCube).parameters)
+        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        super().__init__(data, wcs=None, uncertainty=uncertainty, mask=mask,
+                         meta=MetaDict(meta), unit=unit, copy=copy,
+                         **ndcube_kwargs)
+        # NDData.__init__ sets self.wcs before it sets self.meta as our wcs
+        # setter needs self.meta to exist we call the parent __init__ with
+        # wcs=None and then set self.wcs so that meta is already set before the
+        # wcs setter is run with the "real" wcs.
+        self.wcs = wcs
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
-        self.plot_settings = {'cmap': 'gray',
-                            'interpolation': 'nearest',
-                            'origin': 'lower'
-                            }
-        if self.dtype != np.uint8:
-            # Put import here to reduce sunpy.map import time
-            from matplotlib import colors
-            self.plot_settings['norm'] = colors.Normalize()
-        if plot_settings:
-            self.plot_settings.update(plot_settings)
 
-        # Try and set the colormap. This is not always possible if this method
-        # is run before map sources fix some of their metadata, so
-        # just ignore any exceptions raised.
-        try:
-            cmap = self._get_cmap_name()
-            if cmap in sunpy_cm.cmlist:
-                self.plot_settings['cmap'] = cmap
-        except Exception:
-            pass
+        self.plotter = MapPlotter
+        if plot_settings:
+            self.plotter.plot_settings.update(plot_settings)
+
+    @property
+    # @deprecated('6.0', alternative='plotter.plot_settings')
+    def plot_settings(self):
+        return self.plotter.plot_settings
+
+    @plot_settings.setter
+    # @deprecated('6.0', alternative='plotter.plot_settings')
+    def plot_settings(self, value):
+        self.plotter.plot_settings = value
 
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        def format_slice(key):
+            if not isinstance(key, slice):
+                return f"{key}"
+            return f"{key.start or ''}:{key.stop or ''}{f':{key.step}' if key.step else ''}"
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if any(intidx := list(map(lambda x: isinstance(x, Integral), key))):
+            strslice = ", ".join([f"{k}:{k+1}" if isint else format_slice(k)
+                                  for k, isint in zip(key, intidx)])
+            raise TypeError(
+                "It is not possible to slice a map with an integer as it will "
+                "reduce the number of data dimensions by one.\nIn order to "
+                "apply the same slice without dropping a dimension do "
+                f"mymap[{strslice}]."
+            )
+        return super().__getitem__(key)
+
 
     def _text_summary(self):
         dt = self.exposure_time
@@ -312,8 +311,9 @@ class GenericMap(NDData):
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
                    Observation Date:\t {date}
+                   Reference Date:\t\t {ref_date}
                    Exposure Time:\t\t {dt}
-                   Dimension:\t\t {dim}
+                   Pixel Dimensions:\t\t {dim}
                    Coordinate System:\t {coord}
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
@@ -321,8 +321,9 @@ class GenericMap(NDData):
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
+                               ref_date=self.reference_date.strftime(TIME_FORMAT),
                                dt=dt,
-                               dim=u.Quantity(self.dimensions),
+                               dim=u.Quantity(self.shape[::-1]),
                                scale=u.Quantity(self.scale),
                                coord=self._coordinate_frame_name,
                                refpix=u.Quantity(self.reference_pixel),
@@ -530,13 +531,19 @@ class GenericMap(NDData):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    @classmethod
-    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+    def _new_instance(self, data=None, meta=None, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        new_map = cls(data, meta, **kwargs)
+        if meta is None:
+            meta = copy.deepcopy(getattr(self, 'meta'))
+        if new_unit := kwargs.get('unit', None):
+            meta['bunit'] = new_unit.to_string()
+
+        # NOTE: wcs=None is explicitly passed here because the wcs of a map is
+        # derived from the information in the metadata.
+        new_map = super()._new_instance(data=data, meta=meta, wcs=None, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
@@ -558,68 +565,64 @@ class GenericMap(NDData):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
 
-    def _new_instance_from_op(self, new_data):
+    def _as_mpl_axes(self):
         """
-        Helper function for creating new map instances after arithmetic
-        operations.
+        Compatibility hook for Matplotlib and WCSAxes.
+        This functionality requires the WCSAxes package to work. The reason
+        we include this here is that it allows users to use WCSAxes without
+        having to explicitly import WCSAxes
+        With this method, one can do::
+
+            import matplotlib.pyplot as plt
+            import sunpy.map
+            amap = sunpy.map.Map('filename.fits')
+            fig = plt.figure()
+            ax = plt.subplot(projection=amap)
+            ...
+
+        and this will generate a plot with the correct WCS coordinates on the
+        axes. See <https://docs.astropy.org/en/stable/visualization/wcsaxes/index.html> for more information.
         """
-        new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string()
-        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
+        # This code is reused from Astropy
+        return WCSAxes, {'wcs': self.wcs}
 
-    def __neg__(self):
-        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
 
-    @check_arithmetic_compatibility
-    def __pow__(self, value):
-        new_data = self.quantity ** value
-        return self._new_instance_from_op(new_data)
+    @u.quantity_input
+    def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
+        """
+        Returns a map shifted by a specified amount to, for example, correct
+        for a bad map location. These values are applied directly to the
+        `~sunpy.map.GenericMap.reference_coordinate`. To check how much the
+        reference coordinate has been modified, see
+        ``sunpy.map.GenericMap.meta.modified_items['CRVAL1']`` and
+        ``sunpy.map.GenericMap.meta.modified_items['CRVAL2']``.
 
-    @check_arithmetic_compatibility
-    def __add__(self, value):
-        new_data = self.quantity + value
-        return self._new_instance_from_op(new_data)
+        Parameters
+        ----------
+        axis1 : `~astropy.units.Quantity`
+            The shift to apply to the Longitude (solar-x) coordinate.
+        axis2 : `~astropy.units.Quantity`
+            The shift to apply to the Latitude (solar-y) coordinate
 
-    def __radd__(self, value):
-        return self.__add__(value)
+        Returns
+        -------
+        out : `~sunpy.map.GenericMap` or subclass
+            A new shifted Map.
+        """
+        new_meta = self.meta.copy()
 
-    def __sub__(self, value):
-        return self.__add__(-value)
+        # Update crvals
+        new_meta['crval1'] = ((self._reference_longitude + axis1).to(self.spatial_units[0])).value
+        new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
-    def __rsub__(self, value):
-        return self.__neg__().__add__(value)
+        # Create new map with the modification
+        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plotter.plot_settings)
 
-    @check_arithmetic_compatibility
-    def __mul__(self, value):
-        new_data = self.quantity * value
-        return self._new_instance_from_op(new_data)
-
-    def __rmul__(self, value):
-        return self.__mul__(value)
-
-    @check_arithmetic_compatibility
-    def __truediv__(self, value):
-        return self.__mul__(1/value)
-
-    @check_arithmetic_compatibility
-    def __rtruediv__(self, value):
-        new_data = value / self.quantity
-        return self._new_instance_from_op(new_data)
+        return new_map
 
     @property
-    def _meta_hash(self):
-        return self.meta.item_hash()
-
-    def _set_symmetric_vmin_vmax(self):
-        """
-        Set symmetric vmin and vmax about zero
-        """
-        threshold = np.nanmax(abs(self.data))
-        self.plot_settings['norm'].vmin = -threshold
-        self.plot_settings['norm'].vmax = threshold
-
-    @property
-    @cached_property_based_on('_meta_hash')
+    # TODO FIX THIS
+    #@cached_property_based_on('_meta_hash')
     def wcs(self):
         """
         The `~astropy.wcs.WCS` property of the map.
@@ -643,6 +646,7 @@ class GenericMap(NDData):
         provided by the `.date_end` property, which normally returns a value only if the
         DATE-END key is in the metadata.
         """
+        self._validate_meta()
         w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
@@ -691,957 +695,49 @@ class GenericMap(NDData):
         w2.wcs.set()
         return w2
 
-    @property
-    def coordinate_frame(self):
+    @wcs.setter
+    def wcs(self, wcs):
         """
-        An `astropy.coordinates.BaseCoordinateFrame` instance created from the coordinate
-        information for this Map, or None if the frame cannot be determined.
-
-        Notes
-        -----
-        The ``obstime`` for the coordinate frame uses the `.reference_date` property,
-        which may be different from the `.date` property.
+        Map uses the meta dict as the source of truth.
+        When setting the wcs of the map we convert it to a header and then
+        update the header of the map.
         """
-        try:
-            return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
-        except ValueError as e:
-            warn_user(f'Could not determine coordinate frame from map metadata.\n{e}')
-            return None
-
-    @property
-    def _coordinate_frame_name(self):
-        if self.coordinate_frame is None:
-            return 'Unknown'
-        return self.coordinate_frame.name
-
-    def _as_mpl_axes(self):
-        """
-        Compatibility hook for Matplotlib and WCSAxes.
-        This functionality requires the WCSAxes package to work. The reason
-        we include this here is that it allows users to use WCSAxes without
-        having to explicitly import WCSAxes
-        With this method, one can do::
-
-            import matplotlib.pyplot as plt
-            import sunpy.map
-            amap = sunpy.map.Map('filename.fits')
-            fig = plt.figure()
-            ax = plt.subplot(projection=amap)
-            ...
-
-        and this will generate a plot with the correct WCS coordinates on the
-        axes. See <https://docs.astropy.org/en/stable/visualization/wcsaxes/index.html> for more information.
-        """
-        # This code is reused from Astropy
-        return WCSAxes, {'wcs': self.wcs}
-
-    # Some numpy extraction
-    @property
-    def dimensions(self):
-        """
-        The dimensions of the array (x axis first, y axis second).
-        """
-        return PixelPair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
-
-    @property
-    def dtype(self):
-        """
-        The `numpy.dtype` of the array of the map.
-        """
-        return self.data.dtype
-
-    @property
-    def ndim(self):
-        """
-        The value of `numpy.ndarray.ndim` of the data array of the map.
-        """
-        return self.data.ndim
-
-    def std(self, *args, **kwargs):
-        """
-        Calculate the standard deviation of the data array, ignoring NaNs.
-
-        This method **does** preserve dask arrays.
-        """
-        return np.nanstd(self.data, *args, **kwargs)
-
-    def mean(self, *args, **kwargs):
-        """
-        Calculate the mean of the data array, ignoring NaNs.
-
-        This method **does** preserve dask arrays.
-        """
-        return np.nanmean(self.data, *args, **kwargs)
-
-    def min(self, *args, **kwargs):
-        """
-        Calculate the minimum value of the data array, ignoring NaNs.
-
-        This method **does** preserve dask arrays.
-        """
-        return np.nanmin(self.data, *args, **kwargs)
-
-    def max(self, *args, **kwargs):
-        """
-        Calculate the maximum value of the data array, ignoring NaNs.
-
-        This method **does** preserve dask arrays.
-        """
-        return np.nanmax(self.data, *args, **kwargs)
-
-    @staticmethod
-    def _parse_fits_unit(unit_str):
-        replacements = {'gauss': 'G',
-                        'counts / pixel': 'ct/pix',}
-        if unit_str.lower() in replacements:
-            unit_str = replacements[unit_str.lower()]
-        unit = u.Unit(unit_str, parse_strict='silent')
-        for base in unit.bases:
-            # NOTE: Special case DN here as it is not part of the FITS standard, but
-            # is widely used and is also a recognized astropy unit
-            if base is u.DN:
-                continue
-            try:
-                if isinstance(base, u.UnrecognizedUnit):
-                    raise ValueError
-
-                # Also rejects a unit that is not in the FITS standard but is equivalent to one (e.g., Mx)
-                if u.Unit(base.to_string(format='fits')) is not base:  # to_string() can raise ValueError
-                    raise ValueError
-            except ValueError:
-                warn_metadata(f'Could not parse unit string "{unit_str}" as a valid FITS unit.\n'
-                              f'See {_META_FIX_URL} for how to fix metadata before loading it '
-                               'with sunpy.map.Map.\n'
-                               'See https://fits.gsfc.nasa.gov/fits_standard.html for '
-                               'the FITS unit standards.')
-                return None
-        return unit
-
-    @property
-    def unit(self):
-        """
-        Unit of the map data.
-
-        This is taken from the 'BUNIT' FITS keyword. If no 'BUNIT' entry is
-        present in the metadata then this returns `None`. If the 'BUNIT' value
-        cannot be parsed into a unit a warning is raised, and `None` returned.
-        """
-        unit_str = self.meta.get('bunit', None)
-        if unit_str is None:
-            return
-        return self._parse_fits_unit(unit_str)
-
-# #### Keyword attribute and other attribute definitions #### #
-
-    def _base_name(self):
-        """Abstract the shared bit between name and latex_name"""
-        if self.measurement is None:
-            format_str = "{nickname} {date}"
-        else:
-            format_str = "{nickname} {{measurement}} {date}"
-        return format_str.format(nickname=self.nickname,
-                                 date=parse_time(self.date).strftime(TIME_FORMAT))
-
-    @property
-    def name(self):
-        """Human-readable description of the Map."""
-        return self._base_name().format(measurement=self.measurement)
-
-    @property
-    def latex_name(self):
-        """LaTeX formatted description of the Map."""
-        if isinstance(self.measurement, u.Quantity):
-            return self._base_name().format(measurement=self.measurement._repr_latex_())
-        else:
-            return self.name
-
-    @property
-    def nickname(self):
-        """An abbreviated human-readable description of the map-type; part of
-        the Helioviewer data model."""
-        return self._nickname if self._nickname else self.detector
-
-    @nickname.setter
-    def nickname(self, n):
-        self._nickname = n
-
-    def _get_date(self, key):
-        time = self.meta.get(key, None)
-        if not time:
+        if wcs is None:
             return
 
-        # Get the time scale
-        if 'TAI' in time:
-            # SDO specifies the 'TAI' scale in their time string, which is parsed
-            # by parse_time(). If a different timescale is also present, warn the
-            # user that it will be ignored.
-            timesys = 'TAI'
-            timesys_meta = self.meta.get('timesys', '').upper()
-            if timesys_meta not in ('', 'TAI'):
-                warn_metadata('Found "TAI" in time string, ignoring TIMESYS keyword '
-                              f'which is set to "{timesys_meta}".')
-        else:
-            timesys = self._timesys
-
-        return parse_time(time, scale=timesys.lower())
-
-    @property
-    def _timesys(self):
-        """
-        Time system.
-        """
-        # UTC is the FITS standard default
-        return self.meta.get('timesys', 'UTC')
-
-    @property
-    def date_start(self):
-        """
-        Time of the beginning of the image acquisition.
-
-        Taken from the DATE-BEG FITS keyword.
-        """
-        return self._get_date('date-beg')
-
-    @property
-    def date_end(self):
-        """
-        Time of the end of the image acquisition.
-
-        Taken from the DATE-END FITS keyword.
-        """
-        return self._get_date('date-end')
-
-    @property
-    def date_average(self):
-        """
-        Average time of the image acquisition.
-
-        Taken from the DATE-AVG FITS keyword if present, otherwise halfway
-        between `date_start` and `date_end` if both pieces of metadata are
-        present.
-        """
-        avg = self._get_date('date-avg')
-        if avg is None:
-            start, end = self.date_start, self.date_end
-            if start is not None and end is not None:
-                avg = start + (end - start) / 2
-
-        return avg
-
-    @property
-    def _date_obs(self):
-        # Get observation date from date-obs, falling back to date_obs
-        if is_time(self.meta.get("date-obs", None)):
-            return self._get_date('date-obs')
-        elif is_time(self.meta.get('date_obs', None)):
-            return self._get_date('date_obs')
-
-    @property
-    def reference_date(self):
-        """
-        The reference date for the coordinate system.
-
-        This date is used to define the ``obstime`` of the coordinate frame and often
-        the ``obstime`` of the observer. Be aware that this date can be different from
-        the "canonical" observation time (see the `.GenericMap.date` property).
-
-        The reference date is determined using this order of preference:
-
-        1. The ``DATE-AVG`` key in the meta.
-        2. The ``DATE-OBS`` key in the meta.
-        3. The ``DATE-BEG`` key in the meta.
-        4. The ``DATE-END`` key in the meta.
-        5. The `.GenericMap.date` property as a fallback (which, if not
-           overridden, would be the current time if the above keywords are missing).
-
-        See Also
-        --------
-        date : The observation time.
-        date_start : The start time of the observation.
-        date_end : The end time of the observation.
-        date_average : The average time of the observation.
-
-        Notes
-        -----
-        The FITS standard implies that, but does not expressly require, the DATE-AVG keyword
-        to be the reference date.
-        """
-        return (
-            self._get_date('date-avg') or
-            self._date_obs or
-            self._get_date('date-beg') or
-            self._get_date('date-end') or
-            self.date
-        )
-
-    def _set_reference_date(self, date):
-        """
-        Set the reference date using the same priority as `.GenericMap.reference_date`.
-
-        If a source subclass overrides `.GenericMap.reference_date`, it should override
-        this private method as well.
-        """
-        for keyword in ['date-avg', 'date-obs', 'date-beg', 'date-end']:
-            if keyword in self.meta:
-                self.meta[keyword] = parse_time(date).utc.isot
-                return
-        self._set_date(date)
-
-    @property
-    def date(self):
-        """
-        The observation time.
-
-        This time is the "canonical" way to refer to an observation, which is commonly
-        the start of the observation, but can be a different time. In comparison, the
-        `.GenericMap.date_start` property is unambigiously the start of the observation.
-
-        The observation time is determined using this order of preference:
-
-        1. The ``DATE-OBS`` or ``DATE_OBS`` FITS keywords
-        2. `.GenericMap.date_start`
-        3. `.GenericMap.date_average`
-        4. `.GenericMap.date_end`
-        5. The current time
-
-        See Also
-        --------
-        reference_date : The reference date for the the coordinate system
-        date_start : The start time of the observation.
-        date_end : The end time of the observation.
-        date_average : The average time of the observation.
-        """
-        time = (
-            self._date_obs or
-            self.date_start or
-            self.date_average or
-            self.date_end
-        )
-
-        if time is None:
-            if self._default_time is None:
-                warn_metadata("Missing metadata for observation time, "
-                              "setting observation time to current time. "
-                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
-                self._default_time = parse_time('now')
-            time = self._default_time
-
-        return time
-
-    def _set_date(self, date):
-        """
-        Set the observation time by setting DATE-OBS.
-
-        If a source subclass overrides `.GenericMap.date`, it should override
-        this private method as well.
-
-        Notes
-        -----
-        This method will additionally always remove DATE_OBS (note the underscore),
-        if present.
-        """
-        if 'date_obs' in self.meta:
-            del self.meta['date_obs']
-        self.meta['date-obs'] = parse_time(date).utc.isot
-
-    @property
-    def detector(self):
-        """
-        Detector name.
-
-        This is taken from the 'DETECTOR' FITS keyword.
-        """
-        return self.meta.get('detector', "")
-
-    @property
-    def timeunit(self):
-        """
-        The `~astropy.units.Unit` of the exposure time of this observation.
-
-        Taken from the "TIMEUNIT" FITS keyword, and defaults to seconds (as per)
-        the FITS standard).
-        """
-        return u.Unit(self.meta.get('timeunit', 's'))
-
-    @property
-    def exposure_time(self):
-        """
-        Exposure time of the image.
-
-        This is taken from the 'XPOSURE' keyword or the 'EXPTIME' FITS keyword,
-        in that order.
-        """
-        exptime = self.meta.get('xposure') or self.meta.get('exptime')
-        if exptime is not None:
-            return exptime * self.timeunit
-
-    @property
-    def instrument(self):
-        """Instrument name."""
-        return self.meta.get('instrume', "").replace("_", " ")
-
-    @property
-    def measurement(self):
-        """
-        The measurement type of the observation.
-
-        The measurement type can be described by a `str` or a
-        `~astropy.units.Quantity`. If the latter, it is typically equal to
-        `.GenericMap.wavelength`.
-
-        See Also
-        --------
-        wavelength : The wavelength of the observation.
-        """
-
-        return self.wavelength
-
-    @property
-    def waveunit(self):
-        """
-        The `~astropy.units.Unit` of the wavelength of this observation.
-
-        This is taken from the 'WAVEUNIT' FITS keyword. If the keyword is not
-        present, defaults to `None`
-        """
-        if 'waveunit' in self.meta:
-            return u.Unit(self.meta['waveunit'])
-        else:
-            wunit = extract_waveunit(self.meta)
-            if wunit is not None:
-                return u.Unit(wunit)
-
-    @property
-    def wavelength(self):
-        """
-        Wavelength of the observation.
-
-        This is taken from the 'WAVELNTH' FITS keywords. If the keyword is not
-        present, defaults to `None`. If 'WAVEUNIT' keyword isn't present,
-        defaults to dimensionless units.
-        """
-        if 'wavelnth' in self.meta:
-            return u.Quantity(self.meta['wavelnth'], self.waveunit)
-
-    @property
-    def observatory(self):
-        """
-        Observatory or Telescope name.
-
-        This is taken from the 'OBSRVTRY' FITS keyword.
-        """
-        return self.meta.get('obsrvtry',
-                             self.meta.get('telescop', "")).replace("_", " ")
-
-    @property
-    def processing_level(self):
-        """
-        Returns the FITS processing level if present.
-
-        This is taken from the 'LVL_NUM' FITS keyword.
-        """
-        return self.meta.get('lvl_num', None)
-
-    @property
-    def bottom_left_coord(self):
-        """
-        The physical coordinate at the center of the bottom left ([0, 0]) pixel.
-        """
-        return self.wcs.pixel_to_world(0, 0)
-
-    @property
-    def top_right_coord(self):
-        """
-        The physical coordinate at the center of the the top right ([-1, -1]) pixel.
-        """
-        top_right = np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1
-        return self.wcs.pixel_to_world(*top_right)
-
-    @property
-    def center(self):
-        """
-        Return a coordinate object for the center pixel of the array.
-
-        If the array has an even number of pixels in a given dimension,
-        the coordinate returned lies on the edge between the two central pixels.
-        """
-        center = (np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1) / 2.
-        return self.wcs.pixel_to_world(*center)
-
-    @u.quantity_input
-    def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
-        """
-        Returns a map shifted by a specified amount to, for example, correct
-        for a bad map location. These values are applied directly to the
-        `~sunpy.map.GenericMap.reference_coordinate`. To check how much the
-        reference coordinate has been modified, see
-        ``sunpy.map.GenericMap.meta.modified_items['CRVAL1']`` and
-        ``sunpy.map.GenericMap.meta.modified_items['CRVAL2']``.
-
-        Parameters
-        ----------
-        axis1 : `~astropy.units.Quantity`
-            The shift to apply to the Longitude (solar-x) coordinate.
-        axis2 : `~astropy.units.Quantity`
-            The shift to apply to the Latitude (solar-y) coordinate
-
-        Returns
-        -------
-        out : `~sunpy.map.GenericMap` or subclass
-            A new shifted Map.
-        """
-        new_meta = self.meta.copy()
-
-        # Update crvals
-        new_meta['crval1'] = ((self._reference_longitude + axis1).to(self.spatial_units[0])).value
-        new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
-
-        # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
-
-        return new_map
-
-    def _rsun_meters(self, dsun=None):
-        """
-        This property exists to avoid circular logic in constructing the
-        observer coordinate, by allowing a custom 'dsun' to be specified,
-        instead of one extracted from the `.observer_coordinate` property.
-        """
-        rsun = self.meta.get('rsun_ref', None)
-        if rsun is not None:
-            return rsun * u.m
-        elif self._rsun_obs_no_default is not None:
-            if dsun is None:
-                dsun = self.dsun
-            return sun._radius_from_angular_radius(self.rsun_obs, dsun)
-        else:
-            log.info("Missing metadata for solar radius: assuming "
-                     "the standard radius of the photosphere.")
-            return constants.radius
-
-    @property
-    def rsun_meters(self):
-        """
-        Assumed radius of observed emission from the Sun center.
-
-        This is taken from the RSUN_REF FITS keyword, if present.
-        If not, and angular radius metadata is present, it is calculated from
-        `~sunpy.map.GenericMap.rsun_obs` and `~sunpy.map.GenericMap.dsun`.
-        If neither pieces of metadata are present, defaults to the standard
-        photospheric radius.
-        """
-        return self._rsun_meters()
-
-    @property
-    def _rsun_obs_no_default(self):
-        """
-        Get the angular radius value from FITS keywords without defaulting.
-        Exists to avoid circular logic in `rsun_meters()` above.
-        """
-        return self.meta.get('rsun_obs',
-                             self.meta.get('solar_r',
-                                           self.meta.get('radius',
-                                                         None)))
-
-    @property
-    def rsun_obs(self):
-        """
-        Angular radius of the observation from Sun center.
-
-        This value is taken (in order of preference) from the 'RSUN_OBS',
-        'SOLAR_R', or 'RADIUS' FITS keywords. If none of these keys are present,
-        the angular radius is calculated from
-        `~sunpy.map.GenericMap.rsun_meters` and `~sunpy.map.GenericMap.dsun`.
-        """
-        rsun_arcseconds = self._rsun_obs_no_default
-
-        if rsun_arcseconds is not None:
-            return rsun_arcseconds * u.arcsec
-        else:
-            return sun._angular_radius(self.rsun_meters, self.dsun)
-
-    @property
-    def coordinate_system(self):
-        """
-        Coordinate system used for x and y axes (ctype1/2).
-
-        If not present, defaults to (HPLN-TAN, HPLT-TAN), and emits a warning.
-        """
-        ctype1 = self.meta.get('ctype1', None)
-        if not ctype1:
-            warn_metadata("Missing CTYPE1 from metadata, assuming CTYPE1 is HPLN-TAN")
-            ctype1 = 'HPLN-TAN'
-
-        ctype2 = self.meta.get('ctype2', None)
-        if not ctype2:
-            warn_metadata("Missing CTYPE2 from metadata, assuming CTYPE2 is HPLT-TAN")
-            ctype2 = 'HPLT-TAN'
-
-        # Astropy WCS does not understand the SOHO default of "solar-x" and
-        # "solar-y" ctypes. This overrides the default assignment and
-        # changes it to a ctype that is understood. See Thompson, 2006, A.&A.,
-        # 449, 791.
-        if ctype1.lower() in ("solar-x", "solar_x"):
-            warn_deprecated("CTYPE1 value 'solar-x'/'solar_x' is deprecated, use 'HPLN-TAN' instead.")
-            ctype1 = 'HPLN-TAN'
-
-        if ctype2.lower() in ("solar-y", "solar_y"):
-            warn_deprecated("CTYPE2 value 'solar-y'/'solar_y' is deprecated, use 'HPLN-TAN' instead.")
-            ctype2 = 'HPLT-TAN'
-
-        return SpatialPair(ctype1, ctype2)
-
-    @property
-    def _supported_observer_coordinates(self):
-        """
-        A list of supported coordinate systems.
-
-        This is a list so it can easily maintain a strict order. The list of
-        two element tuples, the first item in the tuple is the keys that need
-        to be in the header to use this coordinate system and the second is the
-        kwargs to SkyCoord.
-        """
-        return [(('hgln_obs', 'hglt_obs', 'dsun_obs'), {'lon': self.meta.get('hgln_obs'),
-                                                        'lat': self.meta.get('hglt_obs'),
-                                                        'radius': self.meta.get('dsun_obs'),
-                                                        'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_stonyhurst"}),
-                (('crln_obs', 'crlt_obs', 'dsun_obs'), {'lon': self.meta.get('crln_obs'),
-                                                        'lat': self.meta.get('crlt_obs'),
-                                                        'radius': self.meta.get('dsun_obs'),
-                                                        'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_carrington"}), ]
-
-    @property
-    def _default_observer_coordinate(self):
-        """
-        The default observer coordinate to use when there is insufficient information
-        in the metadata. This should be overridden by map sources as appropriate.
-        """
-
-    def _remove_existing_observer_location(self):
-        """
-        Remove all keys that this map might use for observer location.
-        """
-        all_keys = expand_list([e[0] for e in self._supported_observer_coordinates])
-        for key in all_keys:
-            self.meta.pop(key)
-
-    @property
-    @cached_property_based_on('_meta_hash')
-    def observer_coordinate(self):
-        """
-        The Heliographic Stonyhurst Coordinate of the observer.
-
-        Notes
-        -----
-        The ``obstime`` for this coordinate uses the `.reference_date` property, which
-        may be different from the `.date` property.
-        """
-        warning_message = []
-        for keys, kwargs in self._supported_observer_coordinates:
-            missing_keys = set(keys) - self.meta.keys()
-            if not missing_keys:
-                sc = SkyCoord(obstime=self.reference_date, **kwargs)
-                # If the observer location is supplied in Carrington coordinates,
-                # the coordinate's `observer` attribute should be set to "self"
-                if isinstance(sc.frame, HeliographicCarrington):
-                    sc.frame._observer = "self"
-
-                sc = sc.heliographic_stonyhurst
-                # We set rsun after constructing the coordinate, as we need
-                # the observer-Sun distance (sc.radius) to calculate this, which
-                # may not be provided directly in metadata (if e.g. the
-                # observer coordinate is specified in a cartesian
-                # representation)
-                return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
-            elif missing_keys != keys:
-                frame = kwargs['frame'] if isinstance(kwargs['frame'], str) else kwargs['frame'].name
-                warning_message.append(f"For frame '{frame}' the following metadata is missing: "
-                                       f"{','.join(missing_keys)}")
-
-        default = self._default_observer_coordinate
-        if default is not None:
-            # If a map source specifies a default observer, we log a message at the debug level
-            warning_message = (["Missing metadata for observer: assuming custom default observer."]
-                               + warning_message)
-            log.debug("\n".join(warning_message))
-            return default
-        else:
-            # If a map source does not specify a default observer, we assume Earth center and warn
-            warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
-                               + warning_message + [""])
-            warn_metadata("\n".join(warning_message), stacklevel=3)
-            return get_earth(self.reference_date)
-
-    @property
-    def heliographic_latitude(self):
-        """Observer heliographic latitude."""
-        return self.observer_coordinate.lat
-
-    @property
-    def heliographic_longitude(self):
-        """Observer heliographic longitude."""
-        return self.observer_coordinate.lon
-
-    @property
-    def carrington_latitude(self):
-        """Observer Carrington latitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
-                                           rsun=self.rsun_meters)
-        return self.observer_coordinate.transform_to(hgc_frame).lat
-
-    @property
-    def carrington_longitude(self):
-        """Observer Carrington longitude."""
-        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.reference_date,
-                                           rsun=self.rsun_meters)
-        return self.observer_coordinate.transform_to(hgc_frame).lon
-
-    @property
-    def dsun(self):
-        """Observer distance from the center of the Sun."""
-        return self.observer_coordinate.radius.to('m')
-
-    @property
-    def _reference_longitude(self):
-        """
-        FITS-WCS compatible longitude. Used in self.wcs and
-        self.reference_coordinate.
-        """
-        return self.meta.get('crval1', 0.) * self.spatial_units[0]
-
-    @property
-    def _reference_latitude(self):
-        return self.meta.get('crval2', 0.) * self.spatial_units[1]
-
-    @property
-    def reference_coordinate(self):
-        """Reference point WCS axes in data units (i.e. crval1, crval2). This value
-        includes a shift if one is set."""
-        return SkyCoord(self._reference_longitude,
-                        self._reference_latitude,
-                        frame=self.coordinate_frame)
-
-    @property
-    def reference_pixel(self):
-        """
-        Pixel of reference coordinate.
-
-        The pixel returned uses zero-based indexing, so will be 1 pixel less
-        than the FITS CRPIX values.
-        """
-        naxis1 = self.meta.get('naxis1', self.data.shape[1])
-        naxis2 = self.meta.get('naxis2', self.data.shape[0])
-        return PixelPair((self.meta.get('crpix1', (naxis1 + 1) / 2.) - 1) * u.pixel,
-                         (self.meta.get('crpix2', (naxis2 + 1) / 2.) - 1) * u.pixel)
-
-    @property
-    def scale(self):
-        """
-        Image scale along the x and y axes in units/pixel
-        (i.e. cdelt1, cdelt2).
-
-        If the CDij matrix is defined but no CDELTi values are explicitly defined,
-        effective CDELTi values are constructed from the CDij matrix. The effective
-        CDELTi values are chosen so that each row of the PCij matrix has unity norm.
-        This choice is optimal if the PCij matrix is a pure rotation matrix, but may not
-        be as optimal if the PCij matrix includes any skew.
-        """
-        if 'cd1_1' in self.meta and 'cdelt1' not in self.meta and 'cdelt2' not in self.meta:
-            cdelt1 = np.sqrt(self.meta['cd1_1']**2 + self.meta['cd1_2']**2)
-            cdelt2 = np.sqrt(self.meta['cd2_1']**2 + self.meta['cd2_2']**2)
-        else:
-            cdelt1 = self.meta.get('cdelt1', 1.)
-            cdelt2 = self.meta.get('cdelt2', 1.)
-
-        return SpatialPair(cdelt1 * self.spatial_units[0] / u.pixel,
-                           cdelt2 * self.spatial_units[1] / u.pixel)
-
-    @property
-    def spatial_units(self):
-        """
-        Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
-        """
-        units = self.meta.get('cunit1', None), self.meta.get('cunit2', None)
-        units = [None if unit is None else u.Unit(unit.lower()) for unit in units]
-        return SpatialPair(units[0], units[1])
-
-    @property
-    def rotation_matrix(self):
-        r"""
-        Matrix describing the transformation needed to align the reference
-        pixel with the coordinate axes.
-
-        The order or precedence of FITS keywords which this is taken from is:
-        - PC\*_\*
-        - CD\*_\*
-        - CROTA\*
-
-        Notes
-        -----
-        In many cases this is a simple rotation matrix, hence the property name.
-        It general it does not have to be a pure rotation matrix, and can encode
-        other transformations e.g., skews for non-orthogonal coordinate systems.
-        """
-        if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
-            return np.array(
-                [
-                    [self.meta.get('PC1_1', 1), self.meta.get('PC1_2', 0)],
-                    [self.meta.get('PC2_1', 0), self.meta.get('PC2_2', 1)]
-                ]
-            )
-        elif any(key in self.meta for key in ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']):
-            cd = np.array(
-                [
-                    [self.meta.get('CD1_1', 0), self.meta.get('CD1_2', 0)],
-                    [self.meta.get('CD2_1', 0), self.meta.get('CD2_2', 0)]
-                ]
-            )
-
-            cdelt = u.Quantity(self.scale).value
-
-            # Divide each row by each CDELT
-            return cd / np.expand_dims(cdelt, axis=1)
-        else:
-            return self._rotation_matrix_from_crota()
-
-    @staticmethod
-    def _pc_matrix(lam, angle):
-        """
-        Returns PC matrix from the scale ration (lam) and rotation
-        angle in radians (angle).
-        """
-        return np.array([[np.cos(angle), -1 * lam * np.sin(angle)],
-                         [1/lam * np.sin(angle), np.cos(angle)]])
-
-    def _rotation_matrix_from_crota(self, crota_key='CROTA2'):
-        """
-        This method converts the deprecated CROTA FITS kwargs to the new
-        PC rotation matrix.
-
-        This method can be overridden if an instruments header does not use this
-        conversion.
-
-        Parameters
-        ----------
-        crota_key : str, optional
-            The key to use for CROTA2. Defaults to 'CROTA2'.
-
-        Notes
-        -----
-        If the specified key isn't present in the metadata, a default rotation
-        of 0deg is returned.
-        """
-        lam = self.scale[1] / self.scale[0]
-        p = np.deg2rad(self.meta.get(crota_key, 0))
-        return self._pc_matrix(lam, p)
-
-    @property
-    def _pv_values(self):
-        """
-        Return any PV values in the metadata.
-        """
-        pattern = re.compile(r'pv[1-9]\d?_(?:0|[1-9]\d?)$', re.IGNORECASE)
-        pv_keys = [k for k in self.meta.keys() if pattern.match(k)]
-
-        pv_values = []
-        for k in pv_keys:
-            i, m = int(k[2]), int(k[4:])
-            pv_values.append((i, m, self.meta[k]))
-        return pv_values
-
-    @property
-    def fits_header(self):
-        """
-        A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
-        """
-        return header_to_fits(self.meta)
-
-# #### Miscellaneous #### #
-    def _get_cmap_name(self):
-        """Build the default color map name."""
-        cmap_string = (self.observatory + self.detector +
-                       str(int(self.wavelength.to('angstrom').value)))
-        return cmap_string.lower()
-
-    def _validate_meta(self):
-        """
-        Validates some meta-information associated with a Map.
-
-        This method includes very basic validation checks which apply to
-        all of the kinds of files that sunpy can read. Datasource-specific
-        validation should be handled in the relevant file in the
-        sunpy.map.sources package.
-        """
-        msg = ('Image coordinate units for axis {} not present in metadata.')
-        err_message = []
-        for i in [0, 1]:
-            if self.spatial_units[i] is None:
-                err_message.append(msg.format(i+1, i+1))
-
-        if err_message:
-            err_message.append(
-                f'See {_META_FIX_URL} for instructions on how to add missing metadata.')
-            raise MapMetaValidationError('\n'.join(err_message))
-
-        for meta_property in ('waveunit', ):
-            if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
-                warn_metadata(f"Unknown value for {meta_property.upper()}.")
-
-        if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
-                self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
-            warn_user("sunpy Map does not support three dimensional data "
-                      "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.")
-
-        if not all(su.is_equivalent(u.arcsec) for su in self.spatial_units):
-            units = [su.to_string() for su in self.spatial_units]
-            raise MapMetaValidationError(
-                'Map only supports spherical coordinate systems with angular units '
-                f'(ie. equivalent to arcsec), but this map has units {units}')
-
-# #### Data conversion routines #### #
-    def world_to_pixel(self, coordinate):
-        """
-        Convert a world (data) coordinate to a pixel coordinate.
-
-        Parameters
-        ----------
-        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
-            The coordinate object to convert to pixel coordinates.
-
-        Returns
-        -------
-        x : `~astropy.units.Quantity`
-            Pixel coordinate on the CTYPE1 axis.
-        y : `~astropy.units.Quantity`
-            Pixel coordinate on the CTYPE2 axis.
-        """
-        x, y = self.wcs.world_to_pixel(coordinate)
-        return PixelPair(x * u.pixel, y * u.pixel)
-
-    @u.quantity_input
-    def pixel_to_world(self, x: u.pixel, y: u.pixel):
-        """
-        Convert a pixel coordinate to a data (world) coordinate.
-
-        Parameters
-        ----------
-        x : `~astropy.units.Quantity`
-            Pixel coordinate of the CTYPE1 axis. (Normally solar-x).
-        y : `~astropy.units.Quantity`
-            Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
-
-        Returns
-        -------
-        coord : `astropy.coordinates.SkyCoord`
-            A coordinate object representing the output coordinate.
-        """
-        return self.wcs.pixel_to_world(x, y)
-
-# #### I/O routines #### #
+        # Unwrap any wrapper classes to FITS WCS
+        unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
+        # Convert to a header
+        new_header = unwrapped.to_header()
+        # wcslib ignores NAXIS
+        for n in range(1, unwrapped.naxis + 1):
+            new_header[f"NAXIS{n}"] = unwrapped._naxis[n-1]
+
+        old_wcs_header = self.wcs.to_header()
+        # Reduce the new header to just the keys which differ from the current WCS
+        # We do this to figure out what's been changed post wcslib doing any
+        # conversion (such as arcsec -> deg)
+        changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+
+        # If the units on the WCS are different from the original
+        # header the map was constructed with then wcslib has changed
+        # them, so we now change them back to match.
+        original_units = sorted([self.meta.original_meta[k] for k in old_wcs_header if k.lower().startswith("cunit")])
+        new_units = sorted([new_header[k] for k in new_header if k.lower().startswith("cunit")])
+        if original_units != new_units:
+            # wcslib uses the following code snippet to scale a header if units are not SI:
+            # https://github.com/astropy/astropy/blob/main/cextern/wcslib/C/wcs.c#L3329-L3343
+            # The keys which need changing are CDELT, CRVAL, optionally CDi_j and CUNIT
+            for i, (original_unit, new_unit) in enumerate(zip(original_units, new_units)):
+                i += 1  # FITS indexing
+                scale_factor = u.Unit(new_unit).to(original_unit)
+                # NOTE: Support CD here if we ever set wcs.cd in the wcs property
+                for key_prefix in ["CDELT", "CRVAL"]:
+                    key = f"{key_prefix}{i}"
+                    changed_header[key] = new_header[key] * scale_factor
+                changed_header[f"CUNIT{i}"] = original_unit
+
+        self.meta.update(MetaDict(changed_header))
 
     def save(self, filepath, filetype='auto', **kwargs):
         """
@@ -1687,9 +783,6 @@ class GenericMap(NDData):
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
-
-
-
 # #### Image processing routines #### #
 
     @u.quantity_input
@@ -1698,7 +791,7 @@ class GenericMap(NDData):
         Resample to new dimension sizes.
 
         Uses the same parameters and creates the same coordinate lookup points
-        as IDL''s congrid routine, which apparently originally came from a
+        as IDL's congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
 
         This method **does not** preserve dask arrays.
@@ -1737,8 +830,8 @@ class GenericMap(NDData):
                                         method, center=True)
         new_data = new_data.T
 
-        scale_factor_x = float(self.dimensions[0] / dimensions[0])
-        scale_factor_y = float(self.dimensions[1] / dimensions[1])
+        scale_factor_x = float(self.shape[1] / dimensions[0].value)
+        scale_factor_y = float(self.shape[0] / dimensions[1].value)
 
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
@@ -1758,7 +851,7 @@ class GenericMap(NDData):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1953,7 +1046,7 @@ class GenericMap(NDData):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
 
         return new_map
 
@@ -2009,16 +1102,17 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [335. 335.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [335. 335.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [126.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         ...
@@ -2027,16 +1121,17 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [6. 6.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [6. 6.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [511.5 511.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         ...
@@ -2047,16 +1142,17 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [5. 5.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [5. 5.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [125.5 125.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         ...
@@ -2066,16 +1162,17 @@ class GenericMap(NDData):
         <sunpy.map.sources.sdo.AIAMap object at ...>
         SunPy Map
         ---------
-        Observatory:         SDO
+        Observatory:                 SDO
         Instrument:          AIA 3
         Detector:            AIA
-        Measurement:         171.0 Angstrom
+        Measurement:                 171.0 Angstrom
         Wavelength:          171.0 Angstrom
         Observation Date:    2011-06-07 06:33:02
-        Exposure Time:       0.234256 s
-        Dimension:           [70. 69.] pix
+        Reference Date:              2011-06-07 06:33:02
+        Exposure Time:               0.234256 s
+        Pixel Dimensions:            [70. 69.]
         Coordinate System:   helioprojective
-        Scale:               [2.402792 2.402792] arcsec / pix
+        Scale:                       [2.402792 2.402792] arcsec / pix
         Reference Pixel:     [1.5 0.5] pix
         Reference Coord:     [3.22309951 1.38578135] arcsec
         ...
@@ -2140,10 +1237,10 @@ class GenericMap(NDData):
         if self.mask is not None:
             new_mask = self.mask[arr_slice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+            new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
             return new_map
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings)
         return new_map
 
     @seconddispatch
@@ -2308,219 +1405,37 @@ class GenericMap(NDData):
             new_data = new_array
 
         # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plotter.plot_settings, mask=new_mask)
         return new_map
-
-# #### Visualization #### #
 
     @property
     def cmap(self):
-        """
-        Return the `matplotlib.colors.Colormap` instance this map uses.
-        """
-        cmap = self.plot_settings['cmap']
-        if isinstance(cmap, str):
-            cmap = plt.get_cmap(cmap)
-            # Set the colormap to be this specific instance so we are not
-            # returning a copy
-            self.plot_settings['cmap'] = cmap
-        return cmap
+        return self.plotter.cmap
 
-    @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True,
-                  system='stonyhurst', **kwargs):
-        """
-        Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
-        coordinate system.
+    def draw_grid(self, *args, **kwargs):
+        return self.plotter.draw_grid(*args, **kwargs)
 
-        To overlay other coordinate systems see the `WCSAxes Documentation
-        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`__
+    def draw_limb(self, *args, **kwargs):
+        return self.plotter.draw_limb(*args, **kwargs)
 
-        Parameters
-        ----------
-        axes : `~matplotlib.axes` or `None`
-            Axes to plot limb on, or `None` to use current axes.
-        grid_spacing : `~astropy.units.Quantity`
-            Spacing for longitude and latitude grid, if length two it specifies
-            (lon, lat) spacing.
-        annotate : `bool`
-            Passing `False` disables the axes labels and the ticks on the top and right axes.
-        system : str
-            Coordinate system for the grid. Must be 'stonyhurst' or 'carrington'.
-        kwargs :
-            Additional keyword arguments are passed to `~sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay`.
+    def draw_quadrangle(self, *args, **kwargs):
+        return self.plotter.draw_quadrangle(*args, **kwargs)
 
-        Returns
-        -------
-        overlay: `~astropy.visualization.wcsaxes.CoordinatesMap`
-            The wcsaxes coordinate overlay instance.
+    def draw_extent(self, *args, **kwargs):
+        return self.plotter.draw_extent(*args, **kwargs)
 
-        Notes
-        -----
-        Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
-        """
-        axes = self._check_axes(axes)
-        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
-                                                           grid_spacing=grid_spacing,
-                                                           annotate=annotate,
-                                                           obstime=self.reference_date,
-                                                           rsun=self.rsun_meters,
-                                                           observer=self.observer_coordinate,
-                                                           system=system,
-                                                           **kwargs)
+    def _get_cmap_name(self):
+        cmap_string = f"{self.observatory}{self.detector}{self.wavelength.to_value('AA'):.0f}"
+        return cmap_string.lower()
 
-    def draw_limb(self, axes=None, *, resolution=1000, **kwargs):
-        """
-        Draws the solar limb as seen by the map's observer.
+    def draw_contours(self, *args, **kwargs):
+        return self.plotter.draw_contours(*args, **kwargs)
 
-        The limb is a circle for only the simplest plots. If the coordinate frame of
-        the limb is different from the coordinate frame of the plot axes, not only
-        may the limb not be a true circle, a portion of the limb may be hidden from
-        the observer. In that case, the circle is divided into visible and hidden
-        segments, represented by solid and dotted lines, respectively.
+    def peek(self, *args, **kwargs):
+       return self.plotter.peek(*args, **kwargs)
 
-        Parameters
-        ----------
-        axes : `~matplotlib.axes` or ``None``
-            Axes to plot limb on or ``None`` to use current axes.
-        resolution : `int`
-            The number of points to use to represent the limb.
-
-        Returns
-        -------
-        visible : `~matplotlib.patches.Polygon` or `~matplotlib.patches.Circle`
-            The patch added to the axes for the visible part of the limb (i.e., the
-            "near" side of the Sun).
-        hidden : `~matplotlib.patches.Polygon` or None
-            The patch added to the axes for the hidden part of the limb (i.e., the
-            "far" side of the Sun).
-
-        Notes
-        -----
-        Keyword arguments are passed onto the patches.
-
-        If the limb is a true circle, ``visible`` will instead be
-        `~matplotlib.patches.Circle` and ``hidden`` will be ``None``. If there
-        are no visible points (e.g., on a synoptic map any limb is fully)
-        visible ``hidden`` will be ``None``.
-
-        To avoid triggering Matplotlib auto-scaling, these patches are added as
-        artists instead of patches. One consequence is that the plot legend is not
-        populated automatically when the limb is specified with a text label. See
-        :ref:`sphx_glr_gallery_text_labels_and_annotations_custom_legends.py` in
-        the Matplotlib documentation for examples of creating a custom legend.
-        """
-        # Put imports here to reduce sunpy.map import time
-        import sunpy.visualization.drawing
-
-        axes = self._check_axes(axes)
-        return sunpy.visualization.drawing.limb(
-            axes,
-            self.observer_coordinate,
-            resolution=resolution,
-            rsun=self.rsun_meters,
-            **kwargs
-        )
-
-    def draw_extent(self, *, axes=None, **kwargs):
-        """
-        Draw the extent of the map onto a given axes.
-
-        Parameters
-        ----------
-        axes : `matplotlib.axes.Axes`, optional
-            The axes to plot the extent on, or "None" to use current axes.
-
-        Returns
-        -------
-        visible : `~matplotlib.patches.Polygon`
-            The patch added to the axes for the visible part of the WCS extent.
-        hidden : `~matplotlib.patches.Polygon`
-            The patch added to the axes for the hidden part of the WCS extent.
-        """
-        # Put imports here to reduce sunpy.map import time
-        import sunpy.visualization.drawing
-
-        axes = self._check_axes(axes)
-        return sunpy.visualization.drawing.extent(
-            axes,
-            self.wcs,
-            **kwargs
-        )
-
-    @u.quantity_input
-    def draw_quadrangle(self, bottom_left, *, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
-                        axes=None, top_right=None, **kwargs):
-        """
-        Draw a quadrangle defined in world coordinates on the plot using Astropy's
-        `~astropy.visualization.wcsaxes.Quadrangle`.
-
-        This draws a quadrangle that has corners at ``(bottom_left, top_right)``,
-        and has sides aligned with the coordinate axes of the frame of ``bottom_left``,
-        which may be different from the coordinate axes of the map.
-
-        If ``width`` and ``height`` are specified, they are respectively added to the
-        longitude and latitude of the ``bottom_left`` coordinate to calculate a
-        ``top_right`` coordinate.
-
-        Parameters
-        ----------
-        bottom_left : `~astropy.coordinates.SkyCoord` or `~astropy.units.Quantity`
-            The bottom-left coordinate of the rectangle. If a `~astropy.coordinates.SkyCoord` it can
-            have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
-            pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with pixel units (e.g., ``pix``).
-        top_right : `~astropy.coordinates.SkyCoord` or `~astropy.units.Quantity`, optional
-            The top-right coordinate of the quadrangle. If ``top_right`` is
-            specified ``width`` and ``height`` must be omitted.
-        width : `astropy.units.Quantity`, optional
-            The width of the quadrangle. Required if ``top_right`` is omitted.
-        height : `astropy.units.Quantity`
-            The height of the quadrangle. Required if ``top_right`` is omitted.
-        axes : `matplotlib.axes.Axes`
-            The axes on which to plot the quadrangle. Defaults to the current
-            axes.
-
-        Returns
-        -------
-        quad : `~astropy.visualization.wcsaxes.Quadrangle`
-            The added patch.
-
-        Notes
-        -----
-        Extra keyword arguments to this function are passed through to the
-        `~astropy.visualization.wcsaxes.Quadrangle` instance.
-
-        Examples
-        --------
-        .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
-        """
-        axes = self._check_axes(axes)
-
-        if isinstance(bottom_left, u.Quantity):
-            anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
-            width, height = top_right - anchor
-            transform = axes.get_transform(self.wcs if self.wcs is not axes.wcs else 'pixel')
-            kwargs.update({"vertex_unit": u.pix})
-
-        else:
-            bottom_left, top_right = get_rectangle_coordinates(
-                bottom_left, top_right=top_right, width=width, height=height)
-
-            width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-            height = top_right.spherical.lat - bottom_left.spherical.lat
-            anchor = self._get_lon_lat(bottom_left)
-            transform = axes.get_transform(bottom_left.replicate_without_data())
-
-        kwergs = {
-            "transform": transform,
-            "edgecolor": "white",
-            "fill": False,
-        }
-        kwergs.update(kwargs)
-        quad = Quadrangle(anchor, width, height, **kwergs)
-        axes.add_patch(quad)
-        return quad
+    def plot(self, *args, **kwargs):
+        return self.plotter.plot(*args, **kwargs)
 
     def _process_levels_arg(self, levels):
         """
@@ -2546,401 +1461,6 @@ class GenericMap(NDData):
             # Map data has no units, but levels doesn't have dimensionless units
             raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
                                "or in u.dimensionless_unscaled units.")
-
-
-    def _update_contour_args(self, contour_args):
-        """
-        Updates ``contour_args`` with values from ``plot_settings``.
-
-        Parameters
-        ----------
-        contour_args : dict
-            A dictionary of arguments to be used for contour plotting.
-
-        Returns
-        -------
-        dict
-            The updated ``contour_args`` dictionary.
-
-        Notes
-        -----
-        - 'cmap': Set to `None` to avoid the error "ValueError: Either colors or cmap must be None".
-        - 'interpolation': Removed because Matplotlib's contour function raises the warning
-        "The following kwargs were not used by contour: 'interpolation'".
-        - 'origin': If `'origin': 'lower'` is present, it is replaced with `'origin': None`,
-        as `None` is the default value for Matplotlib's contour plots.
-        """
-        plot_settings = self.plot_settings.copy()
-        contour_args_copy = contour_args.copy()
-        contour_args.update(plot_settings)
-        # Define default settings for normal plots and contour-specific updates
-        original_plot_defaults = {
-            'origin': 'lower',
-        }
-        default_contour_param = {
-            'origin': None,
-        }
-        # Replace conflicting settings with contour defaults
-        for key in original_plot_defaults:
-            if key in contour_args and contour_args[key] == original_plot_defaults[key]:
-                contour_args[key] = default_contour_param[key]
-        # 'cmap' cannot be used for contour plots when levels are not None,
-        # which is the case in composite maps.
-        contour_args['cmap'] = None
-        # custom 'norm' cannot be passed through plot_settings
-        contour_args['norm'] = None
-        # If 'draw_contour' is used, setting 'norm' and 'cmap' to None ensures the method arguments are applied.
-        contour_args.update(contour_args_copy)
-        contour_args.pop('interpolation')
-        return contour_args
-
-
-    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
-        """
-        Draw contours of the data.
-
-        Parameters
-        ----------
-        levels : `~astropy.units.Quantity`
-            A list of numbers indicating the contours to draw. These are given
-            as a percentage of the maximum value of the map data, or in units
-            equivalent to the `~sunpy.map.GenericMap.unit` attribute.
-        axes : `matplotlib.axes.Axes`
-            The axes on which to plot the contours. Defaults to the current
-            axes.
-        fill : `bool`, optional
-            Determines the style of the contours:
-            - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
-            - If `True`, contours are drawn as filled regions using :meth:`~matplotlib.axes.Axes.contourf`.
-
-        Returns
-        -------
-        cs : `list`
-            The `~matplotlib.contour.QuadContourSet` object, after it has been added to
-            ``axes``.
-
-        Notes
-        -----
-        Extra keyword arguments to this function are passed through to the
-        corresponding matplotlib method.
-        """
-        contour_args = self._update_contour_args(contour_args)
-
-        axes = self._check_axes(axes)
-        levels = self._process_levels_arg(levels)
-
-        # Pixel indices
-        y, x = np.indices(self.data.shape)
-
-        # Prepare a local variable in case we need to mask values
-        data = self.data
-
-        # Transform the indices if plotting to a different WCS
-        # We do this instead of using the `transform` keyword argument so that Matplotlib does not
-        # get confused about the bounds of the contours
-        if self.wcs is not axes.wcs:
-            if "transform" in contour_args:
-                transform_orig = contour_args.pop("transform")
-            else:
-                transform_orig = axes.get_transform(self.wcs)
-            transform = transform_orig - axes.transData  # pixel->pixel transform
-            x_1d, y_1d = transform.transform(np.stack([x.ravel(), y.ravel()]).T).T
-            x, y = np.reshape(x_1d, x.shape), np.reshape(y_1d, y.shape)
-
-            # Mask out the data array anywhere the coordinate arrays are not finite
-            data = np.ma.array(data, mask=~np.logical_and(np.isfinite(x), np.isfinite(y)))
-
-        if fill:
-            # Ensure we have more than one level if fill is True
-            if len(levels) == 1:
-                max_val = np.nanmax(self.data)
-                # Ensure the existing level is less than max_val
-                if levels[0] < max_val:
-                    levels = np.append(levels, max_val)
-                else:
-                    raise ValueError(
-                        f"The provided level ({levels[0]}) is not smaller than the maximum data value ({max_val}). "
-                        "Contour level must be smaller than the maximum data value to use `fill=True`.")
-            cs = axes.contourf(x, y, data, levels, **contour_args)
-        else:
-            cs = axes.contour(x, y, data, levels, **contour_args)
-        return cs
-
-    @peek_show
-    def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, **matplot_args):
-        """
-        Displays a graphical overview of the data in this object for user evaluation.
-        For the creation of plots, users should instead use the `~sunpy.map.GenericMap.plot`
-        method and Matplotlib's pyplot framework.
-
-        Parameters
-        ----------
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool or `~astropy.units.Quantity`
-            Whether solar meridians and parallels are plotted.
-            If `~astropy.units.Quantity` then sets degree difference between
-            parallels and meridians.
-        colorbar : bool
-            Whether to display a colorbar next to the plot.
-        **matplot_args : dict
-            Matplotlib Any additional imshow arguments that should be used
-            when plotting.
-        """
-        figure = plt.figure()
-        axes = wcsaxes_compat.gca_wcs(self.wcs)
-
-        im = self.plot(axes=axes, **matplot_args)
-
-        grid_spacing = None
-        # Handle case where draw_grid is actually the grid sapcing
-        if isinstance(draw_grid, u.Quantity):
-            grid_spacing = draw_grid
-            draw_grid = True
-        elif not isinstance(draw_grid, bool):
-            raise TypeError("draw_grid should be a bool or an astropy Quantity.")
-
-        if colorbar:
-            if draw_grid:
-                pad = 0.12  # Pad to compensate for ticks and axes labels
-            else:
-                pad = 0.05  # Default value for vertical colorbar
-            colorbar_label = str(self.unit) if self.unit is not None else ""
-            figure.colorbar(im, pad=pad).set_label(colorbar_label,
-                                                   rotation=0, labelpad=-50, y=-0.02, size=12)
-
-        if draw_limb:
-            self.draw_limb(axes=axes)
-
-        if draw_grid:
-            if grid_spacing is None:
-                self.draw_grid(axes=axes)
-            else:
-                self.draw_grid(axes=axes, grid_spacing=grid_spacing)
-
-        return figure
-
-    @u.quantity_input
-    def plot(self, *, annotate=True, axes=None, title=True, autoalign=True,
-             clip_interval: u.percent = None, **imshow_kwargs):
-        """
-        Plots the map using matplotlib.
-
-        By default, the map's pixels will be drawn in an coordinate-aware fashion, even
-        when the plot axes are a different projection or a different coordinate frame.
-        See the ``autoalign`` keyword and the notes below.
-
-        Parameters
-        ----------
-        annotate : `bool`, optional
-            If `True`, the data is plotted at its natural scale; with
-            title and axis labels.
-        axes : `~matplotlib.axes.Axes` or None
-            If provided the image will be plotted on the given axes. Else the
-            current Matplotlib axes will be used.
-        title : `str`, `bool`, optional
-            The plot title. If `True`, uses the default title for this map.
-        clip_interval : two-element `~astropy.units.Quantity`, optional
-            If provided, the data will be clipped to the percentile interval bounded by the two
-            numbers.
-        autoalign : `bool` or `str`, optional
-            If other than `False`, the plotting accounts for any difference between the
-            WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle). The options are:
-
-            * ``"mesh"``, which draws a mesh of the individual map pixels
-            * ``"image"``, which draws the map as a single (warped) image
-            * `True`, which automatically determines whether to use ``"mesh"`` or ``"image"``
-
-        **imshow_kwargs : `dict`
-            Any additional arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`
-            or :meth:`~matplotlib.axes.Axes.pcolormesh`.
-
-        Examples
-        --------
-        >>> # Simple Plot with color bar
-        >>> aia.plot()   # doctest: +SKIP
-        >>> plt.colorbar()   # doctest: +SKIP
-        >>> # Add a limb line and grid
-        >>> aia.plot()   # doctest: +SKIP
-        >>> aia.draw_limb()   # doctest: +SKIP
-        >>> aia.draw_grid()   # doctest: +SKIP
-
-        Notes
-        -----
-        The ``autoalign`` functionality can be intensive to render. If the plot is to
-        be interactive, the alternative approach of preprocessing the map to match the
-        intended axes (e.g., through rotation or reprojection) will result in better
-        plotting performance.
-
-        The ``autoalign='image'`` approach is usually faster than the
-        ``autoalign='mesh'`` approach, but is not as reliable, depending on the
-        specifics of the map.  If parts of the map cannot be plotted, a warning is
-        emitted.  If the entire map cannot be plotted, an error is raised.
-
-        When combining ``autoalign`` functionality with
-        `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
-        beyond the solar disk may not appear.  To preserve the off-disk parts of the
-        map, using the `~sunpy.coordinates.SphericalScreen` context manager may be
-        appropriate.
-        """
-        if autoalign == 'pcolormesh':
-            warn_deprecated("Specifying `autoalign='pcolormesh'` is deprecated as of 7.0. "
-                            "Specify `autoalign='mesh'` instead.")
-            autoalign = 'mesh'
-
-        # Set the default approach to autoalignment
-        allowed_autoalign = [False, True, 'mesh', 'image']
-        if autoalign not in allowed_autoalign:
-            raise ValueError(f"The value for `autoalign` must be one of {allowed_autoalign}.")
-
-        axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
-
-        # Normal plot
-        plot_settings = copy.deepcopy(self.plot_settings)
-        if 'title' in plot_settings:
-            plot_settings_title = plot_settings.pop('title')
-        else:
-            plot_settings_title = self.latex_name
-
-        # Anything left in plot_settings is given to imshow
-        imshow_args = plot_settings
-        if annotate:
-            if title is True:
-                title = plot_settings_title
-
-            if title:
-                axes.set_title(title)
-
-            # WCSAxes has unit identifiers on the tick labels, so no need
-            # to add unit information to the label
-            ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
-
-        # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
-        # by setting it's vmin and vmax
-        imshow_args.update(copy.deepcopy(imshow_kwargs))
-
-        if clip_interval is not None:
-            vmin, vmax = _clip_interval(self.data, clip_interval)
-            imshow_args['vmin'] = vmin
-            imshow_args['vmax'] = vmax
-
-        if (norm := imshow_args.get('norm', None)) is not None:
-            _handle_norm(norm, imshow_args)
-
-        if self.mask is None:
-            data = self.data
-        else:
-            data = np.ma.array(np.asarray(self.data), mask=self.mask)
-
-        # Disable autoalignment if it is not necessary
-        # TODO: revisit tolerance value
-        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
-            autoalign = False
-
-        if autoalign in {True, 'image'}:
-            ny, nx = self.data.shape
-            pixel_perimeter = grid_perimeter(nx, ny) - 0.5
-
-            transform = axes.get_transform(self.wcs) - axes.transData
-            with warnings.catch_warnings():
-                warnings.filterwarnings('ignore', category=SunpyUserWarning)
-                data_perimeter = transform.transform(pixel_perimeter)
-            if not np.all(np.isfinite(data_perimeter)):
-                if autoalign == 'image':
-                    raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
-                                       "Try specifying autoalign=mesh.")
-                autoalign = 'mesh'
-            else:
-                min_x, min_y = np.min(data_perimeter, axis=0)
-                max_x, max_y = np.max(data_perimeter, axis=0)
-
-                data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
-                if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
-                        and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
-                    if autoalign == 'image':
-                        warn_user("Cannot draw all of the autoaligned image due to the warping required. "
-                                  "Specifying autoalign=mesh is recommended.")
-                    else:
-                        autoalign = 'mesh'
-            if autoalign == 'mesh':
-                log.info("Using mesh-based autoalignment")
-            elif autoalign is True:
-                log.info("Using image-based autoalignment")
-                autoalign = 'image'
-
-        if autoalign == 'image':
-            # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
-            old_datalim = copy.deepcopy(axes.dataLim)
-            ret = axes.imshow(data, transform=transform + axes.transData, **imshow_args)
-            axes.dataLim = old_datalim
-
-            # Update the data limits based on the transformed perimeter
-            ret.sticky_edges.x[:] = [min_x, max_x]
-            ret.sticky_edges.y[:] = [min_y, max_y]
-            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
-            axes.autoscale(enable=None)
-
-            # Clip the drawn image based on the transformed perimeter
-            path = matplotlib.path.Path(data_perimeter)
-            ret.set_clip_path(path, axes.transData)
-        elif autoalign == 'mesh':
-            # We have to handle an `aspect` keyword separately
-            axes.set_aspect(imshow_args.get('aspect', 1))
-
-            # pcolormesh does not do interpolation
-            if imshow_args.get('interpolation', None) not in [None, 'none', 'nearest']:
-                warn_user("The interpolation keyword argument is ignored when using autoalign "
-                          "functionality.")
-
-            # Set the zorder to be 0 so that it is treated like an image in ordering
-            imshow_args.setdefault('zorder', 0)
-
-            # Remove imshow keyword arguments that are not accepted by pcolormesh
-            for item in ['aspect', 'extent', 'interpolation', 'origin']:
-                if item in imshow_args:
-                    del imshow_args[item]
-
-            # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
-            # of a grid pattern when alpha is not 1. These settings minimize the overlap.
-            if imshow_args.get('alpha', 1) != 1:
-                imshow_args.setdefault('antialiased', True)
-                imshow_args.setdefault('linewidth', 0)
-
-            # Create a lookup table for the transformed data corners for matplotlib to use
-            transform = _PrecomputedPixelCornersTransform(axes, self.wcs)
-
-            # Define the mesh in data coordinates in case the transformation results in NaNs
-            ret = axes.pcolormesh(transform.data_x, transform.data_y, data,
-                                  shading='flat',
-                                  transform=transform + axes.transData,
-                                  **imshow_args)
-
-            # Calculate the bounds of the mesh in the pixel space of the axes
-            good = np.logical_and(np.isfinite(transform.axes_x), np.isfinite(transform.axes_y))
-            good_x, good_y = transform.axes_x[good], transform.axes_y[good]
-            min_x, max_x = np.min(good_x), np.max(good_x)
-            min_y, max_y = np.min(good_y), np.max(good_y)
-
-            # Update the plot limits
-            ret.sticky_edges.x[:] = [min_x, max_x]
-            ret.sticky_edges.y[:] = [min_y, max_y]
-            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
-        else:
-            ret = axes.imshow(data, **imshow_args)
-
-        wcsaxes_compat.default_wcs_grid(axes)
-
-        # Set current axes/image if pyplot is being used (makes colorbar work)
-        for i in plt.get_fignums():
-            if axes in plt.figure(i).axes:
-                plt.sca(axes)
-                plt.sci(ret)
-
-        return ret
 
     @deprecated(since="6.1", alternative="sunpy.map.GenericMap.find_contours")
     def contour(self, level, **kwargs):
@@ -3075,36 +1595,6 @@ class GenericMap(NDData):
 
         return contours
 
-    def _check_axes(self, axes, warn_different_wcs=False):
-        """
-        - If axes is None, get the current Axes object.
-        - Error if not a WCSAxes.
-        - Return axes.
-
-        Parameters
-        ----------
-        axes : matplotlib.axes.Axes
-            Axes to validate.
-        warn_different_wcs : bool
-            If `True`, warn if the Axes WCS is different from the Map WCS. This is only used for
-            `.plot()`, and can be removed once support is added for plotting a map on a different
-            WCSAxes.
-        """
-        if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
-
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            raise TypeError("The axes need to be an instance of WCSAxes. "
-                            "To fix this pass set the `projection` keyword "
-                            "to this map when creating the axes.")
-        elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
-            warn_user('The map world coordinate system (WCS) is different from the axes WCS. '
-                      'The map data axes may not correctly align with the coordinate axes. '
-                      'To automatically transform the data to the coordinate axes, specify '
-                      '`autoalign=True`.')
-
-        return axes
-
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
                      **reproject_args):
@@ -3193,8 +1683,8 @@ class GenericMap(NDData):
             output_array, footprint = output_array
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
-                            plot_settings=self.plot_settings)
+        outmap = GenericMap(output_array, meta=target_wcs.to_header(),
+                            plot_settings=self.plotter.plot_settings)
 
         # Check rsun mismatch
         if self.rsun_meters != outmap.rsun_meters:

@@ -58,7 +58,7 @@ def test_private_date_setters(kcor):
 
 def test_wcs(kcor):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    kcor.pixel_to_world(0*u.pix, 0*u.pix)
+    kcor.wcs.pixel_to_world(0*u.pix, 0*u.pix)
 
 
 def test_observer_coordinate(kcor):
@@ -72,7 +72,7 @@ def test_observer_coordinate(kcor):
 
     # The test header will have a fully specified observer when DSUN_OBS is added
     kcor.meta['dsun_obs'] = (1*u.AU).to_value(u.m)
-    kcor = KCorMap(kcor.data, kcor.meta)
+    kcor = KCorMap(kcor.data, meta=kcor.meta)
 
     # The observer coordinate should now no longer be the default observer coordinate
     assert_quantity_allclose(kcor.observer_coordinate.radius, 1*u.AU)

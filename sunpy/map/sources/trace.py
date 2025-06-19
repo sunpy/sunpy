@@ -7,7 +7,8 @@ import astropy.units as u
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['TRACEMap']
@@ -46,13 +47,13 @@ class TRACEMap(GenericMap):
         above concerning how to read "tri" files in SSWIDL.
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
         # Colour maps
-        self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @property

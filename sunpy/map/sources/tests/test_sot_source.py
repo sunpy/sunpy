@@ -4,11 +4,11 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.mapbase import SpatialPair
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.hinode import SOTMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 @pytest.fixture
 def sot():
@@ -84,5 +84,4 @@ def test_obstype(sot):
 
 def test_wcs(sot):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
-        sot.pixel_to_world(0*u.pix, 0*u.pix)
+    sot.wcs.pixel_to_world(0*u.pix, 0*u.pix)
