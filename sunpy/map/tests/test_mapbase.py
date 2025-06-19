@@ -27,6 +27,7 @@ import sunpy
 import sunpy.coordinates
 import sunpy.map
 import sunpy.sun
+from ndcube.tests.helpers import assert_cubes_equal
 from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -1925,3 +1926,22 @@ def test_submap_nan_error(aia171_test_map):
     coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
     with pytest.raises(ValueError, match="The provided input coordinates to"):
         aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
+
+
+def test_slicing_map_submap_same(aia171_test_map):
+    bl_coord = SkyCoord(-1000 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    bottom_left = aia171_test_map.wcs.world_to_pixel(bl_coord)
+
+    tp_coord = SkyCoord(0 * u.arcsec, 1000 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    top_right = aia171_test_map.wcs.world_to_pixel(tp_coord)
+
+    bottom_left_x, bottom_left_y = map(int, bottom_left)
+    top_right_x, top_right_y = map(int, top_right)
+
+    submap = aia171_test_map.submap([bottom_left_x, bottom_left_y]*u.pix,
+                                    top_right=[top_right_x, top_right_y]*u.pix
+                                    )
+
+    sliced_map = aia171_test_map[bottom_left_y : top_right_y + 1, bottom_left_x: top_right_x + 1]
+
+    assert_cubes_equal(submap, sliced_map)
