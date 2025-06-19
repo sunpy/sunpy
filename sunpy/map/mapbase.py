@@ -1420,6 +1420,9 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     def draw_quadrangle(self, *args, **kwargs):
         return self.plotter.draw_quadrangle(*args, **kwargs)
 
+    def draw_extent(self, *args, **kwargs):
+        return self.plotter.draw_extent(*args, **kwargs)
+
     def _get_cmap_name(self):
         cmap_string = f"{self.observatory}{self.detector}{self.wavelength.to_value('AA'):.0f}"
         return cmap_string.lower()
