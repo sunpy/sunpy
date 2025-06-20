@@ -1,0 +1,1 @@
+Added the ability to use different interpolation methods with :func:`sunpy.map.maputils.sample_at_coords`.
