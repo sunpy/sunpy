@@ -5,6 +5,7 @@ import numbers
 from itertools import product
 
 import numpy as np
+import scipy.interpolate
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -164,7 +165,7 @@ def solar_angular_radius(coordinates):
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
-def sample_at_coords(smap, coordinates):
+def sample_at_coords(smap, coordinates, *, method='nearest'):
     """
     Samples the data in a map at given series of coordinates.
     Uses nearest-neighbor interpolation of coordinates in map, as
@@ -178,11 +179,19 @@ def sample_at_coords(smap, coordinates):
         A SunPy map.
     coordinates : `~astropy.coordinates.SkyCoord`
         Input coordinates.
+    method : str
+        Interpolation method. See :func:`scipy.interpolate.interpn` for allowable values.
 
     Returns
     -------
     `~astropy.units.Quantity`
         An array of the map data at the input coordinates.
+
+    See also
+    --------
+    scipy.interpolate.interpn :
+        Function used to interpolate.
+        See here for different options for the ``method`` argument.
 
     Examples
     --------
@@ -191,8 +200,19 @@ def sample_at_coords(smap, coordinates):
     if not all(contains_coordinate(smap, coordinates)):
         raise ValueError('At least one coordinate is not within the bounds of the map.')
 
-    return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
-
+    _, bottom, left, _ = map_edges(smap)
+    x = bottom[:, 0].to_value(u.pix)
+    y = left[:, 1].to_value(u.pix)
+    pixel_coords = smap.wcs.world_to_pixel(coordinates)[::-1]
+    print(pixel_coords)
+    vals = scipy.interpolate.interpn(
+            (x, y),
+            smap.data,
+            # world_to_pixel returns pixels in [y, x] order
+            pixel_coords,
+            method=method
+        )
+    return u.Quantity(vals, smap.unit)
 
 def _edge_coordinates(smap):
     # Calculate all the edge pixels

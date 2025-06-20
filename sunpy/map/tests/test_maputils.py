@@ -218,6 +218,18 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
     assert_quantity_allclose(data[0], intensity_along_arc[0])
     assert_quantity_allclose(data[-1], intensity_along_arc[-1])
 
+@pytest.mark.parametrize(
+    ("method", "expected"), [
+        ("nearest", 283.75 * u.DN),
+        ("linear", 292.92489915 * u.DN)
+    ]
+)
+def test_data_at_coordinates_method(aia171_test_map, aia_test_arc, method: str, expected: u.Quantity):
+    coord = aia_test_arc.coordinates()[0:1]
+    data = sample_at_coords(aia171_test_map, coord, method=method)
+    assert u.allclose(data, expected)
+
+
 
 def test_sample_out_of_bounds(aia171_test_map):
     point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
