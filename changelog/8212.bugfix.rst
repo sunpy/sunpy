@@ -1,1 +1,0 @@
-Fixed an incompatibility between the context manager for applying rotation (:func:`~sunpy.coordinates.propagate_with_solar_surface`) and the context managers for applying screen assumptions (:func:`~sunpy.coordinates.PlanarScreen` and :func:`~sunpy.coordinates.SphericalScreen`), which for example resulted in the discarding of most off-disk data in reprojections.

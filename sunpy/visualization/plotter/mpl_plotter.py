@@ -577,7 +577,7 @@ class MapPlotter:
         imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
-            vmin, vmax = _clip_interval(self.data, clip_interval)
+            vmin, vmax = _clip_interval(self.smap.data, clip_interval)
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
 
