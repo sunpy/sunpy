@@ -1,5 +1,7 @@
 name: asv-benchmarks-daily
 
+permissions: "read-all"
+
 on:
   # Allow manual runs through the web UI
   workflow_dispatch:
@@ -19,10 +21,12 @@ jobs:
       - name: Checkout sunpy repo
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           fetch-depth: "0"
       - name: Checkout sunpy-benchmarks repo
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           repository: sunpy/sunpy-benchmarks
           ref: main
           path: asv_results
@@ -41,11 +45,11 @@ jobs:
       - name: Run benchmarks for commits since v2.1
         run: taskset -c 0 asv run --skip-existing-successful --steps 50 v3.0.dev..
       - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd  # v0.9.1
         with:
           ssh-private-key: ${{ secrets.ASV_CI_KEY }}
       - name: Push results
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8  # v4.7.3
         with:
           branch: main
           folder: asv_results
