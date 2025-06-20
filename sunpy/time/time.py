@@ -47,6 +47,7 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
     "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
     "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
+    "%Y-%m-%dT%H:%M:%SZ",  # Example 2007-05-04T21:08:12Z
     "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
     "%Y%m%dT%H%M",  # Example 20070504T2108 , Should precede "%Y%m%dT%H%M%S".
     "%Y%m%dT%H%M%S",  # Example 20070504T210812
@@ -251,6 +252,8 @@ def convert_time_str(time_string, **kwargs):
                 return t
             except ValueError:
                 pass
+
+        log.debug("No matching sunpy format found for %s, so falling back to astropy formats", first_item)
 
     # If the string format does not match one of ours, we need to protect against a bad interaction
     # between astropy's C fast parser and numpy>=2.3
