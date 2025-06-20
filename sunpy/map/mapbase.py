@@ -15,7 +15,6 @@ from tempfile import NamedTemporaryFile
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
@@ -1600,7 +1599,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
-        
+
         Additional keyword arguments are passed through to the reprojection function.
 
         This method **does not** preserve dask arrays.
