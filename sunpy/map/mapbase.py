@@ -3004,7 +3004,7 @@ class GenericMap(NDData):
         """
         Returns coordinates of the contours for a given level value.
 
-        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`contourpy.contour_generator`.
+        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`skimage.measure.find_contours`.
 
         Parameters
         ----------
