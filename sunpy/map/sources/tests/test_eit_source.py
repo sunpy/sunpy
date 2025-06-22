@@ -7,11 +7,10 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.mapbase import SpatialPair
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.soho import EITMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
-
-__author__ = "Pritish C. (VaticanCameos)"
 
 
 @pytest.fixture()
@@ -70,10 +69,11 @@ def test_norm_clip(eit_map):
 
 def test_wcs(eit_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    eit_map.pixel_to_world(0*u.pix, 0*u.pix)
+    eit_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
 
 
 def test_old_eit_date():
-    eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
+    with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observer"):
+        eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
     assert eit_map.reference_date.value == '1996-12-11T19:00:14.254'
