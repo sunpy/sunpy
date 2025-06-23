@@ -296,3 +296,6 @@ result_images
 # Save from Map.save example
 aia171.fits
 aia171.asdf
+
+# spice example
+examples/showcase/solo_L2_spice-n-ras_20230415T120519_V02_184549780-000.fits.gz
