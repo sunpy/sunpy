@@ -5,7 +5,8 @@ Parallel Fitting with Astropy Modeling
 
 In the 7.0 release of astropy, a new function was added `~astropy.modeling.fitting.parallel_fit_dask`, alongside multiple performance improvement to fitting astropy models with a non-linear fitter.
 These changes mean that it is now practical to fit many independent models to a large multi-dimensional array of data.
-In this tutorial we will demonstrate this functionality by fitting many spectra in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter satellite.
+
+In this example we will demonstrate this functionality by fitting many spectra in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter satellite.
 """
 
 import shutil
@@ -22,13 +23,12 @@ from astropy.modeling.fitting import TRFLSQFitter, parallel_fit_dask
 from astropy.wcs import WCS
 
 ###############################################################################
-# We are going to use a part of a SPICE observation which is a
-# rastering spectrograph, we are going to use a spectral window
-# containing the Nitrogen IV line at 76.51 nm and the Neon VIII line
-# at 77.04 nm.
+# For this example, we are going to use a part of an observation from the SPICE instrument
+# which is a rastering spectrograph onboard Solar Orbiter. The focus will be on the
+# spectral window containing the Nitrogen IV line (76.51 nm) and the Neon VIII line
+# (77.04 nm).
 
 filename = Path("solo_L2_spice-n-ras_20230415T120519_V02_184549780-000.fits.gz")
-window = 'N IV 765 ... Ne VIII 770 (Merged)'
 
 # TODO: sunpy_soar
 # This code cell will download the latest version of the data from the archive.
@@ -43,7 +43,7 @@ if not filename.exists():
 # We now open the FITS file and access the window via EXTNAME.
 
 hdul = fits.open(filename)
-hdu = hdul[window]
+hdu = hdul['N IV 765 ... Ne VIII 770 (Merged)']
 
 ###############################################################################
 # The next step is to create an `~ndcube.NDCube` object from the data we have opened.
@@ -54,10 +54,10 @@ hdu = hdul[window]
 #
 # We then crop down the cube to make it faster to work with.
 
-spice_full = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(hdu.data))
-# The first dimension is length one so let's drop it
-spice = spice_full[0]
-# We want to make this example finish faster, so let's only do a 50x50 box
+spice = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(hdu.data))
+# The first dimension is length one so we will drop it
+spice = spice[0]
+# To ensure this example is quick, we will only do a 50x50 box
 spice = spice[:, 100:150, 100:1500]
 
 ###############################################################################
@@ -67,7 +67,7 @@ spice = spice[:, 100:150, 100:1500]
 # world axes are wavelength, helioprojective latitude and longitude
 # and time which increases along the rastering dimension.
 
-spice
+print(spice)
 
 ###############################################################################
 # To aid our analysis we are going to make two rebinned cubes from
@@ -75,14 +75,14 @@ spice
 # spectra averaged over all spatial pixels.
 
 wl_sum = spice.rebin((spice.data.shape[0], 1, 1), operation=np.sum)[0]
-wl_sum
+print(wl_sum)
 
 spatial_mean = spice.rebin((1, *spice.data.shape[1:]))[:, 0, 0]
-spatial_mean
+print(spatial_mean)
 
 ###############################################################################
-# We can now use NDCube's built in plotting helpers to show the
-# spatially averaged spectra, this is using WCSAxes.
+# We can now use the `~ndcube.NDCube` built in plotting routines to show the
+# spatially averaged spectra, which uses WCSAxes.
 
 plt.figure()
 ax = spatial_mean.plot(axes_units=[u.nm])
@@ -119,7 +119,8 @@ average_fit = fitter(
 print(average_fit)
 
 ###############################################################################
-# Now we can add to our previous plt the initial model and the model fit to the average spectra.
+# Now we can add to our previous plot the initial model and the model 
+# fit to the average spectra.
 
 fig = plt.figure()
 ax = spatial_mean.plot(label="spatial average")
@@ -130,7 +131,8 @@ ax.plot(average_fit(spatial_mean.axis_world_coords("em.wl")[0].to(u.AA)), linest
 plt.legend()
 
 ###############################################################################
-# ## Parallel Fitting
+# Parallel Fitting
+# ----------------
 
 ###############################################################################
 # Now we have our model to fit to all our spectra we can start working on the parallel fitting.
@@ -166,9 +168,10 @@ spice_model_fit = parallel_fit_dask(
     scheduler="single-threaded",
 )
 
-
 ###############################################################################
-# Given that we are going to want to visualise the output of a few fits, I am going to define a plotting function which will display the shift in the peak locations of the two Gaussians. We shall talk more about this later.
+# Given that we are going to want to visualise the output of a few fits. 
+# We will define a plotting function which will display the shift in the peak 
+# locations of the two Gaussians. We shall talk more about this later.
 
 def plot_spice_fit(spice_model_fit):
     g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV_wave))
@@ -205,16 +208,22 @@ plot_spice_fit(spice_model_fit)
 ###############################################################################
 # Oh dear! This clearly didn't work.
 #
-# To discover why we can use the "diagnostics" functionality of the `~astropy.modelling.fitting.parallel_fit_dask` function. This lets each process spun up for the parallelism write out logs of errors or warnings to a directory of our choice, or run a function (useful for making diagnostic plots). In this case we are going to have it write out error logs.
+# To discover why we can use the "diagnostics" functionality of the `~astropy.modelling.fitting.parallel_fit_dask` function.
+# This lets each separate process write out logs of errors
+# or warnings to a directory of our choice, or run a function (useful for making diagnostic plots).
+# In this case we are going to have it write out error logs.
 
 ###############################################################################
-# First we define the path we want the logs saved to and ensure the directory and the contents of that directory have been removed (to make sure that no output from previous runs is present).
+# First we define the path we want the logs saved to and ensure the directory
+# and the contents of that directory have been removed (to make sure that 
+# no output from previous runs is present).
 
 diag_path = Path("./diag")
 shutil.rmtree(diag_path, ignore_errors=True)
 
 ###############################################################################
-# We pass the ``diagnostics="error"`` argument to enable logging of error messages and the ``diagnostics_path=`` argument to specify where to save the logs.
+# We pass the ``diagnostics="error"`` argument to enable logging of error messages
+# and the ``diagnostics_path=`` argument to specify where to save the logs.
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
@@ -241,14 +250,16 @@ for diag in diag_folders:
         errors.append(content)
 
 ###############################################################################
-# We can now print out the first error
+# We can now print out the first error.
 
 print(f"{len(errors)} errors occurred")
 print("First error is:")
 print(errors[0])
 
 ###############################################################################
-# The reason for the failure of the fitting was the presence of NaN values in the data array. When calling the `~astropy.modeling.fitting.TRFLSQFitter` (and many others) it's possible to set the ``filter_non_finite=True`` keyword argument. To do this with the ``parallel_fit_dask`` function we pass a dictionary of keyword arguments to the fitter as the ``fitter_kwargs`` argument:
+# The reason for the failure of the fitting was the presence of NaN values in the data array.
+# When calling the `~astropy.modeling.fitting.TRFLSQFitter` (and many others) it's possible to set the ``filter_non_finite=True`` keyword argument.
+# To do this with the ``parallel_fit_dask`` function we pass a dictionary of keyword arguments to the fitter as the ``fitter_kwargs`` argument:
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
@@ -259,7 +270,6 @@ spice_model_fit = parallel_fit_dask(
     scheduler="single-threaded",
 )
 
-""
 plot_spice_fit(spice_model_fit)
 
 ###############################################################################
@@ -269,12 +279,20 @@ plot_spice_fit(spice_model_fit)
 # ## Working with the fit
 
 ###############################################################################
-# The return value of the ``~astropy.modeling.fitting.parallel_fit_dask` function is a Astropy model instance with the parameters set based on the result of the fit. This is the same as the return value of the fitter called in serial, so for more information about how to work with the results of the fit, you can read the Astropy documentation for serial fitting, such as this page on `Fitting Models to Data <https://docs.astropy.org/en/stable/modeling/fitting.html>`__.
+# The return value of the ``~astropy.modeling.fitting.parallel_fit_dask` function
+# is a Astropy model instance with the parameters set based on the result of the fit.
+# This is the same as the return value of the fitter called in serial, so for more
+# information about how to work with the results of the fit, you can read the 
+# Astropy documentation for serial fitting, such as this page on 
+# `Fitting Models to Data <https://docs.astropy.org/en/stable/modeling/fitting.html>`__.
 #
 # We shall quickly cover some key points.
 
 ###############################################################################
-# Our input model is a ``CompoundModel`` which is a model that combines many models together via various operators, in our case the ``+`` operator. Each individual model can be accessed by using slicing notation, if we print out our model we can see that we have three models 0, 1 and 2 all added together.
+# Our input model is a ``CompoundModel`` which is a model that combines many models
+# together via various operators, in our case the ``+`` operator. Each individual model
+# can be accessed by using slicing notation, if we print out our model we can see that
+# we have three models (0, 1 and 2) all added together.
 
 print(spice_model_fit)
 
@@ -287,42 +305,48 @@ print(spice_model_fit[1])
 # If we want to access the parameters of this model we can do it in two different ways:
 
 print(spice_model_fit[1].mean)
-
-""
+# or
 print(spice_model_fit.mean_1)
 
 ###############################################################################
-# In our plotting helper above we access the mean parameters of both the Gaussian fits, let's take a closer look at that.
-# The parameters on a model are `~astropy.modelling.Parameter` classes, but they can be converted to `~astropy.units.Quantity` objects by accessing their ``.quantity`` property:
+# In our plotting helper above we access the mean parameters of both the Gaussian
+# fits, let's take a closer look at that.
+# The parameters on a model are `~astropy.modelling.Parameter` classes, 
+# but they can be converted to `~astropy.units.Quantity` objects by accessing 
+# their ``.quantity`` property:
 
-spice_model_fit.mean_1.quantity
+print(spice_model_fit.mean_1.quantity)
 
 ###############################################################################
 # A `~astropy.units.Quantity`` object can be converted to other units:
 
-spice_model_fit.mean_1.quantity.to(u.AA)
+print(spice_model_fit.mean_1.quantity.to(u.AA))
 
 ###############################################################################
-# Using :ref:`unit_equivalencies` you can do unit conversions which require an assumption or some extra calculation. Some of the built-in equivalencies in Astropy are for doppler shifts, we can use the `~astropy.units.doppler_optical` equivalency to convert to velocity.
+# Using :ref:`unit_equivalencies` you can do unit conversions which require an
+# assumption or some extra calculation. Some of the built-in equivalencies in 
+# Astropy are for doppler shifts, we can use the `~astropy.units.doppler_optical`
+# equivalency to convert to velocity.
 
 spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV_wave))
 
 ###############################################################################
-# One other thing we may want to do is to evaluate the fitted model for all pixels, for example to plot them or otherwise inspect a single fit.
-# This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__ to the shape of the non-fitting axes. We can do this by once again using the `~ndcube.NDCube.axis_world_coords`` method of ``NDCube``.
+# One other thing we may want to do is to evaluate the fitted model for all pixels,
+# for example to plot them or otherwise inspect a single fit.
+# This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__ 
+# to the shape of the non-fitting axes. We can do this by once again using the
+# `~ndcube.NDCube.axis_world_coords`` method of ``~ndcube.NDCube`.
 
 wavelength = spatial_mean.axis_world_coords("em.wl")[0]
 
-""
-wavelength.shape
+print(wavelength.shape)
 
 ###############################################################################
-# and then to make it the correct shape we can add two dummy dimensions to the end:
+# And then to make it the correct shape we can add two dummy dimensions to the end:
 
 wavelength = wavelength[:, None, None]
 
-""
-wavelength.shape
+print(wavelength.shape)
 
 ###############################################################################
 # We can now evaluate the model for all spatial points with this input:
@@ -349,3 +373,5 @@ leg = plt.legend(loc="upper left")
 # Make the legend not semi-transparent
 for lh in leg.legend_handles:
     lh.set_alpha(1)
+
+plt.show()
