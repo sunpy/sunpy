@@ -30,8 +30,8 @@ from astropy.wcs import WCS
 
 filename = Path("solo_L2_spice-n-ras_20230415T120519_V02_184549780-000.fits.gz")
 
-# TODO: sunpy_soar
-# This code cell will download the latest version of the data from the archive.
+# This code cell will download the latest version of the data from the
+# archive, into the current directory
 if not filename.exists():
     import urllib.request
     urllib.request.urlretrieve(
@@ -119,7 +119,7 @@ average_fit = fitter(
 print(average_fit)
 
 ###############################################################################
-# Now we can add to our previous plot the initial model and the model 
+# Now we can add to our previous plot the initial model and the model
 # fit to the average spectra.
 
 fig = plt.figure()
@@ -169,15 +169,15 @@ spice_model_fit = parallel_fit_dask(
 )
 
 ###############################################################################
-# Given that we are going to want to visualise the output of a few fits. 
-# We will define a plotting function which will display the shift in the peak 
+# Given that we are going to want to visualise the output of a few fits.
+# We will define a plotting function which will display the shift in the peak
 # locations of the two Gaussians. We shall talk more about this later.
 
 def plot_spice_fit(spice_model_fit):
     g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV_wave))
     g2_peak_shift = spice_model_fit.mean_2.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NeVIII_wave))
 
-    fig, axs = plt.subplots(ncols=3, subplot_kw=dict(projection=wl_sum), figsize=(11, 4))
+    fig, axs = plt.subplots(nrows=3, subplot_kw=dict(projection=wl_sum), figsize=(7, 11))
     fig.suptitle(f"SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}")
 
     wl_sum.plot(axes=axs[0])
@@ -215,7 +215,7 @@ plot_spice_fit(spice_model_fit)
 
 ###############################################################################
 # First we define the path we want the logs saved to and ensure the directory
-# and the contents of that directory have been removed (to make sure that 
+# and the contents of that directory have been removed (to make sure that
 # no output from previous runs is present).
 
 diag_path = Path("./diag")
@@ -282,8 +282,8 @@ plot_spice_fit(spice_model_fit)
 # The return value of the ``~astropy.modeling.fitting.parallel_fit_dask` function
 # is a Astropy model instance with the parameters set based on the result of the fit.
 # This is the same as the return value of the fitter called in serial, so for more
-# information about how to work with the results of the fit, you can read the 
-# Astropy documentation for serial fitting, such as this page on 
+# information about how to work with the results of the fit, you can read the
+# Astropy documentation for serial fitting, such as this page on
 # `Fitting Models to Data <https://docs.astropy.org/en/stable/modeling/fitting.html>`__.
 #
 # We shall quickly cover some key points.
@@ -311,8 +311,8 @@ print(spice_model_fit.mean_1)
 ###############################################################################
 # In our plotting helper above we access the mean parameters of both the Gaussian
 # fits, let's take a closer look at that.
-# The parameters on a model are `~astropy.modelling.Parameter` classes, 
-# but they can be converted to `~astropy.units.Quantity` objects by accessing 
+# The parameters on a model are `~astropy.modelling.Parameter` classes,
+# but they can be converted to `~astropy.units.Quantity` objects by accessing
 # their ``.quantity`` property:
 
 print(spice_model_fit.mean_1.quantity)
@@ -324,7 +324,7 @@ print(spice_model_fit.mean_1.quantity.to(u.AA))
 
 ###############################################################################
 # Using :ref:`unit_equivalencies` you can do unit conversions which require an
-# assumption or some extra calculation. Some of the built-in equivalencies in 
+# assumption or some extra calculation. Some of the built-in equivalencies in
 # Astropy are for doppler shifts, we can use the `~astropy.units.doppler_optical`
 # equivalency to convert to velocity.
 
@@ -333,9 +333,9 @@ spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV
 ###############################################################################
 # One other thing we may want to do is to evaluate the fitted model for all pixels,
 # for example to plot them or otherwise inspect a single fit.
-# This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__ 
+# This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__
 # to the shape of the non-fitting axes. We can do this by once again using the
-# `~ndcube.NDCube.axis_world_coords`` method of ``~ndcube.NDCube`.
+# `~ndcube.NDCube.axis_world_coords`` method of `~ndcube.NDCube`.
 
 wavelength = spatial_mean.axis_world_coords("em.wl")[0]
 
@@ -361,7 +361,10 @@ fig = plt.figure(figsize=(11, 5))
 ax = spatial_mean.plot(axes_units=[u.nm], label="Average spectra", zorder=99)
 ax.coords["wavelength"].set_major_formatter("x.xx")
 
-ax.plot(average_fit(spatial_mean.axis_world_coords("em.wl")[0]), linestyle="--", label="Spatial Average Model", zorder=99)
+ax.plot(average_fit(spatial_mean.axis_world_coords("em.wl")[0]),
+        linestyle="--",
+        label="Spatial Average Model",
+        zorder=99)
 
 # Iterate over each fit and plot it.
 for fit_arr in all_fits.reshape((spatial_mean.data.shape[0], -1)).T:
