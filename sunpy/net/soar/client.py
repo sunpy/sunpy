@@ -18,8 +18,6 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.time import parse_time
 
-from sunpy.net.soar.attrs import SOOP, Distance, Product, walker
-
 __all__ = ["SOARClient"]
 
 
@@ -49,6 +47,8 @@ class SOARClient(BaseClient):
         -------
         A ``QueryResponseTable`` instance containing the query result.
         """
+        from sunpy.net.soar._attrs import walker
+
         query = and_(*query)
         queries = walker.create(query)
 
@@ -296,6 +296,7 @@ class SOARClient(BaseClient):
         bool
             True if this client can handle the given query.
         """
+        from sunpy.net.soar.attrs import SOOP, Distance, Product
         required = {Distance} if any(isinstance(q, Distance) for q in query) else {a.Time}
 
         optional = {a.Instrument, a.Detector, a.Wavelength, a.Level, a.Provider, Product, SOOP, Distance, a.Time}
@@ -338,6 +339,8 @@ class SOARClient(BaseClient):
         dict
             The dictionary containing the values formed into attributes.
         """
+        from sunpy.net.soar.attrs import SOOP, Product
+
         # Instrument attrs
         attrs_path = pathlib.Path(__file__).parent / "data" / "attrs.json"
         with attrs_path.open() as attrs_file:
