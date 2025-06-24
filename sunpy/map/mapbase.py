@@ -703,6 +703,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         if wcs is None:
             return
+
         # Unwrap any wrapper classes to FITS WCS
         unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
         # Convert to a header
@@ -710,16 +711,31 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         # wcslib ignores NAXIS
         for n in range(1, unwrapped.naxis + 1):
             new_header[f"NAXIS{n}"] = unwrapped._naxis[n-1]
+
         old_wcs_header = self.wcs.to_header()
         # Reduce the new header to just the keys which differ from the current WCS
         # We do this to figure out what's been changed post wcslib doing any
         # conversion (such as arcsec -> deg)
         changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
-        # If the units are different to the original metadata then we override
-        # all the keys from the new WCS header to account for unit conversion.
-        if any([new_header[f"CUNIT{n}"] != self.meta[f"CUNIT{n}"] for n in range(1, 3)]):
-            # TODO: Do we want to make it so we don't change units?
-            changed_header = new_header
+
+        # If the units on the WCS are different from the original
+        # header the map was constructed with then wcslib has changed
+        # them, so we now change them back to match.
+        original_units = sorted([self.meta.original_meta[k] for k in old_wcs_header if k.lower().startswith("cunit")])
+        new_units = sorted([new_header[k] for k in new_header if k.lower().startswith("cunit")])
+        if original_units != new_units:
+            # wcslib uses the following code snippet to scale a header if units are not SI:
+            # https://github.com/astropy/astropy/blob/main/cextern/wcslib/C/wcs.c#L3329-L3343
+            # The keys which need changing are CDELT, CRVAL, optionally CDi_j and CUNIT
+            for i, (original_unit, new_unit) in enumerate(zip(original_units, new_units)):
+                i += 1  # FITS indexing
+                scale_factor = u.Unit(new_unit).to(original_unit)
+                # NOTE: Support CD here if we ever set wcs.cd in the wcs property
+                for key_prefix in ["CDELT", "CRVAL"]:
+                    key = f"{key_prefix}{i}"
+                    changed_header[key] = new_header[key] * scale_factor
+                changed_header[f"CUNIT{i}"] = original_unit
+
         self.meta.update(MetaDict(changed_header))
 
     def save(self, filepath, filetype='auto', **kwargs):
@@ -765,8 +781,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
             asdf.AsdfFile({'sunpymap': self}).write_to(str(filepath), **kwargs)
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
-
-
 
 
 # #### Image processing routines #### #
@@ -1584,9 +1598,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         """
         Reproject the map to a different world coordinate system (WCS)
 
-        .. note::
-            This method requires the optional package `reproject` to be installed
-
         Additional keyword arguments are passed through to the reprojection function.
 
         This method **does not** preserve dask arrays.
@@ -1611,13 +1622,13 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         Returns
         -------
-        reprojected_cube : `sunpy.map.GenericMap`
-            A new resultant ~`.sunpy.map.GenericMap` object, the supplied ``target_wcs`` will
-            be the ``.wcs`` attribute of the output.
+        outmap : `~sunpy.map.GenericMap`
+            The reprojected map
         footprint : `~numpy.ndarray`
-            Footprint of the input array in the output array.
-            Values of 0 indicate no coverage or valid values in the input
-            image, while values of 1 indicate valid values.
+            Footprint of the input arary in the output array. Values of 0 indicate no
+            coverage or valid values in the input image, while values of 1 indicate
+            valid values. Intermediate values indicate partial coverage.
+            Only returned if ``return_footprint`` is ``True``.
 
         Notes
         -----
@@ -1640,14 +1651,27 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
+        try:
+            import reproject
+        except ImportError as exc:
+            raise ImportError("This method requires the optional package `reproject`.") from exc
+
         if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(header=target_wcs)
+            target_wcs = astropy.wcs.WCS(target_wcs)
+
+        # Select the desired reprojection algorithm
+        functions = {'interpolation': reproject.reproject_interp,
+                     'adaptive': reproject.reproject_adaptive,
+                     'exact': reproject.reproject_exact}
+        if algorithm not in functions:
+            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
+        func = functions[algorithm]
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
         if auto_extent is not None:
             left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
-                                                           method=auto_extent, integers=True)
+                                                            method=auto_extent, integers=True)
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
@@ -1655,17 +1679,24 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         if target_wcs.array_shape is not None:
             reproject_args.setdefault('shape_out', target_wcs.array_shape)
 
-        # check for rsun outmap
-        if self.rsun_meters.to_value() != target_wcs.wcs.aux.rsun_ref:
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters.to_value()} != {target_wcs.wcs.aux.rsun_ref}"
-                      " rsun_meters of target WCS."
-                      " This might cause unexpected results during reprojection.")
+        # Reproject the array
+        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
+        if return_footprint:
+            output_array, footprint = output_array
 
-        return super().reproject_to(target_wcs,
-                                    algorithm=algorithm,
-                                    return_footprint=return_footprint,
-                                    **reproject_args)
+        # Create and return a new GenericMap
+        outmap = GenericMap(output_array, meta=target_wcs.to_header(),
+                            plot_settings=self.plotter.plot_settings)
+
+        # Check rsun mismatch
+        if self.rsun_meters != outmap.rsun_meters:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
+
+        if return_footprint:
+            return outmap, footprint
+        return outmap
 
 
 GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
