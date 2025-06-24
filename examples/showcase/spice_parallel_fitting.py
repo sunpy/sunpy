@@ -276,7 +276,8 @@ plot_spice_fit(spice_model_fit)
 # That's better!
 
 ###############################################################################
-# ## Working with the fit
+# Working with the fit
+# --------------------
 
 ###############################################################################
 # The return value of the ``~astropy.modeling.fitting.parallel_fit_dask` function
@@ -305,6 +306,8 @@ print(spice_model_fit[1])
 # If we want to access the parameters of this model we can do it in two different ways:
 
 print(spice_model_fit[1].mean)
+
+###############################################################################
 # or
 print(spice_model_fit.mean_1)
 
