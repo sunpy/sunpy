@@ -137,20 +137,20 @@ plt.legend()
 ###############################################################################
 # Now we have our model to fit to all our spectra we can start working on the parallel fitting.
 #
-# The function `~astropy.modelling.fitting.parallel_fit_dask` will map
+# The function `~astropy.modeling.fitting.parallel_fit_dask` will map
 # a model to each element of a cube along one (or more) "fitting
 # axes", in this case our fitting axis is our wavelength axis (array
 # axis 0). So we want to fit each slice of the data array along the
 # 0th axis.
 #
-# The key arguments to the `~astropy.modelling.fitting.parallel_fit_dask` function are:
+# The key arguments to the `~astropy.modeling.fitting.parallel_fit_dask` function are:
 #
 # * A data array. This can be a numpy array or a dask array, or a `~astropy.nddata.NDData` / `~ndcube.NDCube` object. If it's one of these objects then the data, wcs, mask, data_unit and uncertainty are all extracted from the object and used in place of their respective keyword arguments.
 # * A model to fit.
 # * A fitter instance.
 # * The fitting axis (or axes).
 #
-# What is returned from `~astropy.modelling.fitting.parallel_fit_dask` is a model with array parameters with the shape of the non-fitting axes of the data (so in this case 100x100 arrays).
+# What is returned from `~astropy.modeling.fitting.parallel_fit_dask` is a model with array parameters with the shape of the non-fitting axes of the data (so in this case 100x100 arrays).
 
 ###############################################################################
 # We can therefore fit all our SPICE cube as follows:
@@ -208,7 +208,7 @@ plot_spice_fit(spice_model_fit)
 ###############################################################################
 # Oh dear! This clearly didn't work.
 #
-# To discover why we can use the "diagnostics" functionality of the `~astropy.modelling.fitting.parallel_fit_dask` function.
+# To discover why we can use the "diagnostics" functionality of the `~astropy.modeling.fitting.parallel_fit_dask` function.
 # This lets each separate process write out logs of errors
 # or warnings to a directory of our choice, or run a function (useful for making diagnostic plots).
 # In this case we are going to have it write out error logs.
@@ -280,7 +280,7 @@ plot_spice_fit(spice_model_fit)
 # --------------------
 
 ###############################################################################
-# The return value of the ``~astropy.modeling.fitting.parallel_fit_dask` function
+# The return value of the `~astropy.modeling.fitting.parallel_fit_dask` function
 # is a Astropy model instance with the parameters set based on the result of the fit.
 # This is the same as the return value of the fitter called in serial, so for more
 # information about how to work with the results of the fit, you can read the
@@ -314,14 +314,14 @@ print(spice_model_fit.mean_1)
 ###############################################################################
 # In our plotting helper above we access the mean parameters of both the Gaussian
 # fits, let's take a closer look at that.
-# The parameters on a model are `~astropy.modelling.Parameter` classes,
+# The parameters on a model are `~astropy.modeling.Parameter` classes,
 # but they can be converted to `~astropy.units.Quantity` objects by accessing
 # their ``.quantity`` property:
 
 print(spice_model_fit.mean_1.quantity)
 
 ###############################################################################
-# A `~astropy.units.Quantity`` object can be converted to other units:
+# A `~astropy.units.Quantity` object can be converted to other units:
 
 print(spice_model_fit.mean_1.quantity.to(u.AA))
 
@@ -338,7 +338,7 @@ spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV
 # for example to plot them or otherwise inspect a single fit.
 # This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__
 # to the shape of the non-fitting axes. We can do this by once again using the
-# `~ndcube.NDCube.axis_world_coords`` method of `~ndcube.NDCube`.
+# `~ndcube.NDCube.axis_world_coords` method of `~ndcube.NDCube`.
 
 wavelength = spatial_mean.axis_world_coords("em.wl")[0]
 
