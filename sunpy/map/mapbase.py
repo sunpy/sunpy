@@ -15,7 +15,6 @@ from tempfile import NamedTemporaryFile
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
@@ -783,6 +782,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         else:
             write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
+
 # #### Image processing routines #### #
 
     @u.quantity_input
@@ -1421,9 +1421,6 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
     def draw_quadrangle(self, *args, **kwargs):
         return self.plotter.draw_quadrangle(*args, **kwargs)
 
-    def draw_extent(self, *args, **kwargs):
-        return self.plotter.draw_extent(*args, **kwargs)
-
     def _get_cmap_name(self):
         cmap_string = f"{self.observatory}{self.detector}{self.wavelength.to_value('AA'):.0f}"
         return cmap_string.lower()
@@ -1654,6 +1651,11 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
+        try:
+            import reproject
+        except ImportError as exc:
+            raise ImportError("This method requires the optional package `reproject`.") from exc
+
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(target_wcs)
 
