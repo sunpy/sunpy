@@ -63,7 +63,7 @@ def test_get_item(generic_map):
     map_slice = generic_map[0:1, :]
     assert np.allclose(map_slice.data, np.array([[0., 1., 2., 3., 4., 5.]]))
     assert map_slice.shape == (1, 6)
-    assert sorted(map_slice.meta.modified_items.keys()) == ['cdelt1', 'cdelt2', 'cunit1', 'cunit2', 'dsun_obs', 'naxis2']
+    assert sorted(map_slice.meta.modified_items.keys()) == ['cdelt1', 'cdelt2', 'naxis2']
     assert map_slice.meta['naxis1'] == map_slice.shape[1]
     assert map_slice.meta['naxis2'] == map_slice.shape[0]
 
