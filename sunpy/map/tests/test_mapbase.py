@@ -1939,9 +1939,7 @@ def test_slicing_map_submap_same(aia171_test_map):
     top_right_x, top_right_y = map(int, top_right)
 
     submap = aia171_test_map.submap([bottom_left_x, bottom_left_y]*u.pix,
-                                    top_right=[top_right_x, top_right_y]*u.pix
-                                    )
-
+                                    top_right=[top_right_x, top_right_y]*u.pix)
     sliced_map = aia171_test_map[bottom_left_y : top_right_y + 1, bottom_left_x: top_right_x + 1]
 
     assert_cubes_equal(submap, sliced_map)
