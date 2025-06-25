@@ -138,6 +138,7 @@ docs-gallery = [
   "sunpy[docs]",
   "astroquery>=0.4.6",
   "jplephem>=2.19",
+  "sunpy-soar",
   "ndcube",
 ]
 dev = ["sunpy[docs,tests]"]

@@ -1,12 +1,12 @@
 """
-======================================
-Parallel Fitting with Astropy Modeling
-======================================
+===============================================
+Parallel Spectral Fitting with Astropy Modeling
+===============================================
 
-In the 7.0 release of astropy, a new function was added `~astropy.modeling.fitting.parallel_fit_dask`, alongside multiple performance improvement to fitting astropy models with a non-linear fitter.
+In the 7.0 release of astropy, a new function was added `~astropy.modeling.fitting.parallel_fit_dask`, alongside multiple performance improvements to fitting astropy models with a non-linear fitter.
 These changes mean that it is now practical to fit many independent models to a large multi-dimensional array of data.
 
-In this example we will demonstrate this functionality by fitting many spectra in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter satellite.
+In this example we will demonstrate this functionality by fitting many spectra of a raster scan in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter mission.
 """
 
 import shutil
@@ -28,16 +28,11 @@ from astropy.wcs import WCS
 # spectral window containing the Nitrogen IV line (76.51 nm) and the Neon VIII line
 # (77.04 nm).
 
-filename = Path("solo_L2_spice-n-ras_20230415T120519_V02_184549780-000.fits.gz")
-
-# This code cell will download the latest version of the data from the
-# archive, into the current directory
-if not filename.exists():
-    import urllib.request
-    urllib.request.urlretrieve(
-        "https://soar.esac.esa.int/soar-sl-tap/data",
-        filename=filename,
-        data=b'retrieval_type=LAST_PRODUCT&data_item_oid=1446345&product_type=SCIENCE')
+res = Fido.search(a.Time("2023-04-15 01:00", "2023-04-15 02:00"), 
+                  a.Instrument.spice, a.Level(2), 
+                  a.Provider.soar, 
+                  a.soar.Product.spice_n_ras)
+filename = Fido.fetch(res)[0]
 
 ###############################################################################
 # We now open the FITS file and access the window via EXTNAME.
@@ -81,8 +76,8 @@ spatial_mean = spice.rebin((1, *spice.data.shape[1:]))[:, 0, 0]
 print(spatial_mean)
 
 ###############################################################################
-# We can now use the `~ndcube.NDCube` built in plotting routines to show the
-# spatially averaged spectra, which uses WCSAxes.
+# We can now use the `~ndcube.NDCube` built-in plotting routines to show the
+# spatially averaged spectra, which uses `~astropy.visualization.wcsaxes.WCSAxes`.
 
 plt.figure()
 ax = spatial_mean.plot(axes_units=[u.nm])
@@ -105,8 +100,8 @@ print(initial_model)
 # To improve our initial conditions we now fit the initial model to
 # the spatially averaged spectra. To do this we use the
 # `~ndcube.NDCube.axis_world_coords` method of `~ndcube.NDCube` which returns
-# all, or a subset of the world coordinates along however many array
-# axes they are correlated with. So in this case we get the wavelength
+# all, or a subset of, the world coordinates along however many array
+# axes they are correlated with. In this case we get the wavelength
 # dimension which only returns a single `~astropy.coordinates.SpectralCoord` object
 # corresponding to the first array dimension of the cube.
 
@@ -157,8 +152,8 @@ plt.legend()
 # .. note::
 #
 #     All examples here are done with ``scheduler="single-threaded"``,
-#     this is to allow them to build on our documentation, you should
-#     remove this line.
+#     this is to allow them to build on our documentation. When running this
+#     example yourself, you should remove this line.
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
@@ -169,15 +164,15 @@ spice_model_fit = parallel_fit_dask(
 )
 
 ###############################################################################
-# Given that we are going to want to visualise the output of a few fits.
-# We will define a plotting function which will display the shift in the peak
+# Given that we are going to want to visualize the output of a few fits,
+# we will define a plotting function which will display the shift in the peak
 # locations of the two Gaussians. We shall talk more about this later.
 
 def plot_spice_fit(spice_model_fit):
     g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV_wave))
     g2_peak_shift = spice_model_fit.mean_2.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NeVIII_wave))
 
-    fig, axs = plt.subplots(nrows=3, subplot_kw=dict(projection=wl_sum), figsize=(7, 11))
+    fig, axs = plt.subplots(nrows=3, subplot_kw=dict(projection=wl_sum), figsize=(5,  15))
     fig.suptitle(f"SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}")
 
     wl_sum.plot(axes=axs[0])
@@ -214,7 +209,7 @@ plot_spice_fit(spice_model_fit)
 # In this case we are going to have it write out error logs.
 
 ###############################################################################
-# First we define the path we want the logs saved to and ensure the directory
+# First we define the local path we want the logs saved to and ensure the directory
 # and the contents of that directory have been removed (to make sure that
 # no output from previous runs is present).
 
@@ -281,7 +276,7 @@ plot_spice_fit(spice_model_fit)
 
 ###############################################################################
 # The return value of the `~astropy.modeling.fitting.parallel_fit_dask` function
-# is a Astropy model instance with the parameters set based on the result of the fit.
+# is an Astropy model instance with the parameters set based on the result of the fit.
 # This is the same as the return value of the fitter called in serial, so for more
 # information about how to work with the results of the fit, you can read the
 # Astropy documentation for serial fitting, such as this page on
@@ -335,7 +330,7 @@ spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV
 
 ###############################################################################
 # One other thing we may want to do is to evaluate the fitted model for all pixels,
-# for example to plot them or otherwise inspect a single fit.
+# for example, to plot them or otherwise inspect a single fit.
 # This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__
 # to the shape of the non-fitting axes. We can do this by once again using the
 # `~ndcube.NDCube.axis_world_coords` method of `~ndcube.NDCube`.
