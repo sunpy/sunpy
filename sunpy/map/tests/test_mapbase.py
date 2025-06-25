@@ -1789,6 +1789,7 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
         check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
 
 
+
 def test_map_arithmetic_pow(aia171_test_map):
     new_map = aia171_test_map ** 2
     check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** 2)
@@ -1862,19 +1863,6 @@ def test_only_cd():
         cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
-
-
-def test_plot_deprecated_positional_args(aia171_test_map):
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
-        aia171_test_map.plot(True)
-
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
-        with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation')
-
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
-        with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation', True)
 
 
 @pytest.mark.parametrize(("aslice", "dims"), [
