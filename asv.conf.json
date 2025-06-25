@@ -1,12 +1,11 @@
 {
     "version": 1,
-    "project": "sunpy-benchmarks",
+    "project": "sunpy",
     "project_url": "https://sunpy.org/",
     "repo": "./",
     "branches": [
         "main"
     ],
-    "dvcs": "git",
     "environment_type": "virtualenv",
     "show_commit_url": "https://github.com/sunpy/sunpy/commit/",
     "benchmark_dir": "benchmarks",

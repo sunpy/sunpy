@@ -7,14 +7,17 @@ import html
 import inspect
 import numbers
 import textwrap
+import warnings
 import itertools
 import webbrowser
+from typing import Literal
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
@@ -46,20 +49,19 @@ from sunpy.io._fits import extract_waveunit, header_to_fits
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.sun import constants
 from sunpy.time import is_time, parse_time
-from sunpy.util import MetaDict, expand_list
+from sunpy.util import MetaDict, expand_list, extent_in_other_wcs, grid_perimeter
 from sunpy.util.decorators import (
-    ACTIVE_CONTEXTS,
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
-    deprecate_positional_args_since,
     deprecated,
 )
-from sunpy.util.exceptions import warn_deprecated, warn_metadata, warn_user
+from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
+from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -929,10 +931,10 @@ class GenericMap(NDData):
     @property
     def _date_obs(self):
         # Get observation date from date-obs, falling back to date_obs
-        time = self._get_date('date-obs')
-        if is_time(self.meta.get('date_obs', None)):
-            time = time or self._get_date('date_obs')
-        return time
+        if is_time(self.meta.get("date-obs", None)):
+            return self._get_date('date-obs')
+        elif is_time(self.meta.get('date_obs', None)):
+            return self._get_date('date_obs')
 
     @property
     def reference_date(self):
@@ -966,7 +968,7 @@ class GenericMap(NDData):
         """
         return (
             self._get_date('date-avg') or
-            self._get_date('date-obs') or
+            self._date_obs or
             self._get_date('date-beg') or
             self._get_date('date-end') or
             self.date
@@ -2200,7 +2202,8 @@ class GenericMap(NDData):
         return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,
+                   conservative_mask: bool = False):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -2226,6 +2229,10 @@ class GenericMap(NDData):
             The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
+        conservative_mask : bool, optional
+            If `True`, a superpixel is masked if any of its constituent pixels are masked.
+            If `False`, a superpixel is masked only if all of its constituent pixels are masked.
+            Default is `False`.
 
         Returns
         -------
@@ -2254,10 +2261,24 @@ class GenericMap(NDData):
         else:
             data = self.data.copy()
 
-        reshaped = reshape_image_to_4d_superpixel(data,
-                                                  [dimensions[1], dimensions[0]],
-                                                  [offset[1], offset[0]])
-        new_array = func(func(reshaped, axis=3), axis=1)
+        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+        new_array = func(func(reshaped_data, axis=3), axis=1)
+
+        if self.mask is not None:
+            if conservative_mask ^ (func in [np.sum, np.prod]):
+                log.info(
+                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                    "False for mean/median/std/min/max."
+                    )
+
+            if conservative_mask:
+                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
+                new_mask = np.any(reshaped_mask, axis=(3, 1))
+            else:
+                new_mask = np.ma.getmaskarray(new_array)
+        else:
+            new_mask = None
 
         # Update image scale and number of pixels
 
@@ -2283,10 +2304,8 @@ class GenericMap(NDData):
         # Create new map instance
         if self.mask is not None:
             new_data = np.ma.getdata(new_array)
-            new_mask = np.ma.getmask(new_array)
         else:
             new_data = new_array
-            new_mask = None
 
         # Create new map with the modified data
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
@@ -2702,13 +2721,15 @@ class GenericMap(NDData):
 
         return figure
 
-    @deprecate_positional_args_since(since="6.0.0")
     @u.quantity_input
-    def plot(self, *, annotate=True, axes=None, title=True, autoalign=False,
+    def plot(self, *, annotate=True, axes=None, title=True, autoalign=True,
              clip_interval: u.percent = None, **imshow_kwargs):
         """
-        Plots the map object using matplotlib, in a method equivalent
-        to :meth:`~matplotlib.axes.Axes.imshow` using nearest neighbor interpolation.
+        Plots the map using matplotlib.
+
+        By default, the map's pixels will be drawn in an coordinate-aware fashion, even
+        when the plot axes are a different projection or a different coordinate frame.
+        See the ``autoalign`` keyword and the notes below.
 
         Parameters
         ----------
@@ -2726,12 +2747,15 @@ class GenericMap(NDData):
         autoalign : `bool` or `str`, optional
             If other than `False`, the plotting accounts for any difference between the
             WCS of the map and the WCS of the `~astropy.visualization.wcsaxes.WCSAxes`
-            axes (e.g., a difference in rotation angle). If ``pcolormesh``, this
-            method will use :meth:`~matplotlib.axes.Axes.pcolormesh` instead of the
-            default :meth:`~matplotlib.axes.Axes.imshow`. Specifying `True` is
-            equivalent to specifying ``pcolormesh``.
+            axes (e.g., a difference in rotation angle). The options are:
+
+            * ``"mesh"``, which draws a mesh of the individual map pixels
+            * ``"image"``, which draws the map as a single (warped) image
+            * `True`, which automatically determines whether to use ``"mesh"`` or ``"image"``
+
         **imshow_kwargs : `dict`
-            Any additional imshow arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`.
+            Any additional arguments are passed to :meth:`~matplotlib.axes.Axes.imshow`
+            or :meth:`~matplotlib.axes.Axes.pcolormesh`.
 
         Examples
         --------
@@ -2745,29 +2769,31 @@ class GenericMap(NDData):
 
         Notes
         -----
-        The ``autoalign`` functionality is computationally intensive. If the plot will
-        be interactive, the alternative approach of preprocessing the map (e.g.,
-        de-rotating it) to match the desired axes will result in better performance.
+        The ``autoalign`` functionality can be intensive to render. If the plot is to
+        be interactive, the alternative approach of preprocessing the map to match the
+        intended axes (e.g., through rotation or reprojection) will result in better
+        plotting performance.
+
+        The ``autoalign='image'`` approach is usually faster than the
+        ``autoalign='mesh'`` approach, but is not as reliable, depending on the
+        specifics of the map.  If parts of the map cannot be plotted, a warning is
+        emitted.  If the entire map cannot be plotted, an error is raised.
 
         When combining ``autoalign`` functionality with
         `~sunpy.coordinates.Helioprojective` coordinates, portions of the map that are
-        beyond the solar disk may not appear, which may also inhibit Matplotlib's
-        autoscaling of the plot limits. The plot limits can be set manually.
-        To preserve the off-disk parts of the map, using the
-        `~sunpy.coordinates.SphericalScreen` context
-        manager may be appropriate.
+        beyond the solar disk may not appear.  To preserve the off-disk parts of the
+        map, using the `~sunpy.coordinates.SphericalScreen` context manager may be
+        appropriate.
         """
-        # Todo: remove this when deprecate_positional_args_since is removed
-        # Users sometimes assume that the first argument is `axes` instead of `annotate`
-        if not isinstance(annotate, bool):
-            raise TypeError("You have provided a non-boolean value for the `annotate` parameter. "
-                            "If you are specifying the axes, use `axes=...` to pass it in.")
+        if autoalign == 'pcolormesh':
+            warn_deprecated("Specifying `autoalign='pcolormesh'` is deprecated as of 7.0. "
+                            "Specify `autoalign='mesh'` instead.")
+            autoalign = 'mesh'
 
         # Set the default approach to autoalignment
-        if autoalign not in [False, True, 'pcolormesh']:
-            raise ValueError("The value for `autoalign` must be False, True, or 'pcolormesh'.")
-        if autoalign is True:
-            autoalign = 'pcolormesh'
+        allowed_autoalign = [False, True, 'mesh', 'image']
+        if autoalign not in allowed_autoalign:
+            raise ValueError(f"The value for `autoalign` must be one of {allowed_autoalign}.")
 
         axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
@@ -2810,7 +2836,58 @@ class GenericMap(NDData):
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
-        if autoalign == 'pcolormesh':
+        # Disable autoalignment if it is not necessary
+        # TODO: revisit tolerance value
+        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+            autoalign = False
+
+        if autoalign in {True, 'image'}:
+            ny, nx = self.data.shape
+            pixel_perimeter = grid_perimeter(nx, ny) - 0.5
+
+            transform = axes.get_transform(self.wcs) - axes.transData
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=SunpyUserWarning)
+                data_perimeter = transform.transform(pixel_perimeter)
+            if not np.all(np.isfinite(data_perimeter)):
+                if autoalign == 'image':
+                    raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
+                                       "Try specifying autoalign=mesh.")
+                autoalign = 'mesh'
+            else:
+                min_x, min_y = np.min(data_perimeter, axis=0)
+                max_x, max_y = np.max(data_perimeter, axis=0)
+
+                data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
+                if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
+                        and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
+                    if autoalign == 'image':
+                        warn_user("Cannot draw all of the autoaligned image due to the warping required. "
+                                  "Specifying autoalign=mesh is recommended.")
+                    else:
+                        autoalign = 'mesh'
+            if autoalign == 'mesh':
+                log.info("Using mesh-based autoalignment")
+            elif autoalign is True:
+                log.info("Using image-based autoalignment")
+                autoalign = 'image'
+
+        if autoalign == 'image':
+            # Draw the image, but revert to the prior data limits because matplotlib does not account for the transform
+            old_datalim = copy.deepcopy(axes.dataLim)
+            ret = axes.imshow(data, transform=transform + axes.transData, **imshow_args)
+            axes.dataLim = old_datalim
+
+            # Update the data limits based on the transformed perimeter
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
+            axes.autoscale(enable=None)
+
+            # Clip the drawn image based on the transformed perimeter
+            path = matplotlib.path.Path(data_perimeter)
+            ret.set_clip_path(path, axes.transData)
+        elif autoalign == 'mesh':
             # We have to handle an `aspect` keyword separately
             axes.set_aspect(imshow_args.get('aspect', 1))
 
@@ -2819,12 +2896,13 @@ class GenericMap(NDData):
                 warn_user("The interpolation keyword argument is ignored when using autoalign "
                           "functionality.")
 
+            # Set the zorder to be 0 so that it is treated like an image in ordering
+            imshow_args.setdefault('zorder', 0)
+
             # Remove imshow keyword arguments that are not accepted by pcolormesh
             for item in ['aspect', 'extent', 'interpolation', 'origin']:
                 if item in imshow_args:
                     del imshow_args[item]
-
-            imshow_args.setdefault('transform', axes.get_transform(self.wcs))
 
             # The quadrilaterals of pcolormesh can slightly overlap, which creates the appearance
             # of a grid pattern when alpha is not 1. These settings minimize the overlap.
@@ -2832,9 +2910,25 @@ class GenericMap(NDData):
                 imshow_args.setdefault('antialiased', True)
                 imshow_args.setdefault('linewidth', 0)
 
-            ret = axes.pcolormesh(np.arange(data.shape[1] + 1) - 0.5,
-                                  np.arange(data.shape[0] + 1) - 0.5,
-                                  data, **imshow_args)
+            # Create a lookup table for the transformed data corners for matplotlib to use
+            transform = _PrecomputedPixelCornersTransform(axes, self.wcs)
+
+            # Define the mesh in data coordinates in case the transformation results in NaNs
+            ret = axes.pcolormesh(transform.data_x, transform.data_y, data,
+                                  shading='flat',
+                                  transform=transform + axes.transData,
+                                  **imshow_args)
+
+            # Calculate the bounds of the mesh in the pixel space of the axes
+            good = np.logical_and(np.isfinite(transform.axes_x), np.isfinite(transform.axes_y))
+            good_x, good_y = transform.axes_x[good], transform.axes_y[good]
+            min_x, max_x = np.min(good_x), np.max(good_x)
+            min_y, max_y = np.min(good_y), np.max(good_y)
+
+            # Update the plot limits
+            ret.sticky_edges.x[:] = [min_x, max_x]
+            ret.sticky_edges.y[:] = [min_y, max_y]
+            axes.update_datalim([(min_x, min_y), (max_x, max_y)])
         else:
             ret = axes.imshow(data, **imshow_args)
 
@@ -2910,7 +3004,7 @@ class GenericMap(NDData):
         """
         Returns coordinates of the contours for a given level value.
 
-        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`contourpy.contour_generator`.
+        For details of the contouring algorithm, see :func:`contourpy.contour_generator` or :func:`skimage.measure.find_contours`.
 
         Parameters
         ----------
@@ -3012,12 +3106,10 @@ class GenericMap(NDData):
         return axes
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
+                     auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
-
-        .. note::
-            This method requires the optional package `reproject` to be installed.
 
         Additional keyword arguments are passed through to the reprojection function.
 
@@ -3032,6 +3124,14 @@ class GenericMap(NDData):
         return_footprint : `bool`
             If ``True``, the footprint is returned in addition to the new map.
             Defaults to ``False``.
+        auto_extent : ``"all"``, ``"edges"``, ``"corners"``, or ``None``
+            If ``None``, the extent of the reprojected map comes from the target WCS.
+            If not ``None``, the extent of the reprojected map is automatically
+            determined by ensuring that all of the pixels, just the edges, or just the
+            corners of this map are in the contained within the extent.  Compared to the
+            target WCS, the extent will be shifted/expanded/cropped by an integer number
+            of pixels.
+            Defaults to ``None``.
 
         Returns
         -------
@@ -3057,17 +3157,13 @@ class GenericMap(NDData):
         See the respective documentation for these functions for additional keyword
         arguments that are allowed.
 
+        Of the options for the automatic determination of the reprojected extent, both
+        ``"edges"`` and ``"corners"`` will perform the calculation faster than
+        ``"all"``, but at the risk of potentially not including the entire reprojected
+        map.
+
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        # Check if both context managers are active
-        if ACTIVE_CONTEXTS.get('propagate_with_solar_surface', False) and ACTIVE_CONTEXTS.get('assume_spherical_screen', False):
-            warn_user("Using propagate_with_solar_surface and SphericalScreen together result in loss of off-disk data.")
-
-        try:
-            import reproject
-        except ImportError as exc:
-            raise ImportError("This method requires the optional package `reproject`.") from exc
-
         if not isinstance(target_wcs, astropy.wcs.WCS):
             target_wcs = astropy.wcs.WCS(target_wcs)
 
@@ -3078,6 +3174,14 @@ class GenericMap(NDData):
         if algorithm not in functions:
             raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
         func = functions[algorithm]
+
+        if auto_extent not in ['all', 'edges', 'corners', None]:
+            raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
+        if auto_extent is not None:
+            left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
+                                                            method=auto_extent, integers=True)
+            target_wcs.wcs.crpix -= [left, bottom]
+            target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
         # reproject does not automatically grab the array shape from the WCS instance
         if target_wcs.array_shape is not None:
@@ -3103,7 +3207,7 @@ class GenericMap(NDData):
         return outmap
 
 
-GenericMap.__doc__ += textwrap.indent(_notes_doc, "    ")
+GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
 
 
 class InvalidHeaderInformation(ValueError):

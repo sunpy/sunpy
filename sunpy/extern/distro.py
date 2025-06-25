@@ -25,7 +25,7 @@ functionality. An alternative implementation became necessary because Python
 predecessor function :py:func:`platform.dist` was already deprecated since
 Python 2.6 and removed in Python 3.8. Still, there are many cases in which
 access to OS distribution information is needed. See `Python issue 1322
-<https://bugs.python.org/issue1322>`__ for more information.
+<https://bugs.python.org/issue1322>`_ for more information.
 """
 
 import argparse
@@ -439,7 +439,7 @@ def like() -> str:
     This information item is only provided by the os-release file.
     For details, see the description of the "ID_LIKE" attribute in the
     `os-release man page
-    <http://www.freedesktop.org/software/systemd/man/os-release.html>`__.
+    <http://www.freedesktop.org/software/systemd/man/os-release.html>`_.
     """
     return _distro.like()
 

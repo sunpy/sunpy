@@ -14,7 +14,6 @@ from packaging.version import Version
 import astropy.table
 import astropy.time
 import astropy.units as u
-from astropy.utils.misc import isiterable
 
 from sunpy import config, log
 from sunpy.net.attr import and_
@@ -177,10 +176,16 @@ class JSOCClient(BaseClient):
     get into the queue::
 
         >>> requests.status  # doctest: +SKIP
-        0
+        2
 
-    Once the status code is 0 you can download the data using the `get_request`
-    method::
+
+    The status codes represent the following:
+
+    0: Completed, ready to download.
+    2: Pending, but downloadable.
+    6: Not found.
+
+    Once the status code is 0 or 2, you can download the data using the ``get_request`` method::
 
         >>> res = client.get_request(requests)  # doctest: +SKIP
 
@@ -426,7 +431,7 @@ class JSOCClient(BaseClient):
 
         defaults = {'max_splits': 1} | kwargs
         # Make response iterable
-        if not isiterable(responses):
+        if not np.iterable(responses):
             responses = [responses]
 
         # Add them to the response for good measure
@@ -483,7 +488,7 @@ class JSOCClient(BaseClient):
             max_splits = 1
 
         # Convert Responses to a list if not already
-        if isinstance(requests, str) or not isiterable(requests):
+        if isinstance(requests, str) or not np.iterable(requests):
             requests = [requests]
 
         # Ensure all the requests are drms ExportRequest objects
@@ -795,11 +800,27 @@ class JSOCClient(BaseClient):
         for series in data_sources:
             info = client.series(rf'{series}\.')
             for item in info:
-                print(f'🛰 Getting info for {series}: {item}')
-                data = client.info(item)
-                series_store.append((data.name, data.note))
-                if not data.segments.empty:
-                    segments.extend((row[0], row[1][-1]) for row in data.segments.iterrows())
+                try:
+                    print(f'🛰 Getting info for {series}: {item}')
+                    data = client.info(item)
+                    series_store.append((data.name, data.note))
+                    if not data.segments.empty:
+                        segments.extend((row[0], row[1].iloc[-1]) for row in data.segments.iterrows())
+                except Exception as e:
+                    print(f"⚠️  {series} failed with error: {e}")
+                    if item in ["hmi.V_avg120", "mdi.fdV_avg120"]:
+                        # The following is from a private email from JSOC:
+                        #
+                        # So basically the 0xC5 LATIN-1 byte (Angstrom) got copied over, as-is, to the
+                        # hmidb2 database. So hmidb2 is basically corrupt in a strict sense, although in
+                        # practice, the only thing that gets messed up is this series, sometimes,
+                        # because it is both slony-replicated and hmidb has a non-ascii char in it.
+                        #
+                        # Then jsocexintinfo.py asks PostgreSQL to "give me info for hmi.v_avg120, first
+                        # converting to utf8 from ascii". PostgreSQL ignores any byte that is not an
+                        # ascii byte and simply returns it as is. So now jsocexintfo.py has a byte,
+                        # 0xC5, that it expects is a UTF-8 byte, which it isn't.
+                        print(f"🛈 {item} has a known issue with the JSOC database.")
         series_store = list(set(series_store))
         segments = list(set(segments))
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:

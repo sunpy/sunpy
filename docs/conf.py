@@ -119,6 +119,9 @@ ogp_custom_meta_tags = [
 # doctest extensions.
 suppress_warnings = ['app.add_directive', ]
 
+# Wrap large function/method signatures
+maximum_signature_line_length = 80
+
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named "sphinx.ext.*") or your custom
 # ones.
@@ -142,7 +145,6 @@ extensions = [
     "sphinxext.opengraph",
     'sphinx_design',
     'sphinx_copybutton',
-    'hoverxref.extension',
     'sphinxcontrib.bibtex',
 ]
 
@@ -231,40 +233,7 @@ intersphinx_mapping = {
     "sunkit_instruments": ("https://docs.sunpy.org/projects/sunkit-instruments/en/stable/", None),
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
     "contourpy": ("https://contourpy.readthedocs.io/en/stable/", None),
-}
-
-# -- Options for hoverxref -----------------------------------------------------
-
-if os.environ.get("READTHEDOCS"):
-    hoverxref_api_host = "https://readthedocs.org"
-
-    if os.environ.get("PROXIED_API_ENDPOINT"):
-        # Use the proxied API endpoint
-        # A RTD thing to avoid a CSRF block when docs are using a custom domain
-        hoverxref_api_host = "/_"
-
-hoverxref_auto_ref = False
-hoverxref_domains = ["py"]
-hoverxref_mathjax = True
-hoverxref_modal_hover_delay = 500
-hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
-hoverxref_intersphinx = list(intersphinx_mapping.keys())
-hoverxref_role_types = {
-    # Roles within the py domain
-    "attr": "tooltip",
-    "class": "tooltip",
-    "const": "tooltip",
-    "data": "tooltip",
-    "exc": "tooltip",
-    "func": "tooltip",
-    "meth": "tooltip",
-    "mod": "tooltip",
-    "obj": "tooltip",
-    # Roles within the std domain
-    "confval": "tooltip",
-    "hoverxref": "tooltip",
-    "ref": "tooltip",  # Would be used by hoverxref_auto_ref if we set it to True
-    "term": "tooltip",
+    "sphinxcontrib_bibtex": ("https://sphinxcontrib-bibtex.readthedocs.io/en/stable/", None),
 }
 
 # -- Options for HTML output ---------------------------------------------------

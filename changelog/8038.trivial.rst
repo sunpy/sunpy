@@ -1,1 +1,0 @@
-Added clarification to the docstring for the `.GenericMap.measurement` property about its possible return types.

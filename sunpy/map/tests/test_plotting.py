@@ -214,6 +214,11 @@ def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
 
 
 @figure_test
+def test_plot_masked_aia171_superpixel_conservative_mask_true(aia171_test_map_with_mask):
+    aia171_test_map_with_mask.superpixel((9, 7) * u.pix, offset=(4, 4) * u.pix, conservative_mask=True).plot()
+
+
+@figure_test
 def test_draw_contours_aia(aia171_test_map):
     aia171_test_map.plot()
     aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))
@@ -283,11 +288,12 @@ def test_quadrangle_no_wcsaxes(aia171_test_map):
 
 
 def test_different_wcs_plot_warning(aia171_test_map, hmi_test_map):
-    aia171_test_map.plot()
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
     with pytest.warns(SunpyUserWarning,
                       match=(r'The map world coordinate system \(WCS\) is different '
                              'from the axes WCS')):
-        hmi_test_map.plot(axes=plt.gca())
+        hmi_test_map.plot(axes=ax, autoalign=False)
 
 
 @figure_test
@@ -345,20 +351,36 @@ def test_map_draw_extent(aia171_test_map):
 
 
 @figure_test
-def test_plot_autoalign(aia171_test_map):
+@pytest.mark.parametrize("autoalign", [True, 'mesh', 'image'])
+def test_plot_autoalign(aia171_test_map, autoalign):
     aia171_test_map._data = aia171_test_map.data.astype('float32')
     rotated_map = aia171_test_map.rotate(30*u.deg, order=3)
 
     # Plotting the rotated map on the original projection should appear de-rotated
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_test_map)
-    rotated_map.plot(axes=ax, autoalign=True)
+    ret = rotated_map.plot(axes=ax, autoalign=autoalign)
+    assert ret.zorder == 0
     return fig
 
 
 def test_plot_autoalign_bad_inputs(aia171_test_map):
-    with pytest.raises(ValueError, match="The value for `autoalign` must be False, True, or 'pcolormesh'."):
+    with pytest.raises(ValueError, match=r"The value for `autoalign` must be one of \[False, True, 'mesh', 'image'\]."):
         aia171_test_map.plot(autoalign='bad')
+
+
+@figure_test
+def test_plot_autoalign_datalim(adjusted_test_maps):
+    # Test whether the plot limits are expanded by the overplotted map
+    aia171_test_map = adjusted_test_maps[0].submap([20, 20]*u.pixel, top_right=[100, 80]*u.pixel)
+    hmi_test_map = adjusted_test_maps[1].submap([0, 0]*u.pixel, top_right=[120, 80]*u.pixel)
+    hmi_test_map.meta['crota2'] = 150
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax)
+    hmi_test_map.plot(axes=ax, autoalign=True, alpha=0.75)
+    return fig
 
 
 @figure_test
@@ -366,21 +388,86 @@ def test_plot_autoalign_pixel_alignment(aia171_test_map):
     # Verify that autoalign=True does not affect pixel alignment
     x, y = (z.value for z in aia171_test_map.reference_pixel)
 
-    fig = Figure(figsize=(10, 4))
+    fig = Figure(figsize=(15, 4))
 
-    ax1 = fig.add_subplot(121, projection=aia171_test_map)
+    ax1 = fig.add_subplot(131, projection=aia171_test_map)
     aia171_test_map.plot(axes=ax1, autoalign=False, title='autoalign=False')
     ax1.grid(False)
     ax1.set_xlim(x - 2, x + 2)
     ax1.set_ylim(y - 2, y + 2)
 
-    ax2 = fig.add_subplot(122, projection=aia171_test_map)
-    aia171_test_map.plot(axes=ax2, autoalign=True, title='autoalign=True')
+    ax2 = fig.add_subplot(132, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax2, autoalign="mesh", title='autoalign=mesh')
     ax2.grid(False)
     ax2.set_xlim(x - 2, x + 2)
     ax2.set_ylim(y - 2, y + 2)
 
+    ax3 = fig.add_subplot(133, projection=aia171_test_map)
+    aia171_test_map.plot(axes=ax3, autoalign="image", title='autoalign=image')
+    ax3.grid(False)
+    ax3.set_xlim(x - 2, x + 2)
+    ax3.set_ylim(y - 2, y + 2)
+
     return fig
+
+
+@figure_test
+def test_plot_autoalign_image_incomplete(aia171_test_map):
+    aia = aia171_test_map.submap([40, 30]*u.pix, top_right=[90, 100]*u.pix)
+    wcs = WCS({
+        'cdelt1': 100,
+        'cdelt2': 100,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': -10,
+        'hglt_obs': 20,
+        'dsun_obs': aia.dsun.value,
+        'rsun_ref': aia.rsun_meters.value,
+        'date-obs': aia.date.isot,
+        'mjd-obs': aia.date.mjd,
+    })
+
+    fig = Figure(figsize=(15, 4))
+
+    ax1 = fig.add_subplot(131, projection=wcs)
+    aia.plot(axes=ax1, autoalign=True, title='autoalign=True')
+    aia.draw_extent(axes=ax1, color='red')
+
+    ax2 = fig.add_subplot(132, projection=wcs)
+    aia.plot(axes=ax2, autoalign="mesh", title='autoalign=mesh')
+    aia.draw_extent(axes=ax2, color='red')
+
+    ax3 = fig.add_subplot(133, projection=wcs)
+    with pytest.warns(match="Cannot draw all of the autoaligned image"):
+        aia.plot(axes=ax3, autoalign="image", title='autoalign=image')
+    aia.draw_extent(axes=ax3, color='red')
+
+    return fig
+
+
+def test_plot_autoalign_image_fail(aia171_test_map):
+    aia = aia171_test_map.submap([0, 30]*u.pix, top_right=[90, 100]*u.pix)
+    wcs = WCS({
+        'cdelt1': 100,
+        'cdelt2': 100,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': -10,
+        'hglt_obs': 20,
+        'dsun_obs': aia.dsun.value,
+        'rsun_ref': aia.rsun_meters.value,
+        'date-obs': aia.date.isot,
+        'mjd-obs': aia.date.mjd,
+    })
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=wcs)
+    with pytest.raises(RuntimeError, match="Cannot draw an autoaligned image at all"):
+        aia.plot(axes=ax, autoalign='image')
 
 
 def test_plot_unit8(aia171_test_map):

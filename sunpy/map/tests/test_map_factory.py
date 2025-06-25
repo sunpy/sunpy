@@ -13,7 +13,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
-from sunpy.tests.helpers import figure_test, skip_glymur
+from sunpy.tests.helpers import asdf_entry_points, figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
     SunpyDeprecationWarning,
@@ -52,6 +52,7 @@ def test_two_map_inputs(args1, args2):
         assert isinstance(out, sunpy.map.GenericMap)
 
 
+@asdf_entry_points
 def test_read_asdf_and_verify(tmpdir):
     loaded_asdf_map = sunpy.map.Map(AIA_ASDF)
     assert isinstance(loaded_asdf_map.data, np.ndarray)
@@ -133,7 +134,10 @@ def test_patterns(eit_fits_directory):
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Test that returned maps are sorted
-    files_sorted = sorted(list(pathlib.Path(pattern).parent.glob('*')))
+    # Sorting based on Strings rather than Path Objects which makes the sorting os independent
+    # This was added because on Windows the sorting was different than on Linux
+    # Windows(and possibly other OSs) use a case-insensitive sort, while Linux uses a case-sensitive sort
+    files_sorted = sorted(str(file) for file in pathlib.Path(pattern).parent.glob('*'))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
     assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
@@ -266,6 +270,7 @@ def test_url_pattern():
     amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
     assert isinstance(amap, sunpy.map.GenericMap)
 
+
 @pytest.mark.remote_data
 def test_uri_pattern():
     """
@@ -274,7 +279,9 @@ def test_uri_pattern():
     amap = sunpy.map.Map("s3://data.sunpy.org/sunpy/AIA20110607_065843_0193_cutout.fits", fsspec_kwargs={"anon": True})
     assert isinstance(amap, sunpy.map.GenericMap)
 
+
 @pytest.mark.remote_data
+@pytest.mark.filterwarnings("ignore:datetime.datetime.utcnow:DeprecationWarning")
 def test_uri_directory_pattern():
     """
     Testing publicly accessible s3 directory
@@ -282,6 +289,7 @@ def test_uri_directory_pattern():
     with pytest.warns(SunpyUserWarning, match='Failed to read'):
         amap = sunpy.map.Map('s3://data.sunpy.org/aiapy', fsspec_kwargs={'anon':True}, allow_errors=True)
         assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
+
 
 def test_save():
     # Test save out
@@ -303,6 +311,7 @@ def test_map_list_urls_cache():
     with pytest.warns(fits.verify.VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         sunpy.map.Map(urls)
 
+
 @pytest.mark.remote_data
 def test_map_list_uri():
     """
@@ -312,6 +321,7 @@ def test_map_list_uri():
                 "s3://data.sunpy.org/aiapy/aia_lev1_94a_2019_01_01t00_00_11_12z_image_lev1.fits"]
     amap = sunpy.map.Map(uri_list, fsspec_kwargs={'anon':True})
     assert all(isinstance(am, sunpy.map.GenericMap) for am in amap)
+
 
 @pytest.mark.filterwarnings('ignore:File may have been truncated')
 @pytest.mark.parametrize(('file', 'mapcls'), [

@@ -353,6 +353,7 @@ def test_files_range_same_directory_months_remote_new_format():
                      'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
+@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_ftp():
     with pytest.warns(SunpyDeprecationWarning, match="pattern has been replaced with the format keyword"):
@@ -364,6 +365,7 @@ def test_ftp():
         assert len(urls) == 4
 
 
+@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_ftp_new_format():
     pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt'
