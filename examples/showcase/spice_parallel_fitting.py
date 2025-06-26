@@ -22,6 +22,8 @@ from astropy.modeling import models as m
 from astropy.modeling.fitting import TRFLSQFitter, parallel_fit_dask
 from astropy.wcs import WCS
 
+from sunpy.net import Fido, attrs as a 
+import sunpy_soar
 ###############################################################################
 # For this example, we are going to use a part of an observation from the SPICE instrument
 # which is a rastering spectrograph onboard Solar Orbiter. The focus will be on the
