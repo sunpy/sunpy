@@ -55,7 +55,7 @@ spice = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(h
 # The first dimension is length one so we will drop it
 spice = spice[0]
 # To ensure this example is quick, we will only do a 50x50 box
-spice = spice[:, 100:150, 100:1500]
+spice = spice[:, 100:200, :]
 
 ###############################################################################
 # This cube we have constructed has three pixel and four world
