@@ -22,17 +22,18 @@ from astropy.modeling import models as m
 from astropy.modeling.fitting import TRFLSQFitter, parallel_fit_dask
 from astropy.wcs import WCS
 
-from sunpy.net import Fido, attrs as a 
-import sunpy_soar
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+
 ###############################################################################
 # For this example, we are going to use a part of an observation from the SPICE instrument
 # which is a rastering spectrograph onboard Solar Orbiter. The focus will be on the
 # spectral window containing the Nitrogen IV line (76.51 nm) and the Neon VIII line
 # (77.04 nm).
 
-res = Fido.search(a.Time("2023-04-15 01:00", "2023-04-15 02:00"), 
-                  a.Instrument.spice, a.Level(2), 
-                  a.Provider.soar, 
+res = Fido.search(a.Time("2023-04-15 01:00", "2023-04-15 02:00"),
+                  a.Instrument.spice, a.Level(2),
+                  a.Provider.soar,
                   a.soar.Product.spice_n_ras)
 filename = Fido.fetch(res)[0]
 
