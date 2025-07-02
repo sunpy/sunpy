@@ -24,6 +24,7 @@ from astropy.wcs import WCS
 
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+import sunpy_soar
 
 ###############################################################################
 # For this example, we are going to use a part of an observation from the SPICE instrument
