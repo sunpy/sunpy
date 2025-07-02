@@ -14,6 +14,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+import sunpy_soar  # NOQA: F401
 from ndcube import NDCube
 
 import astropy.units as u
@@ -24,7 +25,6 @@ from astropy.wcs import WCS
 
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-import sunpy_soar
 
 ###############################################################################
 # For this example, we are going to use a part of an observation from the SPICE instrument
@@ -177,7 +177,7 @@ def plot_spice_fit(spice_model_fit):
     g2_peak_shift = spice_model_fit.mean_2.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NeVIII_wave))
 
     fig, axs = plt.subplots(nrows=3, subplot_kw=dict(projection=wl_sum), figsize=(5,  15))
-    fig.suptitle(f"SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}")
+    fig.suptitle(f'SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}')
 
     wl_sum.plot(axes=axs[0])
     fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.8)
