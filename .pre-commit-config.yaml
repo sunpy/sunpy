@@ -2,7 +2,7 @@ exclude: ".*(.csv|.fits|.fts|.fit|.header|.txt|tca.*|.json|.asdf)$|^CITATION.rst
 repos:
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.11.12"
+    rev: "v0.12.2"
     hooks:
       - id: ruff
         args: ["--fix"]
