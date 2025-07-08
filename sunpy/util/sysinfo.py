@@ -1,6 +1,7 @@
 """
 This module provides functions to retrieve system information.
 """
+import sys
 import platform
 from collections import defaultdict
 from importlib.metadata import PackageNotFoundError, version, requires, distribution
@@ -12,6 +13,18 @@ import sunpy.extern.distro as distro
 from sunpy.util import warn_user
 
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
+
+
+def _trusted_version(package_name):
+    """
+    If the package has already been imported, trust its __version__ attribute
+    over the version retrievable by importlib.
+    """
+    if package_name in sys.modules:
+        package = sys.modules[package_name]
+        if hasattr(package, "__version__"):
+            return package.__version__
+    return version(package_name)
 
 
 def get_requirements(package, *, expand_groups=False):
@@ -119,7 +132,7 @@ def find_dependencies(package="sunpy", extras=None):
             continue
         for package, package_details in requirements[group].items():
             try:
-                package_version = version(package)
+                package_version = _trusted_version(package)
                 installed_requirements[package] = package_version
             except PackageNotFoundError:
                 missing_requirements[package].append(package_details)
@@ -186,7 +199,7 @@ def system_info():
     extra_prop = {"System": platform.system(),
                   "Arch": f"{platform.architecture()[0]}, ({platform.processor()})",
                   "Python": platform.python_version(),
-                  "sunpy": version("sunpy")}
+                  "sunpy": _trusted_version("sunpy")}
     sys_prop = {**installed_packages, **missing_packages, **extra_prop}
     print("==============================")
     print("sunpy Installation Information")
