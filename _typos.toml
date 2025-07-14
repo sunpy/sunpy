@@ -25,5 +25,5 @@ default.extend-ignore-identifiers-re = [
     "pn",
     "lightyear",
     "PNGs",
-	"setp",
+    "setp",
 ]
