@@ -1795,9 +1795,9 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
     new_map = aia171_test_map / value
     check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
-    with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):
+    with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):  # NOQA: PT031
         new_map = value / aia171_test_map
-    check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
+        check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
 
 
 def test_map_arithmetic_pow(aia171_test_map):
