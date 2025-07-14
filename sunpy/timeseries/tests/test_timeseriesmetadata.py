@@ -367,7 +367,7 @@ def test_update_all_dict_type_input(complex_append_md):
     assert updated_dict_md == updated_ordereddict_md == updated_metadict_md
 
 
-def test_update_overwrite(complex_append_md, overwrite=True):
+def test_update_overwrite(complex_append_md):
     updated_not_overwritten_md = copy.deepcopy(complex_append_md)
     updated_not_overwritten_md.update({'all_same': 'updated'})
     updated_overwritten_md = copy.deepcopy(complex_append_md)
