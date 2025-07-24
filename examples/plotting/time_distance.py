@@ -4,7 +4,7 @@ Creating a time-distance plot from a sequence of maps
 =====================================================
 
 This example showcases how you can use :func:`sunpy.map.pixelate_coord_path` and
-:func:`sunpy.map.sample_at_coords()` on a sequence of images to create a time-distance diagram.
+:func:`sunpy.map.sample_at_coords` on a sequence of images to create a time-distance diagram.
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,9 +24,10 @@ from sunpy.net import attrs as a
 query = Fido.search(
     a.Time('2025-05-01 00:00:00', '2025-05-01 00:10:00'),
     a.Instrument.aia,
-    a.Wavelength(171*u.angstrom)
+    a.Wavelength(171*u.angstrom),
+    a.Sample(1*u.min),
 )
-files = Fido.fetch(query)
+files = Fido.fetch(query, site="NSO")
 aia_sequence = sunpy.map.Map(files, sequence=True)
 
 ###############################################################################
@@ -49,12 +50,14 @@ with propagate_with_solar_surface():
     with SphericalScreen(cut_aia_sequence[0].observer_coordinate):
         aia_sequence_aligned = sunpy.map.Map([m.reproject_to(cut_aia_sequence[0].wcs) for m in cut_aia_sequence], sequence=True)
 
+aia_sequence_aligned.plot()
+
 ###############################################################################
 # Next, we will define a path in space and then use that to fetch the pixel
 # coordinates for every pixel that intersects with the physical path.
 
 # Note this is [X0, X1] and [Y0, Y1] in the coordinate frame of the map.
-line_coords = SkyCoord([900, 1000],[456, 250] , unit=u.arcsec, frame=aia_sequence_aligned[0].coordinate_frame)
+line_coords = SkyCoord([850, 950], [456, 250], unit=u.arcsec, frame=aia_sequence_aligned[0].coordinate_frame)
 
 ###############################################################################
 # We can now plot ``line_coords`` on the first map to see what we are intersecting.
@@ -84,8 +87,8 @@ angular_separation = intensity_coords.separation(intensity_coords[0]).to(u.arcse
 # We can now plot the time-distance diagram.
 
 fig = plt.figure(figsize=(10, 4))
-ax1 = fig.add_subplot(111, )
-ax1.imshow(intensities, aspect='auto', origin='lower', extent=[0, len(aia_sequence_aligned) * 12*u.s, 0, angular_separation[-1].value])
+ax1 = fig.add_subplot(111)
+ax1.imshow(intensities, aspect='auto', origin='lower', extent=[0, len(aia_sequence_aligned) * 12, 0, angular_separation[-1].value])
 ax1.set_xlabel('Time (s)')
 ax1.set_ylabel('Distance (arcsec)')
 
