@@ -331,7 +331,6 @@ def test_fido_indexing(queries):
     assert len(aa) == 2 if len(aa) != 1 else 1
     assert len(aa[0]) == 1
 
-
     if isinstance(res, UnifiedResponse):
         assert len(res) == (2 if len(res) != 1 else 1)
 
