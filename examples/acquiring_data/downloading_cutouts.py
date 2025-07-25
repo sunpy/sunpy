@@ -6,8 +6,6 @@ Requesting cutouts of AIA images from the JSOC
 This example shows how to request a cutout of a series of
 AIA images from the JSOC.
 """
-import os
-
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -40,7 +38,7 @@ cutout = a.jsoc.Cutout(bottom_left, top_right=top_right, tracking=True)
 # like so: jsoc_email = "your_email@example.com"
 # See `this page <http://jsoc.stanford.edu/ajax/register_email.html>`__ for more details.
 
-jsoc_email = os.environ["JSOC_EMAIL"]
+jsoc_email = "JSOC_EMAIL"
 
 #####################################################
 # Now we are ready to construct the query. Note that all of this is
