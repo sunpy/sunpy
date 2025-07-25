@@ -220,10 +220,10 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
 
         Alternatively, this can be a dictionary defining a range of times and
         dates; the range dictionary has to be of the form
-        {{'start': start_time, 'stop': stop_time, 'step':'n[y|d|m|s]'}}.
+        {{'start': start_time, 'stop': stop_time, 'step':'n[y|d|m]'}}.
         ``start_time`` and ``stop_time`` must be in a parse_time-compatible format,
         and are interpreted as UTC time. ``step`` must be a string with either a
-        number and interval length (e.g. for every 10 seconds, ``'10s'``), or a
+        number and interval length (e.g. for every 10 minutes, ``'10m'``), or a
         plain number for a number of evenly spaced intervals.
 
     include_velocity : `bool`, optional

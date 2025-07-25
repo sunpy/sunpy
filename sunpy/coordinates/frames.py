@@ -48,64 +48,63 @@ def _frame_parameters():
     """
     ret = {}
 
-    # Each text block is missing the first indent because it already exists in the frame docstring
     ret['data'] = ("data : `~astropy.coordinates.BaseRepresentation` or ``None``\n"
-                   "        A representation object or ``None`` to have no data\n"
-                   "        (or use the coordinate component arguments, see below).")
+                   "    A representation object or ``None`` to have no data\n"
+                   "    (or use the coordinate component arguments, see below).")
     ret['common'] = (f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                     "        The time of the observation. This is used to determine the\n"
-                     "        position of solar-system bodies (e.g., the Sun and the Earth) as\n"
-                     "        needed to define the origin and orientation of the frame.\n"
-                     "    representation_type : `~astropy.coordinates.BaseRepresentation`, str, optional\n"
-                     "        A representation class or string name of a representation class.\n"
-                     "        This may change the valid coordinate component arguments from the\n"
-                     "        defaults (see above). For example, passing\n"
-                     "        ``representation_type='cartesian'`` will make the frame expect\n"
-                     "        Cartesian coordinate component arguments (typically, ``x``, ``y``,\n"
-                     "        and ``z``).\n"
-                     "    copy : bool, optional\n"
-                     "        If `True` (default), make copies of the input coordinate arrays.")
+                     "    The time of the observation. This is used to determine the\n"
+                     "    position of solar-system bodies (e.g., the Sun and the Earth) as\n"
+                     "    needed to define the origin and orientation of the frame.\n"
+                     "representation_type : `~astropy.coordinates.BaseRepresentation`, str, optional\n"
+                     "    A representation class or string name of a representation class.\n"
+                     "    This may change the valid coordinate component arguments from the\n"
+                     "    defaults (see above). For example, passing\n"
+                     "    ``representation_type='cartesian'`` will make the frame expect\n"
+                     "    Cartesian coordinate component arguments (typically, ``x``, ``y``,\n"
+                     "    and ``z``).\n"
+                     "copy : bool, optional\n"
+                     "    If `True` (default), make copies of the input coordinate arrays.")
     ret['lonlat'] = ("lon : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
-                     "        The longitude coordinate for this object (``lat`` must also be\n"
-                     "        given and ``data`` must be ``None``).\n"
-                     "        Not needed if ``data`` is given.\n"
-                     "    lat : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
-                     "        The latitude coordinate for this object (``lon`` must also be\n"
-                     "        given and ``data`` must be ``None``).\n"
-                     "        Not needed if ``data`` is given.")
+                     "    The longitude coordinate for this object (``lat`` must also be\n"
+                     "    given and ``data`` must be ``None``).\n"
+                     "    Not needed if ``data`` is given.\n"
+                     "lat : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
+                     "    The latitude coordinate for this object (``lon`` must also be\n"
+                     "    given and ``data`` must be ``None``).\n"
+                     "    Not needed if ``data`` is given.")
     ret['radius'] = ("radius : `~astropy.units.Quantity`, optional\n"
-                     "        The radial distance coordinate from Sun center for this object.\n"
-                     "        Defaults to the radius of the Sun. Not needed if ``data`` is given.")
+                     "    The radial distance coordinate from Sun center for this object.\n"
+                     "    Defaults to the radius of the Sun. Not needed if ``data`` is given.")
     ret['distance_sun'] = ("distance : `~astropy.units.Quantity`, optional\n"
-                           "        The distance coordinate from Sun center for this object.\n"
-                           "        Not needed if ``data`` is given.")
+                           "    The distance coordinate from Sun center for this object.\n"
+                           "    Not needed if ``data`` is given.")
     ret['distance_earth'] = ("distance : `~astropy.units.Quantity`, optional\n"
-                             "        The distance coordinate from Earth center for this object.\n"
-                             "        Not needed if ``data`` is given.")
+                             "    The distance coordinate from Earth center for this object.\n"
+                             "    Not needed if ``data`` is given.")
     ret['xyz'] = ("x : `~astropy.units.Quantity`, optional\n"
-                  "        X-axis coordinate for this object. Not needed if ``data`` is given.\n"
-                  "    y : `~astropy.units.Quantity`, optional\n"
-                  "        Y-axis coordinate for this object. Not needed if ``data`` is given.\n"
-                  "    z : `~astropy.units.Quantity`, optional\n"
-                  "        Z-axis coordinate for this object. Not needed if ``data`` is given.")
+                  "    X-axis coordinate for this object. Not needed if ``data`` is given.\n"
+                  "y : `~astropy.units.Quantity`, optional\n"
+                  "    Y-axis coordinate for this object. Not needed if ``data`` is given.\n"
+                  "z : `~astropy.units.Quantity`, optional\n"
+                  "    Z-axis coordinate for this object. Not needed if ``data`` is given.")
     ret['observer'] = ("observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str\n"
-                       "        The location of the observer. If a string is provided,\n"
-                       "        it must be a solar system body that can be parsed by\n"
-                       "        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
-                       "        at the time ``obstime``. Defaults to Earth center.")
+                       "    The location of the observer. If a string is provided,\n"
+                       "    it must be a solar system body that can be parsed by\n"
+                       "    `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
+                       "    at the time ``obstime``. Defaults to Earth center.")
     ret['rsun'] = ("rsun : `~astropy.units.Quantity`\n"
-                   "        The radius of the Sun in length units. Used to convert a 2D\n"
-                   "        coordinate (i.e., no ``radius`` component) to a 3D coordinate by\n"
-                   "        assuming that the coordinate is on the surface of the Sun. Defaults\n"
-                   "        to the photospheric radius as defined in `sunpy.sun.constants`.")
+                   "    The radius of the Sun in length units. Used to convert a 2D\n"
+                   "    coordinate (i.e., no ``radius`` component) to a 3D coordinate by\n"
+                   "    assuming that the coordinate is on the surface of the Sun. Defaults\n"
+                   "    to the photospheric radius as defined in `sunpy.sun.constants`.")
     ret['equinox'] = (f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                      "        The date for the mean vernal equinox.\n"
-                      "        Defaults to the J2000.0 equinox.")
+                      "    The date for the mean vernal equinox.\n"
+                      "    Defaults to the J2000.0 equinox.")
     ret['magnetic_model'] = ("magnetic_model : `str`\n"
-                             "        The IGRF model to use for determining the orientation of\n"
-                             "        Earth's magnetic dipole pole. The supported options are\n"
-                             "        ``'igrf13'`` (default), ``'igrf12'``, ``'igrf11'``, and\n"
-                             "        ``'igrf10'``.")
+                             "    The IGRF model to use for determining the orientation of\n"
+                             "    Earth's magnetic dipole pole. The supported options are\n"
+                             "    ``'igrf13'`` (default), ``'igrf12'``, ``'igrf11'``, and\n"
+                             "    ``'igrf10'``.")
     ret['igrf_reference'] = ("* `International Geomagnetic Reference Field (IGRF) "
                              "<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__")
 
@@ -441,18 +440,35 @@ class Heliocentric(SunPyBaseCoordinateFrame):
 @add_common_docstring(**_frame_parameters())
 class Helioprojective(SunPyBaseCoordinateFrame):
     """
-    A coordinate or frame in the Helioprojective Cartesian (HPC) system, which is observer-based.
+    A coordinate or frame in the Helioprojective Cartesian (HPC) system.
 
-    - The origin is the location of the observer.
-    - ``Tx`` (aka "theta_x") is the angle relative to the plane containing the Sun-observer line
-      and the Sun's rotation axis, with positive values in the direction of the Sun's west limb.
-    - ``Ty`` (aka "theta_y") is the angle relative to the Sun's equatorial plane, with positive
-      values in the direction of the Sun's north pole.
-    - ``distance`` is the Sun-observer distance.
+    This is an observer-based spherical coordinate system, with:
 
-    This system is frequently used in a projective form without ``distance`` specified. For
-    observations looking very close to the center of the Sun, where the small-angle approximation
-    is appropriate, ``Tx`` and ``Ty`` can be approximated as Cartesian components.
+    - The origin is the observer location.
+    - The line connecting the poles of the frame is parallel to the component of the Sun's
+      rotation axis that is perpendicular to the observer-Sun line.
+    - ``Tx`` (short for "theta_x", or :math:`\\theta_x`) is the longitude, the angle relative to
+      the plane containing the observer-Sun line and the poles of the frame, with positive values
+      in the direction of the Sun's west limb.
+    - ``Ty`` (short for "theta_y", or :math:`\\theta_y`) is the latitude, the angle relative to the
+      plane that is perpendicular to the poles of the frame, with positive values in the direction
+      of the Sun's north pole.
+    - ``distance`` is the observer-object distance.
+
+    .. note::
+        It can be confusing that the name of this coordinate system uses the adjective "Cartesian"
+        despite being a spherical coordinate system. The reason for this name is because close to
+        the center of the Sun where the small-angle approximation is appropriate, ``Tx`` and ``Ty``
+        can be thought of as two components of a Cartesian-like coordinate system. The corresponding
+        third Cartesian-like component, sometimes called zeta (:math:`\\zeta`), is defined to be the
+        Sun-observer distance (``observer.radius``) minus the observer-object distance (``distance``).
+
+    This system is frequently used in a projective form without ``distance`` specified. When
+    transforming such a 2D coordinate to another frame, the object location usually needs to be
+    fully 3D, which is achieved by calling :meth:`.make_3d` to generate the ``distance`` component.
+    The default assumption is that the object lies on the surface of the Sun if the 2D coordinate is
+    on the solar disk, but is otherwise undefined if the 2D coordinate is beyond the solar limb.
+    This assumption can be modified using a screen (e.g., :func:`~sunpy.coordinates.SphericalScreen`).
 
     A new instance can be created using the following signatures
     (note that if supplied, ``obstime`` and ``observer`` must be keyword arguments)::
@@ -464,15 +480,19 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     ----------
     {data}
     Tx : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        The theta_x coordinate for this object. Not needed if ``data`` is given.
+        The theta_x (:math:`\\theta_x`) component for this object. Not needed if ``data`` is given.
     Ty : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        The theta_y coordinate for this object. Not needed if ``data`` is given.
+        The theta_y (:math:`\\theta_y`) component for this object. Not needed if ``data`` is given.
     distance : `~astropy.units.Quantity`
-        The distance coordinate from the observer for this object.
-        Not needed if ``data`` is given.
+        The distance component from the observer for this object. Not needed if ``data`` is given.
     {observer}
     {rsun}
     {common}
+
+    See Also
+    --------
+    HelioprojectiveRadial
+    ~sunpy.coordinates.PlanarScreen, ~sunpy.coordinates.SphericalScreen
 
     Examples
     --------
@@ -930,19 +950,26 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
             h11s = list(map(float, f.readline().split()[3:]))
 
         decimalyear = self.obstime.utc.decimalyear
-        if decimalyear < 1900.0:
-            raise ValueError
+        output_shape = decimalyear.shape
+        if np.any(decimalyear < 1900.0):
+            raise ValueError("At least one of the dates is earlier than the year 1900, which is unsupported.")
 
-        if decimalyear <= years[-1]:
-            # Use piecewise linear interpolation before the last year
-            g10 = np.interp(decimalyear, years, g10s[:-1])
-            g11 = np.interp(decimalyear, years, g11s[:-1])
-            h11 = np.interp(decimalyear, years, h11s[:-1])
-        else:
-            # Use secular variation beyond the last year
-            g10 = g10s[-2] + (decimalyear - years[-1]) * g10s[-1]
-            g11 = g11s[-2] + (decimalyear - years[-1]) * g11s[-1]
-            h11 = h11s[-2] + (decimalyear - years[-1]) * h11s[-1]
+        # Use piecewise linear interpolation before the last year
+        decimalyear = np.atleast_1d(decimalyear)
+        g10 = np.interp(decimalyear, years, g10s[:-1])
+        g11 = np.interp(decimalyear, years, g11s[:-1])
+        h11 = np.interp(decimalyear, years, h11s[:-1])
+
+        # Use secular variation beyond the last year
+        future = decimalyear > years[-1]
+        if np.sum(future) > 0:
+            g10[future] = g10s[-2] + (decimalyear[future] - years[-1]) * g10s[-1]
+            g11[future] = g11s[-2] + (decimalyear[future] - years[-1]) * g11s[-1]
+            h11[future] = h11s[-2] + (decimalyear[future] - years[-1]) * h11s[-1]
+
+        g10 = g10.reshape(output_shape)
+        g11 = g11.reshape(output_shape)
+        h11 = h11.reshape(output_shape)
 
         return g10, g11, h11
 

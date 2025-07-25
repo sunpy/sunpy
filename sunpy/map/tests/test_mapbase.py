@@ -20,6 +20,7 @@ from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
+from astropy.wcs import InconsistentAxisTypesError
 
 import sunpy
 import sunpy.coordinates
@@ -31,104 +32,12 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _rotation_registry
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
-from sunpy.util.util import fix_duplicate_notes
 from .strategies import matrix_meta
-
-
-def test_notes_combined():
-    map_documentation = """
-    Class Info.
-
-    Notes
-    -----
-    This is a note.
-
-    References
-    ----------
-    This is reference.
-    """
-    extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
-    expected_result = """
-    Class Info.
-
-    Notes
-    -----
-    This is a note.
-
-    This should be combined.
-
-    References
-    ----------
-    This is reference.
-    """
-    assert updated_documentation == expected_result
-
-def test_notes_combined_no_references():
-    map_documentation = """
-    Class Info.
-
-    Notes
-    -----
-    This is a note.
-    """
-    extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
-    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
-    expected_result = """
-    Class Info.
-
-    Notes
-    -----
-    This is a note.
-
-    This should be combined.
-    """
-    assert updated_documentation2.strip() == expected_result.strip()
-
-def test_notes_combined_no_existing_notes():
-    map_documentation = """
-    Class Info.
-
-    References
-    ----------
-    This is reference.
-    """
-    extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
-    expected_result = """
-    Class Info.
-
-    Notes
-    -----
-    This should be combined.
-
-    References
-    ----------
-    This is reference.
-    """
-    assert updated_documentation == expected_result
-
-def test_notes_combined_no_notes_no_references():
-    map_documentation = """
-    Class Info.
-    """
-    extra_note_section= """\nNotes\n-----\nThis should be combined."""
-    updated_documentation= fix_duplicate_notes(extra_note_section, map_documentation)
-    updated_documentation2=updated_documentation.replace("\n    \n    ","\n\n    ")
-    expected_result = """
-    Class Info.
-
-    Notes
-    -----
-    This should be combined.
-    """
-    assert updated_documentation2.strip() == expected_result.strip()
 
 
 def test_fits_data_comparison(aia171_test_map):
@@ -212,6 +121,22 @@ def test_wcs_cache(aia171_test_map):
 
     new_wcs = aia171_test_map.wcs
     assert new_wcs.wcs.crpix[0] == new_crpix
+
+
+def test_wcs_error_not_cached(aia171_test_map):
+    # Create a cached value for the property
+    _ = aia171_test_map.wcs
+
+    # Modify the WCS in a bad way
+    aia171_test_map.meta['ctype1'] = 'HPLN-ARC'
+
+    # Try and fail to recalculate the property
+    with pytest.raises(InconsistentAxisTypesError):
+        _ = aia171_test_map.wcs
+
+    # Try again and fail again to recalculate the property
+    with pytest.raises(InconsistentAxisTypesError):
+        _ = aia171_test_map.wcs
 
 
 def test_obs_coord_cache(aia171_test_map):
@@ -679,6 +604,7 @@ def test_save(aia171_test_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
+@asdf_entry_points
 def test_save_asdf(tmpdir, aia171_test_map):
     outpath = tmpdir/ "save_asdf.asdf"
     aia171_test_map.save(outpath, filetype= "asdf")
@@ -1303,28 +1229,28 @@ def test_plot_with_norm_none(aia171_test_map):
 
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
+    bad_header = {
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 5,
+        'CRPIX2': 5,
+        'CDELT1': 10,
+        'CDELT2': 10,
+        'CUNIT1': 'ARCSEC',
+        'CUNIT2': 'ARCSEC',
+        'PC1_1': 0,
+        'PC1_2': -1,
+        'PC2_1': 1,
+        'PC2_2': 0,
+        'NAXIS1': 6,
+        'NAXIS2': 6,
+        'date-obs': '1970/01/01T00:00:00',
+        'obsrvtry': 'Foo',
+        'detector': 'bar',
+        'wavelnth': 10,
+        'waveunit': 'ANGSTROM'
+    }
     with pytest.warns(SunpyMetadataWarning) as w:
-        bad_header = {
-            'CRVAL1': 0,
-            'CRVAL2': 0,
-            'CRPIX1': 5,
-            'CRPIX2': 5,
-            'CDELT1': 10,
-            'CDELT2': 10,
-            'CUNIT1': 'ARCSEC',
-            'CUNIT2': 'ARCSEC',
-            'PC1_1': 0,
-            'PC1_2': -1,
-            'PC2_1': 1,
-            'PC2_2': 0,
-            'NAXIS1': 6,
-            'NAXIS2': 6,
-            'date-obs': '1970/01/01T00:00:00',
-            'obsrvtry': 'Foo',
-            'detector': 'bar',
-            'wavelnth': 10,
-            'waveunit': 'ANGSTROM'
-        }
         sunpy.map.Map((generic_map.data, bad_header))
 
     assert 'waveunit'.upper() in str(w[0].message)
@@ -1384,13 +1310,13 @@ def test_more_than_two_dimensions():
 
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
-    with pytest.warns(Warning) as record:
-        header = {
-            'cunit1': 'arcsec',
-            'cunit2': 'arcsec',
-            'ctype1': 'HPLN-TAN',
-            'ctype2': 'HPLT-TAN',
-        }
+    header = {
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+    }
+    with pytest.warns(Warning) as record:  # NOQA: PT030,PT031
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
@@ -1869,7 +1795,7 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
     new_map = aia171_test_map / value
     check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
-    with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):
+    with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):  # NOQA: PT031
         new_map = value / aia171_test_map
         check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
 
@@ -1937,19 +1863,6 @@ def test_only_cd():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(u.Quantity(cd_map.scale).value, np.array([5, 13]))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[3/5, -4/5], [5/13, 12/13]]))
-
-
-def test_plot_deprecated_positional_args(aia171_test_map):
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=True as keyword args"):
-        aia171_test_map.plot(True)
-
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation as keyword args."):
-        with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation')
-
-    with pytest.warns(SunpyDeprecationWarning, match=r"Pass annotate=interpolation, axes=True as keyword args."):
-        with pytest.raises(TypeError, match="non-boolean value"):
-            aia171_test_map.plot('interpolation', True)
 
 
 def test_submap_nan_error(aia171_test_map):

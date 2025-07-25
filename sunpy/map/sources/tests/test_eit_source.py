@@ -76,14 +76,4 @@ def test_wcs(eit_map):
 def test_old_eit_date():
     eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
-
-
-def test_l1_eit_map():
-    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_171_20070601T120013_L1.header"))
-    assert eit_map.plot_settings["cmap"] == "sohoeit171"
-    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_195_20070601T121346_L1.header"))
-    assert eit_map.plot_settings["cmap"] == "sohoeit195"
-    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_284_20070601T120607_L1.header"))
-    assert eit_map.plot_settings["cmap"] == "sohoeit284"
-    eit_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_304_20070601T121937_L1.header"))
-    assert eit_map.plot_settings["cmap"] == "sohoeit304"
+    assert eit_map.reference_date.value == '1996-12-11T19:00:14.254'

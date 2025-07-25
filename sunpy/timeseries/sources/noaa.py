@@ -209,7 +209,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> noaa_url = 'https://services.swpc.noaa.gov/json/solar-cycle/predicted-solar-cycle.json'  # doctest: +REMOTE_DATA
-    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
     >>> noaa.peek()  # doctest: +SKIP
 
     References
