@@ -1,0 +1,1 @@
+added a documentation on how to use screens (plots) in sunpy
