@@ -1,3 +1,20 @@
+7.0.1 (2025-07-31)
+==================
+
+Bug Fixes
+---------
+
+- Fixed a bug where the time format ``2001-02-03T04:05:06Z`` was being parsed through different code than ``2001-02-03T04:05:06`` or ``2001-02-03T04:05:06.0Z``. (`#8265 <https://github.com/sunpy/sunpy/pull/8265>`__)
+- Fixed a bug where :func:`sunpy.util.system_info` would report `sunpy` as an optional dependency of itself instead of properly reporting all of the optional dependencies. (`#8294 <https://github.com/sunpy/sunpy/pull/8294>`__)
+- Fixed :func:`sunpy.util.system_info` so that the version reported for a development installation of `sunpy` itself or of a dependency is accurate. (`#8297 <https://github.com/sunpy/sunpy/pull/8297>`__)
+
+
+Documentation
+-------------
+
+- Fixed errors and added elaborations to the docstring for `~sunpy.coordinates.Helioprojective`. (`#8293 <https://github.com/sunpy/sunpy/pull/8293>`__)
+
+
 7.0.0 (2025-06-18)
 ==================
 
