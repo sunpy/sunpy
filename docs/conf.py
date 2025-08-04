@@ -102,6 +102,8 @@ linkcheck_ignore = [
     r"https://xrt.cfa.harvard.edu/",
 ]
 linkcheck_anchors = False
+linkcheck_timeout = 120
+linkcheck_workers = 10
 
 # -- General configuration ---------------------------------------------------
 
