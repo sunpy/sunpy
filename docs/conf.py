@@ -111,9 +111,7 @@ maximum_signature_line_length = 80
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
 ogp_description_length = 160
-ogp_custom_meta_tags = [
-    '<meta property="og:ignore_canonical" content="true" />',
-]
+ogp_custom_meta_tags = ('<meta property="og:ignore_canonical" content="true" />',)
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
@@ -170,7 +168,7 @@ if is_release:
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = 'index'
