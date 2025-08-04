@@ -93,16 +93,20 @@ sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
 linkcheck_ignore = [
-    r"https://doi.org/\d+",
+    r"https://doi\.org/\d+",
     r"https://\w\.element\.io/",
     # Checking all the PR URLs in the changelog takes a very long time
-    r"https://github.com/sunpy/sunpy/pull/\d+",
+    r"https://github\.com/sunpy/sunpy/pull/\d+",
+    # Avoid self-referencing links
     r"https://docs\.sunpy\.org",
-    r"https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf",
-    r"https://xrt.cfa.harvard.edu/",
+    # Large PDF, so it is too slow to check
+    r"https://inis\.iaea\.org/collection/NCLCollectionStore/_Public/20/062/20062491\.pdf",
     # These fails on SSL but are valid in a browser
-    r"https://opencv.org",
-    r"https://punch.space.swri.edu/",
+    r"https://xrt\.cfa\.harvard\.edu/",
+    r"https://opencv\.org",
+    r"https://punch\.space\.swri\.edu",
+    # This is super slow to check
+    r"https://mathesaurus\.sourceforge\.net/idl-numpy\.html",
 ]
 linkcheck_anchors = False
 linkcheck_timeout = 120
