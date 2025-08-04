@@ -222,6 +222,7 @@ The WCS is accessible as an attribute:
     <BLANKLINE>
     Number of WCS axes: 2
     CTYPE : 'HPLN-TAN' 'HPLT-TAN'
+    ...
     CRVAL : 0.00089530541880571 0.00038493926472939
     CRPIX : 512.5 512.5
     PC1_1 PC1_2  : 0.99999706448085 0.0024230207763071

@@ -100,6 +100,9 @@ linkcheck_ignore = [
     r"https://docs\.sunpy\.org",
     r"https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf",
     r"https://xrt.cfa.harvard.edu/",
+    # These fails on SSL but are valid in a browser
+    r"https://opencv.org",
+    r"https://punch.space.swri.edu/",
 ]
 linkcheck_anchors = False
 linkcheck_timeout = 120

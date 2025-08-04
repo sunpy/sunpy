@@ -80,4 +80,4 @@ boolarr(10)    np.zeros(10,dtype=bool)
 identity(3)    np.identity(3)
 =============  =========
 
-Many more examples can be found on this `page <http://mathesaurus.sourceforge.net/idl-numpy.html>`__
+Many more examples can be found on this `page <https://mathesaurus.sourceforge.net/idl-numpy.html>`__
