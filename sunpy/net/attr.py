@@ -32,12 +32,37 @@ _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
 NUMBER_REGEX = re.compile(r"^(\d+$|\d(?:\.\d+)?)")
 
-__all__ = ['Attr', 'DataAttr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
+__all__ = ['AttrMeta', 'Attr', 'DataAttr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker', 'AttrComparison', 'ComparisonParamAttrWrapper']
 
 
 def make_tuple():
     return _ATTR_TUPLE([], [], [], [])
+
+
+def _create_table(attr):
+    """
+    Create a table from the given attribute registry.
+
+    Parameters
+    ----------
+    attr : object
+        An object that contains an attribute registry.
+
+    Returns
+    -------
+    astropy.table.Table
+        A table with columns "Attribute Name", "Client", "Full Name", and "Description".
+    """
+    attrs = attr._attr_registry[attr]
+    # Only sort the attrs if any have been registered
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
+    *other_row_data, descs = sorted_attrs
+    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
+    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
+                  dtype=["U80", "U80", "U80", "U80"],
+                  data=[*other_row_data, descs])
+    return table
 
 
 def _print_attrs(attr, html=False):
@@ -56,14 +81,7 @@ def _print_attrs(attr, html=False):
     `str`
         String with the registered attributes.
     """
-    attrs = attr._attr_registry[attr]
-    # Only sort the attrs if any have been registered
-    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
-    *other_row_data, descs = sorted_attrs
-    descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
-    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
-                  dtype=["U80", "U80", "U80", "U80"],
-                  data=[*other_row_data, descs])
+    table = _create_table(attr)
 
     class_name = f"{(attr.__module__ + '.') or ''}{attr.__name__}"
     lines = [class_name]
@@ -85,7 +103,7 @@ class AttrMeta(type):
     """
     We want to enable discovery, by tab completion, of values for all subclasses of Attr.
     So have to create a metaclass that overloads the methods that Python uses, so that they work on the classes.
-    This would allow that `attrs.Instrument` to be able to tab complete to `attrs.Instrument.aia`.
+    This would allow that ``attrs.Instrument`` to be able to tab complete to ``attrs.Instrument.aia``.
     """
 
     # The aim is to register Attrs as a namedtuple of lists
@@ -141,6 +159,33 @@ class AttrMeta(type):
         This enables the "pretty" printing of Attrs with html.
         """
         return _print_attrs(self, html=True)
+
+
+    def show_in_notebook(self, **kwargs):
+        """
+        Display the attrs tables as interactive grids in a Jupyter Notebook.
+
+        This function utilizes the ``itables`` library to render tables as interactive grids.
+
+        .. note::
+            This function requires the optional dependency ``itables``.
+            Ensure it is installed before calling this method.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Additional keyword arguments to customize the ``itables.show`` function.
+
+        """
+        try:
+            from itables import show
+        except ImportError:
+            raise ImportError(
+                "`itables` is required to display tables. "
+                "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
+            )
+        table = _create_table(self)
+        show(table.to_pandas(), **kwargs)
 
 
 class Attr(metaclass=AttrMeta):
