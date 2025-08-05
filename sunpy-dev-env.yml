@@ -77,7 +77,6 @@ dependencies:
   - pre-commit
 
   - pip:
-      - astropy-iers-data
       - sphinx-bootstrap-theme
       - sphinx-changelog
       - sunpy-sphinx-theme
