@@ -331,7 +331,7 @@ def test_files_range_same_directory_remote_new_format():
 
 @pytest.mark.remote_data
 def test_files_range_same_directory_months_remote():
-    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
+    pattern = ('http://izw1.caltech.edu/{spacecraft}/DATA/{instrument}/'
             'Ahead/1minute/AeH%y%b.1m')
     with pytest.warns(SunpyDeprecationWarning, match="pattern has been replaced with the format keyword"):
         s = Scraper(pattern, spacecraft='STEREO', instrument='HET')
@@ -339,22 +339,22 @@ def test_files_range_same_directory_months_remote():
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
     files = s.filelist(timerange)
-    assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
+    assert files == ['http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
+                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.remote_data
 def test_files_range_same_directory_months_remote_new_format():
-    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
+    pattern = ('http://izw1.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH{{year:2d}}{{month_name_abbr:w}}.1m')
     s = Scraper(format=pattern, spacecraft='STEREO', instrument='HET')
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
     files = s.filelist(timerange)
-    assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
+    assert files == ['http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.xfail
