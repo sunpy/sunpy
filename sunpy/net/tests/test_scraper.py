@@ -592,7 +592,6 @@ def test_http_404_error_debug_message_new_format(caplog):
                 assert "Directory http://test.com/ not found." in caplog.text
 
 
-
 def test_check_timerange():
     with pytest.warns(SunpyDeprecationWarning, match="pattern has been replaced with the format keyword"):
         s = Scraper('%Y.fits')
@@ -616,6 +615,7 @@ def test_check_timerange():
     assert not s._check_timerange('2014.fits', TimeRange("2002-01-01", "2013-01-02"))
     # Interval above both boundaries
     assert not s._check_timerange('2014.fits', TimeRange("2022-01-01", "2025-01-02"))
+
 
 def test_check_timerange_new_pattern():
     s = Scraper(format='{{year:4d}}.fits')
@@ -642,3 +642,13 @@ def test_check_timerange_new_pattern():
 
     # Only 2-digit Year
     assert s._check_timerange('14.fits', TimeRange("2013-06-01", "2014-01-01"))
+
+
+def test_local_expected_directory_doesnt_exist(tmp_path):
+    path = (tmp_path / '2025' / '01' / '01')
+    path.mkdir(parents=True)
+    with (path / 'test.txt').open('w') as file:
+        file.write('')
+    s = Scraper(format='file://'+str(tmp_path)+'/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{file}}')
+    files = s.filelist(TimeRange("2025-01-01", "2025-01-02"))
+    assert len(files) == 1
