@@ -35,3 +35,11 @@ Now we can create a coordinate in helioprojective coordinates (`~sunpy.coordinat
     <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=None, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (70., -30., 1.)>): (Tx, Ty) in arcsec
         (100., 200.)>
+
+Alternatively, you can first create the observer-dependent frame and then use it to create coordinates:
+
+.. code-block:: python
+
+    >>> observer_coord = SkyCoord(70*u.deg, -30*u.deg, 1*u.AU, frame=frames.HeliographicStonyhurst)
+    >>> frame = frames.Helioprojective(observer=observer_coord)
+    >>> coord = SkyCoord(100*u.arcsec, 200*u.arcsec, frame=frame)
