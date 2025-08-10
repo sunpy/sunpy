@@ -46,3 +46,4 @@ Alternatively, you can first create the observer-dependent frame and then use it
     <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=None, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (70., -30., 1.)>): (Tx, Ty) in arcsec
         (100., 200.)>
+        
