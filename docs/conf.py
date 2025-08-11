@@ -176,7 +176,7 @@ if is_release:
     exclude_patterns.append('dev_guide/contents/*')
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
+# You can specify multiple suffix as a dict:
 source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
