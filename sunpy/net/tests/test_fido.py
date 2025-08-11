@@ -81,14 +81,11 @@ def test_online_fido(query):
 
 @pytest.mark.remote_data
 @mock.patch("sunpy.net.vso.vso.VSOClient.search", side_effect=ConnectionError('VSO is down'))
-def test_fido_client_error():
+def test_fido_client_error(mock_vso):
     results = Fido.search(a.Time("2016/10/01", "2016/10/02"), a.Instrument.aia)
     assert len(results.errors) > 0
-    assert isinstance(results.errors["VSOClient"], ConnectionError)
-<<<<<<< HEAD
-=======
-    assert "Error: ConnectionError" in str(results)
->>>>>>> 1799b68d4 (Minor changes)
+    assert isinstance(results['vso'].errors, ConnectionError)
+    assert "Errors: VSO is down" in str(results)
 
 
 def check_response(query, unifiedresp):
@@ -157,9 +154,10 @@ def test_unified_response():
 
 @pytest.mark.remote_data
 def test_no_match():
-    with pytest.raises(DrmsQueryError):
-        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
-                    a.Sample(10*u.s))
+    res = Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
+                a.Sample(10*u.s))
+    assert res.errors
+    assert isinstance(res[0].errors, DrmsQueryError)
 
 
 def test_call_error():

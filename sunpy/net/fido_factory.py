@@ -565,7 +565,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             try:
                 res = tmpclient.search(*query)
             except Exception as err:
-                res = QueryResponseTable([], client=tmpclient, error=err)
+                res = QueryResponseTable([], client=tmpclient, errors=err)
 
             results.append(res)
 
