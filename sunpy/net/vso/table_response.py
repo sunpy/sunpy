@@ -8,7 +8,6 @@ import numpy as np
 from zeep.helpers import serialize_object
 
 import astropy.units as u
-from astropy.table import TableAttribute
 from astropy.time import Time
 
 from sunpy.net.base_client import QueryResponseTable
@@ -51,7 +50,7 @@ def iter_sort_response(response):
 
 class VSOQueryResponseTable(QueryResponseTable):
     hide_keys = ['fileid', 'fileurl', 'Info Required']
-    errors = TableAttribute(default=[])
+    # errors = TableAttribute(default=[])
     size_column = 'Size'
 
     @classmethod

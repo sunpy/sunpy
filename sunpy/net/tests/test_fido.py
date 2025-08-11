@@ -81,7 +81,7 @@ def test_online_fido(query):
 
 @pytest.mark.remote_data
 @mock.patch("sunpy.net.vso.vso.VSOClient.search", side_effect=ConnectionError('VSO is down'))
-def test_fido_client_error(vso_search):
+def test_fido_client_error():
     results = Fido.search(a.Time("2016/10/01", "2016/10/02"), a.Instrument.aia)
     assert len(results.errors) > 0
     assert isinstance(results.errors["VSOClient"], ConnectionError)

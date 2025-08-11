@@ -176,12 +176,9 @@ class UnifiedResponse(Sequence):
     @property
     def errors(self):
         """
-        Returns a dict of errors for all responses.
-
-        If no errors are present for a client, its value is None.
-        If no errors are present at all, an empty dict is returned.
+        Returns a list of errors for all responses.
         """
-        return self._errors
+        return [res.errors for res in self._list if res.errors]
 
     def _repr_html_(self):
         nprov = len(self)
@@ -217,6 +214,8 @@ class UnifiedResponse(Sequence):
 
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
+            if block.errors:
+                ret += f'Errors: {block.errors}\n'
             ret += '\n'
             lines = repr(block).split('\n')
             ret += '\n'.join(lines[1:])
@@ -562,12 +561,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         candidate_widget_types = self._check_registered_widgets(*query)
         results = []
         for client in candidate_widget_types:
+            tmpclient = client()
             try:
-                tmpclient  = client()
-                results.append(tmpclient.search(*query))
-            except Exception as e:
-                e.client = client
-                results.append(e)
+                res = tmpclient.search(*query)
+            except Exception as err:
+                res = QueryResponseTable([], client=tmpclient, error=err)
+
+            results.append(res)
 
         return results
 
