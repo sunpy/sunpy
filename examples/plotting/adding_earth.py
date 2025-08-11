@@ -61,14 +61,14 @@ earth_diameter = (R_earth * 2).to(u.arcsec, equivalencies=solar_angle_equivalenc
 #
 # 2. The image of the Earth is plotted on the new insert axis on top of the AIA map.
 #    `The tricky part is navigating the different coordinate systems used by matplotlib
-#    and transforming between them <https://matplotlib.org/stable/users/explain/artists/transforms_tutorial.html>`__
+#    and transforming between them. <https://matplotlib.org/stable/users/explain/artists/transforms_tutorial.html>`__
 
 # Specify arcsec location to display the Earth image
 earth_x = 1000
 earth_y = -200
 
 # Plot AIA
-fig = plt.figure(figsize=(12, 12))
+fig = plt.figure()
 ax = plt.axes(projection=cutout_map)
 cutout_map.plot(clip_interval=(1, 99.9)*u.percent)
 
@@ -80,9 +80,12 @@ earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.
 
 # Plot the image of the Earth
 img = np.asarray(Image.open("epic_RGB_20250617102539.png"))
+# Add an alpha channel and set that to be 0 where there is no data
+img = np.concatenate([img, np.where(np.sum(img, axis=-1) == 0, 0, 255)[..., None]], axis=-1)
 earth_ax.imshow(img)
 earth_ax.axis('off')
 
+# Here the location was hand picked to be in the middle of the Earth image.
 earth_ax.annotate('Earth to scale', [-2.1, 1.2], xycoords = 'axes fraction', color='white', fontsize=12, transform=earth_ax.transAxes)
 
 plt.show()
