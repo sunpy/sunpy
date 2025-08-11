@@ -12,9 +12,10 @@ The NASA EPIC Team ask that they be be given credit for the original materials.
 
 This example was adapted from an example written by Alex Russell.
 """
+from urllib.request import urlretrieve
+
 import matplotlib.pyplot as plt
 import numpy as np
-import pooch
 from PIL import Image
 
 import astropy.units as u
@@ -31,9 +32,9 @@ from sunpy.coordinates.utils import solar_angle_equivalency
 
 cutout_map = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
 # Here we just pick a nice recent(ish) image.
-earth_image = pooch.retrieve(
+urlretrieve(
     url="https://epic.gsfc.nasa.gov/archive/enhanced/2025/06/17/png/epic_RGB_20250617102539.png",
-    known_hash="baff6889bd4e10ca9412e84a46fad6551b59be2ed15ad8627cc24dd12addc827",
+    filename="epic_RGB_20250617102539.png"
 )
 
 ##############################################################################
@@ -78,7 +79,7 @@ fc = rect.get_extents().transformed(ax.transData.inverted()).corners()
 earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.transData)
 
 # Plot the image of the Earth
-img = np.asarray(Image.open(earth_image))
+img = np.asarray(Image.open("epic_RGB_20250617102539.png"))
 earth_ax.imshow(img)
 earth_ax.axis('off')
 
