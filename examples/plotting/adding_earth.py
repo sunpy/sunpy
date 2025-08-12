@@ -41,12 +41,13 @@ urlretrieve(
 # The first step in plotting the Earth is to convert the Earth's diameter in km
 # to arcsec on the plane-of-sky for the time of the observation.
 #
-# This is ~17.65 arcsec for this example, but varies according to the Sun-Earth
+# This is ~17.35 arcsec for this example, but varies according to the Sun-Earth
 # distance, so it needs to be evaluated for the observation date. For more information
 # about the transformation, see `~sunpy.coordinates.utils.solar_angle_equivalency`.
 
 observer = get_body_heliographic_stonyhurst('earth', cutout_map.meta['date'])
 earth_diameter = (R_earth * 2).to(u.arcsec, equivalencies=solar_angle_equivalency(observer)).value
+print(f"Earth diameter = {earth_diameter:.2f} arcsec")
 
 ##############################################################################
 # Now we plot the AIA image and superimpose the Earth for scale. The image of
@@ -59,7 +60,7 @@ earth_diameter = (R_earth * 2).to(u.arcsec, equivalencies=solar_angle_equivalenc
 # 1. An invisible quadrangle is drawn with the correct size and position.
 #    Its extents provide the required display size of Earth.
 #
-# 2. The image of the Earth is plotted on the new insert axis on top of the AIA map.
+# 2. The image of the Earth is plotted on a new insert axis within the AIA map.
 #    `The tricky part is navigating the different coordinate systems used by matplotlib
 #    and transforming between them. <https://matplotlib.org/stable/users/explain/artists/transforms_tutorial.html>`__
 
@@ -78,17 +79,18 @@ rect = cutout_map.draw_quadrangle(coords, axes=ax, lw=0)
 fc = rect.get_extents().transformed(ax.transData.inverted()).corners()
 earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.transData)
 
-# Plot the image of the Earth
-img = np.asarray(Image.open("epic_RGB_20250617102539.png"))
-# Add an alpha channel and set that to be 0 where there is no data
-img = np.concatenate([img, np.where(np.sum(img, axis=-1) == 0, 0, 255)[..., None]], axis=-1)
-x_extent  = np.argwhere(np.sum(img[:,img.shape[1]//2, ...], axis=1)).flatten()[[0, -1]]
-y_extent  = np.argwhere(np.sum(img[shape[0]//2, ...], axis=1)).flatten()[[0, -1]]
-img_cut = img[y_extent[0]:y_extent[1], x_extent[0]:x_extent[1]]
-earth_ax.imshow(img_cut)
-earth_ax.axis('off')
+# Now we want to add the image of the Earth
+earth_img = np.asarray(Image.open("epic_RGB_20250617102539.png"))
+# Add an alpha channel and set that to be 0 where there is no data,
+# this removes the background
+earth_img = np.concatenate([earth_img, np.where(np.sum(earth_img, axis=-1) == 0, 0, 255)[..., None]], axis=-1)
+# Now we crop the image just to save on computation
+x_extent  = np.argwhere(np.sum(earth_img[:,earth_img.shape[1]//2, ...], axis=1)).flatten()[[0, -1]]
+y_extent  = np.argwhere(np.sum(earth_img[earth_img.shape[0]//2, ...], axis=1)).flatten()[[0, -1]]
+earth_crop = earth_img[y_extent[0]:y_extent[1], x_extent[0]:x_extent[1]]
 
-# Here the location was hand picked to be in the middle of the Earth image.
-earth_ax.annotate('Earth to scale', [-2.1, 1.2], xycoords = 'axes fraction', color='white', fontsize=12, transform=earth_ax.transAxes)
+earth_ax.imshow(earth_crop)
+earth_ax.axis('off')
+earth_ax.set_title('Earth to scale', color='white', fontsize=12)
 
 plt.show()
