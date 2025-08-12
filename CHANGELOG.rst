@@ -617,7 +617,7 @@ Documentation
 -------------
 
 - Added an example of how to search for multiple wavelengths attributes for AIA data using `sunpy.net.attrs.AttrOr`. (`#6501 <https://github.com/sunpy/sunpy/pull/6501>`__)
-- Added `sunpy.map.PixelPair` to the reference documentation. (`#6620 <https://github.com/sunpy/sunpy/pull/6620>`__)
+- Added ``sunpy.map.PixelPair`` to the reference documentation. (`#6620 <https://github.com/sunpy/sunpy/pull/6620>`__)
 - Split the installation docs into a new Installation tutorial, and an installation guide. (`#6639 <https://github.com/sunpy/sunpy/pull/6639>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_time_series_goes_xrs_nrt_data.py`) to download GOES NRT data and load it into `~sunpy.timeseries.TimeSeries`. (`#6744 <https://github.com/sunpy/sunpy/pull/6744>`__)
 - Added an example gallery (:ref:`sphx_glr_generated_gallery_acquiring_data_querying_and_loading_SHARP_data.py`) for querying SHARP data and loading it into a `~sunpy.map.Map`. (`#6757 <https://github.com/sunpy/sunpy/pull/6757>`__)
@@ -1142,8 +1142,8 @@ Removals
   attributes are set on a `~astropy.wcs.WCS`. (`#5348 <https://github.com/sunpy/sunpy/pull/5348>`__)
 - Support for passing non-unit levels to :meth:`sunpy.map.GenericMap.draw_contours`
   when map data has units set has been removed, and with now raise an error. (`#5352 <https://github.com/sunpy/sunpy/pull/5352>`__)
-- The ``origin`` argument to :meth:`sunpy.map.GenericMap.world_to_pixel` and
-  :meth:`sunpy.map.GenericMap.pixel_to_world` has been removed. (`#5353 <https://github.com/sunpy/sunpy/pull/5353>`__)
+- The ``origin`` argument to ``sunpy.map.GenericMap.world_to_pixel`` and
+  ``sunpy.map.GenericMap.pixel_to_world`` has been removed. (`#5353 <https://github.com/sunpy/sunpy/pull/5353>`__)
 - Support for plotting or contouring `~sunpy.map.GenericMap` on axes that are not
   `~astropy.visualization.wcsaxes.WCSAxes` has been removed. To create a
   ``WCSAxes``, use the ``projection`` argument when the axes is created, e.g.
@@ -1668,8 +1668,8 @@ Deprecations
 - Support for :func:`sunpy.coordinates.wcs_utils.solar_wcs_frame_mapping` to
   use the ``.heliographic_observer`` and ``.rsun`` attributes on a
   `~astropy.wcs.WCS` is deprecated. (`#4620 <https://github.com/sunpy/sunpy/pull/4620>`__)
-- The ``origin`` argument to `sunpy.map.GenericMap.pixel_to_world` and
-  `sunpy.map.GenericMap.world_to_pixel` is deprecated.
+- The ``origin`` argument to ``sunpy.map.GenericMap.pixel_to_world`` and
+  ``sunpy.map.GenericMap.world_to_pixel`` is deprecated.
 
   - If passing ``0``, not using the ``origin`` argument will have the same effect.
   - If passing ``1``, manually subtract 1 pixel from the input to ``pixel_to_world``,
@@ -1855,7 +1855,7 @@ Bug Fixes
 - ``sunpy.io.fits.header_to_fits`` now excludes any keys that have associated NaN
   values, as these are not valid in a FITS header, and throws a warning if this
   happens. (`#4676 <https://github.com/sunpy/sunpy/pull/4676>`__)
-- Fixed an assumption in `sunpy.map.GenericMap.pixel_to_world` that the first
+- Fixed an assumption in ``sunpy.map.GenericMap.pixel_to_world`` that the first
   data axis is longitude, and the second is latitude. This will affect you if
   you are using data where the x/y axes are latitude/longitude, and now returns
   correct values in methods and properties that call ``pixel_to_world``,
@@ -2132,7 +2132,7 @@ Improved Documentation
 - Removed obsolete Astropy Helpers submodule section in :file:`CONTRIBUTING.rst`;
   Also removed mentions of astropy_helpers in all files of the project. (`#3676 <https://github.com/sunpy/sunpy/pull/3676>`__)
 - Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters. (`#3680 <https://github.com/sunpy/sunpy/pull/3680>`__)
-- Added an example for `~sunpy.map.GenericMap.world_to_pixel` function in the Units & Coordinates guide. (`#3776 <https://github.com/sunpy/sunpy/pull/3776>`__)
+- Added an example for ``sunpy.map.GenericMap.world_to_pixel`` function in the Units & Coordinates guide. (`#3776 <https://github.com/sunpy/sunpy/pull/3776>`__)
 - Added a :ref:`page <sunpy-topic-guide-coordinates-carrington>` describing how SunPy calculates Carrington longitudes. (`#3782 <https://github.com/sunpy/sunpy/pull/3782>`__)
 - Changed padding value of an example in the example gallery to fix the overlap of titles and x-label axes. (`#3835 <https://github.com/sunpy/sunpy/pull/3835>`__)
 - More information and links about how to create changelogs. (`#3856 <https://github.com/sunpy/sunpy/pull/3856>`__)
@@ -2446,7 +2446,7 @@ Deprecations and Removals
 - Removed ``MapCube`` in favour of `~sunpy.map.MapSequence` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``solar_north`` in favour of ``get_sun_P`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``database.download`` in favour of ``sunpy.database.Database.fetch`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of `sunpy.map.GenericMap.pixel_to_world` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of ``sunpy.map.GenericMap.pixel_to_world`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``GenericClient.get`` in favour of `sunpy.net.dataretriever.GenericClient.fetch`. This changes applies to the other clients as well. (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``Map.xrange`` and ``Map.yrange`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``sunpy.net.attrs.Wave`` in favour of ``sunpy.net.vso.attrs.Wavelength`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)

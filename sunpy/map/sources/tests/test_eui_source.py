@@ -72,4 +72,4 @@ def test_norm_clip(eui_map):
 
 def test_wcs(eui_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    eui_map.pixel_to_world(0*u.pix, 0*u.pix)
+    eui_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

@@ -52,11 +52,11 @@ class SXTMap(GenericMap):
     * `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
-        self.plot_settings['cmap'] = 'yohkohsxt' + self.measurement[0:2].lower()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = 'yohkohsxt' + self.measurement[0:2].lower()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
