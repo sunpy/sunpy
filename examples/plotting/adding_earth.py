@@ -82,7 +82,10 @@ earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.
 img = np.asarray(Image.open("epic_RGB_20250617102539.png"))
 # Add an alpha channel and set that to be 0 where there is no data
 img = np.concatenate([img, np.where(np.sum(img, axis=-1) == 0, 0, 255)[..., None]], axis=-1)
-earth_ax.imshow(img)
+x_extent  = np.argwhere(np.sum(img[:,img.shape[1]//2, ...], axis=1)).flatten()[[0, -1]]
+y_extent  = np.argwhere(np.sum(img[shape[0]//2, ...], axis=1)).flatten()[[0, -1]]
+img_cut = img[y_extent[0]:y_extent[1], x_extent[0]:x_extent[1]]
+earth_ax.imshow(img_cut)
 earth_ax.axis('off')
 
 # Here the location was hand picked to be in the middle of the Earth image.
