@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_plotting_adding_earth.py`) showing how to add an Earth scale image to a Map plot.
