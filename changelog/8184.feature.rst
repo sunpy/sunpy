@@ -1,0 +1,1 @@
+Added support of row & col slicing in `sunpy.timeseries.TimeSeries`.
