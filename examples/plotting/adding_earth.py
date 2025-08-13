@@ -4,8 +4,6 @@ Adding an Earth scale image
 ===========================
 
 This example shows how to plot a map with an image of the Earth added for scale.
-
-This example was adapted from an example written by Alex Russell.
 """
 from urllib.request import urlretrieve
 
