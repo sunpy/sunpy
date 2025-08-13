@@ -5,11 +5,6 @@ Adding an Earth scale image
 
 This example shows how to plot a map with an image of the Earth added for scale.
 
-The Earth image used in this example is produced by NASA's EPIC Team.
-Their images are freely available for re-production or re-use, including commercial purposes.
-The NASA EPIC Team ask that they be be given credit for the original materials.
-`For information about usage. <https://epic.gsfc.nasa.gov/about>`__
-
 This example was adapted from an example written by Alex Russell.
 """
 from urllib.request import urlretrieve
@@ -28,14 +23,11 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.utils import solar_angle_equivalency
 
 ###############################################################################
-# We start with the sample data and downloading the Earth image.
+# We start with the sample data and download a low-resolution Earth image from
+# Wikimedia Commons.
 
 cutout_map = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-# Here we just pick a nice recent(ish) image.
-urlretrieve(
-    url="https://epic.gsfc.nasa.gov/archive/enhanced/2025/06/17/png/epic_RGB_20250617102539.png",
-    filename="epic_RGB_20250617102539.png"
-)
+earth_image = urlretrieve("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Earth_Western_Hemisphere_2002.png/250px-Earth_Western_Hemisphere_2002.png")[0]
 
 ##############################################################################
 # The first step in plotting the Earth is to convert the Earth's diameter in km
@@ -80,7 +72,7 @@ fc = rect.get_extents().transformed(ax.transData.inverted()).corners()
 earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.transData)
 
 # Now we want to add the image of the Earth
-earth_img = np.asarray(Image.open("epic_RGB_20250617102539.png"))
+earth_img = np.asarray(Image.open(earth_image))
 # Add an alpha channel and set that to be 0 where there is no data,
 # this removes the background
 earth_img = np.concatenate([earth_img, np.where(np.sum(earth_img, axis=-1) == 0, 0, 255)[..., None]], axis=-1)
