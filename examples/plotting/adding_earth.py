@@ -8,9 +8,8 @@ This example shows how to plot a map with an image of the Earth added for scale.
 from urllib.request import urlretrieve
 
 import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
 from matplotlib.image import AxesImage
+from PIL import Image
 
 import astropy.units as u
 from astropy.constants import R_earth
