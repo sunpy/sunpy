@@ -22,11 +22,17 @@ import sunpy.map
 from sunpy.coordinates.utils import solar_angle_equivalency
 
 ###############################################################################
-# We start with the sample data and download a low-resolution Earth image from
-# Wikimedia Commons.
+# We start with a sample AIA image.
 
 cutout_map = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-earth_image = urlretrieve("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Earth_Western_Hemisphere_2002.png/250px-Earth_Western_Hemisphere_2002.png")[0]
+
+###############################################################################
+# We download a low-resolution Earth image from Wikimedia Commons that already
+# has a transparent background. We also crop the image tightly.
+
+earth_file = urlretrieve("https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/The_Earth_seen_from_Apollo_17_with_transparent_background.png/250px-The_Earth_seen_from_Apollo_17_with_transparent_background.png")[0]
+earth = Image.open(earth_file)
+earth = earth.crop(earth.getbbox())
 
 ##############################################################################
 # The first step in plotting the Earth is to convert the Earth's diameter in km
@@ -68,16 +74,7 @@ fc = rect.get_extents().transformed(ax.transData.inverted()).corners()
 earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.transData)
 
 # Now we want to add the image of the Earth
-earth_img = np.asarray(Image.open(earth_image))
-# Add an alpha channel and set that to be 0 where there is no data,
-# this removes the background
-earth_img = np.concatenate([earth_img, np.where(np.sum(earth_img, axis=-1) == 0, 0, 255)[..., None]], axis=-1)
-# Now we crop the image just to save on computation
-x_extent  = np.argwhere(np.sum(earth_img[:,earth_img.shape[1]//2, ...], axis=1)).flatten()[[0, -1]]
-y_extent  = np.argwhere(np.sum(earth_img[earth_img.shape[0]//2, ...], axis=1)).flatten()[[0, -1]]
-earth_crop = earth_img[y_extent[0]:y_extent[1], x_extent[0]:x_extent[1]]
-
-earth_ax.imshow(earth_crop)
+earth_ax.imshow(earth)
 earth_ax.axis('off')
 earth_ax.set_title('Earth to scale', color='white', fontsize=12)
 
