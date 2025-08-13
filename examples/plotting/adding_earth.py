@@ -19,7 +19,6 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.data.sample
 import sunpy.map
-from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.coordinates.utils import solar_angle_equivalency
 
 ###############################################################################
@@ -31,14 +30,11 @@ earth_image = urlretrieve("https://upload.wikimedia.org/wikipedia/commons/thumb/
 
 ##############################################################################
 # The first step in plotting the Earth is to convert the Earth's diameter in km
-# to arcsec on the plane-of-sky for the time of the observation.
-#
-# This is ~17.35 arcsec for this example, but varies according to the Sun-Earth
-# distance, so it needs to be evaluated for the observation date. For more information
-# about the transformation, see `~sunpy.coordinates.utils.solar_angle_equivalency`.
+# to arcsec on the plane-of-sky for the time of the observation.  We use the
+# observer coordinate from the map. For more information about the
+# transformation, see :func:`~sunpy.coordinates.utils.solar_angle_equivalency`.
 
-observer = get_body_heliographic_stonyhurst('earth', cutout_map.meta['date'])
-earth_diameter = (R_earth * 2).to(u.arcsec, equivalencies=solar_angle_equivalency(observer)).value
+earth_diameter = 2 * R_earth.to_value(u.arcsec, equivalencies=solar_angle_equivalency(cutout_map.observer_coordinate))
 print(f"Earth diameter = {earth_diameter:.2f} arcsec")
 
 ##############################################################################
