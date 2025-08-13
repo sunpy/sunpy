@@ -12,10 +12,12 @@ from urllib.request import urlretrieve
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from matplotlib.image import AxesImage
 
 import astropy.units as u
 from astropy.constants import R_earth
 from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
 
 import sunpy.data.sample
 import sunpy.map
@@ -40,42 +42,39 @@ earth = earth.crop(earth.getbbox())
 # observer coordinate from the map. For more information about the
 # transformation, see :func:`~sunpy.coordinates.utils.solar_angle_equivalency`.
 
-earth_diameter = 2 * R_earth.to_value(u.arcsec, equivalencies=solar_angle_equivalency(cutout_map.observer_coordinate))
-print(f"Earth diameter = {earth_diameter:.2f} arcsec")
+earth_diameter = 2 * R_earth.to(u.arcsec, equivalencies=solar_angle_equivalency(cutout_map.observer_coordinate))
+print(f"Earth diameter = {earth_diameter:.2f}")
 
 ##############################################################################
-# Now we plot the AIA image and superimpose the Earth for scale. The image of
-# the Earth is plotted by inserting a new axis within the AIA figure.
-#
-# The width and height of the new axis is specified in WCS data coordinates,
-# which must be calculated to agree with the Earth's diameter.
-# This example does the calculation by the following steps.
-#
-# 1. An invisible quadrangle is drawn with the correct size and position.
-#    Its extents provide the required display size of Earth.
-#
-# 2. The image of the Earth is plotted on a new insert axis within the AIA map.
-#    `The tricky part is navigating the different coordinate systems used by matplotlib
-#    and transforming between them. <https://matplotlib.org/stable/users/explain/artists/transforms_tutorial.html>`__
+# We then create a WCS header so that the Earth will be plotted correctly
+# on any underlying map projection. We center the Earth on a specific point in
+# the map.
 
-# Specify arcsec location to display the Earth image
-earth_x = 1000
-earth_y = -200
+earth_x = 1000 * u.arcsec
+earth_y = -200 * u.arcsec
+earth_center = SkyCoord(earth_x, earth_y, frame=cutout_map.coordinate_frame)
+earth_wcs = sunpy.map.make_fitswcs_header(
+    (earth.height, earth.width), earth_center,
+    scale=earth_diameter / ([earth.width, earth.height] * u.pix)
+)
 
-# Plot AIA
+##############################################################################
+# Now we plot the AIA image and superimpose the Earth for scale. We manually
+# create and add the image artist so that the Earth will not be considered
+# when autoscaling plot limits. We also add a text label above the Earth.
+
 fig = plt.figure()
-ax = plt.axes(projection=cutout_map)
+ax = fig.add_subplot(projection=cutout_map)
 cutout_map.plot(clip_interval=(1, 99.9)*u.percent)
 
-# Create new axis of correct size to display Earth image
-coords = SkyCoord(Tx=(earth_x, earth_x + earth_diameter) * u.arcsec, Ty=(earth_y, earth_y + earth_diameter) * u.arcsec, frame=cutout_map.coordinate_frame)
-rect = cutout_map.draw_quadrangle(coords, axes=ax, lw=0)
-fc = rect.get_extents().transformed(ax.transData.inverted()).corners()
-earth_ax = ax.inset_axes(fc[0].tolist() + (fc[-1]-fc[0]).tolist(), transform=ax.transData)
+earth_artist = AxesImage(ax, transform=ax.get_transform(WCS(earth_wcs)))
+earth_artist.set_data(earth)
+ax.add_artist(earth_artist)
 
-# Now we want to add the image of the Earth
-earth_ax.imshow(earth)
-earth_ax.axis('off')
-earth_ax.set_title('Earth to scale', color='white', fontsize=12)
+ax.text(
+    earth_x.to_value('deg'), (earth_y + earth_diameter).to_value('deg'),
+    'Earth to scale', color='white', fontsize=12, horizontalalignment='center',
+    transform=ax.get_transform('world')
+)
 
 plt.show()
