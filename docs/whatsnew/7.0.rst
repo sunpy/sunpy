@@ -14,12 +14,10 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 7.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-This release of sunpy contains 465 commits in 44 merged pull requests closing 15 issues from 25 people, 8 of which are first-time contributors to sunpy.
-
-* 465 commits have been added since 6.1
-* 15 issues have been closed since 6.1
-* 44 pull requests have been merged since 6.1
-* 25 people have contributed since 6.1
+* 515 commits have been added since 6.1
+* 23 issues have been closed since 6.1
+* 63 pull requests have been merged since 6.1
+* 26 people have contributed since 6.1
 * 8 of which are new contributors
 
 The people who have contributed to the code for this release are:
@@ -28,6 +26,7 @@ The people who have contributed to the code for this release are:
 -  Albert Y. Shih
 -  Ankit Khushwaha
 -  Aritra Sinha
+-  Brett J Graham
 -  Chris Lowder  *
 -  Chris R. Gilly
 -  David Pérez-Suárez
@@ -37,6 +36,7 @@ The people who have contributed to the code for this release are:
 -  Hardik  *
 -  Laura Hayes
 -  Manish Tiwari  *
+-  Mingyu Jeon  *
 -  Nabil Freij
 -  Ole Streicher
 -  Pratham Hole
@@ -48,7 +48,6 @@ The people who have contributed to the code for this release are:
 -  Tanish Yelgoe
 -  Will Barnes
 -  _Gagan  *
--  mgjeon  *
 
 Where a * indicates that this release contains their first contribution to sunpy.
 
@@ -93,6 +92,9 @@ There is now support for Polarimeter to Unify the Corona and Heliosphere (PUNCH)
    :alt: A plot from sunpy of a PUNCH level 3 file.
 
 As well as for the Solar Ultraviolet Imaging Telescope (SUIT) onboard the Aditya-L1 mission.
+
+.. image:: 7.0-suit.png
+   :alt: A plot from sunpy of a SUIT level 1 file.
 
 Broadened support for existing observatories
 ============================================
