@@ -1,12 +1,12 @@
-import collections
-from packaging.version import Version
-import requests
-from datetime import datetime, timedelta
-from dateutil.parser import parse as parse_date
-from importlib import metadata
-from packaging.requirements import Requirement
-from functools import cache
 import argparse
+import collections
+from datetime import datetime, timedelta
+from functools import cache
+from importlib import metadata
+
+import requests
+from packaging.requirements import Requirement
+from packaging.version import Version
 
 
 @cache
@@ -20,15 +20,31 @@ def get_package_releases(package):
     print("OK")
     file_date = collections.defaultdict(list)
     for f in response["files"]:
-        ver = f["filename"].split("-")[1]
+        if not f["filename"].endswith(".tar.gz"):
+            continue
+        if ".dev" in f["filename"] or ".post" in f["filename"]:
+            continue
+        package_name = response["name"]
+        if package_name not in f["filename"]:
+            if "-" in package_name:
+                # If the package name contains a dash(es), replace it with an underscore
+                # to match the filename format used on PyPI
+                package_name = package_name.replace("-", "_")
+            if "ruamel" in package_name:
+                # The filename has a dot, but the package name has an underscore
+                package_name = "ruamel.yaml"
+            if package_name.capitalize() in f["filename"]:
+                package_name = package_name.capitalize()
         try:
+            ver = f["filename"].split(package_name + "-")[1].split(".tar.gz")[0]
             version = Version(ver)
-        except:
+        except Exception:
             continue
         release_date = None
-        for format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:
+        for time_format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%MZ"]:
             try:
-                release_date = datetime.strptime(f["upload-time"], format)
+                release_date = datetime.strptime(f["upload-time"], time_format)
+                break
             except ValueError:
                 continue
         if not release_date:
