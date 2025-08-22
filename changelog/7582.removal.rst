@@ -1,0 +1,1 @@
+Remove the arithmetic operators on `~sunpy.map.GenericMap` in favor of using those on `~ndcube.NDCube`.

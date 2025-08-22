@@ -38,13 +38,9 @@ with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):  #
 
 
 @pytest.mark.parametrize(("func", "args"), [
-    ("max", {}),
-    ("mean", {}),
-    ("min", {}),
     pytest.param("reproject_to", {"wcs": aia_wcs}, marks=pytest.mark.xfail(reason="reproject is not dask aware")),
     pytest.param("resample", {"dimensions": (100, 100)*u.pix}, marks=pytest.mark.xfail()),
-    pytest.param("rotate", {}, marks=pytest.mark.xfail(reason="nanmedian is not implemented in Dask")),
-    ("std", {}),
+    pytest.param("rotate", {}, marks=pytest.mark.xfail(reason="nanmedian in Dask doesn't support our use")),
     ("superpixel", {"dimensions": (10, 10)*u.pix}),
     ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height": 10*u.pixel}),
 ])
@@ -54,8 +50,8 @@ def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func
     operating on them and bringing them into memory.
     """
     # Check that result array is still a Dask array
-    res_dask = aia171_test_dask_map.__getattribute__(func)(**args)
-    res = aia171_test_map.__getattribute__(func)(**args)
+    res_dask = getattr(aia171_test_dask_map, func)(**args)
+    res = getattr(aia171_test_map, func)(**args)
     result_is_map = isinstance(res, sunpy.map.GenericMap)
     if result_is_map:
         assert isinstance(res_dask.data, type(aia171_test_dask_map.data))

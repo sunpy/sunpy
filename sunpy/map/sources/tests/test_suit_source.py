@@ -55,4 +55,4 @@ def test_norm_clip(suit_map):
 
 def test_wcs(suit_map):
     """Test WCS is valid and can transform from pixels to world coordinates"""
-    suit_map.pixel_to_world(0*u.pix, 0*u.pix)
+    suit_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

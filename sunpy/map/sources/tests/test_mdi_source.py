@@ -8,10 +8,9 @@ from astropy.coordinates import Angle
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
-__author__ = 'Pritish C. (VaticanCameos)'
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture
@@ -80,15 +79,13 @@ def test_unit(mdi):
 def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
     # Check that the WCS is valid
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        mdi_synoptic.wcs
+    mdi_synoptic.wcs
 
 
 def test_wcs(mdi, mdi_synoptic):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    mdi.pixel_to_world(0*u.pix, 0*u.pix)
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        mdi_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
+    mdi.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+    mdi_synoptic.wcs.pixel_to_world(0*u.pix, 0*u.pix)
 
 
 def test_unit_synoptic(mdi_synoptic):
