@@ -1,6 +1,7 @@
 """
 This module provides functions to retrieve system information.
 """
+import sys
 import platform
 from collections import defaultdict
 from importlib.metadata import PackageNotFoundError, version, requires, distribution
@@ -14,7 +15,19 @@ from sunpy.util import warn_user
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 
 
-def get_requirements(package):
+def _trusted_version(package_name):
+    """
+    If the package has already been imported, trust its __version__ attribute
+    over the version retrievable by importlib.
+    """
+    if package_name in sys.modules:
+        package = sys.modules[package_name]
+        if hasattr(package, "__version__"):
+            return package.__version__
+    return version(package_name)
+
+
+def get_requirements(package, *, expand_groups=False):
     """
     This wraps `importlib.metadata.requires` to not be garbage.
 
@@ -22,6 +35,9 @@ def get_requirements(package):
     ----------
     package : str
         Package you want requirements for.
+
+    expand_groups : bool
+        If `True`, expand any requirement that is a group of the specified package.
 
     Returns
     -------
@@ -43,7 +59,32 @@ def get_requirements(package):
         if package_name in requires_dict[group]:
             continue
         requires_dict[group][package_name] = req
+
+    if expand_groups:
+        # First expand each self-referential package requirement into the individual groups
+        for group, group_reqs in requires_dict.items():
+            if package in group_reqs and (extras := group_reqs[package].extras):
+                requires_dict[group].update(dict.fromkeys(extras))
+                del group_reqs[package]
+
+        # Resolve each group, recursing as necessary
+        for group in requires_dict:
+            _resolve_group(group, requires_dict)
+
     return requires_dict
+
+
+def _resolve_group(group, requires_dict):
+    """
+    Return a fully resolved list of requirements for a group.
+    If the group requires another group, recurse to fully resolve that group first.
+    The dictionary is permanently updated with the fully resolved requirements.
+    """
+    for req_name, req in requires_dict[group].copy().items():
+        if req is None:  # req==None means that req_name is an unresolved group
+            requires_dict[group].update(_resolve_group(req_name, requires_dict))
+            del requires_dict[group][req_name]
+    return requires_dict[group]
 
 
 def resolve_requirement_versions(package_versions):
@@ -82,7 +123,7 @@ def find_dependencies(package="sunpy", extras=None):
     which should be installed to match the requirements and return any which are
     missing.
     """
-    requirements = get_requirements(package)
+    requirements = get_requirements(package, expand_groups=True)
     installed_requirements = {}
     missing_requirements = defaultdict(list)
     extras = extras or ["required"]
@@ -91,7 +132,7 @@ def find_dependencies(package="sunpy", extras=None):
             continue
         for package, package_details in requirements[group].items():
             try:
-                package_version = version(package)
+                package_version = _trusted_version(package)
                 installed_requirements[package] = package_version
             except PackageNotFoundError:
                 missing_requirements[package].append(package_details)
@@ -125,7 +166,7 @@ def missing_dependencies_by_extra(package="sunpy", exclude_extras=None):
     dependencies associated with no extras.
     """
     exclude_extras = exclude_extras or []
-    requirements = get_requirements(package)
+    requirements = get_requirements(package)  # groups do not need to be expanded here
     missing_dependencies = {}
     for group in requirements.keys():
         if group in exclude_extras:
@@ -149,7 +190,7 @@ def system_info():
     """
     Prints ones' system info in an "attractive" fashion.
     """
-    requirements = get_requirements("sunpy")
+    requirements = get_requirements("sunpy", expand_groups=True)
     groups = get_keys_list(requirements)
     extra_groups = get_extra_groups(groups, ['all', 'dev'])
     base_reqs = get_keys_list(requirements['required'])
@@ -158,7 +199,7 @@ def system_info():
     extra_prop = {"System": platform.system(),
                   "Arch": f"{platform.architecture()[0]}, ({platform.processor()})",
                   "Python": platform.python_version(),
-                  "sunpy": version("sunpy")}
+                  "sunpy": _trusted_version("sunpy")}
     sys_prop = {**installed_packages, **missing_packages, **extra_prop}
     print("==============================")
     print("sunpy Installation Information")

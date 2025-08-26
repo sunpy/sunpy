@@ -50,7 +50,7 @@ PARSE_TIME_CONVERSIONS = {
 DEPRECATED_MESSAGE = (
     "pattern has been replaced with the format keyword. "
     "This comes with a new syntax and there is a migration guide available at "
-    "https://docs.sunpy.org/en/stable/how_to/scraper_migration.html."
+    "https://docs.sunpy.org/en/latest/topic_guide/scraper_migration.html."
 )
 
 class Scraper:
@@ -307,11 +307,14 @@ class Scraper:
             directories = self.range(timerange)
             filepaths = list()
             for directory in directories:
-                for file_i in os.listdir(directory):
-                    fullpath = directory + file_i
-                    if self._url_follows_pattern(fullpath):
-                        if self._check_timerange(fullpath, timerange):
-                            filepaths.append(fullpath)
+                try:
+                    for file_i in os.listdir(directory):
+                        fullpath = directory + file_i
+                        if self._url_follows_pattern(fullpath):
+                            if self._check_timerange(fullpath, timerange):
+                                filepaths.append(fullpath)
+                except FileNotFoundError:
+                    log.debug(f"Local directory not found: {directory}.")
             filepaths = [prefix + path for path in filepaths]
             self.pattern = pattern
             return filepaths
@@ -329,11 +332,14 @@ class Scraper:
             directories = self.range(timerange)
             filepaths = list()
             for directory in directories:
-                for file_i in os.listdir(directory):
-                    fullpath = directory + file_i
-                    if self._url_follows_pattern(fullpath):
-                        if self._check_timerange(fullpath, timerange):
-                            filepaths.append(fullpath)
+                try:
+                    for file_i in os.listdir(directory):
+                        fullpath = directory + file_i
+                        if self._url_follows_pattern(fullpath):
+                            if self._check_timerange(fullpath, timerange):
+                                filepaths.append(fullpath)
+                except FileNotFoundError:
+                    log.debug(f"Local directory not found: {directory}.")
             filepaths = [prefix + path for path in filepaths]
             # Set them back to their original values
             self.pattern, self.datetime_pattern = pattern, datetime_pattern
@@ -565,9 +571,10 @@ class Scraper:
                             metadict['month'] = datetime.strptime(metadict['month_name_abbr'], '%b').month
                     if matcher is not None:
                         for k in metadict:
-                            if k in matcher and str(metadict[k]) not in matcher[k]:
-                                append = False
-                                break
+                            if match := matcher.get(k):
+                                if str(metadict[k]) not in match:
+                                    append = False
+                                    break
                     if append:
                         metalist.append(metadict)
             return metalist

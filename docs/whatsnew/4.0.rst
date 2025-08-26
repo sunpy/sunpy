@@ -128,7 +128,7 @@ Deprecation of ``sunpy.physics.solar_rotation``
 ===============================================
 ``sunpy.physics.solar_rotation.calculate_solar_rotate_shift`` and ``sunpy.physics.solar_rotation.mapsequence_solar_derotate`` have been deprecated and will be removed in version 4.1.
 Both of these functions have been moved to `sunkit_image.coalignment` and have identical functionality and API.
-Note that ``sunpy.physics.solar_rotation.mapsequence_solar_derotate`` has been renamed to `~sunkit_image.coalignment.mapsequence_coalign_by_rotation` to more accurately reflect its functionality.
+Note that ``sunpy.physics.solar_rotation.mapsequence_solar_derotate`` has been renamed to ``~sunkit_image.coalignment.mapsequence_coalign_by_rotation`` to more accurately reflect its functionality.
 
 New dependency on ``asdf-astropy`` for ASDF support
 ===================================================

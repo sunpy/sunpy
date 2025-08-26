@@ -9,8 +9,7 @@ can be identified with features in the same place in another map
 (e.g. active regions in a EUV image).
 
 This example shows how to plot two maps on top of each other, with a slider to
-fade between them. Note that it assumes that the two maps are taken at the same
-time from the same observation point.
+fade between them.
 """
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
@@ -22,10 +21,6 @@ from sunpy.data.sample import AIA_171_IMAGE, AIA_1600_IMAGE
 
 ###############################################################################
 # Start by loading two AIA maps from the sample data.
-#
-# Note that these maps must be co-aligned. If they are taken at different times
-# or from different observation locations they will need to be aligned using
-# `~sunpy.map.GenericMap.rotate` or `reproject`.
 
 map_171 = sunpy.map.Map(AIA_171_IMAGE)
 map_1600 = sunpy.map.Map(AIA_1600_IMAGE)
@@ -39,7 +34,7 @@ fig = plt.figure()
 # Add the main axes. Note this is resized to leave room for the slider axes
 ax = fig.add_axes([0.1, 0.2, 0.9, 0.7], projection=map_171)
 
-im_1600 = map_1600.plot(axes=ax, autoalign=True)
+im_1600 = map_1600.plot(axes=ax)
 im_171 = map_171.plot(axes=ax, alpha=0.5, clip_interval=(1, 99.99)*u.percent)
 ax.set_title('AIA 171 + 1600')
 

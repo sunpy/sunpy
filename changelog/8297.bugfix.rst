@@ -1,0 +1,1 @@
+Fixed :func:`sunpy.util.system_info` so that the version reported for a development installation of `sunpy` itself or of a dependency is accurate.

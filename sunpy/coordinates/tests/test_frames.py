@@ -1,5 +1,6 @@
 
 import warnings
+from contextlib import nullcontext
 
 import numpy as np
 import pytest
@@ -14,7 +15,7 @@ from astropy.coordinates import (
 from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy import sun
-from sunpy.coordinates import PlanarScreen, SphericalScreen
+from sunpy.coordinates import PlanarScreen, SphericalScreen, propagate_with_solar_surface
 from sunpy.coordinates.frames import (
     Geomagnetic,
     Heliocentric,
@@ -492,6 +493,21 @@ def test_heliocentric_radial_psi(x, y, psi):
 # ==============================================================================
 
 
+@pytest.mark.parametrize(('obstime', 'dipole_lonlat'),
+                         [('2012-07-01', [-72.408328, 80.16423]*u.deg),
+                          ('2012-08-01', [-72.415148, 80.169261]*u.deg),
+                          ('2032-08-01', [-72.576963, 81.212062]*u.deg),
+                          (['2012-07-01', '2012-08-01'], [[-72.408328, 80.16423], [-72.415148, 80.169261]]*u.deg),
+                          (['2012-07-01', '2032-08-01'], [[-72.408328, 80.16423], [-72.576963, 81.212062]]*u.deg),
+                          ('1899-01-01', ValueError),
+                          (['1899-01-01', '2012-07-01'], ValueError)])
+def test_magnetic_model_obstime(obstime, dipole_lonlat):
+    frame = Geomagnetic(obstime=obstime, magnetic_model='igrf13')
+    ctx = pytest.raises(ValueError, match="earlier than the year 1900") if dipole_lonlat is ValueError else nullcontext()
+    with ctx:
+        assert_quantity_allclose(frame.dipole_lonlat, dipole_lonlat.T)
+
+
 def test_magnetic_model_default():
     # Also tests that no downloading happens because this test is not marked as remote
     obstime = '2012-07-01'
@@ -643,3 +659,35 @@ def test_spherical_screen_askew(off_limb_coord, only_off_disk, distance, non_ear
     with SphericalScreen(non_earth_coord, only_off_disk=only_off_disk):
         olc_3d = off_limb_coord.make_3d()
     assert u.quantity.allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize(('screen', 'only_off_disk', 'distance'), [
+    (SphericalScreen, False, [0.98405002, 0.98306592, 0.98253594]*u.AU),
+    (SphericalScreen, True, [0.98405002, 0.97910333, 0.98253594]*u.AU),
+    (PlanarScreen, False, [0.98407381, 0.98306806, 0.98255967]*u.AU),
+    (PlanarScreen, True, [0.98407381, 0.97910333, 0.98255967]*u.AU),
+])
+def test_screen_plus_diffrot(off_limb_coord, screen, only_off_disk, distance):
+    new_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=off_limb_coord.obstime + 1*u.day)
+    with propagate_with_solar_surface(), screen(new_observer, only_off_disk=only_off_disk):
+        olc_3d = off_limb_coord.make_3d()
+    assert_quantity_allclose(olc_3d.distance, distance)
+
+
+@pytest.mark.parametrize('only_off_disk', [False, True])
+@pytest.mark.parametrize('screen', [SphericalScreen, PlanarScreen])
+def test_screen_plus_diffrot_array_obstime(screen, only_off_disk):
+    array_obstime = parse_time('2025-05-30') + np.arange(5) * u.day
+    observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=array_obstime)
+    coord_2d = SkyCoord([-1000, -750, -500, -250, 0] * u.arcsec,
+                        [600]*5 * u.arcsec,
+                        frame=Helioprojective(observer=observer, obstime=array_obstime))
+
+    with propagate_with_solar_surface(), screen(observer[0], only_off_disk=only_off_disk):
+        # Confirm that array obstime works
+        coord_3d = coord_2d.make_3d()
+
+        # Confirm that calculated distances match the calculation when done individually
+        for point_2d, point_3d in zip(coord_2d, coord_3d):
+            point_2d_3d = point_2d.make_3d()
+            assert_quantity_allclose(point_2d_3d.separation_3d(point_3d), 0*u.m, atol=1*u.m)

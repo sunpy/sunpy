@@ -40,9 +40,9 @@ class LYRAClient(GenericClient):
            Start Time               End Time        Source Instrument    Wavelength    Provider  Physobs   Wavetype Extent Type   Size
                                                                           Angstrom                                               Mibyte
     ----------------------- ----------------------- ------ ---------- ---------------- -------- ---------- -------- ----------- --------
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  30.9375
     2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  2328.75
     2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A 419.0625
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  30.9375
     <BLANKLINE>
     <BLANKLINE>
     """

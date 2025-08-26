@@ -1,2 +1,0 @@
-Fixed the unintended `~sunpy.map.Map` behavior where any combination of non-FITS units were allowed as long as one of the non-FITS units was DN.
-DN is currently the only non-FITS unit permitted in `~sunpy.map.Map`.

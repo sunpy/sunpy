@@ -553,7 +553,7 @@ def test_timeseries_array():
     data = np.array([times, intensity]).T
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         ts = sunpy.timeseries.TimeSeries(data, {})
-        assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
+    assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
 
 # TODO:

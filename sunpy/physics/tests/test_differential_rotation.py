@@ -345,9 +345,12 @@ def test_get_extreme_position():
 
     with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2
 
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
 
     with pytest.raises(ValueError, match="The \"axis\" argument must be either \"Tx\" or \"Ty\""):

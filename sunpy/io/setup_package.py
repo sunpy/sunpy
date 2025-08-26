@@ -19,5 +19,5 @@ def get_extensions():
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         # Squash all warnings
         cfg['extra_compile_args'].extend(['-w'])
-        e = Extension('sunpy.io._pyana', py_limited_api=True, **cfg)
+        e = Extension('sunpy.io._pyana', **cfg)
         return [e]

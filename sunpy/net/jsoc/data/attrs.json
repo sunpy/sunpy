@@ -85,6 +85,10 @@
       "HMI vector B Magnetograms remapped to grid in longitude, latitude"
     ],
     [
+      "hmi.bptr_720s_mod",
+      "Full-disk disambiguated vector magnetograms, field components in spherical cordinate"
+    ],
+    [
       "hmi.c_avg120",
       "Temporal averages of HMI continuum photograms over 1/3 CR"
     ],
@@ -1096,11 +1100,19 @@
     ],
     [
       "Bp",
+      "Phi component of field, west is positive"
+    ],
+    [
+      "Bp",
       "Remapped Bp component"
     ],
     [
       "Bp_err",
       "Standard deviation of B_phi"
+    ],
+    [
+      "Bp_err",
+      "Uncertainty of phi component of field"
     ],
     [
       "Br",
@@ -1116,6 +1128,10 @@
     ],
     [
       "Br",
+      "Radial component of field, outward is positive"
+    ],
+    [
+      "Br",
       "Remapped Br component"
     ],
     [
@@ -1125,6 +1141,10 @@
     [
       "Br_err",
       "Standard deviation of B_r"
+    ],
+    [
+      "Br_err",
+      "Uncertainty of radial component of field"
     ],
     [
       "Br_polfil",
@@ -1151,8 +1171,16 @@
       "Remapped Bt component"
     ],
     [
+      "Bt",
+      "Theta component of field, south is positive"
+    ],
+    [
       "Bt_err",
       "Standard deviation of B_theta"
+    ],
+    [
+      "Bt_err",
+      "Uncertainty of theta component of field"
     ],
     [
       "DARK",
@@ -1891,6 +1919,10 @@
       "Carrington latitude"
     ],
     [
+      "lat",
+      "Stonyhurst latitude"
+    ],
+    [
       "lev1_dcon",
       "true continuum scatter light corrected image fits file"
     ],
@@ -1917,6 +1949,10 @@
     [
       "lon",
       "Carrington longitude"
+    ],
+    [
+      "lon",
+      "Stonyhurst longitude"
     ],
     [
       "lookup",

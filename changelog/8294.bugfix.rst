@@ -1,0 +1,1 @@
+Fixed a bug where :func:`sunpy.util.system_info` would report `sunpy` as an optional dependency of itself instead of properly reporting all of the optional dependencies.

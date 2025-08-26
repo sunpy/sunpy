@@ -100,7 +100,7 @@ def test_sunpy_warnings_logging():
     assert len(warn_list) == 1
 
     # With warnings logging, making sure that Astropy warnings are not intercepted
-    with pytest.warns(AstropyUserWarning, match="This warning should not be captured") as warn_list:
+    with pytest.warns(AstropyUserWarning, match="This warning should not be captured") as warn_list:  # NOQA: PT031
         log.enable_warnings_logging()
         with log.log_to_list() as log_list:
             warnings.warn("This warning should be captured", SunpyUserWarning)

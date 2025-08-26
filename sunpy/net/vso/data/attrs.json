@@ -413,6 +413,10 @@
       "None"
     ],
     [
+      "UVD",
+      "Ultra-violet Light Detector (Lyman-alpha)"
+    ],
+    [
       "VAULT-1999",
       "None"
     ],
@@ -426,7 +430,7 @@
     ],
     [
       "VLD",
-      ""
+      "Visible Light Detector"
     ],
     [
       "WAP",
@@ -635,12 +639,16 @@
       "Hawai'ian GONG+ site"
     ],
     [
+      "Metis",
+      "Metis"
+    ],
+    [
       "Meudon Spectroheliograph",
       "None"
     ],
     [
       "NFI-0",
-      "None"
+      "Narrow-field Imager on Satellite #4"
     ],
     [
       "PHOENIX",
@@ -780,7 +788,7 @@
     ],
     [
       "Unpolarized",
-      "None"
+      "PUNCH Mosaic image in mode Unpolarized (from satellites #1-4)"
     ],
     [
       "VAULT-1999",
@@ -804,15 +812,15 @@
     ],
     [
       "WFI-1",
-      "None"
+      "Wide-field Imager on Satellite #1"
     ],
     [
       "WFI-2",
-      "None"
+      "Wide-field Imager on Satellite #2"
     ],
     [
       "WFI-3",
-      "None"
+      "Wide-field Imager on Satellite #3"
     ],
     [
       "WISPR",
@@ -1091,6 +1099,10 @@
       "Geostationary Operational Environmental Satellite (GOES-R) Series 17 "
     ],
     [
+      "GOES18",
+      "Geostationary Operational Environmental Satellite (GOES-R) Series 18"
+    ],
+    [
       "GONG",
       "Global Oscillations Network Group"
     ],
@@ -1176,23 +1188,23 @@
     ],
     [
       "PUNCH-1",
-      "None"
+      "Polarimeter to UNify the Corona and Helioshere: Satellite #1"
     ],
     [
       "PUNCH-2",
-      "None"
+      "Polarimeter to UNify the Corona and Helioshere: Satellite #2"
     ],
     [
       "PUNCH-3",
-      "None"
+      "Polarimeter to UNify the Corona and Helioshere: Satellite #3"
     ],
     [
       "PUNCH-4",
-      "None"
+      "Polarimeter to UNify the Corona and Helioshere: Satellite #4"
     ],
     [
       "PUNCH-MOSAIC",
-      "None"
+      "Polarimeter to UNify the Corona and Helioshere: Mosaic Composite"
     ],
     [
       "RHESSI",

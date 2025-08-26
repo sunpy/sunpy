@@ -19,6 +19,7 @@ from sunpy.util.exceptions import SunpyUserWarning
 # https://github.com/sunpy/sunpy/issues/4401 is fixed
 pytestmark = [pytest.mark.filterwarnings('ignore:Unverified HTTPS request is being made')]
 
+
 @pytest.fixture(scope="session")
 def client():
     try:
@@ -287,6 +288,7 @@ def test_select_table(client, monkeypatch):
     assert client.select_table() is None
 
 
+@pytest.mark.xfail(reason="This test is failing because the server is returning a 500 error.")
 @pytest.mark.remote_data
 def test_client_search(client):
     start = '2005/01/03'
@@ -302,6 +304,7 @@ def test_max_records_limit():
         a.helio.MaxRecords(99999)
 
 
+@pytest.mark.xfail(reason="This test is failing because the server is returning a 500 error.")
 @pytest.mark.remote_data
 def test_HECResponse_iter(client):
     start = '2005/01/03'

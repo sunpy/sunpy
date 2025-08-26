@@ -46,7 +46,7 @@ def test_can_handle_query(LCClient):
     assert ans2 is False
     ans3 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), a.Source('sdo'))
-    assert ans3 is True
+    assert ans3 is False
     ans4 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('0CS'))
     assert ans4 is False

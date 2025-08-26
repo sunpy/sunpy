@@ -1,3 +1,6 @@
+from inspect import cleandoc
+
+import numpy as np
 import pytest
 
 from astropy.io import fits
@@ -121,3 +124,99 @@ def test_get_set_methods():
             pass
 
     assert util.get_set_methods(A()) == {'test2', 'test6_n'}
+
+
+def test_notes_combined():
+    original_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section = """\nNotes\n-----\nThis should be combined."""
+    updated_documentation = util.fix_duplicate_notes(extra_note_section, original_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == cleandoc(expected_result)
+
+
+def test_notes_combined_no_references():
+    original_documentation = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+    """
+    extra_note_section = """\nNotes\n-----\nThis should be combined."""
+    updated_documentation = util.fix_duplicate_notes(extra_note_section, original_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This is a note.
+
+    This should be combined.
+    """
+    assert updated_documentation == cleandoc(expected_result)
+
+
+def test_notes_combined_no_existing_notes():
+    original_documentation = """
+    Class Info.
+
+    References
+    ----------
+    This is reference.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation = util.fix_duplicate_notes(extra_note_section, original_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+
+    References
+    ----------
+    This is reference.
+    """
+    assert updated_documentation == cleandoc(expected_result)
+
+
+def test_notes_combined_no_notes_no_references():
+    original_documentation = """
+    Class Info.
+    """
+    extra_note_section= """\nNotes\n-----\nThis should be combined."""
+    updated_documentation= util.fix_duplicate_notes(extra_note_section, original_documentation)
+    expected_result = """
+    Class Info.
+
+    Notes
+    -----
+    This should be combined.
+    """
+    assert updated_documentation == cleandoc(expected_result)
+
+
+def test_grid_perimeter():
+    assert np.all(util.grid_perimeter(2, 3) == [[0, 0], [0, 1], [0, 2], [0, 3], [1, 3], [2, 3], [2, 2], [2, 1], [2, 0], [1, 0]])

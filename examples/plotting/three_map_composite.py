@@ -55,8 +55,7 @@ levels = [5, 10, 20, 30, 40]*u.percent
 fig = plt.figure()
 ax = fig.add_subplot(projection=eit_smap)
 eit_smap.plot(axes=ax, clip_interval=(1, 99.9)*u.percent, zorder=0)
-aia_smap.plot(axes=ax, clip_interval=(1, 99.97)*u.percent, alpha=0.7,
-              autoalign=True, zorder=1)
+aia_smap.plot(axes=ax, clip_interval=(1, 99.97)*u.percent, alpha=0.7, zorder=1)
 rhessi.draw_contours(axes=ax, levels=levels, zorder=2)
 ax.set_title("Three Map Composite")
 

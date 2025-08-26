@@ -1,1 +1,0 @@
-Adds caching mechanism for Timeseries URL handling using `~sunpy.data.data_manager.cache.Cache`.

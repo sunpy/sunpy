@@ -8,6 +8,8 @@ omit =
   */sunpy/*setup_package*
   */sunpy/extern/*
   */sunpy/version*
+disable_warnings =
+  module-not-measured
 
 [report]
 exclude_lines =

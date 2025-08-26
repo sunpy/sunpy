@@ -3,6 +3,7 @@ This module provides a collection of time handing functions.
 """
 import re
 import textwrap
+import contextlib
 from datetime import date, datetime
 from functools import singledispatch
 
@@ -11,7 +12,10 @@ import numpy as np
 import astropy.time
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.time import conf as astropy_time_conf
+from astropy.utils.introspection import minversion
 
+from sunpy import log
 # This is not called but imported to register time formats
 from sunpy.time.timeformats import *  # NOQA
 from sunpy.util.decorators import add_common_docstring
@@ -43,6 +47,7 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
     "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
     "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
+    "%Y-%m-%dT%H:%M:%SZ",  # Example 2007-05-04T21:08:12Z
     "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
     "%Y%m%dT%H%M",  # Example 20070504T2108 , Should precede "%Y%m%dT%H%M%S".
     "%Y%m%dT%H%M%S",  # Example 20070504T210812
@@ -248,8 +253,21 @@ def convert_time_str(time_string, **kwargs):
             except ValueError:
                 pass
 
-    # when no format matches, call default function
-    return convert_time.dispatch(object)(time_string, **kwargs)
+        log.debug("No matching sunpy format found for %s, so falling back to astropy formats", first_item)
+
+    # If the string format does not match one of ours, we need to protect against a bad interaction
+    # between astropy's C fast parser and numpy>=2.3
+    # https://github.com/astropy/astropy/issues/18254
+    # TODO: once the bug is fixed, skip this protection for fixed versions of astropy/numpy
+    if is_string_list and len(time_string) > 500 and astropy_time_conf.use_fast_parser == "True" and minversion(np, "2.3.0"):
+        log.debug("Disabling astropy's fast time parsing due to a known bug with long lists")
+        ctx = astropy_time_conf.set_temp("use_fast_parser", "False")
+    else:
+        ctx = contextlib.nullcontext()
+
+    with ctx:
+        # when no format matches, call default function
+        return convert_time.dispatch(object)(time_string, **kwargs)
 
 
 def _variables_for_parse_time_docstring():

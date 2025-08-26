@@ -64,7 +64,7 @@ The first thing we need to do is access the results from the HEK client, the onl
 
 .. code-block:: python
 
-   >>> len(result['hek'])  # doctest: +REMOTE_DATA
+   >>> len(result["hek"])  # doctest: +REMOTE_DATA
    19
 
 This object is an `astropy.table.Table` object with the columns which correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html.
@@ -82,24 +82,26 @@ We can select just this column:
 .. code-block:: python
 
    >>> result["hek"]["frm_name"]  # doctest: +REMOTE_DATA
-    <QueryResponseColumn name='frm_name' dtype='str32' length=19>
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                              asainz
-                   SSW Latest Events
-                                 ...
-                                SWPC
-                   SSW Latest Events
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
-    Flare Detective - Trigger Module
+   <MaskedColumn name='frm_name' dtype='str32' length=19>
+                             asainz
+                             asainz
+                             asainz
+                             asainz
+                             asainz
+                             asainz
+                             asainz
+                  SSW Latest Events
+                               SWPC
+   Flare Detective - Trigger Module
+   Flare Detective - Trigger Module
+                               SWPC
+                  SSW Latest Events
+   Flare Detective - Trigger Module
+   Flare Detective - Trigger Module
+   Flare Detective - Trigger Module
+   Flare Detective - Trigger Module
+   Flare Detective - Trigger Module
+   Flare Detective - Trigger Module
 
 It is likely each flare on the Sun was actually detected multiple times by many different methods.
 
@@ -150,13 +152,7 @@ Let's look further at the FRM attribute:
    <BLANKLINE>
    class FRM(builtins.object)
     |  Data descriptors defined here:
-    |
-    |  __dict__
-    |      dictionary for instance variables
-    |
-    |  __weakref__
-    |      list of weak references to the object
-    |
+    ...
     |  ----------------------------------------------------------------------
     |  Data and other attributes defined here:
     |
@@ -231,44 +227,30 @@ and as a check:
 .. code-block:: python
 
    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='fl_peakflux' dtype='object' length=17>
-      None
-      None
-      None
-      None
-      None
-      None
-      None
-   2326.86
-   1698.83
-      None
-      None
-   2360.49
-   3242.64
-   1375.93
-   6275.98
-   923.984
-   1019.83
+   <MaskedQuantity [     ———,      ———,      ———,      ———,      ———,
+                         ———,      ———, 2326.86 , 1698.83 ,      ———,
+                         ———, 2360.49 , 3242.64 , 1375.93 , 6275.98 ,
+                     923.984, 1019.83 ] DN / (pix s)>
 
-   >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='event_coord1' dtype='float64' length=17>
-    51.0
-    51.0
-    51.0
-   924.0
-   924.0
-   924.0
-    69.0
-   883.2
-   883.2
-    69.0
-    69.0
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
+   >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
+   <QueryResponseColumn name='event_coord' dtype='object' length=17>
+   <SkyCoord (Helioprojective: obstime=2011-08-08T01:30:04.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-08T01:30:04.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.23019163, 1.01409307)>): (Tx, Ty) in arcsec\n    (51., 151.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-08T01:30:04.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-08T01:30:04.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.23019163, 1.01409307)>): (Tx, Ty) in arcsec\n    (51., 151.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-08T01:30:04.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-08T01:30:04.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.23019163, 1.01409307)>): (Tx, Ty) in arcsec\n    (51., 151.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T02:30:04.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T02:30:04.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.29395015, 1.01392568)>): (Tx, Ty) in arcsec\n    (924., 217.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T02:30:04.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T02:30:04.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.29395015, 1.01392568)>): (Tx, Ty) in arcsec\n    (924., 217.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T02:30:04.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T02:30:04.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.29395015, 1.01392568)>): (Tx, Ty) in arcsec\n    (924., 217.)>
+   <SkyCoord (HeliographicStonyhurst: obstime=2011-08-09T07:19:00.000, rsun=695700.0 km): (lon, lat) in deg\n    (69., 15.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:22:38.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:22:38.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30616553, 1.01389261)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:22:44.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:22:44.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30616969, 1.0138926)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (HeliographicStonyhurst: obstime=2011-08-09T07:48:00.000, rsun=695700.0 km): (lon, lat) in deg\n    (69., 17.)>
+   <SkyCoord (HeliographicStonyhurst: obstime=2011-08-09T07:48:00.000, rsun=695700.0 km): (lon, lat) in deg\n    (69., 14.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:55:59.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:55:59.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30755339, 1.01388884)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:59:49.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:59:49.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30771285, 1.0138884)>): (Tx, Ty) in arcsec\n    (883.2, 192.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:00:03.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:00:03.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30772256, 1.01388838)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:00:20.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:00:20.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30773434, 1.01388834)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:00:53.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:00:53.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30775722, 1.01388828)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:01:21.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:01:21.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30777663, 1.01388823)>): (Tx, Ty) in arcsec\n    (883.2, 192.)>
 
 Note that some of the fluxes are returned as "None".
 This is because some feature recognition methods for flares do not report the peak flux.
@@ -281,23 +263,18 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak flux over
    >>> result = Fido.search(a.Time(tstart,tend), a.hek.EventType(event_type), (a.hek.Event.Coord1 > 50) and (a.hek.FL.PeakFlux > 1000))  # doctest: +REMOTE_DATA
 
    >>> result["hek"]["fl_peakflux"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='fl_peakflux' dtype='float64' length=7>
-   2326.86
-   1698.83
-   2360.49
-   3242.64
-   1375.93
-   6275.98
-   1019.83
-   >>> result["hek"]["event_coord1"] # doctest: +REMOTE_DATA
-   <QueryResponseColumn name='event_coord1' dtype='float64' length=7>
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
-   883.2
+   <MaskedQuantity [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98,
+                     1019.83] DN / (pix s)>
+
+   >>> result["hek"]["event_coord"] # doctest: +REMOTE_DATA
+   <QueryResponseColumn name='event_coord' dtype='object' length=7>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:22:38.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:22:38.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30616553, 1.01389261)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:22:44.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:22:44.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30616969, 1.0138926)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:55:59.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:55:59.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30755339, 1.01388884)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T07:59:49.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T07:59:49.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30771285, 1.0138884)>): (Tx, Ty) in arcsec\n    (883.2, 192.)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:00:03.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:00:03.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30772256, 1.01388838)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:00:20.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:00:20.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30773434, 1.01388834)>): (Tx, Ty) in arcsec\n    (883.2, 268.8)>
+   <SkyCoord (Helioprojective: obstime=2011-08-09T08:01:21.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-08-09T08:01:21.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)\n    (0., 6.30777663, 1.01388823)>): (Tx, Ty) in arcsec\n    (883.2, 192.)>
 
 In this case none of the peak fluxes are returned with the value `None`.
 Since we are using an ``and`` logical operator we need a result from the ``(a.hek.FL.PeakFlux > 1000)`` filter.
@@ -345,6 +322,7 @@ Finally, for greater flexibility, it is possible to pass in a list of HEK result
 
    >>> vso_query = hek2vso.translate_results_to_query(result[0][10])  # doctest: +REMOTE_DATA
    >>> vso_query[0]  # doctest: +REMOTE_DATA
-   [<sunpy.net.attrs.Time(2011-08-09 07:22:44.000, 2011-08-09 07:28:56.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Atmospheric Imaging Assembly) object at ...>, <sunpy.net.attrs.Wavelength(193.0, 193.0, 'Angstrom')>]
+   [<sunpy.net.attrs.Time(2011-08-09 07:22:44.000, 2011-08-09 07:28:56.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument(AIA: Data from the Atmospheric Imaging Assembly instrument.) object at
+    ...>, <sunpy.net.attrs.Wavelength(193.0, 193.0, 'Angstrom')>]
 
 This function allows users finer-grained control of VSO queries generated from HEK results.

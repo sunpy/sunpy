@@ -97,7 +97,7 @@ plt.show()
 goes_flare = goes_15.truncate("2015-06-21 09:35", "2015-06-21 10:30")
 
 time_support()
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(10, 8))
 ax.plot(goes_flare.time, np.gradient(goes_flare.quantity("xrsb")))
 ax.set_ylabel("Flux (Wm$^{-2}$$s^{-1}$)")
 fig.autofmt_xdate()

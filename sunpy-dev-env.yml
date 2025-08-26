@@ -64,7 +64,7 @@ dependencies:
   - sphinx-copybutton
   - sphinx-design
   - sphinx-gallery
-  - sphinx-hoverxref
+  - sphinxcontrib-bibtex
   - sphinxext-opengraph
   - towncrier
 

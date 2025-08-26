@@ -1,1 +1,0 @@
-Now using ``sphinxcontrib-bibtex``, to cite papers in a consistent and centralized manner.

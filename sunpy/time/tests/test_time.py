@@ -206,6 +206,7 @@ def test_parse_time_now():
     ('2007-05-04T21:08:12.999999', '2007:124:21:08:12.999999'),
     ('2007-05-04T21:08:12', '2007-05-04T21:08:12'),
     ('2007-05-04T21:08:12', '2007/05/04T21:08:12'),
+    ('2007-05-04T21:08:12', '2007-05-04T21:08:12Z'),
     ('2007-05-04T21:08:12', '20070504T210812'),
     ('2007-05-04T21:08:12', '2007/05/04 21:08:12'),
     ('2007-05-04T21:08:12', '2007-05-04 21:08:12'),
@@ -354,6 +355,13 @@ def test_parse_time_list_2():
 def test_parse_time_list_3():
     tstrings = ['2001-Jan-01', '2001-Jan-02', '2001-Jan-03']
     assert np.all(parse_time(tstrings) == Time.strptime(tstrings, '%Y-%b-%d'))
+
+
+def test_parse_time_long_list():
+    # Check whether lists of >500 strings cause a segmentation fault
+    # https://github.com/astropy/astropy/issues/18254
+    assert isinstance(parse_time(['2001-Jan-01']*501), Time)  # sunpy format
+    assert isinstance(parse_time(['J2000.0']*501), Time)  # non-sunpy format
 
 
 def test_is_time():

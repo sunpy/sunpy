@@ -20,7 +20,6 @@ def test_read_cdf():
     assert len(all_ts) == 3
 
     ts = all_ts[0]
-    print(ts.columns)
     assert isinstance(ts, GenericTimeSeries)
 
     col = ts.quantity('Electron_Flux_0')

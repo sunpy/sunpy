@@ -59,6 +59,9 @@ def test_find_dependencies():
     for package in EXTRA_DEPS:
         assert package in installed
 
+    # There should not be any self-referential dependency on sunpy
+    assert "sunpy" not in installed
+
 
 def test_missing_dependencies_by_extra():
     missing = missing_dependencies_by_extra()
@@ -98,4 +101,10 @@ def test_format_requirement_string():
 def test_system_info(capsys):
     system_info()
     captured = capsys.readouterr()
-    assert "\nsunpy Installation Information\n" in captured.out
+    lines = captured.out.splitlines()
+    assert "sunpy Installation Information" in lines
+
+    # sunpy should not be listed as an optional dependency
+    index = lines.index("Optional Dependencies")
+    for line in lines[index + 2:]:
+        assert not line.startswith("sunpy:")

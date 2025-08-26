@@ -31,7 +31,7 @@ def test_dask_array_repr(aia171_test_dask_map):
 
 
 # This is needed for the reproject_to function
-with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):  # NOQA: PT031
     with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
         with pytest.warns(FITSFixedWarning, match="'datfix' made the change"):
             aia_wcs = astropy.wcs.WCS(header=hdu[0].header)

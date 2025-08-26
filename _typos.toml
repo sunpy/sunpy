@@ -1,6 +1,7 @@
 default.extend-ignore-identifiers-re = [
     "ANDed",
     "arange",
+    "iy",
     "iy1",
     "iy2",
     "EIS",
@@ -24,4 +25,5 @@ default.extend-ignore-identifiers-re = [
     "pn",
     "lightyear",
     "PNGs",
+    "setp",
 ]
