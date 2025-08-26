@@ -1,2 +1,1 @@
-Enhanced :meth:`~sunpy.net.Fido.search` to be robust against individual client failures.
-If a single client fails to respond, the search will continue with the other clients.
+Enhanced :meth:`~sunpy.net.Fido.search` to be robust against client errors. Any client error will be caught and attached to ``.errors`` property on both the `~sunpy.net.fido_factory.UnifiedResponse` and individual `~sunpy.net.base_client.QueryResponseTable`, the search will continue.
