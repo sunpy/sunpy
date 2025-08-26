@@ -25,8 +25,10 @@ from sunpy.net import attrs as a
 # First, we will need to acquire a sequence of images from SDO/AIA.
 # We use a data from 2012 containing a nice example of loop oscillations.
 
+# To keep build and download low using a short time range expand to
+# 18:05 - 18:30
 query = Fido.search(
-    a.Time('2012-10-20 18:08:00', '2012-10-20 18:30:00'),
+    a.Time('2012-10-20 18:14:00', '2012-10-20 18:19:00'),
     a.Instrument.aia,
     a.Wavelength(171*u.angstrom),
 )
