@@ -113,6 +113,7 @@ tests-only = [
   "hvpy>=1.1.0",
   "jplephem>=2.19",
   "pytest-astropy>=0.11.0",
+  "pytest-asdf-plugin>=0.1.1",
   "pytest-mpl>=0.17.0",
   "pytest>=7.4.0",
 ]
