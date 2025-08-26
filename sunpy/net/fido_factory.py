@@ -53,23 +53,12 @@ class UnifiedResponse(Sequence):
         """
         self._list = []
         self._numfile = 0
-        self._errors = {}
         for result in results:
-            if isinstance(result, Exception):
-                print(f"Error: {result} for {result.client.__name__}") # TODO: pass this to logger
-                self._errors[result.client.__name__] = result
-
-                result = QueryResponseTable([], client=result.client)
-
             if isinstance(result, QueryResponseRow):
                 result = result.as_table()
 
             if isinstance(result, QueryResponseColumn):
                 result = result.as_table()
-
-            client_name = result.client.__class__.__name__
-            self._errors[client_name] = None
-
 
             if not isinstance(result, QueryResponseTable):
                 raise TypeError(
@@ -176,7 +165,7 @@ class UnifiedResponse(Sequence):
     @property
     def errors(self):
         """
-        Returns a list of errors for all responses.
+        Returns a list of errors for each client.
         """
         return [res.errors for res in self._list if res.errors]
 
