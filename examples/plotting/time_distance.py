@@ -3,10 +3,11 @@
 Creating a time-distance plot from a sequence of maps
 =====================================================
 
-This example showcases how you can use :func:`sunpy.map.pixelate_coord_path` and
-:func:`sunpy.map.sample_at_coords` on a sequence of images to create a time-distance diagram account for solar
-differential rotation usings `sunpy.coordinates.propagate_with_solar_surface` and off-disk locations
-`sunpy.coordinates.screens.SphericalScreen`
+This example showcases how you can use :func:`sunpy.map.pixelate_coord_path`
+and :func:`sunpy.map.sample_at_coords` on a sequence of images to create a
+time-distance diagram accounting for solar differential rotation using
+`sunpy.coordinates.propagate_with_solar_surface` and dealing with off-disk
+pixels using `sunpy.coordinates.screens.SphericalScreen`
 """
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -23,10 +24,10 @@ from sunpy.net import attrs as a
 
 ###############################################################################
 # First, we will need to acquire a sequence of images from SDO/AIA.
-# We use a data from 2012 containing a nice example of loop oscillations.
+# We will use a data from 2012 containing a nice example of loop oscillations.
 
-# To keep build and download low using a short time range expand to
-# 18:05 - 18:30
+# To keep the online build and download low using a short time range expand to
+# 18:05 - 18:30 to see more of the oscillation
 query = Fido.search(
     a.Time('2012-10-20 18:14:00', '2012-10-20 18:19:00'),
     a.Instrument.aia,
@@ -39,29 +40,30 @@ files = sorted(files)
 ###############################################################################
 # Our target will be a set of loops in the corona above an active region.
 # First load the fits files we downloaded above in to map sequence and create a
-# rectangular submap or cutout around the area of interest.
+# rectangular submap or cutout around the area of interest. We will also define
+# the path, in this case a line, along which we want to make the time-distance
+# plot.
 
 aia_seq = Map(files)
 corner = SkyCoord(Tx=-1150*u.arcsec, Ty=-500*u.arcsec,
                   frame=aia_seq[0].coordinate_frame)
 ref_sub_map = aia_seq[0].submap(corner, width=250*u.arcsec, height=450*u.arcsec)
 
-# Note this is [X0, X1] and [Y0, Y1] in the coordinate frame of the map.
 line_coords = SkyCoord([-1030, -1057]*u.arcsec, [-220, -206]*u.arcsec,
                        frame=aia_seq[0].coordinate_frame)
 
 ###############################################################################
 # Next we can plot the full disk map, over-plotting the region of interest and
-# also
-# plot the submap and the line along which we want to make the time-distance plot.
+# also plot the submap and the line along which we want to make the
+# time-distance plot.
 
 fig = plt.figure(figsize=(8, 5))
 full_disk_ax = fig.add_subplot(121, projection=aia_seq[0])
-aia_seq[0].plot(axes=full_disk_ax)
+aia_seq[0].plot(axes=full_disk_ax, clip_interval=[1,99]*u.percent)
 aia_seq[0].draw_quadrangle(corner, width=250*u.arcsec, height=450*u.arcsec,
                            axes=full_disk_ax)
 sub_map_ax = fig.add_subplot(122, projection=ref_sub_map)
-ref_sub_map.plot(axes=sub_map_ax)
+ref_sub_map.plot(axes=sub_map_ax, clip_interval=[1,99]*u.percent)
 sub_map_ax.plot_coord(line_coords)
 plt.show()
 
@@ -91,9 +93,9 @@ reprojected_sub_maps = Map(reprojected_sub_maps, sequence=True)
 
 ###############################################################################
 # Now that we have reprojected all the maps to common WCS we can extract the
-# pixel coordinates once using `sunpy.map.pixelate_coord_path` to
+# pixel coordinates once using :func:`~sunpy.map.pixelate_coord_path` to
 # determine the coordinates for every pixel that intersects with the physical
-# path and then use `sunpy.map.sample_at_coords` sample the data at
+# path and then use :func:`~sunpy.map.sample_at_coords` sample the data at
 # these coordinates.
 
 # As the maps are all aligned only need to extract the coordinates once
@@ -118,8 +120,8 @@ for cur_map in aia_seq:
             (sample_at_coords(cur_map, intensity_coords)/cur_map.exposure_time).value)
 
 ###############################################################################
-# Now we have obtained the raw data we need to prepare some information to for
-# the final plot
+# Now we have obtained the raw data we need to prepare it for platting and
+# calculate the extents of the x and y acies for the final plot.
 
 # The above will give us a list of 1D arrays, one for each map in the sequence.
 # We need to stack them into a 2D array.
@@ -146,11 +148,11 @@ right_ax = right.subplot_mosaic([['repro'], ['trans'], ['diff']],
 imag_ax = reprojected_sub_maps[0].plot(axes=left_ax, clip_interval=[1, 99]*u.percent)
 left_ax.plot_coord(line_coords)
 
-right_ax['repro'].imshow(intensities_reproject.T, aspect='auto',
+right_ax['repro'].imshow(intensities_reproject.T, aspect='auto', interpolation='none',
                          extent=extent, cmap=imag_ax.get_cmap())
-right_ax['trans'].imshow(intensities_transform.T, aspect='auto',
+right_ax['trans'].imshow(intensities_transform.T, aspect='auto', interpolation='none',
                          extent=extent, cmap=imag_ax.get_cmap())
-right_ax['diff'].imshow((intensities_reproject-intensities_transform).T,
+right_ax['diff'].imshow((intensities_reproject-intensities_transform).T, interpolation='none',
                         aspect='auto', extent=extent, cmap='bwr')
 
 locator = mdates.AutoDateLocator(minticks=4)
@@ -167,3 +169,5 @@ right_ax['diff'].set_xlabel('Time [UTC]')
 right_ax['trans'].set_ylabel('Distance [arcsec]')
 
 plt.show()
+
+# sphinx_gallery_thumbnail_number = -1
