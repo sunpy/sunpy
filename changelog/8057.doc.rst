@@ -1,0 +1,1 @@
+Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_time_distance.py`) demonstrating how to extract the intensities along a slit to create a time-distance plot taking into account differential rotation.
