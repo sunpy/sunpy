@@ -1,2 +1,2 @@
-Enhanced :func:`~sunpy.net.Fido.search` to be robust against client errors.
+Enhanced `sunpy.net.Fido`'s ``search`` method to be robust against client errors.
 Any client error will be caught and attached to ``.errors`` property on both the `~sunpy.net.fido_factory.UnifiedResponse` and individual `~sunpy.net.base_client.QueryResponseTable`, the search will continue.
