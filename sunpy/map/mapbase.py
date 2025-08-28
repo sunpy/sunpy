@@ -2807,17 +2807,21 @@ class GenericMap(NDData):
         # Anything left in plot_settings is given to imshow
         imshow_args = plot_settings
         if annotate:
+            # Do not apply an automatic title if a title has already been set
+            title = title and axes.get_title() == ""
+
             if title is True:
                 title = plot_settings_title
 
             if title:
                 axes.set_title(title)
 
-            # WCSAxes has unit identifiers on the tick labels, so no need
-            # to add unit information to the label
-            ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            # Rewrite the axis labels that have not been changed from the WCSAxes defaults
+            for coord, ctype in zip(axes.coords, axes.wcs.wcs.ctype):
+                if coord.get_axislabel() == coord.default_label:
+                    # WCSAxes has unit identifiers on the tick labels, so no need
+                    # to add unit information to the label
+                    coord.set_axislabel(axis_labels_from_ctype(ctype, None))
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
