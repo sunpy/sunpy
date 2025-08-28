@@ -534,7 +534,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         Given a query, look up the client and perform the query.
 
-        This method is called by `search` and the results are fed into a
+        This method is called by ``search`` and the results are fed into a
         UnifiedResponse object.
 
         Parameters
