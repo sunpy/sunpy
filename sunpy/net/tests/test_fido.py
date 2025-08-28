@@ -154,7 +154,7 @@ def test_unified_response():
 @pytest.mark.remote_data
 def test_no_match():
     res = Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
-                a.Sample(10*u.s))
+                      a.Sample(10*u.s))
     assert res.errors
     assert isinstance(res[0].errors, DrmsQueryError)
     assert "Invalid series name." in str(res[0].errors)
