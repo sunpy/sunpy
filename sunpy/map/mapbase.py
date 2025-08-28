@@ -2360,6 +2360,7 @@ class GenericMap(NDData):
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
         axes = self._check_axes(axes)
+        self._auto_format_plot(axes)
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
                                                            annotate=annotate,
@@ -2414,6 +2415,7 @@ class GenericMap(NDData):
         import sunpy.visualization.drawing
 
         axes = self._check_axes(axes)
+        self._auto_format_plot(axes)
         return sunpy.visualization.drawing.limb(
             axes,
             self.observer_coordinate,
@@ -2442,6 +2444,7 @@ class GenericMap(NDData):
         import sunpy.visualization.drawing
 
         axes = self._check_axes(axes)
+        self._auto_format_plot(axes)
         return sunpy.visualization.drawing.extent(
             axes,
             self.wcs,
@@ -2496,6 +2499,7 @@ class GenericMap(NDData):
         .. minigallery:: sunpy.map.GenericMap.draw_quadrangle
         """
         axes = self._check_axes(axes)
+        self._auto_format_plot(axes)
 
         if isinstance(bottom_left, u.Quantity):
             anchor, _, top_right, _ = self._parse_submap_quantity_input(bottom_left, top_right, width, height)
@@ -2627,6 +2631,7 @@ class GenericMap(NDData):
         contour_args = self._update_contour_args(contour_args)
 
         axes = self._check_axes(axes)
+        self._auto_format_plot(axes)
         levels = self._process_levels_arg(levels)
 
         # Pixel indices
@@ -2721,6 +2726,21 @@ class GenericMap(NDData):
 
         return figure
 
+    def _auto_format_plot(self, axes):
+        """
+        Apply default title and axis labels.
+        """
+        # Apply the default title if one is not already set
+        if axes.get_title() == "":
+            axes.set_title(self.plot_settings.get('title', self.latex_name))
+
+        # Apply the default axis label if one is not already set
+        for coord, ctype in zip(axes.coords, axes.wcs.wcs.ctype):
+            if coord.get_axislabel() == coord.default_label:
+                # WCSAxes has unit identifiers on the tick labels, so no need
+                # to add unit information to the label
+                coord.set_axislabel(axis_labels_from_ctype(ctype, None))
+
     @u.quantity_input
     def plot(self, *, annotate=True, axes=None, title=True, autoalign=True,
              clip_interval: u.percent = None, **imshow_kwargs):
@@ -2797,31 +2817,18 @@ class GenericMap(NDData):
 
         axes = self._check_axes(axes, warn_different_wcs=autoalign is False)
 
-        # Normal plot
-        plot_settings = copy.deepcopy(self.plot_settings)
-        if 'title' in plot_settings:
-            plot_settings_title = plot_settings.pop('title')
-        else:
-            plot_settings_title = self.latex_name
-
-        # Anything left in plot_settings is given to imshow
-        imshow_args = plot_settings
         if annotate:
-            # Do not apply an automatic title if a title has already been set
-            title = title and axes.get_title() == ""
+            self._auto_format_plot(axes)
 
-            if title is True:
-                title = plot_settings_title
+        if title is False:
+            title = ""
 
-            if title:
-                axes.set_title(title)
+        if isinstance(title, str):
+            axes.set_title(title)
 
-            # Rewrite the axis labels that have not been changed from the WCSAxes defaults
-            for coord, ctype in zip(axes.coords, axes.wcs.wcs.ctype):
-                if coord.get_axislabel() == coord.default_label:
-                    # WCSAxes has unit identifiers on the tick labels, so no need
-                    # to add unit information to the label
-                    coord.set_axislabel(axis_labels_from_ctype(ctype, None))
+        # Remove any title from plot settings since it has already been used
+        imshow_args = copy.deepcopy(self.plot_settings)
+        imshow_args.pop('title', None)
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
