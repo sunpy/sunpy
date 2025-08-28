@@ -78,9 +78,9 @@ def test_online_fido(query):
     unifiedresp = Fido.search(query)
     check_response(query, unifiedresp)
 
-
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
 @mock.patch("sunpy.net.vso.vso.VSOClient.search", side_effect=ConnectionError('VSO is down'))
-def test_fido_client_error(mock_vso):
+def test_fido_client_error(mock_vso_search, mock_build_client):
     results = Fido.search(a.Time("2016/10/01", "2016/10/02"), a.Instrument.aia)
     assert len(results.errors) > 0
     assert isinstance(results['vso'].errors, ConnectionError)
