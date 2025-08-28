@@ -39,7 +39,7 @@ files = sorted(files)
 
 ###############################################################################
 # Our target will be a set of loops in the corona above an active region.
-# First load the fits files we downloaded above in to map sequence and create a
+# First load the FITS files we downloaded above in to map sequence and create a
 # rectangular submap or cutout around the area of interest. We will also define
 # the path, in this case a line, along which we want to make the time-distance
 # plot.
