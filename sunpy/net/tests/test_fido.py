@@ -157,6 +157,7 @@ def test_no_match():
                 a.Sample(10*u.s))
     assert res.errors
     assert isinstance(res[0].errors, DrmsQueryError)
+    assert "Invalid series name." in str(res[0].errors)
 
 
 def test_call_error():
