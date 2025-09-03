@@ -9,9 +9,8 @@ from sunpy.net.cdaweb.attrs import Dataset
 def test_query():
     res = Fido.search(a.Time('2018-11-01', '2018-11-01 01:00:00'),
                       Dataset('WI_H1_SWE') | Dataset('WI_H5_SWE'))
-    assert len(res) == 2
-    assert len(res[0]) == 1
-    assert len(res[1]) == 2
+    assert len(res) == 1
+    assert len(res[0]) == 3
 
     files = Fido.fetch(res)
     assert len(files) == 3
