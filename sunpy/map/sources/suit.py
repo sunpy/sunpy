@@ -30,10 +30,10 @@ class SUITMap(GenericMap):
     * `Data Download PRADAN Page: <https://pradan.issdc.gov.in/al1>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
-        filtername = header.get("FTR_NAME", "").strip()
+        filtername = self.meta.get("FTR_NAME", "").strip()
         filternorms = {
             "NB01": 0.1,
             "NB02": 9.0,

@@ -8,7 +8,8 @@ from astropy.visualization import AsinhStretch, PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy import log
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 
@@ -34,11 +35,12 @@ class EITMap(GenericMap):
 
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
+
         self._nickname = self.instrument
-        self.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f"sohoeit{str(int(self.wavelength.to('angstrom').value))}"
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
@@ -118,8 +120,8 @@ class EITL1Map(EITMap):
     * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
     """
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.0001)), clip=False)
 
@@ -185,11 +187,11 @@ class LASCOMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
-        self.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'soholasco{self.detector[1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
@@ -299,11 +301,11 @@ class MDIMap(GenericMap):
     * :cite:t:`scherrer_solar_1995`
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Magnetic field maps, not intensity maps
-            self._set_symmetric_vmin_vmax()
+            self.plotter._set_symmetric_vmin_vmax()
 
     @property
     def _date_obs(self):
