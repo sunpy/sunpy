@@ -7,6 +7,8 @@ import os
 import sys
 import datetime
 import warnings
+import tokenize
+from pathlib import Path
 
 from packaging.version import Version
 
@@ -146,7 +148,6 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
     'sunpy.util.sphinx.doctest',
     'sunpy.util.sphinx.generate',
     "sphinxext.opengraph",
@@ -276,6 +277,75 @@ graphviz_dot_args = [
 autoclass_content = "both"
 
 bibtex_bibfiles = ['references.bib']
+
+# -- Linking to source code ----------------------------------------------------
+
+link_github = True
+# You can add build old with link_github = False
+
+if link_github:
+    import inspect
+
+    extensions.append('sphinx.ext.linkcode')
+
+    def linkcode_resolve(domain, info):
+        """
+        Determine the URL corresponding to Python object
+        """
+        if domain != 'py':
+            return None
+
+        modname = info['module']
+        fullname = info['fullname']
+
+        submod = sys.modules.get(modname)
+        if submod is None:
+            return None
+
+        obj = submod
+        for part in fullname.split('.'):
+            try:
+                obj = getattr(obj, part)
+            except AttributeError:
+                return None
+
+        if inspect.isfunction(obj):
+            obj = inspect.unwrap(obj)
+        try:
+            fn = inspect.getsourcefile(obj)
+        except TypeError:
+            fn = None
+        if not fn or fn.endswith('__init__.py'):
+            try:
+                fn = inspect.getsourcefile(sys.modules[obj.__module__])
+            except (TypeError, AttributeError, KeyError):
+                fn = None
+        if not fn:
+            return None
+
+        try:
+            source, lineno = inspect.getsourcelines(obj)
+        except (OSError, TypeError, tokenize.TokenError):
+            if hasattr(obj, '__qualname__'):
+                print(f"linkcode_resolve: could not get source for {obj.__module__}.{obj.__qualname__}")
+            lineno = None
+
+        linespec = (f"#L{lineno:d}-L{lineno + len(source) - 1:d}"
+                    if lineno else "")
+
+        startdir = Path(sunpy.__file__).parent.parent
+        try:
+            fn = os.path.relpath(fn, start=startdir).replace(os.path.sep, '/')
+        except ValueError:
+            return None
+
+        if not fn.startswith('sunpy/'):
+            return None
+
+        tag = 'main' if is_development else f'v{_version.public}'
+        return (f"https://github.com/sunpy/sunpy/blob/{tag}/{fn}{linespec}")
+else:
+    extensions.append('sphinx.ext.viewcode')
 
 # -- Sphinx Gallery ------------------------------------------------------------
 
