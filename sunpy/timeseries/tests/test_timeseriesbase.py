@@ -520,6 +520,56 @@ def test_repr_html_(generic_ts):
     assert isinstance(html_string, str)
 
 
+@pytest.mark.parametrize(
+    ("row", "col"),
+    [
+        (slice(None), slice(None)),
+        (None, "intensity"),
+        (1, None),
+        ([1, 2, 3], None),
+        ([1, 2, 3], "intensity"),
+        (TimeRange("2016-10-01 05:00:00", "2016-10-01 04:56:00"), ["intensity"]),
+        (slice("2016-10-01 05:00:00", "2016-10-01 04:56:00"), ["intensity"]),
+        (
+            pd.date_range("2016-10-01 04:56:00", "2016-10-01 05:00:00", freq="s"),
+            "intensity",
+        ),
+    ])
+def test_row_col_slicing(generic_ts, row, col):
+    ts = generic_ts
+    sliced_ts = generic_ts[row, col]
+
+    if row is None:
+        row = slice(None)
+    if col is None:
+        col = slice(None)
+
+    # Row slicing
+    if isinstance(row, slice):
+        if isinstance(row.start, str):
+            ts._data = ts._data.sort_index().loc[row, :]
+        else:
+            ts._data = ts._data.iloc[row, :]
+    elif isinstance(row, TimeRange):
+        ts._data = ts._data.sort_index().loc[row.start.value:row.end.value]
+    elif isinstance(row, pd.DatetimeIndex):
+        ts._data[row[0]:row[-1]]
+    else:
+        if isinstance(row, int):
+            row = [row]
+        ts._data = ts._data.iloc[row]
+
+    # Columns slicing
+    if isinstance(col, slice):
+        ts._data = ts._data.iloc[:, col]
+    else:
+        if isinstance(col, str):
+            col = [col]
+        ts._data = ts._data[col]
+
+    assert sliced_ts == ts
+
+
 def test_quicklook(mocker, generic_ts):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
     generic_ts.quicklook()
