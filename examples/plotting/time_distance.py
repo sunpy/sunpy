@@ -9,6 +9,7 @@ time-distance diagram accounting for solar differential rotation using
 `sunpy.coordinates.propagate_with_solar_surface` and dealing with off-disk
 pixels using `sunpy.coordinates.screens.SphericalScreen`
 """
+# sphinx_gallery_thumbnail_number = -1
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,7 +28,8 @@ from sunpy.net import attrs as a
 # We will use a data from 2012 containing a nice example of loop oscillations.
 
 # To keep the online build and download low using a short time range expand to
-# 18:05 - 18:30 to see more of the oscillation
+# 18:05 - 18:30 to see more of the oscillation.
+
 query = Fido.search(
     a.Time('2012-10-20 18:14:00', '2012-10-20 18:19:00'),
     a.Instrument.aia,
@@ -65,7 +67,6 @@ aia_seq[0].draw_quadrangle(corner, width=250*u.arcsec, height=450*u.arcsec,
 sub_map_ax = fig.add_subplot(122, projection=ref_sub_map)
 ref_sub_map.plot(axes=sub_map_ax, clip_interval=[1,99]*u.percent)
 sub_map_ax.plot_coord(line_coords)
-plt.show()
 
 ###############################################################################
 # There are two approaches that can be used to extract time distance
@@ -139,7 +140,7 @@ extent = [aia_seq[0].date.datetime, aia_seq[-1].date.datetime,
 # Plot the reference submap, line and extracted data from both methods and
 # the difference between them.
 
-fig = plt.figure(figsize=(8, 5), layout="constrained")
+fig = plt.figure(figsize=(10, 10), layout="constrained")
 left, right = fig.subfigures(nrows=1, ncols=2, width_ratios=[0.6, 0.75])
 left_ax = left.add_subplot(111, projection=reprojected_sub_maps[0])
 right_ax = right.subplot_mosaic([['repro'], ['trans'], ['diff']],
@@ -148,12 +149,19 @@ right_ax = right.subplot_mosaic([['repro'], ['trans'], ['diff']],
 imag_ax = reprojected_sub_maps[0].plot(axes=left_ax, clip_interval=[1, 99]*u.percent)
 left_ax.plot_coord(line_coords)
 
-right_ax['repro'].imshow(intensities_reproject.T, aspect='auto', interpolation='none',
-                         extent=extent, cmap=imag_ax.get_cmap())
-right_ax['trans'].imshow(intensities_transform.T, aspect='auto', interpolation='none',
-                         extent=extent, cmap=imag_ax.get_cmap())
-right_ax['diff'].imshow((intensities_reproject-intensities_transform).T, interpolation='none',
-                        aspect='auto', extent=extent, cmap='bwr')
+right_ax['repro'].imshow(
+    intensities_reproject.T, aspect='auto', interpolation='none',
+    extent=extent, cmap=imag_ax.get_cmap()
+)
+right_ax['trans'].imshow(
+    intensities_transform.T, aspect='auto', interpolation='none',
+    extent=extent, cmap=imag_ax.get_cmap()
+)
+right_ax['diff'].imshow(
+    (intensities_reproject-intensities_transform).T, interpolation='none',
+    aspect='auto', extent=extent, cmap='bwr'
+)
+plt.colorbar(right_ax['diff'].images[0], ax=right_ax['diff'], label='Difference')
 
 locator = mdates.AutoDateLocator(minticks=4)
 formatter = mdates.ConciseDateFormatter(locator)
@@ -169,5 +177,3 @@ right_ax['diff'].set_xlabel('Time [UTC]')
 right_ax['trans'].set_ylabel('Distance [arcsec]')
 
 plt.show()
-
-# sphinx_gallery_thumbnail_number = -1
