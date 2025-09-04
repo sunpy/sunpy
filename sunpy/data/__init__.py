@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import astropy.units as u
 
 import sunpy
@@ -25,4 +27,8 @@ cache = Cache(
     expiry=int(config.get('downloads', 'cache_expiry')) * u.day
 )
 
-__all__ = ["manager", "cache"]
+__all__ = ["EARTH_IMAGE", "manager", "cache"]
+
+
+# Low-resolution version of "The Blue Marble" (Earth as seen from Apollo 17)
+EARTH_IMAGE = Path(__file__).parent / "The_Blue_Marble_150px.png"
