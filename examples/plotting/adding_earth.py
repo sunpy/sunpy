@@ -8,7 +8,7 @@ This example shows how to plot a map with an image of the Earth added for scale.
 from urllib.request import urlretrieve
 
 import matplotlib.pyplot as plt
-from matplotlib.image import AxesImage
+import numpy as np
 from PIL import Image
 
 import astropy.units as u
@@ -52,21 +52,23 @@ earth_y = -200 * u.arcsec
 earth_center = SkyCoord(earth_x, earth_y, frame=cutout_map.coordinate_frame)
 earth_wcs = sunpy.map.make_fitswcs_header(
     (earth.height, earth.width), earth_center,
-    scale=earth_diameter / ([earth.width, earth.height] * u.pix)
+    scale=earth_diameter / ([earth.width, -earth.height] * u.pix)
 )
 
 ##############################################################################
-# Now we plot the AIA image and superimpose the Earth for scale. We manually
-# create and add the image artist so that the Earth will not be considered
-# when autoscaling plot limits. We also add a text label above the Earth.
+# Now we plot the AIA image and superimpose the Earth for scale. We use
+# :meth:`matplotlib.axes.Axes.pcolormesh` to plot the pixels of the Earth
+# image as a quadrilateral mesh, which accommodates any WCS of the underlying
+# map. We also add a text label above the Earth.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=cutout_map)
 cutout_map.plot(clip_interval=(1, 99.9)*u.percent)
 
-earth_artist = AxesImage(ax, transform=ax.get_transform(WCS(earth_wcs)))
-earth_artist.set_data(earth)
-ax.add_artist(earth_artist)
+ax.pcolormesh(
+    *np.meshgrid(np.arange(earth.width + 1) - 0.5, np.arange(earth.height + 1) - 0.5),
+    earth, shading='flat', transform=ax.get_transform(WCS(earth_wcs))
+)
 
 ax.text(
     earth_x.to_value('deg'), (earth_y + earth_diameter).to_value('deg'),
