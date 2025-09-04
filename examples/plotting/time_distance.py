@@ -140,28 +140,31 @@ extent = [aia_seq[0].date.datetime, aia_seq[-1].date.datetime,
 # Plot the reference submap, line and extracted data from both methods and
 # the difference between them.
 
-fig = plt.figure(figsize=(10, 10), layout="constrained")
+fig = plt.figure(figsize=(10, 5), layout="constrained")
 left, right = fig.subfigures(nrows=1, ncols=2, width_ratios=[0.6, 0.75])
 left_ax = left.add_subplot(111, projection=reprojected_sub_maps[0])
 right_ax = right.subplot_mosaic([['repro'], ['trans'], ['diff']],
                                 sharex=True, sharey=True)
 
 imag_ax = reprojected_sub_maps[0].plot(axes=left_ax, clip_interval=[1, 99]*u.percent)
+plt.colorbar(imag_ax, ax=left_ax)
 left_ax.plot_coord(line_coords)
 
 right_ax['repro'].imshow(
     intensities_reproject.T, aspect='auto', interpolation='none',
     extent=extent, cmap=imag_ax.get_cmap()
 )
+plt.colorbar(right_ax['repro'].images[0], ax=right_ax['repro'])
 right_ax['trans'].imshow(
     intensities_transform.T, aspect='auto', interpolation='none',
     extent=extent, cmap=imag_ax.get_cmap()
 )
+plt.colorbar(right_ax['trans'].images[0], ax=right_ax['trans'])
 right_ax['diff'].imshow(
     (intensities_reproject-intensities_transform).T, interpolation='none',
     aspect='auto', extent=extent, cmap='bwr'
 )
-plt.colorbar(right_ax['diff'].images[0], ax=right_ax['diff'], label='Difference')
+plt.colorbar(right_ax['diff'].images[0], ax=right_ax['diff'])
 
 locator = mdates.AutoDateLocator(minticks=4)
 formatter = mdates.ConciseDateFormatter(locator)
