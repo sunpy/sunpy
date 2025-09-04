@@ -1,0 +1,1 @@
+A low-resolution Earth image (PNG format) is now available as `sunpy.data.EARTH_IMAGE`.
