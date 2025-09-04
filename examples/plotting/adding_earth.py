@@ -5,8 +5,6 @@ Adding an Earth scale image
 
 This example shows how to plot a map with an image of the Earth added for scale.
 """
-from urllib.request import urlretrieve
-
 import matplotlib.pyplot as plt
 from matplotlib.image import AxesImage
 from PIL import Image
@@ -16,22 +14,27 @@ from astropy.constants import R_earth
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 
-import sunpy.data.sample
 import sunpy.map
 from sunpy.coordinates.utils import solar_angle_equivalency
+from sunpy.data import EARTH_IMAGE
+from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE
 
 ###############################################################################
 # We start with a sample AIA image.
 
-cutout_map = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
+cutout_map = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE)
 
 ###############################################################################
-# We download a low-resolution Earth image from Wikimedia Commons that already
-# has a transparent background. We also crop the image tightly.
+# We use a (low-resolution) image of Earth that we provide with `sunpy`. You
+# can use a different image as desired, and it should have a transparent
+# background. We also crop the image tightly so that we can assume that the
+# image width/height are equal to the Earth diameter. Finally, we flip the
+# image vertically so that it is oriented correctly when plotted with the pixel
+# origin in the lower-left corner, which is the convention for maps.
 
-earth_file = urlretrieve("https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/The_Earth_seen_from_Apollo_17_with_transparent_background.png/250px-The_Earth_seen_from_Apollo_17_with_transparent_background.png")[0]
-earth = Image.open(earth_file)
+earth = Image.open(EARTH_IMAGE)
 earth = earth.crop(earth.getbbox())
+earth = earth.transpose(Image.FLIP_TOP_BOTTOM)
 
 ##############################################################################
 # The first step in plotting the Earth is to convert the Earth's diameter in km
