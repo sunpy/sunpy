@@ -1022,6 +1022,34 @@ def test_superpixel_fractional_inputs(generic_map):
     assert super1.meta == super2.meta
 
 
+def test_superpixel_cd_matrix():
+    # TODO: Just make this a dict
+    frame = sunpy.coordinates.Helioprojective(
+        observer=sunpy.coordinates.get_earth('2020-01-01')
+    )
+    ref_coord = SkyCoord(0, 0, unit='arcsec', frame=frame)
+    scale = (2,3) * u.arcsec / u.pixel
+    rotation_angle = 30 * u.deg
+    shape = (10, 12)
+    shape_superpixel = (5, 4)
+    data = np.random.rand(*shape)
+    header = sunpy.map.make_fitswcs_header(
+        data,
+        ref_coord,
+        rotation_angle=rotation_angle,
+        scale=scale,
+    )
+    smap_pc = sunpy.map.Map(data, deepcopy(header))
+    for i in range(2):
+        for j in range(2):
+            pci_j = header.pop(f'pc{i+1}_{j+1}')
+            header[f'cd{i+1}_{j+1}'] = scale[i].to_value('arcsec pix-1') * pci_j
+    smap_cd = sunpy.map.Map(data, header)
+    smap_pc_rebin = smap_pc.rebin(shape_superpixel)
+    smap_cd_rebin = smap_cd.rebin(shape_superpixel)
+    assert (smap_pc_rebin.data == smap_cd_rebin.data).all()
+
+
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
 @settings(
     max_examples=10,

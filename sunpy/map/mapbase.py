@@ -659,6 +659,8 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
         w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
+        if self._cd_matrix is not None:
+            w2.wcs.cd = self._cd_matrix
         w2.wcs.set_pv(self._pv_values)
         # FITS standard doesn't allow both PC_ij *and* CROTA keywords
         w2.wcs.crota = (0, 0)
