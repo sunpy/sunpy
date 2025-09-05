@@ -678,6 +678,7 @@ class MapMetaMixin:
         other transformations e.g., skews for non-orthogonal coordinate systems.
         """
         if any(key in self.meta for key in ['PC1_1', 'PC1_2', 'PC2_1', 'PC2_2']):
+            log.debug('Deriving rotation matrix from PC matrix')
             return np.array(
                 [
                     [self.meta.get('PC1_1', 1), self.meta.get('PC1_2', 0)],
@@ -685,6 +686,7 @@ class MapMetaMixin:
                 ]
             )
         elif any(key in self.meta for key in ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']):
+            log.debug('Deriving rotation matrix from CD matrix')
             cd = np.array(
                 [
                     [self.meta.get('CD1_1', 0), self.meta.get('CD1_2', 0)],
@@ -697,6 +699,7 @@ class MapMetaMixin:
             # Divide each row by each CDELT
             return cd / np.expand_dims(cdelt, axis=1)
         else:
+            log.debug('Deriving rotation matrix from CROTA')
             return self._rotation_matrix_from_crota()
 
     @staticmethod
@@ -743,6 +746,19 @@ class MapMetaMixin:
             i, m = int(k[2]), int(k[4:])
             pv_values.append((i, m, self.meta[k]))
         return pv_values
+
+    @property
+    def _cd_matrix(self):
+        """
+        Return a CD matrix if the necessary keys exist
+        """
+        if 'cd1_1' not in self.meta:
+            return None
+        cd_matrix = np.eye(2)
+        for i in range(2):
+            for j in range(2):
+                cd_matrix[i,j] = self.meta.get(f'CD{i+1}_{j+1}')
+        return cd_matrix
 
     @staticmethod
     def _parse_fits_unit(unit_str):
