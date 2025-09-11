@@ -1,0 +1,1 @@
+Added a helper function to get the heliocentric angle (:math:`\mu`) of a point on the solar disk, `sunpy.coordinates.utils.get_mu_angle`.
