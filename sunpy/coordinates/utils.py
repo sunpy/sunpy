@@ -6,11 +6,12 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
+from astropy.coordinates.representation import CartesianRepresentation
 
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
 from sunpy.sun import constants
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_mu_angle']
 
 
 class GreatArc:
@@ -469,3 +470,57 @@ def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000
                     frame='heliocentric',
                     observer=observer, obstime=observer.obstime)
     return limb
+
+
+def get_mu_angle(coordinate_on_solar_disk):
+    r"""
+    The heliocentric angle is the angle between direction from a point on the surface of the body toward the observer, with respect to the local vertical of that body.
+
+    The range of value is between 0 :math:`^\circ` (at the center) and 90 :math:`^\circ` (at the edge).
+    If one takes the :math:`\cos` of this value, this is referred to as :math:`\mu`.
+
+    It is worked out using the following equation:
+
+    .. math::
+
+        heliocentric angle = \arcsin(\frac{d}{r})
+        \mu=\cos(heliocentric angle)
+
+    where :math:`d` is the distance between the observer and the point on the solar surface and :math:`r` is the radius of the disk.
+
+    Parameters
+    ----------
+    coordinate_on_solar_disk : `astropy.coordinates.SkyCoord`
+        A coordinate on the solar disk, requires the observer and obstime to be set.
+
+    Returns
+    -------
+    mu : `~astropy.units.Quantity`
+        The angle between the local solar vertical and the line of sight from
+        the observer to a point on the solar disk.
+
+    Examples
+    --------
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates.utils import get_mu_angle
+    >>> from astropy.coordinates import SkyCoord
+
+    >>> # At the center of the solar disk
+    >>> hpc_coord_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    >>> get_mu_angle(hpc_coord_center)
+    <Quantity 0. deg>
+
+    >>> # Almost at the limb
+    >>> hpc_coord_limb = SkyCoord(944.35*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    >>> get_mu_angle(hpc_coord_limb)
+    <Quantity 89.26429919 deg>
+
+    References
+    ----------
+    https://astronomy.stackexchange.com/a/48172
+    """
+    hcc = coordinate_on_solar_disk.heliocentric
+    normal = hcc.cartesian
+    to_observer = CartesianRepresentation(0, 0, 1) * hcc.observer.radius - normal
+    mu = normal.dot(to_observer) / (normal.norm() * to_observer.norm())
+    return np.rad2deg(np.arccos(mu))

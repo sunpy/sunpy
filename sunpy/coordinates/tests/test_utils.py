@@ -8,20 +8,22 @@ from astropy.coordinates import ConvertError, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import frames, get_earth, sun
+from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import (
     GreatArc,
     get_limb_coordinates,
+    get_mu_angle,
     get_rectangle_coordinates,
     solar_angle_equivalency,
 )
 from sunpy.sun import constants
+from sunpy.util.exceptions import SunpyUserWarning
+
 
 # Test the great arc code against calculable quantities
 # The inner angle is the same between each pair of coordinates. You can
 # calculate these coordinates using the inner angle formulae as listed here:
 # https://en.wikipedia.org/wiki/Great-circle_distance
-
-
 @pytest.mark.parametrize(("start", "end"), [((0, 0), (0, 45)),
                                             ((0, 0), (45, 0)),
                                             ((0, 45), (0, 0)),
@@ -377,3 +379,33 @@ def test_limb_coords():
 
     with pytest.raises(ValueError, match='Observer distance must be greater than rsun'):
         get_limb_coordinates(observer, 1.1 * u.au)
+
+
+def test_get_mu_angle():
+    # Disc center
+    hpc_coord_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    assert_quantity_allclose(get_mu_angle(hpc_coord_center), 0*u.deg)
+
+    # Almost at the limb
+    hpc_coord_limb = SkyCoord(944.35*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    assert_quantity_allclose(get_mu_angle(hpc_coord_limb), 89.264299*u.deg)
+
+    # Off disk
+    hpc_coord_off_disk = SkyCoord(959.68*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    with pytest.warns(SunpyUserWarning, match="The conversion of these 2D helioprojective coordinates to 3D is all NaNs because off-disk"):
+        assert np.isnan(get_mu_angle(hpc_coord_off_disk).to_value())
+
+    # Off disk with spherical screen for kicks
+    with SphericalScreen(hpc_coord_center.observer, radius=constants.radius):
+        mu_angle = get_mu_angle(hpc_coord_off_disk)
+        assert_quantity_allclose(mu_angle, 0.267803967191623*u.deg)
+
+    # Requires an observer
+    bad_skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst')
+    with pytest.raises(ConvertError, match="observer=None."):
+        get_mu_angle(bad_skycoord)
+
+    # Requires an obstime
+    bad_skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst', observer="earth")
+    with pytest.raises(ConvertError, match="frame needs a specified obstime"):
+        get_mu_angle(bad_skycoord)
