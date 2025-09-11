@@ -74,6 +74,8 @@ map = [
   "mpl-animators>=1.2.0",
   "reproject>=0.12.0",
   "scipy>=1.11.0",
+  # "ndcube>=2.2.0",
+  "ndcube@git+https://github.com/sunpy/ndcube@main",
 ]
 opencv = ["opencv-python>=4.8.0.74"]
 net = [
