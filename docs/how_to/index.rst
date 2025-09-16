@@ -26,7 +26,7 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    search_multiple_wavelengths
    search_vso
    transform_coords
-   mu_angle
+   mu
 
 **Quick Reference**
 
