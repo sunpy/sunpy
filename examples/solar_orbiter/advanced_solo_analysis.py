@@ -77,7 +77,7 @@ try:
                              a.Instrument('MAG'),
                              a.Level(2))
 
-    print(f"\\nFound {len(eui_result)} EUI images")
+    print(f"\nFound {len(eui_result)} EUI images")
     print(f"Found {len(mag_result)} MAG files")
 
     if len(eui_result) > 0:
@@ -126,7 +126,7 @@ bright_threshold = mean_intensity + 3 * std_intensity
 # Create a mask for bright regions
 bright_mask = eui_map.data > bright_threshold
 
-print(f"\\nImage Analysis Results")
+print(f"\nImage Analysis Results")
 print("=" * 30)
 print(f"Mean intensity: {mean_intensity:.1f}")
 print(f"Standard deviation: {std_intensity:.1f}")
@@ -145,7 +145,7 @@ norm1 = ImageNormalize(vmin=eui_map.data.min(), vmax=eui_map.data.max(),
                        stretch=AsinhStretch(0.01))
 im1 = eui_map.plot(axes=ax1, norm=norm1, cmap='sdoaia171')
 eui_map.draw_limb(axes=ax1, color='white', linewidth=2)
-ax1.set_title(f'Solar Orbiter EUI {eui_map.wavelength}\\nObserver at {getattr(eui_map, "hgln_obs", "unknown")}° longitude')
+ax1.set_title(f'Solar Orbiter EUI {eui_map.wavelength}\nObserver at {getattr(eui_map, "hgln_obs", "unknown")}° longitude')
 
 # Histogram of intensity values
 ax2 = fig.add_subplot(2, 3, 2)
@@ -260,7 +260,7 @@ plt.show()
 # Solar Orbiter's different perspective allows observation of features
 # not visible from Earth.
 
-print("\\n" + "="*60)
+print("\n" + "="*60)
 print("Coordinate Transformation Analysis")
 print("="*60)
 
@@ -329,6 +329,6 @@ ax2.set_title('Simulated Earth Perspective')
 plt.tight_layout()
 plt.show()
 
-print("\\nAnalysis Complete!")
+print("\nAnalysis Complete!")
 print("This example demonstrates the unique scientific value of Solar Orbiter's")
 print("orbital perspective for solar physics research.")

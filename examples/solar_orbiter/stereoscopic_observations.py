@@ -49,7 +49,7 @@ try:
 
     separation_angle = solo_coord.separation(earth_coord)
 
-    print(f"\\nOrbital Configuration:")
+    print(f"\nOrbital Configuration:")
     print(f"Solar Orbiter: {solo_coord}")
     print(f"Earth: {earth_coord}")
     print(f"Separation angle: {separation_angle:.1f}")
@@ -151,7 +151,7 @@ norm2 = ImageNormalize(vmin=aia_map.data.min(), vmax=aia_map.data.max(),
                        stretch=AsinhStretch(0.01))
 aia_map.plot(axes=ax2, norm=norm2, cmap='sdoaia171')
 aia_map.draw_limb(axes=ax2, color='white', linewidth=2)
-ax2.set_title(f'SDO/AIA 171 Å\\nLon: 0°')
+ax2.set_title(f'SDO/AIA 171 Å\nLon: 0°')
 
 # Plot 3: Difference image to highlight perspective differences
 ax3 = fig.add_subplot(2, 3, 3)
@@ -280,7 +280,7 @@ plt.show()
 ###############################################################################
 # Analyze stereoscopic capabilities and science potential
 
-print("\\n" + "="*60)
+print("\n" + "="*60)
 print("Stereoscopic Analysis Results")
 print("="*60)
 
@@ -298,11 +298,11 @@ print(f"  Separation angle: {separation_angle:.1f}")
 print(f"  Baseline length: {baseline_km:.0f} km")
 print(f"  Solar Orbiter distance: {solo_coord.radius.to(u.AU):.2f}")
 
-print(f"\\nHeight Sensitivity:")
+print(f"\nHeight Sensitivity:")
 print(f"  Minimum detectable height: {min_detectable_height:.2f} R☉")
 print(f"  (assuming {resolution_limit} resolution limit)")
 
-print(f"\\nScience Applications:")
+print(f"\nScience Applications:")
 print(f"  • 3D reconstruction of coronal loops")
 print(f"  • Height determination of CME fronts")
 print(f"  • Depth resolution of active region structures")
@@ -388,6 +388,6 @@ ax2.set_xlim(0, 180)
 plt.tight_layout()
 plt.show()
 
-print("\\nThis example demonstrates the unique capabilities of Solar Orbiter")
+print("\nThis example demonstrates the unique capabilities of Solar Orbiter")
 print("for stereoscopic solar physics, enabling 3D studies impossible from")
 print("a single vantage point.")

@@ -114,7 +114,7 @@ ax.coords[1].set_axislabel('Solar Y [arcsec]')
 
 # Create a detailed title with observation information
 title = (f"Solar Orbiter EUI {eui_map.detector} "
-         f"{eui_map.wavelength} Image\\n"
+         f"{eui_map.wavelength} Image\n"
          f"Observed: {eui_map.date.strftime('%Y-%m-%d %H:%M:%S')} UTC")
 ax.set_title(title, fontsize=12, pad=20)
 
@@ -136,7 +136,7 @@ plt.show()
 ###############################################################################
 # Display some key information about the Solar Orbiter observation
 
-print("\\n" + "="*50)
+print("\n" + "="*50)
 print("Solar Orbiter EUI Observation Details")
 print("="*50)
 print(f"Observatory: {eui_map.observatory}")

@@ -136,7 +136,7 @@ norm = ImageNormalize(vmin=eui_map.data.min(), vmax=eui_map.data.max(),
                       stretch=AsinhStretch(0.01))
 eui_map.plot(axes=ax1, norm=norm, cmap='sdoaia171')
 eui_map.draw_limb(axes=ax1, color='white', linewidth=2)
-ax1.set_title(f'Solar Orbiter EUI {eui_map.wavelength}\\n{eui_map.date.strftime("%Y-%m-%d %H:%M")}')
+ax1.set_title(f'Solar Orbiter EUI {eui_map.wavelength}\n{eui_map.date.strftime("%Y-%m-%d %H:%M")}')
 
 # Panel 2: Magnetic field components
 ax2 = fig.add_subplot(3, 2, 2)
@@ -200,7 +200,7 @@ plt.show()
 ###############################################################################
 # Perform some basic correlation analysis between in-situ and remote sensing
 
-print("\\n" + "="*60)
+print("\n" + "="*60)
 print("Coordinated Observation Analysis")
 print("="*60)
 
@@ -215,7 +215,7 @@ print(f"Magnetic Field Statistics:")
 print(f"  Mean |B|: {b_mean:.2f} ± {b_std:.2f} nT")
 print(f"  Range: {np.min(mag_data['B_TOTAL']):.2f} - {np.max(mag_data['B_TOTAL']):.2f} nT")
 
-print(f"\\nPlasma Statistics:")
+print(f"\nPlasma Statistics:")
 print(f"  Mean proton density: {n_mean:.2f} cm⁻³")
 print(f"  Mean proton speed: {v_mean:.1f} km/s")
 print(f"  Mean proton temperature: {t_mean/1000:.0f} × 10³ K")
@@ -243,7 +243,7 @@ print(f"  Heliographic Longitude: {observer_lon:.1f}°")
 print(f"  Heliographic Latitude: {observer_lat:.1f}°")
 print(f"  Distance from Sun: {observer_dist:.2f} AU")
 
-print(f"\\nScience Capabilities:")
+print(f"\nScience Capabilities:")
 print(f"  • Simultaneous in-situ and remote sensing observations")
 print(f"  • Off-Earth-line perspective for stereoscopic analysis")
 print(f"  • Variable heliocentric distance for multi-scale studies")
@@ -312,5 +312,5 @@ ax2.legend(loc='upper left')
 plt.tight_layout()
 plt.show()
 
-print("\\nThis example demonstrates the power of Solar Orbiter's coordinated")
+print("\nThis example demonstrates the power of Solar Orbiter's coordinated")
 print("remote sensing and in-situ capabilities for comprehensive solar wind studies.")
