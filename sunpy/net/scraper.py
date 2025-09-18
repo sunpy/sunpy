@@ -17,9 +17,6 @@ from astropy.time import Time
 from sunpy import log
 from sunpy.extern.parse import parse
 from sunpy.net.scraper_utils import date_floor, extract_timestep, get_timerange_from_exdict
-from sunpy.time.timerange import TimeRange
-from sunpy.util.decorators import deprecated_renamed_argument
-from sunpy.util.exceptions import warn_user
 
 __all__ = ['Scraper']
 
@@ -47,11 +44,6 @@ PARSE_TIME_CONVERSIONS = {
     "{millisecond:3d}": "%e",
     "{week_number:2d}": "%W",
 }
-DEPRECATED_MESSAGE = (
-    "pattern has been replaced with the format keyword. "
-    "This comes with a new syntax and there is a migration guide available at "
-    "https://docs.sunpy.org/en/latest/topic_guide/scraper_migration.html."
-)
 
 class Scraper:
     """
@@ -59,17 +51,6 @@ class Scraper:
 
     Parameters
     ----------
-    pattern : `str`
-        A string containing the url with the date encoded as datetime formats,
-        and any other parameter as ``kwargs`` as a string format.
-        This can also be a uri to a local file patterns. Deprecated in favor of `format`. Default is `None`.
-    regex : `bool`
-        Set to `True` if parts of the pattern uses regexp symbols.
-        This only works for the filename part of the pattern rather than the full url.
-        Be careful that periods ``.`` matches any character and therefore it's better to escape them.
-        If regexp is used, other ``kwargs`` are ignored and string replacement is
-        not possible. Default is `False`.
-        Deprecated in favor of `format`. Default is `False`.
     format : `str`
         A string containing the url with the date and other information to be
         extracted encoded as ``parse`` formats, and any other ``kwargs`` parameters
@@ -108,48 +89,25 @@ class Scraper:
     >>> print(swap.now)  # doctest: +SKIP
     http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
     """
-    @deprecated_renamed_argument("pattern", None, since="6.1", message=DEPRECATED_MESSAGE)
-    @deprecated_renamed_argument("regex", None, since="6.1", message=DEPRECATED_MESSAGE)
-    def __init__(self, pattern=None, regex=False, *, format=None, **kwargs):
-        if pattern is not None and format is None:
-            self.use_old_format = True
-            self.pattern = pattern
-        elif pattern is None and format is not None:
-            self.use_old_format = False
-            self.pattern = format
+    def __init__(self, format, **kwargs):
+        pattern = format.format(**kwargs)
+        datetime_pattern = pattern
+        for k, v in PARSE_TIME_CONVERSIONS.items():
+            if k in datetime_pattern:
+                datetime_pattern = datetime_pattern.replace(k,v)
+        self.datetime_pattern = datetime_pattern
+        # so that they don't conflict later on, either one can help in extracting year
+        if "year:4d" in pattern and "year:2d" in pattern:
+            pattern = pattern.replace("year:2d", ":2d")
+        self.pattern = pattern
+        self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
+        milliseconds = re.search(r'\%e', self.datetime_pattern)
+        if not milliseconds:
+            self.now = datetime.now().strftime(self.datetime_pattern)
         else:
-            raise ValueError("Either 'pattern' or 'format' must be provided.")
-        if self.use_old_format:
-            if regex and kwargs:
-                warn_user('regexp being used, the extra arguments passed are being ignored')
-            self.pattern = pattern.format(**kwargs) if kwargs and not regex else self.pattern
-            self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
-            milliseconds = re.search(r'\%e', self.pattern)
-            if not milliseconds:
-                self.now = datetime.now().strftime(self.pattern)
-            else:
-                now = datetime.now()
-                milliseconds_ = int(now.microsecond / 1000.)
-                self.now = now.strftime(f'{self.pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.pattern[milliseconds.end():]}')
-        else:
-            pattern = format.format(**kwargs)
-            datetime_pattern = pattern
-            for k, v in PARSE_TIME_CONVERSIONS.items():
-                if k in datetime_pattern:
-                    datetime_pattern = datetime_pattern.replace(k,v)
-            self.datetime_pattern = datetime_pattern
-            # so that they don't conflict later on, either one can help in extracting year
-            if "year:4d" in pattern and "year:2d" in pattern:
-                pattern = pattern.replace("year:2d", ":2d")
-            self.pattern = pattern
-            self.domain = f"{urlsplit(self.pattern).scheme}://{urlsplit(self.pattern).netloc}/"
-            milliseconds = re.search(r'\%e', self.datetime_pattern)
-            if not milliseconds:
-                self.now = datetime.now().strftime(self.datetime_pattern)
-            else:
-                now = datetime.now()
-                milliseconds_ = int(now.microsecond / 1000.)
-                self.now = now.strftime(f'{self.datetime_pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.datetime_pattern[milliseconds.end():]}')
+            now = datetime.now()
+            milliseconds_ = int(now.microsecond / 1000.)
+            self.now = now.strftime(f'{self.datetime_pattern[0:milliseconds.start()]}{milliseconds_:03d}{self.datetime_pattern[milliseconds.end():]}')
 
     def matches(self, filepath, date):
         """
@@ -168,10 +126,7 @@ class Scraper:
         `bool`
             `True` if the given filepath matches with the calculated one for given date, else `False`.
         """
-        if self.use_old_format:
-            return date.strftime(self.pattern) == filepath
-        else:
-            return parse(date.strftime(self.datetime_pattern), filepath) is not None
+        return parse(date.strftime(self.datetime_pattern), filepath) is not None
 
     def range(self, timerange):
         """
@@ -189,12 +144,8 @@ class Scraper:
             Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
-        if self.use_old_format:
-            if '/' in self.pattern:
-                directorypattern = '/'.join(self.pattern.split('/')[:-1]) + '/'
-        else:
-            if '/' in self.datetime_pattern:
-                directorypattern = '/'.join(self.datetime_pattern.split('/')[:-1]) + '/'
+        if '/' in self.datetime_pattern:
+            directorypattern = '/'.join(self.datetime_pattern.split('/')[:-1]) + '/'
         timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
@@ -227,7 +178,7 @@ class Scraper:
         >>> from sunpy.net import Scraper
         >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
-        >>> swap = Scraper(format=pattern, instrument='swap')
+        >>> swap = Scraper(pattern, instrument='swap')
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-01T00:12:00')
         >>> print(swap.filelist(timerange))  # doctest: +REMOTE_DATA
@@ -240,7 +191,7 @@ class Scraper:
         >>> from sunpy.net import Scraper
         >>> from sunpy.time import TimeRange
         >>> pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
-        >>> lyra = Scraper(format=pattern)
+        >>> lyra = Scraper(pattern)
         >>> timerange = TimeRange('2023-03-06T00:00:00','2023-03-06T00:10:00')
         >>> print(swap.filelist(timerange)) # doctest: +REMOTE_DATA
         ['http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000128.fits',
@@ -295,55 +246,31 @@ class Scraper:
         """
         Goes over locally stored archives to return list of files in the given timerange.
         """
-        if self.use_old_format:
-            pattern = self.pattern
-            pattern_temp = pattern.replace('file://', '')
-            if os.name == 'nt':
-                pattern_temp = pattern_temp.replace('\\', '/')
-                prefix = 'file:///'
-            else:
-                prefix = 'file://'
-            self.pattern = pattern_temp
-            directories = self.range(timerange)
-            filepaths = list()
-            for directory in directories:
-                try:
-                    for file_i in os.listdir(directory):
-                        fullpath = directory + file_i
-                        if self._url_follows_pattern(fullpath):
-                            if self._check_timerange(fullpath, timerange):
-                                filepaths.append(fullpath)
-                except FileNotFoundError:
-                    log.debug(f"Local directory not found: {directory}.")
-            filepaths = [prefix + path for path in filepaths]
-            self.pattern = pattern
-            return filepaths
+        pattern, datetime_pattern = self.pattern, self.datetime_pattern
+        pattern_temp, datetime_pattern_temp = pattern.replace('file://', ''), datetime_pattern.replace('file://', '')
+        if os.name == 'nt':
+            pattern_temp = pattern_temp.replace('\\', '/')
+            datetime_pattern_temp = datetime_pattern_temp.replace('\\', '/')
+            prefix = 'file:///'
         else:
-            pattern, datetime_pattern = self.pattern, self.datetime_pattern
-            pattern_temp, datetime_pattern_temp = pattern.replace('file://', ''), datetime_pattern.replace('file://', '')
-            if os.name == 'nt':
-                pattern_temp = pattern_temp.replace('\\', '/')
-                datetime_pattern_temp = datetime_pattern_temp.replace('\\', '/')
-                prefix = 'file:///'
-            else:
-                prefix = 'file://'
-            # Change pattern variables class-wide
-            self.pattern, self.datetime_pattern = pattern_temp, datetime_pattern_temp
-            directories = self.range(timerange)
-            filepaths = list()
-            for directory in directories:
-                try:
-                    for file_i in os.listdir(directory):
-                        fullpath = directory + file_i
-                        if self._url_follows_pattern(fullpath):
-                            if self._check_timerange(fullpath, timerange):
-                                filepaths.append(fullpath)
-                except FileNotFoundError:
-                    log.debug(f"Local directory not found: {directory}.")
-            filepaths = [prefix + path for path in filepaths]
-            # Set them back to their original values
-            self.pattern, self.datetime_pattern = pattern, datetime_pattern
-            return filepaths
+            prefix = 'file://'
+        # Change pattern variables class-wide
+        self.pattern, self.datetime_pattern = pattern_temp, datetime_pattern_temp
+        directories = self.range(timerange)
+        filepaths = list()
+        for directory in directories:
+            try:
+                for file_i in os.listdir(directory):
+                    fullpath = directory + file_i
+                    if self._url_follows_pattern(fullpath):
+                        if self._check_timerange(fullpath, timerange):
+                            filepaths.append(fullpath)
+            except FileNotFoundError:
+                log.debug(f"Local directory not found: {directory}.")
+        filepaths = [prefix + path for path in filepaths]
+        # Set them back to their original values
+        self.pattern, self.datetime_pattern = pattern, datetime_pattern
+        return filepaths
 
     def _httpfilelist(self, timerange):
         """
@@ -376,7 +303,7 @@ class Scraper:
                     log.debug(f"Directory {directory} not found.")
                     continue
                 if http_err.code in [400, 403]:
-                    log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
+                    log.debug( f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
                     raise
                 if http_err.code in [429, 504]:
                     # See if the server has told us how long to back off for
@@ -392,15 +319,16 @@ class Scraper:
                     )
                     sleep(retry_after)
                     if retry_counts.get(directory, 0) > 4:
-                     log.debug(f"Exceeded maximum retry limit for {directory}")
-                     raise
+                        log.debug(f"Exceeded maximum retry limit for {directory}")
+                        raise
                     retry_counts[directory] = retry_counts.get(directory, 0) + 1
                     directories.insert(0, directory)
                     continue
             except URLError as url_err:
-               log.debug(f"Failed to parse content from {directory}: {url_err}")
-               raise
-            except Exception:
+                log.debug(f"Failed to parse content from {directory}: {url_err}")
+                raise
+            except Exception as e:
+                log.debug(f"Failed to parse: {e}")
                 raise
         return filesurls
 
@@ -421,42 +349,22 @@ class Scraper:
         `bool`
             `True` if URL's valid time range overlaps the given timerange, else `False`.
         """
-        if self.use_old_format:
-            if hasattr(self, 'extractor'):
-                exdict = parse(self.extractor, url).named
-                tr = get_timerange_from_exdict(exdict)
-                return tr.intersects(timerange)
-            else:
-                datehref = self._extract_date(url).to_datetime()
-                timestep = extract_timestep(self.pattern)
-                tr = TimeRange(datehref, datehref + timestep)
-                return tr.intersects(timerange)
-        else:
-            exdict = parse(self.pattern, url).named
-            if exdict['year'] < 100:
-                exdict['year'] = 2000 + exdict['year']
-            if 'month' not in exdict:
-                        if 'month_name' in exdict:
-                            exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
-                        elif 'month_name_abbr' in exdict:
-                            exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
-            tr = get_timerange_from_exdict(exdict)
-            return tr.intersects(timerange)
+        exdict = parse(self.pattern, url).named
+        if exdict['year'] < 100:
+            exdict['year'] = 2000 + exdict['year']
+        if 'month' not in exdict:
+                    if 'month_name' in exdict:
+                        exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
+                    elif 'month_name_abbr' in exdict:
+                        exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
+        tr = get_timerange_from_exdict(exdict)
+        return tr.intersects(timerange)
 
     def _url_follows_pattern(self, url):
         """
         Check whether the url provided follows the pattern.
         """
-        if self.use_old_format:
-            pattern = self.pattern
-            for k, v in TIME_CONVERSIONS.items():
-                pattern = pattern.replace(k, v)
-            matches = re.match(pattern, url)
-            if matches:
-                return matches.end() == matches.endpos
-            return False
-        else:
-            return parse(self.pattern, url)
+        return parse(self.pattern, url)
 
 
     def _extract_date(self, url):
@@ -474,8 +382,10 @@ class Scraper:
         # assuming they are all separated with either '.', '_' or '/'
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
-        time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
-                      '%H', '%I', '%M', '%S', '%e', '%f']
+        time_order = [
+            '%Y', '%y', '%b', '%B', '%m', '%d', '%j',
+            '%H', '%I', '%M', '%S', '%e', '%f'
+        ]
         final_date = []
         final_pattern = []
         # Find in directory and filename
@@ -500,7 +410,6 @@ class Scraper:
         re_together = pattern_together
         for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
-
         # Lists to contain the unique elements of the date and the pattern
         final_date = list()
         final_pattern = list()
@@ -519,7 +428,7 @@ class Scraper:
         return Time.strptime(' '.join(final_date),
                              ' '.join(final_pattern))
 
-    def _extract_files_meta(self, timerange, extractor=None, matcher=None):
+    def _extract_files_meta(self, timerange, matcher=None):
         """
         Returns metadata information contained in URLs.
 
@@ -527,54 +436,34 @@ class Scraper:
         ----------
         timerange : `~sunpy.time.TimeRange`
             Time interval where to find the directories for a given pattern.
-        extractor : `str`
-            Extractor to extract metadata from URLs if the old format for pattern is used.
-        matcher : `dict`
+        matcher : `dict`, optional
             Dictionary to check if extracted metadata is valid.
+            Defaults to None.
 
         Returns
         -------
         `list` of `dict`
             List of metadata info for all URLs.
         """
-        if self.use_old_format:
-            self.extractor = extractor
-            urls = self.filelist(timerange)
-            metalist = []
-            for url in urls:
-                metadict = parse(extractor, url)
-                if metadict is not None:
-                    append = True
-                    metadict = metadict.named
-                    metadict['url'] = url
-                    if matcher is not None:
-                        for k in metadict:
-                            if k in matcher and str(metadict[k]) not in matcher[k]:
+        urls = self.filelist(timerange)
+        metalist = []
+        for url in urls:
+            metadict = parse(self.pattern, url)
+            if metadict is not None:
+                append = True
+                metadict = metadict.named
+                metadict['url'] = url
+                if 'month' not in metadict:
+                    if 'month_name' in metadict:
+                        metadict['month'] = datetime.strptime(metadict['month_name'], '%B').month
+                    elif 'month_name_abbr' in metadict:
+                        metadict['month'] = datetime.strptime(metadict['month_name_abbr'], '%b').month
+                if matcher is not None:
+                    for k in metadict:
+                        if match := matcher.get(k):
+                            if str(metadict[k]) not in match:
                                 append = False
                                 break
-                    if append:
-                        metalist.append(metadict)
-            return metalist
-        else:
-            urls = self.filelist(timerange)
-            metalist = []
-            for url in urls:
-                metadict = parse(self.pattern, url)
-                if metadict is not None:
-                    append = True
-                    metadict = metadict.named
-                    metadict['url'] = url
-                    if 'month' not in metadict:
-                        if 'month_name' in metadict:
-                            metadict['month'] = datetime.strptime(metadict['month_name'], '%B').month
-                        elif 'month_name_abbr' in metadict:
-                            metadict['month'] = datetime.strptime(metadict['month_name_abbr'], '%b').month
-                    if matcher is not None:
-                        for k in metadict:
-                            if match := matcher.get(k):
-                                if str(metadict[k]) not in match:
-                                    append = False
-                                    break
-                    if append:
-                        metalist.append(metadict)
-            return metalist
+                if append:
+                    metalist.append(metadict)
+        return metalist
