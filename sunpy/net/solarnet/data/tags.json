@@ -1,0 +1,12 @@
+{
+  "calibration_data": "calibration_data",
+  "ison_transit": "ison_transit",
+  "lovejoy_transit": "lovejoy_transit",
+  "low_quality": "low_quality",
+  "mercury_transit": "mercury_transit",
+  "moon_transit": "moon_transit",
+  "offline": "offline",
+  "solarnet": "solarnet",
+  "test_data": "test_data",
+  "venus_transit": "venus_transit"
+}
