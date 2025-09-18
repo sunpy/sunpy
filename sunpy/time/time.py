@@ -178,6 +178,7 @@ try:
         return Time(time_string.asm8)
 
     @convert_time.register(pandas.Series)
+    @convert_time.register(pandas.Index)
     def convert_time_pandasSeries(time_string, **kwargs):
         return convert_time(time_string.tolist(), **kwargs)
 
