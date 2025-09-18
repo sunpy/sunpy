@@ -326,4 +326,4 @@ def test_name(wispr_map):
 
 def test_wcs(wispr_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    wispr_map.pixel_to_world(0*u.pix, 0*u.pix)
+    wispr_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

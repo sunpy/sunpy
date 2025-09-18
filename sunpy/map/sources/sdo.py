@@ -7,7 +7,8 @@ from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEclipti
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.time import parse_time
 
@@ -44,12 +45,13 @@ class AIAMap(GenericMap):
     * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
+
         # Fill in some missing info
         self._nickname = self.detector
-        self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = self._get_cmap_name()
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
@@ -119,14 +121,14 @@ class HMIMap(GenericMap):
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Avoid JP2K images not having a norm due to UNIT8 data
             # This means they are not scaled correctly.
-            if self.plot_settings.get('norm') is not None:
+            if self.plotter.plot_settings.get('norm') is not None:
                 # Magnetic field maps, not intensity maps
-                self._set_symmetric_vmin_vmax()
+                self.plotter._set_symmetric_vmin_vmax()
         self._nickname = self.detector
 
     @property
@@ -215,10 +217,10 @@ class HMISynopticMap(HMIMap):
     * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
-        self.plot_settings['cmap'] = 'hmimag'
-        self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
+        self.plotter.plot_settings['cmap'] = 'hmimag'
+        self.plotter.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
 
     @property
     def spatial_units(self):

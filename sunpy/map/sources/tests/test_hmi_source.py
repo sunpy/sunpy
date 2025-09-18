@@ -104,7 +104,7 @@ def test_unit(hmi_cea_sharp_map, hmi_sharp_map):
 
 def test_wcs(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    hmi_map.pixel_to_world(0*u.pix, 0*u.pix)
-    hmi_bharp_map.pixel_to_world(0*u.pix, 0*u.pix)
-    hmi_cea_sharp_map.pixel_to_world(0*u.pix, 0*u.pix)
-    hmi_sharp_map.pixel_to_world(0*u.pix, 0*u.pix)
+    hmi_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+    hmi_bharp_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+    hmi_cea_sharp_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+    hmi_sharp_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)
