@@ -1,0 +1,1 @@
+For the `~sunpy.net.jsoc.attrs.Cutout` class for requesting JSOC cutouts, added protection to require the center of the cutout to be on the solar disk when tracking is enabled, due to confusing output from JSOC.

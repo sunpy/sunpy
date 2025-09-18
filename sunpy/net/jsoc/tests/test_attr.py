@@ -1,9 +1,11 @@
 import pytest
 
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
 import sunpy.net.jsoc as jsoc
 import sunpy.net.jsoc.attrs as attrs
+from sunpy.coordinates import frames
 from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import AttrAnd, AttrOr
 
@@ -81,3 +83,30 @@ def test_empty_notify():
 def test_not_email_notify():
     with pytest.raises(ValueError, match="Notify attribute must contain an '@' symbol to be a valid email address"):
         attrs.Notify("someemailthatisntone")
+
+
+def test_cutout_not_helioprojective():
+    hpc = SkyCoord(500*u.arcsec, -200*u.arcsec,
+                   obstime='2025-09-16', observer="earth", frame=frames.Helioprojective)
+    # No error because helioprojective
+    _  = attrs.Cutout(hpc, width=900*u.arcsec, height=900*u.arcsec)
+
+    hpr = SkyCoord(500*u.arcsec, -200*u.arcsec,
+                   obstime='2025-09-16', observer="earth", frame=frames.HelioprojectiveRadial)
+    # Error because not helioprojective
+    with pytest.raises(ValueError, match="`bottom_left` must be in the `Helioprojective` frame, but is instead in the `HelioprojectiveRadial` frame"):
+        _ = attrs.Cutout(hpr, width=900*u.arcsec, height=900*u.arcsec)
+
+
+def test_cutout_not_on_disk_when_tracking():
+    bottom_left = SkyCoord(500*u.arcsec, -200*u.arcsec,
+                           obstime='2025-09-16', observer="earth", frame=frames.Helioprojective)
+
+    # No error because tracking is disabled
+    cutout  = attrs.Cutout(bottom_left, width=900*u.arcsec, height=900*u.arcsec, tracking=False)
+    assert cutout.value["x"] == 950
+    assert cutout.value["y"] == 250
+
+    # Error because tracking is enabled
+    with pytest.raises(ValueError, match="Tracking is enabled, but the center of the cutout .* is not on the solar disk"):
+        _  = attrs.Cutout(bottom_left, width=900*u.arcsec, height=900*u.arcsec, tracking=True)

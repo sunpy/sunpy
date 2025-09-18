@@ -1,6 +1,9 @@
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
+from sunpy.coordinates.frames import Helioprojective
 from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.map.maputils import coordinate_is_on_solar_disk
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrComparison, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
@@ -131,7 +134,7 @@ class Cutout(DataAttr):
     Parameters
     ----------
     bottom_left : `~astropy.coordinates.SkyCoord`
-        Coordinate for the bottom left corner of the cutout.
+        Helioprojective coordinate for the bottom left corner of the cutout.
     top_right : `~astropy.coordinates.SkyCoord`, optional
         Coordinate for the top right corner of the cutout. If this is
         not specified, both ``width`` and ``height`` must both be specified.
@@ -151,6 +154,15 @@ class Cutout(DataAttr):
     See Also
     --------
     sunpy.coordinates.utils.get_rectangle_coordinates
+
+    Notes
+    -----
+    The ``bottom_left`` coordinate must be in the `~sunpy.coordinates.Helioprojective`
+    frame. The ``observer`` frame attribute of ``bottom_left`` is ignored, and
+    instead the observer location is assumed to be SDO.
+
+    If ``tracking`` is `True`, the center of the cutout is required to be on the
+    solar disk, otherwise the JSOC will produce unexpected output.
     """
     @u.quantity_input
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
@@ -158,6 +170,17 @@ class Cutout(DataAttr):
                  nan_off_limb=False):
         super().__init__()
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width, height=height)
+        if not isinstance(bl.frame, Helioprojective):
+            raise ValueError("`bottom_left` must be in the `Helioprojective` frame, but is instead "
+                             f"in the `{bl.frame.__class__.__name__}` frame")
+
+        center_x = (bl.Tx + tr.Tx) / 2
+        center_y = (bl.Ty + tr.Ty) / 2
+        center = SkyCoord(center_x, center_y, frame=bottom_left.frame)
+        if tracking and not coordinate_is_on_solar_disk(center):
+            raise ValueError("Tracking is enabled, but the center of the cutout "
+                             f"(Tx={center_x}, Ty={center_y}) is not on the solar disk.")
+
         self.value = {
             't_ref': bl.obstime.isot,
             # JSOC input is disable tracking so take the negative
@@ -166,10 +189,10 @@ class Cutout(DataAttr):
             'c': int(nan_off_limb),
             'locunits': 'arcsec',
             'boxunits': 'arcsec',
-            'x': ((bl.Tx + tr.Tx) / 2).to('arcsec').value,
-            'y': ((bl.Ty + tr.Ty) / 2).to('arcsec').value,
-            'width': (tr.Tx - bl.Tx).to('arcsec').value,
-            'height': (tr.Ty - bl.Ty).to('arcsec').value,
+            'x': center_x.to_value('arcsec'),
+            'y': center_y.to_value('arcsec'),
+            'width': (tr.Tx - bl.Tx).to_value('arcsec'),
+            'height': (tr.Ty - bl.Ty).to_value('arcsec'),
         }
 
     def collides(self, other):
