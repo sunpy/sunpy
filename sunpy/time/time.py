@@ -9,6 +9,7 @@ from functools import singledispatch
 
 import numpy as np
 
+import astropy.table
 import astropy.time
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -221,6 +222,11 @@ def convert_time_npndarray(time_string, **kwargs):
 @convert_time.register(astropy.time.Time)
 def convert_time_astropy(time_string, **kwargs):
     return time_string
+
+
+@convert_time.register(astropy.table.Column)
+def convert_time_astropy_table_column(time_string, **kwargs):
+    return convert_time(time_string.tolist(), **kwargs)
 
 
 @convert_time.register(str)
