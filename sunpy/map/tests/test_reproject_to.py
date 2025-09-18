@@ -121,7 +121,7 @@ def test_return_footprint(aia171_test_map, hpc_header):
 
 
 def test_invalid_inputs(aia171_test_map, hpc_header):
-    with pytest.raises(ValueError, match="The specified algorithm must be one of"):
+    with pytest.raises(ValueError, match="algorithm='something' is not valid, it must be one of interpolation"):
         aia171_test_map.reproject_to(hpc_header, algorithm='something')
 
 
