@@ -179,7 +179,7 @@ try:
 
     @convert_time.register(pandas.Series)
     def convert_time_pandasSeries(time_string, **kwargs):
-        return Time(time_string.tolist(), **kwargs)
+        return convert_time(time_string.tolist(), **kwargs)
 
     @convert_time.register(pandas.DatetimeIndex)
     def convert_time_pandasDatetimeIndex(time_string, **kwargs):

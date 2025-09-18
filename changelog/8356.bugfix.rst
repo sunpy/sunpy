@@ -1,0 +1,1 @@
+Fixed a bug where :func:`~sunpy.time.parse_time` failed to parse time strings stored in an `astropy.table.Column` or a `pandas.Series` using the normal wide range of supported time-string formats.
