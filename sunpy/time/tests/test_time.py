@@ -175,6 +175,19 @@ def test_parse_time_astropy():
     assert astropy_time.format == 'isot'
 
 
+@pytest.mark.parametrize("inputs", [[datetime(2012, 1, i) for i in range(1, 13)],
+                                    ['2025-09-18', '2025-09-19'],
+                                    ['2025-Sep-18', '2025-Sep-19']])
+def test_parse_time_astropy_table_column(inputs):
+    ind = astropy.table.Column(inputs)
+    as_inps = parse_time(inputs)
+
+    dts = parse_time(ind)
+
+    assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == as_inps)
+
+
 def test_parse_time_datetime():
     dt = datetime(2014, 2, 7, 16, 47, 51, 8288)
     assert parse_time(dt) == Time('2014-02-07 16:47:51.008288')
