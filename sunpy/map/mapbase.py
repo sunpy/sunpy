@@ -1599,7 +1599,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
-        
+
         Additional keyword arguments are passed through to the reprojection function.
 
         This method **does not** preserve dask arrays.
@@ -1658,6 +1658,7 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
+
         if auto_extent is not None:
             left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
                                                            method=auto_extent, integers=True)
@@ -1675,10 +1676,21 @@ class GenericMap(MapDeprecateMixin, MapMetaMixin, NDCube):
                       " rsun_meters of target WCS."
                       " This might cause unexpected results during reprojection.")
 
-        return super().reproject_to(target_wcs,
-                                    algorithm=algorithm,
-                                    return_footprint=return_footprint,
-                                    **reproject_args)
+        out = super().reproject_to(target_wcs,
+                                   algorithm=algorithm,
+                                   return_footprint=return_footprint,
+                                   **reproject_args)
+        if return_footprint:
+            out, footprint = out
+        # Override the meta of the new map to just be the meta of the WCS
+        # NDCube preserves the meta because it's independent of the
+        # WCS, but because we compute the WCS on the fly from the meta
+        # we can't keep the meta if it's out of sync with the WCS.
+        out.meta = MetaDict(target_wcs.to_header())
+        if return_footprint:
+            return out, footprint
+        return out
+
 
 
 GenericMap.__doc__ = fix_duplicate_notes(_notes_doc, GenericMap.__doc__)
