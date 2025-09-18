@@ -89,10 +89,12 @@ def test_parse_time_nanoseconds():
     assert dt.jd2 == -0.4996971504992593
 
 
-def test_parse_time_pandas_series():
-    inputs = [datetime(2012, 1, i) for i in range(1, 13)]
+@pytest.mark.parametrize("inputs", [[datetime(2012, 1, i) for i in range(1, 13)],
+                                    ['2025-09-18', '2025-09-19'],
+                                    ['2025-Sep-18', '2025-Sep-19']])
+def test_parse_time_pandas_series(inputs):
     ind = pandas.Series(inputs)
-    as_inps = Time(inputs)
+    as_inps = parse_time(inputs)
 
     dts = parse_time(ind)
 
