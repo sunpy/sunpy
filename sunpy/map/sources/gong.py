@@ -192,7 +192,7 @@ class GONGMagnetogramMap(GenericMap):
             date = parse_time(date).tai - 19*u.s
             self.meta['date-obs'], self.meta['time-obs'] = date.isot.split('T')
         else:
-            self.meta['date-obs'] = date
+            super()._set_date(date)
 
     @property
     def reference_date(self):
