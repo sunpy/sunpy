@@ -1,3 +1,27 @@
+7.0.2 (2025-09-19)
+==================
+
+Bug Fixes
+---------
+
+- Fix inconsistent behaviour between local and remote (http/ftp) ~`sunpy.net.scraper.Scraper` searches. Local searches will no longer crash if an expected directory does not exist during search. (`#8316 <https://github.com/sunpy/sunpy/pull/8316>`__)
+- Fixed a bug where :func:`~sunpy.time.parse_time` could not accept `pandas.Index` input. (`#8356 <https://github.com/sunpy/sunpy/pull/8356>`__)
+- Fixed a bug where :func:`~sunpy.time.parse_time` failed to parse time strings stored in an `astropy.table.Column` or a `pandas.Series` using the normal wide range of supported time-string formats. (`#8356 <https://github.com/sunpy/sunpy/pull/8356>`__)
+
+
+Documentation
+-------------
+
+- Added an example (:ref:`sphx_glr_generated_gallery_plotting_adding_earth.py`) showing how to add an Earth scale image to a Map plot. (`#8322 <https://github.com/sunpy/sunpy/pull/8322>`__)
+
+
+Internal Changes
+----------------
+
+- A low-resolution Earth image (PNG format) is now available as `sunpy.data.EARTH_IMAGE`. (`#8340 <https://github.com/sunpy/sunpy/pull/8340>`__)
+- Fixed a doctest that depended on the name of the person associated with a data set. (`#8348 <https://github.com/sunpy/sunpy/pull/8348>`__)
+
+
 7.0.1 (2025-07-31)
 ==================
 
