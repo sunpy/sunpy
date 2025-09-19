@@ -17,7 +17,7 @@ __all__ = [
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
     'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table',
-     'suit_color_table', 'punch_color_table',
+    'suit_color_table', 'punch_color_table', 'metis_color_table'
 ]
 
 
@@ -396,61 +396,61 @@ def punch_color_table():
 
 
 def metis_color_table(cmap_name):
-    if cmap_name == 'solar orbitermetisvl-tb':
-        cmap = cmcrameri.cm.batlow.copy()  # the same as for solar orbitermetisvl-si
-        cmap.name =  'SolO Metis VL Total Brightness'
 
-    elif cmap_name == 'solar orbitermetisvl-pb':
-        aia_wave_dict = create_aia_wave_dict()  # Metis VL/pB images uses AIA color table
-        r, g, b = aia_wave_dict[304*u.angstrom]
-        cmap = _cmap_from_rgb(r, g, b, 'SolO Metis VL Polarized Brightness')
+    aia_wave_dict = create_aia_wave_dict()
+    aia304_rgb = aia_wave_dict[304*u.angstrom]
+    metisvl_pb_cmap = _cmap_from_rgb(
+        *aia304_rgb, 'SolO Metis VL Polarized Brightness'
+    )
 
-    elif cmap_name == 'solar orbitermetisvl-fp':
-        r = np.arange(256)
-        g = np.arange(256)
-        b = np.arange(256)
-        cmap = _cmap_from_rgb(r, g, b, 'SolO Metis VL Fixed Polarization')
+    metisvl_fb_rgb = (np.arange(256), np.arange(256), np.arange(256))
+    metisvl_fb_cmap = _cmap_from_rgb(
+        *metisvl_fb_rgb, 'SolO Metis VL Fixed Polarization'
+    )
 
-    elif cmap_name == 'solar orbitermetisvl-pa':
-        cmap = colormaps['viridis'].copy()
-        cmap.name =  'SolO Metis VL Polarization Angle'
+    # cmap_name, cmap, cmap.name
+    cmap_dict = {
+        'solometisvl-tb': (
+            cmcrameri.cm.batlow.copy(), 'SolO Metis VL Total Brightness'
+        ),
+        'solometisvl-pb': (  # Metis VL/pB images uses AIA color table
+            metisvl_pb_cmap, None
+        ),
+        'solometisvl-fp': (
+            metisvl_fb_cmap, None
+        ),
+        'solometisvl-pa': (
+            colormaps['viridis'].copy(), 'SolO Metis VL Polarization Angle'
+        ),
+        'solometisvl-sq': (
+            colormaps['viridis'].copy(), 'SolO Metis VL Stokes Q'
+        ),
+        'solometisvl-su': (
+            colormaps['viridis'].copy(), 'SolO Metis VL Stokes U'
+        ),
+        'solometisvl-pq': (
+            colormaps['plasma'].copy(), 'SolO Metis VL Pixel Quality'
+        ),
+        'solometisvl-ae': (
+            colormaps['plasma'].copy(), 'SolO Metis VL Absolute Error'
+        ),
+        'solometisuv': (
+            colormaps['Blues_r'].copy(), 'SolO Metis UV'
+        )
+    }
+    cmap_dict['solometisvl-si'] = cmap_dict['solometisvl-tb']
+    cmap_dict['solometisuv-pq'] = cmap_dict['solometisvl-pq']
+    cmap_dict['solometisuv-ae'] = cmap_dict['solometisvl-ae']
 
-    elif cmap_name == 'solar orbitermetisvl-si':
-        cmap = cmcrameri.cm.batlow.copy()  # the same as for solar orbitermetisvl-tb
-        cmap.name =  'SolO Metis VL Stokes I'
-
-    elif cmap_name == 'solar orbitermetisvl-sq':
-        cmap = colormaps['viridis'].copy()
-        cmap.name =  'SolO Metis VL Stokes Q'
-
-    elif cmap_name == 'solar orbitermetisvl-su':
-        cmap = colormaps['viridis'].copy()
-        cmap.name =  'SolO Metis VL Stokes U'
-
-    elif cmap_name == 'solar orbitermetisvl-pq':
-        cmap = colormaps['plasma'].copy()  # the same as for solar orbitermetisuv-pq
-        cmap.name =  'SolO Metis VL Pixel Quality'
-
-    elif cmap_name == 'solar orbitermetisvl-ae':
-        cmap = colormaps['plasma'].copy()  # the same as for solar orbitermetisuv-ae
-        cmap.name =  'SolO Metis VL Absolute Error'
-
-    elif cmap_name == 'solar orbitermetisuv':
-        cmap = colormaps['Blues_r'].copy()
-        cmap.name =  'SolO Metis UV'
-
-    elif cmap_name == 'solar orbitermetisuv-pq':
-        cmap = colormaps['plasma'].copy()  # the same as for solar orbitermetisvl-pq
-        cmap.name =  'SolO Metis UV Pixel Quality'
-
-    elif cmap_name == 'solar orbitermetisuv-ae':
-        cmap = colormaps['plasma'].copy()  # the same as for solar orbitermetisvl-ae
-        cmap.name =  'SolO Metis UV Absolute Error'
-
+    if cmap_name in cmap_dict:
+        cmap, cname = cmap_dict[cmap_name]
     else:
         raise ValueError(
-            'Invalid Metis cmap_name. Valid values are: solar orbitermetisvl-tb, solar orbitermetisvl-pb, solar orbitermetisvl-fp, solar orbitermetisvl-pa, solar orbitermetisvl-si, solar orbitermetisvl-sq, solar orbitermetisvl-su, solar orbitermetisvl-pq, solar orbitermetisvl-ae, solar orbitermetisuv, solar orbitermetisuv-pq, solar orbitermetisuv-ae.'
+            f'Invalid Metis cmap_name [{cmap_name}]. Valid values are: {", ".join(cmap_dict.keys())}.'
         )
+
+    if cname is not None:
+        cmap.name = cname
 
     cmap.set_bad(color='k')
 
