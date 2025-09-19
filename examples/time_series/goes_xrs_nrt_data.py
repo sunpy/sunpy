@@ -43,7 +43,7 @@ goes_data.rename(columns={'0.05-0.4nm': 'xrsa', '0.1-0.8nm': 'xrsb'}, inplace=Tr
 # `sunpy.timeseries.TimeSeries` requires a datetime index, which we can get by
 # parsing the time strings.
 
-goes_data.index = parse_time(list(goes_data.index)).datetime
+goes_data.index = parse_time(goes_data.index).datetime
 
 ###############################################################################
 # `sunpy.timeseries.TimeSeries` requires that there are units for data variables.
