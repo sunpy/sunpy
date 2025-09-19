@@ -141,6 +141,7 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_changelog',
+    'sphinx_tags',
     'sphinx_gallery.gen_gallery',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
@@ -383,6 +384,9 @@ sphinx_gallery_conf = {
     'only_warn_on_example_error': True,
     'parallel': True,
 }
+
+# sphinx tags
+tags_create_tags = True
 
 # -- Linking to OpenCV docs by using rst_epilog --------------------------------
 
