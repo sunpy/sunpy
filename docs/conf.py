@@ -387,6 +387,9 @@ sphinx_gallery_conf = {
 
 # sphinx tags
 tags_create_tags = True
+tags_extension = ['rst']
+tags_overview_title = 'SunPy Examples Gallery Tags'
+
 
 # -- Linking to OpenCV docs by using rst_epilog --------------------------------
 
