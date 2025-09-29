@@ -9,6 +9,7 @@ from functools import singledispatch
 
 import numpy as np
 
+import astropy.table
 import astropy.time
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -47,6 +48,7 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
     "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
     "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
+    "%Y-%m-%dT%H:%M:%SZ",  # Example 2007-05-04T21:08:12Z
     "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
     "%Y%m%dT%H%M",  # Example 20070504T2108 , Should precede "%Y%m%dT%H%M%S".
     "%Y%m%dT%H%M%S",  # Example 20070504T210812
@@ -176,8 +178,9 @@ try:
         return Time(time_string.asm8)
 
     @convert_time.register(pandas.Series)
+    @convert_time.register(pandas.Index)
     def convert_time_pandasSeries(time_string, **kwargs):
-        return Time(time_string.tolist(), **kwargs)
+        return convert_time(time_string.tolist(), **kwargs)
 
     @convert_time.register(pandas.DatetimeIndex)
     def convert_time_pandasDatetimeIndex(time_string, **kwargs):
@@ -222,6 +225,11 @@ def convert_time_astropy(time_string, **kwargs):
     return time_string
 
 
+@convert_time.register(astropy.table.Column)
+def convert_time_astropy_table_column(time_string, **kwargs):
+    return convert_time(time_string.tolist(), **kwargs)
+
+
 @convert_time.register(str)
 @convert_time.register(list)
 def convert_time_str(time_string, **kwargs):
@@ -251,6 +259,8 @@ def convert_time_str(time_string, **kwargs):
                 return t
             except ValueError:
                 pass
+
+        log.debug("No matching sunpy format found for %s, so falling back to astropy formats", first_item)
 
     # If the string format does not match one of ours, we need to protect against a bad interaction
     # between astropy's C fast parser and numpy>=2.3

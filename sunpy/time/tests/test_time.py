@@ -89,10 +89,13 @@ def test_parse_time_nanoseconds():
     assert dt.jd2 == -0.4996971504992593
 
 
-def test_parse_time_pandas_series():
-    inputs = [datetime(2012, 1, i) for i in range(1, 13)]
-    ind = pandas.Series(inputs)
-    as_inps = Time(inputs)
+@pytest.mark.parametrize("pd_type", [pandas.Series, pandas.Index])
+@pytest.mark.parametrize("inputs", [[datetime(2012, 1, i) for i in range(1, 13)],
+                                    ['2025-09-18', '2025-09-19'],
+                                    ['2025-Sep-18', '2025-Sep-19']])
+def test_parse_time_pandas_series(pd_type, inputs):
+    ind = pd_type(inputs)
+    as_inps = parse_time(inputs)
 
     dts = parse_time(ind)
 
@@ -100,7 +103,7 @@ def test_parse_time_pandas_series():
     assert np.all(dts == as_inps)
 
 
-def test_parse_time_pandas_series_2():
+def test_parse_time_pandas_series_2d():
     inputs = [[datetime(2012, 1, 1, 0, 0), datetime(2012, 1, 2, 0, 0)],
               [datetime(2012, 1, 3, 0, 0), datetime(2012, 1, 4, 0, 0)]]
     ind = pandas.Series(inputs)
@@ -175,6 +178,19 @@ def test_parse_time_astropy():
     assert astropy_time.format == 'isot'
 
 
+@pytest.mark.parametrize("inputs", [[datetime(2012, 1, i) for i in range(1, 13)],
+                                    ['2025-09-18', '2025-09-19'],
+                                    ['2025-Sep-18', '2025-Sep-19']])
+def test_parse_time_astropy_table_column(inputs):
+    ind = astropy.table.Column(inputs)
+    as_inps = parse_time(inputs)
+
+    dts = parse_time(ind)
+
+    assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == as_inps)
+
+
 def test_parse_time_datetime():
     dt = datetime(2014, 2, 7, 16, 47, 51, 8288)
     assert parse_time(dt) == Time('2014-02-07 16:47:51.008288')
@@ -206,6 +222,7 @@ def test_parse_time_now():
     ('2007-05-04T21:08:12.999999', '2007:124:21:08:12.999999'),
     ('2007-05-04T21:08:12', '2007-05-04T21:08:12'),
     ('2007-05-04T21:08:12', '2007/05/04T21:08:12'),
+    ('2007-05-04T21:08:12', '2007-05-04T21:08:12Z'),
     ('2007-05-04T21:08:12', '20070504T210812'),
     ('2007-05-04T21:08:12', '2007/05/04 21:08:12'),
     ('2007-05-04T21:08:12', '2007-05-04 21:08:12'),
