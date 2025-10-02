@@ -137,7 +137,6 @@ extensions = [
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
     'sphinx_changelog',
-    'sphinx_tags',
     'sphinx_gallery.gen_gallery',
     'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
@@ -154,6 +153,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'sphinxcontrib.bibtex',
+    'sphinx_tags',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -314,7 +314,8 @@ sphinx_gallery_conf = {
 # sphinx tags
 tags_create_tags = True
 tags_overview_title = 'SunPy Examples Gallery Tags'
-
+tags_output_dir = "_tags"
+tags_page_title = "Tag"
 
 # -- Linking to OpenCV docs by using rst_epilog --------------------------------
 
