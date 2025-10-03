@@ -1,5 +1,6 @@
 default.extend-ignore-identifiers-re = [
-    "ANDed",
+    "NDCube",
+    "ANDed", # ANDed
     "arange",
     "iy",
     "iy1",

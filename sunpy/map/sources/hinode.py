@@ -2,7 +2,8 @@
 import astropy.units as u
 from astropy.visualization import ImageNormalize, LogStretch
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.source_type import source_stretch
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
@@ -48,16 +49,16 @@ class XRTMap(GenericMap):
     filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
                                   "Be_thick", "Gband", "Ti_poly"]
 
-    def __init__(self, data, header, **kwargs):
-        fw1 = header.get('EC_FW1_', '')
+    def __init__(self, data, *, meta,  **kwargs):
+        fw1 = meta.get('EC_FW1_', '')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
             raise ValueError(f'Unexpected filter wheel 1 {fw1} in header.')
-        fw2 = header.get('EC_FW2_', '')
+        fw2 = meta.get('EC_FW2_', '')
         if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError(f'Unexpected filter wheel 2 {fw2} in header.')
-        super().__init__(data, header, **kwargs)
-        self.plot_settings['cmap'] = 'hinodexrt'
-        self.plot_settings['norm'] = ImageNormalize(
+        super().__init__(data, meta=meta, **kwargs)
+        self.plotter.plot_settings['cmap'] = 'hinodexrt'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @property
@@ -163,8 +164,8 @@ class SOTMap(GenericMap):
                         'FG shutterless I and V with 0.2s intervals',
                         'FG shutterless Stokes', 'SP IQUV 4D array']
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
 
         # TODO (add other options, Now all treated as intensity. This follows
@@ -178,7 +179,7 @@ class SOTMap(GenericMap):
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
                  }
 
-        self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
+        self.plotter.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
 
     @property
     def coordinate_system(self):

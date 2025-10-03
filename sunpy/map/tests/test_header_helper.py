@@ -271,12 +271,12 @@ def test_make_heliographic_header(aia171_test_map, shape, projection_code, frame
     carr_map = aia171_test_map.reproject_to(header)
 
     # Check upper right and lower left coordinates are as expected
-    ll_coord = carr_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    ll_coord = carr_map.wcs.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
     assert ll_coord.lon in [-180 * u.deg, 180*u.deg]
     assert ll_coord.lat == -90 * u.deg
     assert ll_coord.frame.name == f"heliographic_{frame}"
 
-    ur_coord = carr_map.pixel_to_world((shape[1] - 0.5) * u.pix, (shape[0] - 0.5) * u.pix)
+    ur_coord = carr_map.wcs.pixel_to_world((shape[1] - 0.5) * u.pix, (shape[0] - 0.5) * u.pix)
     assert ur_coord.lon in [-180 * u.deg, 180*u.deg]
     assert ur_coord.lat == 90 * u.deg
     assert ur_coord.frame.name == f"heliographic_{frame}"

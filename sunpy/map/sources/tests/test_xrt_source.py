@@ -8,7 +8,7 @@ import pytest
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map.mapbase import SpatialPair
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.map.sources.hinode import XRTMap
 from .helpers import _test_private_date_setters
 
@@ -94,4 +94,4 @@ def test_wheel_measurements(xrt_map):
 
 def test_wcs(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    xrt_map.pixel_to_world(0*u.pix, 0*u.pix)
+    xrt_map.wcs.pixel_to_world(0*u.pix, 0*u.pix)

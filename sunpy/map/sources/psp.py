@@ -30,10 +30,10 @@ class WISPRMap(GenericMap):
     * :cite:t:`vourlidas_wide-field_2016`
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=AsinhStretch(a=0.001), vmin=0)
 
     @property

@@ -334,7 +334,7 @@ class MapSequence:
         >>> plt.show()   # doctest: +SKIP
 
         """
-        axes = self[0]._check_axes(axes)
+        axes = self[0]._plotter._check_axes(axes)
         fig = axes.get_figure()
 
         if not plot_function:
@@ -461,7 +461,7 @@ class MapSequence:
         if resample:
             if self.all_same_shape:
                 plot_sequence = MapSequence()
-                resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
+                resample = u.Quantity(self.maps[0].shape) * np.array(resample)
                 for amap in self.maps:
                     plot_sequence.maps.append(amap.resample(resample))
             else:

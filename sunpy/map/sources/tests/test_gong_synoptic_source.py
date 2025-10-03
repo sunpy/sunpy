@@ -57,4 +57,4 @@ def test_spatial_units(gong_synoptic):
 
 def test_wcs(gong_synoptic):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    gong_synoptic.pixel_to_world(0*u.pix, 0*u.pix)
+    gong_synoptic.wcs.pixel_to_world(0*u.pix, 0*u.pix)

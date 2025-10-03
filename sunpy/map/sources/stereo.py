@@ -29,12 +29,12 @@ class EUVIMap(GenericMap):
     * `Instrument Page <http://secchi.lmsal.com/EUVI/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
-        self.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
     def _rotation_matrix_from_crota(self):
@@ -83,12 +83,12 @@ class CORMap(GenericMap):
     * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
-        self.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
@@ -121,12 +121,12 @@ class HIMap(GenericMap):
     * `HI Instrument Page <http://www.stereo.rl.ac.uk>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
-        self.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
     @property

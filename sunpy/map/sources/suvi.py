@@ -69,12 +69,12 @@ class SUVIMap(GenericMap):
     * `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings["cmap"] = self._get_cmap_name()
-        self.plot_settings["norm"] = ImageNormalize(
+        self.plotter.plot_settings["cmap"] = self._get_cmap_name()
+        self.plotter.plot_settings["norm"] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False
         )
 

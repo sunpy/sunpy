@@ -30,10 +30,10 @@ class EUIMap(GenericMap):
     * Instrument Paper: :cite:t:`rochus_solar_2020`
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['norm'] = ImageNormalize(
+        self.plotter.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property

@@ -313,30 +313,30 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
         for this_edge in range(0, 4):
             pixels = edges[this_edge]
             res = _rotate_submap_edge(this_map, pixels, observer)
-            assert all(res.Tx == (this_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
-            assert all(res.Ty == (this_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+            assert all(res.Tx == (this_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+            assert all(res.Ty == (this_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
 
     # For an on disk map, all the edges should change
     edges = map_edges(all_on_disk_map)
     for this_edge in range(0, 4):
         pixels = edges[this_edge]
         res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
-        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
-        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+        assert all(res.Tx != (all_on_disk_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty != (all_on_disk_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
 
     # For the limb map, two of the edges move and two do not
     edges = map_edges(straddles_limb_map)
     for this_edge in (0, 3):  # Top and right edges do not move
         pixels = edges[this_edge]
         res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
-        assert all(res.Tx == (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
-        assert all(res.Ty == (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+        assert all(res.Tx == (straddles_limb_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty == (straddles_limb_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
 
     for this_edge in (1, 2):  # Bottom and left edges do move
         pixels = edges[this_edge]
         res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
-        assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
-        assert all(res.Ty != (straddles_limb_map.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
+        assert all(res.Tx != (straddles_limb_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Tx)
+        assert all(res.Ty != (straddles_limb_map.wcs.pixel_to_world(pixels[:, 0], pixels[:, 1])).Ty)
 
 
 def test_get_extreme_position():

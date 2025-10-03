@@ -25,11 +25,11 @@ class SWAPMap(GenericMap):
     * `Fits headers reference <http://proba2.oma.be/data/SWAP/level0>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = 'sdoaia171'
+        self.plotter.plot_settings['cmap'] = 'sdoaia171'
 
     @property
     def observatory(self):

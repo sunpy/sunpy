@@ -7,6 +7,8 @@ from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import GONGHalphaMap
 from .helpers import _test_private_date_setters
 
+pytestmark = pytest.mark.filterwarnings("ignore:.*times are outside of range covered by IERS table")
+
 
 @pytest.fixture
 def gong_halpha():
@@ -61,7 +63,6 @@ def test_earth_location(gong_halpha):
 
 
 @pytest.mark.filterwarnings("ignore:Tried to get polar motions for times after IERS data is valid.")
-@pytest.mark.filterwarnings("ignore:.*times are outside of range covered by IERS table.")
 def test_observer_coordinate(gong_halpha):
     xyz_expected = [146712246479.363, -5563586.169750214, -17605285536.73928] * u.m
     assert u.isclose(gong_halpha.observer_coordinate.data.xyz, xyz_expected, rtol=1e-8).all()

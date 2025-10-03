@@ -3,7 +3,8 @@ ADAPT Map subclass definitions
 """
 
 
-from sunpy.map.mapbase import GenericMap, SpatialPair
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mixins.mapmeta import SpatialPair
 from sunpy.time import parse_time
 
 __all__ = ['ADAPTMap']

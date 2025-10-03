@@ -163,8 +163,9 @@ From these header MetaDict's that are generated, we can now create a custom map:
     Measurement:                 1000.0 Angstrom
     Wavelength:          1000.0 Angstrom
     Observation Date:    2013-10-28 00:00:00
+    Reference Date:              2013-10-28 00:00:00
     Exposure Time:               Unknown
-    Dimension:           [10. 10.] pix
+    Pixel Dimensions:            [10. 10.]
     Coordinate System:   helioprojective
     Scale:                       [2. 2.] arcsec / pix
     Reference Pixel:     [5. 5.] pix
@@ -179,6 +180,7 @@ From these header MetaDict's that are generated, we can now create a custom map:
            [70, 71, 72, 73, 74, 75, 76, 77, 78, 79],
            [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
            [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]])
+
 
 .. _Meta Keywords Table:
 
