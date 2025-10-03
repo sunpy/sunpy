@@ -3,6 +3,8 @@
 HMI Showcase: Cutout
 ====================
 
+.. tags:: showcase, hmi, coordinates, visualization
+
 This example demonstrates how to plot a cutout region of a `~sunpy.map.Map`
 with connector lines that indicate the region of interest in the full-disk
 image.

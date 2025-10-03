@@ -3,6 +3,8 @@
 Comparing Map Rotation Functions
 ================================
 
+.. tags:: map
+
 This example will compare between the current library implementations for `sunpy.map.GenericMap.rotate`.
 """
 import matplotlib.pyplot as plt

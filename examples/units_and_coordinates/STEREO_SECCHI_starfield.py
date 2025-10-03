@@ -3,6 +3,8 @@
 Identifying stars in a STEREO/SECCHI COR2 coronagraph image
 ===========================================================
 
+.. tags:: units_and_coordinates, features, starfield, planets, secchi
+
 Since the field of view in SECCHI COR2 images can span 2 to 15 solar radii,
 we often observe stars in these image data. In this example, we will use the
 `Astroquery package <https://astroquery.readthedocs.io/en/latest/>`__ to query the

@@ -3,6 +3,8 @@
 Resampling Maps
 ===============
 
+.. tags:: map, processing
+
 How to resample a map using the resample method, which implements interpolation, or
 using superpixels, which combines pixels.
 """

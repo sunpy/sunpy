@@ -3,6 +3,8 @@
 Drawing a rotated rectangle on a map
 ====================================
 
+.. tags:: plotting, visualization
+
 This example will demonstrate how to draw a rectangle that is rotated relative
 to the axes on a map using :meth:`~sunpy.map.GenericMap.draw_quadrangle`.
 """

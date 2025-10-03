@@ -3,6 +3,8 @@
 Saving and loading coordinates with asdf
 ========================================
 
+.. tags:: io_ops, asdf, coordinates,
+
 In this example we are going to look at saving and loading collections of
 coordinates with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 

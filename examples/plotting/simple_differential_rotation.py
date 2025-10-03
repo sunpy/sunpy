@@ -3,6 +3,8 @@
 Simple Differential Rotation
 ============================
 
+.. tags:: plotting, differential_rotation
+
 The Sun is known to rotate differentially, meaning that the rotation rate
 near the poles (rotation period of approximately 35 days) is not the same as
 the rotation rate near the equator (rotation period of approximately 25 days).

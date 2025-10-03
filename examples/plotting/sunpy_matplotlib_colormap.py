@@ -3,6 +3,8 @@
 Using the sunpy Colormaps with matplotlib
 =========================================
 
+.. tags:: plotting, visualization
+
 How you can use the sunpy colormaps with matplotlib.
 """
 import matplotlib

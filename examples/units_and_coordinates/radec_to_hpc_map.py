@@ -3,6 +3,8 @@
 Create a Helioprojective Map from observations in the RA-DEC coordinate system
 ==============================================================================
 
+.. tags:: units_and_coordinates, map, coordinates
+
 How to create a `~sunpy.map.Map` in Helioprojective Coordinate Frame from radio observations
 in GCRS (RA-DEC).
 

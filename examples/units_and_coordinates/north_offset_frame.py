@@ -3,6 +3,8 @@
 Offsetting the north pole of a coordinate frame
 ===============================================
 
+.. tags:: units_and_coordinates, coordinates, aia
+
 How to use `~sunpy.coordinates.NorthOffsetFrame` to offset the north pole for a coordinate frame.
 """
 import matplotlib.pyplot as plt

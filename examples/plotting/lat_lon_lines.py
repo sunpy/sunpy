@@ -3,6 +3,8 @@
 Drawing heliographic longitude and latitude lines
 =================================================
 
+.. tags:: plotting, visualization, coordinates
+
 This example demonstrates how you can draw individual Stonyhurst
 longitude and latitude lines.
 """

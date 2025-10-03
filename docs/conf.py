@@ -153,6 +153,7 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'sphinxcontrib.bibtex',
+    # tags listed here for extension import ordering reasons
     'sphinx_tags',
 ]
 

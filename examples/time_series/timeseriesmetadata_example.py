@@ -3,6 +3,8 @@
 The TimeSeriesMetaData class
 ============================
 
+.. tags:: time_series, acquiring_data, metadata
+
 This provides an overview of the basic functionality of the TimeSeriesMetaData class.
 """
 import astropy.units as u

@@ -3,6 +3,8 @@
 Aligning AIA and HMI Data with Reproject
 ========================================
 
+.. tags:: map_transformations, co_observations, reproject
+
 This example shows how to reproject one image to be aligned with another image.
 
 Here we use the `reproject <https://reproject.readthedocs.io/en/stable/>`__

@@ -3,6 +3,8 @@
 Coordinates computations using SPICE kernels
 ============================================
 
+.. tags:: units_and_coordinates, spice, coordinates
+
 How to use SPICE kernels provided by space missions to perform coordinates
 computations.
 

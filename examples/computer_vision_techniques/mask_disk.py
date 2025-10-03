@@ -3,6 +3,8 @@
 Masking out the solar disk
 ==========================
 
+.. tags:: computer_vision, masking
+
 How to mask out all emission from the solar disk.
 """
 import matplotlib.pyplot as plt

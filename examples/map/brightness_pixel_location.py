@@ -3,6 +3,8 @@
 Finding the brightest pixel
 ===========================
 
+.. tags:: map
+
 How to find and overplot the location of the brightest pixel.
 """
 import matplotlib.pyplot as plt
