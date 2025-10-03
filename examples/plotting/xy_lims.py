@@ -3,6 +3,8 @@
 Set Axis Range When Plotting a Map
 ==================================
 
+.. tags:: plotting, wcs_axes
+
 In this example we are going to look at how to set the axes
 range using Matplotlib's ``set_xlim`` and ``set_ylim`` when plotting a
 Map with WCSAxes.

@@ -3,6 +3,8 @@
 Auto-Aligning AIA and HMI Data During Plotting
 ==============================================
 
+.. tags:: map_transformations, co_observations
+
 This example shows how a map is autoaligned when it is plotted on a different
 reference frame.
 

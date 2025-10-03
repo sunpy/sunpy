@@ -3,6 +3,8 @@
 Reprojecting Images to Different Observers
 ==========================================
 
+.. tags:: map_transformations, co_observations, reproject, fits
+
 This example demonstrates how you can reproject images to the view from
 different observers. We use data from these two instruments:
 

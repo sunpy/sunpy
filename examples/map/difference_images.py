@@ -3,6 +3,8 @@
 Plotting a difference image
 ===========================
 
+.. tags:: map
+
 This example shows how to compute and plot a difference image.
 """
 # sphinx_gallery_thumbnail_number = 3

@@ -3,6 +3,8 @@
 Editing the colormap and normalization of a Map
 ===============================================
 
+.. tags:: plotting, visualization
+
 How to edit the display of a map.
 """
 import matplotlib

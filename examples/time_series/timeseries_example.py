@@ -3,6 +3,8 @@
 Using TimeSeries
 ================
 
+.. tags:: time_series, eve, goes, lyra, norh, rhessi, gbm
+
 This example is intended to demonstrate the current state of `~sunpy.timeseries.TimeSeries`.
 """
 import datetime

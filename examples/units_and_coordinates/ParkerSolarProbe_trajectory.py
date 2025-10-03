@@ -3,6 +3,8 @@
 Obtaining a spacecraft trajectory from JPL Horizons
 ===================================================
 
+.. tags:: units_and_coordinates, jpl_horizons, coordinates, parker_sp
+
 This example shows how to obtain the trajectory of a spacecraft from JPL Horizons
 and plot it relative to other bodies in the solar system.
 
