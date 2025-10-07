@@ -157,11 +157,49 @@ jobs:
     needs: [publish_pure, online]
     runs-on: ubuntu-latest
     steps:
+<<<<<<<
       - uses: Cadair/matrix-notify-action@main
+=======
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+>>>>>>>
         with:
+<<<<<<<
+=======
+          python-version: '3.13'
+      - run: python -m pip install -U --user build
+      - run: python -m build . --sdist
+      - run: python -m pip install -U --user twine
+>>>>>>>
+<<<<<<<
           matrix_token: ${{ secrets.matrix_access_token }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.matrix_homeserver }}
+=======
+      toxdeps: tox-pypi-filter
+      posargs: -n auto
+      envs: |
+        - linux: py314
+        - windows: py312
+        - macos: py312
+        - linux: py312-oldestdeps
+        - linux: py314-devdeps
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+>>>>>>>
+<<<<<<<
+=======
+      test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
+      submodules: false
+      targets: |
+        - cp3{12,13,14}-manylinux*_x86_64
+        - cp3{12,13,14}-macosx_x86_64
+        - cp3{12,13,14}-macosx_arm64
+        - cp3{12,13,14}-win_amd64
+    secrets:
+      pypi_token: ${{ secrets.pypi_token }}
+>>>>>>>
           roomid: '!JYqfIVJjWANcHnfktY:cadair.com'
           ignore_pattern: '.*Load.*'
           summarise_success: true

@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "7958151d0246956f1e95889e8e3fa5abc4a3a129",
+  "commit": "bea8060eef60df35f7df61d9db1d56b838bda01a",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -17,7 +17,7 @@
       "changelog_url": "https://docs.sunpy.org/en/stable/whatsnew/changelog.html",
       "issue_tracker_url": "https://github.com/sunpy/sunpy/issues",
       "license": "BSD 2-Clause",
-      "minimum_python_version": "3.11",
+      "minimum_python_version": "3.12",
       "use_compiled_extensions": "y",
       "enable_dynamic_dev_versions": "y",
       "include_example_code": "n",
@@ -32,7 +32,7 @@
         ".github/workflows/sub_package_update.yml"
       ],
       "_template": "https://github.com/sunpy/package-template",
-      "_commit": "7958151d0246956f1e95889e8e3fa5abc4a3a129"
+      "_commit": "bea8060eef60df35f7df61d9db1d56b838bda01a"
     }
   },
   "directory": null

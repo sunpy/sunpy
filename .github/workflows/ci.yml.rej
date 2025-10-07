@@ -1,0 +1,11 @@
+--- .github/workflows/ci.yml
++++ .github/workflows/ci.yml
+@@ -97,7 +98,7 @@ jobs:
+     needs: [core]
+     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+     with:
+-      default_python: '3.12'
++      default_python: '3.13'
+       submodules: false
+       pytest: false
+       toxdeps: tox-pypi-filter
