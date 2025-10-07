@@ -54,18 +54,6 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  sdist_verify:
-    if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -U --user build
-      - run: python -m build . --sdist
-      - run: python -m pip install -U --user twine
-      - run: python -m twine check dist/*
 
   conda:
     if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))

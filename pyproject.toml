@@ -21,7 +21,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license = { file = "LICENSE.rst" }
 authors = [
@@ -29,8 +29,7 @@ authors = [
 ]
 dependencies = [
   "astropy>=6.1.0",
-  "numpy>=1.25.0",
-  "packaging>=23.2",
+  "numpy>=1.26.0",
   "parfive[ftp]>=2.1.0",
   "pyerfa>=2.0.1.1",
   "requests>=2.32.0",
@@ -60,20 +59,20 @@ asdf = [
 ]
 dask = ["dask[array]>=2023.6.0"]
 image = [
-  "scipy>=1.11.0",
+  "scipy>=1.12.0",
 ]
 jpeg2000 = [
   "glymur>=0.13.0",
   # While a direct dependency of glymur, we import it to save JPEG2000 files.
   # and we had issues with specific versions lxml.
-  "lxml>=4.9.1,!=5.0.0",
+  "lxml>=5.0.1",
 ]
 map = [
   "contourpy>=1.1.0",
   "matplotlib>=3.8.0",
   "mpl-animators>=1.2.0",
   "reproject>=0.12.0",
-  "scipy>=1.11.0",
+  "scipy>=1.12.0",
 ]
 opencv = ["opencv-python>=4.8.0.74"]
 net = [
@@ -92,7 +91,7 @@ timeseries = [
   # We need to raise this to ensure the goes netcdf files open.
   "h5py>=3.9.0",
   "matplotlib>=3.8.0",
-  "pandas>=2.1.0",
+  "pandas>=2.2.0",
 ]
 visualization = [
   "matplotlib>=3.8.0",
