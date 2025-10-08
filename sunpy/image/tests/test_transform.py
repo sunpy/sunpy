@@ -1,5 +1,7 @@
 import numpy as np
 import pytest
+
+pytest.importorskip("skimage")
 import skimage.data as images
 from matplotlib.figure import Figure
 from skimage import transform as tf

@@ -49,9 +49,15 @@ try:
 except ImportError:
     SKIP_CDF = True
 
+try:
+    import asdf  # NOQA
+    SKIP_ASDF = False
+except ImportError:
+    SKIP_ASDF = True
+
 
 asdf_entry_points = pytest.mark.skipif(
-    not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
+    SKIP_ASDF or not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
     reason="No SunPy ASDF entry points.",
 )
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
