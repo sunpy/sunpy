@@ -76,7 +76,6 @@ def test_roundtrip_float32_uncompressed(img_f32, tmp_path):
     np.testing.assert_array_equal(data, img_f32)
 
 
-@pytest.mark.skip()
 def test_roundtrip_float32_compressed(img_f32, tmp_path):
     p = tmp_path / "f32_compressed.ana"
     ana.write(str(p), img_f32, comments="testcase", compress=True)
@@ -111,7 +110,6 @@ def test_compression_reduces_file_size_int16(img_i16, tmp_path):
     assert p_c.stat().st_size < p_u.stat().st_size
 
 
-@pytest.mark.skip()
 def test_compression_reduces_file_size_float32(img_f32, tmp_path):
     p_u = tmp_path / "f32_uncompressed.ana"
     p_c = tmp_path / "f32_compressed.ana"

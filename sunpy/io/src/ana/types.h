@@ -3,6 +3,14 @@
 
 #include <stdint.h>
 
+#ifdef _MSC_VER
+#pragma pack(push,1)
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+
+#endif
+
 //! @todo fix include guards to legal versions
 
 typedef float float32_t;
@@ -36,5 +44,9 @@ struct compresshead{
 void bswapi16(int16_t *x,int n);
 void bswapi32(int32_t *x,int n);
 void bswapi64(int64_t *x,int n);
+
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
 
 #endif               // __TYPES_H__
