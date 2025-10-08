@@ -6,8 +6,11 @@ from astropy.coordinates.matrix_utilities import rotation_matrix
 
 from sunpy.data.test import get_test_filepath
 from sunpy.image.transform import _rotation_registry, affine_transform
-from sunpy.tests.helpers import figure_test, skip_windows
+from sunpy.tests.helpers import figure_test, skip_opencv, skip_skimage, skip_windows
 from sunpy.util import SunpyUserWarning
+
+_methods_to_marks = {"scikit-image": skip_skimage, "opencv": skip_opencv}
+_rotation_registry_params = [pytest.param(meth, marks=_methods_to_marks.get(meth, [])) for meth in _rotation_registry]
 
 # Tolerance for tests
 RTOL = 1.0e-10
@@ -84,6 +87,7 @@ def test_rotation(original, angle, k):
 @pytest.mark.parametrize(('angle', 'k'), [(90.0, 1), (-90.0, -1), (-270.0, 1),
                                           (-90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_skimage_rotation(original, angle, k):
+    pytest.importorskip("skimage")
     # Test rotation against expected outcome
     angle = np.radians(angle)
     c = np.round(np.cos(angle))
@@ -217,6 +221,7 @@ def test_flat(identity):
 
 
 def test_nan_skimage(identity):
+    pytest.importorskip("skimage")
     # Test preservation of NaN values for scikit-image rotation
     in_arr = np.array([[np.nan, 0]])
     out_arr = affine_transform(in_arr, rmatrix=identity, order=0, method='scikit-image')
@@ -231,6 +236,7 @@ def test_nan_scipy(identity):
 
 
 def test_int(identity):
+    pytest.importorskip("skimage")
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
     with pytest.warns(SunpyUserWarning, match='Integer input data has been cast to float64'):
@@ -332,7 +338,7 @@ def test_nans(rot30):
 
 
 @pytest.mark.filterwarnings("ignore:.*bug in the implementation of scikit-image")
-@pytest.mark.parametrize('method', _rotation_registry.keys())
+@pytest.mark.parametrize('method', _rotation_registry_params)
 @pytest.mark.parametrize('order', range(6))
 def test_endian(method, order, rot30):
     if order not in _rotation_registry[method].allowed_orders:
