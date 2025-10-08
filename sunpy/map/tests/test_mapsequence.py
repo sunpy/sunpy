@@ -216,6 +216,13 @@ def test_map_sequence_plot_clip_interval(aia171_test_map):
     animation._step()
 
 
+@figure_test
+def test_map_sequence_plot_custom_title(aia171_test_map):
+    # Test that custom plot title shows up even when annotate=True
+    seq = sunpy.map.Map([aia171_test_map, aia171_test_map], sequence=True)
+    seq.plot(title='Custom Title', annotate=True)
+
+
 @skip_glymur
 def test_mapsequence_plot_uint8_norm():
     # We want to check the case for images with no norms set
