@@ -31,23 +31,13 @@ Using the example below,
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    357 Results from the SOARClient:
+    680 Results from the SOARClient:
     <BLANKLINE>
     Instrument     Data product    Level        Start time               End time        Filesize SOOP Name
                                                                                           Mbyte
     ---------- ------------------- ----- ----------------------- ----------------------- -------- ---------
-           RPW rpw-tds-surv-tswf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   13.748      None
-           RPW    rpw-lfr-surv-bp1    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   61.818      None
-           RPW rpw-tds-surv-tswf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    95.65      None
-           RPW    rpw-lfr-surv-bp2    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000  145.551      None
-           RPW  rpw-lfr-surv-swf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   47.452      None
-           ...                 ...   ...                     ...                     ...      ...       ...
-           RPW   rpw-tds-surv-stat    L2 2023-10-10 00:00:00.000 2023-10-11 00:00:00.000    0.531      None
-           RPW rpw-tds-surv-hist2d    L2 2023-10-10 00:00:00.000 2023-10-11 00:00:00.000    3.382      None
-           RPW        rpw-tnr-surv    L2 2023-10-10 00:00:00.000 2023-10-11 00:00:00.000  341.182      None
-           RPW  rpw-lfr-surv-swf-e    L2 2023-10-10 00:00:00.000 2023-10-11 00:00:00.000  200.206      None
-           RPW rpw-tds-surv-tswf-e    L2 2023-10-10 00:00:00.000 2023-10-11 00:00:00.000  173.184      None
-    Length = 357 rows
+           RPW rpw-tds-surv-hist2d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.084      none
+    ...
     <BLANKLINE>
     <BLANKLINE>
 

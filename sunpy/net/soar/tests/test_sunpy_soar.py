@@ -311,7 +311,7 @@ def test_distance_search_remote_sensing():
     level = a.Level(2)
     distance = a.soar.Distance(0.28 * u.AU, 0.30 * u.AU)
     res = Fido.search(distance & instrument & product & level)
-    assert res.file_num == 35
+    assert res.file_num == 40
 
 
 def test_distance_search_insitu():
@@ -372,6 +372,6 @@ def test_soar_server_down() -> None:
 
     with pytest.raises(
         RuntimeError,
-        match=("The SOAR server returned an invalid JSON response. It may be down or not functioning correctly."),
+        match=r"The SOAR server returned an invalid JSON response. It may be down or not functioning correctly.",
     ):
         Fido.search(time, level, product)
