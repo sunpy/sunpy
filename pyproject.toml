@@ -125,10 +125,10 @@ tests = [
   "sunpy[all,s3,tests-only,asdf-tests]",
 ]
 docs = [
+  "sunpy[all]",
   "sphinx>=7.1.0",
   "sphinx-automodapi>=0.16.0",
   "packaging>=23.2",
-  "sunpy[all]",
   "hvpy>=1.1.0",
   "ruamel.yaml>=0.18.0",
   "sphinx-changelog>=1.5.0",
@@ -143,6 +143,7 @@ docs-gallery = [
   "sunpy[docs]",
   "astroquery>=0.4.6",
   "jplephem>=2.19",
+  "pillow",
 ]
 dev = ["sunpy[docs,tests]"]
 

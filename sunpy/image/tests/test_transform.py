@@ -1,13 +1,10 @@
 import numpy as np
 import pytest
-
-pytest.importorskip("skimage")
-import skimage.data as images
 from matplotlib.figure import Figure
-from skimage import transform as tf
 
 from astropy.coordinates.matrix_utilities import rotation_matrix
 
+from sunpy.data.test import get_test_filepath
 from sunpy.image.transform import _rotation_registry, affine_transform
 from sunpy.tests.helpers import figure_test, skip_windows
 from sunpy.util import SunpyUserWarning
@@ -18,8 +15,8 @@ RTOL = 1.0e-10
 
 @pytest.fixture
 def original():
-    # Test image
-    return images.camera().astype('float')
+    filepath = get_test_filepath("camera.npy")
+    return np.load(filepath).astype('float')
 
 
 @pytest.fixture
@@ -135,6 +132,7 @@ def test_shift(original, dx, dy):
 
 @pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
 def test_scale(original, scale_factor):
+    tf = pytest.importorskip("skimage.transform")
     # No rotation for all scaling tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
@@ -165,6 +163,7 @@ def test_all(original, angle, dx, dy, scale_factor):
     Tests to make sure that combinations of scaling, shifting and rotation
     produce the expected output.
     """
+    tf = pytest.importorskip("skimage.transform")
     k = int(angle / 90)
     angle = np.radians(angle)
     image_center = np.array(original.shape) / 2.0 - 0.5
