@@ -994,7 +994,7 @@ class GenericMap(NDData):
 
         This time is the "canonical" way to refer to an observation, which is commonly
         the start of the observation, but can be a different time. In comparison, the
-        `.GenericMap.date_start` property is unambigiously the start of the observation.
+        `.GenericMap.date_start` property is unambiguously the start of the observation.
 
         The observation time is determined using this order of preference:
 
