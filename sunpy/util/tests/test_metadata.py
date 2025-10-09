@@ -506,10 +506,10 @@ def test_key_case_insensitivity(seas_metadict):
     assert seas_metadict.get('LApTEV') == 'japan'
 
     # setting, new entry
-    seas_metadict['bering'] = 'Russia'
-    assert seas_metadict['bering'] == 'Russia'
-    assert seas_metadict['BeRinG'] == 'Russia'
-    assert seas_metadict.get('BERING') == 'Russia'
+    seas_metadict['blacksea'] = 'Russia'
+    assert seas_metadict['blacksea'] == 'Russia'
+    assert seas_metadict['BLACKSEA'] == 'Russia'
+    assert seas_metadict.get('BLACkSEA') == 'Russia'
 
 
 def test_original_copy():

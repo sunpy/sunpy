@@ -335,16 +335,16 @@ def test_concatenation_of_different_data_ts(eve_test_ts, fermi_gbm_test_ts,
     assert value
 
     # Test units concatenation
-    comined_units = copy.deepcopy(eve_test_ts.units)
-    comined_units.update(fermi_gbm_test_ts.units)
+    combined_units = copy.deepcopy(eve_test_ts.units)
+    combined_units.update(fermi_gbm_test_ts.units)
     assert dict(different_data_concat.units) == dict(
-        comined_units)
+        combined_units)
 
     # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
+    combined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
                            sort=False)
-    comined_df = comined_df.sort_index()
-    assert_frame_equal(different_data_concat.to_dataframe(), comined_df)
+    combined_df = combined_df.sort_index()
+    assert_frame_equal(different_data_concat.to_dataframe(), combined_df)
 
 
 def test_concatenation_of_self(eve_test_ts):
