@@ -61,10 +61,6 @@ def read(filename, debug=False, **kwargs):
     -------
     `list`
         A list of (data, header) tuples
-
-    Examples
-    --------
-    >>> data = sunpy.io.ana.read(filename)  # doctest: +SKIP
     """
     if not os.path.isfile(filename):
         raise OSError(f"File {filename} does not exist!")
@@ -91,10 +87,6 @@ def get_header(filename, debug=False):
     -------
     `list`
         A list of `~sunpy.io._header.FileHeader` headers.
-
-    Examples
-    --------
-    >>> header = sunpy.io.ana.get_header(filename)  # doctest: +SKIP
     """
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
@@ -124,10 +116,6 @@ def write(filename, data, comments=None, compress=True, debug=False):
     -------
     `str`
         A new ANA compressed archive containing the data and header.
-
-    Examples
-    --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=True)  # doctest: +SKIP
     """
     comments = comments or ""
     return _pyana.fzwrite(filename, data, int(compress), comments, debug)
