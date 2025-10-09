@@ -51,6 +51,7 @@ jobs:
         - linux: core_deps
         - linux: linkcheck
           pytest: false
+        - windows: py313-online
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
