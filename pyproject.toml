@@ -184,7 +184,7 @@ sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
 sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.distutils.bdist_wheel]
-py-limited-api = "cp311"
+py-limited-api = "cp312"
 
 [tool.extension-helpers]
 use_extension_helpers = "true"
