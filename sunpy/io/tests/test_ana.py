@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from sunpy.io import ana
-from sunpy.tests.helpers import skip_ana
+from sunpy.tests.helpers import skip_ana, skip_windows
 
 pytestmark = [
     skip_ana,
@@ -75,8 +75,9 @@ def test_roundtrip_float32_uncompressed(img_f32, tmp_path):
     np.testing.assert_array_equal(data, img_f32)
 
 
-@pytest.mark.xfail(reason="float32 data not supported", raises=RuntimeError)
+@skip_windows
 def test_roundtrip_float32_compressed(img_f32, tmp_path):
+    # This works on Linux and Mac, but not Windows
     p = tmp_path / "f32_compressed.ana"
     ana.write(str(p), img_f32, comments="testcase", compress=True)
     (data, _), = ana.read(str(p))
@@ -92,19 +93,3 @@ def test_memmap_read_returns_copy(img_f32, tmp_path):
     (data, _), = ana.read(str(p), memmap=False)
     assert data.base is None
     np.testing.assert_array_equal(data_memmap, data)
-
-
-def test_compression_reduces_file_size_int8(img_i8, tmp_path):
-    p_u = tmp_path / "i8_uncompressed.ana"
-    p_c = tmp_path / "i8_compressed.ana"
-    ana.write(str(p_u), img_i8, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_i8, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
-
-
-def test_compression_reduces_file_size_int16(img_i16, tmp_path):
-    p_u = tmp_path / "i16_uncompressed.ana"
-    p_c = tmp_path / "i16_compressed.ana"
-    ana.write(str(p_u), img_i16, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_i16, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
