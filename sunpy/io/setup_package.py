@@ -17,10 +17,10 @@ def get_extensions():
         sorted(glob(os.path.join(os.path.dirname(__file__), "src", "ana", "*.c")))
     )
     # quiet MSVC's CRT nags; harmless elsewhere if ignored
-    cfg["define_macros"].extend([
-        ("_CRT_SECURE_NO_WARNINGS", None),
-        ("_CRT_NONSTDC_NO_DEPRECATE", None),
-    ])
+    # cfg["define_macros"].extend([
+    #     ("_CRT_SECURE_NO_WARNINGS", None),
+    #     ("_CRT_NONSTDC_NO_DEPRECATE", None),
+    # ])
 
     if sys.platform.startswith("win"):
         cfg["extra_compile_args"].extend([
