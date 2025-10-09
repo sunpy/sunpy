@@ -1450,6 +1450,7 @@ def test_submap_inputs(generic_map2, coords):
 
 
 def test_contour_deprecation_warning(simple_map):
+    pytest.importorskip("skimage")
 
     with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.find_contours instead."):
         simple_map.contour(1.5)
@@ -1473,6 +1474,7 @@ def test_find_contours_contourpy(simple_map):
 
 
 def test_find_contours_skimage(simple_map):
+    pytest.importorskip("skimage")
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)

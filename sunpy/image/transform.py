@@ -322,8 +322,8 @@ def _rotation_skimage(image, matrix, shift, order, missing, clip):
     """
     try:
         import skimage.transform
-    except ImportError:
-        raise ImportError("The scikit-image package is required to use this rotation method.")
+    except ImportError as e:
+        raise ImportError("The scikit-image package is required to use this rotation method.") from e
 
     # Make the rotation matrix 3x3 to include translation of the image
     skmatrix = np.zeros((3, 3))
@@ -384,8 +384,8 @@ def _rotation_cv2(image, matrix, shift, order, missing, clip):
     """
     try:
         import cv2
-    except ImportError:
-        raise ImportError("The opencv-python package is required to use this rotation method.")
+    except ImportError as e:
+        raise ImportError("The opencv-python package is required to use this rotation method.") from e
 
     _CV_ORDER_FLAGS = {
         0: cv2.INTER_NEAREST,
