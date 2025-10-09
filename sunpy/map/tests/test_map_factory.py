@@ -60,6 +60,7 @@ def test_read_asdf_and_verify(tmpdir):
     assert isinstance(loaded_asdf_map, sunpy.map.sources.AIAMap)
 
 
+@asdf_entry_points
 def test_map_meta_changes_in_asdf(tmpdir):
     map = sunpy.map.Map(AIA_171_IMAGE)
     map = map.rotate(90 * u.deg)

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
-import spiceypy
+
+spiceypy = pytest.importorskip("spiceypy")
 
 import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord, UnitSphericalRepresentation, frame_transform_graph
