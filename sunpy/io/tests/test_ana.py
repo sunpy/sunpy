@@ -37,7 +37,6 @@ def img_i16(img_src):
 @pytest.fixture(scope="module")
 def img_f32(img_src):
     arr = img_src * 1.0 / img_src.max()
-    arr += 1e-6  # Ensure no zeros
     return arr.astype(np.float32)
 
 
