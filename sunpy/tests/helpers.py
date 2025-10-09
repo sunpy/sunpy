@@ -44,14 +44,26 @@ except ImportError:
     SKIP_OPENCV = True
 
 try:
+    import skimage  # NOQA
+    SKIP_SKIMAGE = False
+except ImportError:
+    SKIP_SKIMAGE = True
+
+try:
     import cdflib  # NOQA
     SKIP_CDF = False
 except ImportError:
     SKIP_CDF = True
 
+try:
+    import asdf  # NOQA
+    SKIP_ASDF = False
+except ImportError:
+    SKIP_ASDF = True
+
 
 asdf_entry_points = pytest.mark.skipif(
-    not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
+    SKIP_ASDF or not entry_points().select(group="asdf.resource_mappings", name="sunpy"),
     reason="No SunPy ASDF entry points.",
 )
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
@@ -59,6 +71,7 @@ skip_cdf = pytest.mark.skipif(SKIP_CDF, reason="CDFlib is not available.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_jsoc = pytest.mark.skip(reason="JSOC is not available.")
 skip_opencv = pytest.mark.skipif(SKIP_OPENCV, reason="opencv is not available.")
+skip_skimage = pytest.mark.skipif(SKIP_SKIMAGE, reason="skimage is not available.")
 skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 
 
