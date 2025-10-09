@@ -318,7 +318,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
             break;
     }
     // Check if compression flag is sane
-    if (compress == 1 && (type == FLOAT32_ana || type == FLOAT64_ana)) {
+    if (compress == 1 && (type == FLOAT64_ana)) {
         PyErr_SetString(PyExc_RuntimeError, "In pyana_fzwrite: datatype requested cannot be compressed.");
         return NULL;
     }

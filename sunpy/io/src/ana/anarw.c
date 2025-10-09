@@ -347,6 +347,16 @@ void ana_fcwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
         res=anacrunch32(q,(int32_t*)data,crunch_slice,nx,ny,limit,t_endian);
       break;
     }
+    case(3):{
+      if(runlengthflag){
+        fprintf(stderr,"ana_fcwrite: warning: FCRUNWRITE not supported for FLOAT32 yet\n");
+        fclose(f);
+        free(q);
+        return;
+      }else
+        res=anacrunch32(q,(int32_t*)data,crunch_slice,nx,ny,limit,t_endian);
+      break;
+    }
     default:{
       fprintf(stderr,"ana_fcwrite: warning: FCWRITE: unsupported variable type.\n");
       fclose(f);

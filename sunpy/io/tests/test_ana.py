@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from sunpy.io import ana
-from sunpy.tests.helpers import skip_ana, skip_windows
+from sunpy.tests.helpers import skip_ana
 
 pytestmark = [
     skip_ana,
@@ -75,9 +75,7 @@ def test_roundtrip_float32_uncompressed(img_f32, tmp_path):
     np.testing.assert_array_equal(data, img_f32)
 
 
-@skip_windows
 def test_roundtrip_float32_compressed(img_f32, tmp_path):
-    # This works on Linux and Mac, but not Windows
     p = tmp_path / "f32_compressed.ana"
     ana.write(str(p), img_f32, comments="testcase", compress=True)
     (data, _), = ana.read(str(p))
