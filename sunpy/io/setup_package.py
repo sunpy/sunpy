@@ -10,6 +10,7 @@ from setuptools import Extension
 def get_extensions():
     if os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION"):
         return []
+
     cfg = defaultdict(list)
     cfg["include_dirs"].append(numpy.get_include())
     cfg["sources"].extend(
@@ -20,6 +21,7 @@ def get_extensions():
         ("_CRT_SECURE_NO_WARNINGS", None),
         ("_CRT_NONSTDC_NO_DEPRECATE", None),
     ])
+
     if sys.platform.startswith("win"):
         cfg["extra_compile_args"].extend([
             "/O2",
@@ -32,4 +34,5 @@ def get_extensions():
             "-O3",
             "-w",
         ])
+
     return [Extension("sunpy.io._pyana", **cfg)]
