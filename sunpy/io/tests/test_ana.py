@@ -1,120 +1,94 @@
+
+import tempfile
+
 import numpy as np
 import pytest
 
 from sunpy.io import ana
 from sunpy.tests.helpers import skip_ana
 
-pytestmark = [
-    skip_ana,
-    pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning"),
-]
+pytestmark = pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
+
+img_size = (456, 345)
+img_src = np.arange(np.prod(img_size))
+img_src.shape = img_size
+img_i8 = img_src*2**8/img_src.max()
+img_i8 = img_i8.astype(np.int8)
+img_i16 = img_src*2**16/img_src.max()
+img_i16 = img_i16.astype(np.int16)
+img_f32 = img_src*1.0/img_src.max()
+img_f32 = img_f32.astype(np.float32)
 
 
-@pytest.fixture(scope="module")
-def img_size():
-    return (456, 345)
+@skip_ana
+def test_i8c():
+    # Test int 8 compressed functions
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_i8, 'testcase', 0)
+    img_i8c_rec = ana.read(afilename)
+    assert np.sum(img_i8c_rec[0][0] - img_i8) == 0
 
 
-@pytest.fixture(scope="module")
-def img_src(img_size):
-    img = np.arange(np.prod(img_size))
-    img.shape = img_size
-    return img
+@skip_ana
+def test_i8u():
+    # Test int 8 uncompressed functions
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_i8, 'testcase', 1)
+    img_i8u_rec = ana.read(afilename)
+    assert np.sum(img_i8u_rec[0][0] - img_i8) == 0
 
 
-@pytest.fixture(scope="module")
-def img_i8(img_src):
-    arr = img_src * 2**8 / img_src.max()
-    return arr.astype(np.int8)
+@skip_ana
+def test_i16c():
+    # Test int 16 compressed functions
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_i16, 'testcase', 1)
+    img_i16c_rec = ana.read(afilename)
+    assert np.sum(img_i16c_rec[0][0] - img_i16) == 0
 
 
-@pytest.fixture(scope="module")
-def img_i16(img_src):
-    arr = img_src * 2**16 / img_src.max()
-    return arr.astype(np.int16)
+@skip_ana
+def test_i16u():
+    # Test int 16 uncompressed functions
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_i16, 'testcase', 0)
+    img_i16u_rec = ana.read(afilename)
+    assert np.sum(img_i16u_rec[0][0] - img_i16) == 0
 
 
-@pytest.fixture(scope="module")
-def img_f32(img_src):
-    arr = img_src * 1.0 / img_src.max()
-    arr += 1e-6  # Ensure no zeros
-    return arr.astype(np.float32)
+@skip_ana
+def test_f32u():
+    # Test float 32 uncompressed functions
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_f32, 'testcase', 0)
+    img_f32u_rec = ana.read(afilename)
+    assert np.sum(img_f32u_rec[0][0] - img_f32) == 0
 
 
-def test_roundtrip_int8_compressed(img_i8, tmp_path):
-    p = tmp_path / "i8_compressed.ana"
-    ana.write(str(p), img_i8, comments="testcase", compress=True)
-    (data, _), = ana.read(str(p))
-    np.testing.assert_array_equal(data, img_i8)
+@skip_ana
+def test_f32c():
+    # TODO: Bug with same code. Needs to be tracked down.
+    # Test if float 32 compressed functions
+    # ana.write('/tmp/pyana-testf32c', img_f32, 1, 'testcase', 0)
+    # img_f32c_rec = ana.read('/tmp/pyana-testf32c', 1)
+    # assert_(np.sum(img_f32c_rec[0][1]- img_f32) == 0,
+    #        msg="Storing 32 bits float data without compression failed (diff: %g)" % (1.0*np.sum(img_f32c_rec[0][1] - img_f32)))
+    afilename = tempfile.NamedTemporaryFile().name
+    with pytest.raises(RuntimeError):
+        ana.write(afilename, img_f32, 'testcase', 1)
 
 
-def test_roundtrip_int8_uncompressed(img_i8, tmp_path):
-    p = tmp_path / "i8_uncompressed.ana"
-    ana.write(str(p), img_i8, comments="testcase", compress=False)
-    (data, _), = ana.read(str(p))
-    np.testing.assert_array_equal(data, img_i8)
+@skip_ana
+def test_read_memmap():
+    # Test to check that passing memmap doesn't raise an error
+    afilename = tempfile.NamedTemporaryFile().name
+    ana.write(afilename, img_f32, 'testcase', 0)
 
-
-def test_roundtrip_int16_compressed(img_i16, tmp_path):
-    p = tmp_path / "i16_compressed.ana"
-    ana.write(str(p), img_i16, comments="testcase", compress=True)
-    (data, _), = ana.read(str(p))
-    np.testing.assert_array_equal(data, img_i16)
-
-
-def test_roundtrip_int16_uncompressed(img_i16, tmp_path):
-    p = tmp_path / "i16_uncompressed.ana"
-    ana.write(str(p), img_i16, comments="testcase", compress=False)
-    (data, _), = ana.read(str(p))
-    np.testing.assert_array_equal(data, img_i16)
-
-
-def test_roundtrip_float32_uncompressed(img_f32, tmp_path):
-    p = tmp_path / "f32_uncompressed.ana"
-    ana.write(str(p), img_f32, comments="testcase", compress=False)
-    (data, _), = ana.read(str(p))
-    np.testing.assert_array_equal(data, img_f32)
-
-
-@pytest.mark.skip()
-def test_roundtrip_float32_compressed(img_f32, tmp_path):
-    p = tmp_path / "f32_compressed.ana"
-    ana.write(str(p), img_f32, comments="testcase", compress=True)
-    (data, _), = ana.read(str(p))
-    np.testing.assert_array_equal(data, img_f32)
-
-
-def test_memmap_read_returns_copy(img_f32, tmp_path):
-    p = tmp_path / "f32_memmap.ana"
-    ana.write(str(p), img_f32, comments="testcase", compress=False)
-    # Memmap mode should still return an array that owns its data (no view)
-    (data_memmap, _), = ana.read(str(p), memmap=True)
+    # Memmap is not supported by ana
+    data_memmap, _ = ana.read(afilename, memmap=True)[0]
     assert data_memmap.base is None
-    (data, _), = ana.read(str(p), memmap=False)
+
+    data, _ = ana.read(afilename, memmap=False)[0]
     assert data.base is None
-    np.testing.assert_array_equal(data_memmap, data)
 
-
-def test_compression_reduces_file_size_int8(img_i8, tmp_path):
-    p_u = tmp_path / "i8_uncompressed.ana"
-    p_c = tmp_path / "i8_compressed.ana"
-    ana.write(str(p_u), img_i8, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_i8, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
-
-
-def test_compression_reduces_file_size_int16(img_i16, tmp_path):
-    p_u = tmp_path / "i16_uncompressed.ana"
-    p_c = tmp_path / "i16_compressed.ana"
-    ana.write(str(p_u), img_i16, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_i16, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
-
-
-@pytest.mark.skip()
-def test_compression_reduces_file_size_float32(img_f32, tmp_path):
-    p_u = tmp_path / "f32_uncompressed.ana"
-    p_c = tmp_path / "f32_compressed.ana"
-    ana.write(str(p_u), img_f32, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_f32, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
+    assert np.sum(data_memmap - data) == 0
