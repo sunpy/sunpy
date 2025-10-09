@@ -33,11 +33,13 @@ The minimum required versions of the following packages have been updated:
 
 - python>=3.12
 - astropy>=6.1
-- numpy>=1.26.0
-- matplotlib>=3.8.0
-- scipy>=1.12.0
+- h5py>=3.10.0
 - lxml>=5.0.1
+- matplotlib>=3.8.0
+- numpy>=1.26.0
 - pandas>=2.2.0
+- reproject>=0.13.0
+- scipy>=1.12.0
 
 We did not add any new features
 ===============================
