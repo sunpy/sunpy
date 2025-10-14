@@ -188,7 +188,7 @@ class XRSTimeSeries(GenericTimeSeries):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = start_time + TimeDelta(seconds_from_start*u.second)
+        times = start_time + seconds_from_start*u.second
         times.precision = 9
 
         # Remove bad values as defined in header comments
