@@ -1,5 +1,4 @@
 import os
-import codecs
 from os.path import basename
 from collections import OrderedDict
 
@@ -252,7 +251,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         Parses an EVE CSV file.
         """
         cls._filename = basename(filepath)
-        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
+        with open(filepath, encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
 
@@ -283,7 +282,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         missing_data_val = np.nan
         header = []
         fields = []
-        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
+        with open(filepath, encoding='ascii') as fp:
             line = fp.readline()
             # Read header at top of file
             while line.startswith(";"):
