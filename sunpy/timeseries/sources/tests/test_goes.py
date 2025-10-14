@@ -74,15 +74,15 @@ def test_columns_units(goes_nc_files):
     assert np.all([isinstance(unit_val, u.UnitBase) for unit_val in ts_goes.units.values()])
 
 
-@pytest.mark.parametrize(('goes_nc_files', 'times'),
+@pytest.mark.parametrize(('goes_files', 'times'),
                          [(goes_fits_filepath_com, '2012-05-31 23:59:59.089'),
                           (goes13_filepath_nc, '2017-09-01 00:00:00.631'),
                           (goes15_filepath_nc, '2013-10-28 00:00:01.385'),
                           (goes15_1m_avg_filepath, '2019-01-02 00:00:00.000')])
-def test_goes_netcdf_time_parsing15(goes_nc_files, times):
+def test_goes_files_time_parsing(goes_files, times):
     # Testing to make sure the time is correctly parsed (to ignore leap seconds)
     # Tests for 13, 14, 15
-    ts_goes = sunpy.timeseries.TimeSeries(goes_nc_files, source="XRS")
+    ts_goes = sunpy.timeseries.TimeSeries(goes_files, source="XRS")
     assert ts_goes.time[0].strftime("%Y-%m-%d %H:%M:%S.%f") == times
 
 
