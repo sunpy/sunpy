@@ -1,3 +1,14 @@
+7.0.3 (2025-10-17)
+==================
+
+Bug Fixes
+---------
+
+- Fixed a bug where the `~sunpy.net.jsoc.attrs.Cutout` class for requesting JSOC cutouts did not require the supplied coordinate to be in the `~sunpy.coordinates.Helioprojective` coordinate frame. (`#8346 <https://github.com/sunpy/sunpy/pull/8346>`__)
+- For the `~sunpy.net.jsoc.attrs.Cutout` class for requesting JSOC cutouts, added protection to require the center of the cutout to be on the solar disk when tracking is enabled, due to confusing output from JSOC. (`#8346 <https://github.com/sunpy/sunpy/pull/8346>`__)
+- Fix ``GONGMagnetogramMap`` for headers which have standard ``DATE-OBS`` keys vs ones which have split ``DATE-OBS`` & ``TIME-OBS``. (`#8347 <https://github.com/sunpy/sunpy/pull/8347>`__)
+
+
 7.0.2 (2025-09-19)
 ==================
 
