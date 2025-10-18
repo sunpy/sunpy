@@ -88,7 +88,7 @@ def get_datasets(observatory):
       STB_L2_SWEA_PAD
      STB_L1_SWEA_SPEC
     >>> datasets.loc['STB_L1_SWEA_SPEC']['Label'] # doctest: +REMOTE_DATA
-    np.str_('STEREO Behind IMPACT/SWEA Spectra - J. Luhmann (UCB/SSL)')
+    np.str_('STEREO Behind IMPACT/SWEA Spectra - ...')
     >>> datasets.loc['STB_L1_SWEA_SPEC'][['Start', 'End']] # doctest: +REMOTE_DATA
     <Row index=4>
              Start                     End

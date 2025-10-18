@@ -1229,28 +1229,28 @@ def test_plot_with_norm_none(aia171_test_map):
 
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
+    bad_header = {
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 5,
+        'CRPIX2': 5,
+        'CDELT1': 10,
+        'CDELT2': 10,
+        'CUNIT1': 'ARCSEC',
+        'CUNIT2': 'ARCSEC',
+        'PC1_1': 0,
+        'PC1_2': -1,
+        'PC2_1': 1,
+        'PC2_2': 0,
+        'NAXIS1': 6,
+        'NAXIS2': 6,
+        'date-obs': '1970/01/01T00:00:00',
+        'obsrvtry': 'Foo',
+        'detector': 'bar',
+        'wavelnth': 10,
+        'waveunit': 'ANGSTROM'
+    }
     with pytest.warns(SunpyMetadataWarning) as w:
-        bad_header = {
-            'CRVAL1': 0,
-            'CRVAL2': 0,
-            'CRPIX1': 5,
-            'CRPIX2': 5,
-            'CDELT1': 10,
-            'CDELT2': 10,
-            'CUNIT1': 'ARCSEC',
-            'CUNIT2': 'ARCSEC',
-            'PC1_1': 0,
-            'PC1_2': -1,
-            'PC2_1': 1,
-            'PC2_2': 0,
-            'NAXIS1': 6,
-            'NAXIS2': 6,
-            'date-obs': '1970/01/01T00:00:00',
-            'obsrvtry': 'Foo',
-            'detector': 'bar',
-            'wavelnth': 10,
-            'waveunit': 'ANGSTROM'
-        }
         sunpy.map.Map((generic_map.data, bad_header))
 
     assert 'waveunit'.upper() in str(w[0].message)
@@ -1310,13 +1310,13 @@ def test_more_than_two_dimensions():
 
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
-    with pytest.warns(Warning) as record:
-        header = {
-            'cunit1': 'arcsec',
-            'cunit2': 'arcsec',
-            'ctype1': 'HPLN-TAN',
-            'ctype2': 'HPLT-TAN',
-        }
+    header = {
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+    }
+    with pytest.warns(Warning) as record:  # NOQA: PT030,PT031
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 2 warnings for missing metadata (obstime and observer location)
@@ -1450,6 +1450,7 @@ def test_submap_inputs(generic_map2, coords):
 
 
 def test_contour_deprecation_warning(simple_map):
+    pytest.importorskip("skimage")
 
     with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.find_contours instead."):
         simple_map.contour(1.5)
@@ -1473,6 +1474,7 @@ def test_find_contours_contourpy(simple_map):
 
 
 def test_find_contours_skimage(simple_map):
+    pytest.importorskip("skimage")
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
     simple_map = sunpy.map.Map(data, simple_map.meta)
@@ -1795,7 +1797,7 @@ def test_map_arithmetic_multiplication_division(aia171_test_map, value):
     check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
     new_map = aia171_test_map / value
     check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
-    with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):
+    with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):  # NOQA: PT031
         new_map = value / aia171_test_map
         check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
 

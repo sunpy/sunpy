@@ -1,1 +1,0 @@
-Added direct support for EIT L1 data within `sunpy.map.Map`.

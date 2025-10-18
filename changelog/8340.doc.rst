@@ -1,0 +1,1 @@
+Modified the example :ref:`sphx_glr_generated_gallery_plotting_adding_earth.py` to use mesh-based plotting instead of image-based plotting.

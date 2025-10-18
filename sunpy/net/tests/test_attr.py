@@ -335,7 +335,7 @@ def test_attr_number_point(POINTNUMBER):
     assert Instrument.onepointfive == POINTNUMBER
 
 
-def test_attr_numbes():
+def test_attr_numbers():
     attr.Attr.update_values({GenericClient: {Instrument: [('12AIAs', 'That is too many AIAs')]}})
     # This checks for sanitization of names.
     assert 'one_2aias' in attr.Attr._attr_registry[Instrument].name

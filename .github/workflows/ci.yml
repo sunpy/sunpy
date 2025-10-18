@@ -25,44 +25,41 @@ concurrency:
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py313
-          libraries:
-            apt:
-              - libopenjp2-7
+        - linux: py313-minimal
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       submodules: false
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
+      libraries: |
+        brew:
+          - openjpeg
+        apt:
+          - libopenjp2-7
       envs: |
+        - linux: py313
         - windows: py312
         - macos: py311
-          libraries:
-            brew:
-              - openjpeg
         - linux: py311-oldestdeps
-          libraries:
-            apt:
-              - libopenjp2-7
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       default_python: '3.12'
       submodules: false
@@ -83,7 +80,7 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
     with:
       default_python: '3.12'
       submodules: false
@@ -141,7 +138,7 @@ jobs:
 
   publish_pure:
     needs: [publish]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@main
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2
     with:
       python-version: "3.12"
       test_extras: 'tests'

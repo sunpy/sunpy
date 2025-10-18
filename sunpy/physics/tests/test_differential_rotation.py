@@ -167,6 +167,7 @@ def test_consistency_with_rotatedsunframe():
 
 # Testing using observer inputs
 def test_differential_rotate_observer_all_off_disk(all_off_disk_map):
+    pytest.importorskip("skimage")
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
     with pytest.raises(ValueError, match="The entire map is off disk. No data to differentially rotate."):
@@ -174,6 +175,7 @@ def test_differential_rotate_observer_all_off_disk(all_off_disk_map):
 
 
 def test_differential_rotate_observer_full_disk(aia171_test_map):
+    pytest.importorskip("skimage")
     # Test a full disk map
     new_observer = get_earth(aia171_test_map.date + 6*u.hr)
     dmap = differential_rotate(aia171_test_map, observer=new_observer)
@@ -184,6 +186,7 @@ def test_differential_rotate_observer_full_disk(aia171_test_map):
 
 
 def test_differential_rotate_observer_all_on_disk(all_on_disk_map):
+    pytest.importorskip("skimage")
     # Test a map that is entirely on disk - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(all_on_disk_map.date - 48*u.hr)
@@ -199,6 +202,7 @@ def test_differential_rotate_observer_all_on_disk(all_on_disk_map):
 
 
 def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
+    pytest.importorskip("skimage")
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
@@ -212,6 +216,7 @@ def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
 
 # ----- Testing with time input -----
 def test_differential_rotate_time_full_disk(aia171_test_map):
+    pytest.importorskip("skimage")
     # Test a full disk map
     new_time = aia171_test_map.date + 6*u.hr
     with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
@@ -222,6 +227,7 @@ def test_differential_rotate_time_full_disk(aia171_test_map):
 
 
 def test_differential_rotate_time_all_on_disk(all_on_disk_map):
+    pytest.importorskip("skimage")
     # Test a map that is entirely on disk - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_time = all_on_disk_map.date - 48*u.hr
@@ -238,6 +244,7 @@ def test_differential_rotate_time_all_on_disk(all_on_disk_map):
 
 
 def test_differential_rotate_time_straddles_limb(straddles_limb_map):
+    pytest.importorskip("skimage")
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_time = straddles_limb_map.date + 48*u.hr
@@ -249,6 +256,7 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
 
 
 def test_differential_rotate_time_off_disk(all_off_disk_map):
+    pytest.importorskip("skimage")
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
     new_time = all_off_disk_map.date + 48*u.hr
@@ -345,9 +353,12 @@ def test_get_extreme_position():
 
     with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2
 
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
 
     with pytest.raises(ValueError, match="The \"axis\" argument must be either \"Tx\" or \"Ty\""):
@@ -389,12 +400,14 @@ def test_warp_sun_coordinates(all_on_disk_map):
 
 @pytest.mark.array_compare
 def test_differential_rotation(aia171_test_map):
+    pytest.importorskip("skimage")
     with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
 
 
 def test_rsun_fallback(aia171_test_map):
+    pytest.importorskip("skimage")
     # Remove the AIA-specific value of the solar radius
     assert_quantity_allclose(aia171_test_map.rsun_meters, 696 * u.Mm)
     del aia171_test_map.meta['rsun_ref'], aia171_test_map.meta['rsun_obs']

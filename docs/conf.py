@@ -93,15 +93,24 @@ sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
 linkcheck_ignore = [
-    r"https://doi.org/\d+",
+    r"https://doi\.org/\d+",
     r"https://\w\.element\.io/",
     # Checking all the PR URLs in the changelog takes a very long time
-    r"https://github.com/sunpy/sunpy/pull/\d+",
+    r"https://github\.com/sunpy/sunpy/pull/\d+",
+    # Avoid self-referencing links
     r"https://docs\.sunpy\.org",
-    r"https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf",
-    r"https://xrt.cfa.harvard.edu/",
+    # Large PDF, so it is too slow to check
+    r"https://inis\.iaea\.org/collection/NCLCollectionStore/_Public/20/062/20062491\.pdf",
+    # These fails on SSL but are valid in a browser
+    r"https://xrt\.cfa\.harvard\.edu/",
+    r"https://opencv\.org",
+    r"https://punch\.space\.swri\.edu",
+    # This is super slow to check
+    r"https://mathesaurus\.sourceforge\.net/idl-numpy\.html",
 ]
 linkcheck_anchors = False
+linkcheck_timeout = 120
+linkcheck_workers = 10
 
 # -- General configuration ---------------------------------------------------
 
@@ -111,9 +120,7 @@ maximum_signature_line_length = 80
 ogp_image = "https://raw.githubusercontent.com/sunpy/sunpy-logo/master/generated/sunpy_logo_word.png"
 ogp_use_first_image = True
 ogp_description_length = 160
-ogp_custom_meta_tags = [
-    '<meta property="og:ignore_canonical" content="true" />',
-]
+ogp_custom_meta_tags = ('<meta property="og:ignore_canonical" content="true" />',)
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
@@ -145,7 +152,6 @@ extensions = [
     "sphinxext.opengraph",
     'sphinx_design',
     'sphinx_copybutton',
-    'hoverxref.extension',
     'sphinxcontrib.bibtex',
 ]
 
@@ -170,8 +176,8 @@ if is_release:
     exclude_patterns.append('dev_guide/contents/*')
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-source_suffix = ".rst"
+# You can specify multiple suffix as a dict:
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = 'index'
@@ -235,40 +241,6 @@ intersphinx_mapping = {
     "zeep": ("https://docs.python-zeep.org/en/stable/", None),
     "contourpy": ("https://contourpy.readthedocs.io/en/stable/", None),
     "sphinxcontrib_bibtex": ("https://sphinxcontrib-bibtex.readthedocs.io/en/stable/", None),
-}
-
-# -- Options for hoverxref -----------------------------------------------------
-
-if os.environ.get("READTHEDOCS"):
-    hoverxref_api_host = "https://readthedocs.org"
-
-    if os.environ.get("PROXIED_API_ENDPOINT"):
-        # Use the proxied API endpoint
-        # A RTD thing to avoid a CSRF block when docs are using a custom domain
-        hoverxref_api_host = "/_"
-
-hoverxref_auto_ref = False
-hoverxref_domains = ["py"]
-hoverxref_mathjax = True
-hoverxref_modal_hover_delay = 500
-hoverxref_tooltip_maxwidth = 600  # RTD main window is 696px
-hoverxref_intersphinx = list(intersphinx_mapping.keys())
-hoverxref_role_types = {
-    # Roles within the py domain
-    "attr": "tooltip",
-    "class": "tooltip",
-    "const": "tooltip",
-    "data": "tooltip",
-    "exc": "tooltip",
-    "func": "tooltip",
-    "meth": "tooltip",
-    "mod": "tooltip",
-    "obj": "tooltip",
-    # Roles within the std domain
-    "confval": "tooltip",
-    "hoverxref": "tooltip",
-    "ref": "tooltip",  # Would be used by hoverxref_auto_ref if we set it to True
-    "term": "tooltip",
 }
 
 # -- Options for HTML output ---------------------------------------------------

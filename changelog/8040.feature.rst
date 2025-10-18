@@ -1,2 +1,0 @@
-The `~sunpy.map.Map` method :meth:`~sunpy.map.GenericMap.reproject_to` now has the capability to automatically determine the extent of the output map by setting the keyword ``auto_extent``, thus avoiding "clipping" any of the original data.
-The best choice for the how the extent is determined depends on the data being reprojected.

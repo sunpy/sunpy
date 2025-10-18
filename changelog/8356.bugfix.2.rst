@@ -1,0 +1,1 @@
+Fixed a bug where :func:`~sunpy.time.parse_time` could not accept `pandas.Index` input.
