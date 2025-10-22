@@ -104,6 +104,25 @@ def write_image_file_from_header_file(header_file, fits_directory):
     return fits_file
 
 
+def get_header_from_file(filename, package="sunpy.data.test"):
+    """
+    Return a Header from the test file.
+    """
+    filepath = get_test_filepath(filename, package=package)
+    return _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
+
+
+def get_dummy_map_from_header_obj(header):
+    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
+    if 'BITPIX' in header:
+        data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
+    # NOTE: by reading straight from the data header pair, we are skipping
+    # the fixes that are applied in sunpy.io._fits, e.g. the waveunit fix
+    # Would it be better to write this whole map back to a temporary file and then
+    # read it back in by passing in the filename instead?
+    return sunpy.map.Map(data, header)
+
+
 def get_dummy_map_from_header(filename, package="sunpy.data.test"):
     """
     Generate a dummy `~sunpy.map.Map` from header-only test data.
@@ -113,16 +132,8 @@ def get_dummy_map_from_header(filename, package="sunpy.data.test"):
     """
     import sunpy.map
 
-    filepath = get_test_filepath(filename, package=package)
-    header = _fits.format_comments_and_history(astropy.io.fits.Header.fromtextfile(filepath))
-    data = np.random.rand(header['NAXIS2'], header['NAXIS1'])
-    if 'BITPIX' in header:
-        data = data.astype(astropy.io.fits.BITPIX2DTYPE[header['BITPIX']])
-    # NOTE: by reading straight from the data header pair, we are skipping
-    # the fixes that are applied in sunpy.io._fits, e.g. the waveunit fix
-    # Would it be better to write this whole map back to a temporary file and then
-    # read it back in by passing in the filename instead?
-    return sunpy.map.Map(data, header)
+    header = get_header_from_file(filename, package)
+    return get_dummy_map_from_header_obj(header)
 
 
 def write_header_file_from_image_file(image_path, header_path, hdu=0, **kwargs):

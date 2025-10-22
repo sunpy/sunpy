@@ -2,14 +2,20 @@ import pytest
 
 import astropy.units as u
 
-from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.data.test import get_dummy_map_from_header_obj, get_header_from_file, get_test_filepath
 from sunpy.map.sources.gong import GONGMagnetogramMap
+from sunpy.time import parse_time
 from .helpers import _test_private_date_setters
 
 
-@pytest.fixture
-def gong_magnetogram():
-    return get_dummy_map_from_header(get_test_filepath('gong_magnetogram.header'))
+@pytest.fixture(params=["full-date-obs", "with-time-obs"])
+def gong_magnetogram(request):
+    header = get_header_from_file(get_test_filepath('gong_magnetogram.header'))
+    if request.param == "full-date-obs":
+        time_obs =  header.pop("TIME-OBS")
+        date_obs = (parse_time(f"{header['DATE-OBS']} {time_obs}", scale='tai') + 19 *u.s).utc
+        header["DATE-OBS"] = date_obs
+    return get_dummy_map_from_header_obj(header)
 
 
 def test_fitstoGONGSynoptic(gong_magnetogram):

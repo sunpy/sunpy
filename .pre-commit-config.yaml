@@ -2,16 +2,16 @@ exclude: ".*(.csv|.fits|.fts|.fit|.header|.txt|tca.*|.json|.asdf)$|^CITATION.rst
 repos:
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.12.7"
+    rev: "v0.13.3"
     hooks:
       - id: ruff
         args: ["--fix"]
   - repo: https://github.com/PyCQA/isort
-    rev: 6.0.1
+    rev: 6.1.0
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
@@ -23,8 +23,8 @@ repos:
         exclude: ""
       - id: end-of-file-fixer
       - id: mixed-line-ending
-  - repo: https://github.com/crate-ci/typos
-    rev: v1.34.0
+  - repo: https://github.com/adhtruong/mirrors-typos
+    rev: v1.38.1
     hooks:
       - id: typos
   - repo: local

@@ -141,11 +141,10 @@ Method to compute the rotation matrix between two SPICE frames
 
 A new function `~sunpy.coordinates.spice.get_rotation_matrix` has been implemented to compute the rotation matrix between two SPICE frames.
 
-.. code-block:: python
+.. doctest-requires:: spiceypy
 
     >>> from sunpy.coordinates.spice import get_rotation_matrix
     >>> import astropy.units as u
-
     >>> source_frame = "J2000"
     >>> target_frame = "Galactic"
     >>> from_time = '2001-01-01T00:00:00'
