@@ -56,7 +56,7 @@ def test_resample_spline_with_nans_and_inf(nan_data_map,inf_data_map):
         resampled = nan_data_map.resample((64, 64) * u.pix, method='spline')
     assert np.all(np.isnan(resampled.data))
 
-    with pytest.warns(SunpyUserWarning, match="Input data contains NaN or INFINITY values, which may cause the entire output to be NaN when using method='spline'"):
+    with pytest.warns(SunpyUserWarning, match="Input data contains non-finite values, which may cause the entire output to be NaN when using method='spline'"):
         resampled = inf_data_map.resample((64, 64) * u.pix, method='spline')
     assert np.all(np.isnan(resampled.data))
 
