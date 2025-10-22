@@ -1,0 +1,1 @@
+Removed backwards compatibility with the legacy keyword, ``pattern`` within `sunpy.net.Scraper`

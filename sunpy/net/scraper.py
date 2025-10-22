@@ -303,7 +303,7 @@ class Scraper:
                     log.debug(f"Directory {directory} not found.")
                     continue
                 if http_err.code in [400, 403]:
-                    log.debug( f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
+                    log.debug(f"Got error {http_err.code} while scraping {directory} : {http_err.reason}")
                     raise
                 if http_err.code in [429, 504]:
                     # See if the server has told us how long to back off for
@@ -353,10 +353,10 @@ class Scraper:
         if exdict['year'] < 100:
             exdict['year'] = 2000 + exdict['year']
         if 'month' not in exdict:
-                    if 'month_name' in exdict:
-                        exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
-                    elif 'month_name_abbr' in exdict:
-                        exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
+            if 'month_name' in exdict:
+                exdict['month'] = datetime.strptime(exdict['month_name'], '%B').month
+            elif 'month_name_abbr' in exdict:
+                exdict['month'] = datetime.strptime(exdict['month_name_abbr'], '%b').month
         tr = get_timerange_from_exdict(exdict)
         return tr.intersects(timerange)
 
