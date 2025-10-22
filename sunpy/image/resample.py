@@ -57,7 +57,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         raise UnequalNumDimensions("Number of dimensions must remain the same "
                                    "when calling resample.")
     if method == 'spline' and not np.isfinite(orig).all():
-        warn_user("Input data contains NaN or INFINITY values, which may cause the entire output to be NaN when using method='spline'")
+        warn_user("Input data contains non-finite values, which may cause the entire output to be NaN when using method='spline'")
 
     # TODO: Will this be okay for integer (e.g. JPEG 2000) data?
     if orig.dtype not in [np.float64, np.float32]:
