@@ -422,6 +422,9 @@ def metis_color_table(cmap_name):
         'solometisvl-pa': (
             colormaps['viridis'].copy(), 'SolO Metis VL Polarization Angle'
         ),
+        'solometisvl-si': (
+            cmcrameri.cm.batlow.copy(), 'SolO Metis VL Stokes I'  # the same as solometisvl-tb
+        ),
         'solometisvl-sq': (
             colormaps['viridis'].copy(), 'SolO Metis VL Stokes Q'
         ),
@@ -434,13 +437,22 @@ def metis_color_table(cmap_name):
         'solometisvl-ae': (
             colormaps['plasma'].copy(), 'SolO Metis VL Absolute Error'
         ),
+        'solometisvl-re': (
+            colormaps['plasma'].copy(), 'SolO Metis VL Relative Error'
+        ),
         'solometisuv': (
             colormaps['Blues_r'].copy(), 'SolO Metis UV'
-        )
+        ),
+        'solometisuv-pq': (
+            colormaps['plasma'].copy(), 'SolO Metis UV Pixel Quality'  # the same as solometisvl-pq
+        ),
+        'solometisuv-ae': (
+            colormaps['plasma'].copy(), 'SolO Metis UV Absolute Error'  # the same as solometisvl-ae
+        ),
+        'solometisuv-re': (
+            colormaps['plasma'].copy(), 'SolO Metis UV Relative Error'  # the same as solometisvl-re
+        ),
     }
-    cmap_dict['solometisvl-si'] = cmap_dict['solometisvl-tb']
-    cmap_dict['solometisuv-pq'] = cmap_dict['solometisvl-pq']
-    cmap_dict['solometisuv-ae'] = cmap_dict['solometisvl-ae']
 
     if cmap_name in cmap_dict:
         cmap, cname = cmap_dict[cmap_name]
