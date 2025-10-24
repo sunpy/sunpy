@@ -203,6 +203,15 @@ class PHIMap(GenericMap):
         """
         return self.meta.get('btype', 'Unknown')
 
+    def update_plot_norm_settings(self):
+        """
+        Updates vmin and vmax values of plot_settings['norm']
+        """
+        img_vlim = self.get_img_vlim()
+        self.plot_settings['norm'] = ImageNormalize(
+            vmin=img_vlim[0], vmax=img_vlim[1]
+        )
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a PHI image"""
