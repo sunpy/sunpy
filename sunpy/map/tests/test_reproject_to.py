@@ -15,6 +15,7 @@ from astropy.wcs import WCS
 
 import sunpy.coordinates
 import sunpy.map
+from sunpy.data.test import get_dummy_map_from_header
 from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -259,3 +260,14 @@ def test_reproject_to_screen_plus_diffrot(aia171_test_map, screen):
     ax2 = fig.add_subplot(122, projection=with_diffrot)
     with_diffrot.plot(axes=ax2, title="With diffrot")
     return fig
+
+
+def test_reproject_to_preserve_date():
+    "Test that preserve_date preserves the date of the original date in DATE-OBS"
+    m_1 = get_dummy_map_from_header('EIT_header/efz20040301.000010_s.header')
+    m_2 = get_dummy_map_from_header('EIT_header/efz20040301.120010_s.header')
+    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
+        m_2_r = m_2.reproject_to(m_1.wcs, preserve_date=True)
+    assert m_2_r.date == m_2.date
+    assert m_2_r.date_average == m_1.date
+    assert m_2_r.coordinate_frame.obstime == m_1.coordinate_frame.obstime
