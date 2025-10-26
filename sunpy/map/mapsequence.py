@@ -343,8 +343,8 @@ class MapSequence:
         removes = []
 
         # Normal plot
-        def annotate_frame(i):
-            axes.set_title(f"{self[i].name}")
+        def annotate_frame(i, title=None):
+            axes.set_title(f"{self[i].name}" if title is None else title)
             axes.set_xlabel(axis_labels_from_ctype(self[i].coordinate_system[0],
                                                    self[i].spatial_units[0]))
             axes.set_ylabel(axis_labels_from_ctype(self[i].coordinate_system[1],
@@ -381,7 +381,7 @@ class MapSequence:
             wcsaxes_compat.default_wcs_grid(axes)
 
             if annotate:
-                annotate_frame(i)
+                annotate_frame(i, title=kwargs.get('title'))
             removes += list(plot_function(fig, axes, ani_data[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,

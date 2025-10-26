@@ -9,44 +9,42 @@ from sunpy.util.sysinfo import (
 )
 
 EXTRA_DEPS = [
-    'asdf-astropy',
-    'asdf',
-    'astropy',
-    'beautifulsoup4',
-    'cdflib',
-    'drms',
-    'h5netcdf',
-    'h5py',
-    'lxml',
-    'matplotlib',
-    'mpl-animators',
-    'numpy',
-    'packaging',
-    'pandas',
-    'parfive',
-    'pyerfa',
-    'python-dateutil',
-    'reproject',
-    'scipy',
-    'zeep',
+    "astropy",
+    "beautifulsoup4",
+    "cdflib",
+    "drms",
+    "h5netcdf",
+    "h5py",
+    "lxml",
+    "matplotlib",
+    "mpl-animators",
+    "numpy",
+    "packaging",
+    "pandas",
+    "parfive",
+    "pyerfa",
+    "python-dateutil",
+    "reproject",
+    "scipy",
+    "zeep",
 ]
 
 EXTRA_ALL_GROUPS = [
-    'all',
-    'asdf',
-    'dev',
-    'docs-gallery',
-    'docs',
-    'image',
-    'jpeg2000',
-    'map',
-    'net',
-    'opencv',
-    'required',
-    'spice',
-    'tests',
-    'timeseries',
-    'visualization',
+    "all",
+    "asdf",
+    "dev",
+    "docs-gallery",
+    "docs",
+    "image",
+    "jpeg2000",
+    "map",
+    "net",
+    "opencv",
+    "required",
+    "spice",
+    "tests",
+    "timeseries",
+    "visualization",
 ]
 
 def test_find_dependencies():
@@ -58,6 +56,9 @@ def test_find_dependencies():
     _, installed = find_dependencies(package="sunpy", extras=["required", *EXTRA_ALL_GROUPS])
     for package in EXTRA_DEPS:
         assert package in installed
+
+    # There should not be any self-referential dependency on sunpy
+    assert "sunpy" not in installed
 
 
 def test_missing_dependencies_by_extra():
@@ -98,4 +99,10 @@ def test_format_requirement_string():
 def test_system_info(capsys):
     system_info()
     captured = capsys.readouterr()
-    assert "\nsunpy Installation Information\n" in captured.out
+    lines = captured.out.splitlines()
+    assert "sunpy Installation Information" in lines
+
+    # sunpy should not be listed as an optional dependency
+    index = lines.index("Optional Dependencies")
+    for line in lines[index + 2:]:
+        assert not line.startswith("sunpy:")

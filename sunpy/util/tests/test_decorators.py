@@ -21,7 +21,7 @@ def test_deprecated_warning_message(since, warning, message, warning_message):
     @deprecated(since, message=message)
     def foo():
         pass
-    with pytest.warns(warning, match=warning_message):
+    with pytest.warns(warning, match=warning_message):  # NOQA: PT031
         warnings.simplefilter('always')
         foo()
 

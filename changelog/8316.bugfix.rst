@@ -1,0 +1,1 @@
+Fix inconsistent behaviour between local and remote (http/ftp) ~`sunpy.net.scraper.Scraper` searches. Local searches will no longer crash if an expected directory does not exist during search.
