@@ -1,0 +1,9 @@
+Increased minimum version of Python to 3.12.
+Increased minimum version of astropy to 6.1.0.
+Increased minimum version of h5py to 3.10.0.
+Increased minimum version of lxml to 5.0.1.
+Increased minimum version of Matplotlib to 3.8.0.
+Increased minimum version of NumPy to 1.26.0.
+Increased minimum version of pandas to 2.2.0.
+Increased minimum version of reproject to 0.13.0.
+Increased minimum version of SciPy to 1.12.0.
