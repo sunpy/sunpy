@@ -1,0 +1,1 @@
+Fixed errors and added elaborations to the docstring for `~sunpy.coordinates.Helioprojective`.

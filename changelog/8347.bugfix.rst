@@ -1,0 +1,1 @@
+Fix ``GONGMagnetogramMap`` for headers which have standard ``DATE-OBS`` keys vs ones which have split ``DATE-OBS`` & ``TIME-OBS``.

@@ -36,7 +36,7 @@ __all__ = ['read', 'get_header', 'write']
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
-def read(filename, debug=False, **kwargs):
+def read(filename, *, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
     header) tuples.
@@ -61,16 +61,14 @@ def read(filename, debug=False, **kwargs):
     """
     if not os.path.isfile(filename):
         raise OSError("File does not exist!")
-
     if _pyana is None:
         raise ImportError(ANA_NOT_INSTALLED)
-
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
-def get_header(filename, debug=False):
+def get_header(filename, *, debug=False):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
     size (defined as the product of all dimensions times the size of the
@@ -94,13 +92,12 @@ def get_header(filename, debug=False):
     """
     if _pyana is None:
         raise ImportError(ANA_NOT_INSTALLED)
-
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
-def write(filename, data, comments=False, compress=True, debug=False):
+def write(filename, data, comments=False, *, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
     ``NULL``.
@@ -129,8 +126,8 @@ def write(filename, data, comments=False, compress=True, debug=False):
     """
     if _pyana is None:
         raise ImportError(ANA_NOT_INSTALLED)
-
-    if comments:
+    comments = comments or ""
+    try:
         return _pyana.fzwrite(filename, data, int(compress), comments, debug)
-    else:
-        return _pyana.fzwrite(filename, data, int(compress), '', debug)
+    except Exception as e:
+        raise OSError(f"Error occurred while writing ANA file {filename}:\n{e}")
