@@ -133,6 +133,7 @@ jobs:
         - target: cp3{11,12,13}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
         - cp3{11,12,13}-manylinux_x86_64
+        - cp3{11,12,13}-win_amd64
     secrets:
       pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
