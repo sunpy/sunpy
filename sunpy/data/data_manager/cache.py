@@ -88,7 +88,7 @@ class Cache:
         except Exception as e:
             if not cache_details:
                 raise e
-            exception_msg = f"{e} \n"
+            exception_msg = f"{e!r} \n"
             warn_user(
                 f"{exception_msg}Due to the above error, you will be working with a stale version of the file in the cache."
             )
@@ -157,5 +157,9 @@ class Cache:
                 shahash = hash_file(path)
                 return path, shahash, url
             except Exception as e:
-                warn_user(f"{e}")
-                errors.append(f"{e}")
+                errors.append(e)
+        else:
+            if len(errors) == 1:
+                raise errors[0]
+            msg = "Download failed for all URLs, the first error is shown above."
+            raise ValueError(msg) from errors[0]
