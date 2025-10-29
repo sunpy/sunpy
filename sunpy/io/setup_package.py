@@ -21,6 +21,10 @@ def get_extensions():
             "/W3",
             "/utf-8",
         ])
+        # quiet MSVC's CRT nags
+        cfg["define_macros"].extend([
+            ("_CRT_SECURE_NO_WARNINGS", None),
+        ])
     else:
         cfg["extra_compile_args"].extend([
             "-std=c99",
