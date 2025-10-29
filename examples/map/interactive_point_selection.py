@@ -29,6 +29,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax)
+# sphinx_gallery_defer_figures
 
 
 ###############################################################################
