@@ -178,8 +178,17 @@ This will make submitting changes easier in the long term for you:
     $ pip install -e ".[dev]"
 
 .. note::
-    If this does not work, it could be due to a missing C compiler (e.g., ``gcc`` or ``clang``) that is required to build sunpy at install.
-    Getting the compiler either from your system package manager, XCode or conda-forge should address this.
+    If this does not work, it could be due to a missing C compiler (e.g., ``gcc``, ``clang`` or ``msvc``) that is required to build sunpy at install.
+    Getting the compiler either from your system package manager, XCode, Microsoft or conda-forge should address this.
+    If you can't get a working compiler, and you don't want to develop the C extension you can also set the ``SUNPY_NO_BUILD_ANA_EXTENSION`` environment variable to skip building the extension.
+    For example to do this on Windows (in a CMD prompt) you would do ``set SUNPY_NO_BUILD_ANA_EXTENSION=True``.
+
+.. note::
+   To install the C compiler and required libraries on Windows you need to do the following steps:
+
+   - Down the `Visual Studio Build Tools for C++ <https://visualstudio.microsoft.com/visual-cpp-build-tools/>`_
+   - Select to install the "Desktop Development with C++" option from the "Workloads" tab.
+   - Select to install the "Windows Universal CRT SDK" option from the "Individual Components" tab.
 
 Now you have the latest version of sunpy installed and are ready to work on it using your favorite editor!
 Ideally, when you start making changes you want to create a git branch:
