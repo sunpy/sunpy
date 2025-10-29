@@ -96,7 +96,7 @@ char *ana_fzhead(char *file_name) // fzhead subroutine
   int one=1;
   int t_endian=(*(char*)&one==0);                      // an endian detector, taken from SL's tiff library
 //
-  FILE *fin=fopen(file_name,"r");
+  FILE *fin=fopen(file_name,"rb");
   if(!fin){
     fprintf(stderr,"ana_fzhead: error: could not open file \"%s\": %s!\n",file_name,strerror(errno));
     return 0;
@@ -124,7 +124,7 @@ uint8_t *ana_fzread(char *file_name,int **ds,int *nd,char **header,int *type,int
   int one=1;
   int t_endian=(*(char*)&one==0);                      // an endian detector, taken from SL's tiff library
 //
-  FILE *fin=fopen(file_name,"r");
+  FILE *fin=fopen(file_name,"rb");
   if(!fin){
     fprintf(stderr,"ana_fzread: error: could not open file \"%s\": %s!\n",file_name,strerror(errno));
     return 0;
@@ -211,7 +211,7 @@ uint8_t *ana_fzread(char *file_name,int **ds,int *nd,char **header,int *type,int
 
 void ana_fzwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int type)	/* fcwrite subroutine */
 { // write standard f0 files, compressed format
-  FILE *f=fopen(file_name,"w");
+  FILE *f=fopen(file_name,"wb");
   fzhead_t fh;
   memset(&fh,0,sizeof(fzhead_t));
   int one=1;
@@ -278,7 +278,7 @@ void ana_fzwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
 
 void ana_fcwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int type,int slice)	/* fcwrite subroutine */
 { // write standard f0 files, compressed format
-  FILE *f=fopen(file_name,"w");
+  FILE *f=fopen(file_name,"wb");
   fzhead_t fh;
   memset(&fh,0,sizeof(fzhead_t));
   int one=1;
@@ -340,6 +340,16 @@ void ana_fcwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
     case(2):{
       if(runlengthflag){
         fprintf(stderr,"ana_fcwrite: warning: FCRUNWRITE not supported for I*4 yet\n");
+        fclose(f);
+        free(q);
+        return;
+      }else
+        res=anacrunch32(q,(int32_t*)data,crunch_slice,nx,ny,limit,t_endian);
+      break;
+    }
+    case(3):{
+      if(runlengthflag){
+        fprintf(stderr,"ana_fcwrite: warning: FCRUNWRITE not supported for FLOAT32 yet\n");
         fclose(f);
         free(q);
         return;

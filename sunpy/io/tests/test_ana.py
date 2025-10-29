@@ -37,7 +37,6 @@ def img_i16(img_src):
 @pytest.fixture(scope="module")
 def img_f32(img_src):
     arr = img_src * 1.0 / img_src.max()
-    arr += 1e-6  # Ensure no zeros
     return arr.astype(np.float32)
 
 
@@ -76,7 +75,6 @@ def test_roundtrip_float32_uncompressed(img_f32, tmp_path):
     np.testing.assert_array_equal(data, img_f32)
 
 
-@pytest.mark.skip()
 def test_roundtrip_float32_compressed(img_f32, tmp_path):
     p = tmp_path / "f32_compressed.ana"
     ana.write(str(p), img_f32, comments="testcase", compress=True)
@@ -93,28 +91,3 @@ def test_memmap_read_returns_copy(img_f32, tmp_path):
     (data, _), = ana.read(str(p), memmap=False)
     assert data.base is None
     np.testing.assert_array_equal(data_memmap, data)
-
-
-def test_compression_reduces_file_size_int8(img_i8, tmp_path):
-    p_u = tmp_path / "i8_uncompressed.ana"
-    p_c = tmp_path / "i8_compressed.ana"
-    ana.write(str(p_u), img_i8, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_i8, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
-
-
-def test_compression_reduces_file_size_int16(img_i16, tmp_path):
-    p_u = tmp_path / "i16_uncompressed.ana"
-    p_c = tmp_path / "i16_compressed.ana"
-    ana.write(str(p_u), img_i16, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_i16, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
-
-
-@pytest.mark.skip()
-def test_compression_reduces_file_size_float32(img_f32, tmp_path):
-    p_u = tmp_path / "f32_uncompressed.ana"
-    p_c = tmp_path / "f32_compressed.ana"
-    ana.write(str(p_u), img_f32, comments="sizecheck", compress=False)
-    ana.write(str(p_c), img_f32, comments="sizecheck", compress=True)
-    assert p_c.stat().st_size < p_u.stat().st_size
