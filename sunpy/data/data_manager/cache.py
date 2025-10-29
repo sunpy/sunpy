@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from datetime import datetime
 from urllib.request import urlopen
@@ -40,56 +39,60 @@ class Cache:
         """
         Downloads the files from the urls.
 
-        The overall flow of this function is:
-            1. If ``redownload``: Download, update cache and return file path.
-            2. If not ``redownload``: Check cache,
-                i. If present in cache:
-                    - If cache has expired, remove the entry from cache, download and add to cache
-                    - If cache has not expired, return the path
-
         Parameters
         ----------
-        urls : `list` or `str`
+        urls : `list` of path-like or one path-like
             A list of urls or a single url.
-        redownload : `bool`
+            The list is for urls of the same file but from different sources.
+        namespace : `str`, optional
+            A namespace to be used for the file name.
+            Defaults to an empty string.
+        redownload : `bool`, optional
             Whether to skip cache and redownload.
+            Defaults to `False`.
 
         Returns
         -------
-        `pathlib.PosixPath`
+        `pathlib.Path`
             Path to the downloaded file.
         """
-        if isinstance(urls, str):
+        if isinstance(urls, str | Path):
             urls = [urls]
-        # Program flow
-        # 1. If redownload: Download, update cache and return file path
-        # 2. If not redownload: Check cache,
-        #    i. If present in cache:
-        #        - If cache expired, remove entry from cache, download and add to cache
-        #        - If cache not expired, return path
-        details = None
+        # Logic plan
+        # 1. Check if the file is present in cache by url
+        # 2. If present and it has not expired nor redownload, return the file path
+        # 3. If not present or present and (expired or redownload), download the file and update cache
+        #   a. If there is an error from the above steps, we will return the file from the cache if present
         for url in urls:
-            details = self._get_by_url(url)
-            if details:
+            cache_details = self._get_by_url(url)
+            if cache_details:
                 break
-        if details:
-            if redownload or self._has_expired(details):
-                # if file is in cache and it has to be redownloaded or the cache has expired
-                # then remove the file and delete the details from the storage
-                os.remove(details['file_path'])
-                self._storage.delete_by_key('url', details['url'])
-            else:
-                return Path(details['file_path'])
-
-        file_path, file_hash, url = self._download_and_hash(urls, namespace)
-
-        self._storage.store({
-            'file_hash': file_hash,
-            'file_path': str(file_path),
-            'url': url,
-            'time': datetime.now().isoformat(),
-        })
-        return file_path
+        # If we have a cache hit and we do not want to redownload it and its still valid
+        # We want to just return the file
+        if cache_details and not redownload and not self._has_expired(cache_details):
+            return Path(cache_details['file_path'])
+        try:
+            file_path, file_hash, url = self._download_and_hash(urls, namespace)
+            # We explicitly check for redownload or expiry:
+            # This isn't needed as it should be caught by the above if statement
+            # but this is more explicit
+            if cache_details and (redownload or self._has_expired(cache_details)):
+                self._storage.delete_by_key('url', cache_details['url'])
+            self._storage.store({
+                'file_hash': file_hash,
+                'file_path': str(file_path),
+                'url': url,
+                'time': datetime.now().isoformat(),
+             })
+            return file_path
+        except Exception as e:
+            if not cache_details:
+                raise e
+            exception_msg = f"{e!r} \n"
+            warn_user(
+                f"{exception_msg}Due to the above error, you will be working with a stale version of the file in the cache."
+            )
+            return Path(cache_details['file_path'])
 
     def _has_expired(self, details):
         """
@@ -118,8 +121,7 @@ class Cache:
         sha_hash : `str`
             SHA-256 hash of the file.
         """
-        details = self._storage.find_by_key('file_hash', sha_hash)
-        return details
+        return self._storage.find_by_key('file_hash', sha_hash)
 
     def _get_by_url(self, url):
         """
@@ -130,35 +132,34 @@ class Cache:
         url : `str`
             URL of the file.
         """
-        details = self._storage.find_by_key('url', url)
-        return details
+        return self._storage.find_by_key('url', url)
 
-    def _download_and_hash(self, urls, namespace=''):
+    def _download_and_hash(self, urls, namespace):
         """
-        Downloads the file and returns the path, hash and url it used to download.
+        Downloads the file and returns the path, hash, and URL it used to download.
 
         Parameters
         ----------
-        urls : `list`
-            List of urls.
+        urls : `list` of `str`
+            List of URLs.
 
         Returns
         -------
-        `str`, `str`, `str`
-            Path, hash and URL of the file.
+        `pathlib.Path`, `str`, `str`
+            Path to the downloaded file, SHA-256 hash, and the URL used.
         """
-        def download(url):
-            path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
-            self._downloader.download(url, path)
-            shahash = hash_file(path)
-            return path, shahash, url
-
         errors = []
         for url in urls:
             try:
-                return download(url)
+                path = self._cache_dir / (namespace + get_filename(urlopen(url), url))
+
+                self._downloader.download(url, path, overwrite=True)
+                shahash = hash_file(path)
+                return path, shahash, url
             except Exception as e:
-                warn_user(f"{e}")
-                errors.append(f"{e}")
+                errors.append(e)
         else:
-            raise RuntimeError(errors)
+            if len(errors) == 1:
+                raise errors[0]
+            msg = "Download failed for all URLs, the first error is shown above."
+            raise RuntimeError(msg) from errors[0]
