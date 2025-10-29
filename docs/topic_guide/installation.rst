@@ -41,6 +41,8 @@ Once the environment active, to acquire a full ``sunpy`` installation:
 
     $ pip install "sunpy[all]"
 
+There are other optional extras which you may wish to install, such as ``jupyter`` for extra packages which improve output in Jupyter Notebooks, ``s3`` for accessing remote files on s3 like remote URLs.
+You can install these with ``sunpy[all,s3,jupyter]``.
 
 .. warning::
 
