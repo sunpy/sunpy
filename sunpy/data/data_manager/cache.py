@@ -162,4 +162,4 @@ class Cache:
             if len(errors) == 1:
                 raise errors[0]
             msg = "Download failed for all URLs, the first error is shown above."
-            raise ValueError(msg) from errors[0]
+            raise RuntimeError(msg) from errors[0]
