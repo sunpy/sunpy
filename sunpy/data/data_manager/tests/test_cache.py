@@ -57,13 +57,15 @@ def test_check_old_file_is_not_removed(cache, mocker):
     assert first_details['file_path'].endswith('file_name')
 
     # Force a redownload and check that the old file is not removed
-    with patch('sunpy.data.data_manager.cache.Cache._download_and_hash') as download:
+    # We force an error inside `_download_and_hash` to test the full code path
+    with patch('sunpy.data.data_manager.cache.hash_file') as download:
         download.side_effect = IOError
         with pytest.warns(SunpyUserWarning, match="Due to the above error, you"):
             path = cache.download('http://example.com/file_name', redownload=True)
         assert download.call_count == 1
     second_details = cache.get_by_hash(MOCK_HASH)
     assert first_details['file_path'] == second_details['file_path'] == str(path)
+
 
 def test_file_change(cache, mocker):
     cache.download('http://example.com/abc.text')
