@@ -184,9 +184,9 @@ This will make submitting changes easier in the long term for you:
     For example to do this on Windows (in a CMD prompt) you would do ``set SUNPY_NO_BUILD_ANA_EXTENSION=True``.
 
 .. note::
-   To install the C compiler and required libraries on Windows you need to do the following steps:
+   To install the C compiler and required libraries on Windows you need to perform the following steps:
 
-   - Down the `Visual Studio Build Tools for C++ <https://visualstudio.microsoft.com/visual-cpp-build-tools/>`_
+   - Download the `Visual Studio Build Tools for C++ <https://visualstudio.microsoft.com/visual-cpp-build-tools/>`_
    - Select to install the "Desktop Development with C++" option from the "Workloads" tab.
    - Select to install the "Windows Universal CRT SDK" option from the "Individual Components" tab.
 

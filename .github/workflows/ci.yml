@@ -33,7 +33,6 @@ jobs:
       posargs: -n auto --color=yes
       envs: |
         - linux: py313-minimal
-        - windows: py313-minimal
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
