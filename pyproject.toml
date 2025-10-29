@@ -109,11 +109,15 @@ s3 = [
   "fsspec[s3]>=2023.6.0",
   "aiobotocore[boto3]>=2.6.0",  # cdflib has it's own special s3 handling which requires boto3
 ]
+jupyter = [
+  "itables>=2.2.4",
+  "ipywidgets>=8.1.0",
+]
+# These dependencies are required to run the tests
 tests-only = [
   "hvpy>=1.1.0",
   "jplephem>=2.19",
   "pytest-astropy>=0.11.0",
-  "itables>=2.2.4",
   "pytest-mpl>=0.17.0",
   "pytest>=7.4.0",
 ]
@@ -122,8 +126,9 @@ asdf-tests = [
   # We can only install this plugin when we have the asdf extra installed
   "pytest-asdf-plugin>=0.1.1",
 ]
+# This extra allows you to run all tests
 tests = [
-  "sunpy[all,s3,tests-only,asdf-tests]",
+  "sunpy[all,s3,tests-only,asdf-tests,jupyter]",
 ]
 docs = [
   "sunpy[all]",

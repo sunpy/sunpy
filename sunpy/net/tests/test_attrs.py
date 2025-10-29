@@ -1,3 +1,5 @@
+import pytest
+
 import astropy.units as u
 
 from sunpy.net import attr
@@ -29,6 +31,7 @@ def test_wavelength_attr():
 
 
 def test_instrument_show_in_notebook(mocker):
+    pytest.importorskip("itables")
     mock_datagrid =  mocker.patch("itables.show")
     a.Instrument.show_in_notebook()
     mock_datagrid.assert_called_once()
