@@ -9,7 +9,7 @@ import numpy as np
 from pandas import DataFrame
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
 import sunpy.io
 from sunpy import log
