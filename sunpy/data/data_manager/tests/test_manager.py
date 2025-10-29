@@ -16,7 +16,7 @@ def test_basic(storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
-def test_download_cache(manager, storage, downloader, data_function):
+def test_download_cache(storage, downloader, data_function):
     """
     Test calling function multiple times does not redownload.
     """
@@ -33,7 +33,7 @@ def test_file_tampered(manager, storage, downloader, data_function):
     Test calling function multiple times does not redownload.
     """
     data_function()
-    write_to_test_file(manager._tempdir + '/sunpy.test_file', 'b')
+    write_to_test_file(f'{manager._tempdir}/sunpy.test_file', 'b')
     with pytest.warns(SunpyUserWarning):
         data_function()
 
@@ -89,7 +89,7 @@ def test_skip_all(manager, storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
-def test_override_file(manager, storage, downloader, data_function, tmpdir):
+def test_override_file(manager, data_function, tmpdir):
     """
     Test the override_file functionality.
     """
@@ -104,18 +104,19 @@ def test_override_file(manager, storage, downloader, data_function, tmpdir):
         """
         Function to test whether the file is /tmp/another_file.
         """
-        assert manager.get('test_file') == Path(f'{folder}/another_file')
+        assert manager.get('test_file') == Path(f"{folder}/another_file")
+
 
     # Outside the context manager file is default
     folder = tmpdir.strpath
     data_function(default_tester)
-    write_to_test_file(str(Path(folder+'/another_file')), 'a')
+    write_to_test_file(str(Path(f'{folder}/another_file')), 'a')
 
     with manager.override_file('test_file', f'file://{folder}/another_file'):
         # Inside the file is replaced
         data_function(override_file_tester)
 
-    # TODO: this combined with the check above fails on windows
+    # NOTE: This test fails on Windows due to https://github.com/python/cpython/issues/86381.
     # with manager.override_file('test_file', f'{folder}/another_file'):
     #     # Inside the file is replaced
     #     data_function(override_file_tester)

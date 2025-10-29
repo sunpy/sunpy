@@ -331,7 +331,7 @@ def test_files_range_same_directory_remote_new_format():
 
 @pytest.mark.remote_data
 def test_files_range_same_directory_months_remote():
-    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
+    pattern = ('http://izw1.caltech.edu/{spacecraft}/DATA/{instrument}/'
             'Ahead/1minute/AeH%y%b.1m')
     with pytest.warns(SunpyDeprecationWarning, match="pattern has been replaced with the format keyword"):
         s = Scraper(pattern, spacecraft='STEREO', instrument='HET')
@@ -339,22 +339,22 @@ def test_files_range_same_directory_months_remote():
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
     files = s.filelist(timerange)
-    assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
+    assert files == ['http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Jul.1m',
+                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.remote_data
 def test_files_range_same_directory_months_remote_new_format():
-    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
+    pattern = ('http://izw1.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH{{year:2d}}{{month_name_abbr:w}}.1m')
     s = Scraper(format=pattern, spacecraft='STEREO', instrument='HET')
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
     files = s.filelist(timerange)
-    assert files == ['http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
-                     'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
+    assert files == ['http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.xfail
@@ -592,7 +592,6 @@ def test_http_404_error_debug_message_new_format(caplog):
                 assert "Directory http://test.com/ not found." in caplog.text
 
 
-
 def test_check_timerange():
     with pytest.warns(SunpyDeprecationWarning, match="pattern has been replaced with the format keyword"):
         s = Scraper('%Y.fits')
@@ -616,6 +615,7 @@ def test_check_timerange():
     assert not s._check_timerange('2014.fits', TimeRange("2002-01-01", "2013-01-02"))
     # Interval above both boundaries
     assert not s._check_timerange('2014.fits', TimeRange("2022-01-01", "2025-01-02"))
+
 
 def test_check_timerange_new_pattern():
     s = Scraper(format='{{year:4d}}.fits')
@@ -642,3 +642,13 @@ def test_check_timerange_new_pattern():
 
     # Only 2-digit Year
     assert s._check_timerange('14.fits', TimeRange("2013-06-01", "2014-01-01"))
+
+
+def test_local_expected_directory_doesnt_exist(tmp_path):
+    path = (tmp_path / '2025' / '01' / '01')
+    path.mkdir(parents=True)
+    with (path / 'test.txt').open('w') as file:
+        file.write('')
+    s = Scraper(format='file://'+str(tmp_path)+'/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{file}}')
+    files = s.filelist(TimeRange("2025-01-01", "2025-01-02"))
+    assert len(files) == 1

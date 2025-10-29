@@ -1,0 +1,1 @@
+A `~sunpy.util.SunpyUserWarning` will be raised when `sunpy.image.resample` is used with ``method='spline'`` and a data array containing nans and/or infinities.

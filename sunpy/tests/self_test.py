@@ -49,8 +49,7 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
     print()
     print("Checking for packages needed to run sunpy:")
     missing_deps = missing_dependencies_by_extra(exclude_extras=["asdf", "dask", "dev", "all", "docs"])
-    missing_tests = missing_deps.pop("tests")
-    missing_tests = {**missing_tests, **missing_deps.pop("tests-only")}
+    missing_tests = {**missing_deps.pop("core"), **missing_deps.pop("tests-only")}
     printed = print_missing_dependencies_report(missing_deps)
     if not printed:
         print("All required and optional sunpy dependencies are installed.")
