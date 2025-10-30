@@ -1,0 +1,1 @@
+Added :meth:`sunpy.net.fido_factory.UnifiedResponse.show_in_notebook` to render `~sunpy.net.Fido` search results and :meth:`~sunpy.net.attr.AttrMeta.show_in_notebook` on all attrs to render attrs tables in form of interactive table using ``itables`` in Jupyter notebooks.
