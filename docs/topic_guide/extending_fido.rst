@@ -57,11 +57,11 @@ Upon initialization, a version of the pattern following the datetime format is a
 .. code-block:: python
 
     >>> from sunpy.net import Scraper
-    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+    >>> pattern = ('https://proba2.sidc.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     >>> s = Scraper(format=pattern, instrument='swap')
     >>> s.datetime_pattern
-    'http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
+    'https://proba2.sidc.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%M%S.fits'
 
 The smallest unit of time / time-step for that directory-pattern (the full ``datetime_pattern`` except the filename at the end) is then internally detected from ``datetime_pattern`` by using :meth:`~sunpy.net.scraper_utils.extract_timestep`.
 
@@ -78,9 +78,9 @@ After that `~sunpy.net.scraper.Scraper.range` is called on the pattern where for
     >>> from sunpy.time import TimeRange
     >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-03T00:00:00')
     >>> s.range(timerange)
-    ['http://proba2.oma.be/swap/data/bsd/2015/01/01/',
-    'http://proba2.oma.be/swap/data/bsd/2015/01/02/',
-    'http://proba2.oma.be/swap/data/bsd/2015/01/03/']
+    ['https://proba2.sidc.be/swap/data/bsd/2015/01/01/',
+    'https://proba2.sidc.be/swap/data/bsd/2015/01/02/',
+    'https://proba2.sidc.be/swap/data/bsd/2015/01/03/']
 
 These locations, provided by the filled pattern, are visited and a list of files at each location is obtained.
 This is handled differently depending on whether the pattern is a web URL or a ``file://`` or an ``ftp://`` path in the :meth:`~sunpy.net.scraper.Scraper.filelist` method.
@@ -92,10 +92,10 @@ Files that meet these criteria are added to the output.
 .. code-block:: python
 
     >>> s.filelist(timerange) # doctest: +REMOTE_DATA
-    ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
-    'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
+    ['https://proba2.sidc.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
+    'https://proba2.sidc.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
     '...',
-    'http://proba2.oma.be/swap/data/bsd/2015/01/02/swap_lv1_20150102_233313.fits']
+    'https://proba2.sidc.be/swap/data/bsd/2015/01/02/swap_lv1_20150102_233313.fits']
 
 Writing a new "scraper" client
 ==============================

@@ -1,13 +1,16 @@
 import numpy as np
 import pytest
 
-from sunpy.io import ana
 from sunpy.tests.helpers import skip_ana
 
 pytestmark = [
     skip_ana,
     pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning"),
 ]
+
+# Avoid triggering the import which will raise and break pytest collection
+# for the source only build and test CI run.
+from sunpy.io import ana
 
 
 @pytest.fixture(scope="module")

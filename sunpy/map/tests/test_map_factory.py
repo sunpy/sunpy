@@ -283,6 +283,7 @@ def test_uri_pattern():
 
 @pytest.mark.remote_data
 @pytest.mark.filterwarnings("ignore:datetime.datetime.utcnow:DeprecationWarning")
+@pytest.mark.filterwarnings("ignore:The ANA reader may be removed in a future version of sunpy")
 def test_uri_directory_pattern():
     """
     Testing publicly accessible s3 directory

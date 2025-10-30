@@ -122,7 +122,7 @@ def test_files_range_same_directory_local():
 
 @pytest.mark.remote_data
 def test_files_range_same_directory_remote():
-    pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+    pattern = ('https://proba2.sidc.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
                '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
     s = Scraper(format=pattern, instrument='swap')
     startdate = parse_time((2014, 5, 14, 0, 0))
@@ -171,10 +171,10 @@ def test_filelist_url_missing_directory():
 @pytest.mark.remote_data
 def test_filelist_relative_hrefs():
     # the url opened by the scraper from below pattern contains some links which don't have hrefs
-    pattern = 'http://www.bbso.njit.edu/pub/archive/{{year:4d}}/{{month:2d}}/{{day:2d}}/bbso_halph_fr_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fts'
+    pattern = 'https://www.bbso.njit.edu/pub/archive/{{year:4d}}/{{month:2d}}/{{day:2d}}/bbso_halph_fr_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fts'
     s = Scraper(format=pattern)
     timerange = TimeRange('2016/5/18 15:28:00', '2016/5/18 16:30:00')
-    assert s.domain == 'http://www.bbso.njit.edu/'
+    assert s.domain == 'https://www.bbso.njit.edu/'
     # hrefs are relative to domain here, not to the directory they are present in
     # this checks that `scraper.filelist` returns fileurls relative to the domain
     fileurls = s.filelist(timerange)
@@ -258,7 +258,7 @@ def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error
             "http://example.com", error_code, error_message, {}, None
         )
         time_range = TimeRange("2012/3/4", "2012/3/4 02:00")
-        pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+        pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(format=pattern)
         with pytest.raises(HTTPError, match=error_message) as excinfo:
             scraper._httpfilelist(time_range)
@@ -270,7 +270,7 @@ def test_connection_error():
     with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
         mocked_urlopen.side_effect = URLError('connection error')
         time = TimeRange('2012/3/4', '2012/3/4 02:00')
-        pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+        pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(format=pattern)
         with pytest.raises(URLError, match='connection error'):
             scraper._httpfilelist(time)
@@ -284,7 +284,7 @@ def test_http_404_error_debug_message(caplog):
             with patch.object(Scraper, 'range', patch_range):
                 mocked_urlopen.side_effect = HTTPError('http://example.com', 404, '', {}, None)
                 time = TimeRange('2012/3/4', '2012/3/4 02:00')
-                pattern = "http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
+                pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
                 scraper = Scraper(format=pattern)
                 scraper._httpfilelist(time)
                 assert "Directory http://test.com/ not found." in caplog.text

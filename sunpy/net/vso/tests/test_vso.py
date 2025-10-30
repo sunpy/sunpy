@@ -136,7 +136,7 @@ def test_path(client, tmpdir):
             core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
             response_format="table")
     tmp_dir = tmpdir / "{file}"
-    files = client.fetch(qr, path=tmp_dir)
+    files = client.fetch(qr, path=tmp_dir, site="NSO")
     assert len(files) == 1
     # The construction of a VSO filename is BONKERS, so there is no
     # practical way to determine what it should be in this test, so we just

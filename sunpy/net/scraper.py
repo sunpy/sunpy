@@ -76,18 +76,18 @@ class Scraper:
     --------
     >>> from sunpy.net import Scraper
     >>>
-    >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+    >>> pattern = ('https://proba2.sidc.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
     ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{month:2d}}{{second:2d}}.fits')
     >>> swap = Scraper(format=pattern, instrument='swap')
     >>>
     >>> print(swap.pattern)
-    http://proba2.oma.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
+    https://proba2.sidc.be/swap/data/bsd/{year:4d}/{month:2d}/{day:2d}/swap_lv1_{year:4d}{month:2d}{day:2d}_{hour:2d}{month:2d}{second:2d}.fits
     >>>
     >>> print(swap.datetime_pattern)
-    http://proba2.oma.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%m%S.fits
+    https://proba2.sidc.be/swap/data/bsd/%Y/%m/%d/swap_lv1_%Y%m%d_%H%m%S.fits
     >>>
     >>> print(swap.now)  # doctest: +SKIP
-    http://proba2.oma.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
+    https://proba2.sidc.be/swap/data/bsd/2022/12/21/swap_lv1_20221221_112433.fits
     """
     def __init__(self, format, **kwargs):
         pattern = format.format(**kwargs)
@@ -176,29 +176,29 @@ class Scraper:
         Examples
         --------
         >>> from sunpy.net import Scraper
-        >>> pattern = ('http://proba2.oma.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
+        >>> pattern = ('https://proba2.sidc.be/{instrument}/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/'
         ...            '{instrument}_lv1_{{year:4d}}{{month:2d}}{{day:2d}}_{{hour:2d}}{{minute:2d}}{{second:2d}}.fits')
         >>> swap = Scraper(pattern, instrument='swap')
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01T00:08:00','2015-01-01T00:12:00')
         >>> print(swap.filelist(timerange))  # doctest: +REMOTE_DATA
-        ['http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
-         'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
-         'http://proba2.oma.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001157.fits']
+        ['https://proba2.sidc.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_000857.fits',
+         'https://proba2.sidc.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001027.fits',
+         'https://proba2.sidc.be/swap/data/bsd/2015/01/01/swap_lv1_20150101_001157.fits']
 
         While writing the pattern, we can also leverage parse capabilities by using the ``{{}}`` notation to match parts of the filename that cannot be known beforehand:
 
         >>> from sunpy.net import Scraper
         >>> from sunpy.time import TimeRange
-        >>> pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
+        >>> pattern = 'https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
         >>> lyra = Scraper(pattern)
         >>> timerange = TimeRange('2023-03-06T00:00:00','2023-03-06T00:10:00')
         >>> print(swap.filelist(timerange)) # doctest: +REMOTE_DATA
-        ['http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000128.fits',
-        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000318.fits',
-        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000508.fits',
-        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000658.fits',
-        'http://proba2.oma.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000848.fits']
+        ['https://proba2.sidc.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000128.fits',
+        'https://proba2.sidc.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000318.fits',
+        'https://proba2.sidc.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000508.fits',
+        'https://proba2.sidc.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000658.fits',
+        'https://proba2.sidc.be/swap/data/bsd/2023/03/06/swap_lv1_20230306_000848.fits']
 
         Notes
         -----
