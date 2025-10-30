@@ -44,7 +44,6 @@ class LYRAClient(GenericClient):
     2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  2328.75
     2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A 419.0625
     <BLANKLINE>
-    <BLANKLINE>
     """
 
     pattern = 'http://proba2.oma.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'

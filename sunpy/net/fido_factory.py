@@ -162,6 +162,13 @@ class UnifiedResponse(Sequence):
         """
         return self._numfile
 
+    @property
+    def errors(self):
+        """
+        Returns a list of errors for each client.
+        """
+        return [res.errors for res in self._list if res.errors]
+
     def _repr_html_(self):
         nprov = len(self)
         if nprov == 1:
@@ -170,7 +177,10 @@ class UnifiedResponse(Sequence):
             ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
             ret += f"{len(block)} Results from the {block.client.__class__.__name__}:</br>"
+            ret += f"Error: {repr(self._errors[block.client.__name__])}</br>"
             ret += block._repr_html_()
+            if block.errors:
+                ret += f"Errors: {block.errors}</br>"
             ret += '</br>'
 
         return ret
@@ -189,8 +199,15 @@ class UnifiedResponse(Sequence):
             if block.client.info_url is not None:
                 ret += f'Source: {block.client.info_url}\n'
             size = block.total_size()
+
+            if hasattr(block.client, '__name__'):
+                if self.errors[block.client.__name__] is not None:
+                    ret += f'Error: {repr(self._errors[block.client.__name__])}\n'
+
             if np.isfinite(size):
                 ret += f'Total estimated size: {size}\n'
+            if block.errors:
+                ret += f'Errors: {block.errors}\n'
             ret += '\n'
             lines = repr(block).split('\n')
             ret += '\n'.join(lines[1:])
@@ -375,7 +392,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This is because the VSO _can_handle_query is very broad because we
         # don't know the full list of supported values we can search for (yet).
         results = [r for r in results if not isinstance(r, vso.VSOQueryResponseTable) or len(r) > 0]
-
         return UnifiedResponse(*results)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
@@ -521,6 +537,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         Given a query, look up the client and perform the query.
 
+        This method is called by ``search`` and the results are fed into a
+        UnifiedResponse object.
+
         Parameters
         ----------
         *query : collection of `~sunpy.net.vso.attr` objects
@@ -535,10 +554,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         results = []
         for client in candidate_widget_types:
             tmpclient = client()
-            results.append(tmpclient.search(*query))
+            try:
+                res = tmpclient.search(*query)
+            except Exception as err:
+                res = QueryResponseTable([], client=tmpclient, errors=err)
 
-        # This method is called by `search` and the results are fed into a
-        # UnifiedResponse object.
+            results.append(res)
+
         return results
 
     def __repr__(self):
