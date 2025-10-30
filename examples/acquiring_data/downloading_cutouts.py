@@ -3,6 +3,8 @@
 Requesting cutouts of AIA images from the JSOC
 ==============================================
 
+.. tags:: acquiring_data
+
 This example shows how to request a cutout of a series of
 AIA images from the JSOC.
 """

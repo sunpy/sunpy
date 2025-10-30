@@ -3,6 +3,8 @@
 Converting between Helioprojective and AltAz Coordinate
 =======================================================
 
+.. tags:: units_and_coordinates, altaz, coordinates
+
 How to find the Sun in the sky as viewed from a particular location.
 """
 import astropy.units as u

@@ -3,6 +3,8 @@
 Segmenting a Map based on transformation of coordinates
 =======================================================
 
+.. tags:: map, processing
+
 This example demonstrates extracting a region of a particular map based on
 world coordinates in different systems.
 """

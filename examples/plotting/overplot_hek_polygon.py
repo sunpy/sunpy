@@ -3,6 +3,8 @@
 Overplotting HEK feature/event polygons on a map
 ================================================
 
+.. tags:: plotting, hek, feature
+
 How to overplot HEK outlines on a map.
 """
 import matplotlib.pyplot as plt

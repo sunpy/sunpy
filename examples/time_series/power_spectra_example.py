@@ -3,6 +3,8 @@
 Making a power spectrum from a TimeSeries
 =========================================
 
+.. tags:: time_series, rhessi, analysis
+
 How to estimate the power spectrum of a TimeSeries.
 """
 import matplotlib.pyplot as plt

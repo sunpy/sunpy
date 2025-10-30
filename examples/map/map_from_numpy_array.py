@@ -3,6 +3,8 @@
 Generating a map from data array
 ================================
 
+.. tags:: map, fits
+
 A simple demonstration of creating a map from a numpy array of data.
 """
 import matplotlib.pyplot as plt

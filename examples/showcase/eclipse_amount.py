@@ -3,6 +3,8 @@
 Obtaining solar-eclipse information
 ===================================
 
+.. tags:: showcase, timeseries, feature
+
 How to obtain information about a solar eclipse
 
 The function :func:`sunpy.coordinates.sun.eclipse_amount` returns how much of

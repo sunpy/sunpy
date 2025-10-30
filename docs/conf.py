@@ -154,6 +154,8 @@ extensions = [
     'sphinx_design',
     'sphinx_copybutton',
     'sphinxcontrib.bibtex',
+    # tags listed here for extension import ordering reasons
+    'sphinx_tags',
 ]
 
 # Set automodapi to generate files inside the generated directory
@@ -379,6 +381,12 @@ sphinx_gallery_conf = {
     'doc_module': ('sunpy'),
     'only_warn_on_example_error': True,
 }
+
+# sphinx tags
+tags_create_tags = True
+tags_overview_title = 'SunPy Examples Gallery Tags'
+tags_output_dir = "_tags"
+tags_page_title = "Tag"
 
 # -- Linking to OpenCV docs by using rst_epilog --------------------------------
 
