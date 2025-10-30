@@ -150,11 +150,11 @@ def test_files_range_same_directory_months_remote():
 
 @pytest.mark.remote_data
 def test_ftp():
-    pattern = 'ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt'
+    pattern = 'ftp://ftp.ngdc.noaa.gov/STP/space-weather/swpc-products/daily_reports/solar_region_summaries/{{year:4d}}/{{month:2d}}/{{year:4d}}{{month:2d}}{{day:2d}}SRS.txt'
     s = Scraper(format=pattern)
     timerange = TimeRange('2024/5/18', '2024/5/20')
     urls = s.filelist(timerange)
-    assert urls[0] == ('ftp://ftp.ngdc.noaa.gov/STP/swpc_products/daily_reports/solar_region_summaries/2024/05/20240518SRS.txt')
+    assert urls[0] == ('ftp://ftp.ngdc.noaa.gov/STP/space-weather/swpc-products/daily_reports/solar_region_summaries/2024/05/20240518SRS.txt')
     assert len(urls) == 3
 
 
