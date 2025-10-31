@@ -1,5 +1,4 @@
 import numpy as np
-
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import SkyCoord
@@ -127,8 +126,62 @@ def make_fitswcs_header(data,
             dsun_obs = coordinate.observer.radius
         meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
 
+    # ---------------------------------------------------------------------
+    # Add support for OBSGEO-[XYZ] FITS header keys for ground-based observers
+    # ---------------------------------------------------------------------
+    from astropy.coordinates import EarthLocation, ITRS, SkyCoord, GCRS
+
+    try:
+        observer = coordinate.observer
+        loc = None
+
+        # 1) If observer is already an EarthLocation, use it directly
+        if isinstance(observer, EarthLocation):
+            loc = observer
+
+        # 2) If observer is a SkyCoord in ITRS frame, convert to EarthLocation
+        elif isinstance(observer, SkyCoord) and getattr(observer.frame, 'name', '') == 'itrs':
+            loc = EarthLocation.from_geocentric(observer.x, observer.y, observer.z)
+
+        # 3) If observer is some other coordinate/frame (e.g., HeliographicStonyhurst),
+        #    try to transform it to ITRS using a robust two-step approach.
+        else:
+            try:
+                # Wrap in SkyCoord (this handles frame objects too)
+                sc = SkyCoord(observer)
+
+                # Preferred: transform directly to ITRS with explicit keyword for obstime
+                try:
+                    itrs = sc.transform_to(ITRS(obstime=sc.obstime))
+                except Exception:
+                    # Fallback: go via GCRS then to ITRS (both with obstime keyword)
+                    gcrs = sc.transform_to(GCRS(obstime=sc.obstime))
+                    itrs = gcrs.transform_to(ITRS(obstime=sc.obstime))
+
+                # Build EarthLocation from the geocentric coordinates
+                loc = EarthLocation.from_geocentric(itrs.x, itrs.y, itrs.z)
+
+            except Exception as inner_e:
+                # If transformation fails, log debug info but don't raise
+                # (do not spam in normal runs; this helps local dev debugging)
+                print(f"DEBUG: failed to get EarthLocation from observer ({type(observer)}): {inner_e}")
+                loc = None
+
+        # 4) If we have a valid EarthLocation, write OBSGEO keys
+        if loc is not None:
+            meta_wcs['OBSGEO-X'] = float(loc.x.to_value(u.m))
+            meta_wcs['OBSGEO-Y'] = float(loc.y.to_value(u.m))
+            meta_wcs['OBSGEO-Z'] = float(loc.z.to_value(u.m))
+
+    except Exception as e:
+        # Any unexpected error here should not break header generation
+        print("DEBUG: OBSGEO outer block failed:", e)
+        pass
+
+
     meta_dict = MetaDict(meta_wcs)
     return meta_dict
+
 
 
 def _validate_coordinate(coordinate):
