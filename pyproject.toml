@@ -23,7 +23,7 @@ name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
 requires-python = ">=3.11"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = { file = "LICENSE.rst" }
+license-files = ["LICENSE.rst", "licenses/*.rst"]
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
@@ -41,7 +41,7 @@ keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: BSD License",
+  "BSD-3-Clause",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
@@ -166,7 +166,6 @@ zip-safe = false
 include-package-data = true
 platforms = ["any"]
 provides = ["sunpy"]
-license-files = ["LICENSE.rst"]
 
 [tool.setuptools.packages.find]
 include = ["sunpy*"]
