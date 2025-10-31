@@ -1,8 +1,4 @@
 """PROBA2 Map subclass definitions"""
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 from sunpy.map import GenericMap
 
 __all__ = ['SWAPMap']
@@ -21,7 +17,7 @@ class SWAPMap(GenericMap):
 
     References
     ----------
-    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`__
+    * `Proba2 SWAP Science Center <https://proba2.sidc.be/index.php>`__
     * `Fits headers reference <https://proba2.sidc.be/data/SWAP/level0>`__
     """
 
