@@ -330,7 +330,7 @@ def test_fallback_if_cgi_offline(check_vso_alive, mocker):  # NOQA: ARG001
     with pytest.warns(SunpyConnectionWarning,
                       match=f"Connection to {cgi_url} failed with error .* Retrying with different url and port"):
         mirror = get_online_vso_url()
-    assert mirror["url"] != "https://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
+    assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
 
 
 def test_get_online_vso_url(mocker):
