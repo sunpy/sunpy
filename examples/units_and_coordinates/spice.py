@@ -59,7 +59,7 @@ kernel_urls = [
     "spk/de421.bsp",
     "spk/solo_ANC_soc-orbit-stp_20200210-20301120_280_V1_00288_V01.bsp",
 ]
-kernel_urls = [f"http://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/{url}"
+kernel_urls = [f"https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/{url}"
                for url in kernel_urls]
 
 kernel_files = [cache.download(url) for url in kernel_urls]

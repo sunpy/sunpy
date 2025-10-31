@@ -108,7 +108,7 @@ A version without documentation strings is reproduced below:
 .. code-block:: python
 
     class EVEClient(GenericClient):
-        pattern = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+        pattern = ('https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
                '{{year:4d}}/{{year:4d}}{{month:2d}}{{day:2d}}_EVE_L{{Level:1d}}CS_DIODES_1m.txt')
 
         @classmethod
@@ -121,7 +121,7 @@ A version without documentation strings is reproduced below:
                     attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
             return adict
 
-This client scrapes all the URLs available under the base url ``http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
+This client scrapes all the URLs available under the base url ``https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/``.
 `~sunpy.net.scraper.Scraper` is primarily focused on URL parsing based on time ranges, so the rest of the ``pattern`` specifies where in the URL the time information is located, using `parse <https://github.com/r1chardj0n3s/parse/>`__ notation.
 The ``pattern`` attribute is first filled in with the calculated time-based values, and then used to populate the results table from the URLs matched with the ``pattern``.
 It includes some of the time definitions, as well as the name of any other attrs which appear in the URL (in this case "Level").
