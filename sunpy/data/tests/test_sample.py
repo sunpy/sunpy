@@ -7,8 +7,8 @@ from sunpy.data._sample import _download_sample_data, _retry_sample_data
 def test_retry_sample_data(tmpdir):
     # Wrong base URL.
     result = _download_sample_data(
-        "https://www.thinkbroadband.com/download", [("tca110607.fits",
-                                                     tmpdir / "tca110607.fits")], False)
+        "http://ipv4.download.thinkbroadband.com",
+        [("tca110607.fits", tmpdir / "tca110607.fits")], False)
     assert result == []
     assert result.errors != []
 
@@ -21,6 +21,6 @@ def test_retry_sample_data(tmpdir):
 def test_download_sample_data(tmpdir):
     # Download a simple random file off the internet.
     result = _download_sample_data(
-        "https://www.thinkbroadband.com/download", [("5MB.zip", tmpdir / "5MB.zip")], False)
+        "http://ipv4.download.thinkbroadband.com", [("5MB.zip", tmpdir / "5MB.zip")], False)
     assert result == [tmpdir / "5MB.zip"]
     assert result.errors == []

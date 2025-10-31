@@ -132,7 +132,7 @@ def build_client(url=None, port_name=None, **kwargs):
         kwargs["plugins"] = [SunPyLoggingZeepPlugin()]
 
     client = zeep.Client(url, port_name=port_name, **kwargs)
-    client.set_ns_prefix('VSO', 'https://virtualsolar.org/VSO/VSOi')
+    client.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
     return client
 
 

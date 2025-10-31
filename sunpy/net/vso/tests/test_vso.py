@@ -321,8 +321,8 @@ def test_fallback_if_cgi_offline(check_vso_alive, mocker):  # NOQA: ARG001
     # Doing this like this means we don't have to hard code it.
     wdsl = urlopen(default_url).read()
     t = ElementTree.fromstring(wdsl)
-    ele = t.findall("{https://schemas.xmlsoap.org/wsdl/}service")[0]
-    cgi_url = list(ele.iter("{https://schemas.xmlsoap.org/wsdl/soap/}address"))[0].attrib['location']
+    ele = t.findall("{http://schemas.xmlsoap.org/wsdl/}service")[0]
+    cgi_url = list(ele.iter("{http://schemas.xmlsoap.org/wsdl/soap/}address"))[0].attrib['location']
 
     # Now patch out that URL so we can cause it to return an error
     mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=partial(fail_to_open_nso_cgi, cgi_url))
