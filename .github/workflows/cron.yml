@@ -48,6 +48,7 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
+        - windows: py314-online
         - linux: core_deps
         - linux: linkcheck
           pytest: false
