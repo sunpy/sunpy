@@ -137,15 +137,15 @@ def test_files_range_same_directory_remote():
 
 @pytest.mark.remote_data
 def test_files_range_same_directory_months_remote():
-    pattern = ('http://izw1.caltech.edu/{spacecraft}/DATA/{instrument}/'
+    pattern = ('https://izw1.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH{{year:2d}}{{month_name_abbr:w}}.1m')
     s = Scraper(format=pattern, spacecraft='STEREO', instrument='HET')
     startdate = parse_time((2007, 8, 1))
     enddate = parse_time((2007, 9, 10))
     timerange = TimeRange(startdate, enddate)
     files = s.filelist(timerange)
-    assert files == ['http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
-                     'http://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
+    assert files == ['https://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Aug.1m',
+                     'https://izw1.caltech.edu/STEREO/DATA/HET/Ahead/1minute/AeH07Sep.1m']
 
 
 @pytest.mark.remote_data
@@ -255,7 +255,7 @@ def test_yearly_overlap():
 def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error_message):
     with patch("sunpy.net.scraper.urlopen") as mocked_urlopen:
         mocked_urlopen.side_effect = HTTPError(
-            "http://example.com", error_code, error_message, {}, None
+            "https://example.com", error_code, error_message, {}, None
         )
         time_range = TimeRange("2012/3/4", "2012/3/4 02:00")
         pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
@@ -279,15 +279,15 @@ def test_connection_error():
 def test_http_404_error_debug_message(caplog):
     with caplog.at_level(logging.DEBUG, logger='sunpy'):
         def patch_range(self, range):
-            return ['http://test.com/']
+            return ['https://test.com/']
         with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
             with patch.object(Scraper, 'range', patch_range):
-                mocked_urlopen.side_effect = HTTPError('http://example.com', 404, '', {}, None)
+                mocked_urlopen.side_effect = HTTPError('https://example.com', 404, '', {}, None)
                 time = TimeRange('2012/3/4', '2012/3/4 02:00')
                 pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
                 scraper = Scraper(format=pattern)
                 scraper._httpfilelist(time)
-                assert "Directory http://test.com/ not found." in caplog.text
+                assert "Directory https://test.com/ not found." in caplog.text
 
 
 def test_check_timerange():

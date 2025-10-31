@@ -279,25 +279,25 @@ def test_vso_hmi(client, tmpdir):
 
 def test_check_connection(mocker):
     mocker.patch('sunpy.net.vso.vso.urlopen',
-                 side_effect=HTTPError('http://notathing.com/', 400, 'Bad Request', {}, None))
+                 side_effect=HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None))
     with pytest.warns(SunpyUserWarning,
-                      match='Connection to http://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
-        assert check_connection('http://notathing.com/') is False
+                      match='Connection to https://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
+        assert check_connection('https://notathing.com/') is False
 
 
 def test_check_cgi_connection(mocker):
     mocker.patch('sunpy.net.vso.vso.urlopen',
-                 side_effect=HTTPError('http://notathing.com/', 400, 'Bad Request', {}, None))
+                 side_effect=HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None))
     with pytest.warns(SunpyUserWarning,
-                      match='Connection to http://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
-        assert check_cgi_connection('http://notathing.com/') is False
+                      match='Connection to https://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
+        assert check_cgi_connection('https://notathing.com/') is False
 
-    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=URLError('http://notathing.com/', 400))
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=URLError('https://notathing.com/', 400))
     with pytest.warns(
             SunpyUserWarning,
-            match='Connection to http://notathing.com/ failed with error <urlopen error http://notathing.com/>.'
+            match='Connection to https://notathing.com/ failed with error <urlopen error https://notathing.com/>.'
     ):
-        assert check_cgi_connection('http://notathing.com/') is False
+        assert check_cgi_connection('https://notathing.com/') is False
 
 
 def fail_to_open_nso_cgi(disallowed_url, url, **kwargs):
@@ -321,8 +321,8 @@ def test_fallback_if_cgi_offline(check_vso_alive, mocker):  # NOQA: ARG001
     # Doing this like this means we don't have to hard code it.
     wdsl = urlopen(default_url).read()
     t = ElementTree.fromstring(wdsl)
-    ele = t.findall("{http://schemas.xmlsoap.org/wsdl/}service")[0]
-    cgi_url = list(ele.iter("{http://schemas.xmlsoap.org/wsdl/soap/}address"))[0].attrib['location']
+    ele = t.findall("{https://schemas.xmlsoap.org/wsdl/}service")[0]
+    cgi_url = list(ele.iter("{https://schemas.xmlsoap.org/wsdl/soap/}address"))[0].attrib['location']
 
     # Now patch out that URL so we can cause it to return an error
     mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=partial(fail_to_open_nso_cgi, cgi_url))
@@ -330,7 +330,7 @@ def test_fallback_if_cgi_offline(check_vso_alive, mocker):  # NOQA: ARG001
     with pytest.warns(SunpyConnectionWarning,
                       match=f"Connection to {cgi_url} failed with error .* Retrying with different url and port"):
         mirror = get_online_vso_url()
-    assert mirror["url"] != "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
+    assert mirror["url"] != "https://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl"
 
 
 def test_get_online_vso_url(mocker):
@@ -352,13 +352,13 @@ def test_VSOClient(mocker):
 
 def test_build_client(mocker):
     mocker.patch('sunpy.net.vso.vso.check_connection', return_value=None)
-    with pytest.raises(ConnectionError, match="Can't connect to url http://notathing.com/"):
-        build_client(url="http://notathing.com/", port_name="spam")
+    with pytest.raises(ConnectionError, match="Can't connect to url https://notathing.com/"):
+        build_client(url="https://notathing.com/", port_name="spam")
 
 
 def test_build_client_params():
     with pytest.raises(ValueError, match="Both url and port_name must be specified if either is."):
-        build_client(url="http://notathing.com/")
+        build_client(url="https://notathing.com/")
 
 
 
