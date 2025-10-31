@@ -49,14 +49,14 @@ class ESPTimeSeries(GenericTimeSeries):
     References
     ----------
     * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`__
-    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
-    * `README ESP data <http://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`__
-    * `ESP lvl1 data <http://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`__
+    * `EVE Homepage <https://lasp.colorado.edu/eve/>`__
+    * `README ESP data <https://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`__
+    * `ESP lvl1 data <https://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`__
     * ESP instrument paper: :cite:t:`didkovsky_euv_2012`
     """
 
     _source = 'esp'
-    _url = "http://lasp.colorado.edu/home/eve/"
+    _url = "https://lasp.colorado.edu/eve/"
 
     def plot(self, axes=None, columns=None, **kwargs):
         """
@@ -181,20 +181,20 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')  # doctest: +REMOTE_DATA
-    >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +SKIP
+    >>> eve = sunpy.timeseries.TimeSeries("https://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +SKIP
     >>> eve.peek(subplots=True)  # doctest: +SKIP
 
     References
     ----------
     * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`__
-    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
-    * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`__
-    * `EVE Data Access <http://lasp.colorado.edu/home/eve/data/data-access/>`__
+    * `EVE Homepage <https://lasp.colorado.edu/eve/>`__
+    * `Level 0CS Definition <https://lasp.colorado.edu/eve/data/>`__
+    * `EVE Data Access <https://lasp.colorado.edu/eve/data_access/index.html>`__
     * Instrument Paper :cite:t:`woods_extreme_2012`.
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
-    _url = "http://lasp.colorado.edu/home/eve/"
+    _url = "https://lasp.colorado.edu/eve/"
 
     @peek_show
     def peek(self, *, columns=None, **kwargs):

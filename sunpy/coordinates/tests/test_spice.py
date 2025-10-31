@@ -29,8 +29,8 @@ def spice_test():
     fk = download_file("https://soho.nascom.nasa.gov/solarsoft/packages/sunspice/data/heliospheric.tf")
 
     # Use more frames (FK and IK) from Solar Orbiter
-    solo_sc_fk = download_file("http://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/fk/solo_ANC_soc-sc-fk_V09.tf")
-    solo_spd_ik = download_file("http://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/ik/solo_ANC_soc-epd-ik_V03.ti")
+    solo_sc_fk = download_file("https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/fk/solo_ANC_soc-sc-fk_V09.tf")
+    solo_spd_ik = download_file("https://spiftp.esac.esa.int/data/SPICE/SOLAR-ORBITER/kernels/ik/solo_ANC_soc-epd-ik_V03.ti")
 
     # Implicitly test adding a kernel list
     spice.initialize([lsk, pck, fk, solo_sc_fk, solo_spd_ik])

@@ -211,7 +211,7 @@ def struct_to_data(xdrdata, subskeleton):
     subskeleton : `OrderedDict` or `np.array`
         Contains the size and type of the ``xdrdata``.
     """
-    # http://www.harrisgeospatial.com/docs/SIZE.html
+    # https://www.nv5geospatialsoftware.com/docs/SIZE.html
     types_dict = {
         2: (xdrdata.unpack_int, np.int16),  # int
         3: (xdrdata.unpack_int, np.int32),  # long

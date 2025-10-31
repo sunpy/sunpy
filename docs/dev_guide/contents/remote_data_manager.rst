@@ -17,7 +17,7 @@ The following example demonstrates the usage of the fixture:
     @pytest.fixture()
     def local_cache(sunpy_cache):
         sunpy_cache = sunpy_cache('sunpy.test_module.cache')
-        sunpy_cache.add('http://example.com/test_file',
+        sunpy_cache.add('https://example.com/test_file',
                         'test_data_path')
 
 The above snippet creates a pytest fixture called ``local_cache``.
@@ -28,6 +28,5 @@ An example is given below:
 
     def test_test_function(local_cache):
         # inside this function the mocked cache is used
-
-        # test_function uses 'http://example.com/test_file'
+        # test_function uses 'https://example.com/test_file'
         assert test_function() == True

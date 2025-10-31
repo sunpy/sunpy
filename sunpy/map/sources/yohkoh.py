@@ -1,9 +1,4 @@
 """Yohkoh SXT Map subclass definitions"""
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
-
-
 import astropy.units as u
 from astropy.coordinates import ITRS, SphericalRepresentation
 from astropy.visualization import PowerStretch
@@ -47,8 +42,8 @@ class SXTMap(GenericMap):
 
     References
     ----------
-    * `Yohkoh Mission Page <http://solar.physics.montana.edu/sxt/>`__
-    * `Fits header reference <http://proba2.oma.be/data/SWAP/level0>`__
+    * `Yohkoh Mission Page <https://solar.physics.montana.edu/sxt/>`__
+    * `Fits header reference <https://proba2.sidc.be/data/SWAP/level0>`__
     * `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`__
     """
 

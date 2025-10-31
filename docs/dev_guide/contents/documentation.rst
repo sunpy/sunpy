@@ -51,7 +51,7 @@ To still show only the last segment you can add a tilde as prefix:
 will render as `~.GenericMap.peek` or `~.CompositeMap.peek`.
 
 Other packages can also be linked via
-`intersphinx <http://www.sphinx-doc.org/en/master/ext/intersphinx.html>`__:
+`intersphinx <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`__:
 
 .. code-block:: rst
 
@@ -184,7 +184,7 @@ Then change to the :file:`docs/` directory and run::
 
     make html
 
-For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`__.
+For more information on how to use Sphinx, consult the `Sphinx documentation <https://www.sphinx-doc.org/en/master/contents.html>`__.
 
 Special Sphinx directives
 -------------------------

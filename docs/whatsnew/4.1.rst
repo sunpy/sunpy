@@ -57,7 +57,7 @@ Where a * indicates that this release contains their first contribution to ``sun
 Extracting map values along coordinate paths
 ============================================
 It is now easy to extract data values from a `~sunpy.map.GenericMap` along a curve specified by set of coordinates using the new ``sunpy.map.extract_along_coord`` function.
-This is done by applying `Bresenham's line algorithm <http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`__ between the consecutive coordinates, in pixel space, and then indexing the data array of the map at those points.
+This is done by applying `Bresenham's line algorithm <https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm>`__ between the consecutive coordinates, in pixel space, and then indexing the data array of the map at those points.
 
 Easier reprojecting to Carrington and Stonyhurst coordinates
 ============================================================

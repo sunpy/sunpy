@@ -27,7 +27,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
     * The RI sunspot number is the official International Sunspot Number and is
       issued by the `Solar Influence Data Analysis Center (SDIC)
-      <http://sidc.oma.be>`__ in Brussels, Belgium.
+      <https://sidc.be/aboutSIDC/>`__ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
     * Radio flux at 10.7 cm is produced by
       `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`__ and the units are in sfu.
@@ -197,7 +197,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     The following predicted values are available.
 
     * The predicted RI sunspot number is the official International Sunspot
-      Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`__ in Brussels, Belgium.
+      Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <https://sidc.be/aboutSIDC/>`__ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
       `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`__ and the units are in sfu.
 

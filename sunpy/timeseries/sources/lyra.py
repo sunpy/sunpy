@@ -46,9 +46,9 @@ class LYRATimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`__
-    * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`__
-    * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`__
+    * `Proba2 SWAP Science Center <https://proba2.sidc.be/about/SWAP/>`__
+    * `LYRA Data Homepage <https://proba2.sidc.be/data/LYRA>`__
+    * `LYRA Instrument Homepage <https://proba2.sidc.be/about/LYRA>`__
     """
     # Class attributes used to specify the source class of the TimeSeries
     # and a URL to the mission website.
@@ -179,7 +179,6 @@ class LYRATimeSeries(GenericTimeSeries):
                              ('CHANNEL2', u.W/u.m**2),
                              ('CHANNEL3', u.W/u.m**2),
                              ('CHANNEL4', u.W/u.m**2)])
-        # TODO: check: http://www.wmo-sat.info/oscar/instruments/view/733
         return data, metadata, units
 
     @classmethod

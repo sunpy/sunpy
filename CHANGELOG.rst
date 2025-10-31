@@ -1636,7 +1636,7 @@ Removals
   - The ``repair_nonfinite`` keyword argument to ``calculate_shift`` and  ``calculate_match_template_shift``
     has been removed.
   - ``sunpy.instr.lyra.download_lytaf_database`` - this just downloaded the file
-    at ``http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db``, which can be done manually.
+    at ``https://proba2.sidc.be/lyra/data/lytaf/annotation_ppt.db``, which can be done manually.
   - ``sunpy.util.net.check_download_file``, no alternative.
   - ``sunpy.visualization.animator.ImageAnimatorWCS``, alternative is
     ``sunpy.visualization.animator.ArrayAnimatorWCS``. (`#4350 <https://github.com/sunpy/sunpy/pull/4350>`__)

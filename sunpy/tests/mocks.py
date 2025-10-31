@@ -104,7 +104,7 @@ class MockHTTPResponse(MockObject):
 
     Examples
     --------
-    >>> result = MockHTTPResponse(url='http://abc.com', headers={'Content-Type':'text/html'})
+    >>> result = MockHTTPResponse(url='https://abc.com', headers={'Content-Type':'text/html'})
     >>> result.headers.get('Content-Type')
     'text/html'
     """

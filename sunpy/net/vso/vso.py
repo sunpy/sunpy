@@ -690,4 +690,4 @@ class VSOClient(BaseClient):
 
     @property
     def info_url(self):
-        return 'https://sdac.virtualsolar.org/cgi/search\nData retrieval status: https://docs.virtualsolar.org/wiki/VSOHealthReport'
+        return 'https://sdac.virtualsolar.org/cgi/search\nData retrieval status: http://docs.virtualsolar.org/wiki/VSOHealthReport'

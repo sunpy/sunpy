@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from hypothesis import given
+from parfive import Downloader
 
 import astropy.units as u
 
@@ -119,10 +120,10 @@ def test_sample_query(client):
 @pytest.mark.remote_data
 def test_get(client):
     qr1 = client.search(Time('2024/8/9', '2024/8/9 00:00:30'), a.Level("1.5s"))
-    res = client.fetch(qr1)
+    res = client.fetch(qr1, downloader=Downloader(max_conn=1, max_splits=1))
     assert len(res) == len(qr1)
 
-    res2 = client.fetch(qr1[0])
+    res2 = client.fetch(qr1[0], downloader=Downloader(max_conn=1, max_splits=1))
     assert len(res2) == 1
 
 
@@ -142,7 +143,7 @@ def test_fido(tmpdir):
     assert isinstance(query_result, UnifiedResponse)
     assert isinstance(query_result[0].client, AIASynopsisClient)
 
-    response = Fido.fetch(query_result, path=tmpdir)
+    response = Fido.fetch(query_result, path=tmpdir, downloader=Downloader(max_conn=1, max_splits=1))
     assert len(response) == query_result._numfile
 
 

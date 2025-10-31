@@ -190,9 +190,10 @@ def test_repr_MockOpenTextFile():
     """
     Test ``MockOpenTextFile.__repr__``.
     """
-    mo_p = re.compile(r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
-                      "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$")
-
+    mo_p = re.compile(
+        r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
+        "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$"
+    )
     assert mo_p.match(repr(MockOpenTextFile('a', 'r'))) is not None
 
 
@@ -200,15 +201,13 @@ def test_MockHTTPResponse():
     """
     Simple tests querying the headers attribute.
     """
-    headers = {'Content-Type': 'text/html',
-               'Content-Disposition': 'attachment; filename="filename.jpg"'}
-
-    response = MockHTTPResponse(url='http://abc.com', headers=headers)
-
-    assert response.url == 'http://abc.com'
-
+    headers = {
+        'Content-Type': 'text/html',
+        'Content-Disposition': 'attachment; filename="filename.jpg"'
+    }
+    response = MockHTTPResponse(url='https://abc.com', headers=headers)
+    assert response.url == 'https://abc.com'
     assert response.headers.get('Content-Disposition') == 'attachment; filename="filename.jpg"'
     assert response.headers.get('Content-Length') is None
-
     # Key *not* case insensitive
     assert response.headers.get('content-type') is None

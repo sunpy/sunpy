@@ -136,7 +136,7 @@ def test_override_file(manager, data_function, tmpdir):
 
 
 def test_override_file_remote(manager, downloader, data_function):
-    replace_url = 'http://example.com/another_file'
+    replace_url = 'https://example.com/another_file'
     data_function()
     assert downloader.times_called == 1
     with manager.override_file('test_file', replace_url):
@@ -176,7 +176,7 @@ def test_file_changed(data_function, storage):
 
 def test_delete_db(sqlmanager, sqlstorage):
     # Download the file
-    @sqlmanager.require('test_file', ['http://example.com/test_file'], MOCK_HASH)
+    @sqlmanager.require('test_file', ['https://example.com/test_file'], MOCK_HASH)
     def test_function():
         pass
 
@@ -220,7 +220,7 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
 
     # Override the file name with a different URI
     with module_patched_manager.override_file(
-            'test_file', 'http://www.different_uri.com/new_file', MOCK_HASH):
+            'test_file', 'https://www.different_uri.com/new_file', MOCK_HASH):
         data_function_from_fake_module()
 
         assert downloader.times_called == 2

@@ -40,7 +40,7 @@ def test_get_observing_summary_dbase_file_with_unsupported_start_time(LCClient):
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlretrieve', return_value=None)
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='https://www.example.com/')
 def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, mock_urlretrieve,
                                                             one_day_timerange, LCClient):
     """
@@ -49,7 +49,7 @@ def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, m
     """
     LCClient.get_observing_summary_dbase_file(one_day_timerange.start)
     mock_urlretrieve.assert_called_with(
-        'http://www.example.com/dbase/hsi_obssumm_filedb_201601.txt')
+        'https://www.example.com/dbase/hsi_obssumm_filedb_201601.txt')
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlopen', return_value=None)
@@ -74,7 +74,7 @@ def test_get_base_url_on_timeout(mock_urlopen):
     """
     If all tested data servers timeout, then raise an `IOError`
     """
-    with pytest.raises(OSError, match=re.escape("Unable to find an online HESSI server from ('https://hesperia.gsfc.nasa.gov/hessidata/', 'http://hessi.ssl.berkeley.edu/hessidata/', 'http://soleil.i4ds.ch/hessidata/')")):
+    with pytest.raises(OSError, match=re.escape("Unable to find an online HESSI server from ('https://hesperia.gsfc.nasa.gov/hessidata/', 'http://hessi.ssl.berkeley.edu/hessidata/', 'https://soleil.i4ds.ch/hessidata/')")):
         rhessi.get_base_url()
 
 
@@ -83,7 +83,7 @@ def test_get_base_url_on_remote_disconnected(mock_urlopen):
     """
     If all tested data servers timeout, then raise an `IOError`
     """
-    with pytest.raises(OSError, match=re.escape("Unable to find an online HESSI server from ('https://hesperia.gsfc.nasa.gov/hessidata/', 'http://hessi.ssl.berkeley.edu/hessidata/', 'http://soleil.i4ds.ch/hessidata/')")):
+    with pytest.raises(OSError, match=re.escape("Unable to find an online HESSI server from ('https://hesperia.gsfc.nasa.gov/hessidata/', 'http://hessi.ssl.berkeley.edu/hessidata/', 'https://soleil.i4ds.ch/hessidata/')")):
         rhessi.get_base_url()
 
 
@@ -115,7 +115,7 @@ def parsed_dbase():
             'npackets': [0, 0, 0, 0, 0]}
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='https://www.example.com/')
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase_file,
@@ -126,10 +126,10 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
     """
     filename = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-01T23:59:59'))
     assert len(filename) == 1
-    assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
+    assert filename[0] == 'https://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='https://www.example.com/')
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbase_file,
@@ -142,8 +142,8 @@ def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbas
     filenames = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-02T23:59:59'))
 
     assert len(filenames) == 2
-    assert filenames[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
-    assert filenames[1] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031102_161.fits'
+    assert filenames[0] == 'https://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
+    assert filenames[1] == 'https://www.example.com/metadata/catalog/hsi_obssumm_20031102_161.fits'
 
 
 def test_can_handle_query(LCClient):
@@ -154,7 +154,7 @@ def test_can_handle_query(LCClient):
     assert ans2 is False
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='https://www.example.com/')
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_query(mock_get_observing_summary_dbase_file,
@@ -168,7 +168,7 @@ def test_query(mock_get_observing_summary_dbase_file,
 
 
 @no_vso
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='https://www.example.com/')
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_fido_mock(mock_get_observing_summary_dbase_file,

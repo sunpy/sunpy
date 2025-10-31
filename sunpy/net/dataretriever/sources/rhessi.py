@@ -19,7 +19,7 @@ __all__ = ['RHESSIClient']
 
 data_servers = ('https://hesperia.gsfc.nasa.gov/hessidata/',
                 'http://hessi.ssl.berkeley.edu/hessidata/',
-                'http://soleil.i4ds.ch/hessidata/')
+                'https://soleil.i4ds.ch/hessidata/')
 
 lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                  'navy', 'orange', 'green')
@@ -184,6 +184,9 @@ class RHESSIClient(GenericClient):
         One file covers an entire month.  This file lists the name of observing
         summary files for specific times.
 
+        .. note::
+            This API is currently limited to providing data from whole days only.
+
         Parameters
         ----------
         time : `str`, datetime
@@ -202,11 +205,7 @@ class RHESSIClient(GenericClient):
 
         References
         ----------
-        | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
-
-        .. note::
-            This API is currently limited to providing data from whole days only.
-
+        https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         """
         _time = parse_time(time)
 

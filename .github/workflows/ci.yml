@@ -143,7 +143,7 @@ jobs:
     with:
       python-version: "3.12"
       test_extras: 'tests'
-      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
+      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy --ignore=sunpy/io/tests/test_ana.py'
       submodules: false
       env: |
         SUNPY_NO_BUILD_ANA_EXTENSION: 1

@@ -88,7 +88,7 @@ def module_patched_manager(tmp_path, downloader, storage, mocker):
 @pytest.fixture
 def data_function_from_fake_module(module_patched_manager):
     @module_patched_manager.require(
-        'test_file', ['http://www.example.com/test_file'], mocks.MOCK_HASH)
+        'test_file', ['https://www.example.com/test_file'], mocks.MOCK_HASH)
     def foo(manager_tester=lambda x: 1):
         manager_tester(module_patched_manager)
 
