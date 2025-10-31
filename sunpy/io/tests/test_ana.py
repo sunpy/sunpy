@@ -1,14 +1,13 @@
 import numpy as np
 import pytest
 
-from sunpy.tests.helpers import skip_ana
 from sunpy.io import ana
+from sunpy.tests.helpers import skip_ana
 
 pytestmark = [
     skip_ana,
     pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning"),
 ]
-
 
 
 @pytest.fixture(scope="module")
