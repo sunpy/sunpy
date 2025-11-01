@@ -38,25 +38,6 @@ def test_can_handle_query(time):
     assert ans6 is True
 
 
-# def mock_query_object(adapt_client):
-#     """
-#     Creating a Query Response object and prefilling it with some information
-#     """
-#     start = '2019-05-25T02:00:00.00'
-#     end = '2019-05-25T02:00:59.999'
-#     obj = {
-#         'Start Time': parse_time(start),
-#         'End Time': parse_time(end),
-#         'Instrument': 'ADAPT',
-#         'Physobs': 'flux',
-#         'Source': 'GONG',
-#         'Provider': 'NSO',
-#         'url': ("https://gong.nso.edu/adapt/maps/gong/2019/adapt40311_03i012_201905250200_i00005600n0.fts.gz")
-#     }
-#     results = QueryResponse([obj], client=adapt_client)
-#     return results
-
-
 def mock_query_object(adapt_client):
     """
     Creating a Query Response object and prefilling it with some information
