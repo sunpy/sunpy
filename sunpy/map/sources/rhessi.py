@@ -29,6 +29,17 @@ class RHESSIMap(GenericMap):
     .. warning::
 
         Cannot read fits files containing more than one image.
+
+    Examples
+    --------
+    .. plot::
+        :include-source:
+        :context: reset
+
+        import sunpy.map
+        from sunpy.data.sample import RHESSI_IMAGE
+        rhessi_map = sunpy.map.Map(RHESSI_IMAGE)
+        rhessi_map.plot()
     """
 
     def __init__(self, data, header, **kwargs):
