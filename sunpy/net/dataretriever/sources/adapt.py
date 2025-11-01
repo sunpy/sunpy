@@ -77,10 +77,10 @@ class ADAPTClient(GenericClient):
     '_{{ADAPTEvolutionMode:1l}}{{days_since_last_obs:2d}}{{hours_since_last_obs:2d}}{{minutes_since_last_obs:2d}}{{seconds_since_last_obs:2d}}{{ADAPTHelioData:1l}}{{ADAPTMagData:1d}}.fts.gz'
 
     # Start time of new pattern
-    new_pattern_start = Time("2024-09-28T00:00:00")
+    new_pattern_start = Time("2024-09-28T01:00:00")
 
     # End time of old pattern
-    old_pattern_stop = Time("2024-09-30T23:59:59")
+    old_pattern_stop = Time("2024-09-30T23:00:00")
 
     @classmethod
     def _attrs_module(cls):
@@ -125,9 +125,9 @@ class ADAPTClient(GenericClient):
         """
         matchdict = self._get_match_dict(*args, **kwargs)
         tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
-        if tr.end < self.old_pattern_stop:
+        if tr.end < self.new_pattern_start:
             return super().search(*args, **kwargs, adapt_use_new_pattern=False)
-        elif tr.start > self.new_pattern_start:
+        elif tr.start > self.old_pattern_stop:
             return super().search(*args, **kwargs, adapt_use_new_pattern=True)
         else:
             res1 = super().search(*args, **kwargs, adapt_use_new_pattern=False)
