@@ -128,6 +128,17 @@ class HMIMap(GenericMap):
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`__
     * `Instrument Page <http://hmi.stanford.edu>`__
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`__
+
+    Examples
+    --------
+    .. plot::
+        :include-source:
+        :context: reset
+
+        import sunpy.map
+        from sunpy.data.sample import HMI_LOS_IMAGE
+        hmi_map = sunpy.map.Map(HMI_LOS_IMAGE)
+        hmi_map.plot()
     """
 
     def __init__(self, data, header, **kwargs):

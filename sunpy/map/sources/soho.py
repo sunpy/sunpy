@@ -193,17 +193,6 @@ class LASCOMap(GenericMap):
     References
     ----------
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`__
-
-    Examples
-    --------
-    .. plot::
-        :include-source:
-        :context: reset
-
-        import sunpy.map
-        from sunpy.data.sample import LASCO_C2_IMAGE
-        lasco_map = sunpy.map.Map(LASCO_C2_IMAGE)
-        lasco_map.plot()
     """
 
     def __init__(self, data, header, **kwargs):
