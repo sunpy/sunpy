@@ -32,6 +32,16 @@ class EITMap(GenericMap):
     * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`__
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`__
 
+    Examples
+    --------
+    .. plot::
+        :include-source:
+        :context: reset
+
+        import sunpy.map
+        from sunpy.data.sample import EIT_195_IMAGE
+        eit_map = sunpy.map.Map(EIT_195_IMAGE)
+        eit_map.plot()
     """
 
     def __init__(self, data, header, **kwargs):
