@@ -42,7 +42,7 @@ class AIAMap(GenericMap):
     * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`__
     * Instrument Paper - :cite:t:`lemen_atmospheric_2012`
     * `wavelengths and temperature response reference <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/figures/aia_tel_resp.png>`__
-    
+
     Examples
     --------
     .. plot::
