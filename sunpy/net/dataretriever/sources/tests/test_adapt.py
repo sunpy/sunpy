@@ -38,7 +38,7 @@ def test_can_handle_query(time):
     assert ans6 is True
 
 
-def mock_query_object(adapt_client):
+def mock_query_object_old_pattern(adapt_client):
     """
     Creating a Query Response object and prefilling it with some information
     """
@@ -79,15 +79,16 @@ def mock_query_object_new_pattern(adapt_client):
 @pytest.mark.remote_data
 def test_fetch_working(adapt_client):
     """
-    Tests if the online server is working.
+    Tests if the online server is working with old and new patterns.
     This also checks if the mock is working well.
     """
     start = '2024/09/29 02:00:00'
     end = '2024/09/29 02:00:59.999'
     tr = a.Time(start, end)
     qr = adapt_client.search(tr, a.Instrument.adapt)[0]
-    mock_qr = mock_query_object(adapt_client)[0]
+    mock_qr = mock_query_object_old_pattern(adapt_client)[0]
 
+    # Testing old pattern before September 2024
     assert mock_qr['Source'] == qr['Source']
     assert mock_qr['Provider'] == qr['Provider']
     assert mock_qr['Instrument'] == qr['Instrument']
@@ -99,7 +100,7 @@ def test_fetch_working(adapt_client):
         download_list = adapt_client.fetch(qr, path=tmpdirname)
     assert len(download_list) == 1
 
-    # Testing new pattern after 2024-10-01
+    # Testing old pattern after October 2024 (without downloading)
     qr_new = adapt_client.search(tr, a.Instrument.adapt)[2]
     mock_qr_new = mock_query_object_new_pattern(adapt_client)[0]
     assert mock_qr_new['Source'] == qr_new['Source']
@@ -110,10 +111,8 @@ def test_fetch_working(adapt_client):
     assert qr_new['End Time'].isot == mock_qr_new['End Time'].isot
 
 
-
-
 def test_show(adapt_client):
-    mock_qr = mock_query_object(adapt_client)
+    mock_qr = mock_query_object_old_pattern(adapt_client)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
     allcols = {'Start Time', 'End Time', 'Instrument', 'Source', 'Provider', 'url'}
