@@ -50,9 +50,10 @@ class AIAMap(GenericMap):
         :context: reset
 
         import sunpy.map
+        import astropy.units as u
         from sunpy.data.sample import AIA_171_IMAGE
         amap = sunpy.map.Map(AIA_171_IMAGE)
-        amap.plot()
+        amap.plot(clip_interval=(1.25, 99.5)*u.percent)
     """
 
     def __init__(self, data, header, **kwargs):

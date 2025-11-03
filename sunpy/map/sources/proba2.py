@@ -31,9 +31,10 @@ class SWAPMap(GenericMap):
         :context: reset
 
         import sunpy.map
+        import astropy.units as u
         from sunpy.data.sample import SWAP_LEVEL1_IMAGE
         swap_map = sunpy.map.Map(SWAP_LEVEL1_IMAGE)
-        swap_map.plot()
+        swap_map.plot(clip_interval=(1, 99)*u.percent)
     """
 
     def __init__(self, data, header, **kwargs):
