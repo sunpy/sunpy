@@ -85,10 +85,11 @@ def test_fetch_working(adapt_client):
     start = '2024/09/29 02:00:00'
     end = '2024/09/29 02:00:59.999'
     tr = a.Time(start, end)
-    qr = adapt_client.search(tr, a.Instrument.adapt)[0]
-    mock_qr = mock_query_object_old_pattern(adapt_client)[0]
+    queries = adapt_client.search(tr, a.Instrument.adapt)
 
     # Testing old pattern before September 2024
+    qr = queries[0]
+    mock_qr = mock_query_object_old_pattern(adapt_client)[0]
     assert mock_qr['Source'] == qr['Source']
     assert mock_qr['Provider'] == qr['Provider']
     assert mock_qr['Instrument'] == qr['Instrument']
@@ -101,7 +102,7 @@ def test_fetch_working(adapt_client):
     assert len(download_list) == 1
 
     # Testing old pattern after October 2024 (without downloading)
-    qr_new = adapt_client.search(tr, a.Instrument.adapt)[2]
+    qr_new = queries[2]
     mock_qr_new = mock_query_object_new_pattern(adapt_client)[0]
     assert mock_qr_new['Source'] == qr_new['Source']
     assert mock_qr_new['Provider'] == qr_new['Provider']
