@@ -1,0 +1,47 @@
+.. _whatsnew-7.1:
+
+************************
+What's New in sunpy 7.1?
+************************
+
+The SunPy Project is pleased to announce the 7.1 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 7.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+* X commits have been added since 7.0
+* X issues have been closed since 7.0
+* X pull requests have been merged since 7.0
+* X people have contributed since 7.0
+* X of which are new contributors
+
+The people who have contributed to the code for this release are:
+
+- Mambo No. 5
+
+Where a * indicates that this release contains their first contribution to sunpy.
+
+Updates to minimum dependencies
+===============================
+
+The minimum required versions of the following packages have been updated:
+
+- python>=3.12
+- astropy>=6.1
+- h5py>=3.10.0
+- lxml>=5.0.1
+- matplotlib>=3.8.0
+- numpy>=1.26.0
+- pandas>=2.2.0
+- reproject>=0.13.0
+- scipy>=1.12.0
+
+We did not add any new features
+===============================
+
+Maybe in 8.0.0?
