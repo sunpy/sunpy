@@ -85,6 +85,7 @@ def test_fido_client_error(mock_vso_search, mock_build_client):
     assert len(results.errors) > 0
     assert isinstance(results['vso'].errors, ConnectionError)
     assert "Errors: VSO is down" in str(results)
+    assert "Errors: VSO is down" in results._repr_html_()
 
 
 def check_response(query, unifiedresp):
