@@ -33,7 +33,6 @@ jobs:
       posargs: -n auto --color=yes
       envs: |
         - linux: py314-minimal
-          toxargs: -vv
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -64,7 +63,6 @@ jobs:
           - libopenjp2-7
       envs: |
         - linux: py314
-          toxargs: -vv
         - windows: py313
         - macos: py313
           libraries:
