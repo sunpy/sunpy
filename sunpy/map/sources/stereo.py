@@ -22,6 +22,17 @@ class EUVIMap(GenericMap):
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
     * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`__
     * `Instrument Page <https://secchi.lmsal.com/EUVI/>`__
+
+    Examples
+    --------
+    .. plot::
+        :include-source:
+        :context: reset
+
+        import sunpy.map
+        from sunpy.data.sample import EUVI_STEREOSCOPIC_IMAGE
+        euvi_map = sunpy.map.Map(EUVI_STEREOSCOPIC_IMAGE)
+        euvi_map.plot()
     """
 
     def __init__(self, data, header, **kwargs):

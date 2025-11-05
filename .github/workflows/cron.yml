@@ -48,27 +48,12 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
-        - windows: py312-online
         - linux: core_deps
         - linux: linkcheck
           pytest: false
+        - windows: py313-online
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  sdist_verify:
-    if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-tags: true
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -U --user build
-      - run: python -m build . --sdist
-      - run: python -m pip install -U --user twine
-      - run: python -m twine check --strict dist/*
 
   conda:
     if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))

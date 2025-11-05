@@ -1,0 +1,2 @@
+Fix `~sunpy.net.dataretriever.ADAPTClient` returning no results for ADAPT maps after October 2024.
+The filename convention was changed on the NSO server.

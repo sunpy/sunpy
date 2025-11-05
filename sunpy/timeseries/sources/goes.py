@@ -9,7 +9,7 @@ import numpy as np
 from pandas import DataFrame
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
+from astropy.time import Time
 
 import sunpy.io
 from sunpy import log
@@ -188,7 +188,7 @@ class XRSTimeSeries(GenericTimeSeries):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = start_time + TimeDelta(seconds_from_start*u.second)
+        times = start_time + seconds_from_start*u.second
         times.precision = 9
 
         # Remove bad values as defined in header comments

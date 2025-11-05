@@ -15,6 +15,7 @@ Bugfix releases (versions x.y.1, x.y.2, etc.) are released monthly, with a targe
    :maxdepth: 1
 
    changelog
+   7.1
    7.0
    6.1
    6.0
