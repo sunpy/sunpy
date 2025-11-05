@@ -1,5 +1,7 @@
+from astropy.time import Time
+
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever import GenericClient
+from sunpy.net.dataretriever import GenericClient, QueryResponse
 from sunpy.net.dataretriever.attrs.adapt import (
     ADAPTDataAssimilation,
     ADAPTEvolutionMode,
@@ -13,6 +15,7 @@ from sunpy.net.dataretriever.attrs.adapt import (
     ADAPTVersionMonth,
     ADAPTVersionYear,
 )
+from sunpy.time import TimeRange
 
 __all__ = ['ADAPTClient']
 
@@ -63,9 +66,21 @@ class ADAPTClient(GenericClient):
     ----------
     `Names and possible attrs values are available <https://gong.nso.edu/adapt/maps/adapt_filename_notes.txt>`__.
     """
-    pattern = r'https://gong.nso.edu/adapt/maps/gong/{{year:4d}}/adapt{{ADAPTFileType:1d}}{{ADAPTLonType:1d}}{{ADAPTInputSource:1d}}{{ADAPTDataAssimilation:1d}}{{ADAPTResolution:1d}}' + \
+    # Pattern described at adapt_filename_notes.txt above.
+    old_pattern = r'https://gong.nso.edu/adapt/maps/gong/{{year:4d}}/adapt{{ADAPTFileType:1d}}{{ADAPTLonType:1d}}{{ADAPTInputSource:1d}}{{ADAPTDataAssimilation:1d}}{{ADAPTResolution:1d}}' + \
     '_{{ADAPTVersionYear:2d}}{{ADAPTVersionMonth:1l}}{{ADAPTRealizations:3d}}_{{year:4d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}' + \
     '_{{ADAPTEvolutionMode:1l}}{{days_since_last_obs:2d}}{{hours_since_last_obs:2d}}{{minutes_since_last_obs:2d}}{{seconds_since_last_obs:2d}}{{ADAPTHelioData:1l}}{{ADAPTMagData:1d}}.fts.gz'
+
+    # Pattern since 2024-10-01
+    new_pattern = r'https://gong.nso.edu/adapt/maps/gong/{{year:4d}}/adapt{{ADAPTFileType:1d}}{{ADAPTLonType:1d}}{{ADAPTInputSource:1d}}{{ADAPTDataAssimilation:1d}}{{ADAPTResolution:1d}}' + \
+    '_{{ADAPTVersionYear:2d}}{{ADAPTVersionMonth:1d}}{{ADAPTRealizations:3d}}_{{year:4d}}{{month:2d}}{{day:2d}}{{hour:2d}}{{minute:2d}}' + \
+    '_{{ADAPTEvolutionMode:1l}}{{days_since_last_obs:2d}}{{hours_since_last_obs:2d}}{{minutes_since_last_obs:2d}}{{seconds_since_last_obs:2d}}{{ADAPTHelioData:1l}}{{ADAPTMagData:1d}}.fts.gz'
+
+    # Start time of new pattern
+    new_pattern_start = Time("2024-09-28T01:00:00")
+
+    # End time of old pattern
+    old_pattern_stop = Time("2024-09-30T23:00:00")
 
     @classmethod
     def _attrs_module(cls):
@@ -84,10 +99,37 @@ class ADAPTClient(GenericClient):
             ADAPTResolution: [('1', '1.0 deg'), ('2', '0.2 deg')],
             ADAPTVersionYear: [(str(i), f"Code version year -> {2000 + i}") for i in range(1, 20)],
             ADAPTRealizations: [(str(i), f"Number of Realizations -> {i}") for i in range(1, 20)],
-            ADAPTVersionMonth: [(chr(i+96), f"Code version month -> {i}") for i in range(1, 13)],
+            ADAPTVersionMonth: [(chr(i+96), f"Code version month -> {i}") for i in range(1, 13)] + [(str(i), f"Code version number -> {i}") for i in range(0, 10)],
             ADAPTEvolutionMode: [('a', 'Data assimilation step'), ('i', 'Intermediate step'), ('f', 'Forecast step')],
             ADAPTHelioData: [('n', 'Not added or no data'), ('f', 'Far-side'), ('e', 'Emergence'), ('b', 'Both emergence & far-side')],
             ADAPTMagData: [('0', 'Not added or no data'), ('1', 'Mag-los'), ('2', 'Mag-vector'), ('3', 'Mag- both los & vector'),
                             ('4', 'Mag- polar avg obs'), ('5', 'Mag- los & polar'), ('6', 'Mag- vector & polar'), ('7', 'Mag- both los and vector & polar')]
         }
         return adict
+
+    @classmethod
+    def pre_search_hook(cls, *args, **kwargs):
+        """
+        Select the appropriate URL pattern based on the time range.
+        """
+        matchdict = cls._get_match_dict(*args, **kwargs)
+        if kwargs["adapt_use_new_pattern"]:
+            pattern = cls.new_pattern
+        else:
+            pattern = cls.old_pattern
+        return cls.baseurl, pattern, matchdict
+
+    def search(self, *args, **kwargs):
+        """
+        Call super().search with different patterns based on queried time.
+        """
+        matchdict = self._get_match_dict(*args, **kwargs)
+        tr = TimeRange(matchdict['Start Time'], matchdict['End Time'])
+        if tr.end < self.new_pattern_start:
+            return super().search(*args, **kwargs, adapt_use_new_pattern=False)
+        elif tr.start > self.old_pattern_stop:
+            return super().search(*args, **kwargs, adapt_use_new_pattern=True)
+        else:
+            res1 = super().search(*args, **kwargs, adapt_use_new_pattern=False)
+            res2 = super().search(*args, **kwargs, adapt_use_new_pattern=True)
+            return QueryResponse(list(res1)+list(res2), client=self)
