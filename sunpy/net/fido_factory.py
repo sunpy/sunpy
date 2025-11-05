@@ -177,10 +177,9 @@ class UnifiedResponse(Sequence):
             ret = f'Results from {len(self)} Providers:</br></br>'
         for block in self:
             ret += f"{len(block)} Results from the {block.client.__class__.__name__}:</br>"
-            ret += f"Error: {repr(self._errors[block.client.__name__])}</br>"
-            ret += block._repr_html_()
             if block.errors:
                 ret += f"Errors: {block.errors}</br>"
+            ret += block._repr_html_()
             ret += '</br>'
 
         return ret
