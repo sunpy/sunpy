@@ -21,6 +21,7 @@ dependencies = [
   "astropy>=6.1.0",
   "fsspec>=2023.6.0",
   "numpy>=1.26.0",
+  "numpy>=2.3.0;python_version=='3.14'",
   "packaging>=23.2",
   "parfive[ftp]>=2.1.0",
   "pyerfa>=2.0.1.1",
