@@ -146,6 +146,7 @@ docs = [
   "sphinxext-opengraph>=0.9.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinxcontrib-bibtex",
+  "joblib", # for sphinx-gallery parallel
 ]
 docs-gallery = [
   "sunpy[docs]",
