@@ -1,5 +1,5 @@
 import os
-from glob import glob
+from pathlib import Path
 from collections import defaultdict
 
 import numpy
@@ -12,12 +12,10 @@ def get_extensions():
         return []
     cfg = defaultdict(list)
     cfg["include_dirs"].append(numpy.get_include())
-    cfg["sources"].extend(
-        sorted(glob(os.path.join(os.path.dirname(__file__), "src", "ana", "*.c")))
-    )
-
+    cfg["sources"].extend(list((Path(__file__).parent / "src" / "ana").glob("*.c")))
     if get_compiler() == 'msvc':
         cfg["extra_compile_args"].extend([
+            "/O3",
             "/W3",
             "/utf-8",
         ])

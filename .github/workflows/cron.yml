@@ -52,6 +52,8 @@ jobs:
         - linux: linkcheck
           pytest: false
         - windows: py313-online
+          posargs: -m "remote_data"
+
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 

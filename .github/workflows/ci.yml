@@ -40,6 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-tags: true
+          depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
@@ -161,7 +164,7 @@ jobs:
     with:
       python-version: "3.13"
       test_extras: 'tests'
-      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy --ignore=sunpy/io/tests/test_ana.py'
+      test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       env: |
         SUNPY_NO_BUILD_ANA_EXTENSION: 1

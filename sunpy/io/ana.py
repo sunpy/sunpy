@@ -30,17 +30,18 @@ ANA_DEPRECATION_MESSAGE = (
 __all__ = ['read', 'get_header', 'write']
 
 
-# This is not used as a decorator to avoid causing this to error the test build
-# on source only distributions.
-def _check_ana_installed():
+def check_ana_installed(func):
     ana_not_installed = (
         "C extension for ANA is missing. For more details see: "
         "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
     )
-    if _pyana is None:
+    if _pyana is None and os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION") is None:
         raise ImportError(ana_not_installed)
+    return func
+
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
+@check_ana_installed
 def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
@@ -60,7 +61,6 @@ def read(filename, debug=False, **kwargs):
     `list`
         A list of (data, header) tuples
     """
-    _check_ana_installed()
     if not os.path.isfile(filename):
         raise OSError(f"File {filename} does not exist!")
     data = _pyana.fzread(filename, debug)
@@ -68,6 +68,7 @@ def read(filename, debug=False, **kwargs):
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
+@check_ana_installed
 def get_header(filename, debug=False):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
@@ -86,12 +87,12 @@ def get_header(filename, debug=False):
     `list`
         A list of `~sunpy.io._header.FileHeader` headers.
     """
-    _check_ana_installed()
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
+@check_ana_installed
 def write(filename, data, comments=None, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
@@ -115,6 +116,5 @@ def write(filename, data, comments=None, compress=True, debug=False):
     `str`
         A new ANA compressed archive containing the data and header.
     """
-    _check_ana_installed()
     comments = comments or ""
     return _pyana.fzwrite(filename, data, int(compress), comments, debug)
