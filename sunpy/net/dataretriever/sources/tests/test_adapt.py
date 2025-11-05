@@ -38,12 +38,12 @@ def test_can_handle_query(time):
     assert ans6 is True
 
 
-def mock_query_object(adapt_client):
+def mock_query_object_old_pattern(adapt_client):
     """
     Creating a Query Response object and prefilling it with some information
     """
-    start = '2019-05-25T02:00:00.00'
-    end = '2019-05-25T02:00:59.999'
+    start = '2024-09-29T02:00:00.00'
+    end = '2024-09-29T02:00:59.999'
     obj = {
         'Start Time': parse_time(start),
         'End Time': parse_time(end),
@@ -51,7 +51,26 @@ def mock_query_object(adapt_client):
         'Physobs': 'flux',
         'Source': 'GONG',
         'Provider': 'NSO',
-        'url': ("https://gong.nso.edu/adapt/maps/gong/2019/adapt40311_03i012_201905250200_i00005600n0.fts.gz")
+        'url': ("https://gong.nso.edu/adapt/maps/gong/2024/adapt40311_03k012_202409290200_i00013600n1.fts.gz")
+    }
+    results = QueryResponse([obj], client=adapt_client)
+    return results
+
+
+def mock_query_object_new_pattern(adapt_client):
+    """
+    Altering the mock to use the new pattern after 2024-10-01
+    """
+    start = '2024-09-29T02:00:00.00'
+    end = '2024-09-29T02:00:59.999'
+    obj = {
+        'Start Time': parse_time(start),
+        'End Time': parse_time(end),
+        'Instrument': 'ADAPT',
+        'Physobs': 'flux',
+        'Source': 'GONG',
+        'Provider': 'NSO',
+        'url': ("https://gong.nso.edu/adapt/maps/gong/2024/adapt40311_041012_202409290200_i00013600n1.fts.gz")
     }
     results = QueryResponse([obj], client=adapt_client)
     return results
@@ -60,15 +79,17 @@ def mock_query_object(adapt_client):
 @pytest.mark.remote_data
 def test_fetch_working(adapt_client):
     """
-    Tests if the online server is working.
+    Tests if the online server is working with old and new patterns.
     This also checks if the mock is working well.
     """
-    start = '2019/05/25 02:00:00'
-    end = '2019/05/26 02:00:59.999'
+    start = '2024/09/29 02:00:00'
+    end = '2024/09/29 02:00:59.999'
     tr = a.Time(start, end)
-    qr = adapt_client.search(tr, a.Instrument.adapt)[0]
-    mock_qr = mock_query_object(adapt_client)[0]
+    queries = adapt_client.search(tr, a.Instrument.adapt)
 
+    # Testing old pattern before September 2024
+    qr = queries[0]
+    mock_qr = mock_query_object_old_pattern(adapt_client)[0]
     assert mock_qr['Source'] == qr['Source']
     assert mock_qr['Provider'] == qr['Provider']
     assert mock_qr['Instrument'] == qr['Instrument']
@@ -80,10 +101,19 @@ def test_fetch_working(adapt_client):
         download_list = adapt_client.fetch(qr, path=tmpdirname)
     assert len(download_list) == 1
 
+    # Testing old pattern after October 2024 (without downloading)
+    qr_new = queries[2]
+    mock_qr_new = mock_query_object_new_pattern(adapt_client)[0]
+    assert mock_qr_new['Source'] == qr_new['Source']
+    assert mock_qr_new['Provider'] == qr_new['Provider']
+    assert mock_qr_new['Instrument'] == qr_new['Instrument']
+    assert mock_qr_new['url'] == qr_new['url']
+    assert qr_new['Start Time'].isot == mock_qr_new['Start Time'].isot
+    assert qr_new['End Time'].isot == mock_qr_new['End Time'].isot
 
 
 def test_show(adapt_client):
-    mock_qr = mock_query_object(adapt_client)
+    mock_qr = mock_query_object_old_pattern(adapt_client)
     qrshow0 = mock_qr.show()
     qrshow1 = mock_qr.show('Start Time', 'Instrument')
     allcols = {'Start Time', 'End Time', 'Instrument', 'Source', 'Provider', 'url'}

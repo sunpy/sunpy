@@ -4,24 +4,14 @@ requires = [
   "setuptools_scm[toml]>=8.0.1",
   "wheel",
   "extension-helpers>=1.3.0,<2",
-  # Comments on numpy build requirement range:
-  #
-  #   1. >=2.0.x is the numpy requirement for wheel builds for distribution
-  #      on PyPI - building against 2.x yields wheels that are also
-  #      ABI-compatible with numpy 1.x at runtime.
-  #   2. Note that building against numpy 1.x works fine too - users and
-  #      redistributors can do this by installing the numpy version they like
-  #      and disabling build isolation.
-  #   3. The <2.3 upper bound is for matching the numpy deprecation policy,
-  #      it should not be loosened.
-  "numpy>=2.0.0rc1,<2.3",
+  "numpy>=2.0.0rc1",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license = { file = "LICENSE.rst" }
 authors = [
@@ -29,12 +19,12 @@ authors = [
 ]
 dependencies = [
   "astropy>=6.1.0",
-  "numpy>=1.25.0",
+  "fsspec>=2023.6.0",
+  "numpy>=1.26.0",
   "packaging>=23.2",
   "parfive[ftp]>=2.1.0",
   "pyerfa>=2.0.1.1",
-  "requests>=2.32.0",
-  "fsspec>=2023.6.0",
+  "requests>=2.32.1",
 ]
 dynamic = ["version"]
 keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
@@ -49,35 +39,37 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Physics",
 ]
 
 [project.optional-dependencies]
-# The list of available extras is also in the installation docs, if you add or remove one please edit it there as well.
+# The list of available extras is also in the installation docs,
+# if you add or remove one please edit it there as well.
 asdf = [
   "asdf-astropy>=0.5.0",
   "asdf>=3.0.0",
 ]
 dask = ["dask[array]>=2023.6.0"]
 image = [
-  "scipy>=1.11.0",
+  "scipy>=1.12.0",
 ]
 jpeg2000 = [
   "glymur>=0.13.0",
   # While a direct dependency of glymur, we import it to save JPEG2000 files.
   # and we had issues with specific versions lxml.
-  "lxml>=4.9.1,!=5.0.0",
+  "lxml>=5.0.1",
 ]
 map = [
   "contourpy>=1.1.0",
   "matplotlib>=3.8.0",
   "mpl-animators>=1.2.0",
-  "reproject>=0.12.0",
-  "scipy>=1.11.0",
+  "reproject>=0.13.0",
+  "scipy>=1.12.0",
 ]
 opencv = ["opencv-python>=4.8.0.74"]
 net = [
-  "beautifulsoup4>=4.13.0",
+  "beautifulsoup4>=4.13.1",
   "drms>=0.7.1",
   "python-dateutil>=2.9.0",
   "tqdm>=4.66.0",
@@ -90,9 +82,9 @@ timeseries = [
   "h5netcdf>=1.2.0",
   # While a not direct dependency
   # We need to raise this to ensure the goes netcdf files open.
-  "h5py>=3.9.0",
+  "h5py>=3.10.0",
   "matplotlib>=3.8.0",
-  "pandas>=2.1.0",
+  "pandas>=2.2.0",
 ]
 visualization = [
   "matplotlib>=3.8.0",
@@ -100,7 +92,7 @@ visualization = [
 ]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
-# Because of some real *fun* dependancy constraints between aiobotocore, s3fs
+# Because of some real *fun* dependency constraints between aiobotocore, s3fs
 # and boto3 this is the best way to get s3fs and boto3 (needed for cdflib)
 # installed simultaneously. We only use this extra for tests, but it is
 # provided separate for users who want to opt-in to s3 support. It should not be
@@ -109,6 +101,11 @@ s3 = [
   "fsspec[s3]>=2023.6.0",
   "aiobotocore[boto3]>=2.6.0",  # cdflib has it's own special s3 handling which requires boto3
 ]
+jupyter = [
+  "itables>=2.2.4",
+  "ipywidgets>=8.1.0",
+]
+# These dependencies are required to run the tests
 tests-only = [
   "hvpy>=1.1.0",
   "jplephem>=2.19",
@@ -121,8 +118,9 @@ asdf-tests = [
   # We can only install this plugin when we have the asdf extra installed
   "pytest-asdf-plugin>=0.1.1",
 ]
+# This extra allows you to run all tests
 tests = [
-  "sunpy[all,s3,tests-only,asdf-tests]",
+  "sunpy[all,s3,tests-only,asdf-tests,jupyter]",
 ]
 docs = [
   "sunpy[all]",
@@ -138,6 +136,7 @@ docs = [
   "sphinxext-opengraph>=0.9.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinxcontrib-bibtex",
+  "joblib", # for sphinx-gallery parallel
 ]
 docs-gallery = [
   "sunpy[docs]",
@@ -179,7 +178,7 @@ sunpy = "sunpy.io.special.asdf.entry_points:get_resource_mappings"
 sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.distutils.bdist_wheel]
-py-limited-api = "cp311"
+py-limited-api = "cp312"
 
 [tool.extension-helpers]
 use_extension_helpers = "true"

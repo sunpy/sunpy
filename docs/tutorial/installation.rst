@@ -132,6 +132,7 @@ Now that we have a fresh virtual environment, we can proceed with installing ``s
     $ conda install sunpy
 
 This will install ``sunpy`` and all of its dependencies.
+If you are planning on using sunpy in jupyter notebooks we also recommend you install the ``ipywidgets`` and ``itables`` packages.
 
 To ensure that ``sunpy`` was installed correctly, run the following command:
 

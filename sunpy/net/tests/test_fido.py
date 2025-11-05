@@ -17,8 +17,9 @@ from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
 from sunpy.net import jsoc
 from sunpy.net.base_client import QueryResponseColumn, QueryResponseRow, QueryResponseTable
-from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.net.tests.helpers import mock_query_object
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, srs_time, time_attr
 from sunpy.net.vso import VSOQueryResponseTable
 from sunpy.tests.helpers import no_vso, skip_windows
@@ -172,6 +173,22 @@ def test_unifiedresponse_slicing():
         a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], QueryResponseTable)
+
+
+def test_show_in_notebook(mocker):
+    pytest.importorskip("itables")
+    mock_datagrid =  mocker.patch("itables.show")
+    column = "Start Time"
+    offline_results = UnifiedResponse(mock_query_object(TimeRange("2012/1/1", "2012/1/10"), client=GenericClient()))
+    offline_results.show_in_notebook(column)
+    assert mock_datagrid.call_count == 1
+
+    # Test for column filtering and keyword arguments
+    args, kwargs = mock_datagrid.call_args
+    df_passed = args[0]
+    assert list(df_passed.columns) == [column]
+    assert df_passed.size == 10
+    assert kwargs["style"] == "caption-side: top;" # default style
 
 
 @pytest.mark.remote_data
