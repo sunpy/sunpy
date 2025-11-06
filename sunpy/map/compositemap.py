@@ -20,9 +20,6 @@ MATPLOTLIB_GT_3_8 = minversion(matplotlib, "3.8.dev")
 
 __all__ = ['CompositeMap']
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 # Valid keyword arguments for each plotting method
 ACCEPTED_IMSHOW_KWARGS = get_keywords(
     [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]

@@ -1,8 +1,4 @@
 """PROBA2 Map subclass definitions"""
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 from sunpy.map import GenericMap
 
 __all__ = ['SWAPMap']

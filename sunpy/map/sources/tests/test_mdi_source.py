@@ -11,8 +11,6 @@ from sunpy.map.sources.soho import MDIMap, MDISynopticMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
-__author__ = 'Pritish C. (VaticanCameos)'
-
 
 @pytest.fixture
 def mdi():
