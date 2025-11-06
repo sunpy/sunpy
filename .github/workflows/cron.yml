@@ -44,13 +44,32 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: py313-devdeps-online
-          libraries:
-            apt:
-              - libopenjp2-7
         - linux: core_deps
         - linux: linkcheck
           pytest: false
+        - linux: py314-devdeps
+          libraries:
+            apt:
+              - libopenjp2-7
+
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  cron-online:
+    # Run on all triggers other than pull_request unless there's a label
+    if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@main
+    with:
+      default_python: '3.12'
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      libraries: |
+        apt:
+          - libopenjp2-7
+      envs: |
+        - linux: py314-devdeps-online
+          posargs: -m "remote_data"
         - windows: py313-online
           posargs: -m "remote_data"
 
@@ -69,7 +88,7 @@ jobs:
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Install sunpy
         shell: bash -el {0}
         run: |
