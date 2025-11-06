@@ -26,7 +26,7 @@ from sunpy.coordinates.frames import (
 )
 from sunpy.coordinates.sun import angular_radius
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
@@ -611,12 +611,6 @@ def test_screen_classes(off_limb_coord, screen_class):
     with sph_screen:
         olc_3d = off_limb_coord[0].make_3d()
     assert not np.isnan(olc_3d.distance).all()
-
-
-def test_assume_spherical_screen_deprecated(off_limb_coord):
-    with pytest.warns(SunpyDeprecationWarning, match='The assume_spherical_screen function is deprecated'):
-        with Helioprojective.assume_spherical_screen(off_limb_coord.observer):
-            _ = off_limb_coord.make_3d()
 
 
 @pytest.mark.parametrize(('only_off_disk', 'distance_from_center', 'distance'), [

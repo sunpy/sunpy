@@ -171,10 +171,10 @@ Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.imag
 
     This will most likely force a redownload of files from several data providers.
 
-Deprecate `~sunpy.coordinates.Helioprojective.assume_spherical_screen`
-======================================================================
+Deprecate ``assume_spherical_screen``
+=====================================
 
-:meth:`~sunpy.coordinates.Helioprojective.assume_spherical_screen` is now deprecated.
+``sunpy.coordinates.Helioprojective.assume_spherical_screen`` is now deprecated.
 Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.
 
 Removal of ``sunpy.net.helioviewer.HelioViewerClient``
