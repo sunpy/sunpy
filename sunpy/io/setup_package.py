@@ -15,7 +15,7 @@ def get_extensions():
     cfg["sources"].extend(list((Path(__file__).parent / "src" / "ana").glob("*.c")))
     if get_compiler() == 'msvc':
         cfg["extra_compile_args"].extend([
-            "/O3",
+            "/O2",
             "/W3",
             "/utf-8",
         ])
