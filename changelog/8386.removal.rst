@@ -1,0 +1,1 @@
+Remove deprecated ``assume_spherical_screen`` method in favor of `~sunpy.coordinates.SphericalScreen`.

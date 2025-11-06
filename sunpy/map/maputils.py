@@ -457,7 +457,7 @@ def _bresenham(*, x1, y1, x2, y2):
     References
     ----------
     * https://github.com/ejeschke/ginga/blob/c8ceaf8e559acc547bf25661842a53ed44a7b36f/ginga/BaseImage.py#L503
-    * http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+    * https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
     """
     for x in [x1, y1, x2, y2]:
         if not isinstance(x, numbers.Integral):

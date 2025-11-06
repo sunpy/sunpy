@@ -4,7 +4,7 @@ Getting the location of the planets
 ===================================
 
 How to get the position of planetary bodies im the solar system using
-`astropy's solar system ephemeris <http://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
+`astropy's solar system ephemeris <https://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
 """
 import matplotlib.pyplot as plt
 

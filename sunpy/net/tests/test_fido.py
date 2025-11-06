@@ -370,8 +370,8 @@ def test_retry(mock_retry):
     res = Results()
     res.data.append("/this/worked.fits")
 
-    err1 = FailedDownload("This is not a filename", "http://not.url/test", None)
-    err2 = FailedDownload("This is not a filename2", "http://not.url/test2", None)
+    err1 = FailedDownload("This is not a filename", "https://not.url/test", None)
+    err2 = FailedDownload("This is not a filename2", "https://not.url/test2", None)
     res.errors.append(err1)
     res.errors.append(err2)
 

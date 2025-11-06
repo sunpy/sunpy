@@ -63,8 +63,8 @@ This has now changed and you can query JSOC, HEK and HEC with Fido::
     2 Results from the HEKClient:
                                                                                                                         gs_thumburl                                                                                                                       ...
     ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ ...
-    http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0180.gif ...
-    http://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0180.gif ...
+    https://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100731_205448_25495028/www/EDS_FlareDetective-TriggerModule_20100801T033001-20100801T035225_AIA_171_S21W87_ssw_cutout_20100801_033013_AIA_171_S21W87_20100801_033012_context_0180.gif ...
+    https://sdowww.lmsal.com/sdomedia/ssw/ssw_client/data/ssw_service_100801_234037_25860951/www/EDS_FlareDetective-TriggerModule_20100801T033008-20100801T035232_AIA_193_S21W87_ssw_cutout_20100801_033020_AIA_193_S21W87_20100801_033019_context_0180.gif ...
 
     1 Results from the JSOCClient:
             T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
@@ -180,10 +180,10 @@ The typical observation in `~sunpy.coordinates.frames.Helioprojective` coordinat
 By default, SunPy assumes that the emission is coming from the surface of the Sun, which enables reprojections such as in the example :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_different_observers.py`.
 However, this assumption is not appropriate for some observations, e.g., from coronagraphs.
 
-There is now a context manager (:meth:`~sunpy.coordinates.frames.Helioprojective.assume_spherical_screen`) to override the default assumption such that any 2D coordinates are interpreted as being on the inside of a large spherical screen.
+There is now a context manager (``assume_spherical_screen``) to override the default assumption such that any 2D coordinates are interpreted as being on the inside of a large spherical screen.
 See the following example for how this context manager enables alternative reprojections.
 
-.. minigallery:: sunpy.coordinates.Helioprojective.assume_spherical_screen
+.. minigallery:: sunpy.coordinates.Helioprojective.SphericalScreen
 
 .. _whatsnew-2.1-contours:
 

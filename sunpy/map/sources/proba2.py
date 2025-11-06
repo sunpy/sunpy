@@ -21,8 +21,8 @@ class SWAPMap(GenericMap):
 
     References
     ----------
-    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`__
-    * `Fits headers reference <http://proba2.oma.be/data/SWAP/level0>`__
+    * `Proba2 SWAP Science Center <https://proba2.sidc.be/index.php>`__
+    * `Fits headers reference <https://proba2.sidc.be/data/SWAP/level0>`__
 
     Examples
     --------

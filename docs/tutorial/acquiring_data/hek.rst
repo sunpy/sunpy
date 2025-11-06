@@ -13,7 +13,7 @@ A simple query
 
 To search the HEK, you need a start time, an end time, and an event type.
 Times are specified as strings or Python datetime objects.
-Event types are specified as upper case, two letter strings, and are identical to the two letter abbreviations found at the HEK website, http://www.lmsal.com/hek/VOEvent_Spec.html.
+Event types are specified as upper case, two letter strings, and are identical to the two letter abbreviations found at the HEK website, https://www.lmsal.com/hek/VOEvent_Spec.html.
 
 .. code-block:: python
 
@@ -67,7 +67,7 @@ The first thing we need to do is access the results from the HEK client, the onl
    >>> len(result["hek"])  # doctest: +REMOTE_DATA
    19
 
-This object is an `astropy.table.Table` object with the columns which correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html.
+This object is an `astropy.table.Table` object with the columns which correspond to the parameters listed at https://www.lmsal.com/hek/VOEvent_Spec.html.
 
 You can inspect all results very simply:
 
@@ -109,7 +109,7 @@ More complex queries
 ********************
 
 There are two key features you need to know in order to make more complex queries.
-Firstly, the attribute module - ``attrs.hek`` - describes all the parameters stored by the HEK as listed in http://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes these parameters searchable.
+Firstly, the attribute module - ``attrs.hek`` - describes all the parameters stored by the HEK as listed in https://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes these parameters searchable.
 
 To explain this, let's have a closer look at ``attrs.hek``.
 By using the help command; scroll down to section DATA you will see:
