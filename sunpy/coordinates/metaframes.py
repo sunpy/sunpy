@@ -168,7 +168,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
             newcls = _make_rotatedsun_cls(base_frame.__class__)
             return newcls.__new__(newcls, *args, **kwargs)
 
-        # http://stackoverflow.com/questions/19277399/why-does-object-new-work-differently-in-these-three-cases
+        # https://stackoverflow.com/questions/19277399/why-does-object-new-work-differently-in-these-three-cases
         # See above for why this is necessary. Basically, because some child
         # may override __new__, we must override it here to never pass
         # arguments to the object.__new__ method.

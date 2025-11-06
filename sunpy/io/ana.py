@@ -21,17 +21,6 @@ try:
 except ImportError:
     _pyana = None
 
-
-def check_ana_installed(func):
-    ana_not_installed = (
-        "C extension for ANA is missing. For more details see: "
-        "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
-    )
-    if _pyana is None:
-        raise ImportError(ana_not_installed)
-    return func
-
-
 ANA_DEPRECATION_MESSAGE = (
     "The ANA reader may be removed in a future version of sunpy, "
     "please comment here if you are using this code: "
@@ -39,6 +28,16 @@ ANA_DEPRECATION_MESSAGE = (
 )
 
 __all__ = ['read', 'get_header', 'write']
+
+
+def check_ana_installed(func):
+    ana_not_installed = (
+        "C extension for ANA is missing. For more details see: "
+        "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
+    )
+    if _pyana is None and os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION") is None:
+        raise ImportError(ana_not_installed)
+    return func
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)

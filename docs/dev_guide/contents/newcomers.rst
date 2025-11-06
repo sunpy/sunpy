@@ -121,7 +121,7 @@ CSS/HTML:
 * `sunpy.org <https://github.com/sunpy/sunpy.org>`__
 
 .. _issues: https://github.com/sunpy/sunpy/issues
-.. _Good First Issue label: https://github.com/issues/?q=state%3Aopen%20org%3Asunpy%20label%3A%22good%20first%20issue%22
+.. _Good First Issue label: https://github.com/issues?q=sort%3Aupdated-desc+state%3Aopen+org%3Asunpy+label%3A%22good+first+issue%22
 .. _Hacktoberfest: https://hacktoberfest.digitalocean.com/
 .. _Hacktoberfest label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3AHacktoberfest
 

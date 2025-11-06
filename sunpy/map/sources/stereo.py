@@ -26,7 +26,7 @@ class EUVIMap(GenericMap):
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
     * `STEREO SECCHI <https://secchi.nrl.navy.mil/>`__
-    * `Instrument Page <http://secchi.lmsal.com/EUVI/>`__
+    * `Instrument Page <https://secchi.lmsal.com/EUVI/>`__
 
     Examples
     --------
@@ -129,7 +129,7 @@ class HIMap(GenericMap):
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`__
     * `STEREO SECCHI <https://secchi.nrl.navy.mil>`__
-    * `HI Instrument Page <http://www.stereo.rl.ac.uk>`__
+    * `HI Instrument Page <https://www.stereo.rl.ac.uk/>`__
     """
 
     def __init__(self, data, header, **kwargs):

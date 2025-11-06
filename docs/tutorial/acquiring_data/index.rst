@@ -134,7 +134,7 @@ To see a summary of the results print the result variable that came back from th
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the LYRAClient:
-    Source: http://proba2.oma.be/lyra/data/bsd
+    Source: https://proba2.sidc.be/lyra/data/bsd
     <BLANKLINE>
            Start Time               End Time        Instrument ... Provider Level
     ----------------------- ----------------------- ---------- ... -------- -----
@@ -218,7 +218,7 @@ In this example we'll search for LYRA or RHESSI data in a given time range:
     Results from 3 Providers:
     <BLANKLINE>
     2 Results from the LYRAClient:
-    Source: http://proba2.oma.be/lyra/data/bsd
+    Source: https://proba2.sidc.be/lyra/data/bsd
     <BLANKLINE>
            Start Time               End Time        Instrument  Physobs   Source Provider Level
     ----------------------- ----------------------- ---------- ---------- ------ -------- -----
@@ -264,7 +264,7 @@ For example, the following code returns a response containing LYRA data from the
     Results from 2 Providers:
     <BLANKLINE>
     2 Results from the LYRAClient:
-    Source: http://proba2.oma.be/lyra/data/bsd
+    Source: https://proba2.sidc.be/lyra/data/bsd
     <BLANKLINE>
            Start Time               End Time        Instrument  Physobs   Source Provider Level
     ----------------------- ----------------------- ---------- ---------- ------ -------- -----

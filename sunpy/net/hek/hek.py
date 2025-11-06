@@ -188,7 +188,7 @@ class HEKRow(Row):
         return attr.and_(self.vso_time, self.vso_instrument)
 
     def get_voevent(self, as_dict=True,
-                    base_url="http://www.lmsal.com/hek/her?"):
+                    base_url="https://www.lmsal.com/hek/her?"):
         """Retrieves the VOEvent object associated with a given event and
         returns it as either a Python dictionary or an XML string."""
 

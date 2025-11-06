@@ -136,7 +136,7 @@ def test_path(client, tmpdir):
             core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
             response_format="table")
     tmp_dir = tmpdir / "{file}"
-    files = client.fetch(qr, path=tmp_dir)
+    files = client.fetch(qr, path=tmp_dir, site="NSO")
     assert len(files) == 1
     # The construction of a VSO filename is BONKERS, so there is no
     # practical way to determine what it should be in this test, so we just
@@ -279,25 +279,25 @@ def test_vso_hmi(client, tmpdir):
 
 def test_check_connection(mocker):
     mocker.patch('sunpy.net.vso.vso.urlopen',
-                 side_effect=HTTPError('http://notathing.com/', 400, 'Bad Request', {}, None))
+                 side_effect=HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None))
     with pytest.warns(SunpyUserWarning,
-                      match='Connection to http://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
-        assert check_connection('http://notathing.com/') is False
+                      match='Connection to https://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
+        assert check_connection('https://notathing.com/') is False
 
 
 def test_check_cgi_connection(mocker):
     mocker.patch('sunpy.net.vso.vso.urlopen',
-                 side_effect=HTTPError('http://notathing.com/', 400, 'Bad Request', {}, None))
+                 side_effect=HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None))
     with pytest.warns(SunpyUserWarning,
-                      match='Connection to http://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
-        assert check_cgi_connection('http://notathing.com/') is False
+                      match='Connection to https://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
+        assert check_cgi_connection('https://notathing.com/') is False
 
-    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=URLError('http://notathing.com/', 400))
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=URLError('https://notathing.com/', 400))
     with pytest.warns(
             SunpyUserWarning,
-            match='Connection to http://notathing.com/ failed with error <urlopen error http://notathing.com/>.'
+            match='Connection to https://notathing.com/ failed with error <urlopen error https://notathing.com/>.'
     ):
-        assert check_cgi_connection('http://notathing.com/') is False
+        assert check_cgi_connection('https://notathing.com/') is False
 
 
 def fail_to_open_nso_cgi(disallowed_url, url, **kwargs):
@@ -352,13 +352,13 @@ def test_VSOClient(mocker):
 
 def test_build_client(mocker):
     mocker.patch('sunpy.net.vso.vso.check_connection', return_value=None)
-    with pytest.raises(ConnectionError, match="Can't connect to url http://notathing.com/"):
-        build_client(url="http://notathing.com/", port_name="spam")
+    with pytest.raises(ConnectionError, match="Can't connect to url https://notathing.com/"):
+        build_client(url="https://notathing.com/", port_name="spam")
 
 
 def test_build_client_params():
     with pytest.raises(ValueError, match="Both url and port_name must be specified if either is."):
-        build_client(url="http://notathing.com/")
+        build_client(url="https://notathing.com/")
 
 
 

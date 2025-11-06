@@ -144,7 +144,7 @@ def test_endpoint_parser_no_content(mock_link_test):
     """
     No content from the supplied URL? Return None
     """
-    assert endpoint_parser('http://example.com') is None
+    assert endpoint_parser('https://example.com') is None
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=wsdl_endpoints())
@@ -167,7 +167,7 @@ def test_taverna_parser_no_content(mock_endpoint_parser):
     """
     No links at all? Return None
     """
-    assert taverna_parser('http://example.com') is None
+    assert taverna_parser('https://example.com') is None
 
 
 @mock.patch('sunpy.net.helio.parser.endpoint_parser', return_value=['http://try.the.pub/hec'])
