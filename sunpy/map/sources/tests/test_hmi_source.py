@@ -10,6 +10,8 @@ from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
 from .helpers import _test_private_date_setters
 
+__author__ = 'Pritish C. (VaticanCameos)'
+
 
 @pytest.fixture
 def hmi_map():

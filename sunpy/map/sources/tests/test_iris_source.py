@@ -10,6 +10,8 @@ from sunpy.map.sources.iris import SJIMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
+__author__ = 'Pritish C. (VaticanCameos)'
+
 
 @pytest.fixture
 def irismap():

@@ -7,6 +7,10 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
+__author__ = "Jack Ireland"
+__email__ = "jack.ireland@nasa.gov"
+
+
 __all__ = ["SUVIMap"]
 
 

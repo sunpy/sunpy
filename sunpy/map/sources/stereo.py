@@ -1,4 +1,9 @@
 """STEREO Map subclass definitions"""
+
+__author__ = "Keith Hughitt"
+__email__ = "keith.hughitt@nasa.gov"
+
+
 import astropy.units as u
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize

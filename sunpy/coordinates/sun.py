@@ -35,6 +35,9 @@ from ._transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
 from .ephemeris import get_body_heliographic_stonyhurst, get_earth
 from .frames import HeliographicStonyhurst
 
+__author__ = "Albert Y. Shih"
+__email__ = "ayshih@gmail.com"
+
 __all__ = [
     "angular_radius", "sky_position", "carrington_rotation_number",
     "carrington_rotation_time",

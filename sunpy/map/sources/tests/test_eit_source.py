@@ -11,6 +11,8 @@ from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import EITMap
 from .helpers import _test_private_date_setters
 
+__author__ = "Pritish C. (VaticanCameos)"
+
 
 @pytest.fixture()
 def eit_map():

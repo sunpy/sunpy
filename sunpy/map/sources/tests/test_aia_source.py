@@ -18,6 +18,8 @@ params = [get_test_filepath("aia_171_level1.fits")]
 if not SKIP_GLYMUR:
     params += [get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]
 
+__author__ = "Pritish C. (VaticanCameos)"
+
 
 @pytest.fixture(scope="module", params=params)
 def aia_map(request):

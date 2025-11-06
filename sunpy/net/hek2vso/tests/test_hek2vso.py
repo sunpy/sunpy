@@ -1,6 +1,10 @@
 """
 This module was built to test the HEK2VSO class.
 """
+
+__author__ = "Michael Malocha"
+__version__ = "June 11th, 2013"
+
 import numpy as np
 import pytest
 

@@ -19,6 +19,8 @@ header_list = [
     "lasco_c3.header",
 ]
 
+__author__ = 'Pritish C. (VaticanCameos)'
+
 
 @pytest.fixture(scope="module", params=header_list, ids=['C2', 'C3'])
 def lasco_map(request):

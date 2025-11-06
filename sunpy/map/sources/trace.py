@@ -1,5 +1,8 @@
 """TRACE Map subclass definitions"""
 
+__author__ = "Jack Ireland"
+__email__ = "jack.ireland@nasa.gov"
+
 import astropy.units as u
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
