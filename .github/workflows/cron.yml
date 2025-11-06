@@ -44,7 +44,6 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: core_deps
         - linux: linkcheck
           pytest: false
         - linux: py314-devdeps
