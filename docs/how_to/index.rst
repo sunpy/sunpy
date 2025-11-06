@@ -19,7 +19,6 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    create_rectangle_on_map
    fix_map_metadata
    manipulate_grid_lines
-   mu
    observer_by_coordinate
    parse_time
    read_asdf_file
