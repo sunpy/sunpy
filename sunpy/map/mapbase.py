@@ -3076,9 +3076,9 @@ class GenericMap(NDData):
             of pixels.
             Defaults to ``None``.
         preserve_date : `bool`
-            If ``True``, the ``'DATE-OBS'`` of the original map will be preserved in the
+            If ``True``, ``'DATE-OBS'`` of the original map will be preserved in the
             header of the reprojected map. Note that this will not affect the obstime of
-            the reprojected map as this coordinate frame is defined by ``'DATE-AVG`` which
+            the reprojected map as this coordinate frame is defined by ``'DATE-AVG'`` which
             will be the obstime of the target WCS.
 
         Returns
@@ -3141,17 +3141,16 @@ class GenericMap(NDData):
             output_array, footprint = output_array
 
         target_header = target_wcs.to_header()
-        # Make sure that DATE-AVG exists in the target header. In cases where preserve_date=True,
-        # this is important as DATE-OBS will correspond to the current date.
-        # NOTE: Not sure this is necessary as astropy.wcs.WCS seems to always initialize DATE-AVG
-        # to DATE-OBS if it is missing.
-        target_header['DATE-AVG'] = target_header.get('DATE-AVG', 'DATE-OBS')
+        if preserve_date:
+            # Explicitly not using _set_date or _set_reference_date. We do not know whether
+            # target_header has a DATE-AVG key and if it does not, we would inadvertently
+            # overwrite DATE-OBS (that we are supposed to be preserving).
+            target_header['DATE-OBS'] = self.date.utc.isot
+            target_header['DATE-AVG'] = target_header.get('DATE-AVG', 'DATE-OBS')
 
         # Create and return a new GenericMap
         outmap = GenericMap(output_array, target_header,
                             plot_settings=self.plot_settings)
-        if preserve_date:
-            outmap._set_date(self.date)
 
         # Check rsun mismatch
         if self.rsun_meters != outmap.rsun_meters:
