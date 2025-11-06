@@ -262,12 +262,33 @@ def test_reproject_to_screen_plus_diffrot(aia171_test_map, screen):
     return fig
 
 
-def test_reproject_to_preserve_date():
+@pytest.fixture
+def m_eit_1():
+    return get_dummy_map_from_header('EIT_header/efz20040301.000010_s.header')
+
+
+@pytest.fixture
+def m_eit_2():
+    return get_dummy_map_from_header('EIT_header/efz20040301.120010_s.header')
+
+
+def test_reproject_to_preserve_date(m_eit_1, m_eit_2):
     "Test that preserve_date preserves the date of the original date in DATE-OBS"
-    m_1 = get_dummy_map_from_header('EIT_header/efz20040301.000010_s.header')
-    m_2 = get_dummy_map_from_header('EIT_header/efz20040301.120010_s.header')
     with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
-        m_2_r = m_2.reproject_to(m_1.wcs, preserve_date=True)
-    assert m_2_r.date == m_2.date
-    assert m_2_r.date_average == m_1.date
-    assert m_2_r.coordinate_frame.obstime == m_1.coordinate_frame.obstime
+        m_2_r = m_eit_2.reproject_to(m_eit_1.wcs, preserve_date=True)
+    assert m_2_r.date == m_eit_2.date
+    assert m_2_r.date_average == m_eit_1.date
+    assert m_2_r.coordinate_frame.obstime == m_eit_1.coordinate_frame.obstime
+
+
+def test_reproject_to_preserve_date_target_has_no_date_avg(m_eit_1, m_eit_2):
+    "Test that date is preserved even when target WCS does not have a date-avg"
+    target_header = m_eit_1.wcs.to_header()
+    target_header.remove('DATE-AVG')
+    target_header.set('NAXIS1', value=m_eit_1.data.shape[1])
+    target_header.set('NAXIS2', value=m_eit_1.data.shape[0])
+    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
+        m_2_r = m_eit_2.reproject_to(target_header, preserve_date=True)
+    assert m_2_r.date == m_eit_2.date
+    assert m_2_r.date_average == m_eit_1.date
+    assert m_2_r.coordinate_frame.obstime == m_eit_1.coordinate_frame.obstime
