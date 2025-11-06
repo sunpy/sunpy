@@ -3140,13 +3140,18 @@ class GenericMap(NDData):
         if return_footprint:
             output_array, footprint = output_array
 
+        target_header = target_wcs.to_header()
+        # Make sure that DATE-AVG exists in the target header. In cases where preserve_date=True,
+        # this is important as DATE-OBS will correspond to the current date.
+        # NOTE: Not sure this is necessary as astropy.wcs.WCS seems to always initialize DATE-AVG
+        # to DATE-OBS if it is missing.
+        target_header['DATE-AVG'] = target_header.get('DATE-AVG', 'DATE-OBS')
+
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
+        outmap = GenericMap(output_array, target_header,
                             plot_settings=self.plot_settings)
         if preserve_date:
-            # date-avg is the time used as the coordinate frame obstime and
-            # will already be set by the target_wcs
-            outmap.meta['date-obs'] = self.date.isot
+            outmap._set_date(self.date)
 
         # Check rsun mismatch
         if self.rsun_meters != outmap.rsun_meters:
