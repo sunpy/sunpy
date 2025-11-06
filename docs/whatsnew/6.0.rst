@@ -172,7 +172,7 @@ Another example is that the filename "aia.lev1.171A_2020_06_07T06_33_09.35Z.imag
     This will most likely force a redownload of files from several data providers.
 
 Deprecate ``assume_spherical_screen``
-======================================================================
+=====================================
 
 ``sunpy.coordinates.Helioprojective.assume_spherical_screen`` is now deprecated.
 Equivalent functionality is now provided by :class:`~sunpy.coordinates.SphericalScreen`.
