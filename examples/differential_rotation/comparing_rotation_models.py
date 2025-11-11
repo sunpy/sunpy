@@ -44,7 +44,7 @@ print(sidereal_period)
 # We use `~sunpy.coordinates.metaframes.RotatedSunFrame` to rotate the
 # meridian by one sidereal period using each of the available
 # differential-rotation models. See
-# :func:`~sunpy.physics.differential_rotation.diff_rot` for details on each
+# :func:`~sunpy.physics.differential_rotation.differential_rotation` for details on each
 # model.
 
 rotated_meridian = {}

@@ -127,7 +127,7 @@ class RotatedSunFrame(SunPyBaseCoordinateFrame):
         between this time and the observation time in ``base``.
     rotation_model : `str`
         Accepted model names are ``'howard'`` (default), ``'snodgrass'``, ``'allen'``, and ``'rigid'``.
-        See the documentation for :func:`~sunpy.physics.differential_rotation.diff_rot` for differences
+        See the documentation for :func:`~sunpy.physics.differential_rotation.differential_rotation` for differences
         between these models.
 
     Notes
