@@ -1,0 +1,1 @@
+Added support for querying data from `solarnet API <https://solarnet.oma.be/>`__ using a new `~sunpy.net.solarnet.SOLARNETClient`.

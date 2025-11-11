@@ -79,6 +79,15 @@ HELIO
 .. automodapi:: sunpy.net.helio.attrs
    :headings: ^"
 
+SOLARNET
+--------
+
+.. automodapi:: sunpy.net.solarnet
+   :headings: ^"
+
+.. automodapi:: sunpy.net.solarnet.attrs
+   :headings: ^"
+
 
 Internal Classes and Functions
 ==============================
