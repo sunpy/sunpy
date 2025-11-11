@@ -13,7 +13,6 @@ import sunpy.io
 import sunpy.io._file_tools
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.exceptions import warn_deprecated
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
@@ -256,22 +255,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             line1 = fp.readline()
 
         if line1.startswith("Date"):
-            return cls._parse_average_csv(filepath)
+            raise NotImplementedError("Reading SDO/EVE level 0CS average files is not implemented.")
         elif line1.startswith(";"):
             return cls._parse_level_0cs(filepath)
-
-    @staticmethod
-    def _parse_average_csv(filepath):
-        """
-        Parses an EVE Averages file.
-        """
-        warn_deprecated(
-            "Parsing SDO/EVE level 0CS average files is deprecated, and will be removed in "
-            "sunpy 6.0. Parsing this data is untested, and we cannot find a file to test it with. "
-            "If you know where level 0CS 'averages' files can be found, please get in touch at "
-            "https://community.openastronomy.org/c/sunpy/5."
-        )
-        return "", read_csv(filepath, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
     def _parse_level_0cs(filepath):
