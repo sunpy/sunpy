@@ -10,8 +10,15 @@ from astropy.coordinates import SkyCoord, solar_system_ephemeris
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
-from sunpy.coordinates.ephemeris import get_body_heliographic_stonyhurst, get_earth, get_horizons_coord
+from sunpy.coordinates.ephemeris import (
+    get_body_heliographic_stonyhurst,
+    get_earth,
+    get_horizons_coord,
+    get_sscweb_coord,
+)
+from sunpy.coordinates.frames import GeocentricSolarEcliptic
 from sunpy.coordinates.tests.strategies import times
+from sunpy.time import TimeRange
 
 # Ensure all of these tests are run on the same parallel worker
 # There are online flakey tests that are not parallel safe
@@ -178,3 +185,22 @@ def test_consistency_with_horizons(use_DE440s, obstime):
     e1 = get_body_heliographic_stonyhurst('mars', obstime)
     e2 = get_horizons_coord('Mars barycenter', obstime)
     assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)
+
+
+@pytest.mark.remote_data
+def test_get_sscweb_coord():
+    time = Time(["2020-04-04T00:00:00.000", "2020-04-04T00:02:00.000"])
+    location = get_sscweb_coord('sdo', time)
+    assert isinstance(location, SkyCoord)
+    assert isinstance(location.frame, GeocentricSolarEcliptic)
+    assert_quantity_allclose(location.lon, [130.36632, 130.53755, 130.70879] * u.deg)
+    assert_quantity_allclose(location.lat, [0.8609663, 1.0435528, 1.2261274] * u.deg)
+    assert location.shape == (3,)
+
+    # Check for case independence and Timerange
+    time = TimeRange("2020-04-04T00:00:00.000", "2020-04-04T00:02:00.000")
+    location2 = get_sscweb_coord('SDO', time)
+    assert_quantity_allclose(location.lon, location2.lon)
+    assert_quantity_allclose(location.lat, location2.lat)
+    assert_array_equal(location2.obstime, location.obstime)
+    assert location.shape == location2.shape
