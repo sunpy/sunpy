@@ -141,7 +141,7 @@ class H2VClient:
         return self.translate_and_query(self.hek_results,
                                         limit=limit)
 
-    def translate_and_query(self, hek_results, limit=None, ):
+    def translate_and_query(self, hek_results, limit=None):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 

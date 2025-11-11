@@ -1584,7 +1584,7 @@ class GenericMap(NDData):
                 f'See {_META_FIX_URL} for instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
-        for meta_property in ('waveunit', ):
+        for meta_property in ('waveunit',):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
@@ -2157,11 +2157,11 @@ class GenericMap(NDData):
         if top_right is None and width is None:
             raise ValueError('Either top_right alone or both width and height must be specified '
                              'when bottom_left is a Quantity')
-        if bottom_left.shape != (2, ):
-            raise ValueError('bottom_left must have shape (2, ) when specified as a Quantity')
+        if bottom_left.shape != (2,):
+            raise ValueError('bottom_left must have shape (2,) when specified as a Quantity')
         if top_right is not None:
-            if top_right.shape != (2, ):
-                raise ValueError('top_right must have shape (2, ) when specified as a Quantity')
+            if top_right.shape != (2,):
+                raise ValueError('top_right must have shape (2,) when specified as a Quantity')
             if not top_right.unit.is_equivalent(u.pix):
                 raise TypeError("When bottom_left is a Quantity, top_right "
                                 "must be a Quantity in units of pixels.")
