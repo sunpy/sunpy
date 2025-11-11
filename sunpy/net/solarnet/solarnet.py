@@ -66,25 +66,6 @@ class SOLARNETClient(BaseClient):
         -------
         `~sunpy.net.base_client.QueryResponseTable`
             A table containing the search results.
-
-        Examples
-        --------
-        >>> from sunpy.net import Fido, attrs as a
-        >>> query = [a.solarnet.Dataset.swap_level_1, a.solarnet.Limit(1)]
-        >>> search_results = Fido.search(*query)   # doctest: +REMOTE_DATA
-        >>> search_results  # doctest: +REMOTE_DATA
-        <sunpy.net.fido_factory.UnifiedResponse object at ...>
-        Results from 1 Provider:
-        <BLANKLINE>
-        1 Results from the SOLARNETClient:
-        Source: https://solarnet2.oma.be
-        <BLANKLINE>
-            Oid               Date_beg                 Date_end         Wavemin Wavemax Artefx Bscale Bunit Bzero  Cap_mode   Cd1_1   Cd1_2 Cd2_1   Cd2_2     Cdelt1    Cdelt2  Compress      Creator       Crota1 Crota2 Crpix1 Crpix2 Crval1 Crval2  Ctype1   Ctype2  Cunit1 Cunit2 Datamax Datamin           Date                   Date_obs         Detector    Dsun_obs    Dtplar1 Dtplar2    Eacqtime   Exptime            Filename           Filter Firstcol Firstrow    Geod_alt      Geod_lat      Geod_lon      Gsex_obs       Gsey_obs      Gsez_obs   Hasblack Hasoffst Hasstdby    Heex_obs       Heey_obs      Heez_obs       Hgln_obs        Hglt_obs   Instrume Is_proc Lang_rot Last_col Last_row Led_pow Led_sel Level Lonpole    Los_alt    Lzwdecor Naxis Naxis1 Naxis2 Nprescr Npreslzw  Object   Obs_mode   Origin P2_roll P2_x0 P2_y0 Pav_rot0 Pav_rot1 Pga_gain Pga_offs  On Readrdiv Rebin Recbias Recnum Recoding    Rsun_arc      Sacqtime   Sizcompi    Solar_ep   Swavint Swxcen Swycen Telescop    Temp1det       Temp2det       Tempdark       Trantime   Trapelec Trapprot          Ttemp1                  Ttemp2         Wavelnth          Wcsname           F_size
-        -------------- ------------------------ ------------------------ ------- ------- ------ ------ ----- ------ -------- --------- ----- ----- --------- --------- --------- -------- ------------------ ------ ------ ------ ------ ------ ------ -------- -------- ------ ------ ------- ------- ------------------------ ------------------------ -------- -------------- ------- ------- ------------- ------- ----------------------------- ------ -------- -------- ------------- ------------- ------------- -------------- ------------- ------------- -------- -------- -------- -------------- ------------- ------------- ---------------- ------------- -------- ------- -------- -------- -------- ------- ------- ----- ------- ------------- -------- ----- ------ ------ ------- -------- ------- ------------ ------ ------- ----- ----- -------- -------- -------- -------- --- -------- ----- ------- ------ -------- ------------- ------------- -------- ------------- ------- ------ ------ -------- -------------- -------------- -------------- ------------- -------- -------- ----------------------- ----------------------- -------- ------------------------- -------
-        20091120082529 2009-11-20T08:25:29.027Z 2009-11-20T08:25:30.027Z    17.4    17.4    off 0.0625  DN/s 2048.0       DS 3.1646941   0.0   0.0 3.1646941 3.1646941 3.1646941      off P2SW_PREP.PRO v1.5    0.0    0.0  512.5  512.5    0.0    0.0 HPLN-TAN HPLT-TAN arcsec arcsec 50.3125     0.0 2017-11-16T15:30:05.000Z 2009-11-20T08:25:29.027Z     SWAP 147819620849.0  2000.0   177.0 25691981838.0     1.0 swap_lv1_20091120_082529.fits     Al        1        1 723227.647021 49.8713348902 153.634430938 -2841004.71812 3290864.59669 5599236.25546        4       11        0 147819620706.0 -3290864.5967 5599236.25545 -0.0010059134686 2.20683198122     SWAP       0      0.0     1024     1024     off       a     1   180.0 126023.112807      off     2   1024   1024       0        0 Sun EUV Sun centered    ROB    None  None  None      0.0      0.0        1       59   0        0   off       0      0      off 971.178544869 25691900864.0        0 353.089769721 21.4853 353.01 447.68   PROBA2 -2.88999023437 -4.00998535156 -4.00998535156 25691981838.0      0.0      0.0 2009-11-20T08:09:05.000 2009-11-20T08:28:58.000      174 Helioprojective-cartesian 2113920
-        <BLANKLINE>
-        <BLANKLINE>
-
         """
         results = []
         query = and_(*query)
