@@ -13,8 +13,7 @@ from sunpy.net import _attrs as core_attrs
 from sunpy.net import attr
 from sunpy.net import attrs as a
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.legacy_response import QueryResponse
-from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
+from sunpy.net.vso.table_response import VSOQueryResponseTable
 from sunpy.net.vso.vso import (
     DEFAULT_URL_PORT,
     VSOClient,
@@ -174,13 +173,6 @@ def test_non_str_instrument():
     assert isinstance(core_attrs.Instrument("lyra"), core_attrs.Instrument)
     with pytest.raises(ValueError, match="Instrument names must be strings"):
         core_attrs.Instrument(1234)
-
-
-def test_iter_sort_response(mock_response):
-    fileids = [i.fileid for i in iter_sort_response(mock_response)]
-    # the function would have sorted records w.r.t. start time,
-    # those without start time appended at last of final response.
-    assert fileids == ['t1', 't2', 't3', 't4', 'f1', 'f2']
 
 
 def test_from_zeep_response(mocker):
@@ -419,10 +411,7 @@ def test_response_block_properties(client):
 
 def test_response_block_properties_table(mocker, mock_response):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
-    legacy_response = QueryResponse.create(mock_response)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
-
-    assert str(legacy_response)
     assert str(table_response)
 
 

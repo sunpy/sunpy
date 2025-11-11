@@ -34,7 +34,6 @@ from .exceptions import (
     UnknownStatus,
     UnknownVersion,
 )
-from .legacy_response import QueryResponse
 from .table_response import VSOQueryResponseTable
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
@@ -308,7 +307,7 @@ class VSOClient(BaseClient):
         Parameters
         ----------
         query_response : sunpy.net.vso.VSOQueryResponseTable
-            QueryResponse containing the items to be downloaded.
+            VSOQueryResponseTable containing the items to be downloaded.
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
@@ -376,10 +375,11 @@ class VSOClient(BaseClient):
             dl_set = False
             downloader = Downloader(progress=progress, overwrite=overwrite)
 
-        if isinstance(query_response, QueryResponse | list):
-            query_response = VSOQueryResponseTable.from_zeep_response(query_response,
-                                                                      client=self,
-                                                                      _sort=False)
+        if isinstance(query_response, list):
+            query_response = VSOQueryResponseTable.from_zeep_response(
+                query_response,
+                client=self,
+        )
         if isinstance(query_response, QueryResponseRow):
             query_response = query_response.as_table()
 
