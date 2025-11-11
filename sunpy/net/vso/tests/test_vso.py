@@ -65,21 +65,17 @@ class MockQRResponse:
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
-
     def __init__(self, records=None, errors=None):
-
         self.provideritem = list()
-
         if records is not None:
             self.provideritem = [MockObject(record=MockObject(recorditem=list(records)))]
-
         if errors is not None:
             self.provideritem.extend([MockObject(error=err) for err in errors])
 
 
 @pytest.fixture
 def mock_response():
-    # defining unsorted queryresult to mock test `iter_sort_response()`.
+    # Defining unsorted queryresult to mock test `iter_sort_response()`.
     # Incorporated cases with no None start time and without time attribute too.
     recs = [
         MockQRRecord(start_time="2021/01/01T00:00:04", fileid='t4'),
@@ -178,7 +174,6 @@ def test_non_str_instrument():
 def test_from_zeep_response(mocker):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     records = (MockQRRecord(),)
-
     table = VSOQueryResponseTable.from_zeep_response(MockQRResponse(records), client=None)
 
     # These are the only None values in the table.
@@ -396,17 +391,6 @@ def test_vso_repr(client):
     """
     output = str(client)
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
-
-
-
-@pytest.mark.remote_data
-def test_response_block_properties(client):
-    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
-                        a.Wavelength(171 * u.angstrom),
-                        a.Sample(10 * u.minute),
-    )
-    properties = res.response_block_properties()
-    assert len(properties) == 0
 
 
 def test_response_block_properties_table(mocker, mock_response):

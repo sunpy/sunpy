@@ -17,6 +17,38 @@ from sunpy.time import parse_time
 __all__ = ['VSOQueryResponseTable']
 
 
+def iter_sort_response(response):
+    """
+    Sorts the VSO query results by their start time.
+
+    Parameters
+    ----------
+    response : `zeep.objects.QueryResponse`
+        A SOAP Object of a VSO query result
+
+    Returns
+    -------
+    `list`
+        Sorted record items w.r.t. their start time.
+    """
+    has_time_recs = list()
+    has_notime_recs = list()
+    for prov_item in response.provideritem:
+        if not hasattr(prov_item, 'record') or not prov_item.record:
+            continue
+        if not hasattr(prov_item.record, 'recorditem') or not prov_item.record.recorditem:
+            continue
+        rec_item = prov_item.record.recorditem
+        for rec in rec_item:
+            if hasattr(rec, 'time') and hasattr(rec.time, 'start') and rec.time.start is not None:
+                has_time_recs.append(rec)
+            else:
+                has_notime_recs.append(rec)
+    has_time_recs = sorted(has_time_recs, key=lambda x: x.time.start)
+    all_recs = has_time_recs + has_notime_recs
+    return all_recs
+
+
 class VSOQueryResponseTable(QueryResponseTable):
     hide_keys = ['fileid', 'fileurl', 'Info Required']
     errors = TableAttribute(default=[])
@@ -28,7 +60,8 @@ class VSOQueryResponseTable(QueryResponseTable):
         Construct a table response from the zeep response.
         """
         data = []
-        for record in response:
+        records = iter_sort_response(response)
+        for record in records:
             row = defaultdict(lambda: None)
             for key, value in serialize_object(record).items():
                 if not isinstance(value, Mapping):
