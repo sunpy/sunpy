@@ -1,0 +1,1 @@
+Removed legacy ``read_files`` and ``write_files`` methods in `sunpy.io` after their long deprecation period.
