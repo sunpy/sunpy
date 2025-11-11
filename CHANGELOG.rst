@@ -1698,7 +1698,7 @@ Features
   Clicking on the histogram will toggle an alternate version of the histogram. (`#4931 <https://github.com/sunpy/sunpy/pull/4931>`__)
 - Add an ``SRS_TABLE`` file to the sample data, and use it in the magnetogram
   plotting example. (`#4993 <https://github.com/sunpy/sunpy/pull/4993>`__)
-- Added a `sunpy.map.GenericMap.contour()` method to find the contours on a map. (`#3909 <https://github.com/sunpy/sunpy/pull/3909>`__)
+- Added a ``sunpy.map.GenericMap.contour`` method to find the contours on a map. (`#3909 <https://github.com/sunpy/sunpy/pull/3909>`__)
 - Added a context manager (``assume_spherical_screen``)
   to interpret `~sunpy.coordinates.frames.Helioprojective` coordinates as being on
   the inside of a spherical screen instead of on the surface of the Sun. (`#4003 <https://github.com/sunpy/sunpy/pull/4003>`__)

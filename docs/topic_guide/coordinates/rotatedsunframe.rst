@@ -44,7 +44,7 @@ but when transformed to an inertial frame of reference we can see that these two
 
 To evolve a coordinate in time such that it accounts for the rotational motion of the Sun, one can use the `~sunpy.coordinates.metaframes.RotatedSunFrame` "metaframe" class as described below.
 This machinery will take into account the latitude-dependent rotation rate of the solar surface, also known as differential rotation.
-Multiple models for differential rotation are supported (see :func:`~sunpy.physics.differential_rotation.differential_rotation` for details).
+Multiple models for differential rotation are supported (see :func:`~sunpy.physics.differential_rotation.differential_rotate` for details).
 
 .. note::
 
@@ -118,7 +118,7 @@ A ``RotatedSun*`` frame containing coordinate data can be supplied to `~astropy.
     <SkyCoord (RotatedSunHeliographicCarrington: base=<HeliographicCarrington Frame (obstime=2020-03-04T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=2.5 d, rotation_model=howard): (lon, lat) in deg
         (10., 20.)>
 
-The above examples used the default differential-rotation model, but any of the models available through :func:`sunpy.physics.differential_rotation.differential_rotation` are selectable.
+The above examples used the default differential-rotation model, but any of the models available through :func:`sunpy.physics.differential_rotation.differential_rotate` are selectable.
 For example, instead of the default ("howard"), one can specify "allen" using the keyword argument ``rotation_model``.
 Note the slight difference in the "real" longitude compared to the output above:
 
