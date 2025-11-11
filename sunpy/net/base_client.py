@@ -24,7 +24,7 @@ class BaseQueryResponse(Sequence):
 
     Notes
     -----
-    * A QueryResponseTable object must be able to be instantiated with only one
+    * A QueryResponse or QueryResponseTable object must be able to be instantiated with only one
       iterable argument. (i.e. the ``__init__`` must only have one required
       argument).
     * The `client` property must be settable.
