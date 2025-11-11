@@ -16,15 +16,13 @@ from urllib.request import Request, urlopen
 
 import zeep
 
-from astropy.utils.decorators import deprecated_renamed_argument
-
 from sunpy import config, log
 from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseRow
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _walker as walker
-from sunpy.util.exceptions import SunpyDeprecationWarning, warn_connection, warn_user
+from sunpy.util.exceptions import warn_connection, warn_user
 from sunpy.util.net import parse_header, slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .exceptions import (
@@ -183,21 +181,10 @@ class VSOClient(BaseClient):
         return obj(**kwargs)
 
 
-    @deprecated_renamed_argument("response_format", None,"6.0", warning_type=SunpyDeprecationWarning)
-    def search(self, *query, response_format=None):
+    def search(self, *query):
         """
         Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
-
-        Parameters
-        ----------
-        response_format : {``"legacy"``, ``"table"``}, optional
-            The response format from the search, this can be either
-            ``"legacy"`` to return a list-like object of the zeep responses, or
-            ``"table"`` to return the responses in a subclass of
-            `~astropy.table.QTable`.
-
-            Now deprecated, will be removed in sunpy 7.0.
 
         Returns
         -------
@@ -205,8 +192,6 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :meth:`VSOClient.search`.
         """
-        if response_format is None:
-            response_format = "table"
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
@@ -227,10 +212,7 @@ class VSOClient(BaseClient):
                 exceptions.append(ex)
 
         responses = self.merge(responses)
-        if response_format == "legacy":
-            response = QueryResponse.create(responses)
-        else:
-            response = VSOQueryResponseTable.from_zeep_response(responses, client=self)
+        response = VSOQueryResponseTable.from_zeep_response(responses, client=self)
 
         for ex in exceptions:
             response.add_error(ex)

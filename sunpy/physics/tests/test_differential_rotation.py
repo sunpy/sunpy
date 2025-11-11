@@ -18,12 +18,10 @@ from sunpy.physics.differential_rotation import (
     _get_new_observer,
     _rotate_submap_edge,
     _warp_sun_coordinates,
-    diff_rot,
     differential_rotate,
     solar_rotate_coordinate,
 )
 from sunpy.sun.constants import radius as R_sun
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
@@ -84,11 +82,6 @@ def aia171_test_submap(aia171_test_map):
 @pytest.fixture
 def seconds_per_day():
     return 24 * 60 * 60.0 * u.s
-
-
-def test_diff_rot_deprecated_warning(seconds_per_day):
-    with pytest.warns(SunpyDeprecationWarning, match='The diff_rot function is deprecated'):
-        diff_rot(10 * seconds_per_day, 30 * u.deg)
 
 
 def test_solar_rotate_coordinate():

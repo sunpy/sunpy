@@ -25,7 +25,7 @@ from sunpy.net.vso.vso import (
 )
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyConnectionWarning, SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyConnectionWarning, SunpyUserWarning
 
 
 @pytest.fixture(scope="session")
@@ -130,11 +130,10 @@ def test_path(client, tmpdir):
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
     """
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        qr = client.search(
-            core_attrs.Time('2025-03-03 06:33', '2025-03-03 06:33:13'),
-            core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
-            response_format="table")
+    qr = client.search(
+        core_attrs.Time('2025-03-03 06:33', '2025-03-03 06:33:13'),
+        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA)
+    )
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir, site="NSO")
     assert len(files) == 1
@@ -163,8 +162,7 @@ def test_no_download(client):
     stereo = (core_attrs.Detector('STEREO_B') &
               core_attrs.Instrument('EUVI') &
               core_attrs.Time('1900-01-01', '1900-01-01T00:10:00'))
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        qr = client.search(stereo, response_format="table")
+    qr = client.search(stereo)
     downloader = MockDownloader()
     res = client.fetch(qr, wait=False, downloader=downloader)
     assert downloader.download_called is False
@@ -258,18 +256,15 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
-                            core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'), response_format="table")
-
+    res = client.search(
+        core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
+        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA')
+    )
     dr = client.make_getdatarequest(res)
-
     # Extract the DRIs from the request
     dris = dr.request.datacontainer.datarequestitem
-
     # 3 HMI series and one AIA
     assert len(dris) == 4
-
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
         fileids = dri.fileiditem.fileid
@@ -365,10 +360,9 @@ def test_build_client_params():
 @pytest.mark.remote_data
 @pytest.mark.filterwarnings("ignore:Can't connect to vso")
 def test_incorrect_content_disposition(client):
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        results = client.search(
-            core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
-            core_attrs.Instrument('mdi'), response_format="table")
+    results = client.search(
+        core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
+        core_attrs.Instrument('mdi'))
     files = client.fetch(results[:1])
 
     assert len(files) == 1
@@ -415,11 +409,10 @@ def test_vso_repr(client):
 
 @pytest.mark.remote_data
 def test_response_block_properties(client):
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
-                            a.Wavelength(171 * u.angstrom),
-                            a.Sample(10 * u.minute),
-                            response_format="legacy")
+    res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
+                        a.Wavelength(171 * u.angstrom),
+                        a.Sample(10 * u.minute),
+    )
     properties = res.response_block_properties()
     assert len(properties) == 0
 
