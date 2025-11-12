@@ -1,4 +1,4 @@
-"""A MapSequence (lmao) object"""
+"""A MapSequence object"""
 
 import html
 import textwrap
