@@ -64,8 +64,8 @@ Added support for querying data from `solarnet API <https://solarnet.oma.be/>`__
     <BLANKLINE>
     <BLANKLINE>
 
-`Fido.search` will now continue on error
-========================================
+Fido.search will now continue on error
+======================================
 
 We have enhanced `sunpy.net.Fido`'s ``search`` method to be continue if a client errors on search.
 
