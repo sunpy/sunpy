@@ -117,7 +117,6 @@ class HXIMap(GenericMap):
     
     @property
     def _date_obs(self):
-        """using date_start"""
         return self.date_start
         
     @property
