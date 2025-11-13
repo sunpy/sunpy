@@ -37,7 +37,7 @@ class HXIMap(GenericMap):
         super().__init__(data, header, **kwargs)
         asos_hxi, hxi = self.meta.get('ORIGIN').split(' ')[0], self.meta.get('INSTRUME','')
         self._nickname =  asos_hxi if 'HXI' in asos_hxi else asos_hxi+'/'+hxi
-        self.plot_settings['cmap'] = 'rhessi' #Using default cmap the same as RHESSI
+        self.plot_settings['cmap'] = 'rhessi'
         
         if kwargs.get('fix_hxi_observer',True):
             self._fix_hxi_observer()
