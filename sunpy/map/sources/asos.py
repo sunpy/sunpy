@@ -154,7 +154,6 @@ class HXIMap(GenericMap):
 
     @property
     def instrument(self):
-        #return self.meta['INSTRUME']
         origin = self.meta.get('ORIGIN')
         return origin.split(' ')[0].replace('ASO-S/','') if 'HXI' in origin else self.meta.get('INSTRUME')
     
