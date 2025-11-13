@@ -1,4 +1,6 @@
-'''ASO-S Map subclass definitions, currently for the HXI payload is available.'''
+"""
+ASO-S Map subclass definitions.
+"""
 
 import astropy.units as u
 #from sunpy import log
