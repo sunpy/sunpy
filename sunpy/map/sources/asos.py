@@ -15,7 +15,7 @@ class HXIMap(GenericMap):
     HXI Image Map Source.
     
     The Hard X-ray Imager (HXI, Zhang et al. 2019b; Su et al. 2019) is one of the three payloads 
-    of the advanced space-based solar observatory (ASO-S, Gan et al. 2019, 2023).
+    of the Advanced Space-based Solar Observatory (ASO-S, Gan et al. 2019, 2023).
     
     The energy ranges are ~15-300 keV for imaging and ~10-300 keV for spectra (Su et al. 2024).
 
