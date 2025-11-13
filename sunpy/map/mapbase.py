@@ -3076,8 +3076,11 @@ class GenericMap(NDData):
             of pixels.
             Defaults to ``None``.
         preserve_date_obs : `bool`
-            If ``True``, the observation time of the original map will be preserved in the
-            ``date`` property of the reprojected map.
+            If ``True``, the observation time of the reprojected map is set to the
+            observation time of the original map instead of the observation time defined in the
+            target WCS.  This does not affect the reprojection itself, which instead depends on
+            the reference times of the two coordinate frames.
+            Defaults to ``False``.
 
         Returns
         -------
