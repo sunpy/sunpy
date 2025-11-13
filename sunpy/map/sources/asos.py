@@ -61,7 +61,7 @@ class HXIMap(GenericMap):
 
     def _get_cmap_name(self):
         """
-        Using default cmap the same as RHESSI
+        Using the same cmap as RHESSI.
         """
         return "rhessi" 
 
