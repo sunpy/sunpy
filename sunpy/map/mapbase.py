@@ -3049,7 +3049,7 @@ class GenericMap(NDData):
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
-                     preserve_date=False,
+                     preserve_date_obs=False,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
@@ -3075,11 +3075,9 @@ class GenericMap(NDData):
             target WCS, the extent will be shifted/expanded/cropped by an integer number
             of pixels.
             Defaults to ``None``.
-        preserve_date : `bool`
-            If ``True``, ``'DATE-OBS'`` of the original map will be preserved in the
-            header of the reprojected map. Note that this will not affect the obstime of
-            the reprojected map as this coordinate frame is defined by ``'DATE-AVG'`` which
-            will be the obstime of the target WCS.
+        preserve_date_obs : `bool`
+            If ``True``, the observation time of the original map will be preserved in the
+            ``date`` property of the reprojected map.
 
         Returns
         -------
@@ -3141,7 +3139,7 @@ class GenericMap(NDData):
             output_array, footprint = output_array
 
         target_header = target_wcs.to_header()
-        if preserve_date:
+        if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # target_header has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
