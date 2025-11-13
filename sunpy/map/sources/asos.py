@@ -45,11 +45,7 @@ class HXIMap(GenericMap):
     def _fix_hxi_observer(self):
         """
         Add the missing information for 'dsun_obs', 'hgln_obs' and 'hglt_obs'.
-        ASO-S is located near Earth, so the observer is assumed as Earth to get the info. 
-        according to the 'date_start' with sunpy.coordinates.get_earth
-        
-        Usage: set keyword 'fix_hxi_observer' when using sunpy.map.Map(), default:True.
-               if not fix, the sunpy will fix it automatically in some cases.
+        ASO-S is located near Earth, so the observer is assumed as Earth.
         """
         if not (set(['HGLN_OBS','HGLT_OBS','DSUN_OBS']) < set(self.fits_header)):
             
