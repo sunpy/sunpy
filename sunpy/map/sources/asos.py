@@ -144,10 +144,6 @@ class HXIMap(GenericMap):
         """
         return u.Unit(self.meta.get("waveunit", 'keV'))
 
-#     @property
-#     def wavelength(self):
-#         return u.Quantity([self.meta['energy_l'], self.meta['energy_h']],
-#                           unit=self.waveunit)
     @property
     def wavelength(self):
         return [self.meta['energy_l'], self.meta['energy_h']]*self.waveunit
