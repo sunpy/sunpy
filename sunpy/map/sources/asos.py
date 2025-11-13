@@ -12,7 +12,7 @@ __all__ = ['HXIMap']
 
 class HXIMap(GenericMap):
     """
-    HXI Image Maps (single map or multi-maps from one .fits file).
+    HXI Image Map Source.
     
     The Hard X-ray Imager (HXI, Zhang et al. 2019b; Su et al. 2019) is one of the three payloads 
     of the advanced space-based solar observatory (ASO-S, Gan et al. 2019, 2023).
