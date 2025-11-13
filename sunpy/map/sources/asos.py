@@ -61,7 +61,6 @@ class HXIMap(GenericMap):
                 self.meta['HGLN_OBS'] = observer.lon.to_value(u.deg)
                 self.meta['HGLT_OBS'] = observer.lat.to_value(u.deg)
                 self.meta['DSUN_OBS'] = observer.radius.to_value(u.m)
-                #log.info("Assuming Earth-based observer to set dsun_obs,hgln_obs,hglt_obs.")
             else:
                 raise ValueError("observer.frame.name not eq 'heliographic_stonyhurst', not support")
 
