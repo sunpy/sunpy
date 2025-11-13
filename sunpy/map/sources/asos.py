@@ -3,7 +3,6 @@ ASO-S Map subclass definitions.
 """
 
 import astropy.units as u
-#from sunpy import log
 from sunpy.time import parse_time
 from sunpy.map.mapbase import GenericMap, SpatialPair
 
