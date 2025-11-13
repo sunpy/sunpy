@@ -67,7 +67,7 @@ class HXIMap(GenericMap):
 
     def _rotation_matrix_from_crota(self):
         """
-        Rotation in CROTA. HXI may not need
+        Rotation from CROTA.
         """
         return super()._rotation_matrix_from_crota(crota_key='CROTA')
 
