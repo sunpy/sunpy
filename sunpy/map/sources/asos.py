@@ -138,9 +138,6 @@ class HXIMap(GenericMap):
     
     @property
     def waveunit(self):
-        """
-        If the WAVEUNIT FITS keyword is not present, defaults to keV.
-        """
         return u.Unit(self.meta.get("waveunit", 'keV'))
 
     @property
