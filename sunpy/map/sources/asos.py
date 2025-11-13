@@ -26,11 +26,6 @@ class HXIMap(GenericMap):
     * `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__
     * `ASO-S/HXI Flare List <http://aso-s.pmo.ac.cn/hxi_flare/hxi_flare_list.html>`__
     * `The Tests and Calibrations of the Hard X-ray Imager Aboard ASO-S <https://link.springer.com/article/10.1007/s11207-024-02392-x>`__
-    
-    History:
-    --------
-        2025 08 27, FuYu@PMO, ASO/HXI Team. rsun_meters use the default value from sunpy (not fix).
-             11 11, add 'fix_hxi_observer' keyword.
     """
 
     def __init__(self, data, header, **kwargs):
