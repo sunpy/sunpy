@@ -23,7 +23,7 @@ class HXIMap(GenericMap):
     References
     ----------
     * `ASO-S Mission Page <http://aso-s.pmo.ac.cn>`__
-    * `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`_
+    * `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__
     * `ASO-S/HXI Flare List <http://aso-s.pmo.ac.cn/hxi_flare/hxi_flare_list.html>`_
     * `The Tests and Calibrations of the Hard X-ray Imager Aboard ASO-S <https://link.springer.com/article/10.1007/s11207-024-02392-x>`_
     
