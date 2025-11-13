@@ -19,7 +19,6 @@ class HXIMap(GenericMap):
     
     The energy ranges are ~15-300 keV for imaging and ~10-300 keV for spectra (Su et al. 2024).
 
-    ASO-S was launched on 9 October 2022 (UTC+8).
 
     References
     ----------
