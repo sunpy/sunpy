@@ -1,4 +1,6 @@
-"""Test cases for ASO-S HXIMap subclass"""
+"""
+Test cases for ASO-S HXIMap subclass.
+"""
 import pytest
 
 import astropy.units as u
