@@ -8,8 +8,6 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suit import SUITMap
 
-__author__ = "Rahul Gopalakrishnan (rahulg.astro@gmail.com)"
-
 
 @pytest.fixture
 def suit_map():
