@@ -6,7 +6,6 @@ import astropy.units as u
 from sunpy.time import parse_time
 from sunpy.map.mapbase import GenericMap, SpatialPair
 
-__author__="FuYu@PMO, from ASO-S/HXI Team"
 
 __all__ = ['HXIMap']
 
