@@ -35,8 +35,7 @@ class HXIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-        asos_hxi, hxi = self.meta.get('ORIGIN').split(' ')[0], self.meta.get('INSTRUME','')
-        self._nickname =  asos_hxi if 'HXI' in asos_hxi else asos_hxi+'/'+hxi
+        self._nickname =  self.meta.get('nickname', 'ASO-S/HXI')
         self.plot_settings['cmap'] = 'rhessi'
 
     @property
@@ -111,16 +110,15 @@ class HXIMap(GenericMap):
 
     @property
     def observatory(self):
-        return self.meta.get('ORIGIN').split('/')[0]
+        return self.meta.get('observatory', 'ASO-S')
 
     @property
     def instrument(self):
-        origin = self.meta.get('ORIGIN')
-        return origin.split(' ')[0].replace('ASO-S/','') if 'HXI' in origin else self.meta.get('INSTRUME')
+        return self.meta.get('INSTRUME','HXI')
     
     @property
     def detector(self):
-        return self.instrument
+        return self.meta.get('detector','HXI')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
