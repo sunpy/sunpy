@@ -78,10 +78,6 @@ class HXIMap(GenericMap):
 
     @property
     def coordinate_system(self):
-        """
-        If CTYPE{1 or 2} are equal to 'solar_x' or 'solar_y', assumes that CTYPE{1 or 2}
-        respectively are intended to be 'HPLN-TAN' or 'HPLT-TAN'.
-        """
         ctypes = [self.meta['ctype1'], self.meta['ctype2']]
         if ctypes[0] == 'solar_x':
             ctypes[0] = 'HPLN-TAN'
