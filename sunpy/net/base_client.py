@@ -208,10 +208,11 @@ class QueryResponseTable(QTable):
         extra_cols = [col for col in all_cols if col not in first_names]
         all_cols = first_names + extra_cols
         new_table = self[[col for col in all_cols if self[col] is not None]]
-
         if remove_empty:
-            empty_cols = [col.info.name for col in self.itercols()
-                          if col.info.dtype.kind == 'O' and all(val is None for val in col)]
+            empty_cols = [
+                col.info.name for col in self.itercols()
+                if col.info.dtype.kind == 'O' and all(val is None for val in col)
+            ]
             new_table.remove_columns(empty_cols)
 
         return new_table
