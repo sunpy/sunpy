@@ -107,18 +107,6 @@ class HXIMap(GenericMap):
         return self.date_start
     
     @property
-    def img_bkg(self):
-        return self.meta.get('BKG')
-
-    @property
-    def img_counts(self):
-        return self.meta.get('COUNTS')
-
-    @property
-    def img_algorith(self):
-        return self.meta.get('ALGORITH')
-    
-    @property
     def waveunit(self):
         return u.Unit(self.meta.get("waveunit", 'keV'))
 
