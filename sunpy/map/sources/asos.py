@@ -15,18 +15,22 @@ class HXIMap(GenericMap):
     """
     HXI Image Map Source.
     
-    The Hard X-ray Imager (HXI, Zhang et al. 2019b; Su et al. 2019) is one of the three payloads 
-    of the Advanced Space-based Solar Observatory (ASO-S, Gan et al. 2019, 2023).
+    The Hard X-ray Imager (HXI, :cite:t:`Zhang_asos_misson_hxi_2019, Su_asos_hxi_simu_soft_2019`)
+    is one of the three payloads of the Advanced Space-based Solar Observatory
+    (ASO-S, :cite:t:`Gan_asos_misson_overview_2019, Gan_asos_issue_overview_2023`), which designed
+    to observe hard X-ray (HXR) spectra and images of solar flares. Having 91 subcollimators to
+    modulate incident X-rays, HXI can obtain 91 modulation data and 45 visibilities to reconstruct
+    images with a spatial resolution as high as ~3.1 arcsec. 
     
-    The energy ranges are ~15-300 keV for imaging and ~10-300 keV for spectra (Su et al. 2024).
-
+    In addition, the energy ranges are ~15-300 keV for imaging and ~10-300 keV for spectra, more information
+    please refer to :cite:t:`Su_asos_hxi_tests_calibrations_2024`.
 
     References
     ----------
     * `ASO-S Mission Page <http://aso-s.pmo.ac.cn>`__
     * `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__
     * `ASO-S/HXI Flare List <http://aso-s.pmo.ac.cn/hxi_flare/hxi_flare_list.html>`__
-    * `The Tests and Calibrations of the Hard X-ray Imager Aboard ASO-S <https://link.springer.com/article/10.1007/s11207-024-02392-x>`__
+    * `The tests and calibrations paper <https://link.springer.com/article/10.1007/s11207-024-02392-x>`__ - :cite:t:`Su_asos_hxi_tests_calibrations_2024`
     """
 
     def __init__(self, data, header, **kwargs):
