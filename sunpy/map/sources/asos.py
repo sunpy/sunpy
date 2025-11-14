@@ -4,6 +4,7 @@ ASO-S Map subclass definitions.
 
 import astropy.units as u
 from sunpy.time import parse_time
+from sunpy.coordinates import get_earth
 from sunpy.map.mapbase import GenericMap, SpatialPair
 
 
@@ -33,26 +34,16 @@ class HXIMap(GenericMap):
         asos_hxi, hxi = self.meta.get('ORIGIN').split(' ')[0], self.meta.get('INSTRUME','')
         self._nickname =  asos_hxi if 'HXI' in asos_hxi else asos_hxi+'/'+hxi
         self.plot_settings['cmap'] = 'rhessi'
-        
-        if kwargs.get('fix_hxi_observer',True):
-            self._fix_hxi_observer()
-            
-    def _fix_hxi_observer(self):
+
+    @property
+    def _default_observer_coordinate(self):
         """
-        Add the missing information for 'dsun_obs', 'hgln_obs' and 'hglt_obs'.
-        ASO-S is located near Earth, so the observer is assumed as Earth.
+        The default observer coordinate to use when there is insufficient information
+        in the metadata. This should be overridden by map sources as appropriate.
         """
         if not (set(['HGLN_OBS','HGLT_OBS','DSUN_OBS']) < set(self.fits_header)):
-            
-            from sunpy.coordinates import get_earth
-            observer = get_earth(self.date_start)
-            
-            if observer.frame.name=='heliographic_stonyhurst':
-                self.meta['HGLN_OBS'] = observer.lon.to_value(u.deg)
-                self.meta['HGLT_OBS'] = observer.lat.to_value(u.deg)
-                self.meta['DSUN_OBS'] = observer.radius.to_value(u.m)
-            else:
-                raise ValueError("observer.frame.name not eq 'heliographic_stonyhurst', not support")
+        
+            return  get_earth(self.reference_date)
 
     def _get_cmap_name(self):
         """
