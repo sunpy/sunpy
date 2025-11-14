@@ -16,7 +16,7 @@ from .helpers import _test_private_date_setters
 @pytest.fixture(scope="module")
 def hxi_map():
     """Note: HXIMap may have more than one images"""
-    ms = Map(get_test_filepath("hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN.fits"), fix_hxi_observer=True)
+    ms = Map(get_test_filepath("hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN.fits"))
     if not isinstance(ms, list): ms=[ms]
     return ms
 
