@@ -6,7 +6,7 @@ import pytest
 import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.data.test import get_test_filepath
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.asos import HXIMap
 from sunpy.util.exceptions import SunpyMetadataWarning
@@ -16,8 +16,8 @@ from .helpers import _test_private_date_setters
 @pytest.fixture(scope="module")
 def hxi_map():
     """Note: HXIMap may have more than one images"""
-    ms = Map(get_test_filepath("hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN.fits"))
-    if not isinstance(ms, list): ms=[ms]
+    #ms = Map(get_test_filepath("hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN.fits"))
+    ms = [get_dummy_map_from_header(get_test_filepath(f"hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN_{i}.header")) for i in range(2)]
     return ms
 
 
