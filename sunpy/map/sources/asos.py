@@ -14,14 +14,14 @@ __all__ = ['HXIMap']
 class HXIMap(GenericMap):
     """
     HXI Image Map Source.
-    
+
     The Hard X-ray Imager (HXI, :cite:t:`Zhang_asos_misson_hxi_2019, Su_asos_hxi_simu_soft_2019`)
     is one of the three payloads of the Advanced Space-based Solar Observatory
     (ASO-S, :cite:t:`Gan_asos_misson_overview_2019, Gan_asos_issue_overview_2023`), which designed
     to observe hard X-ray (HXR) spectra and images of solar flares. Having 91 subcollimators to
     modulate incident X-rays, HXI can obtain 91 modulation data and 45 visibilities to reconstruct
-    images with a spatial resolution as high as ~3.1 arcsec. 
-    
+    images with a spatial resolution as high as ~3.1 arcsec.
+
     In addition, the energy ranges are ~15-300 keV for imaging and ~10-300 keV for spectra, more information
     please refer to :cite:t:`Su_asos_hxi_tests_calibrations_2024`.
 
@@ -53,7 +53,7 @@ class HXIMap(GenericMap):
         """
         Using the same cmap as RHESSI.
         """
-        return "rhessi" 
+        return "rhessi"
 
     def _rotation_matrix_from_crota(self):
         """
