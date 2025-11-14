@@ -68,10 +68,6 @@ class HXIMap(GenericMap):
 
     @property
     def spatial_units(self):
-        """
-        If cunit{1 or 2} are equal to 'arcsecs', assumes that cunit{1 or 2}
-        respectively are intended to be 'arcsec'.
-        """
         units = [self.meta.get('cunit1', None), self.meta.get('cunit2', None)]
         if self.meta['cunit1'] == 'arcsecs':
             units[0] = 'arcsec'
