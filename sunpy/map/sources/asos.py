@@ -118,7 +118,7 @@ class HXIMap(GenericMap):
 
     @property
     def detector(self):
-        return self.meta.get('detector','HXI')
+        return self.meta.get('detector', 'HXI')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
