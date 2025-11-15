@@ -225,3 +225,9 @@ Including C Code
 * C extensions (`Cython`_ or otherwise) should provide the necessary information for building the extension.
 
 .. _Cython: https://cython.org/
+
+Authorship of sunpy
+===================
+
+Given the wide array of contributions from many authors over a number of years, the "author" of the ``sunpy`` package is regarded as the "The SunPy Community" rather than any one individual.
+As such, the ``__author__`` and ``__email__`` module level dunder names should not be included in any source file within the ``sunpy`` package.
