@@ -3,6 +3,8 @@
 Find Peaks in sunpy TimeSeries
 ==============================
 
+.. tags:: time_series, goes, xrs, processing, analysis
+
 This example illustrates how to find minimum or maximum peaks in a TimeSeries.
 Note: Peak finding is a complex problem that has many potential solutions and
 this example is just one method of many.

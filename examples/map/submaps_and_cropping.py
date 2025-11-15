@@ -3,6 +3,8 @@
 Cropping a Map
 ==============
 
+.. tags:: map, processing
+
 How to crop a map by using submap.
 """
 import matplotlib.pyplot as plt

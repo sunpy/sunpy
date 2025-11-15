@@ -3,6 +3,8 @@
 Differentially rotating a coordinate
 ====================================
 
+.. tags:: differential_rotation
+
 How to differentially rotate a coordinate.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate

@@ -3,6 +3,8 @@
 Overlay an AIA image on a LASCO C2 coronagraph
 ==============================================
 
+.. tags:: plotting, lasco, visualization
+
 This example shows the steps needed to overlay the disc and off-limb
 components of an AIA image within the masked occulter of a LASCO C2 image.
 """

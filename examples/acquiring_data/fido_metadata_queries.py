@@ -3,6 +3,8 @@
 Querying Metadata clients
 =========================
 
+.. tags:: acquiring_data
+
 This example shows how to search and retrieve metadata using `~sunpy.net.Fido`.
 Fido supports searching metadata from services like `~sunpy.net.hek.HEKClient`,
 `~sunpy.net.helio.HECClient`, and `~sunpy.net.jsoc.JSOCClient`.

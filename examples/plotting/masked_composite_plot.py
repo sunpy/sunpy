@@ -3,6 +3,8 @@
 Combining off-limb and disk maps
 ================================
 
+.. tags:: plotting, masking, aia, hmi, co_observations
+
 This example combines creating a composite plot with masking out the
 solar disk. The purpose is to introduce users to the plotting process
 required to overlay multiple maps that have been modified with other

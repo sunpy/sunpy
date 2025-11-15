@@ -3,6 +3,8 @@
 Getting the observer location from a Map
 ========================================
 
+.. tags:: units_and_coordinates, coordinates, map, aia
+
 How to access the observer location from a `~sunpy.map.Map` and interpret it.
 """
 import matplotlib.pyplot as plt

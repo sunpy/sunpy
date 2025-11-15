@@ -3,6 +3,8 @@
 Edge Enhancing Coronal Loops
 ============================
 
+.. tags:: computer_vision, features
+
 How to edge enhance coronal loops in an SDO/AIA image.
 """
 import matplotlib.pyplot as plt

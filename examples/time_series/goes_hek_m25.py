@@ -3,6 +3,8 @@
 Flare times on a GOES XRS plot
 ==============================
 
+.. tags:: time_series, hek, goes, acquiring_data
+
 How to plot flare times as provided by the HEK on a GOES XRS plot.
 """
 import matplotlib.pyplot as plt

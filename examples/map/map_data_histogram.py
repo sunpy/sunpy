@@ -3,6 +3,8 @@
 Histograming map data
 =====================
 
+.. tags:: map, analysis
+
 How to inspect the histogram of the data of a map.
 """
 # sphinx_gallery_thumbnail_number = 2

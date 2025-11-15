@@ -3,6 +3,8 @@
 Plotting a map
 ==============
 
+.. tags:: plotting, AIA
+
 How to create a plot of a map.
 """
 # sphinx_gallery_thumbnail_number = 2
