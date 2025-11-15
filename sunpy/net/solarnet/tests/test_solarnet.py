@@ -66,12 +66,18 @@ def test_default_limit(client):
 @pytest.mark.remote_data
 def test_complex_query():
     search = Fido.search(a.solarnet.Dataset.lyra_level_2 & a.solarnet.Limit(2) | a.solarnet.Dataset.eui_level_2 & a.solarnet.Limit(3))
-
     # We have two results as they are not combined
     assert len(search) == 2
-
     # The first query is limited to 2 results
     assert len(search[0]) == 2
-
     # The second query is limited to 3 results
     assert len(search[1]) == 3
+
+
+def test_failed_search_raises(client, monkeypatch):
+    def mock_urlopen_fail(url):
+        raise OSError("Something went very wrong")
+
+    monkeypatch.setattr("urllib.request.urlopen", mock_urlopen_fail)
+    with pytest.raises(OSError, match="Failed to fetch data from"):
+        client.search(a.solarnet.Dataset.eui_level_2)
