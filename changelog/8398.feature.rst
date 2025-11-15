@@ -1,1 +1,1 @@
-Added a new map source for ASO-S mission, currently added ``HXIMap`` for the Hard X-ray Imager (HXI) payload.
+Added a new map source for ASO-S mission, currently added `~sunpy.map.sources.HXIMap` for the Hard X-ray Imager (HXI) payload.
