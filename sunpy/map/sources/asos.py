@@ -45,7 +45,6 @@ class HXIMap(GenericMap):
         in the metadata. This should be overridden by map sources as appropriate.
         """
         if not (set(['HGLN_OBS','HGLT_OBS','DSUN_OBS']) < set(self.fits_header)):
-        
             return  get_earth(self.reference_date)
 
     def _get_cmap_name(self):
@@ -78,35 +77,44 @@ class HXIMap(GenericMap):
         if ctypes[1] == 'solar_y':
             ctypes[1] = 'HPLT-TAN'
         return SpatialPair(*ctypes)
-    
+
     @property
     def date_start(self):
-        """DATE-OBS is the start date"""
-        date_obs = self.meta.get('DATE-OBS')
-        if len(date_obs.split(" ")[0])==9:
+        """
+        DATE-OBS is the start_date.
+        Here do some thing to deal with date string like '01-May-23 13:08:16.962' or
+        ' 1-May-2023 13:08:16.962' (the latter one is output from SSWIDL's map2fits)
+        """
+        date_obs = self.meta.get('DATE-OBS').strip()
+        tmp = date_obs.split(" ")[0]
+        if len(tmp)==9 and len(tmp.split("-")[-1])==2:
             date_obs = date_obs[:7]+'20'+date_obs[7:]
         return parse_time(date_obs)
 
     @property
     def date_end(self):
         return self.date_start + self.meta.get('exptime')*u.second
-    
+
     @property
     def _date_obs(self):
         return self.date_start
-        
+
     @property
     def reference_date(self):
         """using date_start, compatible with the old version of sunpy """
         return self.date_start
-    
+
     @property
     def waveunit(self):
         return u.Unit(self.meta.get("waveunit", 'keV'))
 
     @property
     def wavelength(self):
-        return [self.meta['energy_l'], self.meta['energy_h']]*self.waveunit
+        waves = [self.meta.get('energy_l', None), self.meta.get('energy_h', None)]
+        if None in waves:
+            return None
+        else:
+            return waves*self.waveunit
 
     @property
     def observatory(self):
@@ -115,7 +123,7 @@ class HXIMap(GenericMap):
     @property
     def instrument(self):
         return self.meta.get('INSTRUME','HXI')
-    
+
     @property
     def detector(self):
         return self.meta.get('detector','HXI')
@@ -125,4 +133,3 @@ class HXIMap(GenericMap):
         """Determines if header corresponds to an HXI image"""
         tag_ori = 'HXI' in header.get('ORIGIN') if header.get('ORIGIN') is not None else False
         return tag_ori or header.get('INSTRUME') == 'HXI'
-        
