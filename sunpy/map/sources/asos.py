@@ -18,7 +18,7 @@ class HXIMap(GenericMap):
     The Hard X-ray Imager (HXI, :cite:t:`Zhang_asos_mission_hxi_2019, Su_asos_hxi_simu_soft_2019`)
     is one of the three payloads of the Advanced Space-based Solar Observatory
     (ASO-S, :cite:t:`Gan_asos_mission_overview_2019, Gan_asos_issue_overview_2023`), which is designed
-    to observe hard X-ray (HXR) spectra and images of solar flares. Having 91 subcollimators to
+    to observe Hard X-Ray (HXR) spectra and images of solar flares. Having 91 subcollimators to
     modulate incident X-rays, HXI can obtain 91 modulation data and 45 visibilities to reconstruct
     images with a spatial resolution as high as ~3.1 arcsec.
 
