@@ -114,7 +114,7 @@ class HXIMap(GenericMap):
 
     @property
     def instrument(self):
-        return self.meta.get('INSTRUME','HXI')
+        return self.meta.get('INSTRUME', 'HXI')
 
     @property
     def detector(self):
