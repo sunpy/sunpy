@@ -40,10 +40,6 @@ class HXIMap(GenericMap):
 
     @property
     def _default_observer_coordinate(self):
-        """
-        The default observer coordinate to use when there is insufficient information
-        in the metadata. This should be overridden by map sources as appropriate.
-        """
         if not (set(['HGLN_OBS','HGLT_OBS','DSUN_OBS']) < set(self.fits_header)):
             return  get_earth(self.reference_date)
 
