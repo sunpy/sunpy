@@ -48,9 +48,6 @@ class HXIMap(GenericMap):
             return  get_earth(self.reference_date)
 
     def _get_cmap_name(self):
-        """
-        Using the same cmap as RHESSI.
-        """
         return "rhessi"
 
     def _rotation_matrix_from_crota(self):
