@@ -8,7 +8,6 @@ import fsspec
 import numpy as np
 
 import astropy.io.fits
-from astropy.utils.decorators import deprecated_renamed_argument
 from astropy.utils.introspection import minversion
 from astropy.wcs import WCS
 
@@ -26,7 +25,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
-from sunpy.util.exceptions import NoMapsInFileError, SunpyDeprecationWarning, warn_user
+from sunpy.util.exceptions import NoMapsInFileError, warn_user
 from sunpy.util.io import expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
 
@@ -120,7 +119,7 @@ class MapFactory(BasicRegistrationFactory):
                 pairs = read_file(os.fspath(fname), filetype=filetype, **kwargs)
         except Exception as e:
             msg = f"Failed to read {fname}\n{e}"
-            if kwargs.get("silence_errors") or kwargs.get("allow_errors"):
+            if kwargs.get("allow_errors"):
                 warn_user(msg)
                 return []
             msg += "\n If you want to bypass these errors, pass `allow_errors=True`."
@@ -152,7 +151,7 @@ class MapFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _parse_args(self, *args, silence_errors=False, allow_errors=False, **kwargs):
+    def _parse_args(self, *args, allow_errors=False, **kwargs):
         """
         Parses an args list into data-header pairs.
 
@@ -216,9 +215,9 @@ class MapFactory(BasicRegistrationFactory):
         data_header_pairs = []
         for arg in parsed_args:
             try:
-                data_header_pairs += self._parse_arg(arg, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
+                data_header_pairs += self._parse_arg(arg, allow_errors=allow_errors, **kwargs)
             except NoMapsInFileError as e:
-                if not (silence_errors or allow_errors):
+                if not allow_errors:
                     raise
                 warn_user(f"One of the arguments failed to parse with error: {e}")
 
@@ -265,8 +264,7 @@ class MapFactory(BasicRegistrationFactory):
         # use fsspec for everything, but for now we parse the URI through
         return self._read_file(arg.full_name, **kwargs)
 
-    @deprecated_renamed_argument("silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning)
-    def __call__(self, *args, composite=False, sequence=False, silence_errors=False, allow_errors=False, **kwargs):
+    def __call__(self, *args, composite=False, sequence=False, allow_errors=False, **kwargs):
         """Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
@@ -283,11 +281,6 @@ class MapFactory(BasicRegistrationFactory):
         sequence : `bool`, optional
             Indicates if collection of maps should be returned as a `sunpy.map.MapSequence`.
             Default is `False`.
-        silence_errors : `bool`, optional
-            Deprecated, renamed to `allow_errors`.
-
-            If set, ignore data-header pairs which cause an exception.
-            Default is ``False``.
         allow_errors : `bool`, optional
             If set, bypass data-header pairs or files which cause an exception and warn instead.
             Defaults to `False`.
@@ -297,7 +290,7 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io._file_tools.read_file` such as
         ``memmap`` for FITS files.
         """
-        data_header_pairs = self._parse_args(*args, silence_errors=silence_errors, allow_errors=allow_errors, **kwargs)
+        data_header_pairs = self._parse_args(*args, allow_errors=allow_errors, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
@@ -313,7 +306,7 @@ class MapFactory(BasicRegistrationFactory):
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
                 new_maps.append(new_map)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError, MapMetaValidationError) as e:
-                if not (silence_errors or allow_errors):
+                if not allow_errors:
                     raise
                 warn_user(f"One of the data, header pairs failed to validate with: {e}")
 

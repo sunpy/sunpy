@@ -26,7 +26,7 @@ print(aiamap.unit)
 
 ###############################################################################
 # We can see that the units of this map are ``ct``, or counts. We can now
-# chose a contour level, and use the :meth:`~sunpy.map.GenericMap.contour`
+# chose a contour level, and use the :meth:`~sunpy.map.GenericMap.find_contours`
 # method to extract the contours.
 
 contours = aiamap.find_contours(50000 * u.DN)

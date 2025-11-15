@@ -112,20 +112,20 @@ Breaking Changes
 Deprecations
 ------------
 
-- :meth:`sunpy.map.GenericMap.contour` is deprecated in favor of :meth:`sunpy.map.GenericMap.find_contours`.
+- ``sunpy.map.GenericMap.contour`` is deprecated in favor of :meth:`sunpy.map.GenericMap.find_contours`.
   Note that ContourPy, now used for contour generation, may produce different results and does not support all scikit-image keyword arguments. (`#7760 <https://github.com/sunpy/sunpy/pull/7760>`__)
 - The following components of `~sunpy.map.MapSequence` are now deprecated and will be removed in v7.1:
 
   - The ``derotate`` keyword argument to `~sunpy.map.MapSequence`. Derotation is not implemented.
   - The ``resample`` keyword argument to `~sunpy.map.MapSequence.peek` and `~sunpy.map.MapSequence.plot`.
     To reproduce this behavior, use `~sunpy.map.GenericMap.resample` on each map in the sequence before plotting.
-  - Deprecate `~sunpy.map.MapSequence.all_maps_same_shape` in favor of `~sunpy.map.MapSequence.all_same_shape`.
-  - Deprecate `~sunpy.map.MapSequence.at_least_one_map_has_mask`. To reproduce this functionality, check whether
+  - Deprecate ``~sunpy.map.MapSequence.all_maps_same_shape`` in favor of `~sunpy.map.MapSequence.all_same_shape`.
+  - Deprecate ``~sunpy.map.MapSequence.at_least_one_map_has_mask``. To reproduce this functionality, check whether
     `~sunpy.map.MapSequence.mask` is None.
-  - Deprecate `~sunpy.map.MapSequence.as_array` in favor of `~sunpy.map.MapSequence.data` and
+  - Deprecate ``~sunpy.map.MapSequence.as_array`` in favor of `~sunpy.map.MapSequence.data` and
     `~sunpy.map.MapSequence.mask`. Previously, ``as_array`` returned a masked array if at least one map held a mask
     and a bare array if not.
-  - Deprecate `~sunpy.map.MapSequence.all_meta` in favor of `~sunpy.map.MapSequence.meta`. (`#7827 <https://github.com/sunpy/sunpy/pull/7827>`__)
+  - Deprecate ``~sunpy.map.MapSequence.all_meta`` in favor of `~sunpy.map.MapSequence.meta`. (`#7827 <https://github.com/sunpy/sunpy/pull/7827>`__)
 - General support within `~sunpy.map.Map` for the non-standard CTYPE values 'SOLAR-X' and 'SOLAR-Y' is now deprecated, and should instead be handled by a source-specific subclass. (`#7955 <https://github.com/sunpy/sunpy/pull/7955>`__)
 - Renamed the `sunpy.time.TimeRange` method ``extend()`` to :meth:`sunpy.time.TimeRange.shift` to reflect what the method actually does. (`#8008 <https://github.com/sunpy/sunpy/pull/8008>`__)
 
@@ -253,7 +253,7 @@ Deprecations
 ------------
 
 - ``assume_spherical_screen`` has been deprecated in favor of `~sunpy.coordinates.SphericalScreen`. (`#7115 <https://github.com/sunpy/sunpy/pull/7115>`__)
-- :func:`sunpy.physics.differential_rotation.diff_rot` has been deprecated and replaced by :func:`sunpy.sun.models.differential_rotation`. (`#7409 <https://github.com/sunpy/sunpy/pull/7409>`__)
+- ``sunpy.physics.differential_rotation.diff_rot`` has been deprecated and replaced by :func:`sunpy.sun.models.differential_rotation`. (`#7409 <https://github.com/sunpy/sunpy/pull/7409>`__)
 - Deprecated all positional arguments in :meth:`sunpy.map.GenericMap.plot` method.
   The ``annotate``, ``axes``, ``title``, ``clip_interval`` arguments should be passed as keyword arguments (e.g., ``..., title=True, ...``) instead. (`#7421 <https://github.com/sunpy/sunpy/pull/7421>`__)
 - The keyword ``response_format`` in :meth:`sunpy.net.vso.VSOClient.search` has been deprecated.
@@ -1401,10 +1401,10 @@ Features
 - Added a ``sunpy.time.timerange.TimeRange.__contains__`` method to `sunpy.time.TimeRange`
   that tests if two time ranges overlap. (`#5093 <https://github.com/sunpy/sunpy/pull/5093>`__)
 - Added the ability to namespace files downloaded using `sunpy.data.data_manager.manager.DataManager` by prepending the file name with module name. (`#5111 <https://github.com/sunpy/sunpy/pull/5111>`__)
-- Added a rigid rotation model to :func:`~sunpy.physics.differential_rotation.diff_rot` via ``rot_type=rigid``, where the rotation rate does not vary with latitude. (`#5132 <https://github.com/sunpy/sunpy/pull/5132>`__)
+- Added a rigid rotation model to ``~sunpy.physics.differential_rotation.diff_rot`` via ``rot_type=rigid``, where the rotation rate does not vary with latitude. (`#5132 <https://github.com/sunpy/sunpy/pull/5132>`__)
 - Added a :meth:`~sunpy.map.MapSequence.save` method to `sunpy.map.MapSequence`
   that saves each map of the sequence. (`#5145 <https://github.com/sunpy/sunpy/pull/5145>`__)
-- The allowable ``level`` inputs to :meth:`sunpy.map.GenericMap.contour` and
+- The allowable ``level`` inputs to ``sunpy.map.GenericMap.contour`` and
   :meth:`sunpy.map.GenericMap.draw_contours` have been consolidated. Both methods
   now accept
   - Scalars, if the map has no units
@@ -1698,7 +1698,7 @@ Features
   Clicking on the histogram will toggle an alternate version of the histogram. (`#4931 <https://github.com/sunpy/sunpy/pull/4931>`__)
 - Add an ``SRS_TABLE`` file to the sample data, and use it in the magnetogram
   plotting example. (`#4993 <https://github.com/sunpy/sunpy/pull/4993>`__)
-- Added a `sunpy.map.GenericMap.contour()` method to find the contours on a map. (`#3909 <https://github.com/sunpy/sunpy/pull/3909>`__)
+- Added a ``sunpy.map.GenericMap.contour`` method to find the contours on a map. (`#3909 <https://github.com/sunpy/sunpy/pull/3909>`__)
 - Added a context manager (``assume_spherical_screen``)
   to interpret `~sunpy.coordinates.frames.Helioprojective` coordinates as being on
   the inside of a spherical screen instead of on the surface of the Sun. (`#4003 <https://github.com/sunpy/sunpy/pull/4003>`__)
@@ -1908,7 +1908,7 @@ Added/Improved Documentation
 - Created the new gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_north_offset_frame.py` for `~sunpy.coordinates.NorthOffsetFrame`. (`#4709 <https://github.com/sunpy/sunpy/pull/4709>`__)
 - Added more information on which FITS keywords are used for various `sunpy.map.GenericMap`
   properties. (`#4717 <https://github.com/sunpy/sunpy/pull/4717>`__)
-- Improved documentation for :func:`sunpy.physics.differential_rotation.diff_rot`. (`#4876 <https://github.com/sunpy/sunpy/pull/4876>`__)
+- Improved documentation for ``sunpy.physics.differential_rotation.diff_rot``. (`#4876 <https://github.com/sunpy/sunpy/pull/4876>`__)
 
 
 Documentation Fixes

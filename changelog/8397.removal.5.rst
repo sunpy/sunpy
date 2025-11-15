@@ -1,0 +1,1 @@
+Removed deprecated arguments from ``sunpy.net.vso.VSOClient.translate_and_query`` method (``progress`` and ``vso_response_format``) after its long deprecation period.

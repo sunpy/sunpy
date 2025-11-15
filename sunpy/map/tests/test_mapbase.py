@@ -1449,13 +1449,6 @@ def test_submap_inputs(generic_map2, coords):
         assert u.allclose(smap.dimensions, (3, 3) * u.pix)
 
 
-def test_contour_deprecation_warning(simple_map):
-    pytest.importorskip("skimage")
-
-    with pytest.warns(SunpyDeprecationWarning, match="The contour function is deprecated and may be removed in a future version.\\s+Use sunpy.map.GenericMap.find_contours instead."):
-        simple_map.contour(1.5)
-
-
 def test_find_contours_contourpy(simple_map):
     data = np.ones(simple_map.data.shape)
     data[4, 4] = 2
@@ -1567,12 +1560,12 @@ def test_parse_submap_quantity_inputs(aia171_test_map):
         aia171_test_map.submap(bottom_left=bottom_left[0],
                                top_right=None, width=None, height=None)
 
-    with pytest.raises(ValueError, match=re.escape("bottom_left must have shape (2, ) "
+    with pytest.raises(ValueError, match=re.escape("bottom_left must have shape (2,) "
                        "when specified as a Quantity")):
         aia171_test_map.submap(bottom_left=bottom_left[0],
                                top_right=top_right, width=None, height=None)
 
-    with pytest.raises(ValueError, match=re.escape("top_right must have shape (2, ) when specified as "
+    with pytest.raises(ValueError, match=re.escape("top_right must have shape (2,) when specified as "
                        "a Quantity")):
         aia171_test_map.submap(bottom_left=bottom_left,
                                top_right=top_right[0], width=None, height=None)

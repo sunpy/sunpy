@@ -1,0 +1,1 @@
+Removed ``sunpy.coordinates.transformations`` module after its long deprecation period.

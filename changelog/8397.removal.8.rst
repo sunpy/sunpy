@@ -1,0 +1,1 @@
+Removed legacy ``extend`` on `sunpy.time.TimeRange` after its long deprecation period.

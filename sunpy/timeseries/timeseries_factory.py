@@ -17,7 +17,6 @@ import astropy.io.fits
 import astropy.units as u
 from astropy.table import Table
 from astropy.time import Time
-from astropy.utils.decorators import deprecated_renamed_argument
 
 import sunpy
 from sunpy.data import cache
@@ -32,7 +31,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
-from sunpy.util.exceptions import SunpyDeprecationWarning, warn_user
+from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.io import HDPair, expand_fsspec_open_file, is_uri, is_url, parse_path, possibly_a_path
 from sunpy.util.metadata import MetaDict
@@ -340,7 +339,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 all_ts += self._parse_arg(arg, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError) as e:
                 msg = f"One of the files failed to validate with: {e}"
-                if self.silence_errors or self.allow_errors:
+                if self.allow_errors:
                     warn_user(msg)
                     continue
                 else:
@@ -433,10 +432,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # use fsspec for everything, but for now we parse the URI through
         return self._read_file(arg.full_name, **kwargs)
 
-    @deprecated_renamed_argument(
-        "silence_errors", "allow_errors", "5.1", warning_type=SunpyDeprecationWarning
-    )
-    def __call__(self, *args, silence_errors=False, allow_errors=False, **kwargs):
+    def __call__(self, *args, allow_errors=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
         arguments and passes them to a sequence of pre-registered types to
@@ -448,11 +444,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        silence_errors : `bool`, optional
-            Deprecated, renamed to `allow_errors`.
-
-            If set, ignore data-header pairs which cause an exception.
-            Defaults to `False`.
         allow_errors : `bool`, optional
             If set, bypass data-header pairs or files which cause an exception and warn instead.
             Defaults to `False`.
@@ -461,7 +452,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
-        self.silence_errors = silence_errors
         self.allow_errors = allow_errors
         new_timeseries = self._parse_args(*args, **kwargs)
 

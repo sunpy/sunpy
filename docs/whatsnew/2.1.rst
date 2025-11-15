@@ -189,7 +189,7 @@ See the following example for how this context manager enables alternative repro
 
 Finding map contours
 ====================
-The new :meth:`sunpy.map.GenericMap.contour` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
+The new ``sunpy.map.GenericMap.contour`` method can be used to extract contours from a map. It returns contours as a `~astropy.coordinates.SkyCoord`, allowing contours to be easily overplotted on the original or other maps.
 
 .. minigallery:: sunpy.map.GenericMap.contour
 

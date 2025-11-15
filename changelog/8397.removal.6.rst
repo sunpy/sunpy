@@ -1,0 +1,1 @@
+Removed legacy ``QueryResponse`` used by the ``sunpy.net.vso`` module after its long deprecation period.
