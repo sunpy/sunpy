@@ -90,7 +90,5 @@ def test_new_instance_preserves_plot_settings(hxi_map):
 
 def test_wcs(hxi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    # with pytest.warns(SunpyMetadataWarning,
-    #                   match='Missing metadata for observer: assuming Earth-based observer.*'):
         for tmp_map in hxi_map:
             tmp_map.pixel_to_world(0*u.pix, 0*u.pix)
