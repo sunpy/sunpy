@@ -369,6 +369,10 @@
       "HMI daily update Mr synoptic frames, constructed from Blos, with polar field corrected"
     ],
     [
+      "hmi.mrdailysynframe_polfil_720s_nrt",
+      "HMI daily NRT update Mr synoptic frames, constructed from Blos, with polar field corrected"
+    ],
+    [
       "hmi.mrdailysynframe_small_720s",
       "HMI daily update synoptic frame -- Mr field converted from Mlos"
     ],
@@ -1233,6 +1237,10 @@
     [
       "Log",
       "run log"
+    ],
+    [
+      "Mr_polfil",
+      "Mr NRT synoptic map with polar field correction"
     ],
     [
       "Mr_polfil",

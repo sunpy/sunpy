@@ -12,8 +12,6 @@ from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import XRTMap
 from .helpers import _test_private_date_setters
 
-__author__ = 'Pritish C. (VaticanCameos)'
-
 
 @pytest.fixture
 def xrt_map():

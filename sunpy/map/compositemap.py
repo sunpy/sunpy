@@ -15,9 +15,6 @@ from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compa
 
 __all__ = ['CompositeMap']
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 # Valid keyword arguments for each plotting method
 ACCEPTED_IMSHOW_KWARGS = get_keywords(
     [GenericMap.plot, plt.Axes.imshow, AxesImage.__init__, _ImageBase.__init__]

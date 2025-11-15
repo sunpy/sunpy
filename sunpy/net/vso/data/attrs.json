@@ -101,6 +101,10 @@
       "None"
     ],
     [
+      "FRT",
+      "None"
+    ],
+    [
       "FSI-174",
       "None"
     ],
@@ -157,6 +161,10 @@
       "None"
     ],
     [
+      "HRT",
+      "None"
+    ],
+    [
       "HSTOF",
       ""
     ],
@@ -183,6 +191,14 @@
     [
       "Kodak_KAF-09000",
       "INAF-OACT H\u03b1 and Continuum Detector"
+    ],
+    [
+      "L1",
+      "Coronado solar telescope L1"
+    ],
+    [
+      "L2",
+      "Coronado solar telescope L2"
     ],
     [
       "LED",
@@ -479,6 +495,14 @@
       "Big Bear Solar Observatory, California TON and GONG+ sites"
     ],
     [
+      "C1",
+      "Coronagraph #1 (H alpha line)"
+    ],
+    [
+      "C2",
+      "Coronagraph #2 (HeI and FeXIII lines)"
+    ],
+    [
       "CAII",
       "Kanzelh\u00f6he Ca II k Instrument"
     ],
@@ -595,6 +619,14 @@
       "Kanzelh\u00f6he Photosphere Digital Camera"
     ],
     [
+      "L1",
+      "Lunette #1 (Solar Refactor #1)"
+    ],
+    [
+      "L2",
+      "Lunette #2 (Solar Refactor #2)"
+    ],
+    [
       "LASCO",
       "Large Angle and Spectrometric Coronagraph"
     ],
@@ -649,6 +681,10 @@
     [
       "NFI-0",
       "Narrow-field Imager on Satellite #4"
+    ],
+    [
+      "PHI",
+      "None"
     ],
     [
       "PHOENIX",
@@ -713,6 +749,10 @@
     [
       "SPICE",
       "Spectral Imaging of the Coronal Environment"
+    ],
+    [
+      "STIX",
+      "None"
     ],
     [
       "SUMER",
@@ -1045,6 +1085,10 @@
       "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris"
     ],
     [
+      "OMP",
+      "Observatoire Midi-Pyr\u00e9n\u00e9es"
+    ],
+    [
       "SAO",
       "Smithsonian Astrophysical Observatory"
     ],
@@ -1101,6 +1145,10 @@
     [
       "GOES18",
       "Geostationary Operational Environmental Satellite (GOES-R) Series 18"
+    ],
+    [
+      "GOES19",
+      "Geostationary Operational Environmental Satellite (GOES-R) Series 19"
     ],
     [
       "GONG",
@@ -1173,6 +1221,10 @@
     [
       "OBSPM",
       "D\u00e9partement d'Astronomie Solaire de l'Observatoire de Paris, Paris, France"
+    ],
+    [
+      "OMP",
+      "Pic-du-Midi, France"
     ],
     [
       "PROBA2",
