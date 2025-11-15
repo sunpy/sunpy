@@ -125,5 +125,4 @@ class HXIMap(GenericMap):
         """
         Determines if header corresponds to a HXI image.
         """
-        tag_ori = 'HXI' in header.get('ORIGIN') if header.get('ORIGIN') is not None else False
-        return tag_ori or header.get('INSTRUME') == 'HXI'
+        return 'HXI' in header.get('ORIGIN', '') or header.get('INSTRUME') == 'HXI'
