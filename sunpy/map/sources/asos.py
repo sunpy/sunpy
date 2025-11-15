@@ -30,7 +30,7 @@ class HXIMap(GenericMap):
     * `ASO-S Mission Page <http://aso-s.pmo.ac.cn>`__
     * `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__
     * `ASO-S/HXI Flare List <http://aso-s.pmo.ac.cn/hxi_flare/hxi_flare_list.html>`__
-    * `The tests and calibrations paper <https://link.springer.com/article/10.1007/s11207-024-02392-x>`__ - :cite:t:`Su_asos_hxi_tests_calibrations_2024`
+    * The tests and calibrations paper: :cite:t:`Su_asos_hxi_tests_calibrations_2024`
     """
 
     def __init__(self, data, header, **kwargs):
