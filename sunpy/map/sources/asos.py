@@ -94,7 +94,6 @@ class HXIMap(GenericMap):
 
     @property
     def reference_date(self):
-        """using date_start, compatible with the old version of sunpy """
         return self.date_start
 
     @property
