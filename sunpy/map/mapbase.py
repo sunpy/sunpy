@@ -3107,6 +3107,7 @@ class GenericMap(NDData):
 
     def reproject_to(self, target_wcs, *, algorithm='interpolation', return_footprint=False,
                      auto_extent: Literal[None, 'corners', 'edges', 'all'] = None,
+                     preserve_date_obs=False,
                      **reproject_args):
         """
         Reproject the map to a different world coordinate system (WCS)
@@ -3132,6 +3133,12 @@ class GenericMap(NDData):
             target WCS, the extent will be shifted/expanded/cropped by an integer number
             of pixels.
             Defaults to ``None``.
+        preserve_date_obs : `bool`
+            If ``True``, the observation time of the reprojected map is set to the
+            observation time of the original map instead of the observation time defined in the
+            target WCS.  This does not affect the reprojection itself, which instead depends on
+            the reference times of the two coordinate frames.
+            Defaults to ``False``.
 
         Returns
         -------
@@ -3192,8 +3199,16 @@ class GenericMap(NDData):
         if return_footprint:
             output_array, footprint = output_array
 
+        target_header = target_wcs.to_header()
+        if preserve_date_obs:
+            # Explicitly not using _set_date or _set_reference_date. We do not know whether
+            # target_header has a DATE-AVG key and if it does not, we would inadvertently
+            # overwrite DATE-OBS (that we are supposed to be preserving).
+            target_header['DATE-AVG'] = target_header.get('DATE-AVG', 'DATE-OBS')
+            target_header['DATE-OBS'] = self.date.utc.isot
+
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
+        outmap = GenericMap(output_array, target_header,
                             plot_settings=self.plot_settings)
 
         # Check rsun mismatch
