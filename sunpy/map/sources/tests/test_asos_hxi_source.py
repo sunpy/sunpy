@@ -7,9 +7,7 @@ import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
-from sunpy.map import Map
 from sunpy.map.sources.asos import HXIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
 

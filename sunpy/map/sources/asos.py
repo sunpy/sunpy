@@ -3,10 +3,10 @@ ASO-S Map subclass definitions.
 """
 
 import astropy.units as u
-from sunpy.time import parse_time
+
 from sunpy.coordinates import get_earth
 from sunpy.map.mapbase import GenericMap, SpatialPair
-
+from sunpy.time import parse_time
 
 __all__ = ['HXIMap']
 
