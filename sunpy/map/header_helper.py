@@ -2,7 +2,7 @@ import numpy as np
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import SkyCoord, EarthLocation
+from astropy.coordinates import EarthLocation, SkyCoord
 
 from sunpy import log
 from sunpy.coordinates import frames, sun
@@ -128,7 +128,7 @@ def make_fitswcs_header(data,
         if isinstance(observer, EarthLocation):
             observer_meta = get_earth_observer_meta(observer)
             meta_wcs.update(observer_meta)
-            
+
             observer_hgs = observer.get_itrs(obstime=coordinate.obstime).transform_to(
                 frames.HeliographicStonyhurst(obstime=coordinate.obstime)
             )
@@ -306,28 +306,28 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
 def get_earth_observer_meta(observer):
     """
     Function to get OBSGEO metadata from an EarthLocation observer.
-    
+
     Parameters
     ----------
     observer : `~astropy.coordinates.EarthLocation`
         The Earth-based observer location.
-    
+
     Returns
     -------
     coord_meta : `dict`
         WCS metadata with the keys ``['obsgeo-x', 'obsgeo-y', 'obsgeo-z']``.
     """
-    
+
     if not isinstance(observer, EarthLocation):
         raise ValueError("Observer must be an EarthLocation instance for ground-based observations.")
-    
+
     itrs_coord = observer.get_itrs()
-    
+
     coord_meta = {}
     coord_meta['obsgeo-x'] = itrs_coord.x.to_value(u.m)
     coord_meta['obsgeo-y'] = itrs_coord.y.to_value(u.m)
     coord_meta['obsgeo-z'] = itrs_coord.z.to_value(u.m)
-    
+
     return coord_meta
 
 @u.quantity_input

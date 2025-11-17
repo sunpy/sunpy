@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord, EarthLocation
+from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
 from astropy.wcs import WCS
 
@@ -325,15 +325,15 @@ def test_make_hpr_header(hgs_coord):
 def test_earth_observer_obsgeo_keywords():
     """Test that ground-based observers get OBSGEO keywords."""
     greenwich = EarthLocation(lat=51.4769*u.deg, lon=0*u.deg, height=46*u.m)
-    
+
     # Simple coordinate without observer in frame
     coord = SkyCoord(0*u.arcsec, 0*u.arcsec,
                      obstime="2020-01-01T12:00:00",
                      frame=frames.Helioprojective)
-    
+
     data = np.zeros((512, 512))
     header = make_fitswcs_header(data, coord, observer=greenwich)
-    
+
     assert 'obsgeo-x' in header
     assert 'obsgeo-y' in header
     assert 'obsgeo-z' in header
