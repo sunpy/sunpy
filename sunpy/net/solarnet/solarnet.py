@@ -101,11 +101,11 @@ class SOLARNETClient(BaseClient):
         for i in data:
             # Filter out keys that should be hidden or not displayed
             filtered_data = {key.upper(): value for key, value in i.items()}
-                # Add specific fields from data_location
+            # Add specific fields from data_location
             filtered_data.update({
-                    "F_SIZE": i["data_location"]["file_size"],
-                    "URL": i["data_location"]["file_url"],
-                })
+                "F_SIZE": i["data_location"]["file_size"],
+                "URL": i["data_location"]["file_url"],
+            })
             results.append(filtered_data)
         qrt = QueryResponseTable(results, client=self)
         qrt.hide_keys = hide_keys + ["URL", "F_SIZE"]
