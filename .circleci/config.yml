@@ -42,7 +42,7 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run: pip install --user -U tox tox-pypi-filter
-      - run: tox -v
+      - run: tox -v -- -n 4
       - run:
           name: Running codecov
           command: bash -e .circleci/codecov_upload.sh -f ".tmp/${TOXENV}/coverage.xml"
@@ -77,7 +77,7 @@ jobs:
       # Generate Reference images
       - run: pip install --user -U tox tox-pypi-filter
       - run: rm -rf /home/circleci/sunpy-figure-tests/figures/$TOXENV/*
-      - run: tox -v -- --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
+      - run: tox -v -- -n 4 --mpl-generate-path=/home/circleci/sunpy-figure-tests/figures/$TOXENV | tee toxlog
       - run: |
           hashlib=$(grep "^figure_hashes.*\.json$" toxlog)
           cp ./sunpy/tests/$hashlib /home/circleci/sunpy-figure-tests/figures/$TOXENV/
