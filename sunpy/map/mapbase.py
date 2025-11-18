@@ -1168,21 +1168,26 @@ class GenericMap(NDData):
         return self.wcs.pixel_to_world(*center)
 
     @u.quantity_input
-    def shift_reference_coord(self, axis1: u.deg, axis2: u.deg):
+    def shift_reference_coord(self, axis1, axis2):
         """
-        Returns a map shifted by a specified amount to, for example, correct
-        for a bad map location. These values are applied directly to the
-        `~sunpy.map.GenericMap.reference_coordinate`. To check how much the
-        reference coordinate has been modified, see
+        Returns a map shifted by a specified amount applied directly to the
+        `~sunpy.map.GenericMap.reference_coordinate`.
+
+        To check how much the reference coordinate has been modified, see
         ``sunpy.map.GenericMap.meta.modified_items['CRVAL1']`` and
         ``sunpy.map.GenericMap.meta.modified_items['CRVAL2']``.
+
+        If ``axis1`` and ``axis2`` are given in pixels, the shift is converted
+        using the plate scale of the map.
 
         Parameters
         ----------
         axis1 : `~astropy.units.Quantity`
             The shift to apply to the Longitude (solar-x) coordinate.
+            This can be in degrees or pixels.
         axis2 : `~astropy.units.Quantity`
-            The shift to apply to the Latitude (solar-y) coordinate
+            The shift to apply to the Latitude (solar-y) coordinate.
+            This can be in degrees or pixels.
 
         Returns
         -------
@@ -1190,15 +1195,14 @@ class GenericMap(NDData):
             A new shifted Map.
         """
         new_meta = self.meta.copy()
-
-        # Update crvals
+        # If we are given pixel we turn them into physical units to shift CRVAL1/2
+        if axis1.unit.is_equivalent(u.pix):
+            axis1 = axis1*self.scale[0]
+        if axis2.unit.is_equivalent(u.pix):
+            axis2 = axis2*self.scale[1]
         new_meta['crval1'] = ((self._reference_longitude + axis1).to(self.spatial_units[0])).value
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
-
-        # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
-
-        return new_map
+        return self._new_instance(self.data, new_meta, self.plot_settings)
 
     def _rsun_meters(self, dsun=None):
         """
