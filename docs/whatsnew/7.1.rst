@@ -64,6 +64,11 @@ Added support for querying data from `solarnet API <https://solarnet.oma.be/>`__
     <BLANKLINE>
     <BLANKLINE>
 
+Added support for new observatories
+===================================
+
+Added a new map source for the ASO-S mission, currently added `~sunpy.map.sources.HXIMap` for the Hard X-ray Imager (HXI) payload, which enables the loading of the hard X-ray imaging FITS file that was exported from the HXI analysis software.
+
 We did not add any new features
 ===============================
 
