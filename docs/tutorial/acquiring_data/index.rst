@@ -245,7 +245,7 @@ In this example we'll search for LYRA or RHESSI data in a given time range:
     <BLANKLINE>
     <BLANKLINE>
 
-Failed client errors be reported in the returned `~sunpy.net.fido_factory.UnifiedResponse` and also on the individual `~sunpy.net.base_client.QueryResponseTable` responses in the ``.errors`` attribute.
+Failed client errors are reported in the returned `~sunpy.net.fido_factory.UnifiedResponse` and also on the individual `~sunpy.net.base_client.QueryResponseTable` responses in the ``.errors`` attributes.
 
 Working with Search Results
 ***************************
