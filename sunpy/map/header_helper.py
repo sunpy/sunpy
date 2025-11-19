@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 import astropy.units as u
@@ -6,7 +8,7 @@ from astropy.coordinates import EarthLocation, SkyCoord
 
 from sunpy import log
 from sunpy.coordinates import frames, sun
-from sunpy.util import MetaDict
+from sunpy.util import MetaDict, SunpyUserWarning
 
 __all__ = ['make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header', 'make_hpr_header',
            'get_earth_observer_meta']
@@ -79,7 +81,8 @@ def make_fitswcs_header(data,
         over the unit information attached to ``data``.
     observer : `~astropy.coordinates.EarthLocation`, optional
         Ground-based observer location. If provided, OBSGEO-X/Y/Z keywords will be set
-        in the header instead of heliographic observer keywords.
+        in the header. If both ``observer`` and ``coordinate.observer`` are set, the
+        explicit ``observer`` parameter takes precedence and a warning is issued.
 
     Returns
     -------
@@ -125,6 +128,14 @@ def make_fitswcs_header(data,
     meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
 
     if observer is not None:
+        if getattr(coordinate, 'observer', None) is not None:
+            warnings.warn(
+                "Both 'coordinate.observer' and 'observer' parameter are set. "
+                "Using the explicit 'observer' parameter and ignoring 'coordinate.observer'.",
+                SunpyUserWarning,
+                stacklevel=2
+            )
+
         if isinstance(observer, EarthLocation):
             observer_meta = get_earth_observer_meta(observer)
             meta_wcs.update(observer_meta)
@@ -134,6 +145,8 @@ def make_fitswcs_header(data,
             )
             dsun_obs = observer_hgs.radius
             meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
+        else:
+            raise ValueError("`observer` parameter must be an `EarthLocation` instance.")
     elif getattr(coordinate, 'observer', None) is not None:
         if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
             dsun_obs = coordinate.radius

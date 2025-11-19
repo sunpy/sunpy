@@ -12,6 +12,7 @@ import sunpy.map
 from sunpy.coordinates import frames, sun
 from sunpy.map import make_fitswcs_header
 from sunpy.map.header_helper import make_heliographic_header, make_hpr_header
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 
@@ -333,6 +334,26 @@ def test_earth_observer_obsgeo_keywords():
 
     data = np.zeros((512, 512))
     header = make_fitswcs_header(data, coord, observer=greenwich)
+
+    assert 'obsgeo-x' in header
+    assert 'obsgeo-y' in header
+    assert 'obsgeo-z' in header
+    assert 'rsun_obs' in header
+
+def test_earth_observer_with_coordinate_observer_conflict():
+    """Test that explicit observer parameter takes precedence with warning."""
+    greenwich = EarthLocation(lat=51.4769*u.deg, lon=0*u.deg, height=46*u.m)
+
+    coord_with_observer = SkyCoord(0*u.arcsec, 0*u.arcsec,
+                                   obstime="2020-01-01T12:00:00",
+                                   observer='earth',
+                                   frame=frames.Helioprojective)
+
+    data = np.zeros((512, 512))
+
+    # Conflict case.
+    with pytest.warns(SunpyUserWarning, match="coordinate.observer.*ignoring"):
+        header = make_fitswcs_header(data, coord_with_observer, observer=greenwich)
 
     assert 'obsgeo-x' in header
     assert 'obsgeo-y' in header
