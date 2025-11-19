@@ -386,6 +386,10 @@ def test_get_heliocentric_angle_on_disk():
     hpc_coord_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
     assert_quantity_allclose(get_heliocentric_angle(hpc_coord_center), 0*u.deg)
 
+    # Very close to disk center
+    hpc_coord_centerish = SkyCoord(1e-6*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    assert_quantity_allclose(get_heliocentric_angle(hpc_coord_centerish), 6.0667397e-8*u.deg)
+
     # Almost at the limb
     hpc_coord_limb = SkyCoord(944.35*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
     assert_quantity_allclose(get_heliocentric_angle(hpc_coord_limb), 89.264299*u.deg)

@@ -474,20 +474,20 @@ def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000
 
 def get_heliocentric_angle(coordinate_on_solar_disk):
     r"""
-    The heliocentric angle is the angle between direction from a point on the surface of the Sun toward
-    the observer, with respect to the local vertical.
+    Returns the heliocentric angle, the angle between the observer look direction
+    for a point on the surface of the Sun and the local vertical for that point.
 
-    The range of value is between 0 :math:`^\circ` (at the center) and 90 :math:`^\circ` (at the edge).
-    If one takes the :math:`\cos` of this value, this is referred to as :math:`\mu`.
+    If a point is on the visible side of the Sun for the observer, the angle ranges
+    between 0 :math:`^\circ` (at disk center) and 90 :math:`^\circ` (at the solar
+    limb). A point on the far side of the Sun has to be provided as a 3D coordinate,
+    and then the angle ranges from 90 :math:`^\circ` to 180 :math:`^\circ`.
 
-    It is worked out using the following equation:
+    The heliocentric angle is related to the parameter :math:`\mu` commonly used for
+    limb-darkening calculations:
 
     .. math::
 
-        heliocentric angle = \arcsin(\frac{d}{r})
         \mu=\cos(heliocentric angle)
-
-    where :math:`d` is the distance between the observer and the point on the solar surface and :math:`r` is the radius of the disk.
 
     Parameters
     ----------
@@ -513,7 +513,7 @@ def get_heliocentric_angle(coordinate_on_solar_disk):
     >>> hpc_coord_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
     >>> get_heliocentric_angle(hpc_coord_center)
     <Quantity 0. deg>
-    >>> # Mu
+    >>> # mu
     >>> np.cos(get_heliocentric_angle(hpc_coord_center))
     <Quantity 1.>
 
@@ -521,12 +521,12 @@ def get_heliocentric_angle(coordinate_on_solar_disk):
     >>> hpc_coord_limb = SkyCoord(944.35*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
     >>> get_heliocentric_angle(hpc_coord_limb)
     <Quantity 89.26429919 deg>
-    >>> # Mu
+    >>> # mu
     >>> np.cos(get_heliocentric_angle(hpc_coord_limb))
     <Quantity 0.01284005>
     """
     hcc = coordinate_on_solar_disk.heliocentric
     normal = hcc.cartesian
     to_observer = CartesianRepresentation(0, 0, 1) * hcc.observer.radius - normal
-    heliocentric_angle = normal.dot(to_observer) / (normal.norm() * to_observer.norm())
-    return np.rad2deg(np.arccos(heliocentric_angle))
+    heliocentric_angle = np.arctan2(normal.cross(to_observer).norm(), normal.dot(to_observer))
+    return heliocentric_angle.to(u.deg)
