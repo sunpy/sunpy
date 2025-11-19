@@ -25,66 +25,9 @@ from sunpy.map import (
 from sunpy.map.header_helper import get_observer_meta
 from sunpy.time import parse_time
 from sunpy.util import expand_list
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import warn_user
 
-__all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
-
-
-@u.quantity_input
-@deprecated(since="6.0", alternative="sunpy.sun.models.differential_rotation")
-def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
-    r"""
-    This function computes the change in longitude over days in degrees.
-
-    Parameters
-    ----------
-    duration : `~astropy.units.Quantity`
-        Number of seconds to rotate over.
-    latitude : `~astropy.units.Quantity`
-        heliographic coordinate latitude in Degrees.
-    rot_type : `str`
-        The differential rotation model to use.
-
-        One of:
-
-        | ``howard`` : Use values from :cite:t:`howard_solar_1990`
-        | ``snodgrass`` : Use values from :cite:t:`snodgrass_magnetic_1983`
-        | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
-        | ``rigid`` : Use values from `~sunpy.sun.constants.sidereal_rotation_rate`.
-
-    frame_time : `str`
-        One of : ``'sidereal'`` or  ``'synodic'``. Choose 'type of day' time reference frame.
-
-    Returns
-    -------
-    longitude_delta : `~astropy.units.Quantity`
-        The change in longitude over days (units=degrees)
-
-    Notes
-    -----
-    The rotation rate at a heliographic latitude :math:`\theta` is given by
-
-    .. math::
-
-        A + B \sin^{2} \left (\theta \right ) + C \sin^{4} \left ( \theta \right )
-
-    where :math:`A, B, C` are constants that depend on the model:
-
-    ========= ======= ====== ====== ==========
-    Model     A       B      C      Unit
-    ========= ======= ====== ====== ==========
-    howard    2.894   -0.428 -0.370 microrad/s
-    snodgrass 2.851   -0.343 -0.474 microrad/s
-    allen     14.44   -3.0   0      deg/day
-    rigid     14.1844 0      0      deg/day
-    ========= ======= ====== ====== ==========
-
-    1 microrad/s is approximately 4.95 deg/day.
-    See also the comparisons in :cite:t:`beck_comparison_2000`.
-    """
-
-    return sunpy.sun.models.differential_rotation(duration, latitude, model=rot_type, frame_time=frame_time)
+__all__ = ['solar_rotate_coordinate', 'differential_rotate']
 
 
 def _validate_observer_args(initial_obstime, observer, time):

@@ -3,16 +3,12 @@ This module translates the results of a HEK query into a VSO query and
 returns the results from the VSO query to the user.
 """
 
-import sys
 
 from tqdm import tqdm
-
-from astropy.utils.decorators import deprecated_renamed_argument
 
 from sunpy.net import attrs as a
 from sunpy.net import hek, vso
 from sunpy.net.hek import HEKTable
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
@@ -116,8 +112,7 @@ class H2VClient:
         self.vso_results = []
         self.num_of_records = 0
 
-    @deprecated_renamed_argument("progress", None,"6.0", warning_type=SunpyDeprecationWarning)
-    def full_query(self, client_query, limit=None, progress=False):
+    def full_query(self, client_query, limit=None):
         """
         An encompassing method that takes a HEK query and returns a VSO result
 
@@ -141,17 +136,12 @@ class H2VClient:
         7
         """
         self._quick_clean()
-        if progress:
-            sys.stdout.write('\rQuerying HEK webservice...')
-            sys.stdout.flush()
         self.hek_results = self.hek_client.search(*client_query)
         self._quick_clean()
         return self.translate_and_query(self.hek_results,
                                         limit=limit)
 
-    @deprecated_renamed_argument("vso_response_format", None,"6.0", warning_type=SunpyDeprecationWarning)
-    @deprecated_renamed_argument("progress", None,"6.0", warning_type=SunpyDeprecationWarning)
-    def translate_and_query(self, hek_results, limit=None, progress=False, vso_response_format="table"):
+    def translate_and_query(self, hek_results, limit=None):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -165,9 +155,6 @@ class H2VClient:
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.
-        progress : bool
-            A flag to turn off the progress bar, defaults to "off"
-            Was never used and is now deprecated, will be removed in sunpy 7.0
 
         Examples
         --------
@@ -182,8 +169,6 @@ class H2VClient:
         """
         vso_query = translate_results_to_query(hek_results)
         kwargs = {}
-        if vso_response_format != "table":
-            kwargs = {"response_format": vso_response_format}
         for query in tqdm(vso_query, unit="records"):
             temp = self.vso_client.search(*query, **kwargs)
             self.vso_results.append(temp)
