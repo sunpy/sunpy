@@ -32,7 +32,6 @@ class LYRAClient(GenericClient):
     2025-01-02 00:00:00.000 2025-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     2
     2025-01-02 00:00:00.000 2025-01-02 23:59:59.999       LYRA irradiance PROBA2      ESA     3
     <BLANKLINE>
-    <BLANKLINE>
     """
     pattern = 'https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits'
 

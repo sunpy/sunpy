@@ -174,6 +174,7 @@ class QueryResponseTable(QTable):
     client = TableAttribute()
     display_keys = TableAttribute(default=slice(None))
     hide_keys = TableAttribute()
+    errors = TableAttribute(default=[])
 
     size_column = None
 
