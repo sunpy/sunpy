@@ -9,7 +9,7 @@ from astropy.time import Time, TimeDelta
 from sunpy import config
 from sunpy.time import is_time_equal, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.decorators import add_common_docstring
 
 TIME_FORMAT = config.get('general', 'time_format')
 
@@ -424,22 +424,6 @@ class TimeRange:
         if self._t1 > self._t2:
             self._t1, self._t2 = self._t2, self._t1
 
-    @deprecated('6.1', alternative='sunpy.time.TimeRange.shift')
-    def extend(self, dt_start, dt_end):
-        """
-        Shift the start and the end of the time range.
-
-        To extend the time range both forwards and backwards, specify a negative value
-        for ``dt_start`` and a positive value for ``dt_end``.
-
-        Parameters
-        ----------
-        dt_start : `astropy.time.TimeDelta`
-            The amount to shift the start time.
-        dt_end : `astropy.time.TimeDelta`
-            The amount to shift the end time.
-        """
-        self.shift(dt_start, dt_end)
 
     def get_dates(self):
         """

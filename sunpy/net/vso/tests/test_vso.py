@@ -13,8 +13,7 @@ from sunpy.net import _attrs as core_attrs
 from sunpy.net import attr
 from sunpy.net import attrs as a
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.legacy_response import QueryResponse
-from sunpy.net.vso.table_response import VSOQueryResponseTable, iter_sort_response
+from sunpy.net.vso.table_response import VSOQueryResponseTable
 from sunpy.net.vso.vso import (
     DEFAULT_URL_PORT,
     VSOClient,
@@ -25,7 +24,7 @@ from sunpy.net.vso.vso import (
 )
 from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyConnectionWarning, SunpyDeprecationWarning, SunpyUserWarning
+from sunpy.util.exceptions import SunpyConnectionWarning, SunpyUserWarning
 
 
 @pytest.fixture(scope="session")
@@ -66,21 +65,17 @@ class MockQRResponse:
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
-
     def __init__(self, records=None, errors=None):
-
         self.provideritem = list()
-
         if records is not None:
             self.provideritem = [MockObject(record=MockObject(recorditem=list(records)))]
-
         if errors is not None:
             self.provideritem.extend([MockObject(error=err) for err in errors])
 
 
 @pytest.fixture
 def mock_response():
-    # defining unsorted queryresult to mock test `iter_sort_response()`.
+    # Defining unsorted queryresult to mock test `iter_sort_response()`.
     # Incorporated cases with no None start time and without time attribute too.
     recs = [
         MockQRRecord(start_time="2021/01/01T00:00:04", fileid='t4'),
@@ -130,11 +125,10 @@ def test_path(client, tmpdir):
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
     """
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        qr = client.search(
-            core_attrs.Time('2025-03-03 06:33', '2025-03-03 06:33:13'),
-            core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA),
-            response_format="table")
+    qr = client.search(
+        core_attrs.Time('2025-03-03 06:33', '2025-03-03 06:33:13'),
+        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA)
+    )
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir, site="NSO")
     assert len(files) == 1
@@ -163,8 +157,7 @@ def test_no_download(client):
     stereo = (core_attrs.Detector('STEREO_B') &
               core_attrs.Instrument('EUVI') &
               core_attrs.Time('1900-01-01', '1900-01-01T00:10:00'))
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        qr = client.search(stereo, response_format="table")
+    qr = client.search(stereo)
     downloader = MockDownloader()
     res = client.fetch(qr, wait=False, downloader=downloader)
     assert downloader.download_called is False
@@ -178,17 +171,9 @@ def test_non_str_instrument():
         core_attrs.Instrument(1234)
 
 
-def test_iter_sort_response(mock_response):
-    fileids = [i.fileid for i in iter_sort_response(mock_response)]
-    # the function would have sorted records w.r.t. start time,
-    # those without start time appended at last of final response.
-    assert fileids == ['t1', 't2', 't3', 't4', 'f1', 'f2']
-
-
 def test_from_zeep_response(mocker):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
     records = (MockQRRecord(),)
-
     table = VSOQueryResponseTable.from_zeep_response(MockQRResponse(records), client=None)
 
     # These are the only None values in the table.
@@ -258,18 +243,15 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        res = client.search(core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
-                            core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'), response_format="table")
-
+    res = client.search(
+        core_attrs.Time('2020-01-02 23:52:00', '2020-01-02 23:54:00'),
+        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA')
+    )
     dr = client.make_getdatarequest(res)
-
     # Extract the DRIs from the request
     dris = dr.request.datacontainer.datarequestitem
-
     # 3 HMI series and one AIA
     assert len(dris) == 4
-
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
         fileids = dri.fileiditem.fileid
@@ -365,10 +347,9 @@ def test_build_client_params():
 @pytest.mark.remote_data
 @pytest.mark.filterwarnings("ignore:Can't connect to vso")
 def test_incorrect_content_disposition(client):
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        results = client.search(
-            core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
-            core_attrs.Instrument('mdi'), response_format="table")
+    results = client.search(
+        core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
+        core_attrs.Instrument('mdi'))
     files = client.fetch(results[:1])
 
     assert len(files) == 1
@@ -412,24 +393,9 @@ def test_vso_repr(client):
     assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nProvides access to qu'
 
 
-
-@pytest.mark.remote_data
-def test_response_block_properties(client):
-    with pytest.warns(SunpyDeprecationWarning, match="response_format"):
-        res = client.search(a.Time('2020/3/4', '2020/3/6'), a.Instrument('aia'),
-                            a.Wavelength(171 * u.angstrom),
-                            a.Sample(10 * u.minute),
-                            response_format="legacy")
-    properties = res.response_block_properties()
-    assert len(properties) == 0
-
-
 def test_response_block_properties_table(mocker, mock_response):
     mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
-    legacy_response = QueryResponse.create(mock_response)
     table_response = VSOQueryResponseTable.from_zeep_response(mock_response, client=False)
-
-    assert str(legacy_response)
     assert str(table_response)
 
 

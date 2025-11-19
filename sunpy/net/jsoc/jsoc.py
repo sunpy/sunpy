@@ -785,7 +785,7 @@ class JSOCClient(BaseClient):
         return cls.load_jsoc_values()
 
     @staticmethod
-    def create_parse_jsoc_values():
+    def _update_jsoc_data():
         """
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.

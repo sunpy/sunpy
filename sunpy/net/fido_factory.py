@@ -49,7 +49,7 @@ class UnifiedResponse(Sequence):
         Parameters
         ----------
         *results : `sunpy.net.base_client.QueryResponseTable`
-            One or more QueryResponse objects.
+            One or more QueryResponseTable objects.
         """
         self._list = []
         self._numfile = 0
