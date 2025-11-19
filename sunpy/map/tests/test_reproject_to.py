@@ -273,7 +273,7 @@ def m_eit_2():
 
 
 def test_reproject_to_preserve_date_obs(m_eit_1, m_eit_2):
-    "Test that preserve_date_obs preserves the date of the original date in DATE-OBS"
+    """Test that preserve_date_obs preserves the date of the original date in DATE-OBS"""
     with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
         m_2_r = m_eit_2.reproject_to(m_eit_1.wcs, preserve_date_obs=True)
     assert m_2_r.date == m_eit_2.date
@@ -282,7 +282,7 @@ def test_reproject_to_preserve_date_obs(m_eit_1, m_eit_2):
 
 
 def test_reproject_to_preserve_date_obs_target_has_no_date_avg(m_eit_1, m_eit_2):
-    "Test that date is preserved even when target WCS does not have a date-avg"
+    """Test that date is preserved even when target WCS does not have a date-avg"""
     target_header = m_eit_1.wcs.to_header()
     target_header.remove('DATE-AVG')
     target_header.set('NAXIS1', value=m_eit_1.data.shape[1])
