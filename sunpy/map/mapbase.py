@@ -1167,7 +1167,7 @@ class GenericMap(NDData):
         center = (np.array([self.dimensions.x.value, self.dimensions.y.value]) - 1) / 2.
         return self.wcs.pixel_to_world(*center)
 
-    @u.quantity_input
+    @u.quantity_input(axis1=[u.deg, u.pix], axis2=[u.deg, u.pix])
     def shift_reference_coord(self, axis1, axis2):
         """
         Returns a map shifted by a specified amount applied directly to the
@@ -1184,10 +1184,10 @@ class GenericMap(NDData):
         ----------
         axis1 : `~astropy.units.Quantity`
             The shift to apply to the Longitude (solar-x) coordinate.
-            This can be in degrees or pixels.
+            This can be in deg equivalent units or pixels.
         axis2 : `~astropy.units.Quantity`
             The shift to apply to the Latitude (solar-y) coordinate.
-            This can be in degrees or pixels.
+            This can be in deg equivalent units or pixels.
 
         Returns
         -------
