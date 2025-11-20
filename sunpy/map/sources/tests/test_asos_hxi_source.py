@@ -11,10 +11,9 @@ from sunpy.map.sources.asos import HXIMap
 from .helpers import _test_private_date_setters
 
 
-@pytest.fixture(scope="module")
-def hxi_map():
-    ms = [get_dummy_map_from_header(get_test_filepath(f"hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN_{i}.header")) for i in range(2)]
-    return ms
+@pytest.fixture(scope="module", params=[0,1])
+def hxi_map(request):
+    return get_dummy_map_from_header(get_test_filepath(f"hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN_{request.param}.header"))
 
 
 def test_HXIMap(hxi_map):
