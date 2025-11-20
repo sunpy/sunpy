@@ -35,7 +35,7 @@ class HXIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-        self._nickname =  self.meta.get('nickname', 'ASO-S/HXI')
+        self._nickname = self.meta.get('nickname', 'ASO-S/HXI')
         self.plot_settings['cmap'] = 'rhessi'
 
     @property
@@ -73,10 +73,13 @@ class HXIMap(GenericMap):
         ' 1-May-2023 13:08:16.962' (the latter one is output from SSWIDL's map2fits)
         """
         date_obs = self.meta.get('DATE-OBS').strip()
-        tmp = date_obs.split(" ")[0]
-        if len(tmp)==9 and len(tmp.split("-")[-1])==2:
-            date_obs = date_obs[:7]+'20'+date_obs[7:]
-        return parse_time(date_obs)
+        try:
+            return parse_time(date_obs)
+        except ValueError:
+            tmp = date_obs.split(" ")[0]
+            if len(tmp)==9 and len(tmp.split("-")[-1])==2:
+                date_obs = date_obs[:7]+'20'+date_obs[7:]
+            return parse_time(date_obs)
 
     @property
     def date_end(self):
