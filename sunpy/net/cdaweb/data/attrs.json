@@ -801,6 +801,7 @@
   "DN_MAGN-L2-HIRES_G16": "GOES-16 Magnetometer L2 - Rob Redmon, Paul Loto'aniu, Howard Singer (DOC/NOAA/NCEI and DOC/NOAA/NWS/SWPC respectively)",
   "DN_MAGN-L2-HIRES_G17": "GOES-17 Magnetometer L2 - Rob Redmon, Paul Loto'aniu, Howard Singer (DOC/NOAA/NCEI and DOC/NOAA/NWS/SWPC respectively)",
   "DN_MAGN-L2-HIRES_G18": "GOES-18 Magnetometer L2 - Rob Redmon, Paul Loto'aniu (DOC/NOAA/NESDIS/NCEI/OGSSD/STP)",
+  "DN_MAGN-L2-HIRES_G19": "GOES-19 Magnetometer L2 Geomagnetic Field 10 Hz Product with Complete Coordinate Frames - Rob Redmon, Paul Loto'aniu (DOC/NOAA/NESDIS/NCEI/OGSSD/STP)",
   "DSCOVR_AT_DEF": "DSCOVR Definitive Attitude - A. Szabo (NASA Goddard Space Flight Center)",
   "DSCOVR_AT_PRE": "DSCOVR Preliminary Attitude - A. Szabo (NASA Goddard Space Flight Center)",
   "DSCOVR_H0_MAG": "DSCOVR Fluxgate Magnetometer 1-sec Definitive Data - A. Koval (UMBC, NASA/GSFC)",
