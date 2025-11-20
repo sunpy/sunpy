@@ -22,6 +22,8 @@ import numpy as np
 import astropy.units as u
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
+    CIRS,
+    GCRS,
     HCRS,
     ICRS,
     ITRS,
@@ -32,6 +34,7 @@ from astropy.coordinates import (
 )
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.builtin_frames import make_transform_graph_docs
+from astropy.coordinates.builtin_frames.intermediate_rotation_transforms import gcrs_precession_mat
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.matrix_utilities import matrix_transpose, rotation_matrix
 from astropy.coordinates.representation import (
@@ -1197,17 +1200,60 @@ def gei_to_hme(geicoord, hmeframe):
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
-                                 GeocentricEarthEquatorial, GeocentricEarthEquatorial)
-@_transformation_debug("GEI->GEI")
-def gei_to_gei(from_coo, to_frame):
+                                 GCRS, GeocentricEarthEquatorial)
+@_transformation_debug("GCRS->GEI")
+def gcrs_to_gei(gcrscoord, geiframe):
     """
-    Convert between two Geocentric Earth Equatorial frames.
+    Convert from GCRS to Geocentric Earth Equatorial
     """
-    if _times_are_equal(from_coo.equinox, to_frame.equinox) and \
-       _times_are_equal(from_coo.obstime, to_frame.obstime):
-        return to_frame.realize_frame(from_coo.data)
-    else:
-        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
+    if geiframe.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # Use an intermediate frame of GCRS at the GEI observation time
+    int_frame = GCRS(obstime=geiframe.obstime)
+    int_coord = gcrscoord.transform_to(int_frame)
+
+    # Precess to the equinox
+    rot_matrix = gcrs_precession_mat(geiframe.equinox)
+    newrepr = int_coord.cartesian.transform(rot_matrix)
+
+    return geiframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricEarthEquatorial, GCRS)
+@_transformation_debug("GEI->GCRS")
+def gei_to_gcrs(geicoord, gcrsframe):
+    """
+    Convert from Geocentric Earth Equatorial to GCRS
+    """
+    if geicoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # Use an intermediate frame of GCRS at the GEI observation time
+    int_frame = GCRS(obstime=geicoord.obstime)
+
+    # Precess from the equinox
+    rot_matrix = matrix_transpose(gcrs_precession_mat(geicoord.equinox))
+    object_int = geicoord.cartesian.transform(rot_matrix)
+    int_coord = int_frame.realize_frame(object_int)
+
+    # Convert to the final frame
+    return int_coord.transform_to(gcrsframe)
+
+
+frame_transform_graph._add_merged_transform(GeocentricEarthEquatorial, GCRS, GeocentricEarthEquatorial)
+
+
+# Add shortcuts to/from ICRS so that GEI transforms to/from heliospheric frames go through HME rather than GCRS
+frame_transform_graph._add_merged_transform(GeocentricEarthEquatorial, HeliocentricMeanEcliptic, ICRS)
+frame_transform_graph._add_merged_transform(ICRS, HeliocentricMeanEcliptic, GeocentricEarthEquatorial)
+
+# Add shortcuts so that GEI transforms to/from CIRS-based frames go through GCRS and not ITRS
+frame_transform_graph._add_merged_transform(GeocentricEarthEquatorial, GCRS, CIRS)
+frame_transform_graph._add_merged_transform(CIRS, GCRS, GeocentricEarthEquatorial)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
