@@ -3,6 +3,8 @@
 Saving and loading sunpy Maps with FITS
 =======================================
 
+.. tags:: io_ops, fits, map
+
 In this example we are going to look at how to save and load a
 `~sunpy.map.GenericMap` as FITS files.
 

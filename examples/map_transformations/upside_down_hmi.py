@@ -3,6 +3,8 @@
 Rotating HMI maps so they're not 'upside-down'
 ==============================================
 
+.. tags:: map_transformations, reproject
+
 This example shows how to rotate a HMI magnetogram, so when you plot it
 it appears with solar North pointing up.
 """

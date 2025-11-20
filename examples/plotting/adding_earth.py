@@ -3,6 +3,8 @@
 Adding an Earth scale image
 ===========================
 
+.. tags:: plotting, visualization
+
 This example shows how to plot a map with an image of the Earth added for scale.
 """
 import matplotlib.pyplot as plt

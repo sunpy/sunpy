@@ -3,6 +3,8 @@
 Reprojecting Using a Spherical Screen
 =====================================
 
+.. tags:: map_transformations, reproject, fits, visualization
+
 This example demonstrates how you can reproject an image as if it lies on the
 inside of a spherical screen and the observer is not at the center of the
 sphere. This functionality is primarily for visualization purposes, since

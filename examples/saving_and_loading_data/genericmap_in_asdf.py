@@ -3,6 +3,8 @@
 Saving and loading sunpy Maps with ASDF
 =======================================
 
+.. tags:: io_ops, asdf, map
+
 In this example, we are going to look at how we can save and load a
 `~sunpy.map.GenericMap` with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 

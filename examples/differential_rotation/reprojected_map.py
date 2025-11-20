@@ -3,6 +3,8 @@
 Differentially rotating a map
 =============================
 
+.. tags:: differential_rotation, map
+
 How to apply differential rotation to a Map.
 
 The example uses the :func:`~sunpy.coordinates.propagate_with_solar_surface`

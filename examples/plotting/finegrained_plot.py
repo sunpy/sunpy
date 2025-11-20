@@ -3,6 +3,8 @@
 Fine grained Plotting Features of Map
 =====================================
 
+.. tags:: plotting, visualization
+
 How to control various plotting features of map.
 """
 import matplotlib.pyplot as plt
