@@ -1,0 +1,1 @@
+Added support for pixel inputs to `~sunpy.map.GenericMap.shift_reference_coord`.
