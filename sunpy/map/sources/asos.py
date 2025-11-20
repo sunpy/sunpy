@@ -46,12 +46,6 @@ class HXIMap(GenericMap):
     def _get_cmap_name(self):
         return "rhessi"
 
-    def _rotation_matrix_from_crota(self):
-        """
-        Rotation from CROTA.
-        """
-        return super()._rotation_matrix_from_crota(crota_key='CROTA')
-
     @property
     def spatial_units(self):
         units = [self.meta.get('cunit1', None), self.meta.get('cunit2', None)]
