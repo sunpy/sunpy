@@ -121,21 +121,22 @@ def make_fitswcs_header(data,
         else:
             log.info("Overwriting data's current unit with specified unit.")
 
-    meta_wcs = _get_wcs_meta(coordinate, projection_code)
+    if observer is not None and getattr(coordinate, 'observer', None) is not None:
+        warnings.warn(
+            "Both 'coordinate.observer' and 'observer' parameter are set. "
+            "Using the explicit 'observer' parameter and ignoring 'coordinate.observer'.",
+            SunpyUserWarning,
+            stacklevel=2
+        )
+        # Don't let `_get_wcs_meta` set hgln_obs and hglt_obs.
+        coordinate = coordinate.replicate(observer=None)
 
+    meta_wcs = _get_wcs_meta(coordinate, projection_code)
     meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector, wavelength, exposure, unit)
     meta_wcs = _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape)
     meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
 
     if observer is not None:
-        if getattr(coordinate, 'observer', None) is not None:
-            warnings.warn(
-                "Both 'coordinate.observer' and 'observer' parameter are set. "
-                "Using the explicit 'observer' parameter and ignoring 'coordinate.observer'.",
-                SunpyUserWarning,
-                stacklevel=2
-            )
-
         if isinstance(observer, EarthLocation):
             observer_meta = get_earth_observer_meta(observer)
             meta_wcs.update(observer_meta)

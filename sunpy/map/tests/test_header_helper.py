@@ -339,6 +339,8 @@ def test_earth_observer_obsgeo_keywords():
     assert 'obsgeo-y' in header
     assert 'obsgeo-z' in header
     assert 'rsun_obs' in header
+    assert 'hgln_obs' not in header
+    assert 'hglt_obs' not in header
 
 def test_earth_observer_with_coordinate_observer_conflict():
     """Test that explicit observer parameter takes precedence with warning."""
@@ -359,3 +361,5 @@ def test_earth_observer_with_coordinate_observer_conflict():
     assert 'obsgeo-y' in header
     assert 'obsgeo-z' in header
     assert 'rsun_obs' in header
+    assert 'hgln_obs' not in header
+    assert 'hglt_obs' not in header
