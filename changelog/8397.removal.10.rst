@@ -1,0 +1,1 @@
+Removed the ability to read SDO/EVE level 0CS average files in `sunpy.timeseries.TimeSeries` after its long deprecation period.

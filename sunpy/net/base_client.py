@@ -24,7 +24,7 @@ class BaseQueryResponse(Sequence):
 
     Notes
     -----
-    * A QueryResponse object must be able to be instantiated with only one
+    * A QueryResponse or QueryResponseTable object must be able to be instantiated with only one
       iterable argument. (i.e. the ``__init__`` must only have one required
       argument).
     * The `client` property must be settable.
@@ -174,6 +174,7 @@ class QueryResponseTable(QTable):
     client = TableAttribute()
     display_keys = TableAttribute(default=slice(None))
     hide_keys = TableAttribute()
+    errors = TableAttribute(default=[])
 
     size_column = None
 
@@ -208,10 +209,11 @@ class QueryResponseTable(QTable):
         extra_cols = [col for col in all_cols if col not in first_names]
         all_cols = first_names + extra_cols
         new_table = self[[col for col in all_cols if self[col] is not None]]
-
         if remove_empty:
-            empty_cols = [col.info.name for col in self.itercols()
-                          if col.info.dtype.kind == 'O' and all(val is None for val in col)]
+            empty_cols = [
+                col.info.name for col in self.itercols()
+                if col.info.dtype.kind == 'O' and all(val is None for val in col)
+            ]
             new_table.remove_columns(empty_cols)
 
         return new_table

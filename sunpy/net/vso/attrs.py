@@ -213,7 +213,7 @@ _walker.add_converter(_attrs.Time)(
 
 
 _walker.add_converter(_attr.SimpleAttr)(
-    lambda x: _attr.ValueAttr({(x.__class__.__name__.lower(), ): x.value})
+    lambda x: _attr.ValueAttr({(x.__class__.__name__.lower(),): x.value})
 )
 
 

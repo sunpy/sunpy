@@ -10,7 +10,7 @@ from sunpy.time import TimeRange, parse_time
 
 
 def test_simpleattr_apply():
-    a = attr.ValueAttr({('test', ): 1})
+    a = attr.ValueAttr({('test',): 1})
     dct = {}
     va._walker.apply(a, None, dct)
     assert dct['test'] == 1
@@ -30,7 +30,7 @@ def test_input_error():
 
 @pytest.mark.remote_data
 def test_simpleattr_create(client):
-    a = attr.ValueAttr({('instrument', ): 'eit'})
+    a = attr.ValueAttr({('instrument',): 'eit'})
     assert va._walker.create(a, client.api)[0].instrument == 'eit'
 
 

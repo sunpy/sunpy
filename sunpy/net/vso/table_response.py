@@ -8,7 +8,6 @@ import numpy as np
 from zeep.helpers import serialize_object
 
 import astropy.units as u
-from astropy.table import TableAttribute
 from astropy.time import Time
 
 from sunpy.net.base_client import QueryResponseTable
@@ -51,22 +50,15 @@ def iter_sort_response(response):
 
 class VSOQueryResponseTable(QueryResponseTable):
     hide_keys = ['fileid', 'fileurl', 'Info Required']
-    errors = TableAttribute(default=[])
     size_column = 'Size'
 
     @classmethod
-    def from_zeep_response(cls, response, *, client, _sort=True):
+    def from_zeep_response(cls, response, *, client):
         """
         Construct a table response from the zeep response.
         """
-        # _sort is a hack to be able to convert from a legacy QueryResponse to
-        # a table response.
-        if _sort:
-            records = iter_sort_response(response)
-        else:
-            records = response
-
         data = []
+        records = iter_sort_response(response)
         for record in records:
             row = defaultdict(lambda: None)
             for key, value in serialize_object(record).items():
