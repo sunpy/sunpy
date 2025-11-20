@@ -982,18 +982,73 @@ def gse_to_hee(gsecoord, heeframe):
     return heeframe._replicate(newrepr, obstime=int_coord.obstime)
 
 
+def _rotation_matrix_gei_to_gse(geiframe):
+    """
+    Return the rotation matrix from GEI to gse at the same observation time
+    """
+    # Get the Earth-Sun vector
+    sun = ICRS(get_body_barycentric('sun', geiframe.obstime))
+    earth_sun_gei = sun.transform_to(geiframe).cartesian
+
+    # Go from equatorial to ecliptic
+    obl_matrix = _rotation_matrix_obliquity(geiframe.obstime)
+    earth_sun_ecliptic = earth_sun_gei.transform(obl_matrix)
+
+    # Rotate the Earth-Sun vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(earth_sun_ecliptic)
+
+    # Tilt the rotated Earth-Sun vector so that it is aligned with the X axis
+    tilt_matrix = _rotation_matrix_reprs_to_reprs(earth_sun_ecliptic.transform(rot_matrix),
+                                                  CartesianRepresentation(1, 0, 0))
+
+    return tilt_matrix @ rot_matrix @ obl_matrix
+
+
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
-                                 GeocentricSolarEcliptic, GeocentricSolarEcliptic)
-@_transformation_debug("GSE->GSE")
-def gse_to_gse(from_coo, to_frame):
+                                 GeocentricEarthEquatorial, GeocentricSolarEcliptic)
+@_transformation_debug("GEI->GSE")
+def gei_to_gse(geicoord, gseframe):
     """
-    Convert between two Geocentric Solar Ecliptic frames.
+    Convert from Geocentric Earth Equatorial to Geocentric Solar Ecliptic
     """
-    if _times_are_equal(from_coo.obstime, to_frame.obstime):
-        return to_frame.realize_frame(from_coo.data)
-    else:
-        heecoord = from_coo.transform_to(HeliocentricEarthEcliptic(obstime=from_coo.obstime))
-        return heecoord.transform_to(to_frame)
+    if geicoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    # Convert to the GEI frame with mean equinox of date at the GSE obstime
+    int_frame = GeocentricEarthEquatorial(obstime=gseframe.obstime, equinox=gseframe.obstime)
+    int_coord = geicoord.transform_to(int_frame)
+
+    # Rotate the intermediate coord to the GSE frame
+    total_matrix = _rotation_matrix_gei_to_gse(int_frame)
+    newrepr = int_coord.cartesian.transform(total_matrix)
+
+    return gseframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricSolarEcliptic, GeocentricEarthEquatorial)
+@_transformation_debug("GSE->GEI")
+def gse_to_gei(gsecoord, geiframe):
+    """
+    Convert from Geocentric Solar Ecliptic to Geocentric Earth Equatorial
+    """
+    if gsecoord.obstime is None:
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
+
+    int_frame = GeocentricEarthEquatorial(obstime=gsecoord.obstime, equinox=gsecoord.obstime)
+
+    # Rotate the GSE coord to the intermediate frame
+    total_matrix = matrix_transpose(_rotation_matrix_gei_to_gse(int_frame))
+    int_repr = gsecoord.cartesian.transform(total_matrix)
+    int_coord = int_frame.realize_frame(int_repr)
+
+    # Convert to the GEI frame
+    return int_coord.transform_to(geiframe)
+
+
+frame_transform_graph._add_merged_transform(GeocentricSolarEcliptic, GeocentricEarthEquatorial, GeocentricSolarEcliptic)
 
 
 def _rotation_matrix_hgs_to_hci(obstime):
