@@ -77,8 +77,8 @@ class HXIMap(GenericMap):
             return parse_time(date_obs)
         except ValueError:
             tmp = date_obs.split(" ")[0]
-            if len(tmp)==9 and len(tmp.split("-")[-1])==2:
-                date_obs = date_obs[:7]+'20'+date_obs[7:]
+            if len(tmp) == 9 and len(tmp.split("-")[-1]) == 2:
+                date_obs = date_obs[:7] + '20'+date_obs[7:]
             return parse_time(date_obs)
 
     @property
