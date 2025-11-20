@@ -20,13 +20,13 @@
             "affiliation": "University College London"
         },
         {
-            "name": "Steven Christe",
-            "orcid": "0000-0001-6127-795X",
+            "name": "Albert Y. Shih",
+            "orcid": "0000-0001-6874-2594",
             "affiliation": "NASA Goddard Space Flight Center"
         },
         {
-            "name": "Albert Y. Shih",
-            "orcid": "0000-0001-6874-2594",
+            "name": "Steven Christe",
+            "orcid": "0000-0001-6127-795X",
             "affiliation": "NASA Goddard Space Flight Center"
         },
         {
@@ -144,13 +144,14 @@
             "affiliation": "Department of Computer Science & Technology, Indian Institute of Engineering Science & Technology, Shibpur"
         },
         {
+            "name": "Saurav Kumar Roy",
+            "orcid": "0009-0007-3703-6532",
+            "affiliation": "Amrita Vishwa Vidyapeetham, Amritapuri"
+        },
+        {
             "name": "Shane Maloney",
             "orcid": "0000-0002-4715-1805",
             "affiliation": "Dublin Institute for Advanced Studies"
-        },
-        {
-            "name": "Md Akramul Haque",
-            "affiliation": "Department of Mechanical Engineering, ZHCET, Aligarh Muslim University"
         },
         {
             "name": "Pratham Hole",
@@ -160,6 +161,10 @@
             "name": "Alasdair Wilson",
             "orcid": "0000-0003-0820-8159",
             "affiliation": "Oxford Research Software Engineering Team, University of Oxford"
+        },
+        {
+            "name": "Md Akramul Haque",
+            "affiliation": "Department of Mechanical Engineering, ZHCET, Aligarh Muslim University"
         },
         {
             "name": "Chris R. Gilly",
@@ -296,6 +301,11 @@
             "affiliation": "Graphic Era (Deemed to be University), Dehradun"
         },
         {
+            "name": "Brett J Graham",
+            "orcid": "0000-0001-6315-4507",
+            "affiliation": "Space Telescope Science Institute"
+        },
+        {
             "name": "Jan Gieseler",
             "orcid": "0000-0003-1848-7067",
             "affiliation": "University of Turku"
@@ -380,17 +390,15 @@
             "name": "Arib Alam"
         },
         {
-            "name": "Brett J Graham",
-            "orcid": "0000-0001-6315-4507",
-            "affiliation": "Space Telescope Science Institute"
-        },
-        {
             "name": "Dumindu Buddhika"
         },
         {
             "name": "Hannah Collier",
             "orcid": "0000-0001-5592-8023",
             "affiliation": "University of Applied Sciences Northwestern Switzerland & ETH Zürich"
+        },
+        {
+            "name": "Haruhisa Iijima"
         },
         {
             "name": "Himanshu Pathak",
@@ -401,11 +409,6 @@
             "name": "Jai Ram Rideout",
             "orcid": "0000-0003-2587-1454",
             "affiliation": "Dogfox Software LLC"
-        },
-        {
-            "name": "Saurav Kumar Roy",
-            "orcid": "0009-0007-3703-6532",
-            "affiliation": "Amrita Vishwa Vidyapeetham, Amritapuri"
         },
         {
             "name": "Swapnil Sharma"
@@ -432,6 +435,10 @@
             "name": "Matt Bates"
         },
         {
+            "name": "Tanish Yelgoe",
+            "affiliation": "Indian Institute of Technology Gandhinagar (IIT-GN)"
+        },
+        {
             "name": "Devansh Shukla",
             "orcid": "0000-0003-0610-9747",
             "affiliation": "Sardar Vallabhbhai National Institute of Technology, Surat"
@@ -443,10 +450,6 @@
         },
         {
             "name": "Pankaj Mishra"
-        },
-        {
-            "name": "Tanish Yelgoe",
-            "affiliation": "Indian Institute of Technology Gandhinagar (IIT-GN)"
         },
         {
             "name": "Deepankar Sharma"
@@ -497,12 +500,18 @@
             "name": "Erik Bray"
         },
         {
+            "name": "Maya Mohamed"
+        },
+        {
             "name": "Nick Murphy",
             "affiliation": "Center for Astrophysics | Harvard & Smithsonian",
             "orcid": "0000-0001-6628-8033"
         },
         {
             "name": "Rutuja Surve"
+        },
+        {
+            "name": "Samuel Jackson"
         },
         {
             "name": "Serge Zahniy",
@@ -575,6 +584,11 @@
             "name": "Krish Agrawal"
         },
         {
+            "name": "Mingyu Jeon",
+            "orcid": "0009-0004-7798-5052",
+            "affiliation": "Kyung Hee University"
+        },
+        {
             "name": "Mubin Manasia"
         },
         {
@@ -609,11 +623,6 @@
         },
         {
             "name": "Yash Krishan"
-        },
-        {
-            "name": "Mingyu Jeon",
-            "orcid": "0009-0004-7798-5052",
-            "affiliation": "Kyung Hee University"
         },
         {
             "name": "Abijith Bahuleyan"
@@ -1002,6 +1011,9 @@
         },
         {
             "name": "_Gagan"
+        },
+        {
+            "name": "eebbaaf"
         },
         {
             "name": "graham"
