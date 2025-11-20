@@ -1058,10 +1058,46 @@ def test_no_obstime_on_target_end_hee():
     assert_no_obstime_on_target_end(HeliocentricEarthEcliptic, HeliocentricEarthEcliptic)
 
 
-@pytest.mark.parametrize("start_class", _frameset3)
-@pytest.mark.parametrize("end_class", _frameset3)
-def test_no_obstime_on_target_end_hee_subgraph(start_class, end_class):
-    assert_no_obstime_on_target_end(start_class, end_class)
+_frameset_geocentric = [
+    ITRS,
+    Geomagnetic,
+    SolarMagnetic,
+    GeocentricSolarMagnetospheric,
+    GeocentricEarthEquatorial,
+    GeocentricSolarEcliptic,
+]
+
+
+@pytest.mark.parametrize("start_class", _frameset_geocentric)
+@pytest.mark.parametrize("end_class", _frameset_geocentric)
+def test_earth_stays_at_origin_between_geocentric(start_class, end_class):
+    obstime = Time("2001-01-01")
+    coord = start_class(CartesianRepresentation(0, 0, 0)*u.km, obstime=obstime)
+    result = coord.transform_to(end_class(obstime=obstime))
+    assert_quantity_allclose(result.cartesian.xyz, 0*u.km)
+
+
+@pytest.mark.parametrize("start_class", _frameset_geocentric)
+@pytest.mark.parametrize("end_class", _frameset_geocentric)
+def test_no_aberration_between_geocentric(start_class, end_class):
+    obstime = Time("2001-01-01")
+    vx = start_class(CartesianRepresentation(1, 0, 0)*u.km, obstime=obstime)
+    vy = start_class(CartesianRepresentation(0, 1, 0)*u.km, obstime=obstime)
+    vz = start_class(CartesianRepresentation(0, 0, 1)*u.km, obstime=obstime)
+
+    tvx = vx.transform_to(end_class(obstime=obstime)).cartesian
+    tvy = vy.transform_to(end_class(obstime=obstime)).cartesian
+    tvz = vz.transform_to(end_class(obstime=obstime)).cartesian
+
+    # Verify all vector lengths have not changed
+    assert_quantity_allclose(tvx.norm(), 1*u.km)
+    assert_quantity_allclose(tvy.norm(), 1*u.km)
+    assert_quantity_allclose(tvz.norm(), 1*u.km)
+
+    # Verify all vectors are still orthogonal
+    assert_quantity_allclose(tvx.cross(tvy).norm(), 1*u.km**2)
+    assert_quantity_allclose(tvy.cross(tvz).norm(), 1*u.km**2)
+    assert_quantity_allclose(tvx.cross(tvz).norm(), 1*u.km**2)
 
 
 def test_transform_with_sun_center():
