@@ -874,6 +874,24 @@ def test_hme_gei_sunspice():
     assert_quantity_allclose(new.distance, 1.8217103*u.AU)
 
 
+def test_gei_gse_sunspice():
+    # Compare our GEI->GSE transformation against SunSPICE
+    # The GEI in SunSPICE is at epoch J2000.0
+    #
+    # IDL> coord = [1.d-3, 120.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'GEI', 'GSE', /degrees
+    # IDL> print, coord
+    #     0.0010000000       50.054253      -10.363626
+
+    old = SkyCoord(120*u.deg, 10*u.deg, 1*u.m,
+                   frame=GeocentricEarthEquatorial(obstime='2019-06-01', equinox='J2000.0'))
+    new = old.transform_to(GeocentricSolarEcliptic)
+
+    assert_quantity_allclose(new.lon, 50.054253*u.deg, atol=0.02*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, -10.363626*u.deg, atol=0.03*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, 1*u.m)
+
+
 def test_gei_gei():
     # Test GEI loopback transformation using the 2017 revision to Franz & Harper 2002
     t = Time('1996-08-28 16:46:00', scale='tt')
@@ -889,6 +907,8 @@ def test_gei_gei():
 # Coordinate transformations from the example in the 2017 revision to Franz & Harper 2002
 _franz_harper_example_data = [
     (ITRS, [6.9027400, -1.6362400, 1.9166900]),
+    (GeocentricEarthEquatorial, [-5.7864918, -4.1039136, 1.9165612]),
+    (GeocentricSolarEcliptic, [4.0378470, 5.1182566, 3.3908764]),
     (Geomagnetic, [3.3344557, 6.0215108, 2.5732497]),
     (SolarMagnetic, [3.3601371, 6.0071917, 2.5733108]),
     (GeocentricSolarMagnetospheric, [4.0378470, 6.0071917, 1.2681645]),
@@ -897,16 +917,18 @@ _franz_harper_example_data = [
 
 @pytest.mark.parametrize(("start_class", "start_vector"), _franz_harper_example_data)
 @pytest.mark.parametrize(("end_class", "end_vector"), _franz_harper_example_data)
-def test_magnetic_franz_harper(start_class, start_vector, end_class, end_vector):
-    # Test all magnetic-model frames (MAG, SM, GSM) using the 2017 revision to Franz & Harper 2002
+def test_geocentric_franz_harper(start_class, start_vector, end_class, end_vector):
     t = Time('1996-08-28 16:46:00', scale='tt')
     start_repr = CartesianRepresentation(start_vector * (6378.14*u.km))
     end_repr = CartesianRepresentation(end_vector * (6378.14*u.km))
 
-    start = SkyCoord(start_repr, frame=start_class(obstime=t))
+    start_kwargs = {'equinox': t} if hasattr(start_class, 'equinox') else {}
+    end_kwargs = {'equinox': t} if hasattr(end_class, 'equinox') else {}
+
+    start = SkyCoord(start_repr, frame=start_class(obstime=t, **start_kwargs))
     if end_class == start_class:
         start = start.itrs
-    end = start.transform_to(end_class)
+    end = start.transform_to(end_class(obstime=t, **end_kwargs))
 
     assert_quantity_allclose(end.cartesian.xyz, end_repr.xyz, rtol=2e-2)
 
@@ -1030,9 +1052,10 @@ def test_no_obstime_on_target_end_hgs_subgraph(start_class, end_class):
     assert_no_obstime_on_target_end(start_class, end_class)
 
 
-# We currently allow the target `obstime` to be `None` for the transformation subgraph
-# below `HeliocentricEarthEcliptic`, but this may change in the future
-_frameset3 = [HeliocentricEarthEcliptic, GeocentricSolarEcliptic]
+# We currently allow the target `obstime` to be `None` for the HEE loopback,
+# but this may change in the future
+def test_no_obstime_on_target_end_hee():
+    assert_no_obstime_on_target_end(HeliocentricEarthEcliptic, HeliocentricEarthEcliptic)
 
 
 @pytest.mark.parametrize("start_class", _frameset3)
