@@ -20,7 +20,7 @@ authors = [
 dependencies = [
   "astropy>=6.1.0",
   "fsspec>=2023.12.0",
-  "numpy>=1.26.0",
+  "numpy>=1.26.0",  # Note: We are keeping an extended support for numpy 1 until it starts to cause us issues.
   "numpy>=2.3.0;python_version=='3.14'",
   "packaging>=24.0",
   "parfive[ftp]>=2.1.0",
