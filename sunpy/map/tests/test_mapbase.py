@@ -643,6 +643,26 @@ def test_shift_applied(generic_map):
     assert shifted_map.meta.get('crval2') == crval2
 
 
+def test_shift_applied_pixel(generic_map):
+    """Test that adding a shift actually updates the reference coordinate this time with pixels"""
+    original_reference_coord = (generic_map.reference_coordinate.Tx,
+                                generic_map.reference_coordinate.Ty)
+    # Shift by a pixel amount but want to ensure it gives the same results as the arcsec test above
+    x_shift = 5 * u.arcsec
+    y_shift = 13 * u.arcsec
+    x_shift_pixel = x_shift / generic_map.scale[0]
+    y_shift_pixel = y_shift / generic_map.scale[1]
+    shifted_map = generic_map.shift_reference_coord(x_shift_pixel, y_shift_pixel)
+    assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
+    assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
+    crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
+               x_shift).to(shifted_map.spatial_units[0])).value
+    assert shifted_map.meta.get('crval1') == crval1
+    crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units[1] +
+               y_shift).to(shifted_map.spatial_units[1])).value
+    assert shifted_map.meta.get('crval2') == crval2
+
+
 def test_set_shift(generic_map):
     """Test that previously applied shift is stored in the shifted_value property"""
     x_shift = 5 * u.arcsec
