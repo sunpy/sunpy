@@ -369,8 +369,8 @@ class JSOCClient(BaseClient):
 
     @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
-              downloader=None, wait=True, sleep=10, timeout=None, retries=5,
-              max_conn=default_max_conn, **kwargs):
+              downloader=None, wait=True, sleep=10,
+              max_conn=default_max_conn, timeout=None, retries=5, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
