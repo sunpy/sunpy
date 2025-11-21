@@ -25,10 +25,25 @@ class HXIMap(GenericMap):
     In addition, the energy ranges are ~15-300 keV for imaging and ~10-300 keV for spectra, more information
     please refer to :cite:t:`Su_asos_hxi_tests_calibrations_2024`.
 
+    The HXI level 1 detector data, which is provided by the
+    `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__, can be further processed by
+    the HXI `data analysis software <http://aso-s.pmo.ac.cn/sodc/analysisSoftware.jsp>`__
+    to make hard X-ray images and export them as a FITS file.
+    There may be more than one image in the FITS file, from different time and energy intervals, which can be
+    loaded by `~sunpy.map.Map` as a single `~sunpy.map.sources.HXIMap` (for one image) or a `list` containing
+    multiple `~sunpy.map.sources.HXIMap`s.
+
+    It is suggested to pay attention to the updates in the data and software versions, and feel free to contact the
+    ASO-S/HXI team if there are any difficulties in data processing.
+    Some useful links are attached in the references section below.
+
     References
     ----------
-    * `ASO-S Mission Page <http://aso-s.pmo.ac.cn>`__
+    * `ASO-S Mission Page <http://aso-s.pmo.ac.cn/en_index.jsp>`__
+    * `ASO-S Instruments <http://aso-s.pmo.ac.cn/english/sat/payload.jsp>`__
     * `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__
+    * `Data Analysis Guide <http://aso-s.pmo.ac.cn/sodc/analysisGuide.jsp>`__
+    * `Data Analysis Software <http://aso-s.pmo.ac.cn/sodc/analysisSoftware.jsp>`__
     * `ASO-S/HXI Flare List <http://aso-s.pmo.ac.cn/hxi_flare/hxi_flare_list.html>`__
     * The tests and calibrations paper: :cite:t:`Su_asos_hxi_tests_calibrations_2024`
     """
