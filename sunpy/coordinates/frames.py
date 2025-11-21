@@ -847,7 +847,7 @@ class GeocentricSolarEcliptic(SunPyBaseCoordinateFrame):
 
     Notes
     -----
-    Aberration due to Earth motion is not included.
+    Aberration due to Earth motion is not included when transforming directly to/from this frame.
     """
 
 
@@ -882,7 +882,7 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
     A coordinate or frame in the Geocentric Earth Equatorial (GEI) system.
 
     - The origin is the center of the Earth.
-    - The Z-axis (+90 degrees latitude) is aligned with the Earth's north pole.
+    - The Z-axis (+90 degrees latitude) is aligned with the Earth's mean (not true) north pole.
     - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the mean (not true)
       vernal equinox.
 
@@ -896,7 +896,7 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
 
     Notes
     -----
-    Aberration due to Earth motion is not included.
+    Aberration due to Earth motion is not included when transforming directly to/from this frame.
     """
     equinox = TimeFrameAttributeSunPy(default=_J2000)
 
