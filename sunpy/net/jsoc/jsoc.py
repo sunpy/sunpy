@@ -369,7 +369,8 @@ class JSOCClient(BaseClient):
 
     @convert_row_to_table
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
-              downloader=None, wait=True, sleep=10, max_conn=default_max_conn, **kwargs):
+              downloader=None, wait=True, sleep=10,
+              max_conn=default_max_conn, timeout=None, retries=5, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
@@ -405,6 +406,12 @@ class JSOCClient(BaseClient):
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
+        timeout : `int` or None, optional
+            Maximum number of seconds until the JSOC export request times out. See
+            `~drms.ExportRequest.wait` for more information.
+        retries : `int`, optional
+            Number of retries in case the export request was not found on the
+            server.  See `~drms.ExportRequest.wait` for more information.
 
         Returns
         -------
@@ -439,7 +446,7 @@ class JSOCClient(BaseClient):
         time.sleep(sleep/2.)
 
         for response in responses:
-            response.wait()
+            response.wait(sleep=sleep, timeout=timeout, retries_notfound=retries)
 
         return self.get_request(responses, path=path, overwrite=overwrite,
                                 progress=progress, downloader=downloader,
