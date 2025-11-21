@@ -1,0 +1,3 @@
+Pass ``sleep``, ``timeout``, and ``retries_notfound`` from :meth:`~sunpy.net.jsoc.JSOCClient.fetch`
+to :meth:`drms.ExportRequest`. Previously, ``sleep`` was a keyword to :meth:`~sunpy.net.jsoc.JSOCClient.fetch`
+but was not being propagated correctly.
