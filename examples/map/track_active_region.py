@@ -55,9 +55,16 @@ cutout_map.plot(axes=ax)
 # Now that we have our cutout around our active region, we can reproject each map in our sequence to
 # the WCS of that cutout. Additionally, we will use the `~sunpy.coordinates.propagate_with_solar_surface`
 # context manager to adjust the field of view of the cutout with the rotation of the solar surface.
+# We use the ``preserve_date_obs`` keyword argument to preserve the original observation time in each
+# reprojected map. Otherwise, the observation time of the reprojected maps would all be the same as the
+# cutout WCS. Note that using this keyword does not affect the resulting coordinate frame of the reprojected
+# map which will be defined by the date of the cutout WCS.
 
 with propagate_with_solar_surface():
-    aia_sequence_aligned = sunpy.map.Map([m.reproject_to(cutout_map.wcs) for m in aia_sequence], sequence=True)
+    aia_sequence_aligned = sunpy.map.Map(
+        [m.reproject_to(cutout_map.wcs, preserve_date_obs=True) for m in aia_sequence],
+        sequence=True
+    )
 
 ###############################################################################
 # Finally, we can animate our sequence of reprojected cutouts to confirm that we've tracked our active
