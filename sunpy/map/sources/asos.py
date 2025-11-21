@@ -29,9 +29,9 @@ class HXIMap(GenericMap):
     `ASO-S Data Center <http://aso-s.pmo.ac.cn/sodc/dataArchive.jsp>`__, can be further processed by
     the HXI `data analysis software <http://aso-s.pmo.ac.cn/sodc/analysisSoftware.jsp>`__
     to make hard X-ray images and export them as a FITS file.
-    There may be more than one image in the FITS file, from different time and energy intervals, which can be
+    There may be more than one image included in the FITS file, from different time and energy intervals, which can be
     loaded by `~sunpy.map.Map` as a single `~sunpy.map.sources.HXIMap` (for one image) or a `list` containing
-    multiple `~sunpy.map.sources.HXIMap`s.
+    multiple `~sunpy.map.sources.HXIMap`.
 
     It is suggested to pay attention to the updates in the data and software versions, and feel free to contact the
     ASO-S/HXI team if there are any difficulties in data processing.
