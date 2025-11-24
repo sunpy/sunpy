@@ -16,9 +16,10 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
+import sunpy.map
 from sunpy.coordinates import propagate_with_solar_surface
 from sunpy.coordinates.screens import SphericalScreen
-from sunpy.map import Map, pixelate_coord_path, sample_at_coords
+from sunpy.map import pixelate_coord_path, sample_at_coords
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
@@ -27,8 +28,8 @@ from sunpy.net import attrs as a
 # We will use a data from 2012 containing a nice example of loop oscillations.
 #
 # For the online documentation, the time range specified here is kept short,
-# but you can expand the time range to 18:05 - 18:30 to see more of them
-# oscillation.
+# but you can expand the time range to 18:05 - 18:30 to see more of the
+# oscillations.
 
 query = Fido.search(
     a.Time('2012-10-20 18:14:00', '2012-10-20 18:19:00'),
@@ -45,7 +46,7 @@ files = sorted(files)
 # of interest. We will also define the path, in this case a line, along which
 # we want to make the time-distance plot.
 
-aia_seq = [aia_map / aia_map.exposure_time for aia_map in Map(files)]
+aia_seq = [aia_map / aia_map.exposure_time for aia_map in sunpy.map.Map(files)]
 
 corner = SkyCoord(Tx=-1150*u.arcsec, Ty=-500*u.arcsec,
                   frame=aia_seq[0].coordinate_frame)
@@ -90,7 +91,6 @@ for cur_map in aia_seq:
     with (propagate_with_solar_surface(),
           SphericalScreen(cur_map.observer_coordinate, only_off_disk=True)):
         reprojected_sub_maps.append(cur_map.reproject_to(ref_sub_map.wcs, preserve_date_obs=True))
-reprojected_sub_maps = Map(reprojected_sub_maps, sequence=True)
 
 ###############################################################################
 # Now that we have reprojected all the maps to common WCS, we can extract the
