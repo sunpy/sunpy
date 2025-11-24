@@ -487,7 +487,7 @@ def get_heliocentric_angle(coordinate_on_solar_disk):
 
     .. math::
 
-        \mu = \cos(heliocentric\\_angle)
+        \mu = \cos(heliocentric\_angle)
 
     Parameters
     ----------
