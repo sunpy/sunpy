@@ -3146,7 +3146,12 @@ class GenericMap(NDData):
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # target_header has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            target_header['DATE-AVG'] = target_header.get('DATE-AVG', target_header['DATE-OBS'])
+            if (ref_date := target_header.get('DATE-AVG', target_header.get('DATE-OBS'))) is None:
+                raise ValueError("The target_wcs has neither a DATE-AVG or DATE-OBS. It is ambiguous "
+                                 "as to what date should be used as reference date in the target header. "
+                                 "To avoid this, either set DATE-AVG or DATE-OBS on target_wcs or "
+                                 "set preserve_date_obs=False.")
+            target_header['DATE-AVG'] = ref_date
             target_header['DATE-OBS'] = self.date.utc.isot
 
         # Create and return a new GenericMap
