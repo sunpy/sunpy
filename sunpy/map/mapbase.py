@@ -3146,7 +3146,7 @@ class GenericMap(NDData):
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # target_header has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            target_header['DATE-AVG'] = target_header.get('DATE-AVG', 'DATE-OBS')
+            target_header['DATE-AVG'] = target_header.get('DATE-AVG', target_header['DATE-OBS'])
             target_header['DATE-OBS'] = self.date.utc.isot
 
         # Create and return a new GenericMap
