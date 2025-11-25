@@ -61,8 +61,8 @@ def test_new_instance_preserves_plot_settings(hxi_map):
     hxi_map.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
     hxi_map.plot_settings['cmap'] = 'inferno'
     new_hxi_map = hxi_map._new_instance(hxi_map.data,
-                                              hxi_map.meta,
-                                              plot_settings=hxi_map.plot_settings)
+                                        hxi_map.meta,
+                                        plot_settings=hxi_map.plot_settings)
     assert new_hxi_map.plot_settings['norm'].vmin == hxi_map.plot_settings['norm'].vmin
     assert new_hxi_map.plot_settings['norm'].vmax == hxi_map.plot_settings['norm'].vmax
     assert new_hxi_map.plot_settings['cmap'] == hxi_map.plot_settings['cmap']
