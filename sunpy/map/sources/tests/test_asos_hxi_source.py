@@ -45,7 +45,7 @@ def test_private_date_setters(hxi_map):
 
 def test_measurement(hxi_map):
     """Tests the measurement property of the HXIMap object."""
-    assert hxi_map.measurement in [[20, 30], [20, 30]] * u.keV
+    assert u.allclose(hxi_map.measurement, [20, 30] * u.keV)
 
 
 def test_norm_clip(hxi_map):
