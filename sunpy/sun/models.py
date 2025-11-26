@@ -10,6 +10,8 @@ This module contains models of the Sun from various sources:
 * :func:`~sunpy.sun.models.differential_rotation`: Function for calculating
   solar differential rotation for different models
 """
+import pathlib
+
 import numpy as np
 
 import astropy.units as u
@@ -18,7 +20,19 @@ from astropy.table import QTable
 
 from sunpy.sun.constants import sidereal_rotation_rate
 
-__all__ = ["interior", "evolution", "differential_rotation"]
+_MODEL_DATA_DIR = pathlib.Path(__file__).parent.absolute() / "data"
+_MODELS = {
+    "chromosphere_avrett_loeser_2008": _MODEL_DATA_DIR / "chromosphere_avrett_Loeser_2008_model.ecsv"
+}
+_MODEL_CACHE = {}
+
+
+__all__ = ["interior", "evolution", "differential_rotation"] + list(_MODELS.keys())
+
+
+# See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
+def __dir__():
+    return __all__
 
 
 # Radius -  R_sun
@@ -198,3 +212,26 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
         rotation -= 0.9856 * u.deg / u.day * duration
 
     return Longitude(rotation.to(u.deg))
+
+
+def _read_model(model_name):
+    """
+    Reads the specified model.
+    """
+    model_path = _MODELS[model_name]
+    return QTable.read(model_path, format="ascii.ecsv")
+
+
+# See PEP 562 (https://peps.python.org/pep-0562/) for module-level __getattr__()
+def __getattr__(name):
+    """
+    Dynamically load a model when accessed.
+    Raises an error if the requested model is unavailable.
+    """
+    if name not in _MODELS:
+        raise AttributeError(f"Error: Model '{name}' is not available.")
+
+    if name not in _MODEL_CACHE:
+        _MODEL_CACHE[name] = _read_model(name)
+
+    return _MODEL_CACHE[name]
