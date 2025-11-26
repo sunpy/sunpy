@@ -178,12 +178,24 @@ def test_warn_longkey():
 
 
 def test_read_memmap():
+    # This function is a work around for astropy 7.1 vs 7.2
+    # In 7.2 there's an extra view on the array returned
+    def get_bottom_base(arr):
+        if hasattr(arr.base, "base"):
+            return get_bottom_base(arr.base)
+        return arr.base
+
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=True)[0]
-    assert data.base is not None
-    assert isinstance(data.base, mmap.mmap)
+    base = get_bottom_base(data)
+
+    # When we are astropy 7.2+ this should be data.base.base
+    assert base is not None
+    assert isinstance(base, mmap.mmap)
 
     data, _ = _fits.read(TEST_AIA_IMAGE, memmap=False)[0]
-    assert data.base is None
+    base = get_bottom_base(data)
+    # When we are astropy 7.2+ this should be data.base.base
+    assert base is None
 
 
 def test_merge_multiple_comment_history_entries():

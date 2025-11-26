@@ -13,6 +13,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_data_filenames, get_test_filepath, rootdir
+from sunpy.io._fits import read
 from sunpy.tests.helpers import asdf_entry_points, figure_test, skip_glymur
 from sunpy.util.exceptions import (
     NoMapsInFileError,
@@ -383,14 +384,16 @@ def test_map_jp2_HMI():
     plt.colorbar()
 
 
-def test_map_fits():
-    fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=False)
-    assert isinstance(fits_map, sunpy.map.GenericMap)
-    # The base of an array that owns its memory is None
-    assert fits_map.data.base is None
-    fits_map = sunpy.map.Map(AIA_171_IMAGE, memmap=True)
-    assert isinstance(fits_map, sunpy.map.GenericMap)
-    assert fits_map.data.base is not None
+def test_map_fits(mocker):
+
+    hdus = read(AIA_171_IMAGE)
+    mock = mocker.patch("sunpy.io._file_tools.fits.read", return_value=hdus)
+    sunpy.map.Map(AIA_171_IMAGE, memmap=False)
+    assert mock.call_args.kwargs["memmap"] is False
+
+    mock.reset_mock()
+    sunpy.map.Map(AIA_171_IMAGE, memmap=True)
+    assert mock.call_args.kwargs["memmap"] is True
 
 
 def test_map_list_of_files_with_one_broken():
