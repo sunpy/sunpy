@@ -74,7 +74,7 @@ Now all queries will have an ``.errors`` property that contains any client error
 Preserving the observation time of a map when reprojecting
 ==========================================================
 
-When calling `~sunpy.map.GenericMap.reproject_to`, it is not possible to preserve the original observation time
+When calling `~sunpy.map.GenericMap.reproject_to`, it is now possible to preserve the original observation time
 of the map when reprojecting to a new WCS through the ``preserve_date_obs`` keyword argument. This does not affect
 the reprojection itself, which instead depends on the reference times of the two coordinate frames. This is useful,
 for example, when reprojecting a series of images to a common coordinate frame and you want to preserve the
