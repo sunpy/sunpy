@@ -1,0 +1,4 @@
+:func:`sunpy.time.parse_time` now supports two new formats:
+
+* ``"%Y-%m-%dT%H%M%SZ"`` - Example: 2010-08-30T111402Z
+* ``"%Y-%m-%dT%H%M%S"`` - Example: 2010-08-30T111402

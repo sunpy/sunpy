@@ -49,6 +49,8 @@ TIME_FORMAT_LIST = [
     "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
     "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
     "%Y-%m-%dT%H:%M:%SZ",  # Example 2007-05-04T21:08:12Z
+    "%Y-%m-%dT%H%M%SZ",  # Example 2010-08-30T111402Z
+    "%Y-%m-%dT%H%M%S",  # Example 2010-08-30T111402
     "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
     "%Y%m%dT%H%M",  # Example 20070504T2108 , Should precede "%Y%m%dT%H%M%S".
     "%Y%m%dT%H%M%S",  # Example 20070504T210812
