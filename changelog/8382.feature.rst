@@ -1,0 +1,1 @@
+Add a keyword argument to :meth:`~sunpy.map.GenericMap.reproject_to` to preserve the original observation time (typically the ``DATE-OBS`` header key) instead of the observation time in the target WCS.

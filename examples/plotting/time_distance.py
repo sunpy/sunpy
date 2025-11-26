@@ -89,7 +89,7 @@ for cur_map in aia_seq:
     cur_map = cur_map/cur_map.exposure_time
     with (propagate_with_solar_surface(),
           SphericalScreen(cur_map.observer_coordinate, only_off_disk=True)):
-        reprojected_sub_maps.append(cur_map.reproject_to(ref_sub_map.wcs))
+        reprojected_sub_maps.append(cur_map.reproject_to(ref_sub_map.wcs, preserve_date_obs=True))
 reprojected_sub_maps = Map(reprojected_sub_maps, sequence=True)
 
 ###############################################################################
@@ -133,7 +133,7 @@ intensities_transform = np.vstack(intensities_transform)
 angular_separation = intensity_coords.separation(intensity_coords[0]).to(u.arcsec)
 
 # Get correct values for the extent
-extent = [aia_seq[0].date.datetime, aia_seq[-1].date.datetime,
+extent = [reprojected_sub_maps[0].date.datetime, reprojected_sub_maps[-1].date.datetime,
           0, angular_separation[-1].value]
 
 ###############################################################################

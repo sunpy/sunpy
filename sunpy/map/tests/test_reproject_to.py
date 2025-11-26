@@ -15,6 +15,7 @@ from astropy.wcs import WCS
 
 import sunpy.coordinates
 import sunpy.map
+from sunpy.data.test import get_dummy_map_from_header
 from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -259,3 +260,51 @@ def test_reproject_to_screen_plus_diffrot(aia171_test_map, screen):
     ax2 = fig.add_subplot(122, projection=with_diffrot)
     with_diffrot.plot(axes=ax2, title="With diffrot")
     return fig
+
+
+@pytest.fixture
+def m_eit_1():
+    m = get_dummy_map_from_header('EIT_header/efz20040301.000010_s.header')
+    # These EIT headers have no DATE-AVG key by default so we mimic it.
+    m.meta['DATE-AVG'] = (m.date + m.exposure_time/2).isot
+    return m
+
+
+@pytest.fixture
+def m_eit_1_no_date_avg():
+    return get_dummy_map_from_header('EIT_header/efz20040301.000010_s.header')
+
+
+@pytest.fixture
+def m_eit_2():
+    m = get_dummy_map_from_header('EIT_header/efz20040301.120010_s.header')
+    m.meta['DATE-AVG'] = (m.date + m.exposure_time/2).isot
+    return m
+
+
+def test_reproject_to_preserve_date_obs(m_eit_1, m_eit_2):
+    """Test that preserve_date_obs preserves the date of the original date in DATE-OBS"""
+    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
+        m_2_r = m_eit_2.reproject_to(m_eit_1.wcs, preserve_date_obs=True)
+    assert m_2_r.date == m_eit_2.date
+    assert m_2_r.reference_date == m_eit_1.date_average
+    assert m_2_r.coordinate_frame.obstime == m_eit_1.coordinate_frame.obstime
+
+
+def test_reproject_to_preserve_date_obs_target_has_no_date_avg(m_eit_1_no_date_avg, m_eit_2):
+    """Test that date is preserved even when target WCS does not have a date-avg"""
+    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
+        m_2_r = m_eit_2.reproject_to(m_eit_1_no_date_avg.wcs, preserve_date_obs=True)
+    assert m_2_r.date == m_eit_2.date
+    assert m_2_r.reference_date == m_eit_1_no_date_avg.date
+    assert m_2_r.coordinate_frame.obstime == m_eit_1_no_date_avg.coordinate_frame.obstime
+
+
+def test_reproject_to_preserve_date_obs_raises_exception_missing_date_obs_avg(m_eit_1, m_eit_2):
+    target_header = m_eit_1.wcs.to_header()
+    for k in ['DATE-OBS', 'DATE-AVG', 'MJD-OBS', 'MJD-AVG']:
+        target_header.remove(k)
+    target_header.set('NAXIS1', value=m_eit_1.data.shape[1])
+    target_header.set('NAXIS2', value=m_eit_1.data.shape[0])
+    with pytest.raises(ValueError, match="The target_wcs has neither a DATE-AVG or DATE-OBS."):
+        m_eit_2.reproject_to(target_header, preserve_date_obs=True)
