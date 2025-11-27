@@ -50,7 +50,7 @@ jobs:
               - libopenjp2-7
           artifact-name: py314-devdeps.jsonl
           artifact-path: |
-            pytest-log.jsonl
+            .tmp/py314-devdeps-reportlog/pytest-log.jsonl
 
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
