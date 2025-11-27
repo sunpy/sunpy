@@ -48,7 +48,6 @@ jobs:
           libraries:
             apt:
               - libopenjp2-7
-          artifact-name: py314-devdeps.jsonl
           artifact-path: |
             .tmp/py314-devdeps-reportlog/pytest-log.jsonl
 
@@ -64,7 +63,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
-          name: py314-devdeps.jsonl
+          name: py314-devdeps-reportlog-(ubuntu-latest)
           path: pytest-log.jsonl
 
       - uses: scientific-python/issue-from-pytest-log-action@558a3dfdd251069b328d3fded994824ddbefc47b  # v1.4.0
