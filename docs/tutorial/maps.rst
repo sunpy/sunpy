@@ -215,13 +215,14 @@ But what if we wanted to know what pixel these physical coordinates correspond t
 Each Map has an associated World Coordinate System, or WCS, which is derived from the underlying metadata and expressed as an `astropy.wcs.WCS` object.
 The WCS is accessible as an attribute:
 
-.. code-block:: python
+.. doctest-requires:: astropy>=7.2
 
     >>> my_map.wcs  # doctest: +REMOTE_DATA
     WCS Keywords
     <BLANKLINE>
     Number of WCS axes: 2
     CTYPE : 'HPLN-TAN' 'HPLT-TAN'
+    CUNIT : 'deg' 'deg'
     CRVAL : 0.00089530541880571 0.00038493926472939
     CRPIX : 512.5 512.5
     PC1_1 PC1_2  : 0.99999706448085 0.0024230207763071
