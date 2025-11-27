@@ -64,11 +64,13 @@ jobs:
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
         with:
           name: py314-devdeps-reportlog-(ubuntu-latest)
-          path: pytest-log.jsonl
+          path: pytest-log
+
+      - run: ls -lha pytest-log/
 
       - uses: scientific-python/issue-from-pytest-log-action@558a3dfdd251069b328d3fded994824ddbefc47b  # v1.4.0
         with:
-          log-path: pytest-log.jsonl
+          log-path: pytest-log/pytest-log.jsonl
           issue-title: "Cron devdeps build failure"
           issue-label: "Infrastructure"
 
