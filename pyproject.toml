@@ -32,7 +32,6 @@ keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Science/Research",
-  "BSD-3-Clause",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
@@ -42,6 +41,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Physics",
+  "License-Expression: BSD-3-Clause",
 ]
 
 [project.optional-dependencies]
