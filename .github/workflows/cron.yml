@@ -44,15 +44,34 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       envs: |
-        - linux: linkcheck
-          pytest: false
-        - linux: py314-devdeps
+        - linux: py314-devdeps-reportlog
           libraries:
             apt:
               - libopenjp2-7
+          artifact-name: py314-devdeps.jsonl
+          artifact-path: |
+            pytest-log.jsonl
 
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  open-issue:
+    if: failure()
+    needs: [cron]
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
+        with:
+          name: py314-devdeps.jsonl
+          path: pytest-log.jsonl
+
+      - uses: scientific-python/issue-from-pytest-log-action@558a3dfdd251069b328d3fded994824ddbefc47b  # v1.4.0
+        with:
+          log-path: pytest-log.jsonl
+          issue-title: "Cron devdeps build failure"
+          issue-label: "Infrastructure"
 
   cron-online:
     # Run on all triggers other than pull_request unless there's a label
@@ -67,6 +86,8 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
+        - linux: linkcheck
+          pytest: false
         - linux: py314-devdeps-online
           posargs: -m "remote_data"
         - windows: py313-online
