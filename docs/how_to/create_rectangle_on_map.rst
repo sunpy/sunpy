@@ -1,8 +1,8 @@
 .. _sunpy-how-to-create-rectangle-on-map:
 
-*********************************************
+**************************************
 Draw a rectangle on a `~sunpy.map.Map`
-*********************************************
+**************************************
 
 ``sunpy`` provides a convenient method called :meth:`~sunpy.map.GenericMap.draw_quadrangle` to draw rectangles on maps.
 In this guide, we will demonstrate four different methods to draw a rectangle on a `sunpy.map.Map`.
