@@ -29,6 +29,7 @@ jobs:
           # triggered by the workflow_run trigger, therefore we only
           # need to list any non-main branches here.
           - branch: "7.0"
+          - branch: "7.1"
     steps:
       - run: gh workflow run ci.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
       - run: gh workflow run cron.yml --repo sunpy/sunpy --ref ${{ matrix.branch }}
