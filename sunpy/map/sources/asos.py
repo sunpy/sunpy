@@ -109,6 +109,17 @@ class HXIMap(GenericMap):
         return self.date_start
 
     @property
+    def unit(self):
+        unit = self.meta.get("unit")
+        if unit is None:
+            # Fall back to BUNIT
+            return super().unit
+
+        unit = unit.replace("photons", "photon")
+        unit = unit.replace("asec", "arcsec")
+        return self._parse_fits_unit(unit)
+
+    @property
     def waveunit(self):
         return u.Unit(self.meta.get("waveunit", 'keV'))
 

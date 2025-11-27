@@ -8,6 +8,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.asos import HXIMap
+from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
 
@@ -37,6 +38,29 @@ def test_reference_date(hxi_map):
 
 def test_date(hxi_map):
     assert hxi_map.date.isot in ["2023-05-01T13:07:58.713", "2023-05-01T13:08:16.962"]
+
+
+def test_unit(hxi_map):
+    assert hxi_map.unit == u.photon / (u.s * u.arcsec**2 * u.cm**2)
+
+
+def test_broken_units(hxi_map):
+    # Check that no unit or bunit leads to no unit
+    hxi_map.meta["unit"] = None
+    assert hxi_map.unit is None
+
+    # Check that other units are parsed
+    hxi_map.meta["unit"] = "second"
+    assert hxi_map.unit == u.s
+
+    # Check that it falls back to fits standard key
+    hxi_map.meta["bunit"] = "second"
+    assert hxi_map.unit == u.s
+
+    # Check that non-fits units still raise
+    hxi_map.meta["unit"] = "spam"
+    with pytest.warns(SunpyMetadataWarning):
+        hxi_map.unit
 
 
 def test_private_date_setters(hxi_map):
