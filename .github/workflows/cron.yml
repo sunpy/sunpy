@@ -55,7 +55,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   open-issue:
-    if: failure()
+    if: failure() && github.event_name != 'pull_request'
     needs: [cron]
     runs-on: ubuntu-latest
     permissions:
