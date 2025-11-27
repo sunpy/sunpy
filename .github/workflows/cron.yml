@@ -126,7 +126,7 @@ jobs:
 
   notify:
     if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run')
-    needs: [cron, conda]
+    needs: [cron, cron-online, conda]
     runs-on: ubuntu-latest
     steps:
       - uses: Cadair/matrix-notify-action@main
