@@ -8,6 +8,7 @@ will be subclasses of the :mod`sunpy.map.Map` class.
 
 from sunpy.map.map_factory import Map
 from .adapt import *
+from .asos import *
 from .gong import *
 from .hinode import *
 from .iris import *

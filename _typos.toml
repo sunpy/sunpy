@@ -28,4 +28,6 @@ default.extend-ignore-identifiers-re = [
     "setp",
     "precess",
     "precessed",
+    "ASO",
+    "aso",
 ]
