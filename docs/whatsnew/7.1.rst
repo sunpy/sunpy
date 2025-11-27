@@ -12,17 +12,34 @@ On this page, you can read about some of the big changes in this release.
     :local:
     :depth: 1
 
-``sunpy`` 7.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-* X commits have been added since 7.0
-* X issues have been closed since 7.0
-* X pull requests have been merged since 7.0
-* X people have contributed since 7.0
-* X of which are new contributors
+This release of sunpy contains 329 commits in 66 merged pull requests closing 24 issues from 17 people, 5 of which are first-time contributors to sunpy.
+
+* 329 commits have been added since 7.0
+* 24 issues have been closed since 7.0
+* 66 pull requests have been merged since 7.0
+* 17 people have contributed since 7.0
+* 5 of which are new contributors
 
 The people who have contributed to the code for this release are:
 
-- Mambo No. 5
+-  Alasdair Wilson
+-  Albert Y. Shih
+-  Brett J Graham
+-  Conor MacBride
+-  David Stansby
+-  Fu Yu  *
+-  Haruhisa Iijima  *
+-  Maya Mohamed  *
+-  Nabil Freij
+-  Pratham Hole
+-  Samuel Jackson  *
+-  Saurav Kumar Roy
+-  Shane Maloney
+-  Stuart J. Mumford
+-  Tanish Yelgoe
+-  Will Barnes
+-  eebbaaf  *
 
 Where a * indicates that this release contains their first contribution to sunpy.
 
