@@ -23,7 +23,8 @@ name = "sunpy"
 description = "SunPy core package: Python for Solar Physics"
 requires-python = ">=3.11"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = { file = "LICENSE.rst" }
+license-files = ["LICENSE.rst", "licenses/*.rst"]
+license = "BSD-3-Clause"
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
@@ -49,7 +50,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: Physics",
-  "License-Expression: BSD-3-Clause",
 ]
 
 [project.optional-dependencies]
