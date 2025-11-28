@@ -1,1 +1,0 @@
-Modified the approach of coordinate transformations between Earth-centered frames in order to minimize the unintended triggering of a correction for stellar aberration (due to Earth motion).

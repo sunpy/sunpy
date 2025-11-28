@@ -1,1 +1,0 @@
-Added support for ANA to compile and work on Windows.

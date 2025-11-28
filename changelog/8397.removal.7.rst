@@ -1,1 +1,0 @@
-Removed legacy ``diff_rot`` after its long deprecation period.

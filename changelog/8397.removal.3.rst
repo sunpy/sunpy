@@ -1,1 +1,0 @@
-Removed ``contour`` method on `sunpy.map.Map` after its long deprecation period.

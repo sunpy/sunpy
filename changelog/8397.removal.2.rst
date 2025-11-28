@@ -1,3 +1,0 @@
-Removed all deprecated API (``all_maps_same_shape``, ``at_least_one_map_has_mask``, ``as_array``, ``all_meta`` and ``derotate``) from `sunpy.map.MapSequence` after its long deprecation period.
-In addition, ``derotate`` was removed from the initialization of `sunpy.map.MapSequence`.
-Finally, ``resample`` keyword was removed from the plotting method of `sunpy.map.MapSequence`.
