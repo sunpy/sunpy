@@ -3,6 +3,8 @@
 Reproducing the "Where is STEREO Today?" plot
 =============================================
 
+.. tags:: showcase, stereo, visualization
+
 How to reproduce the "Where is STEREO Today?" plot.
 
 This example uses capabilities in sunpy to reproduce the plot that can be found

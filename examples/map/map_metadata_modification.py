@@ -3,6 +3,8 @@
 Map metadata modification
 =========================
 
+.. tags:: map, fits
+
 How to query map metadata for changes.
 
 sunpy has a series of map sources that can fix common issues with the original metadata

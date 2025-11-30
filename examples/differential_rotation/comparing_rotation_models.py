@@ -3,6 +3,8 @@
 Comparing differential-rotation models
 ======================================
 
+.. tags:: differential_rotation
+
 How to compare differential-rotation models.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate

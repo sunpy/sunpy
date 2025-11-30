@@ -3,6 +3,8 @@
 Reprojecting with Automatic Extent
 ==================================
 
+.. tags:: map_transformations, processing, reproject,
+
 This example demonstrates how you can automatically determine the extent
 needed for the output of a reprojection instead of specifying it ahead of time.
 """

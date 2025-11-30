@@ -3,6 +3,8 @@
 Fading between two maps
 =======================
 
+.. tags:: plotting, co_observations
+
 Often it is useful to plot two maps of the Sun on top of each other, so
 features observed in one map (e.g. strong magnetic fields in a magnetogram)
 can be identified with features in the same place in another map

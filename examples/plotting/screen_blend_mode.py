@@ -3,6 +3,8 @@
 Blending maps together
 ======================
 
+.. tags:: plotting, visualization, co_observations
+
 This example shows how to blend two maps.
 
 ``matplotlib`` by itself provides only alpha-based transparency for
