@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pytest
+
 from astropy.io import fits
 from astropy.wcs import WCS
 
@@ -9,7 +10,7 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 def test_crash_on_ape14_wcs_plotting():
     pytest.importorskip('ndcube')
-    
+
     from ndcube import NDCube
 
     image_data = fits.getdata(AIA_171_IMAGE)
