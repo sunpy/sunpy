@@ -296,3 +296,5 @@ result_images
 # Save from Map.save example
 aia171.fits
 aia171.asdf
+sun-env/
+test.py
