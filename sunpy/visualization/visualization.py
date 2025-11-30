@@ -50,7 +50,7 @@ def axis_labels_from_ctype(ctype, unit):
         if unit is not None:
              return f"[{unit}]"
         return ""
-    
+
     physical_labels = {
         'custom:pos.helioprojective.lon': 'HPLN',
         'custom:pos.helioprojective.lat': 'HPLT',
@@ -63,7 +63,7 @@ def axis_labels_from_ctype(ctype, unit):
     }
     if ctype in physical_labels:
         ctype = physical_labels[ctype]
-        
+
     ctype_short = ctype[:4]
 
     labels = {'HGLN': 'Heliographic Longitude',

@@ -13,7 +13,6 @@ import webbrowser
 from typing import Literal
 from tempfile import NamedTemporaryFile
 from collections import namedtuple
-from astropy.wcs import WCS
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -21,6 +20,8 @@ import numpy as np
 import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+
+from astropy.wcs import WCS
 
 try:
     from dask.array import Array as DaskArray
