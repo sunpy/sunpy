@@ -1,3 +1,2 @@
 # This file is used to pin test packages across sunpy coordinated packages
 # Do not remove, even if it's empty!
-sphinx<9.0  # automodapi
