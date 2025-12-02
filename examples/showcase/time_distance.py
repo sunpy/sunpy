@@ -81,8 +81,8 @@ sub_map_ax.plot_coord(line_coords)
 # We will use both and show they achieve almost the same results. Choosing which
 # approach to use will depend on the exact use case.
 #
-# We will start of with the first approach and reproject all the maps to common WCS
-# of the ``ref_sub_map.wcs`` while also taking account of differential rotation of
+# We will start with the first approach and reproject all the maps to a common WCS
+# defined by ``ref_sub_map.wcs`` while also taking account of differential rotation
 # using :func:`~sunpy.coordinates.propagate_with_solar_surface` and off-disk pixels
 # using :func:`~sunpy.coordinates.screens.SphericalScreen`.
 
@@ -93,10 +93,10 @@ for cur_map in aia_seq:
         reprojected_sub_maps.append(cur_map.reproject_to(ref_sub_map.wcs, preserve_date_obs=True))
 
 ###############################################################################
-# Now that we have reprojected all the maps to common WCS, we can extract the
+# Now that we have reprojected all the maps to a common WCS, we can extract the
 # pixel coordinates once using :func:`~sunpy.map.pixelate_coord_path` to
 # determine the coordinates for every pixel that intersects with the physical
-# path and then use :func:`~sunpy.map.sample_at_coords` sample the data at
+# path and then use :func:`~sunpy.map.sample_at_coords` to sample the data at
 # these coordinates.
 
 # As the maps are all aligned only need to extract the coordinates once
@@ -120,8 +120,8 @@ for cur_map in aia_seq:
         intensities_transform.append(sample_at_coords(cur_map, intensity_coords))
 
 ###############################################################################
-# Now we have obtained the raw data we need to prepare it for plotting and
-# calculate the extents of the x and y axes for the final plot.
+# Now that we have obtained the raw datai, we need to prepare it for plotting
+# and calculate the extents of the x and y axes for the final plot.
 
 # The above will give us a list of 1D arrays, one for each map in the sequence.
 # We need to stack them into a 2D array.
