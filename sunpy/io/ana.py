@@ -21,11 +21,6 @@ try:
 except ImportError:
     _pyana = None
 
-ANA_NOT_INSTALLED = (
-    "C extension for ANA is missing. For more details see: "
-    "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
-)
-
 ANA_DEPRECATION_MESSAGE = (
     "The ANA reader may be removed in a future version of sunpy, "
     "please comment here if you are using this code: "
@@ -35,7 +30,18 @@ ANA_DEPRECATION_MESSAGE = (
 __all__ = ['read', 'get_header', 'write']
 
 
+def check_ana_installed(func):
+    ana_not_installed = (
+        "C extension for ANA is missing. For more details see: "
+        "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
+    )
+    if _pyana is None and os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION") is None:
+        raise ImportError(ana_not_installed)
+    return func
+
+
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
+@check_ana_installed
 def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
@@ -48,28 +54,21 @@ def read(filename, debug=False, **kwargs):
     debug : `bool`, optional
         Prints verbose debug information.
     **kwargs : `dict`
-        Unused.
+        Unused, provided for compatibility with the unified IO layer.
 
     Returns
     -------
     `list`
         A list of (data, header) tuples
-
-    Examples
-    --------
-    >>> data = sunpy.io.ana.read(filename)  # doctest: +SKIP
     """
     if not os.path.isfile(filename):
-        raise OSError("File does not exist!")
-
-    if _pyana is None:
-        raise ImportError(ANA_NOT_INSTALLED)
-
+        raise OSError(f"File {filename} does not exist!")
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
+@check_ana_installed
 def get_header(filename, debug=False):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
@@ -87,20 +86,14 @@ def get_header(filename, debug=False):
     -------
     `list`
         A list of `~sunpy.io._header.FileHeader` headers.
-
-    Examples
-    --------
-    >>> header = sunpy.io.ana.get_header(filename)  # doctest: +SKIP
     """
-    if _pyana is None:
-        raise ImportError(ANA_NOT_INSTALLED)
-
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)
-def write(filename, data, comments=False, compress=True, debug=False):
+@check_ana_installed
+def write(filename, data, comments=None, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
     ``NULL``.
@@ -122,15 +115,6 @@ def write(filename, data, comments=False, compress=True, debug=False):
     -------
     `str`
         A new ANA compressed archive containing the data and header.
-
-    Examples
-    --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=True)  # doctest: +SKIP
     """
-    if _pyana is None:
-        raise ImportError(ANA_NOT_INSTALLED)
-
-    if comments:
-        return _pyana.fzwrite(filename, data, int(compress), comments, debug)
-    else:
-        return _pyana.fzwrite(filename, data, int(compress), '', debug)
+    comments = comments or ""
+    return _pyana.fzwrite(filename, data, int(compress), comments, debug)
