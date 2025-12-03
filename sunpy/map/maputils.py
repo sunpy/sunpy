@@ -9,8 +9,7 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
-from sunpy.coordinates import Helioprojective, sun
-from sunpy.coordinates import utils
+from sunpy.coordinates import sun, utils
 from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',

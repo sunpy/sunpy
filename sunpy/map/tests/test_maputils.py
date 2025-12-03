@@ -10,7 +10,7 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
-from sunpy.coordinates.utils import GreatArc, coordinate_is_on_solar_disk, solar_angular_radius, _verify_coordinate_helioprojective
+from sunpy.coordinates.utils import GreatArc, coordinate_is_on_solar_disk, _verify_coordinate_helioprojective
 from sunpy.map.maputils import (
     all_coordinates_from_map,
     all_corner_coords_from_map,
