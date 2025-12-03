@@ -12,7 +12,8 @@ from astropy.coordinates.representation import CartesianRepresentation
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective, get_body_heliographic_stonyhurst, sun
 from sunpy.sun import constants
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle'
+           'solar_angular_radius', 'coordinate_is_on_solar_disk']
 
 
 class GreatArc:
@@ -568,3 +569,29 @@ def get_heliocentric_angle(coordinate_on_solar_disk):
     to_observer = CartesianRepresentation(0, 0, 1) * hcc.observer.radius - normal
     heliocentric_angle = np.arctan2(normal.cross(to_observer).norm(), normal.dot(to_observer))
     return heliocentric_angle.to(u.deg)
+
+@u.quantity_input
+def coordinate_is_on_solar_disk(coordinates):
+    """
+    Checks if the helioprojective Cartesian coordinates are on the solar disk.
+
+    The check is performed by comparing the coordinate's angular distance
+    to the angular size of the solar radius. The solar disk is assumed to be
+    a circle i.e., solar oblateness and other effects that cause the solar disk to
+    be non-circular are not taken in to account.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    `~bool`
+        Returns `True` if the coordinate is on disk, `False` otherwise.
+    """
+    _verify_coordinate_helioprojective(coordinates)
+    # Calculate the radial angle from the center of the Sun (do not assume small angles)
+    # and compare it to the angular radius of the Sun
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)

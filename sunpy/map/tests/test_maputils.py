@@ -10,9 +10,8 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
-from sunpy.coordinates.utils import GreatArc
+from sunpy.coordinates.utils import GreatArc, coordinate_is_on_solar_disk, solar_angular_radius, _verify_coordinate_helioprojective
 from sunpy.map.maputils import (
-    _verify_coordinate_helioprojective,
     all_coordinates_from_map,
     all_corner_coords_from_map,
     all_pixel_indices_from_map,
@@ -20,14 +19,12 @@ from sunpy.map.maputils import (
     contains_full_disk,
     contains_limb,
     contains_solar_center,
-    coordinate_is_on_solar_disk,  #to be removed
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
     pixelate_coord_path,
     sample_at_coords,
-    solar_angular_radius #to be removed
 )
 
 
@@ -170,7 +167,6 @@ def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, strad
     assert ~contains_limb(all_on_disk_map)
     assert contains_limb(straddles_limb_map)
 
-#To be moved
 def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     off_disk = aia171_test_map.bottom_left_coord
     on_disk = aia171_test_map.center
@@ -239,13 +235,6 @@ def test_verify_coordinate_helioprojective(aia171_test_map, all_off_disk_map, al
         _verify_coordinate_helioprojective(non_helioprojective_map.coordinate_frame)
     with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         _verify_coordinate_helioprojective(non_helioprojective_skycoord)
-
-#To be moved
-def test_functions_raise_non_frame_coords(non_helioprojective_skycoord):
-    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
-        solar_angular_radius(non_helioprojective_skycoord)
-    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
-        coordinate_is_on_solar_disk(non_helioprojective_skycoord)
 
 
 def test_functions_raise_non_frame_map(non_helioprojective_map):

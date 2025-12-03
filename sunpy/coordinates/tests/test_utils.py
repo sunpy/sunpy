@@ -7,6 +7,7 @@ import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
+from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import (
@@ -15,7 +16,8 @@ from sunpy.coordinates.utils import (
     get_limb_coordinates,
     get_rectangle_coordinates,
     solar_angle_equivalency,
-    solar_angular_radius
+    solar_angular_radius,
+    coordinate_is_on_solar_disk
 )
 from sunpy.sun import constants
 from sunpy.util.exceptions import SunpyUserWarning
@@ -259,6 +261,9 @@ def rectangle_args():
 
     return bottom_left, top_right, width, height
 
+@pytest.fixture
+def non_helioprojective_skycoord():
+    return SkyCoord(0 * u.rad, 0 * u.rad, frame="icrs")
 
 def test_rectangle_incomplete_input(rectangle_args):
     bottom_left, _, _, height = rectangle_args
@@ -425,3 +430,9 @@ def test_solar_angular_radius(aia171_test_map):
     sar = solar_angular_radius(on_disk)
     assert isinstance(sar, u.Quantity)
     np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
+
+def test_functions_raise_non_frame_coords(non_helioprojective_skycoord):
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
+        solar_angular_radius(non_helioprojective_skycoord)
+    with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
+        coordinate_is_on_solar_disk(non_helioprojective_skycoord)
