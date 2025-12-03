@@ -1,3 +1,4 @@
+
 """
 Miscellaneous utilities related to coordinates
 """
@@ -8,7 +9,7 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.coordinates.representation import CartesianRepresentation
 
-from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
+from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective, get_body_heliographic_stonyhurst, sun
 from sunpy.sun import constants
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle']
@@ -386,6 +387,43 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
             top_right = top_right.frame
 
     return bottom_left, top_right
+
+def _verify_coordinate_helioprojective(coordinates):
+    """
+    Raises an error if the coordinate is not in the
+    `~sunpy.coordinates.frames.Helioprojective` frame.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
+    """
+    frame = coordinates.frame if hasattr(coordinates, 'frame') else coordinates
+    if not isinstance(frame, Helioprojective):
+        raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
+                         "but must be in the Helioprojective frame.")
+
+def solar_angular_radius(coordinates):
+    """
+    Calculates the solar angular radius as seen by the observer.
+
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse. Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    angle : `~astropy.units.Quantity`
+        The solar angular radius.
+    """
+    _verify_coordinate_helioprojective(coordinates)
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
 def solar_angle_equivalency(observer):

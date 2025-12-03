@@ -20,14 +20,14 @@ from sunpy.map.maputils import (
     contains_full_disk,
     contains_limb,
     contains_solar_center,
-    coordinate_is_on_solar_disk,
+    coordinate_is_on_solar_disk,  #to be removed
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
     pixelate_coord_path,
     sample_at_coords,
-    solar_angular_radius,
+    solar_angular_radius #to be removed
 )
 
 
@@ -63,7 +63,7 @@ def non_helioprojective_map():
                                                          wavelength=1000*u.angstrom)
     return sunpy.map.Map(data, header)
 
-
+#To be copied over?
 @pytest.fixture
 def non_helioprojective_skycoord():
     return SkyCoord(0 * u.rad, 0 * u.rad, frame="icrs")
@@ -143,13 +143,6 @@ def test_map_edges(all_off_disk_map):
     assert np.all(edges[0][10] == [10, 11] * u.pix)
 
 
-def test_solar_angular_radius(aia171_test_map):
-    on_disk = aia171_test_map.center
-    sar = solar_angular_radius(on_disk)
-    assert isinstance(sar, u.Quantity)
-    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
-
-
 def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     assert contains_full_disk(aia171_test_map)
     assert ~contains_full_disk(all_off_disk_map)
@@ -177,7 +170,7 @@ def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, strad
     assert ~contains_limb(all_on_disk_map)
     assert contains_limb(straddles_limb_map)
 
-
+#To be moved
 def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     off_disk = aia171_test_map.bottom_left_coord
     on_disk = aia171_test_map.center
@@ -247,7 +240,7 @@ def test_verify_coordinate_helioprojective(aia171_test_map, all_off_disk_map, al
     with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         _verify_coordinate_helioprojective(non_helioprojective_skycoord)
 
-
+#To be moved
 def test_functions_raise_non_frame_coords(non_helioprojective_skycoord):
     with pytest.raises(ValueError, match=r"ICRS, .* Helioprojective"):
         solar_angular_radius(non_helioprojective_skycoord)

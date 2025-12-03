@@ -9,8 +9,9 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
-
 from sunpy.coordinates import Helioprojective, sun
+from sunpy.coordinates.utils import _verify_coordinate_helioprojective
+from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -124,7 +125,8 @@ def map_edges(smap):
     right_hand_side = list(product([nx - 1], np.arange(ny))) * u.pix
     return top, bottom, left_hand_side, right_hand_side
 
-
+# moved to utils
+'''
 def _verify_coordinate_helioprojective(coordinates):
     """
     Raises an error if the coordinate is not in the
@@ -138,8 +140,9 @@ def _verify_coordinate_helioprojective(coordinates):
     if not isinstance(frame, Helioprojective):
         raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
                          "but must be in the Helioprojective frame.")
+'''
 
-
+@deprecated(since="7.0", message="solar_angular_radius moved to coordinates/utils")
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
