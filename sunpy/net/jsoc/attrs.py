@@ -1,9 +1,6 @@
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates.frames import Helioprojective
-from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.map.maputils import coordinate_is_on_solar_disk
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrComparison, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
@@ -168,6 +165,12 @@ class Cutout(DataAttr):
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
                  height: u.arcsec = None, tracking=False, register=False,
                  nan_off_limb=False):
+
+        # import here so net won't depend on map
+        from sunpy.coordinates.frames import Helioprojective
+        from sunpy.coordinates.utils import get_rectangle_coordinates
+        from sunpy.map.maputils import coordinate_is_on_solar_disk
+
         super().__init__()
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width, height=height)
         if not isinstance(bl.frame, Helioprojective):
