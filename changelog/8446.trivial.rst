@@ -1,0 +1,1 @@
+Stop using deprecated ``set_bad`` method on a matplotlib colormap.
