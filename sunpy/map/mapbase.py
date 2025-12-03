@@ -386,7 +386,7 @@ class GenericMap(NDData):
         # Make a copy of the colormap to avoid modifying the matplotlib instance when
         # doing set_bad() (copy not needed when min mpl is 3.5, as already a copy)
         cmap = copy.copy(matplotlib.colormaps['gray'])
-        cmap.set_bad(color='red')
+        cmap.with_extremes(bad='red')
         norm = ImageNormalize(stretch=HistEqStretch(finite_data))
 
         # Plot the image in pixel space
