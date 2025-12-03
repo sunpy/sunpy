@@ -9,6 +9,7 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
+
 from sunpy.coordinates import sun, utils
 from sunpy.util.decorators import deprecated
 

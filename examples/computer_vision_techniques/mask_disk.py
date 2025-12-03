@@ -8,9 +8,9 @@ How to mask out all emission from the solar disk.
 import matplotlib.pyplot as plt
 
 import sunpy.map
+from sunpy.coordinates.utils import coordinate_is_on_solar_disk
 from sunpy.data.sample import AIA_171_IMAGE
 from sunpy.map.maputils import all_coordinates_from_map
-from sunpy.coordinates.utils import coordinate_is_on_solar_disk
 
 ###############################################################################
 # We start with the sample data.

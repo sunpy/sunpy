@@ -7,17 +7,16 @@ import astropy.units as u
 from astropy.coordinates import ConvertError, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
-from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import (
     GreatArc,
+    coordinate_is_on_solar_disk,
     get_heliocentric_angle,
     get_limb_coordinates,
     get_rectangle_coordinates,
     solar_angle_equivalency,
     solar_angular_radius,
-    coordinate_is_on_solar_disk
 )
 from sunpy.sun import constants
 from sunpy.util.exceptions import SunpyUserWarning

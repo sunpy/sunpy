@@ -14,9 +14,9 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 
 import sunpy.data.sample
-from sunpy.map import Map
-from sunpy.map.maputils import all_coordinates_from_map 
 from sunpy.coordinates.utils import coordinate_is_on_solar_disk
+from sunpy.map import Map
+from sunpy.map.maputils import all_coordinates_from_map
 
 ###############################################################################
 # Let's import sample data representing the three types of data we want to

@@ -17,8 +17,8 @@ from matplotlib.patches import ConnectionPatch
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-import sunpy.map
 import sunpy.coordinates
+import sunpy.map
 from sunpy.data.sample import HMI_LOS_IMAGE
 
 ##############################################################################
