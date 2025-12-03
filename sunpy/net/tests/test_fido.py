@@ -222,7 +222,7 @@ def test_path(tmp_path):
     downloader = Downloader(config=config)
     results = Fido.search(
         a.Time("2025/1/1", "2025/1/1"), a.Instrument.aia)
-    file = Fido.fetch(results, path=tmp_path / "{file}", downloader=downloader)
+    file = Fido.fetch(results, path=tmp_path / "{file}", downloader=downloader, site="NSO")
     assert file == [str(pathlib.Path(tmp_path, "aia.lev1.335A_2025_01_01T00_00_00.63Z.image_lev1.fits"))]
 
 
