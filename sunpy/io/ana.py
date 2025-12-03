@@ -38,7 +38,7 @@ def check_ana_installed(func):
     )
     @wraps(func)
     def ana_installed_wrapper(*args, **kwargs):
-        if _pyana is None and os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION") is None:
+        if _pyana is None:
             raise ImportError(ana_not_installed)
         return func(*args, **kwargs)
 
