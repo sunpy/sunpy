@@ -1,6 +1,8 @@
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
+from sunpy.coordinates.frames import Helioprojective
+from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrComparison, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
@@ -165,12 +167,6 @@ class Cutout(DataAttr):
     def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
                  height: u.arcsec = None, tracking=False, register=False,
                  nan_off_limb=False):
-
-        # import here so net won't depend on map
-        from sunpy.coordinates.frames import Helioprojective
-        from sunpy.coordinates.utils import get_rectangle_coordinates
-        from sunpy.map.maputils import coordinate_is_on_solar_disk
-
         super().__init__()
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width, height=height)
         if not isinstance(bl.frame, Helioprojective):
@@ -180,9 +176,13 @@ class Cutout(DataAttr):
         center_x = (bl.Tx + tr.Tx) / 2
         center_y = (bl.Ty + tr.Ty) / 2
         center = SkyCoord(center_x, center_y, frame=bottom_left.frame)
-        if tracking and not coordinate_is_on_solar_disk(center):
-            raise ValueError("Tracking is enabled, but the center of the cutout "
-                             f"(Tx={center_x}, Ty={center_y}) is not on the solar disk.")
+        if tracking:
+            # import here so net won't depend on map
+            from sunpy.map.maputils import coordinate_is_on_solar_disk
+            if not coordinate_is_on_solar_disk(center):
+
+                raise ValueError("Tracking is enabled, but the center of the cutout "
+                                 f"(Tx={center_x}, Ty={center_y}) is not on the solar disk.")
 
         self.value = {
             't_ref': bl.obstime.isot,
