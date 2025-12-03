@@ -180,7 +180,6 @@ class Cutout(DataAttr):
             # import here so net won't depend on map
             from sunpy.map.maputils import coordinate_is_on_solar_disk
             if not coordinate_is_on_solar_disk(center):
-
                 raise ValueError("Tracking is enabled, but the center of the cutout "
                                  f"(Tx={center_x}, Ty={center_y}) is not on the solar disk.")
 
