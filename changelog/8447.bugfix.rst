@@ -1,0 +1,1 @@
+Fixed a bug with HMI and MDI magnetic-field maps where the data array would always be read during map instantiation.
