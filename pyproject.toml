@@ -160,7 +160,6 @@ zip-safe = false
 include-package-data = true
 platforms = ["any"]
 provides = ["sunpy"]
-license-files = ["LICENSE.rst"]
 
 [tool.setuptools.packages.find]
 include = ["sunpy*"]
