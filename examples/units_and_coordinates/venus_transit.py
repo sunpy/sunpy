@@ -3,6 +3,8 @@
 Overplotting the position of the Venus transit
 ==============================================
 
+.. tags:: units_and_coordinates, venus_transit, aia, map
+
 How to accurately plot the position of Venus as it transited in front
 of the Sun as observed by SDO/AIA.
 """

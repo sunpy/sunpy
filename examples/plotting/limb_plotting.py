@@ -3,6 +3,8 @@
 Plotting the solar limb
 =======================
 
+.. tags:: plotting, visualization
+
 This example demonstrates how you can draw the limb as seen by an arbitrary
 observer.
 """

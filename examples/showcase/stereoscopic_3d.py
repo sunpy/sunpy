@@ -3,6 +3,8 @@
 Visualizing 3D stereoscopic images
 ==================================
 
+.. tags:: showcase, stereoscopic_image, aia, euvi
+
 How to make an anaglyph 3D image from a stereoscopic observation
 
 We use a stereoscopic observation from July 2023, when the STEREO-A spacecraft

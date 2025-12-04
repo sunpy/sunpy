@@ -127,6 +127,7 @@ docs = [
   "sunpy[all]",
   "sphinx>=7.1.0",
   "sphinx-automodapi>=0.16.0",
+  "sphinx-tags>=0.4",
   "packaging>=23.2",
   "hvpy>=1.1.0",
   "ruamel.yaml>=0.18.0",

@@ -3,6 +3,8 @@
 Overlaying off-disk contours using a screen
 ===========================================
 
+.. tags:: plotting, contours, visualization, co_observations
+
 This example shows how to use a screen to overlay off-disk contours from one
 map onto another map.
 

@@ -3,6 +3,8 @@
 Reprojecting to a Map Projection with a Custom Origin
 =====================================================
 
+.. tags:: map_transformations, fits
+
 In this example, we show how to reproject a map to a map projection with a
 custom origin. Here, we choose the target map projection to be the
 `azimuthal equidistant projection <https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection>`__,

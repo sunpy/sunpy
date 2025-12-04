@@ -3,6 +3,8 @@
 Rotating a Map
 ==============
 
+.. tags:: map, processing
+
 How to rotate a map.
 """
 import matplotlib.pyplot as plt

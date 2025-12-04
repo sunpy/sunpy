@@ -3,6 +3,8 @@
 Plotting a solar cycle index
 ============================
 
+.. tags:: plotting, visualization, acquiring_data
+
 This example demonstrates how to plot the solar cycle in terms of
 the number of sunspots and a prediction for the next few years.
 """

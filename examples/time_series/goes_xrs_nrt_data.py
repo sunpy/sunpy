@@ -2,6 +2,7 @@
 ========================================================================
 Creating a TimeSeries from GOES-XRS near real time data with flare times
 ========================================================================
+ .. tags:: time_series, goes, xrs, nrt, features
 
 This example will demonstrate how to make use of GOES XRS Near Real Time data.
 This includes the goes XRS timeseries data as well as the flare times.

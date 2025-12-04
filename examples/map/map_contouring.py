@@ -3,6 +3,8 @@
 Finding contours of a map
 =========================
 
+.. tags:: map, contours
+
 This example shows how to find and plot contours on a map.
 """
 import matplotlib.pyplot as plt

@@ -3,6 +3,8 @@
 Overlaying Two Maps
 ===================
 
+.. tags:: plotting, co_observations
+
 This example demonstrates how to draw contours of one map on top of another
 to compare features.
 """
