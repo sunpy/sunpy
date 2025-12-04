@@ -41,7 +41,7 @@ files = sorted(files)
 
 ###############################################################################
 # Our target will be a set of loops in the corona above an active region. First
-# load the FITS files we downloaded above in to map sequence and divide by
+# load the FITS files we downloaded above into map sequence and divide by the
 # exposure time. We then create a rectangular submap or cutout around the area
 # of interest. We will also define the path, in this case a line, along which
 # we want to make the time-distance plot.
@@ -120,7 +120,7 @@ for cur_map in aia_seq:
         intensities_transform.append(sample_at_coords(cur_map, intensity_coords))
 
 ###############################################################################
-# Now that we have obtained the raw datai, we need to prepare it for plotting
+# Now that we have obtained the raw data, we need to prepare it for plotting
 # and calculate the extents of the x and y axes for the final plot.
 
 # The above will give us a list of 1D arrays, one for each map in the sequence.
