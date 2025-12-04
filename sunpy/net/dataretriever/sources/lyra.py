@@ -37,12 +37,12 @@ class LYRAClient(GenericClient):
     Data retrieval status: https://docs.virtualsolar.org/wiki/VSOHealthReport
     Total estimated size: 2.914 Gbyte
     <BLANKLINE>
-           Start Time               End Time        Source Instrument    Wavelength    Provider  Physobs   Wavetype Extent Type   Size
-                                                                          Angstrom                                               Mibyte
-    ----------------------- ----------------------- ------ ---------- ---------------- -------- ---------- -------- ----------- --------
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  30.9375
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A  2328.75
-    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA 1200.0 .. 1230.0      ESA irradiance      euv         N/A 419.0625
+           Start Time               End Time        Source Instrument Provider  Physobs   Wavetype Extent Type   Size
+                                                                                                                Mibyte
+    ----------------------- ----------------------- ------ ---------- -------- ---------- -------- ----------- --------
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA      ESA irradiance      euv         N/A  30.9375
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA      ESA irradiance      euv         N/A  2328.75
+    2016-01-01 09:41:00.000 2016-01-01 10:40:00.000 PROBA2       LYRA      ESA irradiance      euv         N/A 419.0625
     <BLANKLINE>
     <BLANKLINE>
     """

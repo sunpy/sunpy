@@ -107,6 +107,8 @@ linkcheck_ignore = [
     r"https://punch\.space\.swri\.edu",
     # This is super slow to check
     r"https://mathesaurus\.sourceforge\.net/idl-numpy\.html",
+    # You have to be logged into GitHub in order to project wide issue searches
+    r"https://github.com/issues?.*"
 ]
 linkcheck_anchors = False
 linkcheck_timeout = 120
