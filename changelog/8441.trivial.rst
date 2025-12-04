@@ -1,0 +1,1 @@
+Enable a dependency cooldown for dependabot updates.
