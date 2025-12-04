@@ -1,6 +1,7 @@
 """SDO Map subclass definitions"""
 
 import numpy as np
+from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
@@ -149,7 +150,7 @@ class HMIMap(GenericMap):
             # This means they are not scaled correctly.
             if self.plot_settings.get('norm') is not None:
                 # Magnetic field maps, not intensity maps
-                self._set_symmetric_vmin_vmax()
+                self.plot_settings['norm'] = CenteredNorm()
         self._nickname = self.detector
 
     @property
