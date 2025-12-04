@@ -1,3 +1,20 @@
+7.0.4 (2025-12-04)
+==================
+
+Bug Fixes
+---------
+
+- Fix `~sunpy.net.dataretriever.ADAPTClient` returning no results for ADAPT maps after October 2024.
+  The filename convention was changed on the NSO server. (`#8388 <https://github.com/sunpy/sunpy/pull/8388>`__)
+- Fix unintended dependency of ``net`` module on ``map`` module due to `~sunpy.net.jsoc.attrs.Cutout`. (`#8442 <https://github.com/sunpy/sunpy/pull/8442>`__)
+
+
+Internal Changes
+----------------
+
+- Stop using deprecated ``set_bad`` method on a matplotlib colormap. (`#8446 <https://github.com/sunpy/sunpy/pull/8446>`__)
+
+
 7.0.3 (2025-10-17)
 ==================
 

@@ -1,1 +1,0 @@
-Fix unintended dependency of ``net`` module on ``map`` module due to `~sunpy.net.jsoc.attrs.Cutout`.
