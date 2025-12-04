@@ -5,6 +5,7 @@ This module provides `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import html
 import time
+import numbers
 import textwrap
 import webbrowser
 from tempfile import NamedTemporaryFile
@@ -534,8 +535,10 @@ class GenericTimeSeries:
         # If given strings, then use to create a sunpy.time.timerange.TimeRange
         # for the SunPy text date parser.
         if isinstance(a, str) and isinstance(b, str):
-            a = TimeRange(a, b)
-        if isinstance(a, TimeRange):
+            time_range = TimeRange(a, b)
+            start = time_range.start.datetime
+            end = time_range.end.datetime
+        elif isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start.datetime
             end = a.end.datetime
@@ -543,6 +546,20 @@ class GenericTimeSeries:
             # Otherwise we already have the values
             start = a
             end = b
+
+        if isinstance(start, numbers.Integral) and end is None:
+            end = len(self._data)
+
+        start, end = (end, start) if start > end else (start, end)
+        min_time, max_time = self._data.index.min(), self._data.index.max()
+        if not (isinstance(start, numbers.Integral) and isinstance(end, numbers.Integral)):
+            # Check if the timerange overlaps with the data timerange
+            if min_time >= start and max_time <= end:
+                pass
+            elif start <= end <= min_time:
+                start = end = self._data.sort_index().index[0]
+            elif max_time <= start <= end:
+                start = end = self._data.sort_index().index[-1]
 
         # If an interval integer was given then use in truncation.
         truncated_data = self._data.sort_index()[start:end:int]
