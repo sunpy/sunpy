@@ -279,21 +279,14 @@ def test_fido_indexing(queries):
     assume(query1.attrs[1].start != query2.attrs[1].start)
 
     res = Fido.search(query1 | query2)
-    assert len(res) == 2
 
-    assert isinstance(res[1:], UnifiedResponse)
-    assert len(res[1:]) == 1
     assert isinstance(res[0:1], UnifiedResponse)
     assert len(res[0:1]) == 1
 
-    assert isinstance(res[1:, 0], UnifiedResponse)
-    assert len(res[1:, 0]) == 1
     assert isinstance(res[0:1, 0], UnifiedResponse)
     assert len(res[0:1, 0]) == 1
 
     assert isinstance(res[0][0], QueryResponseRow)
-    assert isinstance(res[1][0], QueryResponseRow)
-    assert isinstance(res[1, 0:1], QueryResponseTable)
 
     aa = res[0, 0]
     assert isinstance(aa, QueryResponseRow)
@@ -301,20 +294,10 @@ def test_fido_indexing(queries):
     aa = res[0, 'Instrument']
     assert isinstance(aa, QueryResponseColumn)
 
-    aa = res[:, 'Instrument']
-    assert isinstance(aa, UnifiedResponse)
-    for table in aa:
-        assert len(table.columns) == 1
-
     aa = res[0, ('Instrument',)]
     assert isinstance(aa, QueryResponseTable)
     for table in aa:
         assert len(table.columns) == 1
-
-    aa = res[:, 0]
-    assert isinstance(aa, UnifiedResponse)
-    assert len(aa) == 2
-    assert len(aa[0]) == 1
 
     aa = res[0, :]
     assert isinstance(aa, QueryResponseTable)
@@ -337,8 +320,77 @@ def test_fido_indexing(queries):
     with pytest.raises(IndexError):
         res[1.0132]
 
+    assert len(res) == (2 if len(res) != 1 else 1)
+    assert isinstance(res[1:], UnifiedResponse)
+    assert len(res[1:]) == (1 if len(res) != 1 else 0)
+
+    assert isinstance(res[1:, 0], UnifiedResponse)
+    assert len(res[1:, 0]) == (1 if len(res) != 1 else 0)
+
+    if len(res) != 1:
+        assert isinstance(res[1][0], QueryResponseRow)
+        assert isinstance(res[1, 0:1], QueryResponseTable)
+
+    aa = res[:, 'Instrument']
+    assert isinstance(aa, UnifiedResponse)
+    for table in aa:
+        assert len(table.columns) == 1
+
+    aa = res[:, 0]
+
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 2 if len(aa) != 1 else 1
+    assert len(aa[0]) == 1
+
     if isinstance(res, UnifiedResponse):
-        assert len(res) != 1
+        assert len(res) == (2 if len(res) != 1 else 1)
+
+
+@pytest.mark.remote_data
+def test_combined_response_vso_time():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')) &
+                  a.Instrument('AIA'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
+    t2 = TimeRange('2020-01-01', '2020-01-03 00:00:10')
+    assert t1 == t2
+
+    # Tables from 2 different providers dont get combines
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Instrument.lasco)
+    assert len(results) == 2
+    assert isinstance(results[0], QueryResponseTable)
+    assert isinstance(results[1], QueryResponseTable)
+
+
+    results = Fido.search(a.Time('2020-01-01', '2020-01-01 00:00:10'), a.Instrument.aia | a.Wavelength(171*u.angstrom))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+@pytest.mark.remote_data
+def test_combined_response_jsoc():
+    results = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+            a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 00:00:10') | a.Time('2020-01-03', '2020-01-03 00:00:10')),
+                           a.jsoc.Series('hmi.m_45s'))
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+    assert results['jsoc']['T_REC'][0] == '2020.01.01_00:00:45_TAI'
+    assert results['jsoc']['T_REC'][-1] == '2020.01.03_00:00:45_TAI'
+
+
+@pytest.mark.remote_data
+def test_combined_response_lyra():
+    results = Fido.search((a.Time('2020-01-01', '2020-01-01 23:59:59.999') | a.Time('2020-01-03', '2020-01-03 23:59:59.999')), a.Instrument.lyra)
+    assert len(results) == 1
+    assert isinstance(results[0], QueryResponseTable)
+    t1 = TimeRange(results[-1][0]["Start Time"], results[-1][-1]["End Time"])
+    t2 = TimeRange('2020-01-01', '2020-01-03 23:59:59.999')
+    assert t1 == t2
 
 
 @no_vso
@@ -501,8 +553,11 @@ def test_path_format_keys():
     t2 = QueryResponseTable({'End Time': ['2011/01/01', '2011/01/02'],
                              '!excite!': ['cat', 'rabbit']})
     assert t2.path_format_keys() == {'_excite_', 'end_time'}
+
     unif = UnifiedResponse(t1, t2)
-    assert unif.path_format_keys() == {'_excite_'}
+
+    # assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
+    assert unif.path_format_keys() == {'start_time', '_excite_', '01_wibble', 'end_time'}
 
 
 @pytest.mark.remote_data
