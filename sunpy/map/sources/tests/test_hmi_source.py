@@ -1,6 +1,7 @@
 """
 Test cases for SDO HMIMap subclass.
 """
+import psutil
 import pytest
 
 import astropy.units as u
@@ -106,3 +107,25 @@ def test_wcs(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
     hmi_bharp_map.pixel_to_world(0*u.pix, 0*u.pix)
     hmi_cea_sharp_map.pixel_to_world(0*u.pix, 0*u.pix)
     hmi_sharp_map.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+# We use our sample HMI image to test memory mapping because it is large (8 MB data array)
+@pytest.mark.remote_data
+def test_memmap():
+    process = psutil.Process()
+
+    initial = process.memory_info()
+
+    from sunpy.data.sample import HMI_LOS_IMAGE
+    hmi_map = Map(HMI_LOS_IMAGE)
+
+    instantiated = process.memory_info()
+    assert instantiated.vms - initial.vms > 8e6  # The memory-mapped array is addressable
+    assert instantiated.rss - initial.rss < 1e6  # but has not yet been read
+
+    # Force a read of every element in the data array
+    _ = hmi_map.data.max()
+
+    accessed = process.memory_info()
+    assert accessed.vms - instantiated.vms < 1e6  # The addressable memory has not changed
+    assert accessed.rss - instantiated.rss > 8e6  # but the array has now been read
