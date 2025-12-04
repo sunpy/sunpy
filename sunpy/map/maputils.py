@@ -10,13 +10,14 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
-from sunpy.coordinates import Helioprojective, sun
+from sunpy.coordinates import sun, utils
+from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
-           'map_edges', 'solar_angular_radius', 'sample_at_coords',
+           'map_edges', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
-           'contains_limb', 'coordinate_is_on_solar_disk',
+           'contains_limb',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
            'pixelate_coord_path']
@@ -124,8 +125,9 @@ def map_edges(smap):
     right_hand_side = list(product([nx - 1], np.arange(ny))) * u.pix
     return top, bottom, left_hand_side, right_hand_side
 
-
-def _verify_coordinate_helioprojective(coordinates):
+# moved to utils
+'''
+def utils._verify_coordinate_helioprojective(coordinates):
     """
     Raises an error if the coordinate is not in the
     `~sunpy.coordinates.frames.Helioprojective` frame.
@@ -138,8 +140,9 @@ def _verify_coordinate_helioprojective(coordinates):
     if not isinstance(frame, Helioprojective):
         raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
                          "but must be in the Helioprojective frame.")
+'''
 
-
+@deprecated(since="7.0", message="solar_angular_radius moved to coordinates/utils")
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
@@ -160,7 +163,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
-    _verify_coordinate_helioprojective(coordinates)
+    utils._verify_coordinate_helioprojective(coordinates)
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
@@ -234,10 +237,10 @@ def contains_full_disk(smap):
     within the field of the view of the instrument (although no emission
     from the disk itself is present in the data.)
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    utils._verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Check that the edge pixels are all beyond the limb yet the Sun center is in the map
-    return np.all(~coordinate_is_on_solar_disk(edge_of_world)) and contains_solar_center(smap)
+    return np.all(~utils.coordinate_is_on_solar_disk(edge_of_world)) and contains_solar_center(smap)
 
 
 def contains_solar_center(smap):
@@ -256,10 +259,10 @@ def contains_solar_center(smap):
     bool
         True if the map contains the solar center.
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    utils._verify_coordinate_helioprojective(smap.coordinate_frame)
     return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
 
-
+@deprecated(since="7.0", message="solar_angular_radius moved to coordinates/utils")
 @u.quantity_input
 def coordinate_is_on_solar_disk(coordinates):
     """
@@ -281,10 +284,10 @@ def coordinate_is_on_solar_disk(coordinates):
     `~bool`
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
-    _verify_coordinate_helioprojective(coordinates)
+    utils._verify_coordinate_helioprojective(coordinates)
     # Calculate the radial angle from the center of the Sun (do not assume small angles)
     # and compare it to the angular radius of the Sun
-    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= utils.solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):
@@ -311,10 +314,10 @@ def is_all_off_disk(smap):
     within the field of view of the instrument, even though the solar disk
     itself is not imaged. For such images this function will return `False`.
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    utils._verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Check that the edge pixels are all beyond the limb and the Sun center is not in the map
-    return np.all(~coordinate_is_on_solar_disk(edge_of_world)) and ~contains_solar_center(smap)
+    return np.all(~utils.coordinate_is_on_solar_disk(edge_of_world)) and ~contains_solar_center(smap)
 
 
 def is_all_on_disk(smap):
@@ -337,9 +340,9 @@ def is_all_on_disk(smap):
         Returns `True` if all map coordinates have an angular radius less than
         the angular radius of the Sun.
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    utils._verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
-    return np.all(coordinate_is_on_solar_disk(edge_of_world))
+    return np.all(utils.coordinate_is_on_solar_disk(edge_of_world))
 
 
 def contains_limb(smap):
@@ -370,10 +373,10 @@ def contains_limb(smap):
     within the field of view of the instrument, but the solar disk itself is not imaged.
     For such images this function will return `True`.
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    utils._verify_coordinate_helioprojective(smap.coordinate_frame)
     if contains_full_disk(smap):
         return True
-    on_disk = coordinate_is_on_solar_disk(_edge_coordinates(smap))
+    on_disk = utils.coordinate_is_on_solar_disk(_edge_coordinates(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 
@@ -395,7 +398,7 @@ def on_disk_bounding_coordinates(smap):
         top right coordinate of the smallest rectangular region that contains
         all the on-disk pixels in the input map.
     """
-    _verify_coordinate_helioprojective(smap.coordinate_frame)
+    utils._verify_coordinate_helioprojective(smap.coordinate_frame)
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
         raise ValueError("The entire map is off disk.")
@@ -404,7 +407,7 @@ def on_disk_bounding_coordinates(smap):
     coordinates = all_coordinates_from_map(smap)
 
     # Find which coordinates are on the disk
-    on_disk = coordinate_is_on_solar_disk(coordinates)
+    on_disk = utils.coordinate_is_on_solar_disk(coordinates)
     on_disk_coordinates = coordinates[on_disk]
 
     # The bottom left and top right coordinates that contain

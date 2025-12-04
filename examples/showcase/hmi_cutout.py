@@ -17,6 +17,7 @@ from matplotlib.patches import ConnectionPatch
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
+import sunpy.coordinates
 import sunpy.map
 from sunpy.data.sample import HMI_LOS_IMAGE
 
@@ -33,7 +34,7 @@ right_corner = SkyCoord(Tx=158*u.arcsec, Ty=350*u.arcsec, frame=magnetogram.coor
 # limb.
 
 hpc_coords = sunpy.map.all_coordinates_from_map(magnetogram)
-mask = ~sunpy.map.coordinate_is_on_solar_disk(hpc_coords)
+mask = ~sunpy.coordinates.coordinate_is_on_solar_disk(hpc_coords)
 magnetogram_big = sunpy.map.Map(magnetogram.data, magnetogram.meta, mask=mask)
 
 ##############################################################################
