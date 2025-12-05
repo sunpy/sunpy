@@ -21,6 +21,8 @@ import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
+from astropy.wcs import WCS
+
 try:
     from dask.array import Array as DaskArray
     DASK_INSTALLED = True
@@ -2802,9 +2804,9 @@ class GenericMap(NDData):
 
             # WCSAxes has unit identifiers on the tick labels, so no need
             # to add unit information to the label
-            ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            physical_type = axes.wcs.world_axis_physical_types
+            axes.coords[0].set_axislabel(axis_labels_from_ctype(physical_type[0], None))
+            axes.coords[1].set_axislabel(axis_labels_from_ctype(physical_type[1], None))
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
@@ -2825,14 +2827,17 @@ class GenericMap(NDData):
 
         # Disable autoalignment if it is not necessary
         # TODO: revisit tolerance value
-        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+        if autoalign is True and isinstance(axes.wcs, WCS) and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
             autoalign = False
 
         if autoalign in {True, 'image'}:
             ny, nx = self.data.shape
             pixel_perimeter = grid_perimeter(nx, ny) - 0.5
 
-            transform = axes.get_transform(self.wcs) - axes.transData
+            try:
+                transform = axes.get_transform(self.wcs) - axes.transData
+            except TypeError:
+                transform = axes.transData
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=SunpyUserWarning)
                 data_perimeter = transform.transform(pixel_perimeter)
