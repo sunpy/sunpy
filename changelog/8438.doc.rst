@@ -1,0 +1,1 @@
+Added a new topic guide explaining the difference between autoalignment and reprojection.
