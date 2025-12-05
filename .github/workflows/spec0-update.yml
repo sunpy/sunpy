@@ -1,0 +1,17 @@
+name: Update SPEC 0 dependencies
+
+on:
+  # On demand:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: savente93/update-spec0-dependencies@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
