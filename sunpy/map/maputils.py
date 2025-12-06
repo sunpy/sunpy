@@ -139,29 +139,27 @@ def _verify_coordinate_helioprojective(coordinates):
         raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
                          "but must be in the Helioprojective frame.")
 
+from sunpy.coordinates.utils import (
+    solar_angular_radius as _solar_angular_radius,
+    coordinate_is_on_solar_disk as _coordinate_is_on_solar_disk,
+)
+from sunpy.util.decorators import deprecated
 
+
+@deprecated("6.0", "7.0",
+            alternative="sunpy.coordinates.utils.solar_angular_radius")
 def solar_angular_radius(coordinates):
-    """
-    Calculates the solar angular radius as seen by the observer.
+    return _solar_angular_radius(coordinates)
 
-    The tangent vector from the observer to the edge of the Sun forms a
-    right-angle triangle with the radius of the Sun as the far side and the
-    Sun-observer distance as the hypotenuse. Thus, the sine of the angular
-    radius of the Sun is ratio of these two distances.
 
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
+@u.quantity_input
+@deprecated("6.0", "7.0",
+            alternative="sunpy.coordinates.utils.coordinate_is_on_solar_disk")
+def coordinate_is_on_solar_disk(coordinates):
+    return _coordinate_is_on_solar_disk(coordinates)
 
-    Returns
-    -------
-    angle : `~astropy.units.Quantity`
-        The solar angular radius.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
+
+
 
 
 def sample_at_coords(smap, coordinates):
@@ -259,32 +257,6 @@ def contains_solar_center(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
 
-
-@u.quantity_input
-def coordinate_is_on_solar_disk(coordinates):
-    """
-    Checks if the helioprojective Cartesian coordinates are on the solar disk.
-
-    The check is performed by comparing the coordinate's angular distance
-    to the angular size of the solar radius. The solar disk is assumed to be
-    a circle i.e., solar oblateness and other effects that cause the solar disk to
-    be non-circular are not taken in to account.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-    Returns
-    -------
-    `~bool`
-        Returns `True` if the coordinate is on disk, `False` otherwise.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    # Calculate the radial angle from the center of the Sun (do not assume small angles)
-    # and compare it to the angular radius of the Sun
-    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):
