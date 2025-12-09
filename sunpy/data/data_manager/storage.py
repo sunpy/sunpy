@@ -153,8 +153,8 @@ class SqliteStorage(StorageProviderBase):
             raise KeyError
         with self.connection() as conn:
             cursor = conn.cursor()
-            cursor.execute(f'''SELECT * FROM {self._table_name}
-                                      WHERE {key}="{value}"''')
+            query = f'SELECT * FROM {self._table_name} WHERE {key}=?'
+            cursor.execute(query, (value,))
             row = cursor.fetchone()
             if row:
                 return dict(zip(self.COLUMN_NAMES, row))
@@ -165,8 +165,8 @@ class SqliteStorage(StorageProviderBase):
             raise KeyError
         with self.connection(commit=True) as conn:
             cursor = conn.cursor()
-            cursor.execute(f'''DELETE FROM {self._table_name}
-                                      WHERE {key}="{value}"''')
+            query = f'DELETE FROM {self._table_name} WHERE {key}=?'
+            cursor.execute(query, (value,))
 
     def store(self, details):
         values = [details[k] for k in self.COLUMN_NAMES]
