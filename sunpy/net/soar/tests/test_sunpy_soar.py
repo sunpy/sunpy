@@ -358,7 +358,7 @@ def test_distance_out_of_bounds_warning(recwarn):
 
 
 @pytest.mark.skipif(SUNPY_VERSION < (7, 1), reason="Skip pre sunpy 7.1")
-def test_distance_out_of_bounds_warning_post71():
+def test_distance_out_of_bounds_warning_post71(recwarn):
     instrument = a.Instrument("EUI")
     time = a.Time("2023-04-27", "2023-04-28")
     level = a.Level(2)
@@ -367,7 +367,14 @@ def test_distance_out_of_bounds_warning_post71():
     # Run the search and ensure it raises an HTTPError
     query = Fido.search(distance & instrument & product & level & time)
     # Check if the warning was raised
-    assert "Distance values must be within the range 0.28 AU to 1.0 AU." in str(query['soar'].errors)
+    assert query['soar'].errors
+    # Check if the warning was raised
+    warnings_list = recwarn.list
+    assert any(
+        warning.message.args[0] == "Distance values must be within the range 0.28 AU to 1.0 AU."
+        and issubclass(warning.category, SunpyUserWarning)
+        for warning in warnings_list
+    )
 
 
 # Remove this test and the mark from below once min sunpy dep >=7.1
