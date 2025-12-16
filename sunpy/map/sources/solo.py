@@ -8,6 +8,7 @@ from astropy.visualization import AsinhStretch, ImageNormalize
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['EUIMap', 'PHIMap']
 
@@ -116,6 +117,7 @@ class PHIMap(GenericMap):
     - get all (normally 6) observed wavelengths (they are corrected for the orbital
       velocity of the spacecraft)
     - test compatibility with both HRT and FDT data
+    - raise SunpyMetadataWarning if CAL_WCS is not True (and is HRT)
     """
 
     def __init__(self, data, header, **kwargs):
@@ -134,12 +136,16 @@ class PHIMap(GenericMap):
             self.plot_settings['cmap'] = 'hsv'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180)
         elif self.meta.get('btype', '').lower() == 'vlos':
-            self.plot_settings['cmap'] = 'seismic'
+            self.plot_settings['cmap'] = 'RdBu_r'
             self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2)
         elif self.meta.get('btype', '').lower() == 'icnt':
             self.plot_settings['cmap'] = 'gist_heat'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2)
-        
+
+        if self.meta.get('cal_wcs', '').lower() is not 'true' and self.detector == 'HRT':
+            warn_user("The WCS of this SO/PHI-HRT PHIMap may not be fully calibrated. "
+                      "Use caution when using the WCS for scientific analysis.")
+            
     @property
     def _rotation_matrix_from_crota(self):
         return super()._rotation_matrix_from_crota(crota_key='CROTA')
