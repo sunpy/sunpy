@@ -93,10 +93,8 @@ class PHIMap(GenericMap):
     about 780 km on the solar surface.
 
     The Level 2 PHI STOKES data product (the raw Stokes polarimetric images) normally 
-    contain a 4d array of dimensions (y,x,4,6) (4 polarization states x 6 wavelengths). 
-
-    This is to be parsed into a separate PHIStokesMap, using NDCube to handle the 4D
-    data.
+    contain a 4D array of dimensions (y,x,4,6) (4 polarization states x 6 wavelengths). 
+    The STOKES currently cannot be handled by PHIMap.
 
     References
     ----------
@@ -117,12 +115,31 @@ class PHIMap(GenericMap):
     - stokes files as separate map class, as it has 4D array, need NDCube
     - get all (normally 6) observed wavelengths (they are corrected for the orbital
       velocity of the spacecraft)
+    - test compatibility with both HRT and FDT data
     """
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-
+        if self.meta.get('btype', '').lower() == 'blos':
+            self.plot_settings['cmap'] = 'hmimag'
+            self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+        elif self.meta.get('btype', '').lower() == 'bmag':
+            self.plot_settings['cmap'] = 'rainbow'
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3)
+        elif self.meta.get('btype', '').lower() == 'binc':
+            self.plot_settings['cmap'] = 'RdGy'
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180)
+        elif self.meta.get('btype', '').lower() == 'bazi':
+            self.plot_settings['cmap'] = 'hsv'
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180)
+        elif self.meta.get('btype', '').lower() == 'vlos':
+            self.plot_settings['cmap'] = 'seismic'
+            self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2)
+        elif self.meta.get('btype', '').lower() == 'icnt':
+            self.plot_settings['cmap'] = 'gist_heat'
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2)
+        
     @property
     def _rotation_matrix_from_crota(self):
         return super()._rotation_matrix_from_crota(crota_key='CROTA')
@@ -187,7 +204,6 @@ class PHIMap(GenericMap):
         else:
             return super().unit
     
-        
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a PHI image"""
