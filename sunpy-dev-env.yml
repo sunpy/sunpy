@@ -43,6 +43,7 @@ dependencies:
   # Testing
   - hvpy
   - hypothesis
+  - psutil
   - pytest
   - pytest-arraydiff
   - pytest-astropy
