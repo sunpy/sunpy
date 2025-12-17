@@ -9,6 +9,7 @@ import warnings
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import PHIMap
 from sunpy.util.exceptions import SunpyUserWarning
+from .helpers import _test_private_date_setters
 
 hrt_header_list = [
     get_test_filepath('solo_L2_phi-hrt-vlos_20241004T003104_V202506050052_0450040601.header'),
@@ -127,6 +128,10 @@ def test_reference_date(phi_map_hrt, expected_refdate):
         )
 def test_date(phi_map_hrt, expected_date):
     assert phi_map_hrt.date.isot == expected_date
+
+
+def test_private_date_setters(phi_hrt_map):
+    _test_private_date_setters(phi_hrt_map)
 
 
 @pytest.mark.parametrize(
