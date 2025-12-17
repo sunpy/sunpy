@@ -4,11 +4,12 @@ Solar Orbiter Map subclass definitions.
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
+import warnings
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.util.exceptions import warn_user
+from sunpy.util.exceptions import SunpyMetadataWarning, warn_user
 
 __all__ = ['EUIMap', 'PHIMap']
 
@@ -121,8 +122,15 @@ class PHIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        header = header.copy()
+        if header.get('BUNIT') == "Normalised Intensity":
+            header['BUNIT'] = "" # dimensionless
+        elif header.get('BUNIT') == 'Degrees':
+            header['BUNIT'] = "deg"
+
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
+
         if self.meta.get('btype', '').lower() == 'blos':
             self.plot_settings['cmap'] = 'hmimag'
             self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
@@ -142,9 +150,22 @@ class PHIMap(GenericMap):
             self.plot_settings['cmap'] = 'gist_heat'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2)
 
-        if self.meta.get('cal_wcs', '').lower() is not 'true' and self.detector == 'HRT':
-            warn_user("The WCS of this SO/PHI-HRT PHIMap may not be fully calibrated. "
-                      "Use caution when using the WCS for scientific analysis.")
+        # Warn user if WCS is not calibrated for HRT data
+        def str_to_bool(s):
+            return str(s).lower() in ['true', '1', 't']
+
+        if self.detector == 'HRT':
+            try:
+                cal_wcs = self.meta.get('cal_wcs', None) 
+                if type(cal_wcs) is str: #older data versions have CAL_WCS as a string
+                    cal_wcs = str_to_bool(cal_wcs)
+                if not cal_wcs:
+                    warn_user("The WCS of this SO/PHI-HRT PHIMap may not be fully calibrated. "
+                              "Use caution when using the WCS for scientific analysis.")
+            except Exception:
+                warn_user("Could not determine if the WCS of this SO/PHI-HRT PHIMap is calibrated. "
+                    "Use caution when using the WCS for scientific analysis.")
+
             
     @property
     def _rotation_matrix_from_crota(self):
@@ -186,35 +207,13 @@ class PHIMap(GenericMap):
         Returns the observatory.
         """
         return self.meta.get('obsrvtry', 'Solar Orbiter')
-    
-    @property
-    def reference_data(self):
-        """
-        Returns the reference data used for calibration.
 
-        DATE-OBS is the start time of the observation.
-        DATE-AVG is the average time of the observation and should be used as the reference time.
-        """
-        return self._get_date('DATE-AVG') or super().reference_date
-    
-    @property
-    def unit(self):
-        unit_str = self.meta.get('bunit', None)
-        if unit_str is None:
-            return
-        # 'Normalised Intensity' (icnt data product) is not a valid FITS unit
-        # It denotes intensity normalized to the average quiet Sun intensity (close as possible to disc centre).
-        # The mapbase unit property forces this validation, so we must override it to prevent it.
-        if (parsed_unit := u.Unit(unit_str)) == u.Unit('Normalised Intensity'):
-            return parsed_unit
-        else:
-            return super().unit
     
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a PHI image"""
         is_solo = 'solar orbiter' in str(header.get('obsrvtry', '')).lower()
         is_phi = str(header.get('instrume', '')).startswith('PHI')
-        is_not_phi_stokes = str(header.get('btype', '')).lower() is not 'stokes'
+        is_not_phi_stokes = str(header.get('btype', '')).lower() != 'stokes'
         return is_solo and is_phi and is_not_phi_stokes 
         #future higher level data products will need to be checked here
