@@ -1,4 +1,6 @@
-"""Tests for PHI Solar Orbiter Map"""
+"""
+Tests for Solar Orbiter PHIMap subclass
+"""
 
 import pytest
 
@@ -25,6 +27,36 @@ hrt_header_list = [
     get_test_filepath('solo_L2_phi-hrt-bazi_20220307T000009_V202208311927_0243070101.header'),
     get_test_filepath('solo_L2_phi-hrt-icnt_20220307T000009_V202208311927_0243070101.header'),
     
+]
+
+expected_hrt_cmap_list = [
+    'RdBu_r',
+    'hmimag',
+    'rainbow',
+    'RdGy',
+    'hsv',
+    'gist_heat',
+    'RdBu_r',
+    'hmimag',
+    'rainbow',
+    'RdGy',
+    'hsv',
+    'gist_heat',
+]
+
+expected_hrt_norm_list = [
+    (-2,2),
+    (-1500,1500),
+    (0,2500),
+    (0,180),
+    (0,180),
+    (0,1.2),
+    (-2,2),
+    (-1500,1500),
+    (0,2500),
+    (0,180),
+    (0,180),
+    (0,1.2),
 ]
 
 expected_hrt_refdates_list = 6*['2024-10-04T00:31:45.499'] + 6*['2022-03-07T00:00:32.393']
@@ -77,8 +109,6 @@ fdt_header_list = [
 
 @pytest.fixture(scope="module", params=hrt_header_list)
 def phi_map_hrt(request):
-    import warnings
-    from sunpy.util.exceptions import SunpyUserWarning
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
@@ -113,10 +143,32 @@ def test_stokes_PHIMap(phi_map_stokes):
 
 
 @pytest.mark.parametrize(
+        ('phi_map_hrt', 'expected_cmap'),
+        list(zip(hrt_header_list, expected_hrt_cmap_list)),
+        indirect=['phi_map_hrt']
+)
+def test_hrt_cmap(phi_map_hrt, expected_cmap):
+    cmap = phi_map_hrt.plot_settings['cmap']
+    assert cmap == expected_cmap
+
+
+@pytest.mark.parametrize(
+        ('phi_map_hrt', 'expected_norm'),
+        list(zip(hrt_header_list, expected_hrt_norm_list)),
+        indirect=['phi_map_hrt']
+)
+def test_hrt_norm(phi_map_hrt, expected_norm):
+    norm = phi_map_hrt.plot_settings['norm']
+    assert norm.clip is True
+    assert norm.vmin == expected_norm[0]
+    assert norm.vmax == expected_norm[1]
+
+
+@pytest.mark.parametrize(
         ('phi_map_hrt', 'expected_refdate'),
         list(zip(hrt_header_list, expected_hrt_refdates_list)),
         indirect=['phi_map_hrt']
-        )
+)
 def test_reference_date(phi_map_hrt, expected_refdate):
     assert phi_map_hrt.reference_date.isot == expected_refdate
 
@@ -165,7 +217,7 @@ def test_level_number(phi_map_hrt):
         ('phi_map_hrt', 'expected_unit'),
         list(zip(hrt_header_list, expected_hrt_units_list)),
         indirect=['phi_map_hrt']
-        )
+)
 def test_unit(phi_map_hrt, expected_unit):
     assert phi_map_hrt.unit == expected_unit
 

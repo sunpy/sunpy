@@ -114,11 +114,12 @@ class PHIMap(GenericMap):
 
     """
     TODO:
-    - stokes files as separate map class, as it has 4D array, need NDCube
-    - get all (normally 6) observed wavelengths (they are corrected for the orbital
-      velocity of the spacecraft)
-    - test compatibility with both HRT and FDT data
-    - raise SunpyMetadataWarning if CAL_WCS is not True (and is HRT)
+    - test with FDT data (for now just blos + icnt)
+    - test with FDT L3 data?
+    - test FDT units (G, Normalised Intensity etc.)
+    - test FDT cmaps + norms
+    - test FDT LL fits data
+    - test FDT LL JP2 data
     """
 
     def __init__(self, data, header, **kwargs):
@@ -133,13 +134,13 @@ class PHIMap(GenericMap):
 
         if self.meta.get('btype', '').lower() == 'blos':
             self.plot_settings['cmap'] = 'hmimag'
-            self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
+            self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=True)
         elif self.meta.get('btype', '').lower() == 'bmag':
             self.plot_settings['cmap'] = 'rainbow'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3)
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3, clip=True)
         elif self.meta.get('btype', '').lower() == 'binc':
             self.plot_settings['cmap'] = 'RdGy'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180)
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
         elif self.meta.get('btype', '').lower() == 'bazi':
             self.plot_settings['cmap'] = 'hsv'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180)
