@@ -10,15 +10,11 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
-
 from sunpy.coordinates.utils import (
     _verify_coordinate_helioprojective,
     coordinate_is_on_solar_disk,
     solar_angular_radius,
 )
-
-
-
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
