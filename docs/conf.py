@@ -128,7 +128,7 @@ ogp_custom_meta_tags = ('<meta property="og:ignore_canonical" content="true" />'
 
 # Suppress warnings about overriding directives as we overload some of the
 # doctest extensions.
-suppress_warnings = ['app.add_directive', ]
+suppress_warnings = ['app.add_directive','ref.ref' ]
 
 # Wrap large function/method signatures
 maximum_signature_line_length = 80
@@ -157,6 +157,7 @@ extensions = [
     'sphinx_copybutton',
     'sphinxcontrib.bibtex',
 ]
+
 
 # Set automodapi to generate files inside the generated directory
 automodapi_toctreedirnm = "generated/api"
