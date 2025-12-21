@@ -12,10 +12,6 @@ from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_hel
 from sunpy.coordinates.frames import Helioprojective
 from sunpy.sun import constants
 
-
-
-
-
 __all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle']
 
 
@@ -604,4 +600,3 @@ def coordinate_is_on_solar_disk(coordinates):
     # Calculate the radial angle from the center of the Sun (do not assume small angles)
     # and compare it to the angular radius of the Sun
     return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
-
