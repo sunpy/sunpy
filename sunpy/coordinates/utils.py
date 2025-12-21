@@ -8,10 +8,15 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.coordinates.representation import CartesianRepresentation
 
-from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
-from sunpy.sun import constants
+from sunpy.coordinates import (
+    Heliocentric,
+    HeliographicStonyhurst,
+    get_body_heliographic_stonyhurst,
+)
 from sunpy.coordinates.frames import Helioprojective
-import sunpy.sun as sun
+from sunpy.sun import constants
+
+
 
 
 
@@ -602,3 +607,4 @@ def coordinate_is_on_solar_disk(coordinates):
     # Calculate the radial angle from the center of the Sun (do not assume small angles)
     # and compare it to the angular radius of the Sun
     return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
+

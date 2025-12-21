@@ -1,1 +1,1 @@
-Refactor coordinate-only helper functions by moving them from `sunpy.map.maputils` to `sunpy.coordinates.util` for imrpoved seperation of responsibilitie.
+Refactor coordinate-only helper functions by moving them from `sunpy.map.maputils` to `sunpy.coordinates.util` for improved separation of responsibilitie.
