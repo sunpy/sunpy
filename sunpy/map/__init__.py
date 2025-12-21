@@ -15,3 +15,6 @@ from sunpy.map.map_factory import Map
 from sunpy.map.maputils import *
 from .compositemap import CompositeMap
 from .mapsequence import MapSequence
+from sunpy.map.maputils import coordinate_is_on_solar_disk, solar_angular_radius
+
+__all__=['sources','Map','CompositeMap','MapSequence','coordinate_is_on_solar_disk','solar_angular_radius']
