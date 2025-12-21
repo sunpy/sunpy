@@ -8,11 +8,7 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.coordinates.representation import CartesianRepresentation
 
-from sunpy.coordinates import (
-    Heliocentric,
-    HeliographicStonyhurst,
-    get_body_heliographic_stonyhurst,
-)
+from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst
 from sunpy.coordinates.frames import Helioprojective
 from sunpy.sun import constants
 
@@ -541,7 +537,7 @@ def get_heliocentric_angle(coordinate_on_solar_disk):
     return heliocentric_angle.to(u.deg)
 
 #---------------------------------------------------------#
-def _verify_coordinate_helioprojective(coordinates): 
+def _verify_coordinate_helioprojective(coordinates):
     """
     Raises an error if the coordinate is not in the
     `~sunpy.coordinates.frames.Helioprojective` frame.
@@ -555,7 +551,7 @@ def _verify_coordinate_helioprojective(coordinates):
         raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
                          "but must be in the Helioprojective frame.")
 
-def solar_angular_radius(coordinates): 
+def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
 
@@ -580,6 +576,7 @@ def solar_angular_radius(coordinates):
     distance = coordinates.observer.radius
 
     return np.arcsin((rsun / distance).to(u.dimensionless_unscaled))
+
 
 
 @u.quantity_input
