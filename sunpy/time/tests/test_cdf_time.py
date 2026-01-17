@@ -8,7 +8,7 @@ from sunpy.time import parse_time
 cdflib = pytest.importorskip("cdflib")
 # Also skip if cdflib is present but too old to have epochs_astropy
 try:
-    import cdflib.epochs_astropy
+    import cdflib.epochs_astropy  # noqa: F401
 except ImportError:
     pytest.skip("cdflib installed but too old (missing epochs_astropy)", allow_module_level=True)
 

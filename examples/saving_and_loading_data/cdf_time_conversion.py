@@ -25,7 +25,7 @@ warnings.simplefilter('ignore', ErfaWarning)
 ###############################################################################
 # First we need to make sure that `cdflib` is installed.
 try:
-    import cdflib
+    import cdflib  # noqa: F401
 except ImportError:
     warnings.warn("cdflib is not installed, skipping example", SunpyUserWarning)
     exit(0)
