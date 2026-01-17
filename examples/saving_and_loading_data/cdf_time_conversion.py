@@ -1,55 +1,45 @@
-
 """
-============================================
-Converting CDF time formats to Astropy Times
-============================================
+===================
+Converting CDF time
+===================
 
-This example demonstrates how to convert CDF time formats (CDF_EPOCH, CDF_EPOCH16, TT2000)
-to `astropy.time.Time` objects using `~sunpy.time.parse_time`.
-This is useful when working with CDF files that store time in these specific formats.
+This example demonstrates how to convert CDF time formats to `~astropy.time.Time`.
 """
-import numpy as np
+import warnings
 
-import sunpy.time
+from erfa import ErfaWarning
 
-################################################################################
-# The Common Data Format (CDF) is widely used in space physics.
-# It defines specific time formats like CDF_EPOCH (milliseconds since 0 AD),
-# CDF_EPOCH16 (picoseconds since 0 AD), and TT2000 (nanoseconds since J2000).
+from sunpy.time import parse_time
+from sunpy.util.exceptions import SunpyUserWarning
+
+warnings.simplefilter('ignore', ErfaWarning)
+
+###############################################################################
+# The Common Data Format (CDF) has a number of standard time formats that are
+# not supported by `astropy.time` by default. These are ``CDF_EPOCH``,
+# ``CDF_EPOCH16`` and ``CDF_TT2000``.
 #
-# Often these are read as arrays of numbers. SunPy can convert these into
-# `astropy.time.Time` objects if ``cdflib`` is installed.
+# SunPy provides a way to convert these times to `~astropy.time.Time` objects
+# using the `cdflib` library.
 
-################################################################################
-# Example with CDF_TT2000 (nanoseconds since J2000)
-# Let's create a numpy array representing TT2000 times.
-# 0 corresponds to J2000 (2000-01-01 12:00:00 TT).
-tt2000_times = np.array([0, 1000000000, 60000000000], dtype=np.int64)
-
-# We can parse these using `parse_time` by specifying the format 'cdf_tt2000'.
-# Note: This requires the optional dependency 'cdflib'.
+###############################################################################
+# First we need to make sure that `cdflib` is installed.
 try:
-    time_obj = sunpy.time.parse_time(tt2000_times, format='cdf_tt2000')
-
-    print(f"Format: {time_obj.format}")
-    print(f"Scale: {time_obj.scale}")
-    print("Times:")
-    print(time_obj.iso)
-except ImportError as e:
-    print(f"Could not parse CDF times: {e}")
-
-################################################################################
-# Example with CDF_EPOCH (milliseconds since 0 AD)
-# 6.383e13 milliseconds is roughly year 2023.
-cdf_epoch_times = np.array([63830592000000.0])
-
-try:
-    time_epoch = sunpy.time.parse_time(cdf_epoch_times, format='cdf_epoch')
-    print("\nCDF_EPOCH Times:")
-    print(time_epoch.iso)
+    import cdflib
 except ImportError:
-    pass
+    warnings.warn("cdflib is not installed, skipping example", SunpyUserWarning)
+    exit(0)
 
-################################################################################
-# These `astropy.time.Time` objects can now be used for analysis or plotting
-# with other SunPy and Astropy tools.
+###############################################################################
+# We can parse ``CDF_TT2000`` times, which are nanoseconds since J2000.
+t_ns = 599572869184000000
+t = parse_time(t_ns, format='cdf_tt2000')
+print(f"Format: {t.format}")
+print(f"Scale: {t.scale}")
+print(f"Times:\n{t}")
+
+###############################################################################
+# We can also parse ``CDF_EPOCH`` times, which are milliseconds since 0000-01-01.
+t_epoch = 63806836800000.0
+t = parse_time(t_epoch, format='cdf_epoch')
+print(f"\nCDF_EPOCH Times:\n{t}")
