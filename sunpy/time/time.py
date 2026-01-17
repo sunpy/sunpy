@@ -167,6 +167,13 @@ find_time.__doc__ += ', '.join(list(REGEX.keys()))
 
 @singledispatch
 def convert_time(time_string, format=None, **kwargs):
+    if format in ['cdf_epoch', 'cdf_epoch16', 'cdf_tt2000']:
+        try:
+            from cdflib.epochs_astropy import CDFAstropy
+        except ImportError:
+            raise ImportError("cdflib must be installed to support CDF time formats.")
+        return CDFAstropy.convert_to_astropy(time_string, format=format)
+
     # default case when no type matches
     return Time(time_string, format=format, **kwargs)
 
@@ -330,6 +337,9 @@ def parse_time(time_string, *, format=None, **kwargs):
 
           >>> list(astropy.time.Time.FORMATS)
           {astropy_time_formats}
+
+        If ``cdflib`` is installed, we also support:
+        ``'cdf_epoch'``, ``'cdf_epoch16'``, ``'cdf_tt2000'``.
 
     **kwargs :
         Additional keyword arguments are passed to `astropy.time.Time`
