@@ -1,0 +1,3 @@
+Removed unreachable legacy configuration listing code that referenced
+the deprecated sunpy.config module.
+

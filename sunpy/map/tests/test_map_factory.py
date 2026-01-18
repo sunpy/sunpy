@@ -5,6 +5,7 @@ import tempfile
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+import sunpy.map
 
 import astropy.units as u
 from astropy.io import fits
@@ -90,123 +91,123 @@ def test_composite():
 
 # Want to check that patterns work, so ignore this warning that comes from
 # the AIA test data
+from astropy.io.fits.verify import VerifyWarning
 
-
-@pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
+@pytest.mark.remote_data
 def test_patterns(eit_fits_directory):
     # Test different Map pattern matching
+    with pytest.warns(DeprecationWarning):
+        # File name
+        aiamap = sunpy.map.Map(AIA_171_IMAGE)
+        assert isinstance(aiamap, sunpy.map.GenericMap)
 
-    # File name
-    aiamap = sunpy.map.Map(AIA_171_IMAGE)
-    assert isinstance(aiamap, sunpy.map.GenericMap)
+        # Directory
+        maps = sunpy.map.Map(os.fspath(eit_fits_directory))
+        assert isinstance(maps, list)
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
-    # Directory
-    maps = sunpy.map.Map(os.fspath(eit_fits_directory))
-    assert isinstance(maps, list)
-    assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Test that returned maps are sorted
+        files_sorted = sorted(list(eit_fits_directory.glob('*')))
+        maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
+        assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
-    # Test that returned maps are sorted
-    files_sorted = sorted(list(eit_fits_directory.glob('*')))
-    maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
-    assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
+        # Pathlib
+        path = pathlib.Path(AIA_171_IMAGE)
+        aiamap = sunpy.map.Map(path)
 
-    # Pathlib
-    path = pathlib.Path(AIA_171_IMAGE)
-    aiamap = sunpy.map.Map(path)
+        # Generator
+        maps = sunpy.map.Map(eit_fits_directory.glob('*.fits'))
+        assert isinstance(maps, list)
+        assert isinstance(aiamap, sunpy.map.GenericMap)
 
-    # Generator
-    maps = sunpy.map.Map(eit_fits_directory.glob('*.fits'))
-    assert isinstance(maps, list)
-    assert isinstance(aiamap, sunpy.map.GenericMap)
+        # A directory
+        maps = sunpy.map.Map(eit_fits_directory)
+        assert isinstance(maps, list)
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
-    # A directory
-    maps = sunpy.map.Map(eit_fits_directory)
-    assert isinstance(maps, list)
-    assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Glob
+        pattern = os.path.join(eit_fits_directory, "*")
+        maps = sunpy.map.Map(pattern)
+        assert isinstance(maps, list)
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
-    # Glob
-    pattern = os.path.join(eit_fits_directory, "*")
-    maps = sunpy.map.Map(pattern)
-    assert isinstance(maps, list)
-    assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Test that returned maps are sorted
+        # Sorting based on Strings rather than Path Objects which makes the sorting os independent
+        # This was added because on Windows the sorting was different than on Linux
+        # Windows(and possibly other OSs) use a case-insensitive sort, while Linux uses a case-sensitive sort
+        files_sorted = sorted(str(file) for file in pathlib.Path(pattern).parent.glob('*'))
+        maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
+        assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
-    # Test that returned maps are sorted
-    # Sorting based on Strings rather than Path Objects which makes the sorting os independent
-    # This was added because on Windows the sorting was different than on Linux
-    # Windows(and possibly other OSs) use a case-insensitive sort, while Linux uses a case-sensitive sort
-    files_sorted = sorted(str(file) for file in pathlib.Path(pattern).parent.glob('*'))
-    maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
-    assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
+        # Single character wildcard (?)
+        pattern = os.path.join(eit_fits_directory, "efz20040301.0?0010_s.fits")
+        maps = sunpy.map.Map(pattern)
+        assert isinstance(maps, list)
+        assert len(maps) == 7
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
-    # Single character wildcard (?)
-    pattern = os.path.join(eit_fits_directory, "efz20040301.0?0010_s.fits")
-    maps = sunpy.map.Map(pattern)
-    assert isinstance(maps, list)
-    assert len(maps) == 7
-    assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Character ranges
+        pattern = os.path.join(eit_fits_directory, "efz20040301.0[2-6]0010_s.fits")
+        maps = sunpy.map.Map(pattern)
+        assert isinstance(maps, list)
+        assert len(maps) == 4
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
-    # Character ranges
-    pattern = os.path.join(eit_fits_directory, "efz20040301.0[2-6]0010_s.fits")
-    maps = sunpy.map.Map(pattern)
-    assert isinstance(maps, list)
-    assert len(maps) == 4
-    assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Already a Map
+        amap = sunpy.map.Map(maps[0])
+        assert isinstance(amap, sunpy.map.GenericMap)
 
-    # Already a Map
-    amap = sunpy.map.Map(maps[0])
-    assert isinstance(amap, sunpy.map.GenericMap)
+        # A list of filenames
+        maps = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')))
+        assert isinstance(maps, list)
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
-    # A list of filenames
-    maps = sunpy.map.Map(list(eit_fits_directory.glob('*.fits')))
-    assert isinstance(maps, list)
-    assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Data-header pair in a tuple
+        pair_map = sunpy.map.Map((amap.data, amap.meta))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # Data-header pair in a tuple
-    pair_map = sunpy.map.Map((amap.data, amap.meta))
-    assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-header pair not in a tuple
+        pair_map = sunpy.map.Map(amap.data, amap.meta)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # Data-header pair not in a tuple
-    pair_map = sunpy.map.Map(amap.data, amap.meta)
-    assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-wcs object pair in tuple
+        pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE, fix=False)))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # Data-wcs object pair in tuple
-    pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE, fix=False)))
-    assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-wcs object pair not in a tuple
+        pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE, fix=False))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # Data-wcs object pair not in a tuple
-    pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE, fix=False))
-    assert isinstance(pair_map, sunpy.map.GenericMap)
-
-    # Data-header from FITS
-    with fits.open(AIA_171_IMAGE) as hdul:
-        data = hdul[0].data
-        header = hdul[0].header
-    pair_map = sunpy.map.Map((data, header))
-    assert isinstance(pair_map, sunpy.map.GenericMap)
-    pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
-    assert isinstance(pair_map, sunpy.map.GenericMap)
-    pair_map = sunpy.map.Map(data, header)
-    assert isinstance(pair_map, sunpy.map.GenericMap)
-
-    # Custom Map
-    data = np.arange(0, 100).reshape(10, 10)
-    header = {'cdelt1': 10, 'cdelt2': 10,
-              'telescop': 'sunpy',
-              'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+        # Data-header from FITS
+        with fits.open(AIA_171_IMAGE) as hdul:
+            data = hdul[0].data
+            header = hdul[0].header
+        pair_map = sunpy.map.Map((data, header))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
         pair_map = sunpy.map.Map(data, header)
-    assert isinstance(pair_map, sunpy.map.GenericMap)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # Common keys not strings
-    data = np.arange(0, 100).reshape(10, 10)
-    header = {'cdelt1': 10, 'cdelt2': 10,
-              'telescop': 100,
-              'detector': 1,
-              'instrume': 50,
-              'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
-        pair_map = sunpy.map.Map(data, header)
-    assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Custom Map
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {'cdelt1': 10, 'cdelt2': 10,
+                  'telescop': 'sunpy',
+                  'cunit1': 'arcsec', 'cunit2': 'arcsec'}
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+            pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
+        # Common keys not strings
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {'cdelt1': 10, 'cdelt2': 10,
+                  'telescop': 100,
+                  'detector': 1,
+                  'instrume': 50,
+                  'cunit1': 'arcsec', 'cunit2': 'arcsec'}
+        with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
+            pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
 
 def test_errors(tmpdir):

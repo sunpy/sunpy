@@ -117,12 +117,6 @@ def print_config():
         print("  " + file_)
 
     print("\nCONFIGURATION:")
-    for section in sunpy.config.sections():
-        print(f"  [{section}]")
-        for option in sunpy.config.options(section):
-            print(f"  {option} = {sunpy.config.get(section, option)}")
-        print("")
-
 
 def _is_writable_dir(p):
     """
