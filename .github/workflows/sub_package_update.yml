@@ -77,7 +77,7 @@ jobs:
 
       - name: Create pull request
         if: steps.cruft_json.outputs.has_changes == '1'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           add-paths: "."
@@ -147,15 +147,15 @@ jobs:
             // If no issue is open, create a new issue,
             // else update the body of the existing issue.
             if (result.search.edges.length === 0) {
-              github.rest.issues.create({
+              await github.rest.issues.create({
                 owner: variables.owner,
-                repo: variables.n   ame,
+                repo: variables.name,
                 body: issue_body,
                 title: variables.title,
                 labels: [variables.label],
               });
             } else {
-              github.rest.issues.update({
+              await github.rest.issues.update({
                 owner: variables.owner,
                 repo: variables.name,
                 issue_number: result.search.edges[0].node.number,
