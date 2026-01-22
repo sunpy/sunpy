@@ -73,7 +73,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
-    "%Y%m%d%H%M" ,   # Example 201401041205 , Should precede "%Y%m%d%H%M%S".
+    "%Y%m%d%H%M",   # Example 201401041205 , Should precede "%Y%m%d%H%M%S".
     "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC/VSO Export/Downloads)
     "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI - JSOC
     "%Y.%m.%d_%H:%M:%S.%f_TAI",  # Example 2019.09.15_00:00:02.898_TAI - JSOC
@@ -170,8 +170,8 @@ def convert_time(time_string, format=None, **kwargs):
     if format in ['cdf_epoch', 'cdf_epoch16', 'cdf_tt2000']:
         try:
             from cdflib.epochs_astropy import CDFAstropy
-        except ImportError:
-            raise ImportError("cdflib must be installed to support CDF time formats.")
+        except ImportError as err:
+            raise ImportError("cdflib must be installed to support CDF time formats.") from err
         return CDFAstropy.convert_to_astropy(time_string, format=format)
 
     # default case when no type matches
@@ -310,10 +310,15 @@ def _variables_for_parse_time_docstring():
                              Any time input, will be passed into `~sunpy.time.parse_time`.
                              """
     try:
-        # Need to import cdflib.epochs_astropy to register the CDF formats with astropy
-        import cdflib.epochs_astropy  # NOQA
+        # Need to try importing cdflib, as if it is present it will register
+        # extra formats with time
+        import cdflib  # NOQA
     except ImportError:
-        pass
+        try:
+            # Need to import cdflib.epochs_astropy to register the CDF formats with astropy
+            import cdflib.epochs_astropy  # NOQA
+        except ImportError:
+            pass
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
                                                 subsequent_indent=' '*10)
 
