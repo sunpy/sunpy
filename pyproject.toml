@@ -139,6 +139,7 @@ docs = [
   "sunpy-sphinx-theme>=2.0.3",
   "sphinxcontrib-bibtex",
   "joblib", # for sphinx-gallery parallel
+  "sphinx-autodoc-typehints",
 ]
 docs-gallery = [
   "sunpy[docs]",
