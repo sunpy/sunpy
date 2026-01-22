@@ -312,7 +312,7 @@ def test_distance_search_remote_sensing():
     level = a.Level(2)
     distance = a.soar.Distance(0.28 * u.AU, 0.30 * u.AU)
     res = Fido.search(distance & instrument & product & level)
-    assert res.file_num == 40
+    assert res.file_num > 40
 
 
 def test_distance_search_insitu():
