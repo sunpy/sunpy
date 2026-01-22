@@ -313,12 +313,9 @@ def _variables_for_parse_time_docstring():
         # Need to try importing cdflib, as if it is present it will register
         # extra formats with time
         import cdflib  # NOQA
+        import cdflib.epochs_astropy  # NOQA
     except ImportError:
-        try:
-            # Need to import cdflib.epochs_astropy to register the CDF formats with astropy
-            import cdflib.epochs_astropy  # NOQA
-        except ImportError:
-            pass
+        pass
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
                                                 subsequent_indent=' '*10)
 
