@@ -2802,10 +2802,12 @@ class GenericMap(NDData):
 
             # WCSAxes has unit identifiers on the tick labels, so no need
             # to add unit information to the label
-            ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
-
+            try:
+                ctype = axes.wcs.wcs.ctype
+                axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
+                axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            except AttributeError:
+                pass
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
         imshow_args.update(copy.deepcopy(imshow_kwargs))
@@ -2825,34 +2827,39 @@ class GenericMap(NDData):
 
         # Disable autoalignment if it is not necessary
         # TODO: revisit tolerance value
-        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
-            autoalign = False
+        if autoalign is True and hasattr(axes.wcs, 'wcs') and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):            autoalign = False
 
         if autoalign in {True, 'image'}:
             ny, nx = self.data.shape
             pixel_perimeter = grid_perimeter(nx, ny) - 0.5
 
+        try:
             transform = axes.get_transform(self.wcs) - axes.transData
-            with warnings.catch_warnings():
-                warnings.filterwarnings('ignore', category=SunpyUserWarning)
-                data_perimeter = transform.transform(pixel_perimeter)
-            if not np.all(np.isfinite(data_perimeter)):
-                if autoalign == 'image':
-                    raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
-                                       "Try specifying autoalign=mesh.")
-                autoalign = 'mesh'
-            else:
-                min_x, min_y = np.min(data_perimeter, axis=0)
-                max_x, max_y = np.max(data_perimeter, axis=0)
+        except TypeError:
+            # If Astropy can't handle the WCS transformation (e.g. APE-14),
+            # fall back to standard data coordinates.
+            transform = axes.transData            
+            
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=SunpyUserWarning)
+            data_perimeter = transform.transform(pixel_perimeter)
+        if not np.all(np.isfinite(data_perimeter)):
+            if autoalign == 'image':
+                raise RuntimeError("Cannot draw an autoaligned image at all due to its coordinates. "
+                                   "Try specifying autoalign=mesh.")
+            autoalign = 'mesh'
+        else:
+            min_x, min_y = np.min(data_perimeter, axis=0)
+            max_x, max_y = np.max(data_perimeter, axis=0)
 
-                data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
-                if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
+            data_corners = data_perimeter[[0, ny, nx + ny, nx + 2*ny], :]
+            if not (np.allclose([min_x, min_y], np.min(data_corners, axis=0))
                         and np.allclose([max_x, max_y], np.max(data_corners, axis=0))):
-                    if autoalign == 'image':
-                        warn_user("Cannot draw all of the autoaligned image due to the warping required. "
-                                  "Specifying autoalign=mesh is recommended.")
-                    else:
-                        autoalign = 'mesh'
+                if autoalign == 'image':
+                    warn_user("Cannot draw all of the autoaligned image due to the warping required. "
+                              "Specifying autoalign=mesh is recommended.")
+                else:
+                    autoalign = 'mesh'
             if autoalign == 'mesh':
                 log.info("Using mesh-based autoalignment")
             elif autoalign is True:
