@@ -10,8 +10,7 @@ from sunpy.tests.helpers import skip_ana
 pytestmark = pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 
 img_size = (456, 345)
-img_src = np.arange(np.prod(img_size))
-img_src.shape = img_size
+img_src = np.reshape(np.arange(np.prod(img_size)), img_size)
 img_i8 = img_src*2**8/img_src.max()
 img_i8 = img_i8.astype(np.int8)
 img_i16 = img_src*2**16/img_src.max()
