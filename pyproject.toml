@@ -93,14 +93,15 @@ visualization = [
 ]
 core = ["sunpy[image,map,net,timeseries,visualization]"]
 all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
-# Because of some real *fun* dependency constraints between aiobotocore, s3fs
-# and boto3 this is the best way to get s3fs and boto3 (needed for cdflib)
-# installed simultaneously. We only use this extra for tests, but it is
-# provided separate for users who want to opt-in to s3 support. It should not be
-# included in [all] or conda deps.
+# We only use this extra for tests, but it is provided separate for
+# users who want to opt-in to s3 support. It should not be included in
+# [all] or conda deps.
+# We also can't easily test this in oldestdeps because of
+# co-versioning of aiobotocore & boto3 / botocore
 s3 = [
   "fsspec[s3]>=2023.6.0",
-  "aiobotocore[boto3]>=2.6.0",  # cdflib has it's own special s3 handling which requires boto3
+  "aiobotocore>=2.6.0",
+  "boto3>=1.31.17",
 ]
 jupyter = [
   "itables>=2.2.4",
@@ -139,6 +140,7 @@ docs = [
   "sunpy-sphinx-theme>=2.0.3",
   "sphinxcontrib-bibtex",
   "joblib", # for sphinx-gallery parallel
+  "sphinx-autodoc-typehints",
 ]
 docs-gallery = [
   "sunpy[docs]",
