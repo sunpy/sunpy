@@ -429,15 +429,15 @@ def test_table_noinfo_required(client):
 @pytest.mark.remote_data
 def test_table_has_info_required_swap(client):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/15 20:00:00'), a.Instrument('swap'), a.Provider('ESA'), a.Source('PROBA2'))
-    assert 'Info Required' in res.keys()
     assert len(res) > 0
+    assert 'Info Required' in res.keys()
 
 
 @pytest.mark.remote_data
 def test_table_has_info_required_lyra(client):
     res = client.search(a.Time('2020/02/15 00:00:00', '2020/02/17 20:00:00'), a.Instrument('lyra'), a.Provider('ESA'), a.Source('PROBA2'))
-    assert 'Info Required' in res.keys()
     assert len(res) > 0
+    assert 'Info Required' in res.keys()
 
 
 @pytest.mark.remote_data
