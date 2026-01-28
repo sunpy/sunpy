@@ -127,7 +127,7 @@ def test_goes_remote():
     assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
     # Testing NOAA served data
     goes = sunpy.timeseries.TimeSeries(
-        'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2022/05/sci_xrsf-l2-flx1s_g16_d20220506_v2-2-0.nc')
+        'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/xrsf-l2-flx1s_science/2022/05/sci_xrsf-l2-flx1s_g16_d20220506_v2-2-1.nc')
     assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
 
