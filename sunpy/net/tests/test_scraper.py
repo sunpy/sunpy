@@ -324,4 +324,6 @@ def test_local_expected_directory_doesnt_exist(tmp_path):
         file.write('')
     s = Scraper(format='file://'+str(tmp_path)+'/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{file}}')
     files = s.filelist(TimeRange("2025-01-01", "2025-01-02"))
+    meta = s._extract_files_meta(TimeRange("2025-01-01", "2025-01-02"))
     assert len(files) == 1
+    assert len(meta) == 1
