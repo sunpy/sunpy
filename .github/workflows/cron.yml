@@ -111,6 +111,7 @@ jobs:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
           python-version: "3.13"
+          conda-remove-defaults: "true"
       - name: Install sunpy
         shell: bash -el {0}
         run: |
