@@ -18,6 +18,9 @@ def test_parse_time_cdf_tt2000_scalar():
     assert t.format == 'cdf_tt2000'
     assert t.value == t_ns
     assert t.scale == 'tt'
+    assert t.utc.isot == '2019-01-01T00:00:00.000000000'
+    assert t.utc.jd == 2458484.5
+    assert t.utc.mjd == 58484.0
 
 
 def test_parse_time_cdf_tt2000_array():
@@ -35,6 +38,9 @@ def test_parse_time_cdf_epoch():
     assert isinstance(t, Time)
     assert t.format == 'cdf_epoch'
     assert t.value == t_epoch
+    assert t.isot == '2021-12-16T01:20:00.000000000'
+    assert t.jd == 2459564.5555555555
+    assert t.mjd == 59564.055555555555
 
 
 def test_missing_cdflib_error():
