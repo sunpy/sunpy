@@ -71,12 +71,14 @@ __all__ = ['transform_with_sun_center',
            'propagate_with_solar_surface']
 
 
-# Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
-_ignore_sun_motion = False
-
-
-# If not None, the name of the differential-rotation model to use for any obstime change
-_autoapply_diffrot = None
+# Thread-safe storage of transformation options
+class TransformationOptions(threading.local):
+    def __init__(self):
+        # Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
+        self.ignore_sun_motion = False
+        # If not None, the name of the differential-rotation model to use for any obstime change
+        self.autoapply_diffrot = None
+_transformation_options = TransformationOptions()
 
 
 @sunpycontextmanager
@@ -129,18 +131,16 @@ def transform_with_sun_center():
         (0., 0., 0.)>
     """
     try:
-        global _ignore_sun_motion
-
-        old_ignore_sun_motion = _ignore_sun_motion  # nominally False
+        old_ignore_sun_motion = _transformation_options.ignore_sun_motion  # nominally False
 
         if not old_ignore_sun_motion:
             log.debug("Ignoring the motion of the center of the Sun for transformations")
-        _ignore_sun_motion = True
+        _transformation_options.ignore_sun_motion = True
         yield
     finally:
         if not old_ignore_sun_motion:
             log.debug("Stop ignoring the motion of the center of the Sun for transformations")
-        _ignore_sun_motion = old_ignore_sun_motion
+        _transformation_options.ignore_sun_motion = old_ignore_sun_motion
 
 
 @sunpycontextmanager
@@ -209,19 +209,17 @@ def propagate_with_solar_surface(rotation_model='howard'):
     """
     with transform_with_sun_center():
         try:
-            global _autoapply_diffrot
-
-            old_autoapply_diffrot = _autoapply_diffrot  # nominally False
+            old_autoapply_diffrot = _transformation_options.autoapply_diffrot  # nominally False
 
             log.debug("Enabling automatic solar differential rotation "
                       f"('{rotation_model}') for any changes in obstime")
-            _autoapply_diffrot = rotation_model
+            _transformation_options.autoapply_diffrot = rotation_model
             yield
         finally:
             if not old_autoapply_diffrot:
                 log.debug("Disabling automatic solar differential rotation "
                           "for any changes in obstime")
-            _autoapply_diffrot = old_autoapply_diffrot
+            _transformation_options.autoapply_diffrot = old_autoapply_diffrot
 
 
 # Global counter to keep track of the layer of transformation
@@ -738,7 +736,7 @@ def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
 
     # All of the above is calculated for the HGS observation time
     # If the HCRS observation time is different, calculate the translation in origin
-    if not _ignore_sun_motion and np.any(hcrs_time != hgs_time):
+    if not _transformation_options.ignore_sun_motion and np.any(hcrs_time != hgs_time):
         sun_pos_old_icrs = get_body_barycentric('sun', hcrs_time)
         offset_icrf = sun_pos_old_icrs - sun_pos_icrs
     else:
@@ -807,9 +805,9 @@ def hgs_to_hgs(from_coo, to_frame):
     elif _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        if _autoapply_diffrot:
+        if _transformation_options.autoapply_diffrot:
             from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
-                                               _autoapply_diffrot)
+                                               _transformation_options.autoapply_diffrot)
         return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
