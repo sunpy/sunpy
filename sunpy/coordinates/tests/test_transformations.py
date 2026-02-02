@@ -1101,8 +1101,8 @@ def test_no_aberration_between_geocentric(start_class, end_class):
 
 
 def test_transform_with_sun_center():
-    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU,
-                          frame=HeliographicStonyhurst(obstime="2001-01-01"))
+    sun_center = HeliographicStonyhurst(0*u.deg, 0*u.deg, 0*u.AU,
+                                        obstime="2001-01-01")
 
     with transform_with_sun_center():
         result1 = sun_center.transform_to(HeliographicStonyhurst(obstime="2001-02-01"))
@@ -1112,8 +1112,8 @@ def test_transform_with_sun_center():
     assert_quantity_allclose(result1.lat, sun_center.lat)
     assert_quantity_allclose(result1.radius, sun_center.radius)
 
-    other = SkyCoord(10*u.deg, 20*u.deg, 1*u.AU,
-                     frame=HeliographicStonyhurst(obstime="2001-01-01"))
+    other = HeliographicStonyhurst(10*u.deg, 20*u.deg, 1*u.AU,
+                                   obstime="2001-01-01")
 
     with transform_with_sun_center():
         result2 = other.transform_to(HeliographicCarrington(observer='earth', obstime="2001-02-01"))
@@ -1126,8 +1126,8 @@ def test_transform_with_sun_center():
 def test_transform_with_sun_center_reset():
     # This test sequence ensures that the context manager resets properly
 
-    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU,
-                          frame=HeliographicStonyhurst(obstime="2001-01-01"))
+    sun_center = HeliographicStonyhurst(0*u.deg, 0*u.deg, 0*u.AU,
+                                        obstime="2001-01-01")
     end_frame = HeliocentricInertial(obstime="2001-02-01")
 
     # Without the context manager, the coordinate should not point at Sun center
@@ -1206,8 +1206,8 @@ def test_unit_preservation(frame1, frame2, unit):
 
 def test_propagate_with_solar_surface():
     # Test propagating the meridian by 6 days of solar rotation
-    meridian = SkyCoord(0*u.deg, np.arange(0, 90, 10)*u.deg, 1*u.AU,
-                        frame=HeliocentricInertial, obstime='2001-01-01')
+    meridian = HeliocentricInertial(0*u.deg, np.arange(0, 90, 10)*u.deg, 1*u.AU,
+                                    obstime='2001-01-01')
     dt = 6*u.day
     end_frame = HeliocentricInertial(obstime=meridian.obstime + dt)
 
