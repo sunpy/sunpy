@@ -11,7 +11,7 @@ from astropy.coordinates.representation import CartesianRepresentation, UnitSphe
 
 from sunpy import log
 from sunpy.coordinates import HeliographicStonyhurst, Helioprojective, _transformations
-from sunpy.util.decorators import ACTIVE_CONTEXTS
+from sunpy.util.decorators import _active_contexts
 from sunpy.util.exceptions import warn_user
 
 __all__ = ['BaseScreen', 'SphericalScreen', 'PlanarScreen']
@@ -33,12 +33,12 @@ class BaseScreen(abc.ABC):
         ...
 
     def __enter__(self):
-        ACTIVE_CONTEXTS.append(self._context_name)
+        _active_contexts.stack.append(self._context_name)
         self._old_assumed_screen = Helioprojective._assumed_screen  # nominally None
         Helioprojective._assumed_screen = self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        if (removed := ACTIVE_CONTEXTS.pop()) != self._context_name:
+        if (removed := _active_contexts.stack.pop()) != self._context_name:
             raise RuntimeError(f"Cannot remove {self._context_name} from tracking stack because {removed} is last active.")
         Helioprojective._assumed_screen = self._old_assumed_screen
 
