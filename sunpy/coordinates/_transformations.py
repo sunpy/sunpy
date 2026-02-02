@@ -13,6 +13,7 @@ This module contains the functions for converting one
 
 """
 import logging
+import threading
 from copy import deepcopy
 from functools import wraps
 
