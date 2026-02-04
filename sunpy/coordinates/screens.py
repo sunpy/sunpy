@@ -35,13 +35,13 @@ class BaseScreen(abc.ABC):
 
     def __enter__(self):
         _active_contexts.stack.append(self._context_name)
-        self._old_assumed_screen = Helioprojective._assumed_screen  # nominally None
-        Helioprojective._assumed_screen = self
+        self._old_assumed_screen = Helioprojective._assumptions.screen  # nominally None
+        Helioprojective._assumptions.screen = self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if (removed := _active_contexts.stack.pop()) != self._context_name:
             raise RuntimeError(f"Cannot remove {self._context_name} from tracking stack because {removed} is last active.")
-        Helioprojective._assumed_screen = self._old_assumed_screen
+        Helioprojective._assumptions.screen = self._old_assumed_screen
 
     def _iterate_calculate_distance(self, coord, distance, screen_frame):
         """
