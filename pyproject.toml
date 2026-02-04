@@ -114,6 +114,7 @@ tests-only = [
   "psutil>=6.0.0",
   "pytest-astropy>=0.11.0",
   "pytest-mpl>=0.18.0",
+  "pytest-run-parallel",
   "pytest>=7.4.0",
 ]
 asdf-tests = [
