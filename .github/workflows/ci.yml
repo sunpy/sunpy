@@ -67,6 +67,9 @@ jobs:
         - windows: py313
         - macos: py313
         - linux: py312-oldestdeps
+        - linux: py314
+          name: py314 (parallel threads)
+          posargs: --parallel-threads=auto --color=yes
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
