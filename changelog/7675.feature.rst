@@ -1,1 +1,0 @@
-﻿Split contributors in release notes into New Contributors and Other Contributors sections in generate_releaserst.xsh.
