@@ -186,7 +186,9 @@ nnew = len(new)
 
 lines = current_log.split('\n')[:-1]
 
-shortlog = []
+new_contributors = []
+other_contributors = []
+
 for i, line in enumerate(lines):
     if "[bot]" in line:
         continue
@@ -195,11 +197,12 @@ for i, line in enumerate(lines):
         outl = line
     else:
         outl = line.split('\t')[1]
-    if any([a in line for a in new]):
-        outl += '  *'
-    shortlog.append(outl)
 
-shortlog = list(map(lambda x: '-  ' + x, shortlog))
+    if any([a in line for a in new]):
+        new_contributors.append('-  ' + outl)
+    else:
+        other_contributors.append('-  ' + outl)
+
 
 # Get PR info
 
@@ -212,8 +215,6 @@ icnt = count_issues_since(since, upto, repo, args['--pat'], verbose=verbose)
 prcnt = count_prs_since(since, upto, repo, args['--pat'], verbose=verbose)
 
 # Build output
-output = '\n'.join(shortlog)
-
 
 pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] != "<project-name>" else args["--project-name"]
 
@@ -226,8 +227,17 @@ print(f"* {prcnt} pull requests have been merged since {prev_version[:3]}")
 print(f"* {npeople} people have contributed since {prev_version[:3]}")
 print(f"* {nnew} of which are new contributors")
 print()
-print("The people who have contributed to the code for this release are:")
-print()
-print(output)
-print()
-print(f"Where a * indicates that this release contains their first contribution to {pretty_project_name}.")
+
+
+# Print contributors in two sections
+if new_contributors:
+    print("New Contributors")
+    print("----------------")
+    print('\n'.join(new_contributors))
+    print()
+
+if other_contributors:
+    print("Other Contributors")
+    print("------------------")
+    print('\n'.join(other_contributors))
+    print()
