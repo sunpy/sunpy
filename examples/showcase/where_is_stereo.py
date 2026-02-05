@@ -3,8 +3,6 @@
 Reproducing the "Where is STEREO Today?" plot
 =============================================
 
-.. tags:: showcase, stereo, visualization
-
 How to reproduce the "Where is STEREO Today?" plot.
 
 This example uses capabilities in sunpy to reproduce the plot that can be found
@@ -15,6 +13,8 @@ capabilities:
 * :ref:`sphx_glr_generated_gallery_units_and_coordinates_planet_locations.py`
 * :ref:`sphx_glr_generated_gallery_units_and_coordinates_ParkerSolarProbe_trajectory.py`
 """
+# sphinx_gallery_tags = ["showcase", "stereo", "visualization"]
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np

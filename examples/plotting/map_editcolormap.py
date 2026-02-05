@@ -3,10 +3,10 @@
 Editing the colormap and normalization of a Map
 ===============================================
 
-.. tags:: plotting, visualization
-
 How to edit the display of a map.
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 import matplotlib
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt

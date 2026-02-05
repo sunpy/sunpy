@@ -3,8 +3,6 @@
 Aligning AIA and HMI Data with Reproject
 ========================================
 
-.. tags:: map_transformations, co_observations, reproject
-
 This example shows how to reproject one image to be aligned with another image.
 
 Here we use the `reproject <https://reproject.readthedocs.io/en/stable/>`__
@@ -19,6 +17,8 @@ See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`
 for an alternate approach to image alignment, where the images are aligned
 as they are plotted, with no modified map created.
 """
+# sphinx_gallery_tags = ["map_transformations", "co_observations", "reproject"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

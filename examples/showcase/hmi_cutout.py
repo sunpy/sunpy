@@ -3,8 +3,6 @@
 HMI Showcase: Cutout
 ====================
 
-.. tags:: showcase, hmi, coordinates, visualization
-
 This example demonstrates how to plot a cutout region of a `~sunpy.map.Map`
 with connector lines that indicate the region of interest in the full-disk
 image.
@@ -12,6 +10,8 @@ image.
 Since this example deals with the creation of a specific style of image, there
 are multiple lines that deal directly with matplotlib axes.
 """
+# sphinx_gallery_tags = ["showcase", "hmi", "coordinates", "visualization"]
+
 import matplotlib.colors
 import matplotlib.pyplot as plt
 from matplotlib.patches import ConnectionPatch

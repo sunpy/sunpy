@@ -3,8 +3,6 @@
 Reprojecting to a Map Projection with a Custom Origin
 =====================================================
 
-.. tags:: map_transformations, fits
-
 In this example, we show how to reproject a map to a map projection with a
 custom origin. Here, we choose the target map projection to be the
 `azimuthal equidistant projection <https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection>`__,
@@ -13,6 +11,8 @@ specified origin of the projection. If a different map projection is desired,
 modifying this example is straightforward.
 
 """
+# sphinx_gallery_tags = ["map_transformations", "fits"]
+
 
 import matplotlib.pyplot as plt
 

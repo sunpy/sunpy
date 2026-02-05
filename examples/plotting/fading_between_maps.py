@@ -3,8 +3,6 @@
 Fading between two maps
 =======================
 
-.. tags:: plotting, co_observations
-
 Often it is useful to plot two maps of the Sun on top of each other, so
 features observed in one map (e.g. strong magnetic fields in a magnetogram)
 can be identified with features in the same place in another map
@@ -13,6 +11,8 @@ can be identified with features in the same place in another map
 This example shows how to plot two maps on top of each other, with a slider to
 fade between them.
 """
+# sphinx_gallery_tags = ["plotting", "co_observations"]
+
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 

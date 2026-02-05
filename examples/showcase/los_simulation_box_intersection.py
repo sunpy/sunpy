@@ -3,12 +3,12 @@
 Understanding Observer Orientation Relative to a Simulated Volume with `astropy.coordinates`
 ============================================================================================
 
-.. tags:: showcase, visualization, coordinates, astropy, reproject:
-
 This example demonstrates how to use the `astropy.coordinates` framework, combined with the solar
 coordinate frameworks provided by ``sunpy``, to find the intersection of a set of lines of sight
 defined by an observer position with a simulated volume represented by a Cartesian box.
 """
+# sphinx_gallery_tags = ["showcase", "visualization", "coordinates", "astropy", "reproject:"]
+
 # sphinx_gallery_thumbnail_number = 4
 
 import itertools

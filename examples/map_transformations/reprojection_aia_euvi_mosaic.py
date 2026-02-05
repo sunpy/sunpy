@@ -3,14 +3,14 @@
 Creating a Full Sun Map with AIA and EUVI
 =========================================
 
-.. tags:: map_transformations, co_observations, fits, reproject
-
 With SDO/AIA and STEREO/A and STEREO/B, it is possible (for specific dates)
 to combine combine three EUV images from these satellites to produce a nearly
 full latitude / longitude map of the Sun.
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
+# sphinx_gallery_tags = ["map_transformations", "co_observations", "fits", "reproject"]
+
 # sphinx_gallery_thumbnail_number = 4
 
 import matplotlib.pyplot as plt

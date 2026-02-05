@@ -3,8 +3,6 @@
 Coordinates computations using SPICE kernels
 ============================================
 
-.. tags:: units_and_coordinates, spice, coordinates
-
 How to use SPICE kernels provided by space missions to perform coordinates
 computations.
 
@@ -31,6 +29,8 @@ of SPICE (e.g., CSPICE or Icy).
     installed.
 
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "spice", "coordinates"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.dates import DateFormatter

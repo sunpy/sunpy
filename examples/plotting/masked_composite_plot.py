@@ -3,14 +3,14 @@
 Combining off-limb and disk maps
 ================================
 
-.. tags:: plotting, masking, aia, hmi, co_observations
-
 This example combines creating a composite plot with masking out the
 solar disk. The purpose is to introduce users to the plotting process
 required to overlay multiple maps that have been modified with other
 ``sunpy`` functions. The resulting plot in this tutorial shows information
 on the upper photosphere, quiet corona, and magnetogram contours.
 """
+# sphinx_gallery_tags = ["plotting", "masking", "aia", "hmi", "co_observations"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

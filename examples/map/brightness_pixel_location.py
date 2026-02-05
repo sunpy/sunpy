@@ -3,10 +3,10 @@
 Finding the brightest pixel
 ===========================
 
-.. tags:: map
-
 How to find and overplot the location of the brightest pixel.
 """
+# sphinx_gallery_tags = ["map"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -3,12 +3,12 @@
 Smoothing of timeSeries data using convolution filters
 ======================================================
 
-.. tags:: time_series, analysis, processing, astropy
-
 How to smooth a TimeSeries using a convolution filter
 kernel from `~astropy.convolution` and `~astropy.convolution.convolve`
 function.
 """
+# sphinx_gallery_tags = ["time_series", "analysis", "processing", "astropy"]
+
 import matplotlib.pyplot as plt
 
 from astropy.convolution import Box1DKernel, convolve

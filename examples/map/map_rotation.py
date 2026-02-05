@@ -3,10 +3,10 @@
 Rotating a Map
 ==============
 
-.. tags:: map, processing
-
 How to rotate a map.
 """
+# sphinx_gallery_tags = ["map", "processing"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

@@ -3,11 +3,11 @@
 Getting the location of the planets
 ===================================
 
-.. tags:: units_and_coordinates, planet_locations, coordinates, astropy
-
 How to get the position of planetary bodies im the solar system using
 `astropy's solar system ephemeris <https://docs.astropy.org/en/stable/coordinates/solarsystem.html#solar-system-ephemerides>`__ information and sunpy.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "planet_locations", "coordinates", "astropy"]
+
 import matplotlib.pyplot as plt
 
 from astropy.time import Time

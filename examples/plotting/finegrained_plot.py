@@ -3,10 +3,10 @@
 Fine grained Plotting Features of Map
 =====================================
 
-.. tags:: plotting, visualization
-
 How to control various plotting features of map.
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

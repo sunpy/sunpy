@@ -3,11 +3,11 @@
 Reading ADAPT FITS Files
 ========================
 
-.. tags:: io_ops, fits, map, adapt
-
 This example demonstrates how to load data from the
 Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model into a list of `sunpy.map.Map` objects.
 """
+# sphinx_gallery_tags = ["io_ops", "fits", "map", "adapt"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

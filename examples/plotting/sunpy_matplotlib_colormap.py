@@ -3,10 +3,10 @@
 Using the sunpy Colormaps with matplotlib
 =========================================
 
-.. tags:: plotting, visualization
-
 How you can use the sunpy colormaps with matplotlib.
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np

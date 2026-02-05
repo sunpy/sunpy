@@ -3,10 +3,10 @@
 The TimeSeriesMetaData class
 ============================
 
-.. tags:: time_series, acquiring_data, metadata
-
 This provides an overview of the basic functionality of the TimeSeriesMetaData class.
 """
+# sphinx_gallery_tags = ["time_series", "acquiring_data", "metadata"]
+
 import astropy.units as u
 
 import sunpy.data.sample

@@ -3,8 +3,6 @@
 Obtaining a spacecraft trajectory from JPL Horizons
 ===================================================
 
-.. tags:: units_and_coordinates, jpl_horizons, coordinates, parker_sp
-
 This example shows how to obtain the trajectory of a spacecraft from JPL Horizons
 and plot it relative to other bodies in the solar system.
 
@@ -12,6 +10,8 @@ JPL `Horizons <https://ssd.jpl.nasa.gov/horizons/>`__ can return the locations o
 planets and minor bodies (e.g., asteroids) in the solar system, and it can also
 return the location of a variety of major spacecraft.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "jpl_horizons", "coordinates", "parker_sp"]
+
 
 import matplotlib.pyplot as plt
 

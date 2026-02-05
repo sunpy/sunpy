@@ -3,11 +3,11 @@
 Plotting a coordinate grid
 ==========================
 
-.. tags:: plotting, visualization, coordinates
-
 This example demonstrates how you can draw a grid of solar coordinates on top
 of a map.
 """
+# sphinx_gallery_tags = ["plotting", "visualization", "coordinates"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

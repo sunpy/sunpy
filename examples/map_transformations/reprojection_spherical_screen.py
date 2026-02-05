@@ -3,8 +3,6 @@
 Reprojecting Using a Spherical Screen
 =====================================
 
-.. tags:: map_transformations, reproject, fits, visualization
-
 This example demonstrates how you can reproject an image as if it lies on the
 inside of a spherical screen and the observer is not at the center of the
 sphere. This functionality is primarily for visualization purposes, since
@@ -13,6 +11,8 @@ features in the image are unlikely to actually lie on this spherical screen.
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6
 or higher installed.
 """
+# sphinx_gallery_tags = ["map_transformations", "reproject", "fits", "visualization"]
+
 # sphinx_gallery_thumbnail_number = 4
 
 import matplotlib.pyplot as plt

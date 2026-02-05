@@ -3,8 +3,6 @@
 Blending maps together
 ======================
 
-.. tags:: plotting, visualization, co_observations
-
 This example shows how to blend two maps.
 
 ``matplotlib`` by itself provides only alpha-based transparency for
@@ -12,6 +10,8 @@ superimposing one image onto another, which may not be visually appealing.
 For better results, one can manipulate the rendered image data arrays to perform a
 standard image-compositing `blend mode <https://en.wikipedia.org/wiki/Blend_modes>`__.
 """
+# sphinx_gallery_tags = ["plotting", "visualization", "co_observations"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

@@ -3,8 +3,6 @@
 Differentially rotating a coordinate
 ====================================
 
-.. tags:: differential_rotation
-
 How to differentially rotate a coordinate.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate
@@ -12,6 +10,8 @@ metaframe in `sunpy.coordinates` to apply differential rotation to a
 coordinate. See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on
 using `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
+# sphinx_gallery_tags = ["differential_rotation"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -3,8 +3,6 @@
 Map metadata modification
 =========================
 
-.. tags:: map, fits
-
 How to query map metadata for changes.
 
 sunpy has a series of map sources that can fix common issues with the original metadata
@@ -15,6 +13,8 @@ easily queried.
 In the example below, we load a HMI sample image, and query the metadata for
 any added, removed, or modified items.
 """
+# sphinx_gallery_tags = ["map", "fits"]
+
 import astropy.units as u
 
 import sunpy.map

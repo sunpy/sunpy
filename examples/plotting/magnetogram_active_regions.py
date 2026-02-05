@@ -3,10 +3,10 @@
 Overplotting SRS active region locations on a magnetograms
 ==========================================================
 
-.. tags:: plotting, hmi, visualization
-
 How to find and plot the location of an active region on an HMI magnetogram.
 """
+# sphinx_gallery_tags = ["plotting", "hmi", "visualization"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

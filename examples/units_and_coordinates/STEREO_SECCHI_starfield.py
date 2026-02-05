@@ -3,8 +3,6 @@
 Identifying stars in a STEREO/SECCHI COR2 coronagraph image
 ===========================================================
 
-.. tags:: units_and_coordinates, features, starfield, planets, secchi
-
 Since the field of view in SECCHI COR2 images can span 2 to 15 solar radii,
 we often observe stars in these image data. In this example, we will use the
 `Astroquery package <https://astroquery.readthedocs.io/en/latest/>`__ to query the
@@ -18,6 +16,8 @@ This requires the installation of the `astroquery <https://astroquery.readthedoc
 package, which can be installed on top of the existing sunpy conda
 environment: ``conda install -c astropy astroquery`` and an active internet connection.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "features", "starfield", "planets", "secchi"]
+
 import hvpy
 import matplotlib.pyplot as plt
 from astroquery.gaia import Gaia

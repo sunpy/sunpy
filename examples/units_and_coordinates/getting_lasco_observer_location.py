@@ -3,11 +3,11 @@
 Setting the correct position for SOHO in a LASCO C3 Map
 =======================================================
 
-.. tags:: units_and_coordinates, lasco, coordinates
-
 How to get the correct location of SOHO using JPL HORIZONS
 and update the header.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "lasco", "coordinates"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import hvpy

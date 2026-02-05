@@ -3,8 +3,6 @@
 Saving and loading coordinates with asdf
 ========================================
 
-.. tags:: io_ops, asdf, coordinates,
-
 In this example we are going to look at saving and loading collections of
 coordinates with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 
@@ -19,6 +17,8 @@ the same form as they were saved.
     This example requires astropy>=3.2 and asdf>=2.3.0
 
 """
+# sphinx_gallery_tags = ["io_ops", "asdf", "coordinates,"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

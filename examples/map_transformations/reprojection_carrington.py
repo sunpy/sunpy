@@ -3,12 +3,12 @@
 Creating Carrington Maps
 ========================
 
-.. tags:: map_transformations, reproject
-
 In this example we use the `reproject` generate a map in heliographic Carrington coordinates from a full-disk AIA image.
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
+# sphinx_gallery_tags = ["map_transformations", "reproject"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt

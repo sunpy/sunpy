@@ -3,8 +3,6 @@
 Auto-Aligning AIA and HMI Data During Plotting
 ==============================================
 
-.. tags:: map_transformations, co_observations
-
 This example shows how a map is autoaligned when it is plotted on a different
 reference frame.
 
@@ -12,6 +10,8 @@ See :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_
 for an alternate approach to image alignment, where one of the maps is modified
 prior to plotting, and thus is available for purposes other than plotting.
 """
+# sphinx_gallery_tags = ["map_transformations", "co_observations"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

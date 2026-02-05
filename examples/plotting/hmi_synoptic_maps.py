@@ -3,13 +3,13 @@
 Loading an HMI synoptic map
 ===========================
 
-.. tags:: plotting, coordinates
-
 In this example we load a synoptic map produced by the HMI team. This
 data is an interesting demonstration of sunpy's Map class as it is not in the
 more common Helioprojective coordinate system, but in heliographic Carrington
 coordinates and a cylindrical equal area (CEA) projection.
 """
+# sphinx_gallery_tags = ["plotting", "coordinates"]
+
 import matplotlib.pyplot as plt
 
 from astropy.utils.data import download_file

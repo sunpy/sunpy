@@ -3,10 +3,10 @@
 Getting the observer location from a Map
 ========================================
 
-.. tags:: units_and_coordinates, coordinates, map, aia
-
 How to access the observer location from a `~sunpy.map.Map` and interpret it.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "coordinates", "map", "aia"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

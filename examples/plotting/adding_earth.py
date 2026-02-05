@@ -3,10 +3,10 @@
 Adding an Earth scale image
 ===========================
 
-.. tags:: plotting, visualization
-
 This example shows how to plot a map with an image of the Earth added for scale.
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image

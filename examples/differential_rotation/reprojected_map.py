@@ -3,14 +3,14 @@
 Differentially rotating a map
 =============================
 
-.. tags:: differential_rotation, map
-
 How to apply differential rotation to a Map.
 
 The example uses the :func:`~sunpy.coordinates.propagate_with_solar_surface`
 context manager to apply differential rotation during coordinate
 transformations.
 """
+# sphinx_gallery_tags = ["differential_rotation", "map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

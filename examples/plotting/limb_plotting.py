@@ -3,11 +3,11 @@
 Plotting the solar limb
 =======================
 
-.. tags:: plotting, visualization
-
 This example demonstrates how you can draw the limb as seen by an arbitrary
 observer.
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 import matplotlib.pyplot as plt
 
 import sunpy.map

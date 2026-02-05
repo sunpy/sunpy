@@ -3,8 +3,6 @@
 Retrieving and analyzing GOES X-Ray Sensor (XRS) data
 =====================================================
 
-.. tags:: time_series, goes, xrs, acquiring_data, features
-
 The X-ray Sensor (XRS) on board the GOES series of satellites
 have provided soft X-ray measurements in two broadband energy
 ranges 0.5-4 and 1-8 angstrom since 1975. The GOES 16 and 17
@@ -29,6 +27,8 @@ returns all available GOES data for the specific timerange queried. For
 example, there are times when GOES 13, 14 and 15 overlap and such data is
 available from each satellite. Similarly there are times when GOES 16 and 17 overlap.
 """
+# sphinx_gallery_tags = ["time_series", "goes", "xrs", "acquiring_data", "features"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -3,8 +3,6 @@
 Overlaying off-disk contours using a screen
 ===========================================
 
-.. tags:: plotting, contours, visualization, co_observations
-
 This example shows how to use a screen to overlay off-disk contours from one
 map onto another map.
 
@@ -21,6 +19,8 @@ assumption for the 3D location of 2D off-disk points.
 See :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
 for a different use case for screens.
 """
+# sphinx_gallery_tags = ["plotting", "contours", "visualization", "co_observations"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

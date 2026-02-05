@@ -3,11 +3,11 @@
 Plotting a Map without any Axes
 ===============================
 
-.. tags:: map, plotting_techniques
-
 This examples shows you how to plot a Map without any annotations at all, i.e.,
 to save as an image.
 """
+# sphinx_gallery_tags = ["map", "plotting_techniques"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

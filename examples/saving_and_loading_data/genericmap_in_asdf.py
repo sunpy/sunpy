@@ -3,8 +3,6 @@
 Saving and loading sunpy Maps with ASDF
 =======================================
 
-.. tags:: io_ops, asdf, map
-
 In this example, we are going to look at how we can save and load a
 `~sunpy.map.GenericMap` with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 
@@ -19,6 +17,8 @@ Here, even though we will be working with `~sunpy.map.sources.sdo.AIAMap`
 specifically, the process can be extended to any `~sunpy.map.GenericMap`,
 including ones created using custom FITS files.
 """
+# sphinx_gallery_tags = ["io_ops", "asdf", "map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

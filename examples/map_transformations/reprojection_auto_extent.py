@@ -3,11 +3,11 @@
 Reprojecting with Automatic Extent
 ==================================
 
-.. tags:: map_transformations, processing, reproject,
-
 This example demonstrates how you can automatically determine the extent
 needed for the output of a reprojection instead of specifying it ahead of time.
 """
+# sphinx_gallery_tags = ["map_transformations", "processing", "reproject,"]
+
 # sphinx_gallery_thumbnail_number = 3
 
 import matplotlib.pyplot as plt

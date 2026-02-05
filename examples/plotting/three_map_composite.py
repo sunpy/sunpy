@@ -3,12 +3,12 @@
 Creating a Composite Plot with Three Maps
 =========================================
 
-.. tags:: plotting, co_observations
-
 In this example, a composite plot is created with three maps.
 It demonstrates how to specify contour levels, transparency, and
 ordering when overlaying multiple maps.
 """
+# sphinx_gallery_tags = ["plotting", "co_observations"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

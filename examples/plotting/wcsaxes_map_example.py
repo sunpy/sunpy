@@ -3,11 +3,11 @@
 Imshow and maps coordinates
 ===========================
 
-.. tags:: plotting, coordinates, map
-
 How to use imshow with a map and overplot points specified by pixel coordinates
 and map coordinates.
 """
+# sphinx_gallery_tags = ["plotting", "coordinates", "map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

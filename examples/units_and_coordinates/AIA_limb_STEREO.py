@@ -3,12 +3,12 @@
 Drawing the AIA limb on a STEREO EUVI image
 ===========================================
 
-.. tags:: units_and_coordinates, aia, euvi, co_observations
-
 In this example we use a STEREO-B and an SDO image to demonstrate how to
 overplot the limb as seen by AIA on an EUVI-B image. Then we overplot the AIA
 coordinate grid on the STEREO image.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "aia", "euvi", "co_observations"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

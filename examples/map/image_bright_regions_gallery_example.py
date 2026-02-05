@@ -3,11 +3,11 @@
 Finding bright regions with ndimage
 ===================================
 
-.. tags:: map, modelling
-
 How you can to find the brightest regions in an AIA image and
 count the approximate number of regions of interest using ndimage.
 """
+# sphinx_gallery_tags = ["map", "modelling"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt

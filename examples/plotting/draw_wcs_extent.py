@@ -3,10 +3,10 @@
 Drawing the Extent of a WCS
 ===========================
 
-.. tags:: plotting, visualization
-
 This example demonstrates how to draw the extent of a WCS on a `~sunpy.map.Map`
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 # sphinx_gallery_thumbnail_number = 3
 import matplotlib.pyplot as plt
 

@@ -3,10 +3,10 @@
 Drawing a latitude-longitude quadrangle
 =======================================
 
-.. tags:: plotting, visualization
-
 How to draw a latitude-longitude quadrangle on a map.
 """
+# sphinx_gallery_tags = ["plotting", "visualization"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

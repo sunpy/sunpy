@@ -3,11 +3,11 @@
 AIA to STEREO coordinate conversion
 ===================================
 
-.. tags:: units_and_coordinates, sdo, stereo, coordinates
-
 How to convert a point of a source on an AIA image
 to a position on a STEREO image.
 """
+# sphinx_gallery_tags = ["units_and_coordinates", "sdo", "stereo", "coordinates"]
+
 # sphinx_gallery_thumbnail_number = 5
 
 import matplotlib.pyplot as plt

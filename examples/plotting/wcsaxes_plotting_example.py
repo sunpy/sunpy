@@ -3,11 +3,11 @@
 Plotting points on a Map with WCSAxes
 =====================================
 
-.. tags:: plotting, coordinates, wcs_axes
-
 This example demonstrates the plotting of a point, a line and an arch in pixel coordinates,
 world coordinates, and SkyCoords respectively when plotting a map with WCSAxes.
 """
+# sphinx_gallery_tags = ["plotting", "coordinates", "wcs_axes"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

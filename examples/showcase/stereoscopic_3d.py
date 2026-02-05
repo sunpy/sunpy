@@ -3,8 +3,6 @@
 Visualizing 3D stereoscopic images
 ==================================
 
-.. tags:: showcase, stereoscopic_image, aia, euvi
-
 How to make an anaglyph 3D image from a stereoscopic observation
 
 We use a stereoscopic observation from July 2023, when the STEREO-A spacecraft
@@ -12,6 +10,8 @@ and the SDO spacecraft were close in heliographic longitude. See the
 `Wikipedia page on anaglyph 3D <https://en.wikipedia.org/wiki/Anaglyph_3D>`__,
 which typically requires red-cyan glasses to visualize.
 """
+# sphinx_gallery_tags = ["showcase", "stereoscopic_image", "aia", "euvi"]
+
 import copy
 
 import matplotlib.pyplot as plt

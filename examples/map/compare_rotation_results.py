@@ -3,10 +3,10 @@
 Comparing Map Rotation Functions
 ================================
 
-.. tags:: map
-
 This example will compare between the current library implementations for `sunpy.map.GenericMap.rotate`.
 """
+# sphinx_gallery_tags = ["map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

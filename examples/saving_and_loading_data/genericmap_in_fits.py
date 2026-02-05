@@ -3,8 +3,6 @@
 Saving and loading sunpy Maps with FITS
 =======================================
 
-.. tags:: io_ops, fits, map
-
 In this example we are going to look at how to save and load a
 `~sunpy.map.GenericMap` as FITS files.
 
@@ -15,6 +13,8 @@ IDL and many other languages.
 Here, even though we will be working with `~sunpy.map.sources.sdo.AIAMap`
 specifically, the process can be extended to any `~sunpy.map.GenericMap`.
 """
+# sphinx_gallery_tags = ["io_ops", "fits", "map"]
+
 import astropy.units as u
 
 import sunpy.data.sample

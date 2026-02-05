@@ -3,10 +3,10 @@
 Generating a map from data array
 ================================
 
-.. tags:: map, fits
-
 A simple demonstration of creating a map from a numpy array of data.
 """
+# sphinx_gallery_tags = ["map", "fits"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

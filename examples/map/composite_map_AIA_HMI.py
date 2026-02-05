@@ -3,11 +3,11 @@
 Creating a Composite map
 ========================
 
-.. tags:: map
-
 How to create a composite map and use it to overplot two maps to
 compare features.
 """
+# sphinx_gallery_tags = ["map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

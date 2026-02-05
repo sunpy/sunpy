@@ -3,11 +3,11 @@
 Finding and masking bright pixels
 =================================
 
-.. tags:: computer_vision, masking
-
 How to find and overplot the location of the brightest
 pixel and then mask pixels around that region.
 """
+# sphinx_gallery_tags = ["computer_vision", "masking"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt

@@ -3,8 +3,6 @@
 Comparing differential-rotation models
 ======================================
 
-.. tags:: differential_rotation
-
 How to compare differential-rotation models.
 
 The example uses the `~sunpy.coordinates.metaframes.RotatedSunFrame` coordinate
@@ -12,6 +10,8 @@ metaframe in `sunpy.coordinates` to apply differential rotation to a coordinate.
 See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on using
 `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
+# sphinx_gallery_tags = ["differential_rotation"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
