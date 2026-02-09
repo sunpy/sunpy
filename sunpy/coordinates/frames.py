@@ -176,6 +176,18 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         return (self._data is not None and self._data.norm().unit is u.one
                 and u.allclose(self._data.norm(), 1*u.one))
 
+    def to_2d(self):
+        """
+        Convert the frame to a 2D representation by dropping the distance.
+
+        Returns
+        -------
+        new_frame : `~sunpy.coordinates.frames.SunPyBaseCoordinateFrame`
+            A new frame instance with the same attributes but using a
+            `~astropy.coordinates.UnitSphericalRepresentation`.
+        """
+        return self.realize_frame(self.represent_as('unitspherical'))
+
 
 class BaseHeliographic(SunPyBaseCoordinateFrame):
     """
