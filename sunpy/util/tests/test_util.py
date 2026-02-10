@@ -1,3 +1,4 @@
+import copy
 from inspect import cleandoc
 
 import numpy as np
@@ -62,10 +63,17 @@ def test_expand_list():
     (['a1234', 'b', [], (['c', 'd']), (), ['e'], b'fghj'], ['a1234', 'b', 'c', 'd', 'e', b'fghj']),
     (iter(['c', 'd']), ['c', 'd']),
     (zip(['1', '2'], ['3', '4']), ['1', '3', '2', '4']),
-    (Results(["a", "b", "c"]), ["a", "b", "c"]),
-    ([open(get_test_filepath('aia_171_level1.fits'), 'rb')], open(get_test_filepath('aia_171_level1.fits'), 'rb').readlines())
+    (Results(["a", "b", "c"]), ["a", "b", "c"])
 ])
 def test_expand_list_generator(input_data, expected_output):
+    input_data = copy.deepcopy(input_data)  # for thread safety
+    assert list(util.expand_list_generator(input_data)) == expected_output
+
+
+def test_expand_list_generator_file():
+    # Not included in the above parametrization for thread safety
+    input_data = [open(get_test_filepath('aia_171_level1.fits'), 'rb')]
+    expected_output = open(get_test_filepath('aia_171_level1.fits'), 'rb').readlines()
     assert list(util.expand_list_generator(input_data)) == expected_output
 
 
