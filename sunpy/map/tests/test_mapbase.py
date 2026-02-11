@@ -1375,6 +1375,7 @@ def test_repr_html(aia171_test_map):
     assert "Bad pixels are shown in red: 1 infinite" in html_string
 
 
+@pytest.mark.thread_unsafe(reason="mocks web browser")
 def test_quicklook(mocker, aia171_test_map):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
     aia171_test_map.quicklook()
