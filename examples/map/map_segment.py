@@ -6,7 +6,7 @@ Segmenting a Map based on transformation of coordinates
 This example demonstrates extracting a region of a particular map based on
 world coordinates in different systems.
 """
-# sphinx_gallery_tags = ["map", "processing"]
+# sphinx_gallery_tags = ["Map", "AIA", "Coordinates", "Segmentation"]
 
 # sphinx_gallery_thumbnail_number = 2
 import matplotlib.pyplot as plt

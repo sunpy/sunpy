@@ -5,7 +5,7 @@ Comparing Map Rotation Functions
 
 This example will compare between the current library implementations for `sunpy.map.GenericMap.rotate`.
 """
-# sphinx_gallery_tags = ["map"]
+# sphinx_gallery_tags = ["Map", "HMI", "Map Rotate"]
 
 import matplotlib.pyplot as plt
 

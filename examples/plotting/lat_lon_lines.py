@@ -6,7 +6,7 @@ Drawing heliographic longitude and latitude lines
 This example demonstrates how you can draw individual Stonyhurst
 longitude and latitude lines.
 """
-# sphinx_gallery_tags = ["plotting", "visualization", "coordinates"]
+# sphinx_gallery_tags = ["Map", "AIA", "Visualization"]
 
 import matplotlib.pyplot as plt
 import numpy as np

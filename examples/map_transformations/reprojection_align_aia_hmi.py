@@ -17,7 +17,7 @@ See :ref:`sphx_glr_generated_gallery_map_transformations_autoalign_aia_hmi.py`
 for an alternate approach to image alignment, where the images are aligned
 as they are plotted, with no modified map created.
 """
-# sphinx_gallery_tags = ["map_transformations", "co_observations", "reproject"]
+# sphinx_gallery_tags = ["Map", "Reproject", "AIA", "HMI"]
 
 import matplotlib.pyplot as plt
 

@@ -7,7 +7,7 @@ In this example, a composite plot is created with three maps.
 It demonstrates how to specify contour levels, transparency, and
 ordering when overlaying multiple maps.
 """
-# sphinx_gallery_tags = ["plotting", "co_observations"]
+# sphinx_gallery_tags = ["Visualization", "EIT", "AIA", "RHESSI", "Coordinates", "Map"]
 
 import matplotlib.pyplot as plt
 

@@ -17,7 +17,7 @@ the same form as they were saved.
     This example requires astropy>=3.2 and asdf>=2.3.0
 
 """
-# sphinx_gallery_tags = ["io_ops", "asdf", "coordinates"]
+# sphinx_gallery_tags = ["Saving & Loading", "ASDF", "Coordinates", "Map", "AIA"]
 
 import matplotlib.pyplot as plt
 import numpy as np

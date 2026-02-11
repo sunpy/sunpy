@@ -5,7 +5,7 @@ Enhancing off-disk emission
 
 How to enhance emission above the limb.
 """
-# sphinx_gallery_tags = ["computer_vision", "processing"]
+# sphinx_gallery_tags = ["Computer Vision", "AIA", "Coordinates"]
 
 # sphinx_gallery_thumbnail_number = 2
 

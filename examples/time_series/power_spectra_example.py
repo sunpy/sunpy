@@ -5,7 +5,7 @@ Making a power spectrum from a TimeSeries
 
 How to estimate the power spectrum of a TimeSeries.
 """
-# sphinx_gallery_tags = ["time_series", "rhessi", "analysis"]
+# sphinx_gallery_tags = ["Timeseries", "RHESSI"]
 
 import matplotlib.pyplot as plt
 from scipy import signal

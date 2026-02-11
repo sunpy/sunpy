@@ -7,7 +7,7 @@ In this example we are going to look at how to set the axes
 range using Matplotlib's ``set_xlim`` and ``set_ylim`` when plotting a
 Map with WCSAxes.
 """
-# sphinx_gallery_tags = ["plotting", "wcs_axes"]
+# sphinx_gallery_tags = ["Visualization", "AIA", "Coordinates", "Map"]
 
 import matplotlib.pyplot as plt
 

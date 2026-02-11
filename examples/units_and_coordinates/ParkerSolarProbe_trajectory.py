@@ -10,7 +10,7 @@ JPL `Horizons <https://ssd.jpl.nasa.gov/horizons/>`__ can return the locations o
 planets and minor bodies (e.g., asteroids) in the solar system, and it can also
 return the location of a variety of major spacecraft.
 """
-# sphinx_gallery_tags = ["units_and_coordinates", "jpl_horizons", "coordinates", "parker_sp"]
+# sphinx_gallery_tags = ["Coordinates", "PSP"]
 
 
 import matplotlib.pyplot as plt

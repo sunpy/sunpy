@@ -11,7 +11,7 @@ showcases how one can use the the output of this function to calculate the
 start/end times of an eclipse and to plot the eclipse amount as a function of
 time.
 """
-# sphinx_gallery_tags = ["showcase", "timeseries", "feature"]
+# sphinx_gallery_tags = ["Coordinates", "Solar Eclipse"]
 
 import matplotlib.pyplot as plt
 import numpy as np

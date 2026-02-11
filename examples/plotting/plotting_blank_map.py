@@ -8,7 +8,7 @@ It is often useful to plot coordinate positions of events on a blank helioprojec
 In this example, we create an empty map with a WCS defined by a helioprojective frame as observed from
 Earth at a certain time, and show how you can plot different coordinates on it.
 """
-# sphinx_gallery_tags = ["plottting", "map", "coordinates"]
+# sphinx_gallery_tags = ["Map", "Visualization", "Coordinates"]
 
 import matplotlib.pyplot as plt
 import numpy as np

@@ -5,7 +5,7 @@ Using the sunpy Colormaps with matplotlib
 
 How you can use the sunpy colormaps with matplotlib.
 """
-# sphinx_gallery_tags = ["plotting", "visualization"]
+# sphinx_gallery_tags = ["Visualization"]
 
 import matplotlib
 import matplotlib.pyplot as plt

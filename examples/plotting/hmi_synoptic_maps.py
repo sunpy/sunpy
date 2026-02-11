@@ -8,7 +8,7 @@ data is an interesting demonstration of sunpy's Map class as it is not in the
 more common Helioprojective coordinate system, but in heliographic Carrington
 coordinates and a cylindrical equal area (CEA) projection.
 """
-# sphinx_gallery_tags = ["plotting", "coordinates"]
+# sphinx_gallery_tags = ["Map", "HMI"]
 
 import matplotlib.pyplot as plt
 

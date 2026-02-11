@@ -5,7 +5,7 @@ The TimeSeriesMetaData class
 
 This provides an overview of the basic functionality of the TimeSeriesMetaData class.
 """
-# sphinx_gallery_tags = ["time_series", "acquiring_data", "metadata"]
+# sphinx_gallery_tags = ["Timeseries", "Acquiring Data", "Metadata", "GOES", "XRS", "NORH"]
 
 import astropy.units as u
 

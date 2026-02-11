@@ -10,7 +10,7 @@ image.
 Since this example deals with the creation of a specific style of image, there
 are multiple lines that deal directly with matplotlib axes.
 """
-# sphinx_gallery_tags = ["showcase", "hmi", "coordinates", "visualization"]
+# sphinx_gallery_tags = ["Visualization", "HMI", "Coordinates"]
 
 import matplotlib.colors
 import matplotlib.pyplot as plt

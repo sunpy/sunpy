@@ -11,7 +11,7 @@ can be identified with features in the same place in another map
 This example shows how to plot two maps on top of each other, with a slider to
 fade between them.
 """
-# sphinx_gallery_tags = ["plotting", "co_observations"]
+# sphinx_gallery_tags = ["Map", "AIA", "Visualization"]
 
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider

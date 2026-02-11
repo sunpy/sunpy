@@ -6,7 +6,7 @@ Plotting points on a Map with WCSAxes
 This example demonstrates the plotting of a point, a line and an arch in pixel coordinates,
 world coordinates, and SkyCoords respectively when plotting a map with WCSAxes.
 """
-# sphinx_gallery_tags = ["plotting", "coordinates", "wcs_axes"]
+# sphinx_gallery_tags = ["Visualization", "AIA", "Coordinates", "Map"]
 
 import matplotlib.pyplot as plt
 import numpy as np

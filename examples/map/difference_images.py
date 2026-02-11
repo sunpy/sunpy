@@ -5,9 +5,9 @@ Plotting a difference image
 
 This example shows how to compute and plot a difference image.
 """
-# sphinx_gallery_tags = ["map"]
-
+# sphinx_gallery_tags = ["Map", "AIA", "Map Sequence", "Animation"]
 # sphinx_gallery_thumbnail_number = 3
+
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 

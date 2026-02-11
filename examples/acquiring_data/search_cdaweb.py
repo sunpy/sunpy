@@ -8,6 +8,7 @@ How to download data from the Coordinated Data Analysis Web (CDAWeb).
 CDAWeb stores data from from current and past space physics missions, and is
 full of heliospheric insitu datasets.
 """
+# sphinx_gallery_tags = ["Acquiring Data", "CDAWeb", "Solar Orbiter"]
 
 from sunpy.net import Fido
 from sunpy.net import attrs as a

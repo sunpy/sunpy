@@ -6,7 +6,7 @@ Plotting a solar cycle index
 This example demonstrates how to plot the solar cycle in terms of
 the number of sunspots and a prediction for the next few years.
 """
-# sphinx_gallery_tags = ["plotting", "visualization", "acquiring_data"]
+# sphinx_gallery_tags = ["Timeseries", "Acquiring Data"]
 
 import matplotlib.pyplot as plt
 

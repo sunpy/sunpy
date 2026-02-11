@@ -5,7 +5,7 @@ Editing the colormap and normalization of a Map
 
 How to edit the display of a map.
 """
-# sphinx_gallery_tags = ["plotting", "visualization"]
+# sphinx_gallery_tags = ["Map", "AIA", "Visualization"]
 
 import matplotlib
 import matplotlib.colors as colors

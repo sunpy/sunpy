@@ -12,7 +12,7 @@ when comparing observations of features on the Sun over time.
 A good review can be found in Beck 1999 Solar Physics 191, 47–70.
 This example illustrates solar differential rotation.
 """
-# sphinx_gallery_tags = ["plotting", "differential_rotation"]
+# sphinx_gallery_tags = ["Map", "AIA", "Differential Rotation", "Coordinates"]
 
 # sphinx_gallery_thumbnail_number = 2
 

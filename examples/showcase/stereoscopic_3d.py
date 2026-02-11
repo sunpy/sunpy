@@ -10,7 +10,7 @@ and the SDO spacecraft were close in heliographic longitude. See the
 `Wikipedia page on anaglyph 3D <https://en.wikipedia.org/wiki/Anaglyph_3D>`__,
 which typically requires red-cyan glasses to visualize.
 """
-# sphinx_gallery_tags = ["showcase", "stereoscopic_image", "aia", "euvi"]
+# sphinx_gallery_tags = ["AIA", "EUVI", "Map", "Visualization"]
 
 import copy
 

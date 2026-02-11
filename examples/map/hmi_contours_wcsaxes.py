@@ -6,7 +6,7 @@ Overplotting HMI Contours on an AIA Image
 This example shows how to use `~astropy.visualization.wcsaxes` to overplot
 unaligned HMI magnetic field strength contours on an AIA map.
 """
-# sphinx_gallery_tags = ["map", "hmi"]
+# sphinx_gallery_tags = ["Map", "HMI", "AIA", "Coordinates"]
 
 # sphinx_gallery_thumbnail_number = 2
 

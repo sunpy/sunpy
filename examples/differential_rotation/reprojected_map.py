@@ -9,7 +9,7 @@ The example uses the :func:`~sunpy.coordinates.propagate_with_solar_surface`
 context manager to apply differential rotation during coordinate
 transformations.
 """
-# sphinx_gallery_tags = ["differential_rotation", "map"]
+# sphinx_gallery_tags = ["Differential Rotation", "Map", "Reproject", "AIA", "Coordinates"]
 
 import matplotlib.pyplot as plt
 

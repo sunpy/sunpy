@@ -5,7 +5,7 @@ Plotting a map
 
 How to create a plot of a map.
 """
-# sphinx_gallery_tags = ["plotting", "AIA"]
+# sphinx_gallery_tags = ["Map", "AIA"]
 
 # sphinx_gallery_thumbnail_number = 2
 import matplotlib.pyplot as plt

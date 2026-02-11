@@ -10,7 +10,7 @@ We use the `~skimage.feature.peak_local_max` function in the scikit-image librar
 to find those regions in the map data where the intensity values form a local maxima.
 Then we plot those peaks in the original AIA plot.
 """
-# sphinx_gallery_tags = ["plotting", "sklearn"]
+# sphinx_gallery_tags = ["AIA", "Peak Finding", "Map"]
 
 import matplotlib.pyplot as plt
 from skimage.feature import peak_local_max

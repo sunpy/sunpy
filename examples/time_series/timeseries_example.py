@@ -5,7 +5,7 @@ Using TimeSeries
 
 This example is intended to demonstrate the current state of `~sunpy.timeseries.TimeSeries`.
 """
-# sphinx_gallery_tags = ["time_series", "eve", "goes", "lyra", "norh", "rhessi", "gbm"]
+# sphinx_gallery_tags = ["Timeseries", "EVE", "GOES", "LYRA", "NORH", "RHESSI", "GBM"]
 
 import datetime
 from collections import OrderedDict

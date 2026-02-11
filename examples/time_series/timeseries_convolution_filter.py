@@ -7,7 +7,7 @@ How to smooth a TimeSeries using a convolution filter
 kernel from `~astropy.convolution` and `~astropy.convolution.convolve`
 function.
 """
-# sphinx_gallery_tags = ["time_series", "analysis", "processing", "astropy"]
+# sphinx_gallery_tags = ["Timeseries", "GOES", "XRS"]
 
 import matplotlib.pyplot as plt
 

@@ -6,7 +6,7 @@ Overplotting the position of the Venus transit
 How to accurately plot the position of Venus as it transited in front
 of the Sun as observed by SDO/AIA.
 """
-# sphinx_gallery_tags = ["units_and_coordinates", "venus_transit", "aia", "map"]
+# sphinx_gallery_tags = ["AIA", "Map", "Coordinates"]
 
 import matplotlib.pyplot as plt
 

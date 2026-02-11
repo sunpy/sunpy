@@ -6,7 +6,7 @@ Plotting the solar limb
 This example demonstrates how you can draw the limb as seen by an arbitrary
 observer.
 """
-# sphinx_gallery_tags = ["plotting", "visualization"]
+# sphinx_gallery_tags = ["Map", "HMI", "Visualization"]
 
 import matplotlib.pyplot as plt
 

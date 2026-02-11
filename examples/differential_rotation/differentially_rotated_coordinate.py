@@ -10,7 +10,7 @@ metaframe in `sunpy.coordinates` to apply differential rotation to a
 coordinate. See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on
 using `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
-# sphinx_gallery_tags = ["differential_rotation"]
+# sphinx_gallery_tags = ["Differential Rotation", "AIA", "Coordinates", "Map"]
 
 import matplotlib.pyplot as plt
 import numpy as np

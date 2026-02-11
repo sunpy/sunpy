@@ -10,7 +10,7 @@ See :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_align_aia_
 for an alternate approach to image alignment, where one of the maps is modified
 prior to plotting, and thus is available for purposes other than plotting.
 """
-# sphinx_gallery_tags = ["map_transformations", "co_observations"]
+# sphinx_gallery_tags = ["Map", "AIA", "HMI"]
 
 import matplotlib.pyplot as plt
 

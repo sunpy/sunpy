@@ -5,7 +5,7 @@ Rotating a Map
 
 How to rotate a map.
 """
-# sphinx_gallery_tags = ["map", "processing"]
+# sphinx_gallery_tags = ["Map", "AIA"]
 
 import matplotlib.pyplot as plt
 

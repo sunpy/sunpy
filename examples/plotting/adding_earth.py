@@ -5,7 +5,7 @@ Adding an Earth scale image
 
 This example shows how to plot a map with an image of the Earth added for scale.
 """
-# sphinx_gallery_tags = ["plotting", "visualization"]
+# sphinx_gallery_tags = ["Map", "AIA", "Coordinates"]
 
 import matplotlib.pyplot as plt
 import numpy as np

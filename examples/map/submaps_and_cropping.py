@@ -5,7 +5,7 @@ Cropping a Map
 
 How to crop a map by using submap.
 """
-# sphinx_gallery_tags = ["map", "processing"]
+# sphinx_gallery_tags = ["Map", "SWAP", "Coordinates"]
 
 import matplotlib.pyplot as plt
 

@@ -11,7 +11,7 @@ features in the image are unlikely to actually lie on this spherical screen.
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6
 or higher installed.
 """
-# sphinx_gallery_tags = ["map_transformations", "reproject", "fits", "visualization"]
+# sphinx_gallery_tags = ["Map", "Reproject", "AIA", "Coordinates"]
 
 # sphinx_gallery_thumbnail_number = 4
 

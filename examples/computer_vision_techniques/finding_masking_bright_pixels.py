@@ -6,7 +6,7 @@ Finding and masking bright pixels
 How to find and overplot the location of the brightest
 pixel and then mask pixels around that region.
 """
-# sphinx_gallery_tags = ["computer_vision", "masking"]
+# sphinx_gallery_tags = ["Computer Vision", "AIA", "Masking", "Map"]
 
 # sphinx_gallery_thumbnail_number = 2
 

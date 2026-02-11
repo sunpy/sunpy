@@ -6,7 +6,7 @@ Extracting intensity of a map along a line
 In this example we will extract the intensity values of all the pixels
 that intersect with a given set of coordinates.
 """
-# sphinx_gallery_tags = ["units_and_coordinates", "map", "coordinates"]
+# sphinx_gallery_tags = ["Map", "Coordinates", "AIA"]
 
 import matplotlib.pyplot as plt
 

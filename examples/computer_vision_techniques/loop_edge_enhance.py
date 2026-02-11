@@ -5,7 +5,7 @@ Edge Enhancing Coronal Loops
 
 How to edge enhance coronal loops in an SDO/AIA image.
 """
-# sphinx_gallery_tags = ["computer_vision", "features"]
+# sphinx_gallery_tags = ["Computer Vision", "Coronal Loops", "AIA", "Map", "Coordinates"]
 
 import matplotlib.pyplot as plt
 import numpy as np

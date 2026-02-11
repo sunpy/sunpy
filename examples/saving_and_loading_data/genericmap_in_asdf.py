@@ -17,7 +17,7 @@ Here, even though we will be working with `~sunpy.map.sources.sdo.AIAMap`
 specifically, the process can be extended to any `~sunpy.map.GenericMap`,
 including ones created using custom FITS files.
 """
-# sphinx_gallery_tags = ["io_ops", "asdf", "map"]
+# sphinx_gallery_tags = ["Saving & Loading", "ASDF", "Map", "AIA"]
 
 import matplotlib.pyplot as plt
 

@@ -5,7 +5,7 @@ Finding contours of a map
 
 This example shows how to find and plot contours on a map.
 """
-# sphinx_gallery_tags = ["map", "contours"]
+# sphinx_gallery_tags = ["Map", "AIA"]
 
 import matplotlib.pyplot as plt
 

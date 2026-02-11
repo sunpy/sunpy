@@ -5,7 +5,7 @@ Flare times on a GOES XRS plot
 
 How to plot flare times as provided by the HEK on a GOES XRS plot.
 """
-# sphinx_gallery_tags = ["time_series", "hek", "goes", "acquiring_data"]
+# sphinx_gallery_tags = ["Timeseries", "HEK", "GOES", "Acquiring Data"]
 
 import matplotlib.pyplot as plt
 
