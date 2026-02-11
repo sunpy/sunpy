@@ -6,11 +6,11 @@ AI Usage
 
 Core Principle for the Use of AI in Contributions
 =================================================
-Contributing to the SunPy project requires human judgment, contextual understanding, and familiarity with the SunPy projects' structure and goals.
+Contributing to the SunPy project requires human judgment, contextual understanding, and familiarity with the SunPy project's structure and goals.
 It is not suitable for automatic processing by AI tools.
-The SunPy project will accept the responsible use of AI-assisted tools by both contributors and maintainers (in fact this document was generated from and initial draft obtained from ChatGPT).
+The SunPy project will accept the responsible use of AI-assisted tools by both contributors and maintainers (in fact this document was generated from an initial draft obtained from ChatGPT).
 These tools can be valuable aids for exploration, debugging, documentation, and code improvement.
-However, AI cannot replace human effort and intellect, and its use must not shift disproportionate effort or responsibility onto project.
+However, AI cannot replace human effort and intellect, and its use must not shift disproportionate effort or responsibility onto the project.
 The core principle can be summarised as:
 
 **Any contribution should be worth more to the project than the effort required to review it.**
@@ -39,7 +39,7 @@ Regardless of whether AI tools are used, the human contributor remains the clear
 * Ensuring correctness, scientific validity, and reproducibility
 * Following sunpy’s coding standards and design principles
 * Addressing review feedback in a timely and constructive manner
-* Ensuring ensuring that copyrighted material does not appear in their contributions
+* Ensuring copyrighted material does not appear in their contributions
 
 Maintainers may also use AI tools to assist with review, triage, or debugging, but this does not replace the need for human judgment, project knowledge, and accountability.
 
@@ -63,8 +63,6 @@ Transparency and Sustainable Collaboration
 Contributors should be transparent about significant AI assistance and be prepared to explain how AI tools were used and how the resulting work was validated.
 Transparency supports trust, effective collaboration, and sustainable maintenance.
 The intent of this policy is not to discourage AI use, but to ensure that all contributions, AI-assisted or not, respect the time, expertise, and long-term responsibilities of both contributors and maintainers.
-
-This document may evolve over time as generative AI tooling and community expectations change. Contributors should refer to the latest version when preparing contributions.
 
 
 This document may evolve over time as generative AI tooling and community expectations change.
