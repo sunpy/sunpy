@@ -1,0 +1,1 @@
+Fix ~`sunpy.net.scraper.Scraper` to correctly handle proper local file URI on Windows and make internal code more consistent.
