@@ -18,7 +18,7 @@ The core principle can be summarised as:
 Non-Compliance
 ==============
 Contributions which that appear to violate this principle can be summarily closed or removed.
-Repeated non-compliance may influence future engagement possibles.
+Repeated non-compliance may be considered a code of conduct violation.
 
 Value and Project Effort
 ========================
@@ -30,7 +30,8 @@ This includes, but is not limited to:
 * Testing, validation, and debugging
 * Long-term maintenance and user support
 
-AI assistance does not reduce the expected level of contributor effort. Submissions that require maintainers to spend significant time understanding, validating, or correcting work that the contributor has not fully reviewed or understood place an unfair burden on already scarce project resources.
+AI assistance does not reduce the expected level of contributor effort.
+Submissions that require maintainers to spend significant time understanding, validating, or correcting work that the contributor has not fully reviewed or understood place an unfair burden on already scarce project resources.
 
 Shared Responsibility, Clear Ownership
 ======================================
@@ -70,4 +71,4 @@ This document may evolve over time as generative AI tooling and community expect
 This document was inspired by many other open source projects AI usage polices and documents such as `scikit-learn`_ and `LLVM`_.
 
 .. _scikit-learn: https://scikit-learn.org/dev/developers/contributing.html#automated-contributions-policy
-.. _LLVM: https://llvm.org/docs//AIToolPolicy.html#extractive-contributions
+.. _LLVM: https://llvm.org/docs//AIToolPolicy.html
