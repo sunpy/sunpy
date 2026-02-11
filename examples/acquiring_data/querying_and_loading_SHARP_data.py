@@ -5,7 +5,7 @@ Querying and loading SHARP data
 
 In this example we will demonstrate how to acquire `Spaceweather HMI Active Region Patch (SHARP) <http://jsoc.stanford.edu/doc/data/hmi/sharp/sharp.htm>`__ data and load it into a `sunpy.map.Map`.
 """
-# sphinx_gallery_tags = ["Acquiring Data", "JSOC", "Map", "Active Regions", "HMI"]
+# sphinx_gallery_tags = ["Acquiring Data", "JSOC", "Map", "Active Regions", "HMI", "SHARP"]
 
 import os
 
