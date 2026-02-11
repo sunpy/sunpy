@@ -4,17 +4,24 @@
 AI Usage
 ********
 
-Core Principles for the Use of AI in Contributions
-==================================================
-The sunpy project welcomes the responsible use of AI-assisted tools by both contributors and maintainers (in fact this
-document was generated from and initial draft obtained from ChatGPT). These tools can be valuable aids for exploration,
-debugging, documentation, and code improvement. However, AI use must not shift disproportionate effort or responsibility
-onto other members of the project.
+Core Principle for the Use of AI in Contributions
+=================================================
+Contributing to the SunPy project requires human judgment, contextual understanding, and familiarity with SunPy structure and goals.
+It is not suitable for automatic processing by AI tools.
+The SunPy project will accept the responsible use of AI-assisted tools by both contributors and maintainers (in fact this document was generated from and initial draft obtained from ChatGPT).
+These tools can be valuable aids for exploration, debugging, documentation, and code improvement. However, AI cannot replace human effort and intellect, and its use must not shift disproportionate effort or responsibility onto project.
+The core principle can be summarised as:
 
-Effort Balance and Project Cost
-===============================
-Contributions should be prepared with the expectation that the contributor invests at least as much effort as the
-contribution will require from maintainers and reviewers across its full lifecycle. This includes, but is not limited
+**Any contribution should be worth more to the project than the effort required to review it.**
+
+Non-Compliance
+==============
+Contributions which that appear to violate this principle can be summarily closed or removed.
+Repeated non-compliance may influence future engagement possibles.
+
+Value and Project Effort
+========================
+Contributions should be prepared with the expectation that they must be worth more to the project than the effort required to review. This includes, but is not limited
 to:
 
 * Initial code review and discussion
@@ -22,42 +29,45 @@ to:
 * Testing, validation, and debugging
 * Long-term maintenance and user support
 
-AI assistance does not reduce the expected level of contributor effort. Submissions that require maintainers to spend
-significant time understanding, validating, or correcting work that the contributor has not fully reviewed or understood
-place an unfair burden on the project.
+AI assistance does not reduce the expected level of contributor effort. Submissions that require maintainers to spend significant time understanding, validating, or correcting work that the contributor has not fully reviewed or understood place an unfair burden on already scarce project resources.
 
 Shared Responsibility, Clear Ownership
 ======================================
-Regardless of whether AI tools are used, the human contributor remains the clear owner of their contribution and is
-responsible for:
+Regardless of whether AI tools are used, the human contributor remains the clear owner of their contribution and is responsible for:
 
 * Understanding and being able to explain all changes
 * Ensuring correctness, scientific validity, and reproducibility
 * Following sunpy’s coding standards and design principles
 * Addressing review feedback in a timely and constructive manner
+* Ensuring ensuring that copyrighted material does not appear in their contributions
 
-Maintainers may also use AI tools to assist with review, triage, or debugging, but this does not replace the need for
-human judgment, project knowledge, and accountability.
+Maintainers may also use AI tools to assist with review, triage, or debugging, but this does not replace the need for human judgment, project knowledge, and accountability.
 
 Responsible Uses of AI
 =======================
 Examples of appropriate use:
  * A contributor uses AI to help diagnose a failing test or isolate a bug in a pull request they authored and understand
-.
+ * A contributor uses AI to help improve or reword PR summaries and or comments they have written
  * AI is used to suggest improvements to documentation, error messages, or small refactors, followed by careful human
 verification.
  * Maintainers use AI tools to summarize discussions, explore alternative implementations, or assist in reviewing
 well-scoped, clearly explained changes.
 
 Examples of inappropriate use:
-
 * Generating an entire pull request directly from an issue description and submitting it with minimal human understanding or validation.
+* Entirely AI generated Issues, PR summaries, comments.
 * Using AI-generated changes as a substitute for learning the codebase or engaging with review feedback.
 * Expecting maintainers to serve as the primary filter for correctness, design decisions, or AI hallucinations.
+* Passing off large amounts of AI generate content as created by a human
 
 Transparency and Sustainable Collaboration
 ==========================================
-Contributors should be transparent about significant AI assistance and be prepared to explain how AI tools were used and
-how the resulting work was validated. Transparency supports trust, effective collaboration, and sustainable maintenance.
-The intent of this policy is not to discourage AI use, but to ensure that all contributions, AI-assisted or not,respect
-the time, expertise, and long-term responsibilities of both contributors and maintainers.
+Contributors should be transparent about significant AI assistance and be prepared to explain how AI tools were used and how the resulting work was validated. Transparency supports trust, effective collaboration, and sustainable maintenance.
+The intent of this policy is not to discourage AI use, but to ensure that all contributions, AI-assisted or not,respect the time, expertise, and long-term responsibilities of both contributors and maintainers.
+
+This document may evolve over time as generative AI tooling and community expectations change. Contributors should refer to the latest version when preparing contributions.
+
+This document was inspired by many other open source projects AI usage polices and documents such as `scikit-learn`_ and `LLVM`_.
+
+.. _scikit-learn: https://scikit-learn.org/dev/developers/contributing.html#automated-contributions-policy
+.. _LLVM: https://llvm.org/docs//AIToolPolicy.html#extractive-contributions
