@@ -18,10 +18,11 @@ The core principle can be summarised as:
 Non-Compliance
 ==============
 Contributions which that appear to violate this principle can be summarily closed or removed.
+
 Repeated non-compliance may be considered a code of conduct violation.
 
-Value and Project Effort
-========================
+Responsible Uses of AI
+=======================
 Contributions should be prepared with the expectation that they must be worth more to the project than the effort required to review.
 This includes, but is not limited to:
 
@@ -32,9 +33,6 @@ This includes, but is not limited to:
 
 AI assistance does not reduce the expected level of contributor effort.
 Submissions that require maintainers to spend significant time understanding, validating, or correcting work that the contributor has not fully reviewed or understood place an unfair burden on already scarce project resources.
-
-Responsible Uses of AI
-=======================
 Regardless of whether AI tools are used, the human contributor remains the clear owner of their contribution and is responsible for:
 
 * Understanding and being able to explain all changes
