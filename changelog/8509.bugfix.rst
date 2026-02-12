@@ -1,0 +1,1 @@
+Fix ``log(0)`` edge cases when generating the HTML representation for ``sunpy.timeseries.TimeSeries`` plots.
