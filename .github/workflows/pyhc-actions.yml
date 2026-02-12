@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - pyproject.toml
+      - .github/workflows/pyhc-actions.yml
   pull_request:
     branches: [main]
     paths:
       - pyproject.toml
+      - .github/workflows/pyhc-actions.yml
   schedule:
     # Run quarterly: Jan 1, Apr 1, Jul 1, Oct 1 at 3pm UTC (8am Mountain Time)
     - cron: '0 15 1 1,4,7,10 *'
