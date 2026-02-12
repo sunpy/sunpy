@@ -21,7 +21,8 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
-
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+import warnings
 # Test fixtures are in ../conftest.py
 
 
@@ -555,6 +556,27 @@ def test_timeseries_array():
         ts = sunpy.timeseries.TimeSeries(data, {})
     assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
+
+def test_repr_html_does_not_force_log_when_all_zero():
+    df = pd.DataFrame(
+        {"flux": [0.0, 0.0, 0.0]},
+        index=pd.date_range("2020-01-01", periods=3, freq="s"),
+    )
+    ts = GenericTimeSeries(df, meta=None, units={"flux": u.ct})
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        _ = ts._repr_html_()
+
+    bad = [
+        ww for ww in w
+        if "log-scal" in str(ww.message).lower()
+        and (
+            "no positive values" in str(ww.message).lower()
+            or "cannot be log-scaled" in str(ww.message).lower()
+        )
+    ]
+    assert not bad
 
 # TODO:
 # _validate_units

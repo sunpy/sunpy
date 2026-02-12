@@ -303,7 +303,7 @@ class GenericTimeSeries:
                     color=cols[i%len(cols)],
                     label=self.columns[i],
                 )
-                if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
+                if (dat[self.columns[i]].values <= 0).any() is np.bool_(False):
                     axs.set_yscale("log")
                 axs.legend(frameon=False, handlelength=0)
                 axs.set_ylabel(self.units[self.columns[i]])
@@ -314,7 +314,7 @@ class GenericTimeSeries:
                     color=cols[i%len(cols)],
                     label=self.columns[i],
                 )
-                if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
+                if (dat[self.columns[i]].values <= 0).any() is np.bool_(False):
                     axs[i].set_yscale("log")
                 axs[i].legend(frameon=False, handlelength=0)
                 axs[i].set_ylabel(self.units[self.columns[i]])
