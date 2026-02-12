@@ -19,7 +19,7 @@ Non-Compliance
 ==============
 Contributions which that appear to violate this principle can be summarily closed or removed.
 
-Repeated non-compliance may be considered a code of conduct violation.
+Repeated non-compliance may be considered a `code of conduct <https://sunpy.org/coc/>`__ violation.
 
 Responsible Uses of AI
 =======================
@@ -36,8 +36,8 @@ Submissions that require maintainers to spend significant time understanding, va
 Regardless of whether AI tools are used, the human contributor remains the clear owner of their contribution and is responsible for:
 
 * Understanding and being able to explain all changes
-* Ensuring correctness, scientific validity, and reproducibility
-* Following sunpy’s coding standards and design principles
+* Ensuring, to the best of their ability and knowledge, correctness, scientific validity, and reproducibility
+* Following sunpy’s :ref:`coding-standards`, :ref:`docs_guidelines` style, and design principles
 * Addressing review feedback in a timely and constructive manner
 * Ensuring copyrighted material does not appear in their contributions
 
@@ -63,7 +63,6 @@ Transparency and Sustainable Collaboration
 Contributors should be transparent about significant AI assistance and be prepared to explain how AI tools were used and how the resulting work was validated.
 Transparency supports trust, effective collaboration, and sustainable maintenance.
 The intent of this policy is not to discourage AI use, but to ensure that all contributions, AI-assisted or not, respect the time, expertise, and long-term responsibilities of both contributors and maintainers.
-
 
 This document may evolve over time as generative AI tooling and community expectations change.
 Contributors should refer to the latest version when preparing contributions.
