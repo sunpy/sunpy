@@ -1,0 +1,20 @@
+name: PyHC Environment Compatibility
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run quarterly: Jan 1, Apr 1, Jul 1, Oct 1 at 3pm UTC (8am Mountain Time)
+    - cron: '0 15 1 1,4,7,10 *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check PyHC Environment Compatibility
+        uses: heliophysicsPy/pyhc-actions/pyhc-env-compat@v1
