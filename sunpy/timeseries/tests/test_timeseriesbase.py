@@ -1,6 +1,7 @@
 import re
 import copy
 import datetime
+import warnings
 from collections import OrderedDict
 
 import numpy as np
@@ -19,10 +20,10 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-import warnings
+
 # Test fixtures are in ../conftest.py
 
 
