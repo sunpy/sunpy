@@ -56,19 +56,19 @@ It includes an interface for searching and downloading data from multiple data p
 Installation
 ============
 
-We recommended following the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` documentation.
+We recommend following the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` documentation.
 This will walk you through installing ``sunpy`` and all of its dependencies.
 
 Usage
 =====
 
 If you are new to ``sunpy``, the best place to start is the `tutorial <https://docs.sunpy.org/en/stable/tutorial/index.html>`__.
-the `example gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__ also includes a collection of shorter and more specific examples of using ``sunpy``.
+The `example gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__ also includes a collection of shorter and more specific examples of using ``sunpy``.
 
 Changes
 =======
 
-See our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__. for the latest changes in ``sunpy``.
+See our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__ for the latest changes in ``sunpy``.
 
 Getting Help
 ============
