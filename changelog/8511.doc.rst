@@ -1,0 +1,1 @@
+Fixed typos and grammar improvements in the main README file.
