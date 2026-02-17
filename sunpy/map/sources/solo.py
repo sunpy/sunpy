@@ -5,11 +5,7 @@ from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import (
-    AsinhStretch,
-    ImageNormalize,
-    AsymmetricPercentileInterval
-)
+from astropy.visualization import AsinhStretch, ImageNormalize, AsymmetricPercentileInterval
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
@@ -40,18 +36,17 @@ class EUIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
+        self.plot_settings["norm"] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
     def _rotation_matrix_from_crota(self):
-        return super()._rotation_matrix_from_crota(crota_key='CROTA')
+        return super()._rotation_matrix_from_crota(crota_key="CROTA")
 
     @property
     def processing_level(self):
-        if self.meta.get('level'):
+        if self.meta.get("level"):
             # The level number is prepended by the letter L
-            return int(self.meta.get('level')[1:])
+            return int(self.meta.get("level")[1:])
 
     @property
     def waveunit(self):
@@ -63,19 +58,25 @@ class EUIMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('hcix_obs', 'hciy_obs', 'hciz_obs'),
-                 {'x': self.meta.get('hcix_obs'),
-                  'y': self.meta.get('hciy_obs'),
-                  'z': self.meta.get('hciz_obs'),
-                  'unit': u.m,
-                  'representation_type': CartesianRepresentation,
-                  'frame': HeliocentricInertial})] + super()._supported_observer_coordinates
+        return [
+            (
+                ("hcix_obs", "hciy_obs", "hciz_obs"),
+                {
+                    "x": self.meta.get("hcix_obs"),
+                    "y": self.meta.get("hciy_obs"),
+                    "z": self.meta.get("hciz_obs"),
+                    "unit": u.m,
+                    "representation_type": CartesianRepresentation,
+                    "frame": HeliocentricInertial,
+                },
+            )
+        ] + super()._supported_observer_coordinates
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUI image"""
-        is_solo = 'solar orbiter' in str(header.get('obsrvtry', '')).lower()
-        is_eui = str(header.get('instrume', '')).startswith('EUI')
+        is_solo = "solar orbiter" in str(header.get("obsrvtry", "")).lower()
+        is_eui = str(header.get("instrume", "")).startswith("EUI")
         return is_solo and is_eui
 
 
@@ -205,12 +206,11 @@ class PHIMap(GenericMap):
 
     def update_plot_norm_settings(self):
         """
-        Updates vmin and vmax values of plot_settings['norm']
+        Updates vmin and vmax values of plot_settings['norm'] based on current
+        data and contrast cutoff.
         """
         img_vlim = self.get_img_vlim()
-        self.plot_settings['norm'] = ImageNormalize(
-            vmin=img_vlim[0], vmax=img_vlim[1]
-        )
+        self.plot_settings["norm"] = ImageNormalize(vmin=img_vlim[0], vmax=img_vlim[1])
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
