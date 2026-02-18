@@ -234,7 +234,7 @@ print()
 all_contributors = []
 
 for contributor in new_contributors:
-    all_contributors.append(f"{contributor} *")  # mark first-time contributors
+    all_contributors.append(f"{contributor} *")  
 
 for contributor in other_contributors:
     all_contributors.append(contributor)
