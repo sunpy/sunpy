@@ -1,0 +1,1 @@
+Fix a Matplotlib compatibility warning in GONGMagnetogramMap by using explicit linthresh for SymLogNorm.
