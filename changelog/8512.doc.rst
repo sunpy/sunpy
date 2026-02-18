@@ -1,1 +1,1 @@
-git commit -m "Fix typos and grammar in installation.rst"
+Fix typos and grammar in installation.rst
