@@ -25,6 +25,7 @@ import getpass
 import argparse
 import datetime
 import warnings
+import textwrap
 from functools import partial
 
 import docopt
@@ -230,13 +231,20 @@ print()
 
 
 # Print contributors in two sections
-# Combine contributors into a single list
+# Combine contributors into readable sentences
 all_contributors = []
 
-for contributor in new_contributors:
-    all_contributors.append(f"{contributor} *")  
+if new_contributors:
+    clean_new = [name.lstrip("- ").strip() for name in new_contributors]
+    sentence_new = "Thanks to the following new contributors: " + ", ".join(clean_new) + "."
+    all_contributors.extend(textwrap.wrap(sentence_new, width=100))
 
-for contributor in other_contributors:
-    all_contributors.append(contributor)
+# Add a blank line between new and other contributors
+all_contributors.append("")
+
+if other_contributors:
+    clean_other = [name.lstrip("- ").strip() for name in other_contributors]
+    sentence_other = "Thanks also to our other contributors: " + ", ".join(clean_other) + "."
+    all_contributors.extend(textwrap.wrap(sentence_other, width=100))
 
 print('\n'.join(all_contributors))
