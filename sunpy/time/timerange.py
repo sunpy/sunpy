@@ -430,7 +430,6 @@ class TimeRange:
         Return all partial days contained within the time range.
         """
         delta = self.end.to_datetime().date() - self.start.to_datetime().date()
-        dates = []
         dates = [
             parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
             for i in range(delta.days + 1)
@@ -442,7 +441,7 @@ class TimeRange:
         """
         Checks whether the given time lies within this range. Both limits are
         inclusive (i.e., ``__contains__(t1)`` and ``__contains__(t2)`` always
-        return `True).that.
+        return ``True``).
 
         Parameters
         ----------
