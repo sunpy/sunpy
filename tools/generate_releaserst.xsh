@@ -230,14 +230,13 @@ print()
 
 
 # Print contributors in two sections
-if new_contributors:
-    print("New Contributors")
-    print("----------------")
-    print('\n'.join(new_contributors))
-    print()
+# Combine contributors into a single list
+all_contributors = []
 
-if other_contributors:
-    print("Other Contributors")
-    print("------------------")
-    print('\n'.join(other_contributors))
-    print()
+for contributor in new_contributors:
+    all_contributors.append(f"{contributor} *")  # mark first-time contributors
+
+for contributor in other_contributors:
+    all_contributors.append(contributor)
+
+print('\n'.join(all_contributors))
