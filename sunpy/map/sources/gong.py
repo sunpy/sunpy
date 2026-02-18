@@ -168,7 +168,7 @@ class GONGMagnetogramMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         data_abs_max = np.nanmax(np.abs(self.data))
-        self.plot_settings['norm'] =  SymLogNorm(50, vmin=-data_abs_max, vmax=data_abs_max)
+        self.plot_settings['norm'] =  SymLogNorm(linthresh=50, vmin=-data_abs_max, vmax=data_abs_max)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
