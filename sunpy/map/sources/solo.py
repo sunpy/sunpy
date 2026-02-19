@@ -206,8 +206,10 @@ class PHIMap(GenericMap):
 
     def update_plot_norm_settings(self):
         """
-        Updates vmin and vmax values of plot_settings['norm'] based on current
-        data and contrast cutoff.
+        Update vmin and vmax values of plot_settings['norm'].
+
+        Updates the plot normalization settings based on current data and
+        contrast cutoff.
         """
         img_vlim = self.get_img_vlim()
         self.plot_settings["norm"] = ImageNormalize(vmin=img_vlim[0], vmax=img_vlim[1])

@@ -9,7 +9,6 @@ functionalities like occultor masking.
 import pytest
 import numpy as np
 import astropy.units as u
-from astropy.io import fits
 from astropy.coordinates import SkyCoord
 from sunpy.map import Map
 
@@ -237,7 +236,7 @@ class TestMETISDataProcessing:
         metis_map = Map(metis_test_data, minimal_metis_header)
         wrong_shape_qmat = np.ones((512, 512))
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="shape"):
             metis_map.mask_bad_pix(wrong_shape_qmat)
 
 
