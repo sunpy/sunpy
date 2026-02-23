@@ -121,14 +121,13 @@ class PHIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        header = header.copy()
-        if header.get('BUNIT') == "Normalised Intensity":
-            header['BUNIT'] = "" # dimensionless
-        elif header.get('BUNIT') == 'Degrees':
-            header['BUNIT'] = "deg"
-
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
+
+        if self.meta.get('bunit') == "Normalised Intensity":
+            self.meta['bunit'] = "" # dimensionless
+        elif self.meta.get('bunit') == 'Degrees':
+            self.meta['bunit'] = "deg"
 
         btype = self.meta.get('btype','').lower()
 
