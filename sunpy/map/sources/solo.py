@@ -131,22 +131,22 @@ class PHIMap(GenericMap):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
 
-        if self.meta.get('btype', '').lower() == 'blos':
+        if self.meta.get('btype', '').lower() == 'los magnetic field strength':
             self.plot_settings['cmap'] = 'hmimag'
             self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=True)
-        elif self.meta.get('btype', '').lower() == 'bmag':
+        elif self.meta.get('btype', '').lower() == 'magnetic field strength':
             self.plot_settings['cmap'] = 'rainbow'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3, clip=True)
-        elif self.meta.get('btype', '').lower() == 'binc':
+        elif self.meta.get('btype', '').lower() == 'magnetic field inclination':
             self.plot_settings['cmap'] = 'RdGy'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
-        elif self.meta.get('btype', '').lower() == 'bazi':
+        elif self.meta.get('btype', '').lower() == 'magnetic field azimuth':
             self.plot_settings['cmap'] = 'hsv'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
-        elif self.meta.get('btype', '').lower() == 'vlos':
+        elif self.meta.get('btype', '').lower() == 'los velocity':
             self.plot_settings['cmap'] = 'RdBu_r'
             self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2, clip=True)
-        elif self.meta.get('btype', '').lower() == 'icnt':
+        elif self.meta.get('btype', '').lower() == 'intensity':
             self.plot_settings['cmap'] = 'gist_heat'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2, clip=True)
 
