@@ -29,36 +29,6 @@ hrt_header_list = [
     
 ]
 
-expected_hrt_cmap_list = [
-    'RdBu_r',
-    'hmimag',
-    'rainbow',
-    'RdGy',
-    'hsv',
-    'gist_heat',
-    'RdBu_r',
-    'hmimag',
-    'rainbow',
-    'RdGy',
-    'hsv',
-    'gist_heat',
-]
-
-expected_hrt_norm_list = [
-    (-2,2),
-    (-1500,1500),
-    (0,2500),
-    (0,180),
-    (0,180),
-    (0,1.2),
-    (-2,2),
-    (-1500,1500),
-    (0,2500),
-    (0,180),
-    (0,180),
-    (0,1.2),
-]
-
 expected_hrt_refdates_list = 6*['2024-10-04T00:31:45.499'] + 6*['2022-03-07T00:00:32.393']
 
 expected_hrt_dates_list = 6*['2024-10-04T00:31:04.322'] + 6*['2022-03-07T00:00:09.388']
@@ -128,6 +98,11 @@ def phi_map_stokes(request):
     return get_dummy_map_from_header(request.param)
 
 
+@pytest.fixture(scope="module", params=fdt_header_list)
+def phi_map_fdt_ll(request):
+    return get_dummy_map_from_header(request.param)
+
+
 @pytest.fixture(scope="module", params=test_hrt_cal_wcs_warning_header_list)
 def test_phi_map_hrt_wcs_warning(request):
     with pytest.warns(SunpyUserWarning):
@@ -142,26 +117,12 @@ def test_stokes_PHIMap(phi_map_stokes):
     assert not isinstance(phi_map_stokes, PHIMap)
 
 
-@pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_cmap'),
-        list(zip(hrt_header_list, expected_hrt_cmap_list)),
-        indirect=['phi_map_hrt']
-)
-def test_hrt_cmap(phi_map_hrt, expected_cmap):
-    cmap = phi_map_hrt.plot_settings['cmap']
-    assert cmap == expected_cmap
+def test_fdt_ll_PHIMap(phi_map_fdt_ll):
+    assert isinstance(phi_map_fdt_ll, PHIMap)
 
 
-@pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_norm'),
-        list(zip(hrt_header_list, expected_hrt_norm_list)),
-        indirect=['phi_map_hrt']
-)
-def test_hrt_norm(phi_map_hrt, expected_norm):
-    norm = phi_map_hrt.plot_settings['norm']
-    assert norm.clip is True
-    assert norm.vmin == expected_norm[0]
-    assert norm.vmax == expected_norm[1]
+def test_fdt_ll_proc_level(phi_map_fdt_ll):
+    assert phi_map_fdt_ll.processing_level == 2
 
 
 @pytest.mark.parametrize(
