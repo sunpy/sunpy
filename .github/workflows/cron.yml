@@ -56,13 +56,13 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   open-issue:
-    if: failure() && github.event_name != 'pull_request'
+    if: failure() && github.ref == 'refs/heads/main'
     needs: [cron]
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53  # v6.0.0
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
         with:
           name: py314-devdeps-reportlog-(ubuntu-latest)
           path: pytest-log
@@ -111,6 +111,7 @@ jobs:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
           python-version: "3.13"
+          conda-remove-defaults: "true"
       - name: Install sunpy
         shell: bash -el {0}
         run: |

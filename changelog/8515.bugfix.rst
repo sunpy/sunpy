@@ -1,0 +1,1 @@
+Fix incorrect Level 1 detection in `sunpy.map.sources.EITMap`.

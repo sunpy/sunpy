@@ -17,9 +17,7 @@ def img_size():
 
 @pytest.fixture(scope="module")
 def img_src(img_size):
-    img = np.arange(np.prod(img_size))
-    img.shape = img_size
-    return img
+    return np.reshape(np.arange(np.prod(img_size)), img_size)
 
 
 @pytest.fixture(scope="module")

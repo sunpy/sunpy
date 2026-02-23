@@ -247,12 +247,15 @@ class Scraper:
         Goes over locally stored archives to return list of files in the given timerange.
         """
         pattern, datetime_pattern = self.pattern, self.datetime_pattern
-        pattern_temp, datetime_pattern_temp = pattern.replace('file://', ''), datetime_pattern.replace('file://', '')
         if os.name == 'nt':
+            pattern_temp, datetime_pattern_temp = (pattern.replace('file:///', ''),
+                                                   datetime_pattern.replace('file:///',''))
             pattern_temp = pattern_temp.replace('\\', '/')
             datetime_pattern_temp = datetime_pattern_temp.replace('\\', '/')
             prefix = 'file:///'
         else:
+            pattern_temp, datetime_pattern_temp = (pattern.replace('file://', ''),
+                                                   datetime_pattern.replace('file://',''))
             prefix = 'file://'
         # Change pattern variables class-wide
         self.pattern, self.datetime_pattern = pattern_temp, datetime_pattern_temp

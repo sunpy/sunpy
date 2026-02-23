@@ -16,7 +16,7 @@ As well as containing a Python installation, this virtual environment provides a
 If you already have Python and ``conda`` working you can skip the next section.
 
 `If you are using Anaconda, we recommend that you uninstall it as the default package channel(s) have a restrictive license which means you might not be able to use it for free <https://sunpy.org/posts/2024/2024-08-09-anaconda/>`__.
-Instead, we recommend that you use miniforge which is a minimal installer that setups ``conda`` with the ``conda-forge`` channel, which is free to use for everyone.
+Instead, we recommend that you use miniforge which is a minimal installer that sets up ``conda`` with the ``conda-forge`` channel, which is free to use for everyone.
 If you are using miniforge, you can skip the next section
 
 .. _sunpy-tutorial-installing-miniforge:
@@ -32,7 +32,7 @@ First, download the installer for your system and architecture from the links be
 .. note::
 
    sunpy packages are not yet available on conda-forge for aarch64 or ppc64le
-   architectures on linux, you will have to install sunpy from pip on these
+   architectures on Linux, you will have to install sunpy from pip on these
    platforms.
 
 .. grid:: 3
@@ -121,7 +121,7 @@ This also means you can work on multiple projects (research or coding) with diff
     These commands are taken from the
     `conda-forge documentation <https://conda-forge.org/docs/user/introduction/#how-can-i-install-packages-from-conda-forge>`__.
 
-    Running these commands affect all the environments in your conda installation, critically, including the base Anaconda environment.
+    Running these commands affects all the environments in your conda installation, critically, including the base Anaconda environment.
     We highly recommend that you do not install new packages, upgrade packages or use your base environment.
     Instead create new environments for all your projects, as you are much less likely to run into any pitfalls while using `multiple channels <https://conda-forge.org/docs/user/tipsandtricks/#multiple-channels>`__ by doing this.
 
