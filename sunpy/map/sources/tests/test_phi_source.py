@@ -182,8 +182,8 @@ def test_date(phi_map_hrt, expected_date):
     assert phi_map_hrt.date.isot == expected_date
 
 
-def test_private_date_setters(phi_hrt_map):
-    _test_private_date_setters(phi_hrt_map)
+def test_private_date_setters(phi_map_hrt):
+    _test_private_date_setters(phi_map_hrt)
 
 
 @pytest.mark.parametrize(

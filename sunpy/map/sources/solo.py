@@ -114,12 +114,11 @@ class PHIMap(GenericMap):
 
     """
     TODO:
-    - test with FDT data (for now just blos + icnt)
-    - test with FDT L3 data?
-    - test FDT units (G, Normalised Intensity etc.)
-    - test FDT cmaps + norms
-    - test FDT LL fits data
-    - test FDT LL JP2 data
+    - test with FDT data (wait for 2026 FDT release)
+        - test FDT units (G, Normalised Intensity etc.)
+        - test FDT cmaps + norms
+        - test FDT LL fits data
+        - test FDT LL JP2 data
     """
 
     def __init__(self, data, header, **kwargs):
@@ -143,13 +142,13 @@ class PHIMap(GenericMap):
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
         elif self.meta.get('btype', '').lower() == 'bazi':
             self.plot_settings['cmap'] = 'hsv'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180)
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
         elif self.meta.get('btype', '').lower() == 'vlos':
             self.plot_settings['cmap'] = 'RdBu_r'
-            self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2)
+            self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2, clip=True)
         elif self.meta.get('btype', '').lower() == 'icnt':
             self.plot_settings['cmap'] = 'gist_heat'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2)
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2, clip=True)
 
         # Warn user if WCS is not calibrated for HRT data
         def str_to_bool(s):
@@ -175,7 +174,8 @@ class PHIMap(GenericMap):
     @property
     def processing_level(self):
         if self.meta.get('level'):
-            # Low Latency data products have levels LL02, LL03
+            # JP2 Low Latency data products have levels L3
+            # Some low latency FITS files may have level LL01 (raw) or LL02 (reduced) - but not publicly available on SOAR
             # LL01 (raw) are rarely downlinked as LL is processed on board
             if self.meta.get('level').startswith('LL'):
                 return int(self.meta.get('level')[3:])
