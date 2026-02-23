@@ -2,11 +2,12 @@
 Tests for Solar Orbiter PHIMap subclass
 """
 
+import warnings
+
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-import warnings
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import PHIMap
@@ -26,7 +27,7 @@ hrt_header_list = [
     get_test_filepath('solo_L2_phi-hrt-binc_20220307T000009_V202208311927_0243070101.header'),
     get_test_filepath('solo_L2_phi-hrt-bazi_20220307T000009_V202208311927_0243070101.header'),
     get_test_filepath('solo_L2_phi-hrt-icnt_20220307T000009_V202208311927_0243070101.header'),
-    
+
 ]
 
 expected_hrt_refdates_list = 6*['2024-10-04T00:31:45.499'] + 6*['2022-03-07T00:00:32.393']

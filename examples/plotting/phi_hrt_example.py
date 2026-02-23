@@ -1,9 +1,11 @@
-import sunpy_soar
-from sunpy.net import Fido, attrs as a
+import matplotlib.pyplot as plt
+
 from astropy.time import Time
+
 import sunpy.map
 import sunpy.visualization.colormaps
-import matplotlib.pyplot as plt
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # Searching for PHI-HRT Data
@@ -25,7 +27,7 @@ print(search_results_phi_hrt_all)
 # -----------------------------------------
 #
 # Once we have the search results, we fetch the first available files.
-# When a path isnt passed as a kwarg, the files will save locally into sunpy/data. 
+# When a path isnt passed as a kwarg, the files will save locally into sunpy/data.
 # You can also pass `path='./your/path/to/save/PHI/data/')` to choose where to save the data.
 files_phi_hrt_all = Fido.fetch(search_results_phi_hrt_all[:, 0])
 
