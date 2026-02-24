@@ -216,4 +216,3 @@ class PHIMap(GenericMap):
         is_phi = str(header.get('instrume', '')).startswith('PHI')
         is_not_phi_stokes = str(header.get('btype', '')).lower() != 'stokes'
         return is_solo and is_phi and is_not_phi_stokes
-        #future higher level data products will need to be checked here
