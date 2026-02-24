@@ -131,7 +131,7 @@ class PHIMap(GenericMap):
 
         btype = self.meta.get('btype','').strip().lower()
 
-        if btype == 'los magnetic field strength' or btype == 'blos': #older versions may have blos
+        if btype == 'los magnetic field strength' or btype == 'blos':  # older versions may have blos
             self.plot_settings['cmap'] = 'hmimag'
             self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=True)
         elif btype == 'magnetic field strength' or btype == 'bmag':
