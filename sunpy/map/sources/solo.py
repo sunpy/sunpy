@@ -162,10 +162,6 @@ class PHIMap(GenericMap):
 
 
     @property
-    def _rotation_matrix_from_crota(self):
-        return super()._rotation_matrix_from_crota(crota_key='CROTA')
-
-    @property
     def processing_level(self):
         if self.meta.get('level'):
             # JP2 Low Latency data products have levels L3
