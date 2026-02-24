@@ -129,26 +129,29 @@ class PHIMap(GenericMap):
         elif self.meta.get('bunit') == 'Degrees':
             self.meta['bunit'] = "deg"
 
-        btype = self.meta.get('btype','').lower()
+        btype = self.meta.get('btype','').strip().lower()
 
-        if btype == 'los magnetic field strength':
+        if btype == 'los magnetic field strength' or btype == 'blos': #older versions may have blos
             self.plot_settings['cmap'] = 'hmimag'
             self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=True)
-        elif btype == 'magnetic field strength':
+        elif btype == 'magnetic field strength' or btype == 'bmag':
             self.plot_settings['cmap'] = 'rainbow'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3, clip=True)
-        elif btype == 'magnetic field inclination':
+        elif btype == 'magnetic field inclination' or btype == 'binc':
             self.plot_settings['cmap'] = 'RdGy'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
-        elif btype == 'magnetic field azimuth':
+        elif btype == 'magnetic field azimuth' or btype == 'bazi':
             self.plot_settings['cmap'] = 'hsv'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
-        elif btype == 'los velocity':
+        elif btype == 'los velocity' or btype == 'vlos':
             self.plot_settings['cmap'] = 'RdBu_r'
             self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2, clip=True)
-        elif btype == 'intensity':
+        elif btype == 'intensity' or btype == 'icnt':
             self.plot_settings['cmap'] = 'gist_heat'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2, clip=True)
+
+        def _get_cmap_name(self):
+            return None
 
         # Warn user if WCS is not calibrated for HRT data
         def str_to_bool(s):

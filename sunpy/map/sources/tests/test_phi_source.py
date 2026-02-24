@@ -9,7 +9,7 @@ import pytest
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
+from sunpy.data.test import get_test_filepath, get_dummy_map_from_header
 from sunpy.map.sources import PHIMap
 from sunpy.util.exceptions import SunpyUserWarning
 from .helpers import _test_private_date_setters
@@ -47,6 +47,36 @@ expected_hrt_measurement_list = [
     'BINC',
     'BAZI',
     'ICNT',
+] #test header files have the old btype formatting, newer ones will be 'LOS velocity' etc.
+
+expected_hrt_cmap_list = [
+    'RdBu_r',
+    'hmimag',
+    'rainbow',
+    'RdGy',
+    'hsv',
+    'gist_heat',
+    'RdBu_r',
+    'hmimag',
+    'rainbow',
+    'RdGy',
+    'hsv',
+    'gist_heat',
+]
+
+expected_hrt_norm_list = [
+    (-2,2),
+    (-1500,1500),
+    (0,2500),
+    (0,180),
+    (0,180),
+    (0,1.2),
+    (-2,2),
+    (-1500,1500),
+    (0,2500),
+    (0,180),
+    (0,180),
+    (0,1.2),
 ]
 
 expected_hrt_units_list = [
@@ -142,6 +172,28 @@ def test_reference_date(phi_map_hrt, expected_refdate):
         )
 def test_date(phi_map_hrt, expected_date):
     assert phi_map_hrt.date.isot == expected_date
+
+
+@pytest.mark.parametrize(
+        ('phi_map_hrt', 'expected_cmap'),
+        list(zip(hrt_header_list, expected_hrt_cmap_list)),
+        indirect=['phi_map_hrt']
+)
+def test_hrt_cmap(phi_map_hrt, expected_cmap):
+    cmap = phi_map_hrt.plot_settings['cmap']
+    assert cmap == expected_cmap
+
+
+@pytest.mark.parametrize(
+        ('phi_map_hrt', 'expected_norm'),
+        list(zip(hrt_header_list, expected_hrt_norm_list)),
+        indirect=['phi_map_hrt']
+)
+def test_hrt_norm(phi_map_hrt, expected_norm):
+    norm = phi_map_hrt.plot_settings['norm']
+    assert norm.clip is True
+    assert norm.vmin == expected_norm[0]
+    assert norm.vmax == expected_norm[1]
 
 
 def test_private_date_setters(phi_map_hrt):
