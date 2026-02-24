@@ -156,8 +156,8 @@ class PHIMap(GenericMap):
         if self.detector == 'HRT':
             try:
                 cal_wcs = self.meta.get('cal_wcs', None)
-                if type(cal_wcs) is str: #older data versions have CAL_WCS as a string
-                    cal_wcs = str_to_bool(cal_wcs)
+                if type(cal_wcs) is str:  # older data versions have CAL_WCS as a string
+                    cal_wcs = str(cal_wcs).lower() in ['true', '1', 't']
                 if not cal_wcs:
                     warn_user("The WCS of this SO/PHI-HRT PHIMap may not be fully calibrated. "
                               "Use caution when using the WCS for scientific analysis.")
