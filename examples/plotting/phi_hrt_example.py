@@ -1,3 +1,11 @@
+"""
+===============================
+Plotting Solar Orbiter PHI Data
+===============================
+
+This example demonstrates how to plot Solar Orbiter PHI data.
+"""
+
 import matplotlib.pyplot as plt
 
 from astropy.time import Time
