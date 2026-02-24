@@ -124,11 +124,6 @@ class PHIMap(GenericMap):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
 
-        if self.meta.get('bunit') == "Normalised Intensity":
-            self.meta['bunit'] = "" # dimensionless
-        elif self.meta.get('bunit') == 'Degrees':
-            self.meta['bunit'] = "deg"
-
         btype = self.meta.get('btype','').strip().lower()
 
         if btype == 'los magnetic field strength' or btype == 'blos':  # older versions may have blos
@@ -193,6 +188,23 @@ class PHIMap(GenericMap):
         in Angstroms so we assume this if the WAVEUNIT is missing.
         """
         return super().waveunit or u.Angstrom
+    
+    @property
+    def unit(self):
+        """
+        Returns the unit
+        """
+        unit_str = self.meta.get('bunit', None)
+        if unit_str is None:
+            return
+        elif unit_str == "Normalised Intensity": 
+            self.meta['bunit'] = "" # dimensionless
+            return
+        elif unit_str == 'Degrees':
+            self.meta['bunit'] = "deg"
+            return u.deg
+
+        return u.Unit(unit_str)
 
     @property
     def measurement(self):
