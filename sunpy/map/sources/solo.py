@@ -105,7 +105,7 @@ class PHIMap(GenericMap):
     * `PHI-FDT Data Quick Look Page <https://www.uv.es/jublanro/phidata_fdt.html>`__
     * Instrument Paper: :cite:t:`solanki_polarimetric_2020`
     * HRT Instrument Paper: :cite:t:`gandorfer_high_resolution_2018`
-    * HRT On-Ground Pipeline Paper: :cite:t:`sinjan_ground_2022`
+    * HRT On-Ground Pipeline Paper: :cite:t:`sinjan_on-ground_2022`
     * HRT Magnetic Field Comparison with HMI Paper: :cite:t:`sinjan_mag_hrt_hmi_comparison_2023`
     * HRT Velocity Comparison with HMI Paper: :cite:t:`calchetti_vlos_hrt_hmi_comparison_2025`
     * FDT Magnetic Field Comparison with HMI Paper: :cite:t:`moreno_vacas_mag_fdt_hmi_comparison_2024`
