@@ -1,3 +1,2 @@
 # This file is used to pin test packages across sunpy coordinated packages
 # Do not remove, even if it's empty!
-chardet<6  # requests seems to just not support this
