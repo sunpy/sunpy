@@ -153,10 +153,6 @@ class PHIMap(GenericMap):
         def _get_cmap_name(self):
             return None
 
-        # Warn user if WCS is not calibrated for HRT data
-        def str_to_bool(s):
-            return str(s).lower() in ['true', '1', 't']
-
         if self.detector == 'HRT':
             try:
                 cal_wcs = self.meta.get('cal_wcs', None)
