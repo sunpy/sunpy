@@ -105,7 +105,7 @@ class METISMap(GenericMap):
     ----------
     * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`_
     * `Metis Instrument Page <https://metis.oato.inaf.it/index.html>`_
-    * Antonucci et al. 2020, A&A, 642, A10
+    * Instrument Paper: :cite:t:`antonucci_metis_2020`
     """
 
     def __init__(self, data, header, **kwargs):
@@ -114,9 +114,7 @@ class METISMap(GenericMap):
 
         Validate that the header contains the required parameters.
         """
-        if "RSUN_OBS" in header or "SOLAR_R" in header or "RADIUS" in header:
-            pass
-        else:
+        if not any(k in header for k in ("RSUN_OBS", "SOLAR_R", "RADIUS")):
             header["RSUN_OBS"] = header["RSUN_ARC"]
 
         # Call the superclass (GenericMap) to initialize the map
@@ -243,7 +241,7 @@ class METISMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
-        Determine whether the data is a Metis product.
+        Determine whether the data is a L2 Metis product.
 
         Parameters
         ----------
@@ -262,8 +260,9 @@ class METISMap(GenericMap):
         """
         instrume = header.get("INSTRUME", "").strip().upper()
         obsrvtry = header.get("OBSRVTRY", "").strip().upper()
+        level = header.get("LEVEL", "").strip().upper()
 
-        return ("METIS" in instrume) and ("SOLAR ORBITER" in obsrvtry)
+        return ("METIS" in instrume) and ("SOLAR ORBITER" in obsrvtry) and ("L2" in level)
 
     def get_fov_rsun(self):
         """
@@ -277,11 +276,10 @@ class METISMap(GenericMap):
             respectively. All values are in units of solar radii.
 
         """
-        rsun_deg = self.rsun_obs.value / 3600.0  # Convert arcsec to deg
-        rmin_rsun = self.meta["inn_fov"] / rsun_deg  # Inner FOV in rsun
-        rmax_rsun = self.meta["out_fov"] / rsun_deg  # Outer FOV in rsun
-        board_deg = 2.9  # Detector board edge in deg
-        board_rsun = board_deg / rsun_deg  # Board radius in rsun
+        rmin_rsun = (self.meta["inn_fov"] * u.deg / self.rsun_obs).decompose()  # Inner FOV in rsun
+        rmax_rsun = (self.meta["out_fov"] * u.deg / self.rsun_obs).decompose()  # Outer FOV in rsun
+        board_deg = 2.9 * u.deg  # Detector board edge in deg
+        board_rsun = (board_deg / self.rsun_obs).decompose()  # Board radius in rsun
 
         return rmin_rsun, rmax_rsun, board_rsun
 
@@ -310,15 +308,15 @@ class METISMap(GenericMap):
         calculation assumes square pixels.
 
         """
-        if self.meta["cdelt1"] != self.meta["cdelt2"]:
+        if self.scale[0] != self.scale[1]:
             warnings.warn(
                 "Warning: CDELT1 != CDELT2 for {fname}. Exiting mask_occs method...".format(fname=self.meta["filename"])
             )
             return
 
         # Calculate occulter radii in pixels
-        inn_fov = self.meta["inn_fov"] * 3600 / self.meta["cdelt1"]  # in pix
-        out_fov = self.meta["out_fov"] * 3600 / self.meta["cdelt2"]  # in pix
+        inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0]).decompose()  # in pix
+        out_fov = (self.meta["out_fov"] * u.deg / self.scale[1]).decompose()  # in pix
 
         # Create coordinate grids
         x = np.arange(0, self.meta["naxis1"], 1)
@@ -326,25 +324,25 @@ class METISMap(GenericMap):
         xx, yy = np.meshgrid(x, y, sparse=True)
 
         # Calculate distance from internal occulter center
-        in_xcen = self.meta["io_xcen"]
-        in_ycen = self.meta["io_ycen"]
-        dist_inncen = np.sqrt((xx - in_xcen) ** 2 + (yy - in_ycen) ** 2)
+        in_xcen = (self.meta["io_xcen"] - 1) * u.pix
+        in_ycen = (self.meta["io_ycen"] - 1) * u.pix
+        dist_inncen = np.sqrt((xx * u.pix - in_xcen) ** 2 + (yy * u.pix - in_ycen) ** 2)
 
         # Calculate distance from external occulter/field stop center
         # NOTE: Workaround for DR1 data where fs_*cen keywords are not correctly defined.
-        # In DR1, fs_xcen and fs_ycen are not available and as consequence are assigned to crpix1 and crpix2, respectively.
-        # When this occurs, use sun_xcen and sun_ycen as the external occulter center instead.
+        # In DR1, fs_xcen and fs_ycen are not available and as consequence the corresponding keywords in a FITS file are assigned to crpix1 and crpix2, respectively.
+        # When this occurs, sun_xcen and sun_ycen should be used as approximate coordinates of the field stop center.
         # This problem is solved in DR2.
         if self.meta["fs_xcen"] == self.meta["crpix1"] and self.meta["fs_ycen"] == self.meta["crpix2"]:
-            # DR1 workaround: use sun center instead; For the DR1 data fs_*cen keywords are not defined correctly
-            out_xcen = self.meta["sun_xcen"]
-            out_ycen = self.meta["sun_ycen"]
+            # DR1 workaround: use sun center instead; For the DR1 data fs_*cen keywords are not defined correctly in a FITS file header
+            out_xcen = (self.meta["sun_xcen"] - 1) * u.pix
+            out_ycen = (self.meta["sun_ycen"] - 1) * u.pix
         else:
             # Normal case: use field stop center
-            out_xcen = self.meta["fs_xcen"]
-            out_ycen = self.meta["fs_ycen"]
+            out_xcen = (self.meta["fs_xcen"] - 1) * u.pix
+            out_ycen = (self.meta["fs_ycen"] - 1) * u.pix
 
-        dist_outcen = np.sqrt((xx - out_xcen) ** 2 + (yy - out_ycen) ** 2)
+        dist_outcen = np.sqrt((xx * u.pix - out_xcen) ** 2 + (yy * u.pix - out_ycen) ** 2)
         # Apply masks
         self.data[dist_inncen <= inn_fov] = mask_val
         self.data[dist_outcen >= out_fov] = mask_val
