@@ -14,9 +14,9 @@ from sunpy.coordinates import (
     get_earth,
     transform_with_sun_center,
 )
+from sunpy.coordinates.utils import coordinate_is_on_solar_disk
 from sunpy.map import (
     contains_full_disk,
-    coordinate_is_on_solar_disk,
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
