@@ -1,32 +1,52 @@
-exclude: ".*(.csv|.fits|.fts|.fit|.header|.txt|tca.*|.json|.asdf)$|^CITATION.rst|tools\/|sunpy\/extern\/|sunpy\/io\/src\/ana\/"
 repos:
-    # This should be before any formatting hooks like isort
+  # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.14.14"
     hooks:
       - id: ruff
         args: ["--fix"]
+        types: [python]
+        # Define here once and then reference YAML achore
+        exclude: &exclude_sunpy_dirs ^(sunpy/(data|extern)/|tools/)
   - repo: https://github.com/PyCQA/isort
     rev: 7.0.0
     hooks:
       - id: isort
+        types: [python]
+        exclude: *exclude_sunpy_dirs
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-ast
+        types: [python]
+        exclude: *exclude_sunpy_dirs
       - id: check-case-conflict
+        types: [python]
+        exclude: *exclude_sunpy_dirs
       - id: trailing-whitespace
+        types_or: [python, rst]
+        exclude: *exclude_sunpy_dirs
       - id: check-yaml
+        types: [yaml]
+      - id: check-toml
+        types: [toml]
       - id: debug-statements
+        types: [python]
+        exclude: *exclude_sunpy_dirs
       - id: check-added-large-files
         args: ["--enforce-all", "--maxkb=1054"]
-        exclude: ""
       - id: end-of-file-fixer
+        types_or: [python, rst]
+        exclude: *exclude_sunpy_dirs
       - id: mixed-line-ending
-  - repo: https://github.com/adhtruong/mirrors-typos
-    rev: v1.38.1
+        types: [text]
+        exclude: *exclude_sunpy_dirs
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.34.0
     hooks:
       - id: typos
+        types_or: [python, rst]
+        exclude: *exclude_sunpy_dirs
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
@@ -41,6 +61,10 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
 ci:
   autofix_prs: false
   autoupdate_schedule: "quarterly"
