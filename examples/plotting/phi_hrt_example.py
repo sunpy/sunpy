@@ -54,6 +54,7 @@ plt.colorbar(label=phi_hrt_blos_map.unit.to_string())
 
 phi_hrt_bmag_map.plot()
 plt.colorbar(label=phi_hrt_bmag_map.unit.to_string())
+plt.clim(0,2500)
 
 ########################################
 
@@ -69,8 +70,10 @@ plt.colorbar(label=phi_hrt_bazi_map.unit.to_string())
 
 phi_hrt_vlos_map.plot()
 plt.colorbar(label=phi_hrt_vlos_map.unit.to_string())
+plt.clim(-2,2)
 
 ########################################
 
 phi_hrt_icnt_map.plot()
 plt.colorbar(label=phi_hrt_icnt_map.unit.to_string())
+plt.clim(0,1.2)

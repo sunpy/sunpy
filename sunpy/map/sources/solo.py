@@ -5,6 +5,10 @@ import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
 
+from matplotlib.colors import TwoSlopeNorm
+
+import numpy as np
+
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -128,10 +132,9 @@ class PHIMap(GenericMap):
 
         if btype == 'los magnetic field strength' or btype == 'blos':  # older versions may have blos
             self.plot_settings['cmap'] = 'hmimag'
-            self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=True)
+            self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=False)
         elif btype == 'magnetic field strength' or btype == 'bmag':
             self.plot_settings['cmap'] = 'rainbow'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3, clip=False)
         elif btype == 'magnetic field inclination' or btype == 'binc':
             self.plot_settings['cmap'] = 'RdGy'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
@@ -140,13 +143,10 @@ class PHIMap(GenericMap):
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
         elif btype == 'los velocity' or btype == 'vlos':
             self.plot_settings['cmap'] = 'RdBu_r'
-            self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2, clip=False)
+            v=np.nanmax(np.abs(self.data))
+            self.plot_settings['norm'] = TwoSlopeNorm(vcenter=0, vmin=-v, vmax=v)
         elif btype == 'intensity' or btype == 'icnt':
             self.plot_settings['cmap'] = 'gist_heat'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2, clip=False)
-
-        def _get_cmap_name(self):
-            return None
 
         if self.detector == 'HRT':
             try:
