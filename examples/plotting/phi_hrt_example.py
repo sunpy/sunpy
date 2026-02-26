@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 from astropy.time import Time
 
 import sunpy.map
-import sunpy.visualization.colormaps
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
