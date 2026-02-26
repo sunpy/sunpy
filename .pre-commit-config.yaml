@@ -1,3 +1,4 @@
+files: ^sunpy/(?!(extern|data)/)
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -6,14 +7,11 @@ repos:
       - id: ruff
         args: ["--fix"]
         types: [python]
-        files: ^sunpy/(?!(extern|io/src/ana)/)
-        
   - repo: https://github.com/PyCQA/isort
     rev: 7.0.0
     hooks:
       - id: isort
         types: [python]
-        files: ^sunpy/(?!(extern|io/src/ana)/)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -22,7 +20,6 @@ repos:
       - id: check-case-conflict
         types: [python]
       - id: trailing-whitespace
-        files: ^sunpy/(?!(data|extern|io/src/ana)/)
         types_or: [python, rst]
       - id: check-yaml
         types: [yaml]
@@ -32,16 +29,13 @@ repos:
         args: ["--enforce-all", "--maxkb=1054"]
       - id: end-of-file-fixer
         types_or: [python, rst]
-        files: ^sunpy/(?!(data|extern|io/src/ana)/)
       - id: mixed-line-ending
         types: [text]
-        files: ^sunpy/(?!(data|extern|io/src/ana)/)
   - repo: https://github.com/crate-ci/typos
     rev: v1.34.0
     hooks:
       - id: typos
         types_or: [python, rst]
-        files: ^sunpy/(?!(data|extern|io/src/ana)/)
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
