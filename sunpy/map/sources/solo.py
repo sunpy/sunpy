@@ -196,7 +196,6 @@ class PHIMap(GenericMap):
         elif unit_str == "Normalised Intensity": 
             return u.dimensionless_unscaled
         elif unit_str == 'Degrees':
-            self.meta['bunit'] = "deg"
             return u.deg
 
         return u.Unit(unit_str)
