@@ -170,7 +170,8 @@ flags = flags + "n" if author_sort == "numeric" else flags
 current_log = $(git shortlog @(flags) --no-merges @(prev_tag+"..HEAD"))
 
 # Get all the authors for all releases up to the previous release
-prev = {a.split('\t')[1] for a in $(git shortlog -ns --no-merges @($(git rev-list --max-parents=0 HEAD).split("\n")[0]+".."+prev_tag)).split('\n')[:-1]}
+prev_log = $(git shortlog -ns --no-merges @($(git rev-list --max-parents=0 HEAD).split("\n")[0]+".."+prev_tag))
+prev = {a.split('\t')[1].strip() for a in prev_log.split('\n')[:-1]}
 
 # Get all authors from the previous release to this one
 current = {a.split('\t')[1] for a in current_log.split('\n')[:-1]}
@@ -199,7 +200,8 @@ for i, line in enumerate(lines):
     else:
         outl = line.split('\t')[1]
 
-    if any([a in line for a in new]):
+    line_name = line.split('\t')[1].strip()
+    if line_name in new:
         new_contributors.append('-  ' + outl)
     else:
         other_contributors.append('-  ' + outl)
@@ -222,29 +224,35 @@ pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-na
 print()
 print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt} merged pull requests closing {icnt} issues from {npeople} people, {nnew} of which are first-time contributors to {pretty_project_name}.")
 print()
-print(f"* {ncommits} commits have been added since {prev_version[:3]}")
-print(f"* {icnt} issues have been closed since {prev_version[:3]}")
-print(f"* {prcnt} pull requests have been merged since {prev_version[:3]}")
-print(f"* {npeople} people have contributed since {prev_version[:3]}")
+short_version = prev_version
+print(f"* {ncommits} commits have been added since {short_version}")
+print(f"* {icnt} issues have been closed since {short_version}")
+print(f"* {prcnt} pull requests have been merged since {short_version}")
+print(f"* {npeople} people have contributed since {short_version}")
 print(f"* {nnew} of which are new contributors")
 print()
 
 
 # Print contributors in two sections
 # Combine contributors into readable sentences
+import textwrap
+
+# Wrap width, e.g., 80 characters per line
+wrapper = textwrap.TextWrapper(width=120)
+
 all_contributors = []
 
 if new_contributors:
     clean_new = [name.lstrip("- ").strip() for name in new_contributors]
     sentence_new = "Thanks to the following new contributors: " + ", ".join(clean_new) + "."
-    all_contributors.extend(textwrap.wrap(sentence_new, width=100))
-
-# Add a blank line between new and other contributors
-all_contributors.append("")
+    # Wrap text nicely at spaces
+    sentence_new = "\n".join(wrapper.wrap(sentence_new))
+    all_contributors.append(sentence_new)
 
 if other_contributors:
     clean_other = [name.lstrip("- ").strip() for name in other_contributors]
     sentence_other = "Thanks also to our other contributors: " + ", ".join(clean_other) + "."
-    all_contributors.extend(textwrap.wrap(sentence_other, width=100))
+    sentence_other = "\n".join(wrapper.wrap(sentence_other))
+    all_contributors.append(sentence_other)
 
-print('\n'.join(all_contributors))
+print('\n\n'.join(all_contributors))  # double newline between sections
