@@ -208,14 +208,6 @@ class PHIMap(GenericMap):
         """
         return self.meta.get('btype', 'Unknown')
 
-    @property
-    def observatory(self):
-        """
-        Returns the observatory.
-        """
-        return self.meta.get('obsrvtry', 'Solar Orbiter')
-
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a PHI image"""
