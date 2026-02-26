@@ -20,8 +20,6 @@ from sunpy.net import attrs as a
 # --------------------------------
 #
 # We first search for all **Solar Orbiter PHI-HRT** (High Resolution Telescope) data products
-# in a given time range. The search results will return metadata about available files.
-
 
 t_start_hrt = Time('2024-03-23T20:00', format='isot', scale='utc')
 t_end_hrt = Time('2024-03-23T23:59', format='isot', scale='utc')
@@ -33,21 +31,13 @@ print(search_results_phi_hrt_all)
 ###############################################################################
 # Fetching the First Available PHI-HRT Files
 # -----------------------------------------
-#
-# Once we have the search results, we fetch the first available files.
-# When a path isnt passed as a kwarg, the files will save locally into sunpy/data.
-# You can also pass `path='./your/path/to/save/PHI/data/')` to choose where to save the data.
 files_phi_hrt_all = Fido.fetch(search_results_phi_hrt_all[:, 0])
 
 
 ###############################################################################
 # Loading and Plotting PHI-HRT Data
 # ---------------------------------
-#
-# The downloaded file is in FITS format. We load it as a `sunpy.map.Map`
-# and adjust the plot settings for better visualization.
 
-# Load the downloaded PHI-HRT mags image
 phi_hrt_blos_map = sunpy.map.Map(files_phi_hrt_all[0])
 phi_hrt_bmag_map = sunpy.map.Map(files_phi_hrt_all[1])
 phi_hrt_binc_map = sunpy.map.Map(files_phi_hrt_all[2])
