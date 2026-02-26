@@ -131,7 +131,7 @@ class PHIMap(GenericMap):
             self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3, clip=True)
         elif btype == 'magnetic field strength' or btype == 'bmag':
             self.plot_settings['cmap'] = 'rainbow'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3, clip=True)
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=2.5e3, clip=False)
         elif btype == 'magnetic field inclination' or btype == 'binc':
             self.plot_settings['cmap'] = 'RdGy'
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
@@ -140,10 +140,10 @@ class PHIMap(GenericMap):
             self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=180, clip=True)
         elif btype == 'los velocity' or btype == 'vlos':
             self.plot_settings['cmap'] = 'RdBu_r'
-            self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2, clip=True)
+            self.plot_settings['norm'] = ImageNormalize(vmin=-2, vmax=2, clip=False)
         elif btype == 'intensity' or btype == 'icnt':
             self.plot_settings['cmap'] = 'gist_heat'
-            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2, clip=True)
+            self.plot_settings['norm'] = ImageNormalize(vmin=0, vmax=1.2, clip=False)
 
         def _get_cmap_name(self):
             return None
@@ -194,7 +194,7 @@ class PHIMap(GenericMap):
         if unit_str is None:
             return
         elif unit_str == "Normalised Intensity": 
-            return u.unscaled_dimensionless
+            return u.dimensionless_unscaled
         elif unit_str == 'Degrees':
             self.meta['bunit'] = "deg"
             return u.deg
