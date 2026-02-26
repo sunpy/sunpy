@@ -28,6 +28,8 @@ repos:
         exclude: *exclude_sunpy_dirs
       - id: check-yaml
         types: [yaml]
+      - id: check-toml
+        types: [toml]
       - id: debug-statements
         types: [python]
         exclude: *exclude_sunpy_dirs
