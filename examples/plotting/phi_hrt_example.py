@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 from astropy.time import Time
 
 import sunpy.map
-from sunpy.net import Fido
-from sunpy.net import attrs as a
+from sunpy.net import Fido, attrs as a
+import sunpy_soar
 
 ###############################################################################
 # Searching for PHI-HRT Data
