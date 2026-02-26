@@ -1,4 +1,3 @@
-files: ^sunpy/(?!(extern|data)/)
 repos:
   # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -7,35 +6,45 @@ repos:
       - id: ruff
         args: ["--fix"]
         types: [python]
+        # Define here once and then reference YAML achore
+        exclude: &exclude_sunpy_dirs ^(sunpy/(data|extern)/|tools/)
   - repo: https://github.com/PyCQA/isort
     rev: 7.0.0
     hooks:
       - id: isort
         types: [python]
+        exclude: *exclude_sunpy_dirs
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-ast
         types: [python]
+        exclude: *exclude_sunpy_dirs
       - id: check-case-conflict
         types: [python]
+        exclude: *exclude_sunpy_dirs
       - id: trailing-whitespace
         types_or: [python, rst]
+        exclude: *exclude_sunpy_dirs
       - id: check-yaml
         types: [yaml]
       - id: debug-statements
         types: [python]
+        exclude: *exclude_sunpy_dirs
       - id: check-added-large-files
         args: ["--enforce-all", "--maxkb=1054"]
       - id: end-of-file-fixer
         types_or: [python, rst]
+        exclude: *exclude_sunpy_dirs
       - id: mixed-line-ending
         types: [text]
+        exclude: *exclude_sunpy_dirs
   - repo: https://github.com/crate-ci/typos
     rev: v1.34.0
     hooks:
       - id: typos
         types_or: [python, rst]
+        exclude: *exclude_sunpy_dirs
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
