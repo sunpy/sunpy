@@ -69,7 +69,7 @@ jobs:
 
       - run: ls -lha pytest-log/
 
-      - uses: scientific-python/issue-from-pytest-log-action@558a3dfdd251069b328d3fded994824ddbefc47b  # v1.4.0
+      - uses: scientific-python/issue-from-pytest-log-action@8e905db353437cda1d6a773de245343fbfc940dd  # v1.5.0
         with:
           log-path: pytest-log/pytest-log.jsonl
           issue-title: "Cron devdeps build failure"
