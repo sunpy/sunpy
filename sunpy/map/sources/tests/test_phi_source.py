@@ -65,18 +65,18 @@ expected_hrt_cmap_list = [
 ]
 
 expected_hrt_norm_list = [
-    (-2,2),
+    (None,None),
     (-1500,1500),
-    (0,2500),
+    (None,None),
     (0,180),
     (0,180),
-    (0,1.2),
-    (-2,2),
+    (None,None),
+    (None,None),
     (-1500,1500),
-    (0,2500),
+    (None,None),
     (0,180),
     (0,180),
-    (0,1.2),
+    (None,None),
 ]
 
 expected_hrt_units_list = [
@@ -98,15 +98,29 @@ test_hrt_cal_wcs_warning_header_list = [
     get_test_filepath('solo_L2_phi-hrt-vlos_20220307T000009_V202208311927_0243070101.header')
 ]
 
+test_fdt_averaging_warning_header_list = [
+    get_test_filepath('solo_L2_phi-fdt-icnt_20250225T211509_V03_0542250508.header')
+]
+
 stokes_header_list = [
     get_test_filepath('solo_L2_phi-hrt-stokes_20241004T003104_V202506050052_0450040601.header'),
     get_test_filepath('solo_L2_phi-hrt-stokes_20220307T000009_V202208311927_0243070101.header'),
 ]
 
 fdt_header_list = [
-    get_test_filepath('solo_LL02_phi-fdt-blos_20240305T041509_V202405151730C_0403057611.header'),
+    get_test_filepath('solo_LL02_phi-fdt-blos_20240305T041509_V202405151730C_0403057611.header'), 
+    get_test_filepath('solo_L2_phi-fdt-icnt_20250225T211509_V03_0542250508.header'),
 ]
 
+expected_fdt_cmap_list = [
+    'hmimag',
+    'gist_heat'
+]
+
+expected_fdt_norm_list = [
+    (-1500,1500),
+    (None, None)
+]
 
 @pytest.fixture(scope="module", params=hrt_header_list)
 def phi_map_hrt(request):
@@ -121,6 +135,11 @@ def phi_map_hrt(request):
             category=SunpyUserWarning,
             message=r".*may not be fully calibrated.*"
         )
+        warnings.filterwarnings(
+            "ignore",
+            category=SunpyUserWarning,
+            message=r"This dataset was generated using on-board averaging of 3 individual observations."
+        )
         return get_dummy_map_from_header(request.param)
 
 
@@ -130,13 +149,27 @@ def phi_map_stokes(request):
 
 
 @pytest.fixture(scope="module", params=fdt_header_list)
-def phi_map_fdt_ll(request):
-    return get_dummy_map_from_header(request.param)
+def phi_map_fdt(request):
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            category=SunpyUserWarning,
+            message=r".*averaging.*"
+        )
+        return get_dummy_map_from_header(request.param)
 
 
 @pytest.fixture(scope="module", params=test_hrt_cal_wcs_warning_header_list)
 def test_phi_map_hrt_wcs_warning(request):
     with pytest.warns(SunpyUserWarning):
+        get_dummy_map_from_header(request.param)
+
+
+@pytest.fixture(scope="module", params=test_fdt_averaging_warning_header_list)
+def test_phi_map_fdt_avg_warning(request):
+    with pytest.warns(
+        SunpyUserWarning,
+        match="on-board averaging of 3 individual observations"):
         get_dummy_map_from_header(request.param)
 
 
@@ -148,12 +181,12 @@ def test_stokes_PHIMap(phi_map_stokes):
     assert not isinstance(phi_map_stokes, PHIMap)
 
 
-def test_fdt_ll_PHIMap(phi_map_fdt_ll):
-    assert isinstance(phi_map_fdt_ll, PHIMap)
+def test_fdt_PHIMap(phi_map_fdt):
+    assert isinstance(phi_map_fdt, PHIMap)
 
 
-def test_fdt_ll_proc_level(phi_map_fdt_ll):
-    assert phi_map_fdt_ll.processing_level == 2
+def test_fdt_proc_level(phi_map_fdt):
+    assert phi_map_fdt.processing_level == 2
 
 
 @pytest.mark.parametrize(
@@ -191,9 +224,13 @@ def test_hrt_cmap(phi_map_hrt, expected_cmap):
 )
 def test_hrt_norm(phi_map_hrt, expected_norm):
     norm = phi_map_hrt.plot_settings['norm']
-    assert norm.clip is True
-    assert norm.vmin == expected_norm[0]
-    assert norm.vmax == expected_norm[1]
+
+    btype = phi_map_hrt.meta.get('btype', '').strip().lower()
+    if btype == 'los velocity' or btype == 'vlos':
+        assert norm.vcenter == 0
+    else:
+        assert norm.vmin == expected_norm[0]
+        assert norm.vmax == expected_norm[1]
 
 
 def test_private_date_setters(phi_map_hrt):
@@ -239,3 +276,23 @@ def test_unit(phi_map_hrt, expected_unit):
 def test_wcs(phi_map_hrt):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     phi_map_hrt.pixel_to_world(0*u.pix, 0*u.pix)
+
+@pytest.mark.parametrize(
+        ('phi_map_fdt', 'expected_cmap'),
+        list(zip(fdt_header_list, expected_fdt_cmap_list)),
+        indirect=['phi_map_fdt']
+)
+def test_fdt_cmap(phi_map_fdt, expected_cmap):
+    cmap = phi_map_fdt.plot_settings['cmap']
+    assert cmap == expected_cmap
+
+
+@pytest.mark.parametrize(
+        ('phi_map_fdt', 'expected_norm'),
+        list(zip(fdt_header_list, expected_fdt_norm_list)),
+        indirect=['phi_map_fdt']
+)
+def test_fdt_norm(phi_map_fdt, expected_norm):
+    norm = phi_map_fdt.plot_settings['norm']
+    assert norm.vmin == expected_norm[0]
+    assert norm.vmax == expected_norm[1]

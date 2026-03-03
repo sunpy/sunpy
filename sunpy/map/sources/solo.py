@@ -160,6 +160,10 @@ class PHIMap(GenericMap):
                 warn_user("Could not determine if the WCS of this SO/PHI-HRT PHIMap is calibrated. "
                     "Use caution when using the WCS for scientific analysis.")
 
+        # Check for on-board averaged dataset - there is no way to know this from the filename itself
+        accumulations = int(self.meta.get('accrowit', None))
+        if accumulations > 1:
+            warn_user(f"This dataset was generated using on-board averaging of {accumulations} individual observations.")
 
     @property
     def processing_level(self):
@@ -193,7 +197,7 @@ class PHIMap(GenericMap):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-        elif unit_str == "Normalised Intensity": 
+        elif unit_str == "Normalised Intensity" or unit_str == "Normalized": 
             return u.dimensionless_unscaled
         elif unit_str == 'Degrees':
             return u.deg
