@@ -1,0 +1,1 @@
+Add PHIMap class to Solar Orbiter map source.
