@@ -115,15 +115,6 @@ class PHIMap(GenericMap):
     * FDT Magnetic Field Comparison with HMI Paper: :cite:t:`moreno_vacas_mag_fdt_hmi_comparison_2024`
     """
 
-    """
-    TODO:
-    - test with FDT data (wait for 2026 FDT release)
-        - test FDT units (G, Normalised Intensity etc.)
-        - test FDT cmaps + norms
-        - test FDT LL fits data
-        - test FDT LL JP2 data
-    """
-
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
