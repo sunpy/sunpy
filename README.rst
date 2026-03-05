@@ -56,19 +56,19 @@ It includes an interface for searching and downloading data from multiple data p
 Installation
 ============
 
-We recommended following the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` documentation.
+We recommend following the `installation guide <https://docs.sunpy.org/en/stable/guide/installation.html>`__ in the ``sunpy`` documentation.
 This will walk you through installing ``sunpy`` and all of its dependencies.
 
 Usage
 =====
 
 If you are new to ``sunpy``, the best place to start is the `tutorial <https://docs.sunpy.org/en/stable/tutorial/index.html>`__.
-the `example gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__ also includes a collection of shorter and more specific examples of using ``sunpy``.
+The `example gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`__ also includes a collection of shorter and more specific examples of using ``sunpy``.
 
 Changes
 =======
 
-See our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__. for the latest changes in ``sunpy``.
+See our `changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__ for the latest changes in ``sunpy``.
 
 Getting Help
 ============
@@ -104,8 +104,9 @@ Usage of Generative AI
 ======================
 
 We expect authentic engagement in our community.
-Be wary of posting output from Large Language Models or similar generative AI as comments on GitHub or any other platform, as such comments tend to be formulaic and low quality content.
+**Do no post the output from Large Language Models or similar generative AI as code, issues or comments on GitHub or any other platform.**
 If you use generative AI tools as an aid in developing code or documentation changes, ensure that you fully understand the proposed changes and can explain why they are the correct approach and an improvement to the current state.
+For more information see our documentation on fair and appropriate [AI usage](https://docs.sunpy.org/en/latest/dev_guide/contents/ai_usage.html).
 
 Code of Conduct
 ===============

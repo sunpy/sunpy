@@ -392,3 +392,12 @@ def test_map_list_of_files_with_one_broken():
 
     with pytest.raises(OSError, match='Failed to read'):
         sunpy.map.Map(files, allow_errors=False)
+
+
+def test_eitmap_does_not_match_level1_header_regression():
+    # Regression test for operator-precedence bug in EITMap.is_datasource_for
+    header = {"instrume": "EIT", "level": "L1"}
+
+    # Before fix (old precedence): this incorrectly returned True
+    # After fix: must be False so EITL1Map can claim it
+    assert sunpy.map.sources.EITMap.is_datasource_for(None, header) is False
