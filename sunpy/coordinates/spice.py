@@ -162,7 +162,7 @@ class SpiceBaseCoordinateFrame(SunPyBaseCoordinateFrame):
 
 
 def _convert_to_et(time):
-    return (time - _ET_REF_EPOCH).to_value('s')
+    return (time.tdb - _ET_REF_EPOCH).to_value('s')
 
 
 def _astropy_frame_name(spice_frame_name):
