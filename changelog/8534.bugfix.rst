@@ -1,0 +1,1 @@
+Fixed a bug in `sunpy.coordinates.spice` when converting times to the time scale/format used by SPICE, which resulted in a time inaccuracy of up to 1.6 ms.
