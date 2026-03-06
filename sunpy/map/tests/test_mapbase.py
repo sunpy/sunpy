@@ -200,6 +200,7 @@ def test_nickname(generic_map):
 
 def test_nickname_set(generic_map):
     assert generic_map.nickname == 'bar'
+    generic_map = deepcopy(generic_map)  # for thread safety
     generic_map.nickname = 'hi'
     assert generic_map.nickname == 'hi'
 
@@ -241,6 +242,7 @@ def test_date_scale(generic_map):
     # Check that default time scale is UTC
     assert 'timesys' not in generic_map.meta
     assert generic_map.date.scale == 'utc'
+    generic_map = deepcopy(generic_map)  # for thread safety
     generic_map.meta['timesys'] = 'tai'
     assert generic_map.date.scale == 'tai'
 
@@ -255,11 +257,13 @@ def test_detector(generic_map):
 
 def test_timeunit(generic_map):
     assert generic_map.timeunit == u.Unit('s')
+    generic_map = deepcopy(generic_map)  # for thread safety
     generic_map.meta['timeunit'] = 'h'
     assert generic_map.timeunit == u.Unit('h')
 
 
 def test_exposure_time(generic_map):
+    generic_map = deepcopy(generic_map)  # for thread safety
     exptime = 2 * u.s
     generic_map.meta['exptime'] = exptime.to_value('s')
     assert generic_map.exposure_time == exptime
@@ -1371,6 +1375,7 @@ def test_repr_html(aia171_test_map):
     assert "Bad pixels are shown in red: 1 infinite" in html_string
 
 
+@pytest.mark.thread_unsafe(reason="mocks web browser")
 def test_quicklook(mocker, aia171_test_map):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
     aia171_test_map.quicklook()
@@ -1517,6 +1522,7 @@ def test_find_contours_inputs(simple_map):
     with pytest.raises(ValueError, match=re.escape('The provided level (1000.0) is not smaller than the maximum data value (80)')):
         simple_map.draw_contours(1000 * u.dimensionless_unscaled, fill=True)
 
+    simple_map = deepcopy(simple_map)  # for thread safety
     simple_map.meta['bunit'] = 'm'
 
     with pytest.raises(TypeError, match='The levels argument has no unit attribute'):
@@ -1582,6 +1588,8 @@ def test_parse_submap_quantity_inputs(aia171_test_map):
 
 
 def test_wavelength_properties(simple_map):
+    simple_map = deepcopy(simple_map)  # for thread safety
+
     simple_map.meta.pop('waveunit', None)
     simple_map.meta['wavelnth'] = 1
     assert simple_map.measurement == 1 * u.one
@@ -1597,7 +1605,7 @@ def test_wavelength_properties(simple_map):
 
 
 def test_meta_modifications(aia171_test_map):
-    aiamap = aia171_test_map
+    aiamap = deepcopy(aia171_test_map)
     old_cdelt1 = aiamap.meta['cdelt1']
     aiamap.meta['cdelt1'] = 20
 
@@ -1623,6 +1631,7 @@ def test_no_wcs_observer_info(heliographic_test_map):
     assert wcs_aux.dsun_obs is not None
 
     # Remove observer information, and change coordinate system to HeliographicStonyhurst
+    heliographic_test_map = deepcopy(heliographic_test_map)  # for thread safety
     heliographic_test_map.meta.pop('HGLN_OBS')
     heliographic_test_map.meta.pop('HGLT_OBS')
     heliographic_test_map.meta.pop('DSUN_OBS')

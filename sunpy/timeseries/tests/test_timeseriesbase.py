@@ -520,6 +520,7 @@ def test_repr_html_(generic_ts):
     assert isinstance(html_string, str)
 
 
+@pytest.mark.thread_unsafe(reason="mocks web browser")
 def test_quicklook(mocker, generic_ts):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
     generic_ts.quicklook()

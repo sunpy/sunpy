@@ -7,17 +7,20 @@ from sunpy.util.exceptions import SunpyUserWarning
 from .mocks import MOCK_HASH
 
 
+@pytest.mark.thread_unsafe(reason="uses shared cache")
 def test_cache_basic(cache):
     cache.download('https://example.com/abc.text')
     assert cache._downloader.times_called == 1
 
 
+@pytest.mark.thread_unsafe(reason="uses shared cache")
 def test_cache_caching(cache):
     cache.download('https://example.com/abc.text')
     cache.download('https://example.com/abc.text')
     assert cache._downloader.times_called == 1
 
 
+@pytest.mark.thread_unsafe(reason="uses shared cache")
 def test_cache_redownload(cache):
     cache.download('https://example.com/abc.text')
     cache.download('https://example.com/abc.text', redownload=True)

@@ -1,6 +1,7 @@
 """
 This module provides sunpy specific decorators.
 """
+import threading
 from inspect import cleandoc
 from functools import wraps
 from contextlib import contextmanager
@@ -13,7 +14,6 @@ from astropy.utils.decorators import deprecated_renamed_argument as _deprecated_
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = [
-    'ACTIVE_CONTEXTS',
     'deprecated',
     'deprecated_renamed_argument',
     'cached_property_based_on',
@@ -23,8 +23,13 @@ __all__ = [
 ]
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
 _NOT_FOUND = object()
-# Stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
-ACTIVE_CONTEXTS = []
+
+
+# Thread-safe stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
+class _ActiveContexts(threading.local):
+    def __init__(self):
+        self.stack = []
+_active_contexts = _ActiveContexts()
 
 
 def deprecated(
@@ -255,7 +260,7 @@ def sunpycontextmanager(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         func_name = f"{func.__module__}.{func.__qualname__}"
-        ACTIVE_CONTEXTS.append(func_name)
+        _active_contexts.stack.append(func_name)
         gen = func(*args, **kwargs)
         value = next(gen)
         try:
@@ -264,7 +269,7 @@ def sunpycontextmanager(func):
             gen.throw(e)
         else:
             next(gen, None)
-            if (removed := ACTIVE_CONTEXTS.pop()) != func_name:
+            if (removed := _active_contexts.stack.pop()) != func_name:
                 raise RuntimeError(f"Cannot remove {func_name} from tracking stack because {removed} is last active.")
     return contextmanager(wrapper)
 

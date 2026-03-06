@@ -248,6 +248,10 @@ def test_setitem_existing_entry(seas_metadict):
     """
     Test `MetaDict.__setitem__(...)` on an existing entry.
     """
+    seas_metadict = copy.deepcopy(seas_metadict)  # for thread safety
+
+    assert seas_metadict['NORWEGIAN'] != 'Scandinavia'
+
     len_before = len(seas_metadict)
     seas_metadict['NORWEGIAN'] = 'Scandinavia'
     assert len(seas_metadict) == len_before
@@ -261,6 +265,7 @@ def test_setitem_new_entry(seas_metadict):
 
     Add a new entry
     """
+    seas_metadict = copy.deepcopy(seas_metadict)  # for thread safety
     len_before = len(seas_metadict)
     seas_metadict['Irish'] = 'N.Europe'
     assert len(seas_metadict) == len_before + 1
@@ -272,6 +277,7 @@ def test_delitem(seas_metadict):
     """
     Test `MetaDict.__delitem__(...)`.
     """
+    seas_metadict = copy.deepcopy(seas_metadict)  # for thread safety
     len_before = len(seas_metadict)
     del seas_metadict['NoRwEgIaN']
     del seas_metadict['baltic']
@@ -348,6 +354,8 @@ def test_pop(seas_metadict):
     """
     Test `MetaDict.pop(...)`
     """
+    seas_metadict = copy.deepcopy(seas_metadict)  # for thread safety
+
     # Nothing to 'pop', nothing should change
     len_before = len(seas_metadict)
     seas_metadict.pop('kara') is None
