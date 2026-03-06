@@ -230,3 +230,13 @@ def test_get_rotation_matrix(spice_test):
                                  [-0.23020788,  0.97314148, 0],
                                  [0, 0, 1]])
     np.testing.assert_allclose(result2, expected_result2, atol=1e-6)
+
+
+def test_ephemeris_time(spice_test):
+    # SPICE uses an approximation for UTC->ET that has an accuracy of only 3e-5 seconds
+    # Test the example in the docstring for the SPICE function utc2et()
+    utc = parse_time('2003-12-19 16:48')
+    np.testing.assert_allclose(spice._convert_to_et(utc), 125124544.183560610, rtol=0, atol=3e-5)
+    # Test the example in the docstring for the SPICE function et2utc()
+    utc = parse_time('1983-04-13 12:09:14.274')
+    np.testing.assert_allclose(spice._convert_to_et(utc), -527644192.5403653, rtol=0, atol=3e-5)
