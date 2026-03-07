@@ -25,6 +25,7 @@ import getpass
 import argparse
 import datetime
 import warnings
+import textwrap
 from functools import partial
 
 import docopt
@@ -169,7 +170,8 @@ flags = flags + "n" if author_sort == "numeric" else flags
 current_log = $(git shortlog @(flags) --no-merges @(prev_tag+"..HEAD"))
 
 # Get all the authors for all releases up to the previous release
-prev = {a.split('\t')[1] for a in $(git shortlog -ns --no-merges @($(git rev-list --max-parents=0 HEAD).split("\n")[0]+".."+prev_tag)).split('\n')[:-1]}
+prev_log = $(git shortlog -ns --no-merges @($(git rev-list --max-parents=0 HEAD).split("\n")[0]+".."+prev_tag))
+prev = {a.split('\t')[1].strip() for a in prev_log.split('\n')[:-1]}
 
 # Get all authors from the previous release to this one
 current = {a.split('\t')[1] for a in current_log.split('\n')[:-1]}
@@ -186,7 +188,9 @@ nnew = len(new)
 
 lines = current_log.split('\n')[:-1]
 
-shortlog = []
+new_contributors = []
+other_contributors = []
+
 for i, line in enumerate(lines):
     if "[bot]" in line:
         continue
@@ -195,11 +199,13 @@ for i, line in enumerate(lines):
         outl = line
     else:
         outl = line.split('\t')[1]
-    if any([a in line for a in new]):
-        outl += '  *'
-    shortlog.append(outl)
 
-shortlog = list(map(lambda x: '-  ' + x, shortlog))
+    line_name = line.split('\t')[1].strip()
+    if line_name in new:
+        new_contributors.append('-  ' + outl)
+    else:
+        other_contributors.append('-  ' + outl)
+
 
 # Get PR info
 
@@ -212,22 +218,41 @@ icnt = count_issues_since(since, upto, repo, args['--pat'], verbose=verbose)
 prcnt = count_prs_since(since, upto, repo, args['--pat'], verbose=verbose)
 
 # Build output
-output = '\n'.join(shortlog)
-
 
 pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] != "<project-name>" else args["--project-name"]
 
 print()
 print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt} merged pull requests closing {icnt} issues from {npeople} people, {nnew} of which are first-time contributors to {pretty_project_name}.")
 print()
-print(f"* {ncommits} commits have been added since {prev_version[:3]}")
-print(f"* {icnt} issues have been closed since {prev_version[:3]}")
-print(f"* {prcnt} pull requests have been merged since {prev_version[:3]}")
-print(f"* {npeople} people have contributed since {prev_version[:3]}")
+short_version = prev_version
+print(f"* {ncommits} commits have been added since {short_version}")
+print(f"* {icnt} issues have been closed since {short_version}")
+print(f"* {prcnt} pull requests have been merged since {short_version}")
+print(f"* {npeople} people have contributed since {short_version}")
 print(f"* {nnew} of which are new contributors")
 print()
-print("The people who have contributed to the code for this release are:")
-print()
-print(output)
-print()
-print(f"Where a * indicates that this release contains their first contribution to {pretty_project_name}.")
+
+
+# Print contributors in two sections
+# Combine contributors into readable sentences
+import textwrap
+
+# Wrap width, e.g., 80 characters per line
+wrapper = textwrap.TextWrapper(width=120)
+
+all_contributors = []
+
+if new_contributors:
+    clean_new = [name.lstrip("- ").strip() for name in new_contributors]
+    sentence_new = "Thanks to the following new contributors: " + ", ".join(clean_new) + "."
+    # Wrap text nicely at spaces
+    sentence_new = "\n".join(wrapper.wrap(sentence_new))
+    all_contributors.append(sentence_new)
+
+if other_contributors:
+    clean_other = [name.lstrip("- ").strip() for name in other_contributors]
+    sentence_other = "Thanks also to our other contributors: " + ", ".join(clean_other) + "."
+    sentence_other = "\n".join(wrapper.wrap(sentence_other))
+    all_contributors.append(sentence_other)
+
+print('\n\n'.join(all_contributors))  # double newline between sections
