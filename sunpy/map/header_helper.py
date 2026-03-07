@@ -1,14 +1,17 @@
+import warnings
+
 import numpy as np
 
 import astropy.units as u
 import astropy.wcs
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import EarthLocation, SkyCoord
 
 from sunpy import log
 from sunpy.coordinates import frames, sun
-from sunpy.util import MetaDict
+from sunpy.util import MetaDict, SunpyUserWarning
 
-__all__ = ['make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header', 'make_hpr_header']
+__all__ = ['make_fitswcs_header', 'get_observer_meta', 'make_heliographic_header', 'make_hpr_header',
+           'get_earth_observer_meta']
 
 
 @u.quantity_input(equivalencies=u.spectral())
@@ -25,7 +28,8 @@ def make_fitswcs_header(data,
                         wavelength: u.angstrom = None,
                         exposure: u.s = None,
                         projection_code="TAN",
-                        unit=None):
+                        unit=None,
+                        observer=None):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -75,6 +79,10 @@ def make_fitswcs_header(data,
         Units of the array data of the Map. This will populate the the ``'bunit'`` meta keyword.
         If ``data`` is a `~astropy.units.Quantity`, the unit specified here will take precedence
         over the unit information attached to ``data``.
+    observer : `~astropy.coordinates.EarthLocation`, optional
+        Ground-based observer location. If provided, OBSGEO-X/Y/Z keywords will be set
+        in the header. If both ``observer`` and ``coordinate.observer`` are set, the
+        explicit ``observer`` parameter takes precedence and a warning is issued.
 
     Returns
     -------
@@ -113,14 +121,34 @@ def make_fitswcs_header(data,
         else:
             log.info("Overwriting data's current unit with specified unit.")
 
-    meta_wcs = _get_wcs_meta(coordinate, projection_code)
+    if observer is not None and getattr(coordinate, 'observer', None) is not None:
+        warnings.warn(
+            "Both 'coordinate.observer' and 'observer' parameter are set. "
+            "Using the explicit 'observer' parameter and ignoring 'coordinate.observer'.",
+            SunpyUserWarning,
+            stacklevel=2
+        )
+        # Don't let `_get_wcs_meta` set hgln_obs and hglt_obs.
+        coordinate = coordinate.replicate(observer=None)
 
+    meta_wcs = _get_wcs_meta(coordinate, projection_code)
     meta_wcs = _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector, wavelength, exposure, unit)
     meta_wcs = _set_transform_params(meta_wcs, coordinate, reference_pixel, scale, shape)
     meta_wcs = _set_rotation_params(meta_wcs, rotation_angle, rotation_matrix)
 
-    if getattr(coordinate, 'observer', None) is not None:
-        # Have to check for str, as doing == on a SkyCoord and str raises an error
+    if observer is not None:
+        if isinstance(observer, EarthLocation):
+            observer_meta = get_earth_observer_meta(observer)
+            meta_wcs.update(observer_meta)
+
+            observer_hgs = observer.get_itrs(obstime=coordinate.obstime).transform_to(
+                frames.HeliographicStonyhurst(obstime=coordinate.obstime)
+            )
+            dsun_obs = observer_hgs.radius
+            meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
+        else:
+            raise ValueError("`observer` parameter must be an `EarthLocation` instance.")
+    elif getattr(coordinate, 'observer', None) is not None:
         if isinstance(coordinate.observer, str) and coordinate.observer == 'self':
             dsun_obs = coordinate.radius
         else:
@@ -288,6 +316,33 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
         meta_wcs['bunit'] = _unit.to_string(format=unit_format)
     return meta_wcs
 
+@u.quantity_input
+def get_earth_observer_meta(observer):
+    """
+    Function to get OBSGEO metadata from an EarthLocation observer.
+
+    Parameters
+    ----------
+    observer : `~astropy.coordinates.EarthLocation`
+        The Earth-based observer location.
+
+    Returns
+    -------
+    coord_meta : `dict`
+        WCS metadata with the keys ``['obsgeo-x', 'obsgeo-y', 'obsgeo-z']``.
+    """
+
+    if not isinstance(observer, EarthLocation):
+        raise ValueError("Observer must be an EarthLocation instance for ground-based observations.")
+
+    itrs_coord = observer.get_itrs()
+
+    coord_meta = {}
+    coord_meta['obsgeo-x'] = itrs_coord.x.to_value(u.m)
+    coord_meta['obsgeo-y'] = itrs_coord.y.to_value(u.m)
+    coord_meta['obsgeo-z'] = itrs_coord.z.to_value(u.m)
+
+    return coord_meta
 
 @u.quantity_input
 def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR",
