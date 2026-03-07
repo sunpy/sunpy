@@ -7,6 +7,8 @@ This example illustrates how to find minimum or maximum peaks in a TimeSeries.
 Note: Peak finding is a complex problem that has many potential solutions and
 this example is just one method of many.
 """
+# sphinx_gallery_tags = ["Timeseries", "GOES", "XRS"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

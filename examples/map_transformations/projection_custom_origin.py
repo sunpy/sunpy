@@ -11,6 +11,8 @@ specified origin of the projection. If a different map projection is desired,
 modifying this example is straightforward.
 
 """
+# sphinx_gallery_tags = ["Map", "WCS", "Reproject", "Coordinates", "AIA"]
+
 
 import matplotlib.pyplot as plt
 

@@ -6,6 +6,8 @@ Reprojecting a Helioprojective Map to Helioprojective Radial
 In this example we use `reproject` to transform a helioprojective
 `~sunpy.map.Map` to helioprojective radial.
 """
+# sphinx_gallery_tags = ["Map", "Reproject", "AIA", "Coordinates"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt

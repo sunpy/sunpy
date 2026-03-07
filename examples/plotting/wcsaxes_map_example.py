@@ -6,6 +6,8 @@ Imshow and maps coordinates
 How to use imshow with a map and overplot points specified by pixel coordinates
 and map coordinates.
 """
+# sphinx_gallery_tags = ["Visualization", "AIA", "Coordinates", "Map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

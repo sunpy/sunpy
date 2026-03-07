@@ -6,6 +6,8 @@ Tracking an Active Region Across the Solar Disk
 This example demonstrates how to track an active region as it rotates across the solar disk
 and make cutouts around that active region at each time step to build a tracked datacube.
 """
+# sphinx_gallery_tags = ["Map", "Map Sequence", "Differential Rotation", "Active Regions", "AIA", "Coordinates", "Reproject"]
+
 # sphinx_gallery_thumbnail_number = 3
 import matplotlib.pyplot as plt
 

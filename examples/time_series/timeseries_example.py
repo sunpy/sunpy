@@ -5,6 +5,8 @@ Using TimeSeries
 
 This example is intended to demonstrate the current state of `~sunpy.timeseries.TimeSeries`.
 """
+# sphinx_gallery_tags = ["Timeseries", "EVE", "GOES", "LYRA", "NORH", "RHESSI", "GBM"]
+
 import datetime
 from collections import OrderedDict
 

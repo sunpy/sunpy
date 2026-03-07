@@ -9,6 +9,8 @@ time-distance diagram accounting for solar differential rotation using
 :func:`sunpy.coordinates.propagate_with_solar_surface` and dealing with off-disk
 pixels using :func:`sunpy.coordinates.screens.SphericalScreen`
 """
+# sphinx_gallery_tags = ["Map", "Coordinates", "Acquiring Data", "AIA"]
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np

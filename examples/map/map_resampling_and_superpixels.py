@@ -6,6 +6,8 @@ Resampling Maps
 How to resample a map using the resample method, which implements interpolation, or
 using superpixels, which combines pixels.
 """
+# sphinx_gallery_tags = ["Map", "AIA"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
