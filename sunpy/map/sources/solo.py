@@ -1,13 +1,12 @@
 """
 Solar Orbiter Map subclass definitions.
 """
+import numpy as np
+from matplotlib.colors import TwoSlopeNorm
+
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
-
-from matplotlib.colors import TwoSlopeNorm
-
-import numpy as np
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
@@ -179,7 +178,7 @@ class PHIMap(GenericMap):
         in Angstroms so we assume this if the WAVEUNIT is missing.
         """
         return super().waveunit or u.Angstrom
-    
+
     @property
     def unit(self):
         """
@@ -188,7 +187,7 @@ class PHIMap(GenericMap):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
             return
-        elif unit_str == "Normalised Intensity" or unit_str == "Normalized": 
+        elif unit_str == "Normalised Intensity" or unit_str == "Normalized":
             return u.dimensionless_unscaled
         elif unit_str == 'Degrees':
             return u.deg

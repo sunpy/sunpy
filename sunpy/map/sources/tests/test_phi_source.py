@@ -9,7 +9,7 @@ import pytest
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.data.test import get_test_filepath, get_dummy_map_from_header
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import PHIMap
 from sunpy.util.exceptions import SunpyUserWarning
 from .helpers import _test_private_date_setters
@@ -108,7 +108,7 @@ stokes_header_list = [
 ]
 
 fdt_header_list = [
-    get_test_filepath('solo_LL02_phi-fdt-blos_20240305T041509_V202405151730C_0403057611.header'), 
+    get_test_filepath('solo_LL02_phi-fdt-blos_20240305T041509_V202405151730C_0403057611.header'),
     get_test_filepath('solo_L2_phi-fdt-icnt_20250225T211509_V03_0542250508.header'),
 ]
 
