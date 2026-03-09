@@ -16,7 +16,7 @@ from sunpy.net import attrs as a
 
 ###############################################################################
 # Searching for PHI-HRT Data
-# --------------------------------
+# --------------------------
 #
 # We first search for all **Solar Orbiter PHI-HRT** (High Resolution Telescope) data products # (excluding 'phi-hrt-stokes' which is not compatible with sunpy.map)
 
