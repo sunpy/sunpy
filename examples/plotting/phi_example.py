@@ -79,7 +79,7 @@ plt.clim(0,1.2)
 
 ###############################################################################
 # Searching for PHI-FDT Data
-# --------------------------------
+# --------------------------
 #
 # We first search for all **Solar Orbiter PHI-FDT** (Full Disc Telescope) data products
 # For this time range, at the time of this example creation 'phi-fdt-vlos' is not available yet via SOAR
