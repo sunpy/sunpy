@@ -29,7 +29,7 @@ print(search_results_phi_hrt_all)
 
 ###############################################################################
 # Fetching the First Available PHI-HRT Files
-# -----------------------------------------
+# ------------------------------------------
 files_phi_hrt_all = Fido.fetch(search_results_phi_hrt_all[:, 0])
 
 
