@@ -13,6 +13,8 @@ capabilities:
 * :ref:`sphx_glr_generated_gallery_units_and_coordinates_planet_locations.py`
 * :ref:`sphx_glr_generated_gallery_units_and_coordinates_ParkerSolarProbe_trajectory.py`
 """
+# sphinx_gallery_tags = ["Coordinates", "STEREO"]
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np

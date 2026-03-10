@@ -5,6 +5,8 @@ Histograming map data
 
 How to inspect the histogram of the data of a map.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "Coordinates"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt

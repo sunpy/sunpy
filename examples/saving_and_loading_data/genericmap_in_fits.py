@@ -13,6 +13,8 @@ IDL and many other languages.
 Here, even though we will be working with `~sunpy.map.sources.sdo.AIAMap`
 specifically, the process can be extended to any `~sunpy.map.GenericMap`.
 """
+# sphinx_gallery_tags = ["Saving & Loading", "FITS", "Map", "AIA"]
+
 import astropy.units as u
 
 import sunpy.data.sample

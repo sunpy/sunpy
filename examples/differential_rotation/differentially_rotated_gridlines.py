@@ -10,6 +10,8 @@ metaframe in `sunpy.coordinates` to overlay differentially rotated gridlines on
 a Map. See :ref:`sunpy-topic-guide-coordinates-rotatedsunframe` for more details on using
 `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
+# sphinx_gallery_tags = ["Differential Rotation", "Coordinates", "AIA", "Map"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

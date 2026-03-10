@@ -6,6 +6,8 @@ Overlaying Two Maps
 This example demonstrates how to draw contours of one map on top of another
 to compare features.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "HMI", "Coordinates"]
+
 import matplotlib.colors
 import matplotlib.pyplot as plt
 

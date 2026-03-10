@@ -16,6 +16,8 @@ This requires the installation of the `astroquery <https://astroquery.readthedoc
 package, which can be installed on top of the existing sunpy conda
 environment: ``conda install -c astropy astroquery`` and an active internet connection.
 """
+# sphinx_gallery_tags = ["Coordinates", "SECCHI", "Map", "COR"]
+
 import hvpy
 import matplotlib.pyplot as plt
 from astroquery.gaia import Gaia

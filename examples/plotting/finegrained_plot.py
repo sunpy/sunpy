@@ -5,6 +5,8 @@ Fine grained Plotting Features of Map
 
 How to control various plotting features of map.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "Visualization"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

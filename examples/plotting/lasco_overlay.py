@@ -6,6 +6,8 @@ Overlay an AIA image on a LASCO C2 coronagraph
 This example shows the steps needed to overlay the disc and off-limb
 components of an AIA image within the masked occulter of a LASCO C2 image.
 """
+# sphinx_gallery_tags = ["Map", "LASCO", "Reproject", "Visualization"]
+
 from datetime import datetime
 
 import hvpy

@@ -5,6 +5,8 @@ Masking out the solar disk
 
 How to mask out all emission from the solar disk.
 """
+# sphinx_gallery_tags = ["Computer Vision", "Masking", "AIA", "Coordinates"]
+
 import matplotlib.pyplot as plt
 
 import sunpy.map

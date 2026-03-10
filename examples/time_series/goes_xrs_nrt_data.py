@@ -2,11 +2,12 @@
 ========================================================================
 Creating a TimeSeries from GOES-XRS near real time data with flare times
 ========================================================================
-
 This example will demonstrate how to make use of GOES XRS Near Real Time data.
 This includes the goes XRS timeseries data as well as the flare times.
 The real-time datasets can all be found at https://services.swpc.noaa.gov/json/goes/primary/
 """
+# sphinx_gallery_tags = ["Timeseries", "GOES", "XRS", "Flares"]
+
 
 import matplotlib.pyplot as plt
 import pandas as pd

@@ -9,6 +9,8 @@ required to overlay multiple maps that have been modified with other
 ``sunpy`` functions. The resulting plot in this tutorial shows information
 on the upper photosphere, quiet corona, and magnetogram contours.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "HMI", "Visualization"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
