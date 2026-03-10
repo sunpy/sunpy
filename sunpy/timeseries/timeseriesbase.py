@@ -5,6 +5,7 @@ This module provides `sunpy.timeseries.GenericTimeSeries` which all other
 import copy
 import html
 import time
+import builtins
 import textwrap
 import webbrowser
 from tempfile import NamedTemporaryFile
@@ -83,6 +84,7 @@ class GenericTimeSeries:
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
+    _observatory = None
     _registry = dict()
 
     # Title to show when .peek()ing
@@ -121,6 +123,8 @@ class GenericTimeSeries:
             # Should have a list of 3-tuples giving a complex metadata list.
             self.meta = meta
 
+        if isinstance(data.index[0], Time):
+            self._data.index = pd.to_datetime(self._data.index.map(lambda x: x.to_datetime()))
         if units is None:
             self.units = {}
         else:
@@ -158,7 +162,7 @@ class GenericTimeSeries:
         """
         A string/object used to specify the observatory for the TimeSeries.
         """
-        return
+        return self._observatory
 
     @property
     def columns(self):
@@ -211,9 +215,9 @@ class GenericTimeSeries:
         obs = self.observatory
         if obs is None:
             try:
-                obs = self.meta.metadata[0][2]["telescop"]
+                obs = self._observatory = self.meta.metadata[0][2]["telescop"]
             except KeyError:
-                obs = "Unknown"
+                obs = self._observatory = "Unknown"
         try:
             inst = self.meta.metadata[0][2]["instrume"]
         except KeyError:
@@ -227,7 +231,7 @@ class GenericTimeSeries:
         drange = drange.to_string(float_format="{:.2E}".format)
         drange = drange.replace("\n", "<br>")
 
-        center = self.time_range.center.value.astype('datetime64[s]')
+        center = np.datetime64(self.time_range.center.value)
         center = str(center).replace("T", " ")
         resolution = round(self.time_range.seconds.value/self.shape[0], 3)
         resolution = str(resolution)+" s"
@@ -534,8 +538,10 @@ class GenericTimeSeries:
         # If given strings, then use to create a sunpy.time.timerange.TimeRange
         # for the SunPy text date parser.
         if isinstance(a, str) and isinstance(b, str):
-            a = TimeRange(a, b)
-        if isinstance(a, TimeRange):
+            time_range = TimeRange(a, b)
+            start = time_range.start.datetime
+            end = time_range.end.datetime
+        elif isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start.datetime
             end = a.end.datetime
@@ -543,6 +549,15 @@ class GenericTimeSeries:
             # Otherwise we already have the values
             start = a
             end = b
+
+        min_time, max_time = self._data.index.min(), self._data.index.max()
+        # Check if the timerange overlaps with the data timerange
+        if not (isinstance(start, builtins.int) and isinstance(end, builtins.int)):
+            if min_time >= start and max_time <= end:
+                pass
+            elif (start <= end <= min_time or max_time <= start <= end):
+                message = "Provided timerange is not within the bounds of the timeseries"
+                raise ValueError(message)
 
         # If an interval integer was given then use in truncation.
         truncated_data = self._data.sort_index()[start:end:int]
@@ -560,7 +575,7 @@ class GenericTimeSeries:
         object._sanitize_metadata()
         return object
 
-    def extract(self, column_name):
+    def extract(self, *column_name):
         """
         Returns a new time series with the chosen column.
 
@@ -574,17 +589,9 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` with only the selected column.
         """
-        # TODO: allow the extract function to pick more than one column
-        # TODO: Fix this?
-        # if isinstance(self, pandas.Series):
-        #    return self
-        # else:
-        #    return GenericTimeSeries(self._data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
-
-        # Extract column and remove empty rows
-        data = self._data[[column_name]].dropna()
-        units = {column_name: self.units[column_name]}
-
+        column_name = list(column_name)
+        data = self._data[column_name].dropna()
+        units = {column_name: self.units[column_name] for index, column_name in enumerate(column_name)}
         # Build generic TimeSeries object and sanatise metadata and units.
         object = GenericTimeSeries(data.sort_index(),
                                    TimeSeriesMetaData(copy.copy(self.meta.metadata)),
