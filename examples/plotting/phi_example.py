@@ -7,6 +7,7 @@ This example demonstrates how to plot Solar Orbiter PHI data.
 """
 
 import matplotlib.pyplot as plt
+import sunpy_soar  # noqa: F401
 
 from astropy.time import Time
 
