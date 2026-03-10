@@ -24,6 +24,7 @@ from .ephemeris import *
 from .frames import *
 from .metaframes import *
 from .screens import PlanarScreen, SphericalScreen
+from .utils import solar_angular_radius, coordinate_is_on_solar_disk
 from .wcs_utils import *
 
 __doc__ += _make_sunpy_graph()
