@@ -1,0 +1,624 @@
+SIMPLE  =                    T / file does conform to FITS standard             
+BITPIX  =                  -32 / number of bits per data pixel                  
+NAXIS   =                    4 / number of data axes                            
+NAXIS1  =                    6 / length of data axis 1                          
+NAXIS2  =                    4 / length of data axis 2                          
+NAXIS3  =                 2048 / length of data axis 3                          
+NAXIS4  =                 2048                                                  
+EXTEND  =                    T / FITS dataset may contain extensions            
+COMMENT   FITS (Flexible Image Transport System) format is defined in 'Astronomy
+COMMENT   and Astrophysics', volume 376, page 359; bibcode: 2001A&A...376..359H 
+LONGSTRN= 'OGIP 1.0'           / The HEASARC Long String Convention may be used.
+COMMENT   This FITS file may contain long string keyword values that are        
+COMMENT   continued over multiple keywords.  The HEASARC convention uses the &  
+COMMENT   character at the end of each substring which is then continued        
+COMMENT   on the next keyword which has the name CONTINUE.                      
+FILENAME= 'solo_L2_phi-hrt-stokes_20220307T000009_V202208311927_0243070101.fit&'
+CONTINUE  's.gz'                                                                
+DATE    = '2022-08-31T23:37:18' / file cre/mod date (UT)                        
+                                                                                
+          / Instrument and observation configuration FITS keywords              
+OBSRVTRY= 'Solar Orbiter'      / Satellite Name                                 
+INSTRUME= 'PHI'                / Instrument name                                
+TELESCOP= 'SOLO/PHI/HRT'       / Telescope                                      
+DETECTOR= 'HRT'                / Instrument subunit or sensor                   
+OBS_MODE= ' '                  / Observation mode                               
+OBS_ID  = ' '                  / Unique ID of Observation                       
+OBJECT  = ' '                  / Type of object observed                        
+OBS_TYPE= ' '                  / Encoded version of OBS_MODE                    
+SOOPNAME= 'R_BOTH_HRES_HCAD_Nanoflares' / SOOP Campaign Name                    
+SOOPTYPE= 'RB1'                / SOOP Campaign Id(s)                            
+PURPOSE = ' '                  / Purpose of this observation                    
+SUBJECT = ' '                  / Subject of this observation                    
+SCIENTIS= ' '                  / Resposible scientist for this observation      
+WAVEMIN =             617.2953 / [Angstrom] min wavelength of observation       
+WAVEMAX =             617.3389 / [Angstrom] max wavelength of observation       
+TIMESYS = 'UTC'                / System used for time keywords                  
+DATE-OBS= '2022-03-07T00:00:09.388' / [UTC] Start time of observation           
+DATE-BEG= '2022-03-07T00:00:09.388' / [UTC] Start time of observation           
+DATE-AVG= '2022-03-07T00:00:32.393' / [UTC] Average time of observation         
+DATE-END= '2022-03-07T00:00:55.397' / [UTC] End time of observation             
+OBT_BEG =     699926300.096621 / [OBT] Start time of observation                
+OBT_END =     699926346.106105 / [OBT] End time of observation                  
+LEVEL   = 'L2      '           / Data processing level                          
+ORIGIN  = 'MPS'                / Name of institution                            
+CREATOR = 'converter'          / FITS creation software                         
+SPK_VERS= 'v107_20220317_001'  / Spice Kernel Version                           
+VERS_SW = 'V1.4 June 2nd 2022' / Version of SW that provided FITS file          
+VERSION = '202208311927'       / Version of FITS file                           
+                                                                                
+          / Description of data content keywords                                
+BTYPE   = 'STOKES  '           / Type of data                                   
+BSCALE  =                  1.0 / ratio of physical to array value at 0 offset   
+BUNIT   = 'I_CONT  '           / Units of physical value, after application     
+DATAMIN =                    0 / Minimum valid physical value                   
+DATAMAX =                    1 / Maximum valid physical value                   
+                                                                                
+          / Image relative to detector electronics keywords                     
+RPLTSCL =                  0.5 / [arcsec] Platescale of raw images              
+PXBEG1  =                    1 / First read-out pixel in dimension 1            
+PXEND1  =                 2048 / Last read-out pixel in dimension 1             
+PXBEG2  =                    1 / First read-out pixel in dimension 2            
+PXEND2  =                 2048 / Last read-out pixel in dimension 2             
+NBIN1   =                    1 / Data binning factor in dimension 1             
+NBIN2   =                    1 / Data binning factor in dimension 2             
+NBIN    =                    1 / Total binning factor                           
+AVTTOFFX=                  0.0 / [arcec] average tip/tilt offset x              
+AVTTOFFY=                  0.0 / [arcec] average tip/tilt offset y              
+IMGDIRX = 'YES     '           / Image mirrored along Y-Axis                    
+                                                                                
+          / Onboard processing keywords                                         
+CAL_DARK= 'solo_L1_phi-fdt-ilam_20220225T230747_V202203142343C_0222251001.fits' 
+CAL_FLAT= 'solo_L1_phi-hrt-flat_20220309T004009_V01merge_0263091100.fits' / Onbo
+CAL_USH = 'UV      '           / Unsharp masking correction                     
+SIGM_USH=                 69.0 / Sigma for unsharp masking [px]                 
+CAL_PRE = '/data/slam/valori/test_cal_dir/hrt/prefilter/fitted_prefilter.fits' /
+CAL_GHST=                      / Ghost correction (name + version of module     
+CAL_PREG= 'y: [0.0, 0.05, -0.11, -0.16, 0.0, -0.02, -0.16, -0.21, 0.0, 0.14, &' 
+CONTINUE  '0.22, 0.44, 0.0, 0.06, -0.08, -0.44, 0.0, -0.3, -0.4, -0.34, 0.0, &' 
+CONTINUE  '0.21, 0.2, 0.0], x: [0.0, 0.16, 0.29, 0.56, 0.0, 0.15, 0.09, 0.0, &' 
+CONTINUE  '0.0, -0.14, -0.29, -0.46, 0.0, -0.04, -0.03, 0.03, 0.0, 0.24, &'     
+CONTINUE  '0.41, 0.52, 0.0, 0.15, 0.17, 0.07]&'                                 
+CONTINUE  '' / Polarimetric registration                                        
+CAL_REAL=                      / Prealigment of images before demodulation (name
+CAL_CRT0=               0.0042 / cross-talk from I to Q (slope)                 
+CAL_CRT1=              -0.0015 / cross-talk from I to Q (offset)                
+CAL_CRT2=               0.0021 / cross-talk from I to U (slope)                 
+CAL_CRT3=              -0.0011 / cross-talk from I to U (offset)                
+CAL_CRT4=              -0.0031 / cross-talk from I to V (slope)                 
+CAL_CRT5=               0.0008 / cross-talk from I to V (offset)                
+CAL_CRT6=              -0.0698 / cross-talk from V to Q (slope)                 
+CAL_CRT7=               0.1249 / cross-talk from V to Q (offset)                
+CAL_CRT8=               0.0008 / cross-talk from V to U (slope)                 
+CAL_CRT9=               0.0004 / cross-talk from V to U (offset)                
+CAL_WREG= 'y: [0.25, 0.2, 0.9, -0.14, -0.02], x: [-0.79, 0.15, -0.98, -0.68, &' 
+CONTINUE  '-0.31]&'                                                             
+CONTINUE  '' / Wavelength Registration                                          
+CAL_NORM=            1591.0183 / Normalization (normalization constant PROC_Ic) 
+CAL_FRIN=                      / Fringe correction (name + version of module    
+CAL_PSF = 'Stokes  '           / Onboard calibrated for instrumental PSF        
+CAL_IPOL= 'HRT50   '           / Onboard calibrated for instrumental polarizatio
+CAL_SCIP= 'None'               / Onboard scientific data analysis               
+RTE_MOD = '        '           / Inversion mode                                 
+RTE_SW  = '        '           / Inversion software                             
+RTE_ITER=           4294967295 / Number RTE inversion iterations                
+VERS_CAL= '1.4     '           / Version of calibration pack                    
+COMPRESS= 'Lossy-high quality' / Data compression quality                       
+COMP_RAT=             2.666667 / Data compression ratio                         
+PHICOMPR= '6Bits'              / PHI compression scheme                         
+COMPVERS=                    0 / Version of Compression Core                    
+PHIDATID= '0243070101'         / PHI dataset Id                                 
+                                                                                
+          / WCS keywords                                                        
+WCSNAME = 'Helioprojective-Cartesian' / hpc frame                               
+CTYPE1  = 'HPLN-TAN'           / Spatial axis parallel Solar North              
+CTYPE2  = 'HPLT-TAN'           / Spatial axis parallel to Solar + West          
+CRPIX1  =             1237.117 / Description of ref pixel along axis 1          
+CRPIX2  =             883.6157 / Description of ref pixel along axis 2          
+CUNIT1  = 'arcsec'             / Units along axis 1                             
+CUNIT2  = 'arcsec'             / Units along axis 2                             
+PC1_1   =            0.9999467 / Coordinate transformation to LIF               
+PC1_2   =           0.01032955 / Coordinate transformation to LIF               
+PC2_1   =          -0.01032955 / Coordinate transformation to LIF               
+PC2_2   =            0.9999467 / Coordinate transformation to LIF               
+CROTA   =   -0.591849999429257 / [deg] Rotation angle                           
+CDELT1  =                  0.5 / Pixel scale along axis 1 in unit CUNIT1        
+CDELT2  =                  0.5 / Pixel scale along axis 2 in unit CUNIT2        
+CRVAL1  =            -718.4388 / [arcsec] Coordinates of ref pixel along axis 1 
+CRVAL2  =            -457.7792 / [arcsec] Coordinates of ref pixel along axis 2 
+                                                                                
+          / Solar Ephemeris Data                                                
+RSUN_REF=           695508000. / [m] Assumed physical solar radius              
+RSUN_ARC=            1912.4626 / [arcsec] Apparent photospheric                 
+SOLAR_B0=             -4.29241 / [deg] s/c tilt of solar North pole             
+SOLAR_P0=            -22.87305 / [deg] s/c celestial North to solar North angle 
+SOLAR_EP=           0.03717836 / [deg] s/c ecliptic North to solar North angle  
+CAR_ROT =                 2254 / Carrington rotation number                     
+HGLT_OBS=           -4.2924102 / [deg] Stonyhurst latitude                      
+HGLN_OBS=          -0.61964561 / [deg] Stonyhurst longitude                     
+CRLT_OBS=           -4.2924102 / [deg]Carrington latitude (B0 angle)            
+CRLN_OBS=            5.8815764 / [deg]Carrington longitude (L0 angle)           
+DSUN_OBS=     75013690198.4331 / [m]  Distance from Sun                         
+DSUN_AU =           0.50143555 / [AU]  Distance from Sun                        
+HEEX_OBS=     74909300912.0576 / [m] Heliocentric Earth Ecliptic X              
+HEEY_OBS=    -806193725.959291 / [m] Heliocentric Earth Ecliptic Y              
+HEEZ_OBS=     3873035725.30954 / [m] Heliocentric Earth Ecliptic Z              
+HCIX_OBS=     384016593.630789 / [m] Heliocentric Inertial X                    
+HCIY_OBS=     74802295353.8111 / [m] Heliocentric Inertial Y                    
+HCIZ_OBS=     -5614522085.0502 / [m] Heliocentric Inertial Z                    
+HCIX_VOB=    -41672.9134031768 / [m/s] Heliocentric Inertial X Velocity         
+HCIY_VOB=    -21768.5033510635 / [m/s] Heliocentric Inertial Y Velocity         
+HCIZ_VOB=     1219.40131888552 / [m/s] Heliocentric Inertial Z Velocity         
+HAEX_OBS=    -72518346906.0977 / [m] Heliocentric Aries Ecliptic X              
+HAEY_OBS=     18792181210.0472 / [m] Heliocentric Aries Ecliptic Y              
+HAEZ_OBS=      3872596617.5317 / [m] Heliocentric Aries Ecliptic Z              
+HEQX_OBS=     74798906575.8272 / [m] Heliocentric Earth Equatorial X            
+HEQY_OBS=    -808970953.531122 / [m] Heliocentric Earth Equatorial Y            
+HEQZ_OBS=     -5614522085.0502 / [m] Heliocentric Earth Equatorial Z            
+GSEX_OBS=     73521804343.5151 / [m] Geocentric Solar Ecliptic X                
+GSEY_OBS=     806193725.959292 / [m] Geocentric Solar Ecliptic Y                
+GSEZ_OBS=     3873035725.30954 / [m] Geocentric Solar Ecliptic Z                
+OBS_VR  =    -22011.7615677351 / [m/s] Radial velocity of S/C relative to Sun   
+OBS_VW  =     41560.6115886059 / [m/s] Westward velocity of S/C relative to Sun 
+OBS_VN  =    -429.309092205649 / [m/s] Northward velocity of S/C relative to Sun
+EAR_TDEL=      244.89413625322 / [s] Time(Sun to Earth) - Time(Sun to S/C)      
+SUN_TIME=     250.218736985148 / [s] Light travel time (Sun to S/C)             
+DATE_EAR= '2022-03-07T00:04:14.282' / [UTC] Start time of observation, corrected
+DATE_SUN= '2022-03-06T23:55:59.169' / [UTC] Start time of observation, corrected
+SPECSYS = 'TOPOCENT'           / Reference frame for spectral axes              
+SC_X0   =     -718.43885329912 / [arcsec] S/C X-pointing                        
+SC_Y0   =    -457.779217007958 / [arcsec] S/C Y-pointing                        
+SC_ROLL =   -0.591849999429257 / [deg] S/C Roll                                 
+                                                                                
+          / PHI_FITS_DPU_prehk                                                  
+I_SYSST1= 'OBSERVATION'        / Instrument system state                        
+CPULOAD1=                93.41 / [perc] CPU load                                
+SPWDROP1=                    0 / Number of dropped SpaceWire packets            
+IICPCTN1=                61132 / Number of IIC packets                          
+IICSEQN1=                 9743 / Sequence number of the last IIC packet         
+OBSWVER1=                12413 / On-board software version                      
+DPUHWVR1=             17434701 / DPU hardware version                           
+DPUSSCR1=                24822 / DPU System Supervisor CR                       
+DPUSSSR1=                    0 / DPU System Supervisor SR                       
+TCREC_N1=                   77 / Number of received Telecommands                
+TCFAILN1=                    6 / Number of failed Telecommands                  
+TCQUEUE1=                    0 / Fill level of Telecommanding queue             
+TMQUEUE1=                    0 / Fill level of Telemetry queue                  
+SCQUEUE1=                    0 / Fill level of science Telemetry queue          
+RAMFS_N1=                   10 / Number of files in RAMFS                       
+RAMFSSP1=            119964704 / [Byte] Available space in RAMFS                
+SRVSTFL1=                 3052 / Service status flags                           
+GPIOLST1=            604010536 / Status of GPIO ports 0-31                      
+GPIOHST1=              4265988 / Status of GPIO ports 32-63                     
+SCDCMOD1= 'COMPRESS_NONE'      / Science data compression mode                  
+                                                                                
+          / PHI_FITS_PCM_prehk                                                  
+APCMSTA1=                  241 / Active PCM status flag                         
+APCM_VP1=               27.558 / [V] active PCM V_prim                          
+APCM_IP1=                0.819 / [A] active PCM I_prim                          
+APP28IH1=                0.035 / [A] active PCM I_Heaters_+28V                  
+APP28IM1=                0.066 / [A] active PCM I_Mech_+28V                     
+AP_P33I1=                2.042 / [A] active PCM I_+3V3                          
+AP_P07I1=                0.424 / [A] active PCM I_+7V                           
+AP_M07I1=                0.064 / [A] active PCM I_-7V                           
+AP_P15I1=                0.063 / [A] active PCM I_+15V                          
+AP_M15I1=                0.057 / [A] active PCM I_-15V                          
+AP_P60I1=                0.001 / [A] active PCM I_+60V                          
+ADPU33V1=                3.409 / [V] active PCM V_DPU_+3V3                      
+AABP33V1=                3.409 / [V] active PCM V_AB_+3V3                       
+AABP07V1=                 6.56 / [V] active PCM V_AB_+7V                        
+AABP15V1=               14.419 / [V] active PCM V_AB_+15V                       
+AABM15V1=               14.498 / [V] active PCM V_AB_-15V                       
+ACPP07V1=                7.303 / [V] active PCM V_CPC_+7V                       
+ACPM07V1=                7.443 / [V] active PCM V_CPC_-7V                       
+AHVP07V1=                6.562 / [V] active PCM V_HVPS_+7V                      
+AHVP15V1=               14.419 / [V] active PCM V_HVPS_+15V                     
+AHVM15V1=               14.498 / [V] active PCM V_HVPS_-15V                     
+ATTP07V1=                    0 / [V] active PCM V_TTC_+7V                       
+ATTP60V1=                    0 / [V] active PCM V_TTC_+60V                      
+POWSWST1=                  242 / Power Switch status                            
+                                                                                
+          / PHI_FITS_MECH_prehk                                                 
+MEMOVST1=                   16 / Mechanism movement status flag                 
+MEEOTST1=                  132 / Mechanism end-of-travel switch status flag     
+FRM_POS1=                 3087 / [um] Deduced FRM position                      
+DHRM_PS1=                10918 / [um] Deduced HRM position                      
+DCRM_PS1=                    0 / [um] Deduced CRM position                      
+FSM_POS1=                   48 / [amin] Deduced FSM position                    
+HVPSLPV1=                   59 / [V] HVPS HV level side P                       
+HVPSLNV1=                  -76 / [V] HVPS HV level side N                       
+TTCP55V1=                    0 / [V] Voltage TTC_+55V                           
+IABREFV1=                1.254 / [V] Internal AMHD voltage reference 1.25V      
+DEDFGWL1=              6173388 / [mAng] Deduced current FG wavelength           
+FDTPMPR1=                  255 / Deduced FDT PMP polarization state             
+LC1FDTV1=                    0 / [V] commanded voltage on FDT PMP LC1           
+LC2FDTV1=                    0 / [V] commanded voltage on FDT PMP LC2           
+HRTPMPR1=                    1 / Deduced HRT PMP polarization state             
+LC1HRTV1=                2.093 / [V] commanded voltage on HRT PMP LC1           
+LC2HRTV1=                2.036 / [V] commanded voltage on HRT PMP LC2           
+                                                                                
+          / PHI_FITS_TEMP_prehk                                                 
+FGOV1PT1=                55.99 / [degC] FG oven precision temperature 1         
+FGOV2PT1=                55.96 / [degC] FG oven precision temperature 2         
+FPMP1PT1=                19.08 / [degC] FDT PMP precision temperature 1         
+FPMP2PT1=                19.39 / [degC] FDT PMP precision temperature 2         
+HPMP1PT1=                49.99 / [degC] HRT PMP precision temperature 1         
+HPMP2PT1=                54.58 / [degC] HRT PMP precision temperature 2         
+FRM_MWT1=                14.36 / [degC] FRM motor temperature                   
+HRM_MWT1=                16.51 / [degC] HRM motor temperature                   
+CRM_MWT1=                15.52 / [degC] CRM motor temperature                   
+FSM_MWT1=                16.05 / [degC] FSM motor temperature                   
+AMHD_1T1=                12.42 / [degC] AMHD DCDC temperature                   
+AMHD_2T1=                 8.44 / [degC] AMHD board temperature                  
+FRMPANT1=                16.76 / [degC] FDT housing temperature                 
+M2BAFFT1=                20.16 / [degC] M2 baffle temperature                   
+OUREF1T1=                16.88 / [degC] O-Unit main baffle temperature          
+OUREF2T1=                17.17 / [degC] HRT PMP housing temperature             
+M1MNT_T1=                17.37 / [degC] M1 mounting temperature                 
+M2MNT_T1=                24.14 / [degC] Tip-Tilt housing temperature            
+FGO_1CT1=                55.73 / [degC] FG oven coarse temperature 1            
+FGO_2CT1=                55.16 / [degC] FG oven coarse temperature 2            
+PCM_M1T1=                 7.87 / [degC] Main PCM board temperature 1            
+PCM_M2T1=                 9.26 / [degC] Main PCM board temperature 2            
+PCM_R1T1=                 6.43 / [degC] Redundant PCM board temperature 1       
+PCM_R2T1=                 6.64 / [degC] Redundant PCM board temperature 2       
+DPU_B1T1=                18.93 / [degC] DPU board temperature 1                 
+DPU_B2T1=                11.72 / [degC] DPU board temperature 2                 
+TTCT_BT1=                 8.56 / [degC] TTC board temperature                   
+HVPS_BT1=                 8.52 / [degC] HVPS board temperature                  
+ISSTT1T1=                17.05 / [degC] ISS tip/tilt temperature 1              
+ISSTT2T1=                16.76 / [degC] ISS tip/tilt temperature 2              
+EUREF_T1=                 7.25 / [degC] E-Unit reference temperature            
+HEATOVL1= 'Off     '           / Heater overlapping mode (0=off, 1=on)          
+FGHEATM1=                    1 / FG heater mode status                          
+FGH_TSP1=                   56 / [degC] FG heater set point                     
+FGH_POW1=                    0 / [W] FG heater power                            
+HPHEATM1=                    1 / HRT PMP heater mode status                     
+HPMPTSP1=                   50 / [degC] HRT PMP heater set point                
+HPMPPOW1=                    0 / [W] HRT PMP heater power                       
+FPHEATM1=                    0 / FDT PMP heater mode status                     
+FPMPTSP1=                   40 / [degC] FDT PMP heater set point                
+FPMPPOW1=                    0 / [W] FDT PMP heater power                       
+                                                                                
+          / PHI_FITS_FPA_prehk                                                  
+FPAINPV1=                 0.32 / [A] FPA +7V input current                      
+FPAINMV1=                -0.05 / [A] FPA -7V input current                      
+FPACCIV1=                    0 / [V] FPA CCI voltage                            
+FPASSIV1=                    0 / [V] FPA SSA voltage                            
+FPACCDV1=                 3.24 / [V] FPA CCD voltage                            
+FPACCAV1=                 2.42 / [V] FPA CCA voltage                            
+FPACCBV1=                  1.5 / [V] FPA CCB voltage                            
+FPGA_BT1=                18.67 / [degC] FPA FPGA board temperature              
+IS_PIXV1=                  2.5 / [V] image sensor voltage V_PIX                 
+ISARSTV1=                 0.08 / [V] image sensor voltage V_PIX_RST_ACT         
+ISIRSTV1=                 3.17 / [V] image sensor voltage V_PIX_RST_INACT       
+ISASELV1=                 3.56 / [V] image sensor voltage V_PIX_SEL_ACT         
+ISATX1V1=                 2.99 / [V] image sensor voltage V_PIX_TX1_ACT1        
+ISATX2V1=                 0.09 / [V] image sensor voltage V_PIX_TX1_ACT2        
+ISITX1V1=                    0 / [V] image sensor voltage V_PIX_TX1_INACT       
+IS_ABSV1=                    0 / [V] image sensor ABS bias voltage              
+FPA_IST1=               -23.81 / [degC] FPA image sensor temperature            
+CAMR_ID1=                  513 / Camera ID                                      
+FPAFIRM1=                 1284 / FPA FPGA ID and firmware version               
+ANNEALH1= 'ANNEALING_OFF'      / Annealing heater status (0=off, 1=on)          
+CPC_T__1=                19.43 / [degC] CPC Temperature                         
+CPC_ID_1=                 1743 / CPC ID                                         
+FPATMRS1=                  128 / TMR Status                                     
+FPATMRA1=                    0 / TMR error address                              
+FPATMRC1=                    0 / Number of TMR cycles                           
+FPASELS1=                  128 / SEL Status                                     
+FPASELT1=                    8 / [V] SEL threshold                              
+ACCVERS1=                 3161 / Accumulator Version                            
+ACCSTAT1=                    0 / Accumulator Status                             
+ACCDEST1= 'NANDFS  '           / Accumulator destination                        
+ACCDID_1=                    0 / Accumulator transfer dataset ID                
+                                                                                
+          / PHI_FITS_FPA_settings                                               
+FPIMGCMD=                    8 / FPA image command                              
+FPA_SROW=                    0 / FPA start row setting                          
+FPA_EROW=                 1022 / FPA end row setting                            
+FPA_NIMG=                   16 / FPA number of images set                       
+FPEXPSTC=           1646611100 / [s] FPA exposure start time coarse             
+FPEXPSTF=                96621 / [us] FPA exposure start time fine              
+INTTIME =                0.006 / [s] Exposure time of single readout            
+TELAPSE =     46.0094839781523 / [s] Elapsed time between start and end of obser
+NSUMEXP =                  384 / Number of detector readouts                    
+XPOSURE =                2.304 / [s] Total effective exposure time              
+                                                                                
+          / PHI_FITS_ACCU_settings                                              
+ACCLENGT=              4194304 / ACCU number of pixel set                       
+ACCNROWS=                    6 / ACCU number of rows set                        
+ACCROWIT=                    1 / ACCU number of row iterations set              
+ACCNCOLS=                    4 / ACCU number of columns set                     
+ACCCOLIT=                    1 / ACCU number of column iterations set           
+ACCACCUM=                   16 / ACCU number of accumulations set               
+ACCADDR =                    0 / ACCU readout address (start)                   
+ACCSIZE =            402653184 / ACCU Data size in byte                         
+                                                                                
+          / PHI_FITS_DPU_posthk                                                 
+I_SYSST2= 'OBSERVATION'        / Instrument system state                        
+CPULOAD2=                93.34 / [perc] CPU load                                
+SPWDROP2=                    0 / Number of dropped SpaceWire packets            
+IICPCTN2=                61186 / Number of IIC packets                          
+IICSEQN2=                10175 / Sequence number of the last IIC packet         
+OBSWVER2=                12413 / On-board software version                      
+DPUHWVR2=             17434701 / DPU hardware version                           
+DPUSSCR2=                24822 / DPU System Supervisor CR                       
+DPUSSSR2=                    0 / DPU System Supervisor SR                       
+TCREC_N2=                   77 / Number of received Telecommands                
+TCFAILN2=                    6 / Number of failed Telecommands                  
+TCQUEUE2=                    0 / Fill level of Telecommanding queue             
+TMQUEUE2=                    0 / Fill level of Telemetry queue                  
+SCQUEUE2=                    0 / Fill level of science Telemetry queue          
+RAMFS_N2=                   10 / Number of files in RAMFS                       
+RAMFSSP2=            119964704 / [Byte] Available space in RAMFS                
+SRVSTFL2=                 3052 / Service status flags                           
+GPIOLST2=            604010536 / Status of GPIO ports 0-31                      
+GPIOHST2=              4265988 / Status of GPIO ports 32-63                     
+SCDCMOD2= 'COMPRESS_NONE'      / Science data compression mode                  
+                                                                                
+          / PHI_FITS_PCM_posthk                                                 
+APCMSTA2=                  241 / Active PCM status flag                         
+APCM_VP2=               27.414 / [V] active PCM V_prim                          
+APCM_IP2=                0.868 / [A] active PCM I_prim                          
+APP28IH2=                0.092 / [A] active PCM I_Heaters_+28V                  
+APP28IM2=                 0.06 / [A] active PCM I_Mech_+28V                     
+AP_P33I2=                2.432 / [A] active PCM I_+3V3                          
+AP_P07I2=                0.477 / [A] active PCM I_+7V                           
+AP_M07I2=                0.063 / [A] active PCM I_-7V                           
+AP_P15I2=                 0.06 / [A] active PCM I_+15V                          
+AP_M15I2=                0.058 / [A] active PCM I_-15V                          
+AP_P60I2=                0.001 / [A] active PCM I_+60V                          
+ADPU33V2=                3.406 / [V] active PCM V_DPU_+3V3                      
+AABP33V2=                3.406 / [V] active PCM V_AB_+3V3                       
+AABP07V2=                 6.56 / [V] active PCM V_AB_+7V                        
+AABP15V2=               14.419 / [V] active PCM V_AB_+15V                       
+AABM15V2=                 14.5 / [V] active PCM V_AB_-15V                       
+ACPP07V2=                7.323 / [V] active PCM V_CPC_+7V                       
+ACPM07V2=                7.477 / [V] active PCM V_CPC_-7V                       
+AHVP07V2=                6.562 / [V] active PCM V_HVPS_+7V                      
+AHVP15V2=               14.419 / [V] active PCM V_HVPS_+15V                     
+AHVM15V2=                 14.5 / [V] active PCM V_HVPS_-15V                     
+ATTP07V2=                    0 / [V] active PCM V_TTC_+7V                       
+ATTP60V2=                    0 / [V] active PCM V_TTC_+60V                      
+POWSWST2=                  242 / Power Switch status                            
+                                                                                
+          / PHI_FITS_MECH_posthk                                                
+MEMOVST2=                   16 / Mechanism movement status flag                 
+MEEOTST2=                  132 / Mechanism end-of-travel switch status flag     
+FRM_POS2=                 3087 / [um] Deduced FRM position                      
+DHRM_PS2=                10918 / [um] Deduced HRM position                      
+DCRM_PS2=                    0 / [um] Deduced CRM position                      
+FSM_POS2=                   48 / [amin] Deduced FSM position                    
+HVPSLPV2=                   61 / [V] HVPS HV level side P                       
+HVPSLNV2=                  -76 / [V] HVPS HV level side N                       
+TTCP55V2=                    0 / [V] Voltage TTC_+55V                           
+IABREFV2=                1.254 / [V] Internal AMHD voltage reference 1.25V      
+DEDFGWL2=              6173389 / [mAng] Deduced current FG wavelength           
+FDTPMPR2=                  255 / Deduced FDT PMP polarization state             
+LC1FDTV2=                    0 / [V] commanded voltage on FDT PMP LC1           
+LC2FDTV2=                    0 / [V] commanded voltage on FDT PMP LC2           
+HRTPMPR2=                    4 / Deduced HRT PMP polarization state             
+LC1HRTV2=                  1.7 / [V] commanded voltage on HRT PMP LC1           
+LC2HRTV2=                1.734 / [V] commanded voltage on HRT PMP LC2           
+                                                                                
+          / PHI_FITS_TEMP_posthk                                                
+FGOV1PT2=                55.99 / [degC] FG oven precision temperature 1         
+FGOV2PT2=                55.95 / [degC] FG oven precision temperature 2         
+FPMP1PT2=                19.08 / [degC] FDT PMP precision temperature 1         
+FPMP2PT2=                19.39 / [degC] FDT PMP precision temperature 2         
+HPMP1PT2=                49.99 / [degC] HRT PMP precision temperature 1         
+HPMP2PT2=                54.62 / [degC] HRT PMP precision temperature 2         
+FRM_MWT2=                 14.4 / [degC] FRM motor temperature                   
+HRM_MWT2=                16.48 / [degC] HRM motor temperature                   
+CRM_MWT2=                15.56 / [degC] CRM motor temperature                   
+FSM_MWT2=                16.09 / [degC] FSM motor temperature                   
+AMHD_1T2=                 12.5 / [degC] AMHD DCDC temperature                   
+AMHD_2T2=                 8.48 / [degC] AMHD board temperature                  
+FRMPANT2=                 16.8 / [degC] FDT housing temperature                 
+M2BAFFT2=                20.16 / [degC] M2 baffle temperature                   
+OUREF1T2=                16.92 / [degC] O-Unit main baffle temperature          
+OUREF2T2=                17.21 / [degC] HRT PMP housing temperature             
+M1MNT_T2=                17.37 / [degC] M1 mounting temperature                 
+M2MNT_T2=                24.18 / [degC] Tip-Tilt housing temperature            
+FGO_1CT2=                55.77 / [degC] FG oven coarse temperature 1            
+FGO_2CT2=                 55.2 / [degC] FG oven coarse temperature 2            
+PCM_M1T2=                 7.87 / [degC] Main PCM board temperature 1            
+PCM_M2T2=                 9.34 / [degC] Main PCM board temperature 2            
+PCM_R1T2=                 6.47 / [degC] Redundant PCM board temperature 1       
+PCM_R2T2=                 6.64 / [degC] Redundant PCM board temperature 2       
+DPU_B1T2=                18.93 / [degC] DPU board temperature 1                 
+DPU_B2T2=                11.68 / [degC] DPU board temperature 2                 
+TTCT_BT2=                 8.52 / [degC] TTC board temperature                   
+HVPS_BT2=                 8.52 / [degC] HVPS board temperature                  
+ISSTT1T2=                17.05 / [degC] ISS tip/tilt temperature 1              
+ISSTT2T2=                16.76 / [degC] ISS tip/tilt temperature 2              
+EUREF_T2=                 7.21 / [degC] E-Unit reference temperature            
+HEATOVL2= 'Off     '           / Heater overlapping mode (0=off, 1=on)          
+FGHEATM2=                    1 / FG heater mode status                          
+FGH_TSP2=                   56 / [degC] FG heater set point                     
+FGH_POW2=                    0 / [W] FG heater power                            
+HPHEATM2=                    1 / HRT PMP heater mode status                     
+HPMPTSP2=                   50 / [degC] HRT PMP heater set point                
+HPMPPOW2=                    0 / [W] HRT PMP heater power                       
+FPHEATM2=                    0 / FDT PMP heater mode status                     
+FPMPTSP2=                   40 / [degC] FDT PMP heater set point                
+FPMPPOW2=                    0 / [W] FDT PMP heater power                       
+                                                                                
+          / PHI_FITS_FPA_posthk                                                 
+FPAINPV2=                 0.37 / [A] FPA +7V input voltage                      
+FPAINMV2=                -0.05 / [A] FPA -7V input voltage                      
+FPACCIV2=                    0 / [V] FPA CCI voltage                            
+FPASSIV2=                    0 / [V] FPA SSA voltage                            
+FPACCDV2=                 3.21 / [V] FPA CCD voltage                            
+FPACCAV2=                 2.42 / [V] FPA CCA voltage                            
+FPACCBV2=                 1.49 / [V] FPA CCB voltage                            
+FPGA_BT2=                18.79 / [degC] FPA FPGA board temperature              
+IS_PIXV2=                  2.5 / [V] image sensor voltage V_PIX                 
+ISARSTV2=                 0.08 / [V] image sensor voltage V_PIX_RST_ACT         
+ISIRSTV2=                 3.17 / [V] image sensor voltage V_PIX_RST_INACT       
+ISASELV2=                 3.55 / [V] image sensor voltage V_PIX_SEL_ACT         
+ISATX1V2=                 2.99 / [V] image sensor voltage V_PIX_TX1_ACT1        
+ISATX2V2=                 0.09 / [V] image sensor voltage V_PIX_TX1_ACT2        
+ISITX1V2=                    0 / [V] image sensor voltage V_PIX_TX1_INACT       
+IS_ABSV2=                    0 / [V] image sensor ABS bias voltage              
+FPA_IST2=               -23.05 / [degC] FPA image sensor temperature            
+CAMR_ID2=                  513 / Camera ID                                      
+FPAFIRM2=                 1284 / FPA FPGA ID and firmware version               
+ANNEALH2= 'ANNEALING_OFF'      / Annealing heater status (0=off, 1=on)          
+CPC_T__2=                18.82 / [degC] CPC Temperature                         
+CPC_ID_2=                 1739 / CPC ID                                         
+FPATMRS2=                  128 / TMR Status                                     
+FPATMRA2=                    0 / TMR error address                              
+FPATMRC2=                    0 / Number of TMR cycles                           
+FPASELS2=                  128 / SEL Status                                     
+FPASELT2=                    8 / [V] SEL threshold                              
+ACCVERS2=                 3161 / Accumulator Version                            
+ACCSTAT2=                  160 / Accumulator Status                             
+ACCDEST2= 'NANDFS  '           / Accumulator destination                        
+ACCDID_2=                    0 / Accumulator transfer dataset ID                
+                                                                                
+          / PHI_FITS_ISS_prehk                                                  
+ISSFIRM1=                    0 / ISS controller firmware version                
+ISSVALN1=                    0 / Number of valid ISS controller commands        
+ISSINVN1=                    0 / Number of invalid ISS controller commands      
+ISSLAST1=                    0 / ID of last ISS command                         
+ISSMODE1= 'ISS_IDLE'           / Current ISS mode (0=idle, 1=correlation)       
+CTCLAST1=                    0 / Last CTC command                               
+CTCLRES1=                    0 / CTC last response                              
+CTCLSTF1=                    0 / CTC last status frame                          
+CTC_COR1=                    0 / CTC Column out of range                        
+CTC_ROR1=                    0 / CTC Row out of range                           
+CTCBREF1=                    0 / CTC black reference                            
+CTCN5V_1=                    0 / [V] CTC negative 3V6                           
+CTCP2V51=                    0 / [V] CTC positive 2V5                           
+CTCP3V31=                    0 / [V] CTC positive 3V3                           
+CTCP5V_1=                    0 / [V] CTC positive 5V                            
+CTCSENT1=                    0 / [degC] CTC sensor temperature                  
+CTCFPGT1=                    0 / [degC] CTC FPGA temperature                    
+CTCREF11=                    0 / [V] CTC reference voltage 1V                   
+CTCREF21=                    0 / [V] CTC reference voltage 2v                   
+CTCSIMG1=                    0 / CTC send images                                
+CTCRIMG1=                    0 / CTC received images                            
+CTCBADD1=                    0 / CTC bad address                                
+CTCEADD1=                    0 / CTC expected address                           
+CWRGIMG1=                    0 / CTC wrong images                               
+ISSBADP1=                    0 / ISS bad period                                 
+ISSOUTX1=                    0 / ISS out X                                      
+ISSOUTY1=                    0 / ISS out Y                                      
+ISSAVIR1=                    0 / ISS mean intensity reference                   
+ISSRMSI1=                    0 / ISS rms intensity reference                    
+ISSMXIR1=                    0 / ISS maximum intensity reference                
+ISSMNIR1=                    0 / ISS minimum intensity reference                
+ISS_AVJ1=                    0 / [asec] ISS mean offset                         
+ISSRMSJ1=                    0 / [asec] ISS rms offset                          
+ISSMAXJ1=                    0 / [asec] ISS maximum offset                      
+ISSMINJ1=                    0 / [asec] ISS minimum offset                      
+ISSA10P1=                    0 / ISS parabolic parameter A01                    
+ISSA01P1=                    0 / ISS parabolic parameter A10                    
+ISSA20P1=                    0 / ISS parabolic parameter A02                    
+ISSA02P1=                    0 / ISS parabolic parameter A20                    
+ISSA11P1=                    0 / ISS parabolic parameter A11                    
+ISSREFI1=                    0 / Number of used ISS reference images            
+ISSOOBC1=                    0 / ISS out of bound count                         
+ISSB2OF1=                    0 / ISS CT bank 2 offset                           
+ISSPIMG1=                    0 / ISS pending images                             
+ISLISOX1=                    0 / ISS LIS out X                                  
+ISLISOY1=                    0 / ISS LIS out Y                                  
+ISOTFOX1=                    0 / ISS SOTF out X                                 
+ISOTFOY1=                    0 / ISS SOTF out Y                                 
+ISROTOX1=                    0 / ISS ROT out X                                  
+ISROTOY1=                    0 / ISS ROT out Y                                  
+ISROTLE1=                    0 / ISS ROT log exponent                           
+ISSSTFL1=                    0 / ISS status and error flags                     
+ISSIMSZ1=                    0 / ISS image size (square)                        
+ISSLDEL1=                    0 / ISS line delay                                 
+CTC_AGN1=                    0 / CTC analog gain                                
+CTC_DGN1=                    0 / CTC digital gain                               
+CTCSTOF1=                    0 / CTC static offset                              
+ISSRSHT1=                    0 / ISS rolling shutter offset                     
+ISSIMOX1=                    0 / ISS image offset X                             
+ISSIMOY1=                    0 / ISS image offset Y                             
+CTADPSF1=                    0 / CTC ADC phase shift                            
+CTCRTRI1=                    0 / CTC retries                                    
+CTCDIMN1=                    0 / Number of dropped CTC images                   
+ISSSTEP1=                    0 / ISS stats exponent                             
+ISIMGST1=                    0 / ISS store images                               
+ISIMGRS1=                    0 / ISS store raw images                           
+ISTSTIM1=                    0 / ISS test images                                
+ISSTISE1=                    0 / ISS test image size Exp                        
+ISSTIEV1=                    0 / ISS test image even                            
+ISSTIOD1=                    0 / ISS test image odd                             
+ISSTDIS1=                    0 / ISS store displacement                         
+ISTADIS1=                    0 / ISS stats displacement                         
+ISSREFP1=                    0 / ISS reference period                           
+TT_OFFX1=                    0 / TT offset X                                    
+TT_OFFY1=                    0 / TT offset Y                                    
+TTAMPXX1=                    0 / TT Amp XX                                      
+TTAMPXY1=                    0 / TT Amp XY                                      
+TTAMPYX1=                    0 / TT Amp YX                                      
+TTAMPYY1=                    0 / TT Amp YY                                      
+TT_MAX_1=                    0 / TT max                                         
+TT_MIN_1=                    0 / TT min                                         
+TTSTPEX1=                    0 / TT steps exponent                              
+TTSTPPD1=                    0 / TT steps period                                
+PID_A1X1=                    0 / ISS PID X parameter A1                         
+PID_A1Y1=                    0 / ISS PID Y parameter A1                         
+PID_A2X1=                    0 / ISS PID X parameter A2                         
+PID_A2Y1=                    0 / ISS PID Y parameter A2                         
+PID_B0X1=                    0 / ISS PID X parameter B0                         
+PID_B0Y1=                    0 / ISS PID Y parameter B0                         
+PID_B1X1=                    0 / ISS PID X parameter B1                         
+PID_B1Y1=                    0 / ISS PID Y parameter B1                         
+PID_B2X1=                    0 / ISS PID X parameter B2                         
+PID_B2Y1=                    0 / ISS PID Y parameter B2                         
+LISSAAX1=                    0 / ISS Lissajous parameter AX                     
+LISSAAY1=                    0 / ISS Lissajous parameter AY                     
+LISSADX1=                    0 / ISS Lissajous parameter DX                     
+LISSADY1=                    0 / ISS Lissajous parameter DY                     
+LISSAWX1=                    0 / ISS Lissajous parameter WX                     
+LISSAWY1=                    0 / ISS Lissajous parameter WY                     
+LISSAFI1=                    0 / ISS Lissajous parameter FI                     
+LISSATX1=                    0 / ISS Lissajous parameter TDX                    
+LISSATY1=                    0 / ISS Lissajous parameter TDY                    
+LISSATS1=                    0 / ISS Lissajous parameter TS                     
+LISSPRS1=                    0 / ISS prescaler                                  
+LISSANS1=                    0 / ISS Lissajous parameter VS                     
+ISSTHHX1=                    0 / ISS static threshold X                         
+ISSTHHY1=                    0 / ISS static threshold Y                         
+ISSHKPD1=                    0 / ISS HK period                                  
+ISSMEMP1=                    0 / ISS memory parameter                           
+ISCLKPH1=                    0 / [PI] ISS clock phase                           
+ISSOCWC1= 'No_Error'           / ISS SoCWire communication status               
+                                                                                
+          / Processing keywords                                                 
+PROCNODE= 'germerott-slm6'     / System which processed file                    
+DWNLNKST= '2022-03-10 20:06:20' / Image packed onboard                          
+INFO_URL= 'UNKNOWN'            / Link to additional string information          
+COMPLETE= 'C'                  / C complete, I incomplete, U undefined          
+PFRAMEST= 'CCCCCCCCCCCCCCCCCCCCCCCC' / Frame bit mask C-complete, I-incomplete  
+PHIDBVER= 'unknown'            / PHI Mib Db svn version                         
+PARENT  = 'solo_L1_phi-hrt-ilam_20220307T000009_V202203180553C_0243070101.fits' 
+SPICESYS= 'YES     '           / Availability of SPICE Kernel                   
+DFMTSCAL=                   1. / Data format scale factor                       
+DRNGSCAL=                  128 / Data range scale factor                        
+HISTORY Written with converter(FITS.cpp) Version: 11271:12489                   
+HISTORY Build Host: germerott on Linux germerott-slm6 5.15.23-gentoo x86_64     
+HISTORY Build Time: Mar  8 2022 15:04:30                                        
+HISTORY Data source: solo_L0_phi-raw_20220310200431_V20220318051839C_0243070101.
+HISTORY phi                                                                     
+HISTORY packet_2022-03-10_sc_FM.db                                              
+HISTORY RAW_2022-03-10T00_00_00.BatchRequest.PktTmRaw.SOL.0.2022.076.11.47.20.27
+HISTORY 4.xJEp@2022.076.11.47.22.109.8.xml                                      
+HISTORY Written with converter(FITS.cpp) Version: 11271:12489                   
+HISTORY Build Host: germerott on Linux germerott-slm6 5.15.23-gentoo x86_64     
+HISTORY Build Time: Mar  8 2022 15:04:30                                        
+HISTORY Data source: solo_L0_phi-hrt-ilam_20220307T000009_V202203180528C_0243070
+HISTORY 101.fits                                                                
+HISTORY Version: V1.4 June 2nd 2022. Dark: True. Prefilter: True. Flat: True, Un
+HISTORY sharp: True. Flat norm: True. I->QUV ctalk: True. PSF deconvolution: Sto
+HISTORY kes                                                                     
+CHECKSUM= '5dA6Ad757dA5Ad55'   / HDU checksum updated 2022-03-18T05:53:38       
+DATASUM = '602821605'          / data unit checksum updated 2022-03-18T05:53:38 
+DATAMEDN=        7.8204702E-05                                                  
+DATAMEAN=           0.20287097                                                  
