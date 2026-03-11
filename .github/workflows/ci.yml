@@ -130,6 +130,8 @@ jobs:
     needs: [test, docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v2
     with:
+      save_artifacts: true
+      upload_to_pypi: false
       upload_to_anaconda: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
       anaconda_user: scientific-python-nightly-wheels
       anaconda_package: sunpy
@@ -146,21 +148,42 @@ jobs:
         - target: cp3{12,13,14}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
     secrets:
-      pypi_token: ${{ secrets.pypi_token }}
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
   publish_pure:
     needs: [publish]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2
     with:
+      save_artifacts: true
+      upload_to_pypi: false
       python-version: "3.13"
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       env: |
         SUNPY_NO_BUILD_ANA_EXTENSION: 1
-    secrets:
-      pypi_token: ${{ secrets.pypi_token }}
+
+  upload:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Upload to PyPI
+    runs-on: ubuntu-latest
+    needs: [publish, publish_pure]
+    permissions:
+      id-token: write
+    environment:
+      name: pypi
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131  # v7.0.0
+        with:
+          merge-multiple: true
+          pattern: dist-*
+          path: dist
+
+      - run: ls -lha dist/
+
+      - name: Run upload
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
 
   notify:
     if: always() && (github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run')
