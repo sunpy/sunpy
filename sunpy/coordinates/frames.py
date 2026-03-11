@@ -6,6 +6,7 @@ the `astropy.coordinates` module.
 """
 import os
 import re
+import threading
 import traceback
 
 import numpy as np
@@ -528,7 +529,11 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
     rsun = QuantityAttribute(default=_RSUN, unit=u.km)
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
-    _assumed_screen = None
+
+    class _Assumptions(threading.local):
+        def __init__(self):
+            self.screen = None
+    _assumptions = _Assumptions()
 
     @property
     def angular_radius(self):
@@ -590,9 +595,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         with np.errstate(invalid='ignore'):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
-        if self._assumed_screen:
-            d_screen = self._assumed_screen.calculate_distance(self)
-            d = np.fmin(d, d_screen) if self._assumed_screen.only_off_disk else d_screen
+        if self._assumptions.screen:
+            d_screen = self._assumptions.screen.calculate_distance(self)
+            d = np.fmin(d, d_screen) if self._assumptions.screen.only_off_disk else d_screen
 
         # This warning can be triggered in specific draw calls when plt.show() is called
         # we can not easily prevent this, so we check the specific function is being called

@@ -1,6 +1,8 @@
 """
 Test Composite Map
 """
+import copy
+
 import matplotlib as mpl
 import numpy as np
 import pytest
@@ -92,6 +94,7 @@ def test_plot_composite_map_mplkwargs(composite_test_map):
 
 
 def test_remove_composite_map(composite_test_map):
+    composite_test_map = copy.deepcopy(composite_test_map)  # for thread safety
     composite_test_map.remove_map(0)
     with pytest.raises(IndexError):
         composite_test_map.get_map(1)

@@ -57,6 +57,8 @@ Examples
 #   ICRS. ICRS is a safe frame to use because the SPICE built-in inertial
 #   frame 'J2000' is ICRS, despite its name.
 
+import threading
+
 import numpy as np
 
 try:
@@ -86,9 +88,12 @@ _ET_REF_EPOCH = Time('J2000', scale='tdb')
 _CLASS_TYPES = {1: 'inertial', 2: 'PCK', 3: 'CK', 4: 'TK', 5: 'dynamic', 6: 'switch'}
 
 
-# Registry of the generated frame classes and center classes
-_frame_registry = {}
-_center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}
+# Thread-safe registry of the generated frame classes and center classes
+class _Registry(threading.local):
+    def __init__(self):
+        self.frames = {}
+        self.centers = {'SOLAR SYSTEM BARYCENTER': ICRS}
+_registry = _Registry()
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -181,7 +186,7 @@ def _is_2d(data):
 
 def _install_center_by_id(center_id):
     center_name = spiceypy.bodc2n(center_id)
-    if center_name in _center_registry.keys():
+    if center_name in _registry.centers.keys():
         return
 
     log.info(f"Creating ICRF frame with {center_name} ({center_id}) origin")
@@ -211,7 +216,7 @@ def _install_center_by_id(center_id):
 
     frame_transform_graph._add_merged_transform(center_cls, ICRS, center_cls)
 
-    _center_registry[center_name] = center_cls
+    _registry.centers[center_name] = center_cls
 
 
 def _install_frame_by_id(frame_id):
@@ -225,7 +230,7 @@ def _install_frame_by_id(frame_id):
 
     # Create a center class (if needed)
     _install_center_by_id(center_id)
-    center_cls = _center_registry[center_name]
+    center_cls = _registry.centers[center_name]
 
     frame_cls = type(astropy_frame_name, (SpiceBaseCoordinateFrame,), {},
                      frame_name=frame_name, center_name=center_name)
@@ -250,7 +255,7 @@ def _install_frame_by_id(frame_id):
 
     frame_transform_graph._add_merged_transform(frame_cls, center_cls, frame_cls)
 
-    _frame_registry[frame_name] = (frame_cls, center_cls)
+    _registry.frames[frame_name] = (frame_cls, center_cls)
 
 
 def _uninstall_frame_by_class(target_class, from_class):
@@ -289,22 +294,20 @@ def initialize(kernels):
     spiceypy.furnsh([str(kernel) for kernel in kernels])
 
     # Remove all existing SPICE frame classes
-    global _frame_registry
-    if _frame_registry:
-        log.info(f"Removing {len(_frame_registry)} existing SPICE frame classes")
-        for spice_frame_name in _frame_registry.keys():
-            frame_cls, center_cls = _frame_registry[spice_frame_name]
+    if _registry.frames:
+        log.info(f"Removing {len(_registry.frames)} existing SPICE frame classes")
+        for spice_frame_name in _registry.frames.keys():
+            frame_cls, center_cls = _registry.frames[spice_frame_name]
             _uninstall_frame_by_class(frame_cls, center_cls)
-        _frame_registry.clear()
+        _registry.frames.clear()
 
     # Remove all non-default SPICE center classes
-    global _center_registry
-    if len(_center_registry) > 1:
-        log.info(f"Removing {len(_center_registry) - 1} existing SPICE origin classes")
-        for spice_center_name, center_cls in _center_registry.items():
+    if len(_registry.centers) > 1:
+        log.info(f"Removing {len(_registry.centers) - 1} existing SPICE origin classes")
+        for spice_center_name, center_cls in _registry.centers.items():
             if center_cls != ICRS:
                 _uninstall_frame_by_class(center_cls, ICRS)
-        _center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}
+        _registry.centers = {'SOLAR SYSTEM BARYCENTER': ICRS}
 
     # Generate all SPICE frame classes
     for class_num in _CLASS_TYPES.keys():
@@ -343,7 +346,7 @@ def install_frame(spice_frame):
         if frame_name == '':
             raise ValueError(f"{frame_id} is not a valid SPICE frame ID.")
 
-    if frame_name in _frame_registry:
+    if frame_name in _registry.frames:
         log.info(f"{frame_name} (frame_id) has already been installed.")
     else:
         _install_frame_by_id(frame_id)
@@ -463,7 +466,7 @@ def get_fov(instrument, time, *, resolution=100):
         obstime = Time(np.tile(obstime, num_vectors)).reshape((num_vectors, *obstime.shape)).T
 
     fov = SkyCoord(CartesianRepresentation(vectors.T),
-                   frame=_frame_registry[spice_frame][0],
+                   frame=_registry.frames[spice_frame][0],
                    obstime=obstime,
                    representation_type='unitspherical')
     return fov

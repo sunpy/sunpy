@@ -72,6 +72,21 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  thread_safety:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2
+    with:
+      submodules: false
+      toxdeps: tox-pypi-filter
+      posargs: --parallel-threads=auto --color=yes
+      libraries: |
+        brew:
+          - openjpeg
+        apt:
+          - libopenjp2-7
+      envs: |
+        - linux: py314
+
   docs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2

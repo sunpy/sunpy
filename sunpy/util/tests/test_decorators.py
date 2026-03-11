@@ -2,7 +2,7 @@ import warnings
 
 import pytest
 
-from sunpy.util.decorators import ACTIVE_CONTEXTS, deprecated, sunpycontextmanager
+from sunpy.util.decorators import _active_contexts, deprecated, sunpycontextmanager
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
@@ -41,23 +41,23 @@ def test_context_tracking():
     ctx2_name = f"{ctx2.__module__}.{ctx2.__qualname__}"
 
     # Check that no sunpy contexts are active before entering
-    assert ACTIVE_CONTEXTS == []
+    assert _active_contexts.stack == []
 
     with ctx1():
         # Check that the context is active while inside
-        assert ACTIVE_CONTEXTS == [ctx1_name]
+        assert _active_contexts.stack == [ctx1_name]
 
         with ctx2():
             # Check nesting of contexts
-            assert ACTIVE_CONTEXTS == [ctx1_name, ctx2_name]
+            assert _active_contexts.stack == [ctx1_name, ctx2_name]
 
             with ctx1():
                 # Check a repeated context in the nesting
-                assert ACTIVE_CONTEXTS == [ctx1_name, ctx2_name, ctx1_name]
+                assert _active_contexts.stack == [ctx1_name, ctx2_name, ctx1_name]
 
             # Check that only the last context is removed and not its duplicate
-            assert ACTIVE_CONTEXTS == [ctx1_name, ctx2_name]
+            assert _active_contexts.stack == [ctx1_name, ctx2_name]
 
-        assert ACTIVE_CONTEXTS == [ctx1_name]
+        assert _active_contexts.stack == [ctx1_name]
 
-    assert ACTIVE_CONTEXTS == []
+    assert _active_contexts.stack == []

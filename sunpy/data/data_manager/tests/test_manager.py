@@ -8,6 +8,7 @@ from sunpy.data.data_manager.tests.mocks import MOCK_HASH, write_to_test_file
 from sunpy.util.exceptions import SunpyUserWarning
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_basic(storage, downloader, data_function):
     data_function()
 
@@ -16,6 +17,7 @@ def test_basic(storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_download_cache(storage, downloader, data_function):
     """
     Test calling function multiple times does not redownload.
@@ -28,6 +30,7 @@ def test_download_cache(storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('sunpy.test_file')
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_file_tampered(manager, storage, downloader, data_function):
     """
     Test calling function multiple times does not redownload.
@@ -51,13 +54,14 @@ def test_wrong_hash_provided(manager):
         test_foo()
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_defer_download(manager, storage, downloader, data_function, tmpdir):
     """
     Test that files are not downloaded immediately if defer_download is True,
     but are downloaded when get is called.
     """
     folder = tmpdir.strpath
-    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH,defer_download=True)
+    @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH, defer_download=True)
     def deferred_function():
         pass
 
@@ -65,6 +69,8 @@ def test_defer_download(manager, storage, downloader, data_function, tmpdir):
     assert downloader.times_called == 0
     assert len(storage._store) == 0
 
+
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_defer_download_get(manager, storage, downloader, data_function, tmpdir):
     folder = tmpdir.strpath
     @manager.require('test_file', [f'file://{folder}/another_file'], MOCK_HASH, defer_download=True)
@@ -76,6 +82,7 @@ def test_defer_download_get(manager, storage, downloader, data_function, tmpdir)
     assert len(storage._store) == 1
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_skip_all(manager, storage, downloader, data_function):
     """
     Test skip_hash_check redownloads data.
@@ -135,6 +142,7 @@ def test_override_file(manager, data_function, tmpdir):
     data_function(default_tester)
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_override_file_remote(manager, downloader, data_function):
     replace_url = 'https://example.com/another_file'
     data_function()
@@ -160,6 +168,7 @@ def test_wrong_hash_error(manager, storage):
         foo()
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_file_changed(data_function, storage):
     # Download the file first
     data_function()
@@ -174,6 +183,7 @@ def test_file_changed(data_function, storage):
         data_function()
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_delete_db(sqlmanager, sqlstorage):
     # Download the file
     @sqlmanager.require('test_file', ['https://example.com/test_file'], MOCK_HASH)
@@ -189,6 +199,7 @@ def test_delete_db(sqlmanager, sqlstorage):
     test_function()
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_same_file_id_different_module(downloader, storage,
                                        data_function, data_function_from_fake_module):
     # Uses name 'test_file' to refer to the file
@@ -209,6 +220,7 @@ def test_same_file_id_different_module(downloader, storage,
     assert Path(storage._store[1]['file_path']).name == 'fake_module.test_file'
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_namespacing_with_manager_override_file(module_patched_manager, downloader,
                                                 storage, data_function_from_fake_module):
     # Download a file using manager.require()
@@ -251,6 +263,7 @@ def test_namespacing_with_manager_override_file(module_patched_manager, download
     assert Path(storage._store[0]['file_path']).name == 'fake_module.test_file'
 
 
+@pytest.mark.thread_unsafe(reason="uses shared downloader")
 def test_file_deleted_redownload(storage, downloader, data_function):
     # Checks that if a file is deleted, a warning is raised and the file is re-downloaded.
 

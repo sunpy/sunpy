@@ -1361,7 +1361,7 @@ _distro = LinuxDistribution()
 
 def main() -> None:
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    #logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler(sys.stdout))
 
     parser = argparse.ArgumentParser(description="OS distro info tool")

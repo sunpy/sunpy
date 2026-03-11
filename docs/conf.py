@@ -85,13 +85,13 @@ warnings.filterwarnings("ignore", category=VerifyWarning)
 
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.
-ori_level = sunpy.log.level
-sunpy.log.setLevel("DEBUG")
+#ori_level = sunpy.log.level
+#sunpy.log.setLevel("DEBUG")
 
 import sunpy.data.sample
 
 sunpy.data.sample.download_all()
-sunpy.log.setLevel(ori_level)
+#sunpy.log.setLevel(ori_level)
 
 # For the linkcheck
 linkcheck_ignore = [

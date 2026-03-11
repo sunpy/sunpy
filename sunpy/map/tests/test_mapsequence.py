@@ -121,6 +121,7 @@ def test_repr_html(mapsequence_all_the_same):
         assert m._repr_html_() in html_string
 
 
+@pytest.mark.thread_unsafe(reason="mocks web browser")
 def test_quicklook(mocker, mapsequence_all_the_same):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
     mapsequence_all_the_same.quicklook()
