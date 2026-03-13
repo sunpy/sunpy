@@ -5,6 +5,7 @@ from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, HeliocentricMeanEcliptic
+from astropy.time import Time
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
@@ -82,7 +83,6 @@ class AIAMap(GenericMap):
         """
         return self.meta.get('telescop', '').split('/')[0]
 
-
     @property
     def reference_date(self):
         """
@@ -90,7 +90,8 @@ class AIAMap(GenericMap):
 
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
-        return self._get_date('T_OBS') or super().reference_date
+        date = self._get_date('T_OBS') or super().reference_date
+        return Time(date, scale=self.date.scale)
 
     def _set_reference_date(self, date):
         self.meta['t_obs'] = parse_time(date).utc.isot
@@ -189,7 +190,8 @@ class HMIMap(GenericMap):
 
         DATE-OBS is derived from T_OBS by subtracting half the exposure time, so would not be a reference time.
         """
-        return self._get_date('T_OBS') or super().reference_date
+        date = self._get_date('T_OBS') or super().reference_date
+        return Time(date, scale=self.date.scale)
 
     def _set_reference_date(self, date):
         self.meta['T_OBS'] = parse_time(date).utc.isot
