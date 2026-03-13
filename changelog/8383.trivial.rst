@@ -1,0 +1,1 @@
+Update pre-commit configuration to ensure expected checks are running on expected files.
