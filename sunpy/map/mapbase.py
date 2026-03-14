@@ -2582,7 +2582,7 @@ class GenericMap(NDData):
         return contour_args
 
 
-    def draw_contours(self, levels, axes=None, *, fill=False, **contour_args):
+    def draw_contours(self, levels, axes=None, *, annotate=True, fill=False, **contour_args):
         """
         Draw contours of the data.
 
@@ -2595,6 +2595,11 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the contours. Defaults to the current
             axes.
+        annotate : `bool`, optional
+            If `True` (default), the axes are annotated with a title, axis
+            labels, an equal aspect ratio, and a coordinate grid. Set to
+            `False` when overlaying contours on an existing plot that is
+            already annotated.
         fill : `bool`, optional
             Determines the style of the contours:
             - If `False` (default), contours are drawn as lines using :meth:`~matplotlib.axes.Axes.contour`.
@@ -2615,6 +2620,21 @@ class GenericMap(NDData):
 
         axes = self._check_axes(axes)
         levels = self._process_levels_arg(levels)
+
+        if annotate:
+            plot_settings = self.plot_settings.copy()
+            title = plot_settings.get('title', self.latex_name)
+            axes.set_title(title)
+            axes.set_aspect('equal')
+            if hasattr(axes.wcs, 'wcs'):
+                ctype = axes.wcs.wcs.ctype
+                axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
+                axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            else:
+                physical_types = axes.wcs.world_axis_physical_types
+                axes.coords[0].set_axislabel(axis_labels_from_physical_type(physical_types[0], None))
+                axes.coords[1].set_axislabel(axis_labels_from_physical_type(physical_types[1], None))
+            wcsaxes_compat.default_wcs_grid(axes)
 
         # Pixel indices
         y, x = np.indices(self.data.shape)

@@ -1,0 +1,1 @@
+Fixed `~sunpy.timeseries.GenericTimeSeries._text_summary` raising ``AttributeError`` when the `~pandas.DataFrame` index contains `~astropy.time.Time` objects instead of `numpy.datetime64` values.
