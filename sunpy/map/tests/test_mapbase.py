@@ -1540,6 +1540,30 @@ def test_find_contours_inputs(simple_map):
         simple_map.find_contours(1.5 * u.m)
 
 
+def test_draw_contours_annotate(simple_map):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection=simple_map)
+
+    # With annotate=True (the default), title and axis labels are set
+    simple_map.draw_contours(1.5 * u.dimensionless_unscaled, axes=ax)
+    assert ax.get_title() != ''
+    assert ax.coords[0].get_axislabel() != ''
+    assert ax.coords[1].get_axislabel() != ''
+    assert ax.get_aspect() == 1
+
+    plt.close()
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection=simple_map)
+
+    # With annotate=False, the axes are left unchanged
+    simple_map.draw_contours(1.5 * u.dimensionless_unscaled, axes=ax, annotate=False)
+    assert ax.get_title() == ''
+    assert ax.get_aspect() == 'auto'
+
+    plt.close()
+
+
 def test_print_map(generic_map):
     out_repr = generic_map.__repr__()
     assert isinstance(out_repr, str)
@@ -1674,13 +1698,13 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
     # Panel 1: Implicit transform
     ax1 = fig.add_subplot(1, 3, 1, projection=aia_map)
     aia_map.plot(axes=ax1, clip_interval=(1, 99.99)*u.percent)
-    hmi_map.draw_contours([-10, 10]*u.percent)
+    hmi_map.draw_contours([-10, 10]*u.percent, annotate=False)
     ax1.set_title('Default, correct behavior')
 
     # Panel 2: Explicit transform
     ax2 = fig.add_subplot(1, 3, 2, projection=aia_map)
     aia_map.plot(axes=ax2, clip_interval=(1, 99.99)*u.percent)
-    hmi_map.draw_contours([-10, 10]*u.percent, transform=ax2.get_transform(hmi_map.wcs))
+    hmi_map.draw_contours([-10, 10]*u.percent, transform=ax2.get_transform(hmi_map.wcs), annotate=False)
     ax2.set_title('Explicitly specifying the correct transform')
 
     # Panel 3: Explicit transform with wacky rotation
@@ -1688,7 +1712,7 @@ def test_draw_contours_with_transform(sample_171, sample_hmi):
     rotate_transform = Affine2D().rotate_deg_around(512, 512, 90)
     composite_transform = rotate_transform + ax3.get_transform(hmi_map.wcs)
     aia_map.plot(axes=ax3, clip_interval=(1, 99.99)*u.percent)
-    hmi_map.draw_contours([-10, 10]*u.percent, transform=composite_transform)
+    hmi_map.draw_contours([-10, 10]*u.percent, transform=composite_transform, annotate=False)
     ax3.set_title('Contours rotated by 90 deg CCW')
 
     return fig
