@@ -227,8 +227,7 @@ class GenericTimeSeries:
         drange = drange.to_string(float_format="{:.2E}".format)
         drange = drange.replace("\n", "<br>")
 
-        center = self.time_range.center.value.astype('datetime64[s]')
-        center = str(center).replace("T", " ")
+        center = self.time_range.center.strftime('%Y-%m-%d %H:%M:%S')
         resolution = round(self.time_range.seconds.value/self.shape[0], 3)
         resolution = str(resolution)+" s"
 
@@ -246,8 +245,8 @@ class GenericTimeSeries:
                    Observatory:\t\t\t{obs}
                    Instrument:\t\t\t{link}
                    Channel(s):\t\t\t{channels}
-                   Start Date:\t\t\t{dat.index.min().round('s')}
-                   End Date:\t\t\t{dat.index.max().round('s')}
+                   Start Date:\t\t\t{self.time_range.start.strftime('%Y-%m-%d %H:%M:%S')}
+                   End Date:\t\t\t{self.time_range.end.strftime('%Y-%m-%d %H:%M:%S')}
                    Center Date:\t\t\t{center}
                    Resolution:\t\t\t{resolution}
                    Samples per Channel:\t\t{self.shape[0]}
