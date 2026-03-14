@@ -1227,6 +1227,22 @@ def test_plot_with_norm_none(aia171_test_map):
     aia171_test_map.plot(axes=ax, norm=None, vmin=0, vmax=0)
 
 
+def test_plot_on_ape14_wcs_axes(aia171_test_map):
+    # Regression test for https://github.com/sunpy/sunpy/issues/8416
+    # GenericMap.plot should not crash when the axes WCS is an APE-14
+    # (non-FITS) WCS that has no .wcs attribute.
+    from astropy.wcs.wcsapi import SlicedLowLevelWCS
+
+    # Slicing a FITS WCS produces a SlicedLowLevelWCS (APE-14) with no .wcs attribute.
+    sliced_wcs = SlicedLowLevelWCS(aia171_test_map.wcs, (slice(10, None), slice(10, None)))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=sliced_wcs)
+    # Should not raise AttributeError: 'SlicedLowLevelWCS' object has no attribute 'wcs'
+    aia171_test_map.plot(axes=ax)
+    plt.close(fig)
+
+
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
     bad_header = {

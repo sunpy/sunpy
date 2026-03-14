@@ -58,7 +58,7 @@ from sunpy.util.decorators import (
 from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_metadata, warn_user
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.visualization import axis_labels_from_ctype, axis_labels_from_physical_type, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
@@ -2802,9 +2802,14 @@ class GenericMap(NDData):
 
             # WCSAxes has unit identifiers on the tick labels, so no need
             # to add unit information to the label
-            ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            if hasattr(axes.wcs, 'wcs'):
+                ctype = axes.wcs.wcs.ctype
+                axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
+                axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            else:
+                physical_types = axes.wcs.world_axis_physical_types
+                axes.coords[0].set_axislabel(axis_labels_from_physical_type(physical_types[0], None))
+                axes.coords[1].set_axislabel(axis_labels_from_physical_type(physical_types[1], None))
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
@@ -2825,7 +2830,7 @@ class GenericMap(NDData):
 
         # Disable autoalignment if it is not necessary
         # TODO: revisit tolerance value
-        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+        if autoalign is True and hasattr(axes.wcs, 'wcs') and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
             autoalign = False
 
         if autoalign in {True, 'image'}:
@@ -3027,7 +3032,8 @@ class GenericMap(NDData):
             raise TypeError("The axes need to be an instance of WCSAxes. "
                             "To fix this pass set the `projection` keyword "
                             "to this map when creating the axes.")
-        elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+        elif warn_different_wcs and (not hasattr(axes.wcs, 'wcs')
+                                        or not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01)):
             warn_user('The map world coordinate system (WCS) is different from the axes WCS. '
                       'The map data axes may not correctly align with the coordinate axes. '
                       'To automatically transform the data to the coordinate axes, specify '
