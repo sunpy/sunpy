@@ -39,10 +39,10 @@ jobs:
   sdist_verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-tags: true
-          depth: 0
+          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'

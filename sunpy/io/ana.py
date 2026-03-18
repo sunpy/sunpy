@@ -11,6 +11,7 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
     See the installation guide for more info.
 """
 import os
+from functools import wraps
 
 from sunpy.io._header import FileHeader
 from sunpy.util.decorators import deprecated
@@ -35,9 +36,13 @@ def check_ana_installed(func):
         "C extension for ANA is missing. For more details see: "
         "https://docs.sunpy.org/en/stable/installation.html#installing-without-conda"
     )
-    if _pyana is None and os.environ.get("SUNPY_NO_BUILD_ANA_EXTENSION") is None:
-        raise ImportError(ana_not_installed)
-    return func
+    @wraps(func)
+    def ana_installed_wrapper(*args, **kwargs):
+        if _pyana is None:
+            raise ImportError(ana_not_installed)
+        return func(*args, **kwargs)
+
+    return ana_installed_wrapper
 
 
 @deprecated(since="6.0", message=ANA_DEPRECATION_MESSAGE)

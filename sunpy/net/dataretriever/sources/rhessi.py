@@ -91,7 +91,7 @@ def get_base_url():
         try:
             urlopen(server, timeout=1)
             return server
-        except (TimeoutError, RemoteDisconnected, URLError):
+        except (TimeoutError, ConnectionResetError, RemoteDisconnected, URLError):
             pass
     raise OSError(f'Unable to find an online HESSI server from {data_servers}')
 
