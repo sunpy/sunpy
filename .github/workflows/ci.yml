@@ -172,7 +172,7 @@ jobs:
       name: pypi
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v7  # zizmor: ignore[unpinned-uses]
+        uses: actions/download-artifact@v8  # zizmor: ignore[unpinned-uses]
         with:
           merge-multiple: true
           pattern: dist-*
