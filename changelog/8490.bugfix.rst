@@ -1,0 +1,1 @@
+Fixed an issue where writing or reading ``sunpy.coordinates`` frames to and from FITS files using ``astropy.table.QTable`` would crash. SunPy frames are now properly registered with Astropy's table and YAML serialization machinery.
