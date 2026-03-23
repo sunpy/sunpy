@@ -22,6 +22,8 @@ from astropy.coordinates.representation import (
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
+from astropy.io.misc.yaml import AstropyDumper, AstropyLoader
+from astropy.table import serialize as table_serialize
 from astropy.time import Time
 from astropy.utils.data import download_file
 
@@ -122,6 +124,30 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
       which can be overridden via the class variable ``_wrap_angle``.
     * Inject a nice way of representing the object which the coordinate represents.
     """
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Register the class with Astropy's table serialization allowlist
+        cls_name = f"{cls.__module__}.{cls.__name__}"
+        if hasattr(table_serialize, "__construct_mixin_classes"):
+            existing_classes = getattr(table_serialize, "__construct_mixin_classes")
+            if cls_name not in existing_classes:
+                setattr(table_serialize, "__construct_mixin_classes", existing_classes + (cls_name,))
+
+        # Register YAML representers/constructors for Astropy's table serialization
+        tag = f"!{cls.__module__}.{cls.__name__}"
+
+        def representer(dumper, obj):
+            mapping = obj.info._represent_as_dict()
+            return dumper.represent_mapping(tag, mapping)
+
+        def constructor(loader, node):
+            mapping = loader.construct_mapping(node)
+            return cls.info._construct_from_dict(mapping)
+
+        AstropyDumper.add_multi_representer(cls, representer)
+        AstropyLoader.add_constructor(tag, constructor)
+
     obstime = TimeFrameAttributeSunPy()
 
     default_representation = SphericalRepresentation

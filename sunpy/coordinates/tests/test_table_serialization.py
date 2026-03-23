@@ -31,8 +31,8 @@ def _make_coords(single_observer):
         frame = Helioprojective(obstime=times, observer=observer)
 
     return SkyCoord(
-        np.zeros(len(times)) * u.arcsec,
-        np.zeros(len(times)) * u.arcsec,
+        np.arange(len(times)) * u.arcsec,
+        -1 * np.arange(len(times)) * u.arcsec,
         frame=frame,
     )
 
