@@ -135,7 +135,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
                 setattr(table_serialize, "__construct_mixin_classes", existing_classes + (cls_name,))
 
         # Register YAML representers/constructors for Astropy's table serialization
-        tag = f"!{cls.__module__}.{cls.__name__}"
+        tag = f"!{cls_name}"
 
         def representer(dumper, obj):
             mapping = obj.info._represent_as_dict()
