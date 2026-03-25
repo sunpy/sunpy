@@ -3,8 +3,8 @@
 import sunpy
 from sunpy.net.cdaweb.helpers import _update_cdaweb_dataset_data
 from sunpy.net.jsoc import JSOCClient
-from sunpy.net.vso import VSOClient
 from sunpy.net.solarnet import SOLARNETClient
+from sunpy.net.vso import VSOClient
 
 print(f"Updating the attrs json files using sunpy {sunpy.__version__}...")
 

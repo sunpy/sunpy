@@ -1,12 +1,12 @@
-import collections
-from packaging.version import Version
-import requests
-from datetime import datetime, timedelta
-from dateutil.parser import parse as parse_date
-from importlib import metadata
-from packaging.requirements import Requirement
-from functools import cache
 import argparse
+import collections
+from datetime import datetime, timedelta
+from functools import cache
+from importlib import metadata
+
+import requests
+from packaging.requirements import Requirement
+from packaging.version import Version
 
 
 @cache
@@ -23,7 +23,7 @@ def get_package_releases(package):
         ver = f["filename"].split("-")[1]
         try:
             version = Version(ver)
-        except:
+        except Exception:
             continue
         release_date = None
         for format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:
