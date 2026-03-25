@@ -67,7 +67,6 @@ dependencies:
   - sphinx-gallery
   - sphinxcontrib-bibtex
   - sphinxext-opengraph
-  - towncrier
 
   # Installation
   - extension-helpers
@@ -81,3 +80,4 @@ dependencies:
       - sphinx-bootstrap-theme
       - sphinx-changelog
       - sunpy-sphinx-theme
+      - towncrier  # needs to be installed via pip because sphinx-changelog pins the version

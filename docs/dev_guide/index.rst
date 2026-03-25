@@ -38,6 +38,7 @@ This section contains the various guidelines to be followed by anyone working on
         .. toctree::
             :maxdepth: 1
 
+            contents/ai_usage
             contents/code_standards
             contents/tests
             contents/documentation

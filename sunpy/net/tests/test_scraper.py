@@ -110,7 +110,7 @@ def test_url_pattern_milliseconds_zero_padded():
 
 
 def test_files_range_same_directory_local():
-    s = Scraper(format='/'.join(['file:/', str(rootdir),
+    s = Scraper(format='/'.join([rootdir.as_uri(),
                           'EIT_header', 'efz{{year:4d}}{{month:2d}}{{day:2d}}.{{hour:2d}}{{minute:2d}}{{second:2d}}_s.header']))
     startdate = parse_time((2004, 3, 1, 4, 0))
     enddate = parse_time((2004, 3, 1, 6, 30))
@@ -322,6 +322,8 @@ def test_local_expected_directory_doesnt_exist(tmp_path):
     path.mkdir(parents=True)
     with (path / 'test.txt').open('w') as file:
         file.write('')
-    s = Scraper(format='file://'+str(tmp_path)+'/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{file}}')
+    s = Scraper(format='/'.join([tmp_path.as_uri(), '{{year:4d}}', '{{month:2d}}', '{{day:2d}}', '{{file}}']))
     files = s.filelist(TimeRange("2025-01-01", "2025-01-02"))
+    meta = s._extract_files_meta(TimeRange("2025-01-01", "2025-01-02"))
     assert len(files) == 1
+    assert len(meta) == 1

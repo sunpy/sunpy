@@ -82,7 +82,7 @@ Bug Fixes
 Documentation
 -------------
 
-- Added a gallery example (:ref:`sphx_glr_generated_gallery_plotting_time_distance.py`) demonstrating how to extract the intensities along a slit to create a time-distance plot taking into account differential rotation. (`#8057 <https://github.com/sunpy/sunpy/pull/8057>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_time_distance.py`) demonstrating how to extract the intensities along a slit to create a time-distance plot taking into account differential rotation. (`#8057 <https://github.com/sunpy/sunpy/pull/8057>`__)
 - The source-code links now go to the GitHub repository instead of rendered versions of the source code. (`#8179 <https://github.com/sunpy/sunpy/pull/8179>`__)
 - Fixed errors and added elaborations to the docstring for `~sunpy.coordinates.Helioprojective`. (`#8293 <https://github.com/sunpy/sunpy/pull/8293>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_plotting_adding_earth.py`) showing how to add an Earth scale image to a Map plot. (`#8322 <https://github.com/sunpy/sunpy/pull/8322>`__)

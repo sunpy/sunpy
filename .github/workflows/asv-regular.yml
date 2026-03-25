@@ -11,46 +11,54 @@ on:
     #        │  │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
     - cron: "37 3 * * *" # Every day at 3:37am UTC
 
+permissions: {}
+
 jobs:
   asv-run:
     if: ${{ github.repository == 'sunpy/sunpy' }}
     runs-on: ubuntu-latest
+    environment:
+      name: asv-upload
     steps:
       - name: Checkout sunpy repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: "0"
+          persist-credentials: false
+
       - name: Checkout sunpy-benchmarks repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: sunpy/sunpy-benchmarks
           ref: main
           path: asv_results
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.11"
+          python-version: "3.14"
           architecture: "x64"
+
       - name: Install dependencies
         run: |
           sudo apt-get install -y libopencv-dev
           python -m pip install --upgrade pip
           pip install asv virtualenv
+
       - name: Add machine info for ASV
         run: asv machine --machine GH-Actions --os ubuntu-latest --arch x64 --cpu "2-core unknown" --ram 7GB
-      - name: Run benchmarks for commits since v2.1
-        run: taskset -c 0 asv run --skip-existing-successful --steps 50 v3.0.dev..
-      - name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.ASV_CI_KEY }}
+
+      - name: Run benchmarks for commits since v5.0
+        run: taskset -c 0 asv run --skip-existing-successful --steps 50 v4.1.dev..
+
       - name: Push results
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
           branch: main
           folder: asv_results
+          token: ${{ secrets.GH_PAT_TOKEN }}
           repository-name: sunpy/sunpy-benchmarks
-          ssh-key: true
           commit-message: |
             Push new results from GitHub Actions
             repository: ${{ github.repository }}

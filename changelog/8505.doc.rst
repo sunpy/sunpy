@@ -1,0 +1,1 @@
+Add `AI Usage <https://docs.sunpy.org/en/latest/dev_guide/contents/ai_usage.html>`__ document and update newcomers guide to cross reference.
