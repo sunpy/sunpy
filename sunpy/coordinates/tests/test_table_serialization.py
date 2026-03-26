@@ -10,7 +10,9 @@ from astropy.time import Time
 from sunpy.coordinates.frames import HeliographicStonyhurst, Helioprojective
 
 
-def _make_coords(single_observer):
+@pytest.fixture(params=[True, False], ids=["single_observer", "array_observer"])
+def coords(request):
+    single_observer = request.param
     times = Time("2025-01-01T00:00:00") + np.arange(11) * u.day
 
     if single_observer:
@@ -37,12 +39,9 @@ def _make_coords(single_observer):
     )
 
 
-@pytest.mark.parametrize(
-    "single_observer", [True, False], ids=["single_observer", "array_observer"]
-)
-def test_qtable_sunpy_coordinate_fits_roundtrip(tmp_path, single_observer):
+def test_qtable_sunpy_coordinate_fits_roundtrip(tmp_path, coords):
     original = QTable()
-    original["pos"] = _make_coords(single_observer)
+    original["pos"] = coords
 
     output_file = tmp_path / "sunpy_coords.fits"
     original.write(output_file)
@@ -52,7 +51,7 @@ def test_qtable_sunpy_coordinate_fits_roundtrip(tmp_path, single_observer):
 
     assert isinstance(result.frame, Helioprojective)
     assert isinstance(result.observer, HeliographicStonyhurst)
-    assert result.observer.isscalar is single_observer
+    assert result.observer.isscalar is coords.observer.isscalar
 
     assert_quantity_allclose(original["pos"].Tx, result.Tx)
     assert_quantity_allclose(original["pos"].Ty, result.Ty)

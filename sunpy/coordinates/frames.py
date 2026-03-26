@@ -127,7 +127,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
 
-        # Register the class with Astropy's table serialization allowlist
+        # Register the class with Astropy's table serialization
         cls_name = f"{cls.__module__}.{cls.__name__}"
         if hasattr(table_serialize, "__construct_mixin_classes"):
             existing_classes = getattr(table_serialize, "__construct_mixin_classes")
