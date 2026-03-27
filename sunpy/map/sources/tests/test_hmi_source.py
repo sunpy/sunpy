@@ -112,11 +112,15 @@ def test_wcs(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
 # We use our sample HMI image to test memory mapping because it is large (8 MB data array)
 @pytest.mark.remote_data
 def test_memmap():
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    # Burn in base memory usage associated with Map instantiation
+    _ = Map(HMI_LOS_IMAGE)
+
     process = psutil.Process()
 
     initial = process.memory_info()
 
-    from sunpy.data.sample import HMI_LOS_IMAGE
     hmi_map = Map(HMI_LOS_IMAGE)
 
     instantiated = process.memory_info()
