@@ -39,14 +39,15 @@ def coords(request):
     )
 
 
-def test_qtable_sunpy_coordinate_fits_roundtrip(tmp_path, coords):
+@pytest.mark.parametrize("fmt", ["fits", "ecsv", "parquet"])
+def test_qtable_sunpy_coordinate_roundtrip(tmp_path, coords, fmt):
     original = QTable()
     original["pos"] = coords
 
-    output_file = tmp_path / "sunpy_coords.fits"
-    original.write(output_file)
+    output_file = tmp_path / f"sunpy_coords.{fmt}"
+    original.write(output_file, format=fmt)
 
-    roundtrip = QTable.read(output_file)
+    roundtrip = QTable.read(output_file, format=fmt)
     result = roundtrip["pos"]
 
     assert isinstance(result.frame, Helioprojective)
