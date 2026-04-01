@@ -1,1 +1,1 @@
-Fixed an issue where writing or reading ``sunpy.coordinates`` frames to and from FITS files using ``astropy.table.QTable`` would crash. SunPy frames are now properly registered with Astropy's table and YAML serialization machinery.
+Fixed an issue where saving or loading an ``astropy.table.QTable`` containing ``SkyCoord`` objects in ``sunpy.coordinates`` frames to/from FITS files would crash.
