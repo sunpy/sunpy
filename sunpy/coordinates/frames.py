@@ -129,10 +129,10 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
         # Register the class with Astropy's table serialization
         cls_name = f"{cls.__module__}.{cls.__name__}"
-        if hasattr(table_serialize, "__construct_mixin_classes"):
-            existing_classes = getattr(table_serialize, "__construct_mixin_classes")
-            if cls_name not in existing_classes:
-                setattr(table_serialize, "__construct_mixin_classes", existing_classes + (cls_name,))
+        # We have to use getattr()/setattr() to avoid triggering Python name mangling
+        existing_classes = getattr(table_serialize, "__construct_mixin_classes")
+        if cls_name not in existing_classes:
+            setattr(table_serialize, "__construct_mixin_classes", existing_classes + (cls_name,))
 
         # Register YAML representers/constructors for Astropy's table serialization
         tag = f"!{cls_name}"
