@@ -1,0 +1,1 @@
+Added Fido clients for Hinode SOT data from the `DARTS archive <https://darts.isas.jaxa.jp/en>`__: `~sunpy.net.dataretriever.HinodeSOTFGClient` (Filtergraph, levels 0 and 1) and `~sunpy.net.dataretriever.HinodeSOTSPClient` (Spectro-Polarimeter, levels 0, 1, 2 and 2.1).

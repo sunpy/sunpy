@@ -56,6 +56,8 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     XRSClient         Provides access to several GOES XRS files archive.
     SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
     GONGClient        Provides access to the Magnetogram products of NSO-GONG synoptic Maps.
+    HinodeSOTFGClient Provides access to the Hinode Solar Optical Telescope (SOT) Filtergraph (FG) data archive.
+    HinodeSOTSPClient Provides access to the Hinode Solar Optical Telescope (SOT) Spectro-Polarimeter (SP) data archive.
     LYRAClient        Provides access to the LYRA/Proba2 data archive.
     NOAAIndicesClient Provides access to the NOAA solar cycle indices.
     NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
