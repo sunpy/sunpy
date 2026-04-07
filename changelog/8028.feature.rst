@@ -1,0 +1,1 @@
+Adds the ability to fetch location of body from SSCWeb using `~sunpy.coordinates.ephemeris.get_sscweb_coord`
