@@ -165,7 +165,7 @@ class SOTMap(GenericMap):
     ----------
     * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`__
     * `Hinode SOT Instrument Page <https://sot.lmsal.com>`__
-    * `Hinode SOT Instrument Paper <https://doi.org/10.1007/s11207-008-9174-z>`__ `(arxiv copy <https://doi.org/10.48550/arXiv.0711.1715>)`__
+    * `Hinode SOT Instrument Paper <https://doi.org/10.1007/s11207-008-9174-z>`__
     * `SOT Data Analysis Guide <https://sot.lmsal.com/data/sot/sotguide/book/title.html>`__
     * `FITS header references <https://sot.lmsal.com/data/sot/sotguide/book/ch-kw/keywords.html>`__
     """
