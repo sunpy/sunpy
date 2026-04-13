@@ -128,7 +128,8 @@ class XRTMap(GenericMap):
 
 
 class SOTMap(GenericMap):
-    """Hinode SOT Image Map definition.
+    """
+    Hinode SOT Image Map definition.
 
     The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
     diffraction-limited Gregorian telescope. It is optimized for
@@ -138,12 +139,36 @@ class SOTMap(GenericMap):
 
     Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
 
+    Notes
+    -----
+
+    Support for SOT data depends on whether the file is a 2D spatial image and
+    whether it contains enough metadata for map construction.
+
+    **Supported**
+
+    *SOT/WB and SOT/NB 2D image products*
+        Level 0 and Level 1 filtergraph files are supported.
+
+    **Not supported**
+
+    *SOT/SP Level 0 and Level 1*
+        These files are spectral data cubes rather than 2D spatial images.
+
+    *SOT/SP Level 2 and Level 2.1*
+        These files do not contain enough standard metadata for automatic map
+        construction.
+
+    *SOT/CT (correlation tracker)*
+        These files do not contain enough standard WCS metadata for normal map
+        coordinates without manual reconstruction.
+
     References
     ----------
     * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`__
     * `Hinode SOT Instrument Page <https://sot.lmsal.com>`__
     * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`__
-    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`__
+    * `Data Analysis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`__
     """
     # TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation
@@ -174,6 +199,7 @@ class SOTMap(GenericMap):
         color = {'SOT/WB': 'intensity',
                  'SOT/NB': 'intensity',  # For the 1st dimension
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
+                 'SOT/CT': 'intensity',
                  }
 
         self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
