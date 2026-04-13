@@ -199,7 +199,7 @@ class SOTMap(GenericMap):
         color = {'SOT/WB': 'intensity',
                  'SOT/NB': 'intensity',  # For the 1st dimension
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
-                 'SOT/CT': 'intensity',
+                 'SOT/CT': 'intensity', # In case we want to support CT in the future
                  }
 
         self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
