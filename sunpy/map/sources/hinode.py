@@ -147,40 +147,33 @@ class SOTMap(GenericMap):
 
     **Supported**
 
-    *SOT/WB and SOT/NB 2D image products*
+    *2D SOT/WB and SOT/NB files*
         Level 0 and Level 1 filtergraph files are supported.
 
     **Not supported**
 
-    *SOT/SP Level 0 and Level 1*
+    *SOT/SP Level 0 and Level 1 files*
         These files are spectral data cubes rather than 2D spatial images.
 
-    *SOT/SP Level 2 and Level 2.1*
-        These files do not contain enough standard metadata for automatic map
-        construction.
+    *SOT/SP Level 2 and Level 2.1 files*
+        These files do not contain enough FITS metadata.
 
-    *SOT/CT (correlation tracker)*
-        These files do not contain enough standard WCS metadata for normal map
-        coordinates without manual reconstruction.
+    *SOT/CT (correlation tracker) files*
+        These files do not contain enough FITS metadata.
 
     References
     ----------
     * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`__
     * `Hinode SOT Instrument Page <https://sot.lmsal.com>`__
-    * `Hinode SOT Instrument Paper <https://arxiv.org/abs/0711.1715>`__
-    * `Data Analysis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`__
+    * `Hinode SOT Instrument Paper <https://doi.org/10.1007/s11207-008-9174-z>`__ `(arxiv copy <https://doi.org/10.48550/arXiv.0711.1715>)`__
+    * `SOT Data Analysis Guide <https://sot.lmsal.com/data/sot/sotguide/book/title.html>`__
+    * `FITS header references <https://sot.lmsal.com/data/sot/sotguide/book/ch-kw/keywords.html>`__
     """
-    # TODO: get a link for the SOT FITS headers
-    # Add in some information about the the possible instrument, observation
-    # type, observable ion and wavelength
-
     Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
-
     Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
              'Ca II H line', 'G band 4305', 'NFI no move',
              'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896',
              'blue cont 4504', 'green cont 5550', 'red cont 6684']
-
     Observation_Type = ['FG (simple)', 'FG focus scan',
                         'FG shuttered I and V', 'FG shutterless I and V',
                         'FG shutterless I and V with 0.2s intervals',
@@ -189,8 +182,7 @@ class SOTMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         self._nickname = self.detector
-
-        # TODO (add other options, Now all treated as intensity. This follows
+        # Now all treated as intensity. This follows
         # Hinode SDC archive) StokesQUV -> grey, Velocity -> EIS, Width -> EIS,
         # Mag Field Azi -> IDL 5 (STD gamma II)
         # 'WB' -> red
