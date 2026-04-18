@@ -248,6 +248,8 @@ class SOARClient(BaseClient):
         )
         if "detector" in info:
             result_table["Detector"] = info["detector"]
+        if "sensor" in info:
+            result_table["Sensor"] = info["sensor"]
         if "wavelength" in info:
             result_table["Wavelength"] = info["wavelength"]
         result_table.sort("Start time")
@@ -296,10 +298,22 @@ class SOARClient(BaseClient):
         bool
             True if this client can handle the given query.
         """
-        from sunpy.net.soar.attrs import SOOP, Distance, Product  # NOQA: PLC0415
+        from sunpy.net.soar.attrs import (SOOP, Distance, Product,  # NOQA: PLC0415
+                                      Sensor)
 
         required = {Distance} if any(isinstance(q, Distance) for q in query) else {a.Time}
-        optional = {a.Instrument, a.Detector, a.Wavelength, a.Level, a.Provider, Product, SOOP, Distance, a.Time}
+        optional = {
+            a.Instrument,
+            a.Detector,
+            Sensor,
+            a.Wavelength,
+            a.Level,
+            a.Provider,
+            Product,
+            SOOP,
+            Distance,
+            a.Time,
+        }
         if not cls.check_attr_types_in_query(query, required, optional):
             return False
         # check to make sure the instrument attr passed is one provided by the SOAR.
@@ -339,7 +353,7 @@ class SOARClient(BaseClient):
         dict
             The dictionary containing the values formed into attributes.
         """
-        from sunpy.net.soar.attrs import SOOP, Product  # NOQA: PLC0415
+        from sunpy.net.soar.attrs import SOOP, Product, Sensor  # NOQA: PLC0415
 
         # Instrument attrs
         attrs_path = pathlib.Path(__file__).parent / "data" / "attrs.json"
@@ -354,6 +368,12 @@ class SOARClient(BaseClient):
             all_instr = json.load(instr_attrs_file)
         all_instr = list(all_instr.items())
 
+        # Sensor attrs
+        sensor_path = pathlib.Path(__file__).parent / "data" / "sensor_attrs.json"
+        with sensor_path.open() as sensor_attrs_file:
+            all_sensors = json.load(sensor_attrs_file)
+        all_sensors = list(all_sensors.items())
+
         soop_path = pathlib.Path(__file__).parent / "data" / "soop_attrs.json"
         with soop_path.open() as soop_path_file:
             all_soops = json.load(soop_path_file)
@@ -363,6 +383,7 @@ class SOARClient(BaseClient):
         return {
             Product: all_datasets,
             a.Instrument: all_instr,
+            Sensor: all_sensors,
             SOOP: all_soops,
             a.Provider: [("SOAR", "Solar Orbiter Archive.")],
         }

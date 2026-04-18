@@ -106,6 +106,12 @@ def test_registered_instr_attrs() -> None:
     assert "SOAR" in instr_attr._attr_registry[instr_attr].client
     assert "stix" in instr_attr._attr_registry[instr_attr].name
 
+def test_registered_sensor_attrs() -> None:
+    # Check if SolO sensors are registered in a.soar.Sensor
+    sensor_attr = a.soar.Sensor
+    assert "SOAR" in sensor_attr._attr_registry[sensor_attr].client
+    assert "ept" in sensor_attr._attr_registry[sensor_attr].name
+
 
 def test_registered_soop_names() -> None:
     # Check if the soop names are registered in a.soar.SOOP

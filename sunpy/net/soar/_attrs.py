@@ -73,6 +73,16 @@ class Distance(Range):
         return isinstance(other, self.__class__)
 
 
+class Sensor(SimpleAttr):
+    """
+    The sensor from which the data comes from.
+
+    Parameters
+    ----------
+    value: `str`
+    """
+
+
 walker = AttrWalker()
 
 
@@ -182,6 +192,11 @@ def _(wlk, attr, params) -> None:
 @walker.add_applier(a.Detector)
 def _(wlk, attr, params) -> None:
     params.append(f"Detector='{attr.value}'")
+
+
+@walker.add_applier(Sensor)
+def _(wlk, attr, params) -> None:
+    params.append(f"Sensor='{attr.value}'")
 
 
 @walker.add_applier(a.Wavelength)
