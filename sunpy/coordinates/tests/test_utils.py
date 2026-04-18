@@ -11,10 +11,12 @@ from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import (
     GreatArc,
+    coordinate_is_on_solar_disk,
     get_heliocentric_angle,
     get_limb_coordinates,
     get_rectangle_coordinates,
     solar_angle_equivalency,
+    solar_angular_radius,
 )
 from sunpy.sun import constants
 from sunpy.util.exceptions import SunpyUserWarning
@@ -418,3 +420,24 @@ def test_get_heliocentric_angle_errors():
     bad_skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst', observer="earth")
     with pytest.raises(ConvertError, match="frame needs a specified obstime"):
         get_heliocentric_angle(bad_skycoord)
+
+
+def test_solar_angular_radius():
+    hpc_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    sar = solar_angular_radius(hpc_coord)
+    assert isinstance(sar, u.Quantity)
+    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
+
+
+def test_coordinate_is_on_solar_disk():
+    hpc_on_disk = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    hpc_off_disk = SkyCoord(959.68*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+
+    assert coordinate_is_on_solar_disk(hpc_on_disk)
+    assert ~coordinate_is_on_solar_disk(hpc_off_disk)
+
+
+def test_coordinate_is_on_solar_disk_error():
+    hgs_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst', observer="earth", obstime="2017-07-26")
+    with pytest.raises(ValueError, match="Helioprojective"):
+        coordinate_is_on_solar_disk(hgs_coord)

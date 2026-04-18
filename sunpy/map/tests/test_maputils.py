@@ -10,9 +10,13 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.map
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
-from sunpy.coordinates.utils import GreatArc
-from sunpy.map.maputils import (
+from sunpy.coordinates.utils import (
+    GreatArc,
     _verify_coordinate_helioprojective,
+    coordinate_is_on_solar_disk,
+    solar_angular_radius,
+)
+from sunpy.map.maputils import (
     all_coordinates_from_map,
     all_corner_coords_from_map,
     all_pixel_indices_from_map,
@@ -20,14 +24,12 @@ from sunpy.map.maputils import (
     contains_full_disk,
     contains_limb,
     contains_solar_center,
-    coordinate_is_on_solar_disk,
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
     pixelate_coord_path,
     sample_at_coords,
-    solar_angular_radius,
 )
 
 
