@@ -1,0 +1,1 @@
+Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_artemis-ii-trajectory.py`) to visualize the Artemis II trajectory in two different coordinate frames.
