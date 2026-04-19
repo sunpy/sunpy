@@ -1,0 +1,1 @@
+Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_artemis-ii-eclipse.py`) to visualise and analyse solar eclipse observed by Artemis-II.
