@@ -1,3 +1,12 @@
+7.1.2 (2026-04-19)
+==================
+
+Bug Fixes
+---------
+
+- Fixed a bug where SIP distortion information in a Map WCS was ignored. (`#8573 <https://github.com/sunpy/sunpy/pull/8573>`__)
+
+
 7.1.1 (2026-03-26)
 ==================
 
