@@ -250,7 +250,7 @@ class MapFactory(BasicRegistrationFactory):
         # Data-header or data-WCS pair
         data, header = arg
         if isinstance(header, WCS):
-            header = header.to_header()
+            header = header.to_header(relax=True)
 
         pair = data, header
         if self._validate_meta(header):
