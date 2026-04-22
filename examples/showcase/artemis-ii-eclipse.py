@@ -45,6 +45,7 @@ from skimage.transform import hough_circle, hough_circle_peaks
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, SkyCoord, solar_system_ephemeris
 from astropy.time import Time
+from astropy.visualization import simple_norm
 from astropy.wcs import WCS
 
 import sunpy.map
@@ -262,7 +263,7 @@ artemis_map = Map(artemis_image, header)
 
 def plot_artemis_map(amap, moon_coord, planets, reset_lim=True, legend=True, figsize=(9,4), **kwargs):
     fig, ax = plt.subplots(1, 1, subplot_kw={"projection": amap}, figsize=figsize, **kwargs)
-    amap.plot(axes=ax)
+    amap.plot(axes=ax, norm=simple_norm(amap.data, 'power', min_percent=10, max_percent=99.9))
     amap.draw_limb(axes=ax, label='Sun')
     ax.coords[0].set_format_unit(u.deg)
     ax.coords[1].set_format_unit(u.deg)

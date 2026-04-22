@@ -3134,7 +3134,7 @@ class GenericMap(NDData):
         if return_footprint:
             output_array, footprint = output_array
 
-        target_header = target_wcs.to_header()
+        target_header = target_wcs.to_header(relax=True)
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # target_header has a DATE-AVG key and if it does not, we would inadvertently
