@@ -142,6 +142,17 @@ def test_wcs_sip(aia171_test_map):
     assert not u.allclose(edge1.Tx, edge2.Tx)
     assert not u.allclose(edge1.Ty, edge2.Ty)
 
+    # Check that a Map instantiated with a SIP WCS retains the SIP information
+    instantiated_map = sunpy.map.Map(sip_map.data, sip_map.wcs)
+    np.testing.assert_allclose(instantiated_map.wcs.sip.a, sip_wcs.sip.a)
+    np.testing.assert_allclose(instantiated_map.wcs.sip.b, sip_wcs.sip.b)
+
+    # Check that a Map reprojected to a SIP WCS retains the SIP information
+    reprojected_map = sip_map.reproject_to(sip_map.wcs)
+    np.testing.assert_allclose(reprojected_map.wcs.sip.a, sip_wcs.sip.a)
+    np.testing.assert_allclose(reprojected_map.wcs.sip.b, sip_wcs.sip.b)
+
+
 def test_wcs_cache(aia171_test_map):
     wcs1 = aia171_test_map.wcs
     wcs2 = aia171_test_map.wcs
