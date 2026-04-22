@@ -21,11 +21,6 @@ exclude CITATION.cff
 exclude sunpy-dev-env.yml
 exclude tox.ini
 
-exclude docs/Makefile
-exclude docs/conf.py
-exclude docs/make.bat
-exclude docs/nitpick-exceptions
-
 # Prune folders
 prune .circleci
 prune .github
