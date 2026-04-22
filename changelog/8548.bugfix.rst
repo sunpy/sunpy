@@ -1,1 +1,0 @@
-Fixed an issue where saving or loading an ``astropy.table.QTable`` containing ``SkyCoord`` objects in ``sunpy.coordinates`` frames to/from FITS files would crash.
