@@ -5,7 +5,7 @@ repos:
       - id: zizmor
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.15.4"
+    rev: "v0.15.8"
     hooks:
       - id: ruff
         args: ["--fix"]
