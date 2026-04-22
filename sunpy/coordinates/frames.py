@@ -128,6 +128,9 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         super().__init_subclass__(**kwargs)
 
         # Register the class with Astropy's table serialization
+        # Astropy does not provide an API for registering (see https://github.com/astropy/astropy/issues/13689),
+        # so we have to update a private variable
+        # TODO: Refactor this approach once a public API for registration exists
         cls_name = f"{cls.__module__}.{cls.__name__}"
         # We have to use getattr()/setattr() to avoid triggering Python name mangling
         existing_classes = getattr(table_serialize, "__construct_mixin_classes")
