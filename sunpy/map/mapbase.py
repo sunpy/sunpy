@@ -3194,7 +3194,7 @@ class GenericMap(NDData):
             output_array, footprint = output_array
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_wcs.to_header(),
+        outmap = GenericMap(output_array, target_wcs.to_header(relax=True),
                             plot_settings=self.plot_settings)
 
         # Check rsun mismatch
