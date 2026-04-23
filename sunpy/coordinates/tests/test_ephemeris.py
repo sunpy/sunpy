@@ -169,12 +169,24 @@ def test_consistency_with_horizons(use_DE440s, obstime):
     assert solar_system_ephemeris.get() == 'de440s'
 
     obstime = sorted(obstime)
-    # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
+    # Check whether the location of Earth is the same between Astropy and JPL Horizons
     e1 = get_earth(obstime)
     e2 = get_horizons_coord('Geocenter', obstime)
     assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=50*u.m)
 
-    # Check whether the location of Mars is the same between Astropy and JPL HORIZONS
+    # Check whether the location of Mars is the same between Astropy and JPL Horizons
     e1 = get_body_heliographic_stonyhurst('mars', obstime)
     e2 = get_horizons_coord('Mars barycenter', obstime)
     assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)
+
+
+@pytest.mark.remote_data
+def test_get_horizons_coord_log_response(caplog):
+    get_horizons_coord('Mars Pathfinder', '1997-Jul-04', log_response=True)
+    spot_check = [
+        "Revised: Feb 13, 2021     Mars Pathfinder Spacecraft / (Sun)              -530",
+        "1996  Dec 04 06:58 Launch aboard a Delta II booster from KSC (Cape Canaveral)",
+        "mpf_crus                               1997-Feb-04 02:30  1997-Jul-04 16:52",
+    ]
+    for line in spot_check:
+        assert line in caplog.text
