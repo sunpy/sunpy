@@ -1,6 +1,26 @@
 # Exclude specific files
 # All files which are tracked by git and not explicitly excluded here are included by setuptools_scm
 exclude .codecov.yaml
+<<<<<<<
+=======
+exclude .coveragerc
+exclude .cruft.json
+exclude .gitignore
+exclude .isort.cfg
+exclude .pre-commit-config.yaml
+exclude .readthedocs.yaml
+exclude .rtd-environment.yml
+exclude .ruff.toml
+
+# Prune folders
+prune .github
+prune build
+prune changelog
+global-exclude *.pyc *.o
+# This subpackage is only used in development checkouts
+# and should not be included in built tarballs
+prune sunpy/_dev
+>>>>>>>
 exclude .editorconfig
 exclude .gitattributes
 exclude .gitignore
