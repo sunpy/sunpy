@@ -1,7 +1,5 @@
-import io
 import os
 from pathlib import Path
-from contextlib import redirect_stdout
 
 import pytest
 
@@ -59,10 +57,9 @@ def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     del os.environ["SUNPY_CONFIGDIR"]
 
 
-def test_print_config_files(tmpdir, tmp_path, undo_download_dir_patch):
-    with io.StringIO() as buf, redirect_stdout(buf):
-        print_config()
-        printed = buf.getvalue()
+def test_print_config_files(capsys, tmpdir, tmp_path, undo_download_dir_patch):
+    print_config()
+    printed = capsys.readouterr().out
     assert "time_format = %Y-%m-%d %H:%M:%S" in printed
     assert _find_config_files()[0] in printed
     assert get_and_create_download_dir() in printed
