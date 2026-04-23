@@ -195,7 +195,7 @@ jobs:
     steps:
       - uses: Cadair/matrix-notify-action@main  # zizmor: ignore[unpinned-uses]
         with:
-          workflow_description: "CI Workflow"
+          workflow_description: 'CI Workflow'
           matrix_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.MATRIX_HOMESERVER }}
