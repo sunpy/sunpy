@@ -1,26 +1,27 @@
 """
 ========================
-Artemis-II Solar Eclipse
+Artemis II Solar Eclipse
 ========================
 
 This example demonstrates how to process a solar eclipse image taken by the
-Artemis-II crew using a digital camera onboard the spacecraft during their
-Lunar flyby on April 7, 2026. Due to the relative positions of the Artemis II
+Artemis II crew.
+
+This photo was taken using a digital camera onboard the spacecraft during their
+Lunar flyby on April 7, 2026.  Due to the relative positions of the Artemis II
 spacecraft and the Moon, this eclipse provided nearly 54 minutes of totality,
-far exceeding what is possible on Earth. This example walks through turning
-one of those crew photos, a plain JPEG with EXIF metadata and no pointing
-information, into a `~sunpy.map.Map` with a Helioprojective WCS. Starting from
-raw JPEG images with EXIF metadata, the observation time is extracted. Then,
-the known positions of the Moon, Sun, and planets are retrieved from JPL
-Horizons via `sunpy.coordinates.get_horizons_coord` to build an initial
-Helioprojective WCS using `sunpy.map.header_helper.make_fitswcs_header`.
+far exceeding what is possible on Earth.
+
+This example walks through turning the photo, a plain JPEG with EXIF metadata
+and no pointing information, into a `~sunpy.map.Map` with a Helioprojective WCS.
+The observation time is constructed from the EXIF metadata, and the positions of
+the Moon, Sun, and planets are retrieved from `JPL Horizons <https://ssd.jpl.nasa.gov/horizons/>`__.
 The camera roll angle is refined by comparing the predicted and detected pixel
 positions of Saturn, Mars, and Mercury, identified automatically.
 
 Finally, the residual radial barrel distortion is modelled using a single
 `Simple Imaging Polynomial (SIP) <https://fits.gsfc.nasa.gov/registry/sip>`_
-3rd order coefficient derived from the planets positions. With the resulting
-calibrated `sunpy.map.Map` it is straightforward to overplot some space-based
+3rd order coefficient derived from the planet positions. With the resulting
+calibrated `~sunpy.map.Map` it is straightforward to overplot some space-based
 coronagraph data on top of the eclipse image.
 
 Image credit: NASA/Artemis II crew
@@ -102,9 +103,11 @@ del artemis_image_rbg
 # ================
 #
 # Let's now extract metadata stored in the JPEG image, in particular the date
-# and time the image was taken. The time stamp of the image is the key
-# information we need, as from this we can query JPL horizons for the positions
-# of Artemis II, the Sun, the Moon and the planets.
+# and time the image was taken.  From another example
+# (:ref:`sphx_glr_generated_gallery_showcase_artemis-ii-trajectory.py`), we
+# know that Artemis II was in eclipse between 00:34 UTC and 01:29 UTC.  Since
+# the EXIF timestamp already falls within this range, we infer that it is
+# already in UTC and should not have the EXIF time-zone offset applied.
 
 with Path(filename).open("rb") as f:
     tags = exifread.process_file(f)
@@ -117,15 +120,17 @@ print(obstime)
 hours, _ = [int(part) for part in tags['EXIF OffsetTime'].values.split(":")]
 offset = hours*u.hour
 
-# obstime = obstime + offset # It seems like the timezone or offset is set incorrectly
+# obstime = obstime + offset  # Shift the time to UTC as needed
 
 ###############################################################################
 # Get Coordinates
 # ===============
 #
 # To get the coordinates of the Artemis II spacecraft, the Sun, the Moon, and
-# the planets at the observation time, we query JPL Horizons.
-# Here we use the NAIF IDs for the bodies for the query.
+# the planets at the observation time, we query JPL Horizons using
+# :func:`~sunpy.coordinates.get_horizons_coord`.  Here we use the NAIF IDs for
+# the bodies for the query, particularly because some of planet names do not
+# return a single match when supplied as strings.
 
 NAIF_IDS = {
     "artemis_ii": -1024,
@@ -152,7 +157,9 @@ coords =  {name: get_horizons_coord(str(id), obstime) for name, id in NAIF_IDS.i
 # combined with the Moon's known angular size, we can estimate the plate scale.
 #
 # Here we use canny edge detection and circular Hough filtering to obtain the
-# Moon's limb and center.
+# Moon's limb and center.  See the scikit-image documentation
+# :ref:`skimage:sphx_glr_auto_examples_edges_plot_circular_elliptical_hough_transform.py`
+# for more information on the functions used here.
 #
 # First pass on a downscaled version is used to get an estimate, which is
 # used to extract the region of interest (ROI) for full resolution pass.
@@ -199,7 +206,7 @@ hough_res = hough_circle(edges, hough_radii).astype(np.float32) #  reduce peak m
 
 accums, cx, cy, radii = hough_circle_peaks(hough_res, hough_radii, total_num_peaks=1)
 
-print(f"High res pass moon_x: {cx[0] + slice_x.start}, moon_y: {cy[0]+slice_y.start}, moon_r: {radii}")
+print(f"High res pass moon_x: {cx[0] + slice_x.start}, moon_y: {cy[0]+slice_y.start}, moon_r: {radii[0]}")
 
 ###############################################################################
 # Plot edge detection and Hough filtering results
@@ -223,7 +230,7 @@ fig.legend()
 # Create metadata
 # ================
 #
-# Build up  the metadata required to make a `sunpy.map.Map`
+# Build up the metadata required to make a `~sunpy.map.Map`
 # Here we calculate the reference pixel, and plate scale.
 
 im_cx = (cx[0] + slice_x.start) * u.pix
@@ -243,8 +250,8 @@ print(plate_scale)
 # Make a Map
 # ==========
 #
-# Make a `sunpy.map.Map` using the metadata obtained so far using
-# `sunpy.map.header_helper.make_fitswcs_header`.
+# Make a `~sunpy.map.Map` using the metadata obtained so far using
+# :func:`~sunpy.map.header_helper.make_fitswcs_header`.
 
 frame = Helioprojective(observer=coords['artemis_ii'], obstime=obstime)
 moon_hpc = coords['moon'].transform_to(frame)
@@ -307,8 +314,8 @@ fig.tight_layout()
 # ===============
 #
 # A clear roll is visible, so the positions of the planets are used to
-# estimate the camera orientation. Use `skimage.feature.peak_local_max` to
-# find the brightest peaks, which should correspond to the planets.
+# estimate the camera orientation. Use :func:`skimage.feature.peak_local_max`
+# to find the brightest peaks, which should correspond to the planets.
 
 if downsampled:
     planets_pixels = peak_local_max(artemis_image, threshold_abs=0.9, num_peaks=3, min_distance=30)
@@ -350,12 +357,11 @@ planets_pixel = CartesianRepresentation(*artemis_map.wcs.world_to_pixel(planets_
 vec_expected = planets_pixel - moon_pixel
 vec_actual = actual_planets_pixel - moon_pixel
 roll_angles = -np.arccos(vec_expected.dot(vec_actual) / (vec_expected.norm() * vec_actual.norm()))
+print(roll_angles.to('deg'))
 
 weights = sep[planet_index].to(u.deg).value
-roll_angles_weighted = np.average(roll_angles, weights=weights)
-print(roll_angles.to('deg'))
-print(roll_angles.mean().to('deg'))
-print(f"Weighted roll: {np.degrees(roll_angles_weighted):.4f} deg")
+roll_angles_weighted = np.average(roll_angles, weights=weights).to('deg')
+print(f"Weighted roll: {roll_angles_weighted:.4f}")
 
 ###############################################################################
 # Use derived roll and make new header and map
@@ -365,7 +371,7 @@ header_roll = make_fitswcs_header(
     moon_hpc,
     reference_pixel=u.Quantity([im_cx, im_cy]),
     scale=u.Quantity([plate_scale, plate_scale]),
-    rotation_angle=-roll_angles_weighted.to('deg')
+    rotation_angle=-roll_angles_weighted
 )
 
 artemis_map_roll = Map(artemis_image, header_roll)
@@ -463,12 +469,12 @@ fig.tight_layout()
 # First step is to fetch the images from Helioviewer.
 
 lasco_c2_file = hvpy.save_file(hvpy.getJP2Image(obstime.datetime,
-                                                 DataSource.LASCO_C2.value),
-                                filename=get_and_create_download_dir() + "/LASCO_C2.jp2", overwrite=True)
+                                                DataSource.LASCO_C2.value),
+                               filename=get_and_create_download_dir() + "/LASCO_C2.jp2", overwrite=True)
 lasco_c2_map = Map(lasco_c2_file)
 lasco_c3_file = hvpy.save_file(hvpy.getJP2Image(obstime.datetime,
-                                                 DataSource.LASCO_C3.value),
-                                filename=get_and_create_download_dir() + "/LASCO_C3.jp2", overwrite=True)
+                                                DataSource.LASCO_C3.value),
+                               filename=get_and_create_download_dir() + "/LASCO_C3.jp2", overwrite=True)
 lasco_c3_map = Map(lasco_c3_file)
 
 ###############################################################################
@@ -487,7 +493,7 @@ with SphericalScreen(coords["artemis_ii"]):
 all_hpc = sunpy.map.all_coordinates_from_map(c3_map_img)
 
 # Calculate the angular offset from the center of the moon for each pixel.
-moon_cen_offsets = all_hpc.separation(coords['moon'])
+moon_cen_offsets = all_hpc.separation(coords['moon'], origin_mismatch='ignore')
 
 # Create a mask which is True for all offsets greater than the
 # observed angular width of the moon.
@@ -505,9 +511,9 @@ c2_map_img.mask = c2_map_img.data < 10
 
 fig, ax = plot_artemis_map(artemis_map_final, moon_hpc, planets)
 
-# Overplot both LASCO images, with autoalign off as we already reprojected them.
-c3_map_img.plot(axes=ax, autoalign=False)
-c2_map_img.plot(axes=ax, autoalign=False)
+# Overplot both LASCO images
+c3_map_img.plot(axes=ax)
+c2_map_img.plot(axes=ax)
 
 ax.set_title(f"Artemis-II Solar Eclipse {obstime}")
 fig.tight_layout()
