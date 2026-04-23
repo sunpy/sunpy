@@ -556,6 +556,20 @@ def test_timeseries_array():
     assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
 
 
+def test_text_summary_astropy_time_index():
+    # Regression test for https://github.com/sunpy/sunpy/issues/7932
+    # _text_summary() raised AttributeError when the DataFrame index held
+    # astropy.time.Time objects instead of numpy datetime64 values.
+    times = parse_time("2024-01-01") - TimeDelta(np.arange(5) * u.minute)
+    intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 5))
+    df = pd.DataFrame(intensity, index=times, columns=['intensity'])
+    ts = sunpy.timeseries.TimeSeries(df, {}, {'intensity': u.W / u.m**2})
+    summary = ts._text_summary()
+    assert 'Center Date' in summary
+    assert 'Start Date' in summary
+    assert 'End Date' in summary
+
+
 # TODO:
 # _validate_units
 # _validate_meta
