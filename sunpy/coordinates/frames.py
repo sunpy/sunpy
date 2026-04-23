@@ -141,12 +141,23 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         tag = f"!{cls_name}"
 
         def representer(dumper, obj):
-            mapping = obj.info._represent_as_dict()
+            if hasattr(obj, "info") and hasattr(obj.info, "_represent_as_dict"):
+                mapping = obj.info._represent_as_dict()
+            else:
+                # Fallback for astropy < 7.0 where BaseCoordinateFrame did not have .info
+                mapping = {c: getattr(obj, c) for c in obj.representation_component_names}
+                for attr in obj.frame_attributes:
+                    mapping[attr] = getattr(obj, attr)
+                mapping['representation_type'] = obj.representation_type.name
             return dumper.represent_mapping(tag, mapping)
 
         def constructor(loader, node):
             mapping = loader.construct_mapping(node)
-            return cls.info._construct_from_dict(mapping)
+            if hasattr(cls, "info") and hasattr(cls.info, "_construct_from_dict"):
+                return cls.info._construct_from_dict(mapping)
+            else:
+                # Fallback for astropy < 7.0
+                return cls(**mapping)
 
         AstropyDumper.add_multi_representer(cls, representer)
         AstropyLoader.add_constructor(tag, constructor)
