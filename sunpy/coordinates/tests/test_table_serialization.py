@@ -44,7 +44,7 @@ def coords(request):
 def test_qtable_sunpy_coordinate_roundtrip(tmp_path, coords, fmt):
     # Older versions of astropy (< 7.0) do not support coordinate frames as mixins in tables,
     # specifically for array-valued attributes like the observer in this test.
-    if not coords.observer.isscalar and not minversion("astropy", "7.0") and fmt in ["fits", "parquet"]:
+    if not coords.observer.isscalar and not minversion("astropy", "7.0"):
         pytest.skip("Array-valued frame attributes require astropy >= 7.0 for serialization in some formats.")
 
     original = QTable()

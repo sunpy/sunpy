@@ -148,7 +148,12 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
                 mapping = {c: getattr(obj, c) for c in obj.representation_component_names}
                 for attr in obj.frame_attributes:
                     mapping[attr] = getattr(obj, attr)
-                mapping['representation_type'] = obj.representation_type.name
+                if hasattr(obj.representation_type, 'name'):
+                    mapping['representation_type'] = obj.representation_type.name
+                elif hasattr(obj.representation_type, 'get_name'):
+                    mapping['representation_type'] = obj.representation_type.get_name()
+                else:
+                    mapping['representation_type'] = obj.representation_type.__name__
             return dumper.represent_mapping(tag, mapping)
 
         def constructor(loader, node):
