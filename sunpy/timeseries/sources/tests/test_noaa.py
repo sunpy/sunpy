@@ -1,4 +1,5 @@
 import pytest
+from matplotlib.figure import Figure
 
 import sunpy.timeseries
 from sunpy.data.test import get_test_filepath
@@ -25,7 +26,9 @@ def test_noaa_pre_json():
 
 
 def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
-    ax = noaa_pre_json_test_ts.plot(columns=['sunspot', 'sunspot high', 'sunspot low'])
+    fig = Figure()
+    ax = fig.add_subplot()
+    noaa_pre_json_test_ts.plot(axes=ax, columns=['sunspot', 'sunspot high', 'sunspot low'])
     assert len(ax.lines) == 3
     assert 'sunspot' == ax.lines[0].get_label()
     assert 'sunspot high' == ax.lines[1].get_label()
@@ -33,7 +36,9 @@ def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
 
 
 def test_noaa_json_ind_plot_column(noaa_ind_json_test_ts):
-    ax = noaa_ind_json_test_ts.plot(columns=['sunspot SWO', 'sunspot SWO smooth'])
+    fig = Figure()
+    ax = fig.add_subplot()
+    noaa_ind_json_test_ts.plot(axes=ax, columns=['sunspot SWO', 'sunspot SWO smooth'])
     assert len(ax.lines) == 2
     assert 'sunspot SWO' == ax.lines[0].get_label()
     assert 'sunspot SWO smooth' == ax.lines[1].get_label()
