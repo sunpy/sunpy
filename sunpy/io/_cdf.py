@@ -17,6 +17,9 @@ from sunpy.util.exceptions import warn_user
 
 __all__ = ['read_cdf']
 
+# Force initialization of leapsecond table to avoid potential race condition when threading
+CDFepoch.breakdown_tt2000(0)
+
 
 def read_cdf(fname, **kwargs):
     """
