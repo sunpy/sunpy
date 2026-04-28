@@ -7,6 +7,8 @@ from sunpy.net import attr
 from sunpy.net.attr import AttrMeta, make_tuple
 from sunpy.net.dataretriever import GenericClient
 
+pytestmark = pytest.mark.thread_unsafe(reason="uses shared Attr registry")
+
 
 class Instrument(attr.SimpleAttr):
     """

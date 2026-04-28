@@ -25,6 +25,7 @@ def test_noaa_pre_json():
     assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
 
+@pytest.mark.thread_unsafe(reason="pandas registers/deregisters converters to the matplotlib global registry")
 def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
     fig = Figure()
     ax = fig.add_subplot()
@@ -35,6 +36,7 @@ def test_noaa_json_pre_plot_column(noaa_pre_json_test_ts):
     assert 'sunspot low' == ax.lines[2].get_label()
 
 
+@pytest.mark.thread_unsafe(reason="pandas registers/deregisters converters to the matplotlib global registry")
 def test_noaa_json_ind_plot_column(noaa_ind_json_test_ts):
     fig = Figure()
     ax = fig.add_subplot()

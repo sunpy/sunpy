@@ -21,6 +21,8 @@ from sunpy.util.config import (
     print_config,
 )
 
+pytestmark = pytest.mark.thread_unsafe(reason="modifies environment variable and filesystem")
+
 USER = os.path.expanduser('~')
 
 
