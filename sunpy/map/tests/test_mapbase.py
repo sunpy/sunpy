@@ -391,6 +391,7 @@ def test_units(generic_map):
     assert generic_map.spatial_units == ('arcsec', 'arcsec')
 
 
+@pytest.mark.thread_unsafe(reason="bug fixed in matplotlib dev")
 def test_cmap(generic_map):
     assert generic_map.cmap == matplotlib.colormaps['gray']
 

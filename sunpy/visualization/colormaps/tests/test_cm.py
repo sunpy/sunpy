@@ -30,6 +30,8 @@ def test_invalid_suit_filter(invalid_filter):
     with pytest.raises(ValueError, match=r"Invalid Band"):
         ct.suit_color_table(invalid_filter)
 
+
+@pytest.mark.thread_unsafe(reason="bug fixed in matplotlib dev")
 # Checks that colormaps are imported by MPL
 def test_get_cmap():
     for cmap in cm.cmlist.keys():
