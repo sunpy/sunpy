@@ -11,9 +11,11 @@ from tempfile import NamedTemporaryFile
 from collections import OrderedDict
 from collections.abc import Iterable
 
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.figure import Figure
 
 import astropy
 import astropy.units as u
@@ -286,59 +288,46 @@ class GenericTimeSeries:
                 'tab:green', 'tab:olive', 'tab:cyan', 'palegreen', 'pink'
                 ]
         dat = self.to_dataframe()
-        fig, axs = plt.subplots(
+        fig = Figure(figsize=(6, 10), layout="constrained")
+        axs = fig.subplots(
             nrows=len(self.columns),
             ncols=1,
             sharex=True,
-            constrained_layout=True,
-            figsize=(6, 10),
         )
-        # If all channels have the same unit, then one shared y-axis
-        # label is set. Otherwise, each subplot has its own yaxis label.
-        for i in range(len(self.columns)):
-            if len(self.columns) == 1:
-                axs.plot(
-                    dat.index,
-                    dat[self.columns[i]].values,
-                    color=cols[i%len(cols)],
-                    label=self.columns[i],
-                )
-                if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
-                    axs.set_yscale("log")
-                axs.legend(frameon=False, handlelength=0)
-                axs.set_ylabel(self.units[self.columns[i]])
-            else:
-                axs[i].plot(
-                    dat.index,
-                    dat[self.columns[i]].values,
-                    color=cols[i%len(cols)],
-                    label=self.columns[i],
-                )
-                if (dat[self.columns[i]].values < 0).any() is np.bool_(False):
-                    axs[i].set_yscale("log")
-                axs[i].legend(frameon=False, handlelength=0)
-                axs[i].set_ylabel(self.units[self.columns[i]])
-        plt.xticks(rotation=30)
+        for i, (ax, column) in enumerate(zip(axs, self.columns)):
+            values = dat[column].values
+            ax.plot(
+                dat.index,
+                values,
+                color=cols[i%len(cols)],
+                label=column,
+            )
+            if np.all(values >= 0):
+                axs[i].set_yscale("log")
+            ax.legend(frameon=False, handlelength=0)
+            ax.set_ylabel(self.units[column])
+            ax.tick_params("x", rotation=30)
         spc = _figure_to_base64(fig)
-        plt.close(fig)
         # Make histograms for each column of data. The histograms are
         # created using the Astropy hist method that uses Scott's rule
         # for bin sizes.
         hlist = []
-        for i in range(len(dat.columns)):
-            if set(np.isnan(dat[self.columns[i]].values)) != {True}:
-                fig = plt.figure(figsize=(5, 3), constrained_layout=True)
+        for i, column in enumerate(dat.columns):
+            values = dat[column].values
+            if np.any(np.isfinite(values)):
+                fig = Figure(figsize=(5, 3), layout="constrained")
+                ax = fig.add_subplot()
                 hist(
-                    dat[self.columns[i]].values[~np.isnan(dat[self.columns[i]].values)],
+                    values[np.isfinite(values)],
+                    ax=ax,
                     log=True,
                     bins="scott",
                     color=cols[i%len(cols)],
                 )
-                plt.title(self.columns[i] + " [click for other channels]")
-                plt.xlabel(self.units[self.columns[i]])
-                plt.ylabel("# of occurrences")
+                ax.set_title(column + " [click for other channels]")
+                ax.set_xlabel(self.units[column])
+                ax.set_ylabel("# of occurrences")
                 hlist.append(_figure_to_base64(fig))
-                plt.close(fig)
 
         # This loop creates a formatted list of base64 images that is passed
         # directly into the JS script below, so all images are written into
@@ -720,8 +709,6 @@ class GenericTimeSeries:
         Validate data for plotting, and get default axes/columns if not passed
         by the user.
         """
-        import matplotlib.pyplot as plt
-
         self._validate_data_for_plotting()
         if columns is None:
             columns = self.columns
@@ -738,7 +725,6 @@ class GenericTimeSeries:
         """
         Shared code to set x-axis properties.
         """
-        import matplotlib.dates as mdates
         if isinstance(ax, np.ndarray):
             ax = ax[-1]
 
@@ -766,8 +752,6 @@ class GenericTimeSeries:
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
         """
-        import matplotlib.pyplot as plt
-
         # Now make the plot
         figure = plt.figure()
         self.plot(columns=columns, **kwargs)
