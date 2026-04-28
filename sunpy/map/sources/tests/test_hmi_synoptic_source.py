@@ -1,3 +1,5 @@
+import copy
+
 import pytest
 
 import astropy.units as u
@@ -49,6 +51,7 @@ def test_private_date_setters(hmi_synoptic):
 
 
 def test_unit(hmi_synoptic):
+    hmi_synoptic = copy.deepcopy(hmi_synoptic)  # for thread safety
     assert hmi_synoptic.unit == u.G
     assert hmi_synoptic.unit == u.Unit("Mx/cm^2")
     assert hmi_synoptic.unit.to_string() == 'Mx / cm2'

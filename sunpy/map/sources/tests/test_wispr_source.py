@@ -1,4 +1,5 @@
 """Tests for PSP/WISPR"""
+import copy
 from textwrap import dedent
 
 import numpy as np
@@ -291,6 +292,7 @@ def test_exposure_time(wispr_map):
 def test_processing_level(wispr_map):
     assert wispr_map.processing_level == 1
 
+    wispr_map = copy.deepcopy(wispr_map)  # for thread safety
     for value, expected in [
             ('L1', 1),
             ('L2', 2),
@@ -303,6 +305,8 @@ def test_processing_level(wispr_map):
 
 def test_detector(wispr_map):
     assert wispr_map.detector == 'Outer'
+
+    wispr_map = copy.deepcopy(wispr_map)  # for thread safety
 
     wispr_map.meta['DETECTOR'] = 1
     assert wispr_map.detector == 'Inner'
