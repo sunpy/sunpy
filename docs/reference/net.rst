@@ -79,6 +79,7 @@ HELIO
 .. automodapi:: sunpy.net.helio.attrs
    :headings: ^"
 
+
 SOLARNET
 --------
 
@@ -88,6 +89,15 @@ SOLARNET
 .. automodapi:: sunpy.net.solarnet.attrs
    :headings: ^"
 
+
+SOAR
+----
+
+.. automodapi:: sunpy.net.soar
+   :no-inheritance-diagram:
+
+.. automodapi:: sunpy.net.soar.attrs
+   :no-inheritance-diagram:
 
 Internal Classes and Functions
 ==============================

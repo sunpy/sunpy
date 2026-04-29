@@ -1,0 +1,12 @@
+{
+  "EPD": "Energetic Particle Detector",
+  "EUI": "Extreme UV Imager",
+  "MAG": "Magnetometer",
+  "METIS": "Metis: Visible light and ultraviolet coronagraph",
+  "PHI": "Polarimetric and Helioseismic Imager",
+  "RPW": "Radio and Plasma Wave instrument",
+  "SOLOHI": "Solar Orbiter Heliospheric Imager",
+  "SPICE": "SPectral Investigation of the Coronal Environment",
+  "STIX": "Spectrometer Telescope for Imaging X-rays",
+  "SWA": "Solar Wind Analyser"
+}
