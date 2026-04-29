@@ -3,15 +3,17 @@ This file defines the SOARClient class which is used to access the Solar
 Orbiter Archive (SOAR).
 """
 
+import re
 import json
 import pathlib
-import re
 from copy import copy
 from json.decoder import JSONDecodeError
 
+import requests
+
 import astropy.table
 import astropy.units as u
-import requests
+
 import sunpy.net.attrs as a
 from sunpy import log
 from sunpy.net.attr import and_
@@ -298,8 +300,7 @@ class SOARClient(BaseClient):
         bool
             True if this client can handle the given query.
         """
-        from sunpy.net.soar.attrs import (SOOP, Distance, Product,  # NOQA: PLC0415
-                                      Sensor)
+        from sunpy.net.soar.attrs import SOOP, Distance, Product, Sensor  # NOQA: PLC0415
 
         required = {Distance} if any(isinstance(q, Distance) for q in query) else {a.Time}
         optional = {

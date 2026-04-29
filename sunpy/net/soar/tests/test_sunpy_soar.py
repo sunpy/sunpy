@@ -1,16 +1,17 @@
 from pathlib import Path
 
-import astropy.units as u
 import pytest
 import responses
-import sunpy.map
 from requests.exceptions import HTTPError
+
+import astropy.units as u
+
+import sunpy.map
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.base_client import QueryResponseTable
-from sunpy.util.exceptions import SunpyUserWarning
-
 from sunpy.net.soar.client import SOARClient
+from sunpy.util.exceptions import SunpyUserWarning
 
 SUNPY_VERSION = (sunpy.version.major, sunpy.version.minor)
 

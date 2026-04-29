@@ -9,6 +9,7 @@ Here, we will build a search for METIS data from the UVD (Ultra Violet Detector)
 """
 
 import astropy.units as u
+
 import sunpy.net.attrs as a
 from sunpy.net import Fido
 

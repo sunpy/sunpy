@@ -1,9 +1,10 @@
-import astropy.units as u
 import pytest
-import sunpy.net.attrs as a
-from sunpy.util.exceptions import SunpyUserWarning
 
+import astropy.units as u
+
+import sunpy.net.attrs as a
 from sunpy.net.soar._attrs import SOOP, Distance, Product, Sensor, walker
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 def _apply(attr):

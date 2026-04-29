@@ -7,10 +7,10 @@ The attrs are imported from ``attrs.py`` to ensure the namespace is clean.
 import warnings
 
 import astropy.units as u
-import sunpy.net.attrs as a
 from astropy.units import quantity_input
-from sunpy.net.attr import (AttrAnd, AttrOr, AttrWalker, DataAttr, Range,
-                            SimpleAttr)
+
+import sunpy.net.attrs as a
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, Range, SimpleAttr
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ["SOOP", "Distance", "Product"]

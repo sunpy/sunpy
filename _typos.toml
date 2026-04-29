@@ -33,4 +33,6 @@ default.extend-ignore-identifiers-re = [
     "aso",
     "gae",
     "GAE",
+    "soop",
+    "SOOP",
 ]
