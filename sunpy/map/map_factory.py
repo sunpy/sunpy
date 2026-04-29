@@ -54,14 +54,16 @@ class MapFactory(BasicRegistrationFactory):
     \\*inputs
         Inputs to parse for map objects. This can be one or more of the following:
 
-        - A string or `~pathlib.Path` object pointing to a FITS file.
-        - A directory containing FITS files (if there is more than one FITS file in the directory, it will return a list of Map objects).
-        - A tuple containing a data array and a header (for modifying the data or header).
-        - A `~sunpy.util.metadata.MetaDict` object, which includes data and metadata as a dictionary-like object.
-        - An `astropy.wcs.WCS` object, which represents the World Coordinate System for the data.
-        - A glob pattern to match multiple FITS files (e.g., ``eit_*.fits``).
-        - A URL pointing to a FITS file (can be remote).
-        - A combination of any of the above inputs.
+        - A string or `~pathlib.Path` object pointing to a file.
+        - A directory containing files.
+        - A glob pattern matching multiple files (for example, ``eit_*.fits``).
+        - A URL or URI pointing to a file (can be remote).
+        - An existing `~sunpy.map.GenericMap`.
+        - A tuple of ``(data, metadata)`` or ``(data, wcs)``, where metadata is a `dict` (including `~sunpy.util.metadata.MetaDict`) or an `astropy.io.fits.Header`, and ``wcs`` is an `astropy.wcs.WCS`.
+        - A data array followed immediately by that same metadata or `astropy.wcs.WCS`.
+
+        These inputs can be mixed in one call, but any data array must be
+        immediately followed by its metadata or WCS.
 
     sequence : `bool`, optional
         Return a `sunpy.map.MapSequence` object comprised of all the parsed maps.
@@ -188,8 +190,20 @@ class MapFactory(BasicRegistrationFactory):
                 continue
 
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
+                if i + 1 >= len(args):
+                    raise ValueError(
+                        "Array inputs to sunpy.map.Map must be followed by a header-like "
+                        "object or an astropy.wcs.WCS instance. If you meant to pass "
+                        "multiple filenames, use a Python list rather than a NumPy array."
+                    )
+
                 # The next two items are data and a header
                 data, header = args[i:i+2]
+                if not isinstance(header, WCS) and not self._validate_meta(header):
+                    raise ValueError(
+                        "Array inputs to sunpy.map.Map must be followed by a header-like "
+                        f"object or an astropy.wcs.WCS instance, but got {type(header).__name__}."
+                    )
                 parsed_args.append((data, header))
                 skip_next = True
             elif isinstance(arg, str) and is_url(arg):
@@ -236,7 +250,7 @@ class MapFactory(BasicRegistrationFactory):
         # Data-header or data-WCS pair
         data, header = arg
         if isinstance(header, WCS):
-            header = header.to_header()
+            header = header.to_header(relax=True)
 
         pair = data, header
         if self._validate_meta(header):

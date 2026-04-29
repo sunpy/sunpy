@@ -1,0 +1,1 @@
+Added an option to :func:`~sunpy.coordinates.get_horizons_coord` to print out the response from JPL Horizons, which can contain useful contextual details.

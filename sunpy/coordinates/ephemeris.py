@@ -192,9 +192,10 @@ def get_earth(time='now', *, include_velocity=False):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False):
+def get_horizons_coord(body, time='now', id_type=None, *,
+                       include_velocity=False, log_response=False):
     """
-    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
+    Queries JPL Horizons and returns a `~astropy.coordinates.SkyCoord` for the location of a
     solar-system body at a specified time. This location is the instantaneous or "true" location,
     and is not corrected for light travel time or observer motion.
 
@@ -224,6 +225,11 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
 
     include_velocity : `bool`, optional
         If True, include the body's velocity in the output coordinate. Defaults to False.
+    log_response : `bool`, optional
+        If True, send the received response to the logger at the INFO level.  This
+        is useful for viewing/recording the associated details (e.g., the source of
+        the trajectory information) provided by JPL Horizons.
+        Defaults to False.
 
     Returns
     -------
@@ -232,14 +238,14 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
 
     Notes
     -----
-    Be aware that there can be discrepancies between the coordinates returned by JPL HORIZONS,
+    Be aware that there can be discrepancies between the coordinates returned by JPL Horizons,
     the coordinates reported in mission data files, and the coordinates returned by
     `~sunpy.coordinates.get_body_heliographic_stonyhurst`.
 
     References
     ----------
-    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`__
-    * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`__
+    * `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`__
+    * `JPL Horizons form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`__
 
     Examples
     --------
@@ -250,28 +256,28 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     Query the location of Venus
 
     >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL Horizons location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-33.93155836, -1.64998443, 0.71915147)>
 
     Query the location of the SDO spacecraft
 
     >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spacecraft) (-136395) [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL Horizons location for Solar Dynamics Observatory (spacecraft) (-136395) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.01019118, 3.29640728, 0.99011042)>
 
     Query the location of the SOHO spacecraft via its ID number (-21)
 
     >>> get_horizons_coord(-21, '2004-05-06 11:22:33')  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL Horizons location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0.25234902, -3.55863633, 0.99923086)>
 
     Query the location and velocity of the asteroid Juno
 
     >>> get_horizons_coord('Juno', '1995-07-18 07:17', 'smallbody', include_velocity=True)  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for 3 Juno (A804 RA) [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL Horizons location for 3 Juno (A804 RA) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=1995-07-18T07:17:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (-25.16107532, 14.59098438, 3.17667664)
      (d_lon, d_lat, d_radius) in (arcsec / s, arcsec / s, km / s)
@@ -283,7 +289,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     ...                    time={{'start': '2020-12-01',
     ...                           'stop': '2020-12-02',
     ...                           'step': '12'}})  # doctest: +REMOTE_DATA
-    INFO: Obtained JPL HORIZONS location for Solar Orbiter (spacecraft) (-144) [sunpy.coordinates.ephemeris]
+    INFO: Obtained JPL Horizons location for Solar Orbiter (spacecraft) (-144) [sunpy.coordinates.ephemeris]
     ...
     """
     # Reference plane defaults to the ecliptic (IAU 1976 definition)
@@ -327,7 +333,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         args['TLIST_TYPE'] = 'JD'  # needs to be explicitly set to avoid potential MJD confusion
 
     contents = "!$$SOF\n" + '\n'.join(f"{k}={v}" for k, v in args.items())
-    log.debug(f"JPL HORIZONS query via POST request:\n{contents}")
+    log.debug(f"JPL Horizons query via POST request:\n{contents}")
 
     output = requests.post('https://ssd.jpl.nasa.gov/api/horizons_file.api',
                            data={'format': 'text'}, files={'input': contents})
@@ -339,7 +345,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
     for index, line in enumerate(lines):
         if line.startswith("Target body name:"):
             target_name = re.search(r': (.*) {', line).group(1)
-            log.info(f"Obtained JPL HORIZONS location for {target_name}")
+            log.info(f"Obtained JPL Horizons location for {target_name}")
 
         if "Multiple major-bodies match string" in line:
             error_message = '\n'.join(lines[index:-1])
@@ -365,7 +371,10 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         if error_message:
             raise ValueError(error_message)
         else:
-            raise RuntimeError(f"Unknown JPL HORIZONS error:\n{output.text}")
+            raise RuntimeError(f"Unknown JPL Horizons error:\n{output.text}")
+
+    if log_response:
+        log.info(f"Response from JPL Horizons:\n{output.text}")
 
     column_names = [name.strip() for name in lines[start_index - 3].split(',')]
     result = ascii.read(lines[start_index:stop_index], names=column_names)
@@ -374,7 +383,7 @@ def get_horizons_coord(body, time='now', id_type=None, *, include_velocity=False
         obstime_tdb = parse_time(result['JDTDB'], format='jd', scale='tdb')
         obstime = Time(obstime_tdb, format='isot', scale='utc')
     else:
-        # JPL HORIZONS results are sorted by observation time, so this sorting needs to be undone.
+        # JPL Horizons results are sorted by observation time, so this sorting needs to be undone.
         # Calling argsort() on an array returns the sequence of indices of the unsorted list to put the
         # list in order. Calling argsort() again on the output of argsort() reverses the mapping:
         # the output is the sequence of indices of the sorted list to put that list back in the

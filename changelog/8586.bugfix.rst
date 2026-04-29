@@ -1,0 +1,1 @@
+Fixed bugs where SIP distortion information was ignored when creating a `~sunpy.map.Map` using a `~astropy.wcs.WCS` instance with SIP information.
