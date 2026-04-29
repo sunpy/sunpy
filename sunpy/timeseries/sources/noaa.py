@@ -249,9 +249,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes, columns = self._setup_axes_columns(axes, columns)
 
         dataframe = self.to_dataframe()
-        dataframe['sunspot'].plot(color='b', **plot_args)
-        dataframe['sunspot high'].plot(linestyle='--', color='b', **plot_args)
-        dataframe['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        dataframe['sunspot'].plot(ax=axes, color='b', **plot_args)
+        dataframe['sunspot high'].plot(ax=axes, linestyle='--', color='b', **plot_args)
+        dataframe['sunspot low'].plot(ax=axes, linestyle='--', color='b', **plot_args)
         axes.set_ylim(0)
         axes.set_ylabel('Sunspot Number')
         axes.yaxis.grid(True, 'major')
