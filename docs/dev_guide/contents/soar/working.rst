@@ -13,7 +13,6 @@ Here is an example of how to specify the time range for the data you want to ret
 
     import sunpy.net.attrs as a
     from sunpy.net import Fido
-    import sunpy.net.soar
 
     instrument = a.Instrument("EUI")
     time = a.Time("2021-02-01", "2021-02-02")

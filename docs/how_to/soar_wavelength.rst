@@ -19,7 +19,6 @@ When a single wavelength is provided it is interpreted as the wavelength.
     >>> import astropy.units as u
     >>> import sunpy.net.attrs as a
     >>> from sunpy.net import Fido
-    >>> import sunpy.net.soar
 
     >>> instrument = a.Instrument("METIS")
     >>> time = a.Time("2023-02-01 01:00", "2023-02-01 05:00")

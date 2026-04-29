@@ -11,11 +11,6 @@ import sunpy.net.attrs as a
 from sunpy.net import Fido
 
 ###############################################################################
-# Importing sunpy.net.soar registers the client with sunpy Fido
-
-import sunpy.net.soar  # NOQA: F401 isort:skip
-
-###############################################################################
 # We shall construct a search query with instrument, time, level, and sensor attributes.
 
 result = Fido.search(

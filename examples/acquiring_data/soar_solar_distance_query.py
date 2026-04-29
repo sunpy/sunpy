@@ -11,12 +11,9 @@ The ``Distance`` attribute allows us to specify a range of distances from the Su
 """
 
 import astropy.units as u
-import sunpy.net.attrs as a
-from sunpy.net import Fido
 
-###############################################################################
-# Importing sunpy.net.soar registers the client with sunpy Fido
-import sunpy.net.soar  # NOQA: F401
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # We shall start with constructing a search query with instrument, level, detector, and distance.

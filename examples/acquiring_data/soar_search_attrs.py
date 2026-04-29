@@ -10,11 +10,6 @@ for SOAR currently supported by ``sunpy-soar``.
 import sunpy.net.attrs as a
 
 #####################################################
-# Importing sunpy.net.soar registers the client with sunpy
-
-import sunpy.net.soar  # NOQA: F401 isort:skip
-
-#####################################################
 # The easiest way to access search attributes is using
 # the attribute registry provided by `sunpy.net.attrs`.
 #

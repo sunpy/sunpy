@@ -10,11 +10,6 @@ import sunpy.net.attrs as a
 from sunpy.net import Fido
 
 #####################################################
-# Importing sunpy.net.soar registers the client with sunpy
-
-import sunpy.net.soar  # NOQA: F401 isort:skip
-
-#####################################################
 # We shall start with constructing a search query.
 
 instrument = a.Instrument("EUI")
