@@ -31,15 +31,13 @@ Using the example below,
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    680 Results from the SOARClient:
+    ... Results from the SOARClient:
     <BLANKLINE>
-    Instrument     Data product    Level        Start time               End time        Filesize SOOP Name
+    Instrument     Data product    Level        Start time               End time        Filesize SOOP Name Sensor
                                                                                           Mbyte
-    ---------- ------------------- ----- ----------------------- ----------------------- -------- ---------
-           RPW rpw-tds-surv-hist2d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.084      none
+    ---------- ------------------- ----- ----------------------- ----------------------- -------- --------- ------
+           RPW rpw-tds-surv-hist2d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.084      none    TDS
     ...
-    <BLANKLINE>
-    <BLANKLINE>
 
 Here the query's "REQUEST" type to "doQueryFilteredByDistance", which is a special method that filters the entire database based on the specified distance value.
 

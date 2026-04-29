@@ -1,10 +1,10 @@
 """
-=============================================================
-Searching for EPD/EPT data with the `a.soar.Sensor` attribute
-=============================================================
+===============================================================
+Searching for EPD/EPT data with the ``a.soar.Sensor`` attribute
+===============================================================
 
 This example demonstrates how to search and download Solar Orbiter data for a specific instrument sensor.
-Here, we will build a query for EPD data, specifically from the EPT sensor using ``a.soar.Sensor``.
+Here, we will build a query for EPD data, specifically from the EPT sensor using `a.soar.Sensor <sunpy.net.soar.attrs.Sensor>`.
 """
 
 import sunpy.net.attrs as a
