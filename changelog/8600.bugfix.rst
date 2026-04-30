@@ -1,0 +1,1 @@
+Fixed a bug where `~sunpy.timeseries.sources.NOAAPredictIndicesTimeSeries` would always plot to the current pyplot-managed axes even when a different axes was specified.
