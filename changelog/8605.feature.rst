@@ -1,0 +1,2 @@
+Merge the ``sunpy-soar`` package into sunpy.
+This enables querying the `Solar Orbiter Archive <https://soar.esac.esa.int/soar/>`__ without installing any extra packages.
