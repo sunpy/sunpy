@@ -11,11 +11,17 @@ import numpy as np
 import astropy.units as u
 from astropy.table import Column, QTable, Row, Table, TableAttribute
 
+from sunpy.util.exceptions import warn_user
 from sunpy.util.util import get_width
 
-__all__ = ['QueryResponseColumn', 'BaseQueryResponse',
-           'QueryResponseRow', 'QueryResponseTable', 'BaseClient',
-           'convert_row_to_table']
+__all__ = [
+    "QueryResponseColumn",
+    "BaseQueryResponse",
+    "QueryResponseRow",
+    "QueryResponseTable",
+    "BaseClient",
+    "convert_row_to_table",
+]
 
 
 class BaseQueryResponse(Sequence):
@@ -394,7 +400,15 @@ class BaseClient(ABC):
         super().__init_subclass__(**kwargs)
 
         # We do not want to register GenericClient since its a dummy client.
-        if cls.__name__ in ('GenericClient'):
+        if cls.__name__ in ("GenericClient"):
+            return
+
+        # Exclude the old sunpy_soar.client.SOARClient class as it is superseded by the version in sunpy.net.soar
+        if cls.__name__ == "SOARClient" and cls.__module__ == "sunpy_soar.client":
+            warn_user(
+                "Skipping registering the sunpy_soar client in favour of the client included in sunpy >= 8.0. "
+                "Uninstall or do not import the sunpy_soar package to remove this warning."
+            )
             return
 
         cls._registry[cls] = cls._can_handle_query
