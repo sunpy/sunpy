@@ -388,3 +388,8 @@ class SOARClient(BaseClient):
             SOOP: all_soops,
             a.Provider: [("SOAR", "Solar Orbiter Archive.")],
         }
+
+    @staticmethod
+    def _update_soar_data():
+        from sunpy.net.soar.data._update_attrs_data import update_soar_attr_data
+        return update_soar_attr_data()

@@ -3,6 +3,7 @@
 import sunpy
 from sunpy.net.cdaweb.helpers import _update_cdaweb_dataset_data
 from sunpy.net.jsoc import JSOCClient
+from sunpy.net.soar import SOARClient
 from sunpy.net.solarnet import SOLARNETClient
 from sunpy.net.vso import VSOClient
 
@@ -19,5 +20,8 @@ SOLARNETClient._update_solarnet_data()
 
 print("Updating CDAWeb json...\nThis may take some time...")
 _update_cdaweb_dataset_data()
+
+print("Updating SOAR json...\nThis may take some time...")
+SOARClient._update_soar_data()
 
 print("Done. Don't forget to update the doctests.")
