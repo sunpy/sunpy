@@ -4,7 +4,29 @@ import astropy.units as u
 from astropy.wcs import WCS
 
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization import show_hpr_impact_angle
+from sunpy.visualization import axis_labels_from_physical_type, show_hpr_impact_angle
+
+
+def test_axis_labels_from_physical_type():
+    assert axis_labels_from_physical_type('custom:pos.helioprojective.lon', None) == \
+        'Helioprojective Longitude (Solar-X)'
+    assert axis_labels_from_physical_type('custom:pos.helioprojective.lat', None) == \
+        'Helioprojective Latitude (Solar-Y)'
+    assert axis_labels_from_physical_type('custom:pos.heliographic.stonyhurst.lon', None) == \
+        'Heliographic Longitude'
+    assert axis_labels_from_physical_type('custom:pos.heliographic.carrington.lon', None) == \
+        'Carrington Longitude'
+    assert axis_labels_from_physical_type('custom:pos.helioprojectiveradial.lon', None) == \
+        'Helioprojective Position Angle'
+    assert axis_labels_from_physical_type('custom:pos.helioprojectiveradial.lat', None) == \
+        'Helioprojective Declination'
+    # Unknown type should fall back to the physical type string itself
+    assert axis_labels_from_physical_type('custom:pos.unknown', None) == 'custom:pos.unknown'
+    # None physical type returns empty string
+    assert axis_labels_from_physical_type(None, None) == ''
+    # Unit is appended when provided
+    assert axis_labels_from_physical_type('custom:pos.helioprojective.lon', 'deg') == \
+        'Helioprojective Longitude (Solar-X) [deg]'
 
 
 @figure_test

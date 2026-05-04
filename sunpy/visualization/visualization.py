@@ -11,7 +11,8 @@ import astropy.units as u
 from astropy.visualization.wcsaxes import CoordinateHelper
 from astropy.wcs.utils import pixel_to_pixel
 
-__all__ = ['peek_show', "axis_labels_from_ctype", "show_hpr_impact_angle"]
+__all__ = ['peek_show', "axis_labels_from_ctype", "axis_labels_from_physical_type",
+           "show_hpr_impact_angle"]
 
 
 def peek_show(func):
@@ -62,6 +63,45 @@ def axis_labels_from_ctype(ctype, unit):
 
     label = labels.get(ctype_short, f"{ctype}")
     if unit is not None:
+        label += f' [{unit}]'
+
+    return label
+
+
+def axis_labels_from_physical_type(physical_type, unit):
+    """
+    Returns an axis label for the given APE-14 physical type and unit.
+
+    Parameters
+    ----------
+    physical_type : `str` or `None`
+        The world axis physical type from `~astropy.wcs.wcsapi.BaseLowLevelWCS.world_axis_physical_types`.
+        If `None`, an empty string is returned.
+    unit : `str`, `None`
+        Required unit. If `None` no unit is added to the label.
+
+    Returns
+    -------
+    `str`
+        "Axis Label [Unit]"
+    """
+    labels = {
+        'custom:pos.helioprojective.lon': 'Helioprojective Longitude (Solar-X)',
+        'custom:pos.helioprojective.lat': 'Helioprojective Latitude (Solar-Y)',
+        'custom:pos.heliographic.stonyhurst.lon': 'Heliographic Longitude',
+        'custom:pos.heliographic.stonyhurst.lat': 'Latitude',
+        'custom:pos.heliographic.carrington.lon': 'Carrington Longitude',
+        'custom:pos.heliographic.carrington.lat': 'Latitude',
+        'custom:pos.helioprojectiveradial.lon': 'Helioprojective Position Angle',
+        'custom:pos.helioprojectiveradial.lat': 'Helioprojective Declination',
+    }
+
+    if physical_type is None:
+        label = ''
+    else:
+        label = labels.get(physical_type, physical_type)
+
+    if unit is not None and label:
         label += f' [{unit}]'
 
     return label
