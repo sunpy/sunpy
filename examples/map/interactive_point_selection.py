@@ -31,6 +31,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_193_IMAGE)
 fig = plt.figure()
 ax = fig.add_subplot(projection=aia_map)
 aia_map.plot(axes=ax)
+# sphinx_gallery_defer_figures
 
 ###############################################################################
 # Next we set up a callback function that matplotlib will call each
@@ -84,11 +85,16 @@ print(clicked_points)
 ###############################################################################
 # Now pixelate the path and extract the intensities.
 
-pixel_path = sunpy.map.pixelate_coord_path(aia_map, clicked_points)
-intensities = sunpy.map.sample_at_coords(aia_map, pixel_path)
+pixel_path_coords = sunpy.map.pixelate_coord_path(aia_map, clicked_points)
+intensities = sunpy.map.sample_at_coords(aia_map, pixel_path_coords)
 
-fig = plt.figure()
-ax = fig.add_subplot()
+fig = plt.figure(layout="constrained", figsize=(12, 6))
+ax = fig.add_subplot(121, projection=aia_map)
+aia_map.plot(axes=ax)
+ax.plot_coord(clicked_points, "o")
+ax.plot_coord(pixel_path_coords)
+
+ax = fig.add_subplot(122)
 ax.plot(intensities)
 ax.set_xlabel("pixel along path")
 ax.set_ylabel("Intensity along path")
