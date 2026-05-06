@@ -1,7 +1,7 @@
 """
-============================================
-Quick overview of using sunpy-soar with Fido
-============================================
+==============================================
+Quick overview of Searching the SOAR with Fido
+==============================================
 
 This example demonstrates how to search and download Solar Orbiter data using ``sunpy.net.Fido``.
 """

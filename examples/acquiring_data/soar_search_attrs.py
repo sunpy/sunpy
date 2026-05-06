@@ -4,7 +4,7 @@ Available search attributes
 ===========================
 
 This example demonstrates the available search attributes
-for SOAR currently supported by ``sunpy-soar``.
+for SOAR currently supported by ``Fido``.
 """
 
 import sunpy.net.attrs as a
@@ -14,7 +14,7 @@ import sunpy.net.attrs as a
 # the attribute registry provided by `sunpy.net.attrs`.
 #
 # When constructing a search for SOAR ``a.Time`` must be provided.
-# Other search attributes can be used too - ``sunpy-soar`` recognizes the following:
+# Other search attributes can be used too - ``Fido`` recognizes the following:
 #
 # The third ``near`` argument to ``a.Time`` is not currently supported.
 # You will have to manually filter the results if you want to find the one closest to a given time.

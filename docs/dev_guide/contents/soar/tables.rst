@@ -1,15 +1,15 @@
 .. _sunpy-soar-dev-guide-tables:
 
 **********************************
-Tables supported in ``sunpy-soar``
+Tables supported in ``SOARClient``
 **********************************
 
-The ``sunpy-soar`` library currently supports data retrieval from both science and low-latency data tables, such as ``v_sc_data_item`` and ``v_ll_data_item``.
+The ``SOARClient`` library currently supports data retrieval from both science and low-latency data tables, such as ``v_sc_data_item`` and ``v_ll_data_item``.
 Additionally, it provides support for join tables associated with remote instruments, such as ``v_eui_sc_fits``.
 These tables and their columns are described in the `Tables, Views, and Columns <https://www.cosmos.esa.int/web/soar/tables-views-and-columns/>`__.
 
-In the context of ``sunpy-soar``, data tables contain columns related to scientific measurements, while instrument tables contain metadata specific to particular instruments.
-The ``sunpy-soar`` library specifically supports the wavelength and detector columns within these tables.
+In the context of ``SOARClient``, data tables contain columns related to scientific measurements, while instrument tables contain metadata specific to particular instruments.
+The ``SOARClient`` library specifically supports the wavelength and detector columns within these tables.
 These columns are linked to the data columns in the instrument tables through a join operation, using the ``data_item_oid`` as the key.
 
 How can a new column be added?
@@ -25,7 +25,7 @@ The ``_can_handle_query`` method in the ``client.py`` file should also be update
 How can a new table be added?
 =============================
 
-When adding support for a new table in ``sunpy-soar``, it is essential to fully understand the context and requirements.
+When adding support for a new table in ``SOARClient``, it is essential to fully understand the context and requirements.
 This includes identifying the key that will be used for join operations and determining what columns should be returned to the user.
 
 For direct joins, the key relationship between the tables should be carefully identified.

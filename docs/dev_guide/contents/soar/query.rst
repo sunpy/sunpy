@@ -1,10 +1,10 @@
 .. _sunpy-soar-dev-guide-query:
 
 ***************************************
-Request methods ``sunpy-soar`` supports
+Request methods ``SOARClient`` supports
 ***************************************
 
-sunpy-soar currently supports two REQUEST methods: ``doQuery`` and ``doQueryFilteredByDistance``.
+``SOARClient`` currently supports two REQUEST methods: ``doQuery`` and ``doQueryFilteredByDistance``.
 
 ``doQuery``: This is the standard method used when no specific distance attribute is included in the search query.
 It performs a general query based on the provided parameters, retrieving the data that matches the criteria specified.

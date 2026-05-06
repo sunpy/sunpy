@@ -77,7 +77,7 @@ def get_all_sensors():
         json.dumps(get_all_sensors(), indent=2)
 
     The contents of this output should be placed in
-    ./sunpy_soar/data/sensor_attrs.json
+    ./sunpy/net/soar/data/sensor_attrs.json
 
     Returns
     -------

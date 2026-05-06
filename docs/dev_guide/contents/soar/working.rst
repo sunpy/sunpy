@@ -22,7 +22,7 @@ Here is an example of how to specify the time range for the data you want to ret
     result = Fido.search(instrument & time & level & product)
 
 
-``sunpy-soar`` constructs the query based on the specified criteria, then generates a URL to interact with the SOAR API.
+``SOARClient`` constructs the query based on the specified criteria, then generates a URL to interact with the SOAR API.
 This is done by using the Table Access Protocol (TAP), a widely adopted standard in the astronomical community for accessing large datasets.
 The queries are formulated in Astronomical Data Query Language (`ADQL <https://www.ivoa.net/documents/ADQL/>`__), which allows for flexible querying of astronomical data.
 The results are returned in the form of an Astropy table, providing a structured and efficient format for further analysis and visualization within the Python environment.

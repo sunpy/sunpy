@@ -4,7 +4,7 @@
 Query for Solar Orbiter data using the ``Wavelength`` attribute
 ***************************************************************
 
-``sunpy-soar`` provides convenient methods to construct queries using ``a.Wavelength`` for several different remote sensing instruments available through the SOAR.
+``SOARClient`` provides convenient methods to construct queries using ``a.Wavelength`` for several different remote sensing instruments available through the SOAR.
 In this guide, we will demonstrate how we can query data using ``a.Wavelength`` for different instruments.
 For instruments EUI, METIS and SOLOHI we get query results in form of wavelength.
 However, at this time we cannot search for wavelengths for instruments SPICE, PHI, and STIX as this information is not yet available in the SOAR.
