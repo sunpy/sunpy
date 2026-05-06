@@ -8,6 +8,8 @@ To do this, we can build a query based on several attributes.
 Here, we will build a search for METIS data from the UVD (Ultra Violet Detector) detector for a specific wavelength.
 """
 
+# sphinx_gallery_tags = ["Acquiring Data", "SOAR", "Solar Orbiter"]
+
 import astropy.units as u
 
 import sunpy.net.attrs as a

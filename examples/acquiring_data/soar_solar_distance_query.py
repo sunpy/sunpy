@@ -10,6 +10,8 @@ The ``Distance`` attribute allows us to specify a range of distances from the Su
 
 """
 
+# sphinx_gallery_tags = ["Acquiring Data", "SOAR", "Solar Orbiter"]
+
 import astropy.units as u
 
 from sunpy.net import Fido

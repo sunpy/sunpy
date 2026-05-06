@@ -7,6 +7,8 @@ This example demonstrates how to search and download Solar Orbiter data for a sp
 Here, we will build a query for EPD data, specifically from the EPT sensor using `a.soar.Sensor <sunpy.net.soar.attrs.Sensor>`.
 """
 
+# sphinx_gallery_tags = ["Acquiring Data", "SOAR", "Solar Orbiter"]
+
 import sunpy.net.attrs as a
 from sunpy.net import Fido
 

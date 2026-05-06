@@ -7,6 +7,8 @@ This example demonstrates the available search attributes
 for SOAR currently supported by ``Fido``.
 """
 
+# sphinx_gallery_tags = ["Acquiring Data", "SOAR", "Solar Orbiter"]
+
 import sunpy.net.attrs as a
 
 #####################################################

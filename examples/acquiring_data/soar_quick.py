@@ -6,6 +6,8 @@ Quick overview of Searching the SOAR with Fido
 This example demonstrates how to search and download Solar Orbiter data using ``sunpy.net.Fido``.
 """
 
+# sphinx_gallery_tags = ["Acquiring Data", "SOAR", "Solar Orbiter"]
+
 import sunpy.net.attrs as a
 from sunpy.net import Fido
 
