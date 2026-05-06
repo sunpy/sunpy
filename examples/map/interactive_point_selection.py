@@ -12,6 +12,8 @@ In this example we demonstrate how to extract world coordinates of points select
 
 """
 
+# sphinx_gallery_tags = ["Visualization", "Map"]
+
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 
