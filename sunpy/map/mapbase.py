@@ -674,6 +674,11 @@ class GenericMap(NDData):
         # Set the shape of the data array
         w2.array_shape = self.data.shape
 
+        # Unlike Astropy we only use SIP distortions if it is in the CTYPE.
+        if any(t.endswith("-SIP") for t in self.coordinate_system):
+            sip_wcs = astropy.wcs.WCS(header=self.meta)
+            w2.sip = sip_wcs.sip
+
         # Validate the WCS here.
         w2.wcs.set()
         return w2
@@ -3129,7 +3134,7 @@ class GenericMap(NDData):
         if return_footprint:
             output_array, footprint = output_array
 
-        target_header = target_wcs.to_header()
+        target_header = target_wcs.to_header(relax=True)
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # target_header has a DATE-AVG key and if it does not, we would inadvertently

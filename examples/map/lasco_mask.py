@@ -6,6 +6,8 @@ Creating a mask for LASCO C2 data
 In this example, we will manually create a mask to block the occulter in an
 unprocessed LASCO C2 coronagraph image.
 """
+# sphinx_gallery_tags = ["Map", "LASCO", "Masking", "Coordinates"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

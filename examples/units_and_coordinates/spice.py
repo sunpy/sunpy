@@ -29,6 +29,8 @@ of SPICE (e.g., CSPICE or Icy).
     installed.
 
 """
+# sphinx_gallery_tags = ["Coordinates", "Parker Solar Probe", "Solar Orbiter"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.dates import DateFormatter

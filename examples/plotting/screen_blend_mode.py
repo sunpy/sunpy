@@ -10,6 +10,8 @@ superimposing one image onto another, which may not be visually appealing.
 For better results, one can manipulate the rendered image data arrays to perform a
 standard image-compositing `blend mode <https://en.wikipedia.org/wiki/Blend_modes>`__.
 """
+# sphinx_gallery_tags = ["Map", "Visualization", "AIA"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

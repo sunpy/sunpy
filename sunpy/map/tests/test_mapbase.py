@@ -107,6 +107,52 @@ def test_wcs_pv():
     assert pv_values[6] == (2, 10, 0.1)
 
 
+def test_wcs_sip(aia171_test_map):
+    wcs1 = aia171_test_map.wcs
+    header_sip = wcs1.to_header()
+    k1 = -7e-12
+
+    header_sip["CTYPE1"] = header_sip["CTYPE1"] + "-SIP"
+    header_sip["CTYPE2"] = header_sip["CTYPE2"] + "-SIP"
+    header_sip['A_ORDER'] = 3
+    header_sip['B_ORDER'] = 3
+    header_sip['A_3_0'] = -k1
+    header_sip['A_1_2'] = -k1
+    header_sip['B_0_3'] = -k1
+    header_sip['B_2_1'] = -k1
+    header_sip['A_DMAX'] = 1.0
+    header_sip['B_DMAX'] = 1.0
+
+    sip_map = sunpy.map.Map(aia171_test_map.data, header_sip)
+
+    sip_wcs = sip_map.wcs
+    assert sip_wcs.sip is not None
+
+    # The SIP distortion shouldn't affect the ref pixel
+    ref1 = aia171_test_map.wcs.pixel_to_world(*aia171_test_map.reference_pixel)
+    ref2 = sip_map.wcs.pixel_to_world(*aia171_test_map.reference_pixel)
+
+    assert u.allclose(ref1.Tx, ref2.Tx)
+    assert u.allclose(ref1.Ty, ref2.Ty)
+
+    # Pixels away from the ref should be distorted
+    edge1 = aia171_test_map.wcs.pixel_to_world(1020, 1020)
+    edge2 = sip_map.wcs.pixel_to_world(1020, 1020)
+
+    assert not u.allclose(edge1.Tx, edge2.Tx)
+    assert not u.allclose(edge1.Ty, edge2.Ty)
+
+    # Check that a Map instantiated with a SIP WCS retains the SIP information
+    instantiated_map = sunpy.map.Map(sip_map.data, sip_map.wcs)
+    np.testing.assert_allclose(instantiated_map.wcs.sip.a, sip_wcs.sip.a)
+    np.testing.assert_allclose(instantiated_map.wcs.sip.b, sip_wcs.sip.b)
+
+    # Check that a Map reprojected to a SIP WCS retains the SIP information
+    reprojected_map = sip_map.reproject_to(sip_map.wcs)
+    np.testing.assert_allclose(reprojected_map.wcs.sip.a, sip_wcs.sip.a)
+    np.testing.assert_allclose(reprojected_map.wcs.sip.b, sip_wcs.sip.b)
+
+
 def test_wcs_cache(aia171_test_map):
     wcs1 = aia171_test_map.wcs
     wcs2 = aia171_test_map.wcs

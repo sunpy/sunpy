@@ -6,6 +6,8 @@ Drawing and using a Great Arc
 How to define and draw a great arc on an image of the
 Sun, and to extract intensity values along that arc.
 """
+# sphinx_gallery_tags = ["Map", "AIA"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

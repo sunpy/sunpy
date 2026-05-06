@@ -52,13 +52,17 @@ def test_is_datasource_for(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_
 
 
 def test_reference_date(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
-    assert hmi_map.reference_date.isot == "2014-03-01T00:01:25.000"
-    assert hmi_bharp_map.reference_date.isot == "2014-06-09T23:48:07.532"
-    assert hmi_cea_sharp_map.reference_date.isot == "2024-06-28T00:00:08.212"
-    assert hmi_sharp_map.reference_date.isot == "2024-06-28T00:00:08.212"
+    for m in [hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map]:
+        assert m.reference_date.scale == m.date.scale
+    assert hmi_map.reference_date.isot == "2014-03-01T00:00:50.000"
+    assert hmi_bharp_map.reference_date.isot == "2014-06-09T23:47:32.532"
+    assert hmi_cea_sharp_map.reference_date.isot == "2024-06-27T23:59:31.212"
+    assert hmi_sharp_map.reference_date.isot == "2024-06-27T23:59:31.212"
 
 
 def test_date(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
+    for m in [hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map]:
+        assert m.date.scale == "utc"
     assert hmi_map.date.isot == "2014-03-01T00:00:27.900"
     assert hmi_bharp_map.date.isot == "2014-06-09T23:46:25.000"
     assert hmi_cea_sharp_map.date.isot == "2024-06-27T23:58:46.200"
@@ -112,11 +116,15 @@ def test_wcs(hmi_map, hmi_bharp_map, hmi_cea_sharp_map, hmi_sharp_map):
 # We use our sample HMI image to test memory mapping because it is large (8 MB data array)
 @pytest.mark.remote_data
 def test_memmap():
+    from sunpy.data.sample import HMI_LOS_IMAGE
+
+    # Burn in base memory usage associated with Map instantiation
+    _ = Map(HMI_LOS_IMAGE)
+
     process = psutil.Process()
 
     initial = process.memory_info()
 
-    from sunpy.data.sample import HMI_LOS_IMAGE
     hmi_map = Map(HMI_LOS_IMAGE)
 
     instantiated = process.memory_info()

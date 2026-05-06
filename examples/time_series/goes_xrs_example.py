@@ -27,6 +27,8 @@ returns all available GOES data for the specific timerange queried. For
 example, there are times when GOES 13, 14 and 15 overlap and such data is
 available from each satellite. Similarly there are times when GOES 16 and 17 overlap.
 """
+# sphinx_gallery_tags = ["Timeseries", "GOES", "XRS", "Acquiring Data"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

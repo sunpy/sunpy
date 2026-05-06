@@ -68,7 +68,7 @@ map = [
   "reproject>=0.13.0",
   "scipy>=1.12.0",
 ]
-opencv = ["opencv-python>=4.8.0.74"]
+opencv = ["opencv-python>=4.8.0.74,!=4.13.0.*"]
 net = [
   "beautifulsoup4>=4.13.1",
   "drms>=0.7.1",
@@ -135,11 +135,10 @@ docs = [
   "sphinx-changelog>=1.5.0",
   "sphinx-copybutton>=0.5.0",
   "sphinx-design>=0.5.0",
-  "sphinx-gallery>=0.14.0",
+  "sphinx-gallery>=0.21.0",
   "sphinxext-opengraph>=0.9.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinxcontrib-bibtex",
-  "joblib", # for sphinx-gallery parallel
   "sphinx-autodoc-typehints",
 ]
 docs-gallery = [
@@ -147,6 +146,8 @@ docs-gallery = [
   "astroquery>=0.4.6",
   "jplephem>=2.19",
   "pillow",
+  "sunpy-soar",
+  "exifread",
 ]
 dev = ["sunpy[docs,tests]"]
 

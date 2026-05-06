@@ -6,6 +6,8 @@ Rotating HMI maps so they're not 'upside-down'
 This example shows how to rotate a HMI magnetogram, so when you plot it
 it appears with solar North pointing up.
 """
+# sphinx_gallery_tags = ["Map", "Reproject", "HMI", "Map Rotate"]
+
 import matplotlib.pyplot as plt
 
 import sunpy.map

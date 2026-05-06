@@ -2029,7 +2029,7 @@ Trivial/Internal Changes
 - ``Fido.fetch`` now always specifies a ``path=`` argument of type `pathlib.Path`
   to the ``fetch`` method of the client. This path will default to the configured
   sunpy download dir, will have the user directory expanded, will have the
-  ``{file}`` placeholder and will be tested to ensure that it is writeable. (`#4949 <https://github.com/sunpy/sunpy/pull/4949>`__)
+  ``{file}`` placeholder and will be tested to ensure that it is writable. (`#4949 <https://github.com/sunpy/sunpy/pull/4949>`__)
 - Added information on what went wrong when `sunpy.map.GenericMap.wcs` fails to parse
   a FITS header into a WCS. (`#4335 <https://github.com/sunpy/sunpy/pull/4335>`__)
 - Fixed the `~sunpy.coordinates.frames.Helioprojective` docstring to be clear about the names of the coordinate components. (`#4351 <https://github.com/sunpy/sunpy/pull/4351>`__)

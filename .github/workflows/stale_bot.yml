@@ -9,6 +9,8 @@ on:
 #            │ │ │ │ ┌───────── day of the week (0 - 6 or SUN-SAT)
     - cron: '0 5 * * *' # Every day at 05:00 UTC
 
+permissions: {}
+
 jobs:
   stale:
     permissions:
@@ -16,7 +18,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/stale@v10
+    - uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f # v10.2.0
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         operations-per-run: 50

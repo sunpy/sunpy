@@ -5,6 +5,8 @@ Generating a map from data array
 
 A simple demonstration of creating a map from a numpy array of data.
 """
+# sphinx_gallery_tags = ["Map", "Coordinates"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

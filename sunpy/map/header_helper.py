@@ -291,7 +291,7 @@ def _set_instrument_meta(meta_wcs, instrument, telescope, observatory, detector,
 
 @u.quantity_input
 def make_heliographic_header(date, observer_coordinate, shape, *, frame, projection_code="CAR",
-                             map_center_longitude: u.Quantity[u.deg] = 0.0*u.deg):
+                             map_center_longitude: u.Quantity[u.deg] = 0.0*u.deg, **kwargs):
     """
     Construct a FITS-WCS header for a full-Sun heliographic (Carrington or Stonyhurst) coordinate frame.
 
@@ -313,6 +313,8 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
         Projection to use for the latitude coordinate.
     map_center_longitude : `~astropy.units.Quantity`
         Heliographic longitude of the map center
+    kwargs
+        All other keyword arguments are passed into :func:`~sunpy.map.header_helper.make_fitswcs_header`.
 
     Returns
     -------
@@ -389,7 +391,7 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
             (180 / np.pi) / (int(shape[0]) / 2)
         ] * u.deg / u.pix
 
-    header = make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code)
+    header = make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code, **kwargs)
     return header
 
 

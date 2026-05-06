@@ -7,6 +7,7 @@ This example demonstrates how to use the `astropy.coordinates` framework, combin
 coordinate frameworks provided by ``sunpy``, to find the intersection of a set of lines of sight
 defined by an observer position with a simulated volume represented by a Cartesian box.
 """
+# sphinx_gallery_tags = ["Coordinates", "Visualization", "Reproject"]
 # sphinx_gallery_thumbnail_number = 4
 
 import itertools

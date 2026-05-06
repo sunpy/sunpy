@@ -1,0 +1,1 @@
+Pass extra keyword arguments through from :func:`~sunpy.map.header_helper.make_heliographic_header` to :func:`~sunpy.map.header_helper.make_fitswcs_header`.

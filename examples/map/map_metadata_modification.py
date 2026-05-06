@@ -13,6 +13,8 @@ easily queried.
 In the example below, we load a HMI sample image, and query the metadata for
 any added, removed, or modified items.
 """
+# sphinx_gallery_tags = ["Map", "HMI", "Metadata"]
+
 import astropy.units as u
 
 import sunpy.map
