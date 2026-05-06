@@ -47,3 +47,22 @@ Contribution Guidelines
   * If you need to use ``astropy.visualization.{quantity_support, time_support}``, import these functions at the top of the example, and call them directly before the first plot that needs them.
 
 We recommend checking the other examples in the gallery to see how they are structured and what they contain.
+
+Tagging Examples
+================
+
+All our examples in the gallery are tagged with one or more tags describing what topics the example covers.
+A list of tags looks like this::
+
+  # sphinx_gallery_tags = ["Map", "Coordinates", "AIA"]
+
+The tags we add to examples are:
+
+* Instruments or sources of any data used i.e. ``"AIA", "EUVI", "ADAPT"``.
+* Category of SunPy functionality i.e. ``"Map", "Timeseries", "Coordinates", "Reproject"``.
+* Data provider where appropriate i.e. ``"JSOC", "HEK"`` these should be the focus of an example.
+* Science topic, such as ``"Flares", "Active Regions"``.
+* ``"Visualization"`` should be added to examples where the focus of the example is learning visualization techniques.
+
+Tags should be formatted to be human readable, so should be Title Case and make use of symbols such as ``&``.
+Adding a tag which hasn't already been added should be done thoughtfully.

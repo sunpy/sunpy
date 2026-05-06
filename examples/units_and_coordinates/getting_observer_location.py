@@ -5,6 +5,8 @@ Getting the observer location from a Map
 
 How to access the observer location from a `~sunpy.map.Map` and interpret it.
 """
+# sphinx_gallery_tags = ["Coordinates", "Map", "AIA"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

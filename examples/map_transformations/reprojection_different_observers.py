@@ -11,6 +11,8 @@ different observers. We use data from these two instruments:
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
+# sphinx_gallery_tags = ["Map", "Reproject", "AIA", "EUVI", "STEREO"]
+
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt

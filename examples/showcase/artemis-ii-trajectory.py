@@ -10,6 +10,8 @@ flying four astronauts around the Moon on a ~10 day test flight in April 2026.
 The trajectory is visualized in two different coordinate frames.  The plots
 also highlight the segment of the trajectory when Artemis II was in eclipse.
 """
+# sphinx_gallery_tags = ["Coordinates", "Solar Eclipse"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.dates import DateFormatter
