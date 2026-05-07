@@ -328,7 +328,12 @@ class MapSequence:
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
-            im.set_array(ani_data[i].data)
+            frame_data = np.asarray(ani_data[i].data)
+            if ani_data[i].mask is not None:
+                frame_data = np.ma.masked_array(frame_data,
+                                                mask=ani_data[i].mask,
+                                                copy=False)
+            im.set_array(frame_data)
             im.set_cmap(kwargs.get('cmap', ani_data[i].plot_settings.get('cmap')) or "grey")
             norm = deepcopy(kwargs.get('norm', ani_data[i].plot_settings.get('norm')))
             if clip_interval is not None:
