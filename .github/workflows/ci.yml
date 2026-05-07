@@ -136,7 +136,7 @@ jobs:
         - cp3{12,13,14}-win_amd64
         - target: cp3{12,13,14}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
-      test_extras: 'tests'
+      test_groups: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
       save_artifacts: true
@@ -153,7 +153,7 @@ jobs:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
       python-version: "3.13"
-      test_extras: 'tests'
+      test_groups: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not mpl_image_compare" --pyargs sunpy'
       submodules: false
       env: |
