@@ -146,7 +146,6 @@ docs = [
   "sphinx-autodoc-typehints",
 ]
 docs-gallery = [
-  {include-group = "docs"},
   "astroquery>=0.4.6",
   "jplephem>=2.19",
   "pillow",

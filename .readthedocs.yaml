@@ -23,9 +23,9 @@ formats:
 
 python:
   install:
-    - method: pip
-      extra_requirements:
-        - all
+    - method: uv
+      command: sync
+      groups:
         - docs
         - docs-gallery
       path: .
