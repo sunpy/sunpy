@@ -9,6 +9,7 @@ build:
       - git fetch --unshallow || true
     pre_install:
       - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
+      - pip install --group docs --group docs-gallery .
 
 conda:
   environment: .rtd-environment.yml
@@ -23,9 +24,7 @@ formats:
 
 python:
   install:
-    - method: uv
-      command: sync
-      groups:
-        - docs
-        - docs-gallery
+    - method: pip
+      extra_requirements:
+        - all
       path: .
