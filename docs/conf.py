@@ -23,17 +23,7 @@ if on_rtd:
     os.environ['LC_ALL'] = 'C'
     os.environ['PARFIVE_HIDE_PROGRESS'] = 'True'
 
-# -- Check for dependencies ----------------------------------------------------
-
-from sunpy.util import missing_dependencies_by_extra
-
-missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
-if missing_requirements:
-    print(
-        f"The {' '.join(missing_requirements.keys())} package(s) could not be found and "
-        "is needed to build the documentation, please install the 'docs' requirements."
-    )
-    sys.exit(1)
+# -- Other imports ----------------------------------------------------
 
 from matplotlib import MatplotlibDeprecationWarning
 from ruamel.yaml import YAML
