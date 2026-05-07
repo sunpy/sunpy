@@ -22,7 +22,7 @@ dependencies = [
   "astropy>=6.1.0",
   "fsspec>=2023.6.0",
   "numpy>=1.26.0",
-  "numpy>=2.3.0;python_version=='3.14'",
+  "numpy>=2.3.0;python_version>='3.14'",
   "packaging>=23.2",
   "parfive[ftp]>=2.1.0",
   "pyerfa>=2.0.1.1",
@@ -107,6 +107,8 @@ jupyter = [
   "itables>=2.2.4",
   "ipywidgets>=8.1.0",
 ]
+
+[dependency-groups]
 # These dependencies are required to run the tests
 tests-only = [
   "hvpy>=1.1.0",
@@ -123,7 +125,9 @@ asdf-tests = [
 ]
 # This extra allows you to run all tests
 tests = [
-  "sunpy[all,s3,tests-only,asdf-tests,jupyter]",
+  "sunpy[all,s3,jupyter]",
+  {include-group = "tests-only"},
+  {include-group = "asdf-tests"},
 ]
 docs = [
   "sunpy[all]",
@@ -142,14 +146,19 @@ docs = [
   "sphinx-autodoc-typehints",
 ]
 docs-gallery = [
-  "sunpy[docs]",
+  {include-group = "docs"},
   "astroquery>=0.4.6",
   "jplephem>=2.19",
   "pillow",
   "sunpy-soar",
   "exifread",
 ]
-dev = ["sunpy[docs,tests]"]
+dev = [
+  {include-group = "tests"},
+  {include-group = "docs"},
+  {include-group = "docs-gallery"},
+  "setuptools-scm>=8.0.1",  # For sunpy._dev dynamic version
+]
 
 [project.urls]
 Homepage = "https://sunpy.org"
