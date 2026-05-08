@@ -19,6 +19,8 @@ assumption for the 3D location of 2D off-disk points.
 See :ref:`sphx_glr_generated_gallery_map_transformations_reprojection_spherical_screen.py`
 for a different use case for screens.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "Coordinates"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

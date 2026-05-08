@@ -6,6 +6,8 @@ Plotting a coordinate grid
 This example demonstrates how you can draw a grid of solar coordinates on top
 of a map.
 """
+# sphinx_gallery_tags = ["AIA", "Map", "Coordinates", "Visualization"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

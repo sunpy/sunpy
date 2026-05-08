@@ -55,9 +55,17 @@ repos:
       - id: generate-sunpy-net-hek-attrs
         name: generate sunpy.net.hek.attrs
         entry: python tools/hek_mkcls.py
-        language: system
+        language: python
         pass_filenames: false
         files: (^tools/(hek_mkcls|hektemplate)\.py$)|(^sunpy/net/hek/attrs\.py$)
+      - id: example-gallery-must-have-tags
+        name: Check for tags in gallery examples
+        entry: "^# sphinx_gallery_tags"
+        files: ^examples/.*\.py
+        language: pygrep
+        args:
+          - --multiline
+          - --negate
       - id: git-diff
         name: git diff
         entry: git diff --color --exit-code

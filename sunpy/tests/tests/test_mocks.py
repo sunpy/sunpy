@@ -58,11 +58,13 @@ def test_MockObject_get(mocked_mockobject):
         mocked_mockobject['not-here']
 
 
-def test_MockObject_set_get(mocked_mockobject):
+def test_MockObject_set_get():
     """
     Setting attributes in `MockObject` using bracket notation *not* dot
     notation.
     """
+    # Need a thread-safe version of the fixture, but recursion prevents copying
+    mocked_mockobject = MockObject(records=12)
 
     # Only change the value of existing & new items using 'bracket' notation
     mocked_mockobject['records'] = 45

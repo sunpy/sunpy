@@ -114,6 +114,7 @@ tests-only = [
   "psutil>=6.0.0",
   "pytest-astropy>=0.11.0",
   "pytest-mpl>=0.18.0",
+  "pytest-run-parallel>=0.6.0",
   "pytest>=7.4.0",
 ]
 asdf-tests = [
@@ -135,7 +136,7 @@ docs = [
   "sphinx-changelog>=1.5.0",
   "sphinx-copybutton>=0.5.0",
   "sphinx-design>=0.5.0",
-  "sphinx-gallery>=0.14.0",
+  "sphinx-gallery>=0.21.0",
   "sphinxext-opengraph>=0.9.0",
   "sunpy-sphinx-theme>=2.0.3",
   "sphinxcontrib-bibtex",
@@ -146,6 +147,7 @@ docs-gallery = [
   "astroquery>=0.4.6",
   "jplephem>=2.19",
   "pillow",
+  "sunpy-soar",
   "exifread",
 ]
 dev = ["sunpy[docs,tests]"]

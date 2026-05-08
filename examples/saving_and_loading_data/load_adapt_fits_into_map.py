@@ -6,6 +6,8 @@ Reading ADAPT FITS Files
 This example demonstrates how to load data from the
 Air Force Data Assimilative Photospheric Flux Transport (ADAPT) model into a list of `sunpy.map.Map` objects.
 """
+# sphinx_gallery_tags = ["Saving & Loading", "Acquiring Data", "Map", "ADAPT"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u

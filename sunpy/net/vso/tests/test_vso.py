@@ -26,6 +26,8 @@ from sunpy.tests.mocks import MockObject
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyConnectionWarning, SunpyUserWarning
 
+pytestmark = pytest.mark.thread_unsafe(reason="extensive mocking")
+
 
 @pytest.fixture(scope="session")
 def check_vso_alive():

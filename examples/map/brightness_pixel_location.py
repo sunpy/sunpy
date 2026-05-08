@@ -5,6 +5,8 @@ Finding the brightest pixel
 
 How to find and overplot the location of the brightest pixel.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "WCS", "Coordinates"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

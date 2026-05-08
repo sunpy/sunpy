@@ -5,6 +5,8 @@ Querying the GOES flare event list
 
 How to retrieve the GOES flare event list, sort and save the results.
 """
+# sphinx_gallery_tags = ["Acquiring Data", "HEK", "Flares"]
+
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 

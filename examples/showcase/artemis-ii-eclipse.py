@@ -27,6 +27,8 @@ coronagraph data on top of the eclipse image.
 Image credit: NASA/Artemis II crew
 
 """
+# sphinx_gallery_tags = ["LASCO", "Map", "Coordinates", "Solar Eclipse"]
+
 from pathlib import Path
 
 import exifread

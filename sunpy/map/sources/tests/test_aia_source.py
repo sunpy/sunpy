@@ -30,10 +30,12 @@ def test_aia_map(aia_map):
 
 
 def test_reference_date(aia_map):
+    assert aia_map.reference_date.scale == aia_map.date.scale
     assert aia_map.reference_date.isot in ["2011-02-15T00:00:01.340", "2013-06-24T17:31:31.840"]
 
 
 def test_date(aia_map):
+    assert aia_map.date.scale == "utc"
     assert aia_map.date.isot in ["2011-02-15T00:00:00.340", "2013-06-24T17:31:30.840"]
 
 

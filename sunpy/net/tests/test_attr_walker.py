@@ -19,12 +19,8 @@ class RA1(attr.Range):
     pass
 
 
-@pytest.fixture
-def walker():
-    return attr.AttrWalker()
-
-
-def test_creator(walker):
+def test_creator():
+    walker = attr.AttrWalker()  # cannot be a fixture due thread safety
     CALLED = False
 
     @walker.add_creator(SA2)
@@ -46,7 +42,8 @@ def test_creator(walker):
     assert CALLED
 
 
-def test_applier(walker):
+def test_applier():
+    walker = attr.AttrWalker()  # cannot be a fixture due thread safety
     CALLED = False
 
     @walker.add_applier(SA2)
@@ -68,7 +65,8 @@ def test_applier(walker):
     assert CALLED
 
 
-def test_creator_converter(walker):
+def test_creator_converter():
+    walker = attr.AttrWalker()  # cannot be a fixture due thread safety
     CALLED = False
 
     @walker.add_creator(SA1)
@@ -92,7 +90,8 @@ def test_creator_converter(walker):
     assert CALLED
 
 
-def test_applier_converter(walker):
+def test_applier_converter():
+    walker = attr.AttrWalker()  # cannot be a fixture due thread safety
     CALLED = False
 
     @walker.add_applier(SA1)

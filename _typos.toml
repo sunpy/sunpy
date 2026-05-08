@@ -31,6 +31,8 @@ default.extend-ignore-identifiers-re = [
     "precessed",
     "ASO",
     "aso",
+    "blos",
+    "BLOS",
     "gae",
     "GAE",
 ]

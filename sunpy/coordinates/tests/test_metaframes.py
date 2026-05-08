@@ -17,6 +17,8 @@ from sunpy.sun.models import differential_rotation
 
 # NorthOffsetFrame is tested in test_offset_frame.py
 
+pytestmark = pytest.mark.thread_unsafe(reason="modifies frame_transform_graph for created frames")
+
 
 ###########################
 # Tests for RotatedSunFrame

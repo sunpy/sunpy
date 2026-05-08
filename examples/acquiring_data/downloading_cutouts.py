@@ -6,6 +6,8 @@ Requesting cutouts of AIA images from the JSOC
 This example shows how to request a cutout of a series of
 AIA images from the JSOC.
 """
+# sphinx_gallery_tags = ["Acquiring Data", "JSOC", "Cutouts", "Coordinates", "Animation", "Map"]
+
 import os
 
 import matplotlib.pyplot as plt

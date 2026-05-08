@@ -5,6 +5,8 @@ Overplotting HEK feature/event polygons on a map
 
 How to overplot HEK outlines on a map.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "Coordinates", "HEK"]
+
 import matplotlib.pyplot as plt
 import numpy as np
 

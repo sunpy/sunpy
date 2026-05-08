@@ -5,6 +5,8 @@ Converting between Helioprojective and AltAz Coordinate
 
 How to find the Sun in the sky as viewed from a particular location.
 """
+# sphinx_gallery_tags = ["Coordinates"]
+
 import astropy.units as u
 from astropy.coordinates import AltAz, EarthLocation, SkyCoord
 from astropy.time import Time

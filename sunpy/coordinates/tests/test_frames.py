@@ -673,9 +673,9 @@ def test_screen_plus_diffrot(off_limb_coord, screen, only_off_disk, distance):
 def test_screen_plus_diffrot_array_obstime(screen, only_off_disk):
     array_obstime = parse_time('2025-05-30') + np.arange(5) * u.day
     observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime=array_obstime)
-    coord_2d = SkyCoord([-1000, -750, -500, -250, 0] * u.arcsec,
-                        [600]*5 * u.arcsec,
-                        frame=Helioprojective(observer=observer, obstime=array_obstime))
+    coord_2d = Helioprojective([-1000, -750, -500, -250, 0] * u.arcsec,
+                               [600]*5 * u.arcsec,
+                               observer=observer, obstime=array_obstime)
 
     with propagate_with_solar_surface(), screen(observer[0], only_off_disk=only_off_disk):
         # Confirm that array obstime works

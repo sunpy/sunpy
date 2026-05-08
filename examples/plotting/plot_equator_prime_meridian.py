@@ -6,6 +6,8 @@ Plotting the solar equator and prime meridian
 This example shows how you can draw the solar equator and prime meridian
 (zero Carrington longitude) on Maps as seen by the axes observer.
 """
+# sphinx_gallery_tags = ["Map", "AIA", "Visualization"]
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
