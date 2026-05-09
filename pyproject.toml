@@ -62,11 +62,9 @@ jpeg2000 = [
   "lxml>=5.0.1",
 ]
 map = [
+  "sunpy[image,visualization]",
   "contourpy>=1.1.0",
-  "matplotlib>=3.8.0",
-  "mpl-animators>=1.2.0",
   "reproject>=0.13.0",
-  "scipy>=1.12.0",
 ]
 opencv = ["opencv-python>=4.8.0.74,!=4.13.0.*"]
 net = [
