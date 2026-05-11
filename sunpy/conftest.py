@@ -60,8 +60,8 @@ def tmp_config_dir(request):
     tmpdir = tempfile.TemporaryDirectory()
     os.environ["SUNPY_CONFIGDIR"] = str(tmpdir.name)
     if minversion(astropy, "8.0.0"):
-        os.environ["ASTROPY_CACHE_DIR"] = str(tmpdir)
-        os.environ["ASTROPY_CONFIG_DIR"] = str(tmpdir)
+        os.environ["ASTROPY_CACHE_DIR"] = str(tmpdir.name)
+        os.environ["ASTROPY_CONFIG_DIR"] = str(tmpdir.name)
     else:
         astropy.config.paths.set_temp_cache._temp_path = pathlib.Path(tmpdir.name)
         astropy.config.paths.set_temp_config._temp_path = pathlib.Path(tmpdir.name)
