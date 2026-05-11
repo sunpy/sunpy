@@ -10,6 +10,7 @@ import astropy
 import astropy.config.paths
 import astropy.io.fits
 from astropy.utils import iers
+from astropy.utils.introspection import minversion
 
 from sunpy.data.test import get_test_data_filenames, get_test_filepath, write_image_file_from_header_file
 from sunpy.util import SunpyUserWarning
@@ -57,17 +58,24 @@ def tmp_config_dir(request):
     Globally set the default config for all tests.
     """
     tmpdir = tempfile.TemporaryDirectory()
-
     os.environ["SUNPY_CONFIGDIR"] = str(tmpdir.name)
-    astropy.config.paths.set_temp_config._temp_path = pathlib.Path(tmpdir.name)
-    astropy.config.paths.set_temp_cache._temp_path = pathlib.Path(tmpdir.name)
+    if minversion(astropy, "8.0.0"):
+        os.environ["ASTROPY_CACHE_DIR"] = str(tmpdir)
+        os.environ["ASTROPY_CONFIG_DIR"] = str(tmpdir)
+    else:
+        astropy.config.paths.set_temp_cache._temp_path = pathlib.Path(tmpdir.name)
+        astropy.config.paths.set_temp_config._temp_path = pathlib.Path(tmpdir.name)
 
     yield
 
+    if minversion(astropy, "8.0.0"):
+        del os.environ["ASTROPY_CACHE_DIR"]
+        del os.environ["ASTROPY_CONFIG_DIR"]
+    else:
+        astropy.config.paths.set_temp_cache._temp_path = None
+        astropy.config.paths.set_temp_config._temp_path = None
     del os.environ["SUNPY_CONFIGDIR"]
     tmpdir.cleanup()
-    astropy.config.paths.set_temp_config._temp_path = None
-    astropy.config.paths.set_temp_cache._temp_path = None
 
 
 @pytest.fixture()
