@@ -53,18 +53,17 @@ def no_download_iers(request):
 
 
 @pytest.fixture(scope='session', autouse=True)
-def tmp_config_dir(request):
+def tmp_config_dir(request, tmp_path):
     """
     Globally set the default config for all tests.
     """
-    tmpdir = tempfile.TemporaryDirectory()
-    os.environ["SUNPY_CONFIGDIR"] = str(tmpdir.name)
+    os.environ["SUNPY_CONFIGDIR"] = str(tmp_path)
     if minversion(astropy, "8.0.0"):
-        os.environ["ASTROPY_CACHE_DIR"] = str(tmpdir)
-        os.environ["ASTROPY_CONFIG_DIR"] = str(tmpdir)
+        os.environ["ASTROPY_CACHE_DIR"] = str(tmp_path)
+        os.environ["ASTROPY_CONFIG_DIR"] = str(tmp_path)
     else:
-        astropy.config.paths.set_temp_cache._temp_path = pathlib.Path(tmpdir.name)
-        astropy.config.paths.set_temp_config._temp_path = pathlib.Path(tmpdir.name)
+        astropy.config.paths.set_temp_cache._temp_path = tmp_path
+        astropy.config.paths.set_temp_config._temp_path = tmp_path
 
     yield
 
@@ -75,7 +74,6 @@ def tmp_config_dir(request):
         astropy.config.paths.set_temp_cache._temp_path = None
         astropy.config.paths.set_temp_config._temp_path = None
     del os.environ["SUNPY_CONFIGDIR"]
-    tmpdir.cleanup()
 
 
 @pytest.fixture()
