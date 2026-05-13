@@ -56,7 +56,7 @@ hdu = hdul['O VI 1032 - Peak']
 
 spice = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(hdu.data))
 # The first dimension is length one so we will drop it
-spice = spice[0]
+spice = spice.squeeze()
 # Also we crop out the edges of the wavelength axis where NaNs are present
 spice = spice[6:-4, :, :]
 # To ensure this example is quick, we will only do a subset of the data
