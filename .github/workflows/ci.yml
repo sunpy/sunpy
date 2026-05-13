@@ -184,7 +184,7 @@ jobs:
       - run: ls -lha dist/
 
       - name: Run upload
-        uses: pypa/gh-action-pypi-publish@v1.13.0  # zizmor: ignore[unpinned-uses]
+        uses: pypa/gh-action-pypi-publish@v1.14.0  # zizmor: ignore[unpinned-uses]
 
   notify:
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') }}
