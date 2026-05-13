@@ -8,6 +8,7 @@ These changes mean that it is now practical to fit many independent models to a 
 
 In this example we will demonstrate this functionality by fitting many spectra of a raster scan in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter mission.
 """
+# sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
 
 import shutil
 from pathlib import Path
@@ -15,6 +16,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import sunpy_soar  # NOQA: F401
+from matplotlib.colors import CenteredNorm, LogNorm
 from ndcube import NDCube
 
 import astropy.units as u
@@ -32,7 +34,7 @@ from sunpy.net import attrs as a
 # spectral window containing the Nitrogen IV line (76.51 nm) and the Neon VIII line
 # (77.04 nm).
 
-res = Fido.search(a.Time("2023-04-15 01:00", "2023-04-15 02:00"),
+res = Fido.search(a.Time("2022-04-02 13:00", "2022-04-02 13:25"),
                   a.Instrument.spice, a.Level(2),
                   a.Provider.soar,
                   a.soar.Product.spice_n_ras)
@@ -42,7 +44,7 @@ filename = Fido.fetch(res)[0]
 # We now open the FITS file and access the window via EXTNAME.
 
 hdul = fits.open(filename)
-hdu = hdul['N IV 765 ... Ne VIII 770 (Merged)']
+hdu = hdul['O VI 1032 - Peak']
 
 ###############################################################################
 # The next step is to create an `~ndcube.NDCube` object from the data we have opened.
@@ -57,7 +59,7 @@ spice = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(h
 # The first dimension is length one so we will drop it
 spice = spice[0]
 # To ensure this example is quick, we will only do a 50x50 box
-spice = spice[:, 100:200, :]
+spice = spice[:, 200:550, :]
 
 ###############################################################################
 # This cube we have constructed has three pixel and four world
@@ -76,7 +78,7 @@ print(spice)
 wl_sum = spice.rebin((spice.data.shape[0], 1, 1), operation=np.sum)[0]
 print(wl_sum)
 
-spatial_mean = spice.rebin((1, *spice.data.shape[1:]))[:, 0, 0]
+spatial_mean = spice.rebin((1, *spice.data.shape[1:]), operation=np.nanmean)[:, 0, 0]
 print(spatial_mean)
 
 ###############################################################################
@@ -90,13 +92,11 @@ ax.coords[0].set_major_formatter("x.xx")
 ###############################################################################
 # Now we can create a model for this spectra.
 
-NIV_wave = 76.51 * u.nm
-NeVIII_wave = 77.04 * u.nm
+OVI_wave = 103.2 * u.nm
 
 initial_model = (
     m.Const1D(amplitude=0.1 * spice.unit) +
-    m.Gaussian1D(amplitude=1 * spice.unit, mean=NIV_wave, stddev=0.05 * u.nm) +
-    m.Gaussian1D(amplitude=1 * spice.unit, mean=NeVIII_wave, stddev=0.05 * u.nm)
+    m.Gaussian1D(amplitude=40 * spice.unit, mean=OVI_wave, stddev=0.05 * u.nm)
 )
 print(initial_model)
 
@@ -114,6 +114,7 @@ average_fit = fitter(
     initial_model,
     spatial_mean.axis_world_coords("em.wl")[0].to(u.nm),
     spatial_mean.data*spatial_mean.unit,
+    filter_non_finite=True
 )
 print(average_fit)
 
@@ -164,7 +165,7 @@ spice_model_fit = parallel_fit_dask(
     model=average_fit,
     fitter=TRFLSQFitter(),
     fitting_axes=0,
-    scheduler="single-threaded",
+    # scheduler="single-threaded",
 )
 
 ###############################################################################
@@ -173,25 +174,21 @@ spice_model_fit = parallel_fit_dask(
 # locations of the two Gaussians. We shall talk more about this later.
 
 def plot_spice_fit(spice_model_fit):
-    g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV_wave))
-    g2_peak_shift = spice_model_fit.mean_2.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NeVIII_wave))
+    g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(OVI_wave))
 
-    fig, axs = plt.subplots(nrows=3, subplot_kw=dict(projection=wl_sum), figsize=(5,  15))
+    aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
+
+    fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(5,  15))
     fig.suptitle(f'SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}')
 
-    wl_sum.plot(axes=axs[0])
+    wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
     fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.8)
     axs[0].set_title("Data (summed over wavelength)", pad=40)
 
-    g1_max = np.percentile(np.abs(g1_peak_shift.value), 99)
-    mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", vmin=-g1_max, vmax=g1_max)
+    g1_max = np.percentile(np.abs(g1_peak_shift.value), 97)
+    mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(g1_max), aspect=aspect)
     fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]", shrink=0.8)
-    axs[1].set_title(f"N IV ({NIV_wave:latex})", pad=40)
-
-    g2_max = np.percentile(np.abs(g2_peak_shift.value), 98)
-    mean_2 = axs[2].imshow(g2_peak_shift.value, cmap="coolwarm", vmin=-g2_max, vmax=g2_max)
-    fig.colorbar(mean_2, ax=axs[2], extend="both", label=f"Velocity from Doppler shift [{g2_peak_shift.unit:latex}]", shrink=0.8)
-    axs[2].set_title(f"Ne VIII ({NeVIII_wave:latex})", pad=40)
+    axs[1].set_title(f"N IV ({OVI_wave:latex})", pad=40)
 
     for ax in axs:
         ax.coords[0].set_ticklabel(exclude_overlapping=True)
@@ -231,16 +228,16 @@ spice_model_fit = parallel_fit_dask(
     fitting_axes=0,
     diagnostics="error",
     diagnostics_path=diag_path,
-    scheduler="single-threaded",
+    scheduler=dask_scheduler,
 )
 
-###############################################################################
-# We can now find all the folders in the diagnostics path:
+# ###############################################################################
+# # We can now find all the folders in the diagnostics path:
 
 diag_folders = list(diag_path.glob("*"))
 
-###############################################################################
-# And read the contents of each log into a list.
+# ###############################################################################
+# # And read the contents of each log into a list.
 
 errors = []
 for diag in diag_folders:
@@ -248,8 +245,36 @@ for diag in diag_folders:
         content = open(path).read()
         errors.append(content)
 
-###############################################################################
-# We can now print out the first error.
+# ###############################################################################
+# # We pass the ``diagnostics="error"`` argument to enable logging of error messages
+# # and the ``diagnostics_path=`` argument to specify where to save the logs.
+
+spice_model_fit = parallel_fit_dask(
+    data=spice,
+    model=average_fit,
+    fitter=TRFLSQFitter(),
+    fitting_axes=0,
+    diagnostics="error",
+    diagnostics_path=diag_path,
+    # scheduler="single-threaded",
+)
+
+# ###############################################################################
+# # We can now find all the folders in the diagnostics path:
+
+diag_folders = list(diag_path.glob("*"))
+
+# ###############################################################################
+# # And read the contents of each log into a list.
+
+errors = []
+for diag in diag_folders:
+    if (path := (diag/"error.log")).exists():
+        content = open(path).read()
+        errors.append(content)
+
+# ###############################################################################
+# # We can now print out the first error.
 
 print(f"{len(errors)} errors occurred")
 print("First error is:")
@@ -266,7 +291,7 @@ spice_model_fit = parallel_fit_dask(
     fitter=TRFLSQFitter(),
     fitting_axes=0,
     fitter_kwargs={"filter_non_finite": True}, # Filter out non-finite values,
-    scheduler="single-threaded",
+    # scheduler="single-threaded",
 )
 
 plot_spice_fit(spice_model_fit)
@@ -330,7 +355,7 @@ print(spice_model_fit.mean_1.quantity.to(u.AA))
 # Astropy are for doppler shifts, we can use the `~astropy.units.doppler_optical`
 # equivalency to convert to velocity.
 
-spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(NIV_wave))
+spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(OVI_wave))
 
 ###############################################################################
 # One other thing we may want to do is to evaluate the fitted model for all pixels,
