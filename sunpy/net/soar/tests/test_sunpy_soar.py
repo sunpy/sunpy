@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 import responses
-from requests.exceptions import HTTPError
 
 import astropy.units as u
 
@@ -12,8 +11,6 @@ from sunpy.net import attrs as a
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.soar.client import SOARClient
 from sunpy.util.exceptions import SunpyUserWarning
-
-SUNPY_VERSION = (sunpy.version.major, sunpy.version.minor)
 
 
 @pytest.mark.remote_data
@@ -439,30 +436,7 @@ def test_distance_time_search():
     assert res.file_num == 48
 
 
-# Remove this test and the mark from below once min sunpy dep >=7.1
-@pytest.mark.skipif(SUNPY_VERSION >= (7, 1), reason="Skip post sunpy 7.1")
-@pytest.mark.remote_data
 def test_distance_out_of_bounds_warning(recwarn):
-    instrument = a.Instrument("EUI")
-    time = a.Time("2023-04-27", "2023-04-28")
-    level = a.Level(2)
-    product = a.soar.Product("eui-fsi174-image")
-    distance = a.soar.Distance(0.45 * u.AU, 1.2 * u.AU)
-    # Run the search and ensure it raises an HTTPError
-    with pytest.raises(HTTPError):
-        Fido.search(distance & instrument & product & level & time)
-    # Check if the warning was raised
-    warnings_list = recwarn.list
-    assert any(
-        warning.message.args[0] == "Distance values must be within the range 0.28 AU to 1.0 AU."
-        and issubclass(warning.category, SunpyUserWarning)
-        for warning in warnings_list
-    )
-
-
-@pytest.mark.skipif(SUNPY_VERSION < (7, 1), reason="Skip pre sunpy 7.1")
-@pytest.mark.remote_data
-def test_distance_out_of_bounds_warning_post71(recwarn):
     instrument = a.Instrument("EUI")
     time = a.Time("2023-04-27", "2023-04-28")
     level = a.Level(2)
@@ -481,34 +455,9 @@ def test_distance_out_of_bounds_warning_post71(recwarn):
     )
 
 
-# Remove this test and the mark from below once min sunpy dep >=7.1
-@pytest.mark.skipif(SUNPY_VERSION >= (7, 1), reason="Skip post sunpy 7.1")
+@pytest.mark.thread_unsafe(reason="patches remote response")
 @responses.activate
 def test_soar_server_down() -> None:
-    # As the SOAR server is expected to be down in this test, a JSONDecodeError is expected
-    # to be raised due to the absence of a valid JSON response.
-    tap_endpoint = (
-        "http://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT"
-        " * FROM v_ll_data_item WHERE begin_time%3E='2020-11-13 00:00:00' AND "
-        "begin_time%3C='2020-11-14 00:00:00' AND level='LL02' AND descriptor='mag'"
-    )
-    # We do not give any json data similar to the condition when the server is down.
-    responses.add(responses.GET, tap_endpoint, body="Invalid JSON response", status=200)
-
-    time = a.Time("2020-11-13", "2020-11-14")
-    level = a.Level("LL02")
-    product = a.soar.Product("mag")
-
-    with pytest.raises(
-        RuntimeError,
-        match=r"The SOAR server returned an invalid JSON response. It may be down or not functioning correctly.",
-    ):
-        Fido.search(time, level, product)
-
-
-@pytest.mark.skipif(SUNPY_VERSION < (7, 1), reason="Skip pre sunpy 7.1")
-@responses.activate
-def test_soar_server_down_post71() -> None:
     # As the SOAR server is expected to be down in this test, a JSONDecodeError is expected
     # to be raised due to the absence of a valid JSON response.
     tap_endpoint = (
