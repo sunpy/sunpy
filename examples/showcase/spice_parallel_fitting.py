@@ -15,7 +15,6 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import sunpy_soar  # NOQA: F401
 from matplotlib.colors import CenteredNorm, LogNorm
 from ndcube import NDCube
 
