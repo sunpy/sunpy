@@ -35,4 +35,6 @@ default.extend-ignore-identifiers-re = [
     "BLOS",
     "gae",
     "GAE",
+    "soop",
+    "SOOP",
 ]

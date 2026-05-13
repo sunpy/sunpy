@@ -116,6 +116,7 @@ tests-only = [
   "pytest-mpl>=0.18.0",
   "pytest-run-parallel>=0.6.0",
   "pytest>=7.4.0",
+  "responses>=0.20.0",
 ]
 asdf-tests = [
   "sunpy[asdf]",
