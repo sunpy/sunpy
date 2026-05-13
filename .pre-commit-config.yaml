@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.23.1
+    rev: v1.24.1
     hooks:
       - id: zizmor
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.15.8"
+    rev: "v0.15.12"
     hooks:
       - id: ruff
         args: ["--fix"]
