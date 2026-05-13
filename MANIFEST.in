@@ -1,13 +1,26 @@
 # Exclude specific files
 # All files which are tracked by git and not explicitly excluded here are included by setuptools_scm
 exclude .codecov.yaml
-exclude .editorconfig
-exclude .gitattributes
+exclude .coveragerc
+exclude .cruft.json
 exclude .gitignore
-exclude .mailmap
+exclude .isort.cfg
 exclude .pre-commit-config.yaml
 exclude .readthedocs.yaml
 exclude .rtd-environment.yml
+exclude .ruff.toml
+
+# Prune folders
+prune .github
+prune build
+prune changelog
+global-exclude *.pyc *.o
+# This subpackage is only used in development checkouts
+# and should not be included in built tarballs
+prune sunpy/_dev
+
+# Package specific things
+exclude .mailmap
 exclude .test_package_pins.txt
 exclude .zenodo.json
 exclude asv.conf.json
@@ -17,10 +30,6 @@ exclude tox.ini
 
 # Prune folders
 prune .circleci
-prune .github
 prune benchmarks
 prune binder
-prune changelog
 prune tools
-
-prune sunpy/_dev
