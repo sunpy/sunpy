@@ -328,7 +328,7 @@ class MapSequence:
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
-            frame_data = np.asarray(ani_data[i].data)
+            frame_data = np.asanyarray(ani_data[i].data)
             if ani_data[i].mask is not None:
                 frame_data = np.ma.masked_array(frame_data,
                                                 mask=ani_data[i].mask,
