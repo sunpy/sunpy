@@ -158,6 +158,17 @@ def test_map_sequence_plot_custom_cmap_norm(aia171_test_map, hmi_test_map):
     animation._step()
 
 
+def test_map_sequence_plot_respects_masks(aia171_test_map, aia171_test_map_with_mask):
+    seq = sunpy.map.Map([aia171_test_map, aia171_test_map_with_mask], sequence=True)
+    animation = seq.plot()
+    image = animation._fig.axes[0].images[0]
+    animation._func(1, *animation._args)
+    rendered_data = image.get_array()
+
+    assert np.ma.isMaskedArray(rendered_data)
+    assert np.array_equal(np.ma.getmaskarray(rendered_data), aia171_test_map_with_mask.mask)
+
+
 def test_save(aia171_test_map, hmi_test_map, tmp_path):
     """
     Tests the MapSequence save function
