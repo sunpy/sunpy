@@ -160,7 +160,11 @@ def test_map_sequence_plot_custom_cmap_norm(aia171_test_map, hmi_test_map):
 
 def test_map_sequence_plot_respects_masks(aia171_test_map, aia171_test_map_with_mask):
     seq = sunpy.map.Map([aia171_test_map, aia171_test_map_with_mask], sequence=True)
-    animation = seq.plot()
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=seq.maps[0])
+
+    animation = seq.plot(axes=ax)
     image = animation._fig.axes[0].images[0]
     animation._func(1, *animation._args)
     rendered_data = image.get_array()
