@@ -54,7 +54,7 @@ Example on its implementation:
 
     # Depending upon the attribute the value being added could be a range of values also.
     @walker.add_applier(a.AttrName)
-    def _(wlk, attr, params)
+    def _(wlk, attr, params):
         attrmin = attr.min.value
         attrmax = attr.max.value
         # appending the attribute depending upon how it should be used in the query

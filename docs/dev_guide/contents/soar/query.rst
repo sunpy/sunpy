@@ -52,5 +52,5 @@ How can other request methods be added?
 
 To add support for additional request methods, you'll need to consider the impact they will have on the query structure.
 The REQUEST parameter in the query must be updated accordingly, and any necessary modifications to the query string should be made to accommodate the new method.
-If the new request method requires a specific attribute, you may need to add it as a class in the attrs.py file (if it doesn't already exist in (if it doesn't already exist in `sunpy.net.attrs <https://github.com/sunpy/sunpy/blob/main/sunpy/net/attrs.py/>`__).
+If the new request method requires a specific attribute, you may need to add it as a class in the attrs.py file (if it doesn't already exist in `sunpy.net.attrs <https://github.com/sunpy/sunpy/blob/main/sunpy/net/attrs.py/>`__).
 Additionally, a walker for this attribute will need to be created.

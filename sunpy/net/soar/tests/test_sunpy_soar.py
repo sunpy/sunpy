@@ -154,7 +154,7 @@ def test_when_soar_provider_passed() -> None:
     assert res["soar"]
 
 
-@pytest.mark.xfail(reason="Something is wrong, work it out")
+@pytest.mark.remote_data
 def test_when_sdac_provider_passed() -> None:
     # tests that only VSO EUI results are returned when explicitly setting the provider to SDAC
     instrument = a.Instrument("EUI")
