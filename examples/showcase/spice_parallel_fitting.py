@@ -57,8 +57,11 @@ hdu = hdul['O VI 1032 - Peak']
 spice = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(hdu.data))
 # The first dimension is length one so we will drop it
 spice = spice[0]
-# To ensure this example is quick, we will only do a 50x50 box
-spice = spice[:, 200:550, :]
+# Also we crop out the edges of the wavelength axis where NaNs are present
+spice = spice[6:-4, :, :]
+# To ensure this example is quick, we will only do a subset of the data
+# If you run this example locally you can comment out this line
+spice = spice[:, 200:550, 20:-10]
 
 ###############################################################################
 # This cube we have constructed has three pixel and four world
@@ -152,19 +155,24 @@ plt.legend()
 # What is returned from `~astropy.modeling.fitting.parallel_fit_dask` is a model with array parameters with the shape of the non-fitting axes of the data (so in this case 100x100 arrays).
 
 ###############################################################################
-# We can therefore fit all our SPICE cube as follows:
 # .. note::
 #
 #     All examples here are done with ``scheduler="single-threaded"``,
 #     this is to allow them to build on our documentation. When running this
-#     example yourself, you should remove this line.
+#     example yourself, you should set this to `None` to use the default
+#     parallel scheduler.
+
+dask_scheduler = "single-threaded"  # None
+
+###############################################################################
+# We can therefore fit all our SPICE cube as follows:
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
     model=average_fit,
     fitter=TRFLSQFitter(),
     fitting_axes=0,
-    # scheduler="single-threaded",
+    scheduler=dask_scheduler,
 )
 
 ###############################################################################
@@ -184,8 +192,8 @@ def plot_spice_fit(spice_model_fit):
     fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.8)
     axs[0].set_title("Data (summed over wavelength)", pad=40)
 
-    g1_max = np.percentile(np.abs(g1_peak_shift.value), 97)
-    mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(g1_max), aspect=aspect)
+    g1_max = np.percentile(np.abs(g1_peak_shift.value), 95)
+    mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(halfrange=g1_max), aspect=aspect)
     fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]", shrink=0.8)
     axs[1].set_title(f"N IV ({OVI_wave:latex})", pad=40)
 
@@ -245,34 +253,6 @@ for diag in diag_folders:
         errors.append(content)
 
 # ###############################################################################
-# # We pass the ``diagnostics="error"`` argument to enable logging of error messages
-# # and the ``diagnostics_path=`` argument to specify where to save the logs.
-
-spice_model_fit = parallel_fit_dask(
-    data=spice,
-    model=average_fit,
-    fitter=TRFLSQFitter(),
-    fitting_axes=0,
-    diagnostics="error",
-    diagnostics_path=diag_path,
-    # scheduler="single-threaded",
-)
-
-# ###############################################################################
-# # We can now find all the folders in the diagnostics path:
-
-diag_folders = list(diag_path.glob("*"))
-
-# ###############################################################################
-# # And read the contents of each log into a list.
-
-errors = []
-for diag in diag_folders:
-    if (path := (diag/"error.log")).exists():
-        content = open(path).read()
-        errors.append(content)
-
-# ###############################################################################
 # # We can now print out the first error.
 
 print(f"{len(errors)} errors occurred")
@@ -290,7 +270,7 @@ spice_model_fit = parallel_fit_dask(
     fitter=TRFLSQFitter(),
     fitting_axes=0,
     fitter_kwargs={"filter_non_finite": True}, # Filter out non-finite values,
-    # scheduler="single-threaded",
+    scheduler=dask_scheduler,
 )
 
 plot_spice_fit(spice_model_fit)

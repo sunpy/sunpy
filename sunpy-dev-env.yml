@@ -59,7 +59,6 @@ dependencies:
   - tox
 
   # Documentation
-  - astroquery
   - graphviz
   - ruamel.yaml
   - sphinx
@@ -69,6 +68,13 @@ dependencies:
   - sphinx-gallery
   - sphinxcontrib-bibtex
   - sphinxext-opengraph
+
+  # Gallery
+  - astroquery
+  - jplephem
+  - pillow
+  - exifread
+  - ndcube
 
   # Installation
   - extension-helpers
