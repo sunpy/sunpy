@@ -28,10 +28,10 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
-# For this example, we are going to use a part of an observation from the SPICE instrument
-# which is a rastering spectrograph onboard Solar Orbiter. The focus will be on the
-# spectral window containing the Nitrogen IV line (76.51 nm) and the Neon VIII line
-# (77.04 nm).
+# For this example, we are going to use a part of an observation from
+# the SPICE instrument which is a rastering spectrograph onboard Solar
+# Orbiter. The focus will be on the spectral window containing the
+# Oxygen VI line.
 
 res = Fido.search(a.Time("2022-04-02 13:00", "2022-04-02 13:25"),
                   a.Instrument.spice, a.Level(2),
@@ -65,10 +65,10 @@ spice = spice[:, 200:550, 20:-10]
 
 ###############################################################################
 # This cube we have constructed has three pixel and four world
-# dimensions, the first array dimension is wavelength (71 long)
-# followed by the slit dimension and then the rastering dimension. The
-# world axes are wavelength, helioprojective latitude and longitude
-# and time which increases along the rastering dimension.
+# dimensions, the first array dimension is wavelength followed by the
+# slit dimension and then the rastering dimension. The world axes are
+# wavelength, helioprojective latitude and longitude and time which
+# increases along the rastering dimension.
 
 print(spice)
 
