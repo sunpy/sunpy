@@ -6,3 +6,7 @@ updates:
       interval: "monthly"
     cooldown:
       default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
