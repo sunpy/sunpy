@@ -28,25 +28,40 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
+# Downloading the Data
+# --------------------
+#
 # For this example, we are going to use a part of an observation from
 # the SPICE instrument which is a rastering spectrograph onboard Solar
 # Orbiter. The focus will be on the spectral window containing the
 # Oxygen VI line.
 
-res = Fido.search(a.Time("2022-04-02 13:00", "2022-04-02 13:25"),
-                  a.Instrument.spice, a.Level(2),
-                  a.Provider.soar,
-                  a.soar.Product.spice_n_ras)
+res = Fido.search(
+    a.Time("2022-04-02 13:00", "2022-04-02 13:25"),
+    a.Instrument.spice,
+    a.Level(2),
+    a.Provider.soar,
+    a.soar.Product.spice_n_ras,
+)
 filename = Fido.fetch(res)[0]
 
 ###############################################################################
+# Reading the Data
+# ----------------
+#
 # We now open the FITS file and access the window via EXTNAME.
 
 hdul = fits.open(filename)
-hdu = hdul['O VI 1032 - Peak']
+hdu = hdul["O VI 1032 - Peak"]
 
 ###############################################################################
 # The next step is to create an `~ndcube.NDCube` object from the data we have opened.
+# If you are using SPICE data more regularly you might wish to look
+# into the `read_spice_l2_fits
+# <https://docs.sunpy.org/projects/sunraster/en/stable/generated/api/sunraster.instr.spice.read_spice_l2_fits.html>`__
+# function and the `sospice
+# <https://sospice.readthedocs.io/en/stable/>`__ package for more
+# SPICE tools.
 #
 # To construct this `~ndcube.NDCube` object we use the header from the
 # FITS file to make a WCS object, the data and the unit of the data,
@@ -54,14 +69,23 @@ hdu = hdul['O VI 1032 - Peak']
 #
 # We then crop down the cube to make it faster to work with.
 
-spice = NDCube(hdu.data, wcs=WCS(hdu), unit=hdu.header["BUNIT"], mask=np.isnan(hdu.data))
+spice = NDCube(
+    hdu.data,
+    wcs=WCS(hdu),
+    unit=hdu.header["BUNIT"],
+    mask=np.isnan(hdu.data),
+)
 # The first dimension is length one so we will drop it
 spice = spice.squeeze()
+
+###############################################################################
 # Also we crop out the edges of the wavelength axis where NaNs are present
 spice = spice[6:-4, :, :]
+
+###############################################################################
 # To ensure this example is quick, we will only do a subset of the data
 # If you run this example locally you can comment out this line
-spice = spice[:, 200:550, 20:-10]
+spice = spice[:, 200:500, 30:-20]
 
 ###############################################################################
 # This cube we have constructed has three pixel and four world
@@ -92,7 +116,12 @@ ax = spatial_mean.plot(axes_units=[u.nm])
 ax.coords[0].set_major_formatter("x.xx")
 
 ###############################################################################
-# Now we can create a model for this spectra.
+# Initial Model
+# -------------
+#
+# We now create an initial model for the line, and then fit the
+# average spectra to get a strong initial model for the parallel
+# fitting.
 
 OVI_wave = 103.2 * u.nm
 
@@ -115,8 +144,8 @@ fitter = TRFLSQFitter(calc_uncertainties=True)
 average_fit = fitter(
     initial_model,
     spatial_mean.axis_world_coords("em.wl")[0].to(u.nm),
-    spatial_mean.data*spatial_mean.unit,
-    filter_non_finite=True
+    spatial_mean.data * spatial_mean.unit,
+    filter_non_finite=True,
 )
 print(average_fit)
 
@@ -165,7 +194,8 @@ plt.legend()
 dask_scheduler = "single-threaded"  # None
 
 ###############################################################################
-# We can therefore fit all our SPICE cube as follows:
+# We can therefore fit all our SPICE cube as follows, note we do this
+# for an extra small window to reduce runtime.
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
@@ -181,12 +211,12 @@ spice_model_fit = parallel_fit_dask(
 # locations of the two Gaussians. We shall talk more about this later.
 
 def plot_spice_fit(spice_model_fit):
-    g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(OVI_wave))
+    g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km / u.s, equivalencies=u.doppler_optical(OVI_wave))
 
     aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
 
-    fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(5,  15), layout="constrained")
-    fig.suptitle(f'SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}')
+    fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(5, 15), layout="constrained")
+    fig.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
 
     wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
     fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}")
@@ -246,7 +276,7 @@ diag_folders = list(diag_path.glob("*"))
 
 errors = []
 for diag in diag_folders:
-    if (path := (diag/"error.log")).exists():
+    if (path := (diag / "error.log")).exists():
         content = open(path).read()
         errors.append(content)
 
@@ -267,7 +297,7 @@ spice_model_fit = parallel_fit_dask(
     model=average_fit,
     fitter=TRFLSQFitter(),
     fitting_axes=0,
-    fitter_kwargs={"filter_non_finite": True}, # Filter out non-finite values,
+    fitter_kwargs={"filter_non_finite": True},  # Filter out non-finite values,
     scheduler=dask_scheduler,
 )
 
@@ -365,10 +395,12 @@ fig = plt.figure(figsize=(11, 5))
 ax = spatial_mean.plot(axes_units=[u.nm], label="Average spectra", zorder=99)
 ax.coords["wavelength"].set_major_formatter("x.xx")
 
-ax.plot(average_fit(spatial_mean.axis_world_coords("em.wl")[0]),
-        linestyle="--",
-        label="Spatial Average Model",
-        zorder=99)
+ax.plot(
+    average_fit(spatial_mean.axis_world_coords("em.wl")[0]),
+    linestyle="--",
+    label="Spatial Average Model",
+    zorder=99,
+)
 
 # Iterate over each fit and plot it.
 for fit_arr in all_fits.reshape((spatial_mean.data.shape[0], -1)).T:
