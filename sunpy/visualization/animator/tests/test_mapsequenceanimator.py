@@ -1,6 +1,7 @@
 
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
 
 from astropy.visualization.wcsaxes import WCSAxes
 
@@ -20,7 +21,8 @@ def test_map_sequence(aia171_test_map):
 
 
 def test_construct_map_sequence_animator(test_map_sequence):
-    map_animator = MapSequenceAnimator(test_map_sequence)
+    fig = Figure()
+    map_animator = MapSequenceAnimator(test_map_sequence, fig=fig)
     assert isinstance(map_animator, MapSequenceAnimator)
 
 
@@ -31,12 +33,14 @@ def test_map_sequence_animator_wcs_simple_plot(test_map_sequence):
 
 
 def test_axes(test_map_sequence):
-    map_animator = MapSequenceAnimator(test_map_sequence)
+    fig = Figure()
+    map_animator = MapSequenceAnimator(test_map_sequence, fig=fig)
     assert isinstance(map_animator.axes, WCSAxes)
 
 
 def test_map_sequence_animator_wcs_update_plot(test_map_sequence):
-    map_animator = MapSequenceAnimator(test_map_sequence)
+    fig = Figure()
+    map_animator = MapSequenceAnimator(test_map_sequence, fig=fig)
     map1 = map_animator.im.get_array()
     map_animator.updatefig(1, map_animator.im, map_animator.sliders[0]._slider)
     map2 = map_animator.im.get_array()
