@@ -185,16 +185,16 @@ def plot_spice_fit(spice_model_fit):
 
     aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
 
-    fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(5,  15))
+    fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(5,  15), layout="constrained")
     fig.suptitle(f'SPICE - {hdu.header["EXTNAME"]} - {hdu.header["DATE-AVG"]}')
 
     wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
-    fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.8)
+    fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}")
     axs[0].set_title("Data (summed over wavelength)", pad=40)
 
-    g1_max = np.percentile(np.abs(g1_peak_shift.value), 95)
+    g1_max = np.percentile(np.abs(g1_peak_shift.value), 97)
     mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(halfrange=g1_max), aspect=aspect)
-    fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]", shrink=0.8)
+    fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]")
     axs[1].set_title(f"N IV ({OVI_wave:latex})", pad=40)
 
     for ax in axs:
@@ -202,8 +202,6 @@ def plot_spice_fit(spice_model_fit):
         ax.coords[0].set_axislabel("Helioprojective Longitude")
         ax.coords[1].set_axislabel("Helioprojective Latitude")
         ax.coords[2].set_ticklabel(exclude_overlapping=True)
-
-    fig.tight_layout()
 
 
 plot_spice_fit(spice_model_fit)
@@ -224,9 +222,9 @@ plot_spice_fit(spice_model_fit)
 diag_path = Path("./diag")
 shutil.rmtree(diag_path, ignore_errors=True)
 
-###############################################################################
-# We pass the ``diagnostics="error"`` argument to enable logging of error messages
-# and the ``diagnostics_path=`` argument to specify where to save the logs.
+# ###############################################################################
+# # We pass the ``diagnostics="error"`` argument to enable logging of error messages
+# # and the ``diagnostics_path=`` argument to specify where to save the logs.
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
