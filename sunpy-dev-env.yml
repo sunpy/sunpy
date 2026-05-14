@@ -68,6 +68,7 @@ dependencies:
   - sphinx-gallery
   - sphinxcontrib-bibtex
   - sphinxext-opengraph
+  - sphinx-autodoc-typehints
 
   # Gallery
   - astroquery
@@ -89,3 +90,4 @@ dependencies:
       - sphinx-changelog
       - sunpy-sphinx-theme
       - towncrier  # needs to be installed via pip because sphinx-changelog pins the version
+      - tox-pypi-filter  # stops tox making a venv to run tox
