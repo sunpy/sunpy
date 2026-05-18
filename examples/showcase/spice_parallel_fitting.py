@@ -5,13 +5,11 @@ Parallel Spectral Fitting with Astropy Modeling
 
 In the 7.0 release of astropy, a new function was added `~astropy.modeling.fitting.parallel_fit_dask`, alongside multiple performance improvements to fitting astropy models with a non-linear fitter.
 These changes mean that it is now practical to fit many independent models to a large multi-dimensional array of data.
+For more information on using this functionality, refer to the :ref:`astropy:parallel-fitting` page in the astropy documentation.
 
 In this example we will demonstrate this functionality by fitting many spectra of a raster scan in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter mission.
 """
 # sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
-
-import shutil
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,7 +41,7 @@ res = Fido.search(
     a.Provider.soar,
     a.soar.Product.spice_n_ras,
 )
-filename = Fido.fetch(res)[0]
+filename = Fido.fetch(res, overwrite=True)[0]
 
 ###############################################################################
 # Reading the Data
@@ -85,7 +83,7 @@ spice = spice[6:-4, :, :]
 ###############################################################################
 # To ensure this example is quick, we will only do a subset of the data
 # If you run this example locally you can comment out this line
-spice = spice[:, 200:500, 30:-20]
+spice = spice[:, 200:500, 30:-50]
 
 ###############################################################################
 # This cube we have constructed has three pixel and four world
@@ -100,11 +98,17 @@ print(spice)
 # To aid our analysis we are going to make two rebinned cubes from
 # this data, one summed along the wavelength dimension and one of the
 # spectra averaged over all spatial pixels.
+#
+# We use the shortcut value ``-1`` to `~ndcube.NDCube.rebin` to
+# represent no rebinning along that axis (output length equals number
+# of pixels in input).
+#
+# We then squeeze the resulting cubes to drop all length one axes.
 
-wl_sum = spice.rebin((spice.data.shape[0], 1, 1), operation=np.sum)[0]
+wl_sum = spice.rebin((-1, 1, 1), operation=np.sum).squeeze()
 print(wl_sum)
 
-spatial_mean = spice.rebin((1, *spice.data.shape[1:]), operation=np.nanmean)[:, 0, 0]
+spatial_mean = spice.rebin((1, -1, -1), operation=np.nanmean).squeeze()
 print(spatial_mean)
 
 ###############################################################################
@@ -150,6 +154,11 @@ average_fit = fitter(
 print(average_fit)
 
 ###############################################################################
+# Note that we set the ``filter_non_finite`` keyword to the
+# `astropy.modeling.fitting.TRFLSQFitter.__call__` function to tell
+# the fitter to ignore any ``NaN`` values rather than error.
+
+###############################################################################
 # Now we can add to our previous plot the initial model and the model
 # fit to the average spectra.
 
@@ -176,12 +185,18 @@ plt.legend()
 #
 # The key arguments to the `~astropy.modeling.fitting.parallel_fit_dask` function are:
 #
-# * A data array. This can be a numpy array or a dask array, or a `~astropy.nddata.NDData` / `~ndcube.NDCube` object. If it's one of these objects then the data, wcs, mask, data_unit and uncertainty are all extracted from the object and used in place of their respective keyword arguments.
+# * A data array. This can be a numpy array or a dask array, or a
+#   `~astropy.nddata.NDData` / `~ndcube.NDCube` object. If it's one of
+#   these objects then the data, wcs, mask, data_unit and uncertainty
+#   are all extracted from the object and used in place of their
+#   respective keyword arguments.
 # * A model to fit.
 # * A fitter instance.
 # * The fitting axis (or axes).
 #
-# What is returned from `~astropy.modeling.fitting.parallel_fit_dask` is a model with array parameters with the shape of the non-fitting axes of the data (so in this case 100x100 arrays).
+# What is returned from `~astropy.modeling.fitting.parallel_fit_dask`
+# is a model with array parameters with the shape of the non-fitting
+# axes of the data (so in this case 100x100 arrays).
 
 ###############################################################################
 # .. note::
@@ -192,10 +207,11 @@ plt.legend()
 #     parallel scheduler.
 
 dask_scheduler = "single-threaded"  # None
+dask_scheduler = None
 
 ###############################################################################
-# We can therefore fit all our SPICE cube as follows, note we do this
-# for an extra small window to reduce runtime.
+# We can therefore fit all our SPICE cube as follows, note we are
+# still passing the ``filter_non_finite`` argument as before.
 
 spice_model_fit = parallel_fit_dask(
     data=spice,
@@ -203,108 +219,39 @@ spice_model_fit = parallel_fit_dask(
     fitter=TRFLSQFitter(),
     fitting_axes=0,
     scheduler=dask_scheduler,
-)
-
-###############################################################################
-# Given that we are going to want to visualize the output of a few fits,
-# we will define a plotting function which will display the shift in the peak
-# locations of the two Gaussians. We shall talk more about this later.
-
-def plot_spice_fit(spice_model_fit):
-    g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km / u.s, equivalencies=u.doppler_optical(OVI_wave))
-
-    aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
-
-    fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(5, 15), layout="constrained")
-    fig.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
-
-    wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
-    fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}")
-    axs[0].set_title("Data (summed over wavelength)", pad=40)
-
-    g1_max = np.percentile(np.abs(g1_peak_shift.value), 97)
-    mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(halfrange=g1_max), aspect=aspect)
-    fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]")
-    axs[1].set_title(f"N IV ({OVI_wave:latex})", pad=40)
-
-    for ax in axs:
-        ax.coords[0].set_ticklabel(exclude_overlapping=True)
-        ax.coords[0].set_axislabel("Helioprojective Longitude")
-        ax.coords[1].set_axislabel("Helioprojective Latitude")
-        ax.coords[2].set_ticklabel(exclude_overlapping=True)
-
-
-plot_spice_fit(spice_model_fit)
-
-###############################################################################
-# Oh dear! This clearly didn't work.
-#
-# To discover why we can use the "diagnostics" functionality of the `~astropy.modeling.fitting.parallel_fit_dask` function.
-# This lets each separate process write out logs of errors
-# or warnings to a directory of our choice, or run a function (useful for making diagnostic plots).
-# In this case we are going to have it write out error logs.
-
-###############################################################################
-# First we define the local path we want the logs saved to and ensure the directory
-# and the contents of that directory have been removed (to make sure that
-# no output from previous runs is present).
-
-diag_path = Path("./diag")
-shutil.rmtree(diag_path, ignore_errors=True)
-
-# ###############################################################################
-# # We pass the ``diagnostics="error"`` argument to enable logging of error messages
-# # and the ``diagnostics_path=`` argument to specify where to save the logs.
-
-spice_model_fit = parallel_fit_dask(
-    data=spice,
-    model=average_fit,
-    fitter=TRFLSQFitter(),
-    fitting_axes=0,
-    diagnostics="error",
-    diagnostics_path=diag_path,
-    scheduler=dask_scheduler,
-)
-
-# ###############################################################################
-# # We can now find all the folders in the diagnostics path:
-
-diag_folders = list(diag_path.glob("*"))
-
-# ###############################################################################
-# # And read the contents of each log into a list.
-
-errors = []
-for diag in diag_folders:
-    if (path := (diag / "error.log")).exists():
-        content = open(path).read()
-        errors.append(content)
-
-# ###############################################################################
-# # We can now print out the first error.
-
-print(f"{len(errors)} errors occurred")
-print("First error is:")
-print(errors[0])
-
-###############################################################################
-# The reason for the failure of the fitting was the presence of NaN values in the data array.
-# When calling the `~astropy.modeling.fitting.TRFLSQFitter` (and many others) it's possible to set the ``filter_non_finite=True`` keyword argument.
-# To do this with the ``parallel_fit_dask`` function we pass a dictionary of keyword arguments to the fitter as the ``fitter_kwargs`` argument:
-
-spice_model_fit = parallel_fit_dask(
-    data=spice,
-    model=average_fit,
-    fitter=TRFLSQFitter(),
-    fitting_axes=0,
     fitter_kwargs={"filter_non_finite": True},  # Filter out non-finite values,
-    scheduler=dask_scheduler,
 )
 
-plot_spice_fit(spice_model_fit)
-
 ###############################################################################
-# That's better!
+# We now create a nice stacked plot of the original data and the shift
+# in the peak locations of the Gaussian fit. We shall talk more about
+# this later.
+
+g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km / u.s, equivalencies=u.doppler_optical(OVI_wave))
+
+# We calculate the aspect ratio from the physical size of the pixels to scale the plot to the world coordinates.
+aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
+
+# Create a figure with one column and two rows using the WCS for the ``wl_sum`` cube.
+# Use the constrained layout for better use of space in the figure.
+fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(4.5, 8), layout="constrained")
+fig.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
+
+wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
+fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.9)
+axs[0].set_title("Data (summed over wavelength)", pad=40)
+
+g1_max = np.percentile(np.abs(g1_peak_shift.value), 97)
+mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(halfrange=g1_max), aspect=aspect)
+fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]", shrink=0.9)
+axs[1].set_title(f"O VI ({OVI_wave:latex})", pad=40)
+
+for ax in axs:
+    ax.coords[0].set_ticklabel(exclude_overlapping=True)
+    ax.coords[0].set_axislabel("Helioprojective Longitude")
+    ax.coords[1].set_axislabel("Helioprojective Latitude")
+    ax.coords[2].set_ticklabel(exclude_overlapping=True)
+
 
 ###############################################################################
 # Working with the fit
