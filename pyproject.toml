@@ -149,7 +149,7 @@ docs-gallery = [
   "jplephem>=2.19",
   "pillow",
   "exifread",
-  "ndcube",
+  "ndcube>=2.3.0",
 ]
 dev = ["sunpy[docs,tests]"]
 
