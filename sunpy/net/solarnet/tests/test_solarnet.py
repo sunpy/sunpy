@@ -17,7 +17,7 @@ def client():
 
 
 def test_info_url(client):
-    assert client.info_url == 'https://solarnet2.oma.be'
+    assert client.info_url == 'https://solarnet.oma.be'
 
 
 @pytest.mark.remote_data
