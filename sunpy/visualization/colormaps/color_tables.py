@@ -6,9 +6,8 @@ dictionaries.
 import pathlib
 
 import matplotlib.colors as colors
-from matplotlib import colormaps
 import numpy as np
-import cmcrameri
+from matplotlib import colormaps
 
 import astropy.units as u
 
@@ -411,7 +410,7 @@ def metis_color_table(cmap_name):
     # cmap_name, cmap, cmap.name
     cmap_dict = {
         'solometisvl-tb': (
-            cmcrameri.cm.batlow.copy(), 'SolO Metis VL Total Brightness'
+            colormaps['cividis'].copy(), 'SolO Metis VL Total Brightness'
         ),
         'solometisvl-pb': (  # Metis VL/pB images uses AIA color table
             metisvl_pb_cmap, None
@@ -423,7 +422,7 @@ def metis_color_table(cmap_name):
             colormaps['viridis'].copy(), 'SolO Metis VL Polarization Angle'
         ),
         'solometisvl-si': (
-            cmcrameri.cm.batlow.copy(), 'SolO Metis VL Stokes I'  # the same as solometisvl-tb
+            colormaps['cividis'].copy(), 'SolO Metis VL Stokes I'  # the same as solometisvl-tb
         ),
         'solometisvl-sq': (
             colormaps['viridis'].copy(), 'SolO Metis VL Stokes Q'
