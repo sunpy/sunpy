@@ -72,7 +72,7 @@ Added support for querying data from `solarnet API <https://solarnet.oma.be/>`__
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SOLARNETClient:
-    Source: https://solarnet2.oma.be
+    Source: https://solarnet.oma.be
     <BLANKLINE>
            OID                 DATE_BEG                 DATE_END         WAVEMIN WAVEMAX         DATE_OBS
     ------------------ ------------------------ ------------------------ ------- ------- ------------------------
