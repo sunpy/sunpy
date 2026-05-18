@@ -10,7 +10,7 @@ from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, QueryResponseTable
 from sunpy.net.solarnet.attrs import Dataset, Tags, Target, walker
 
-_BASE_URL = "https://solarnet2.oma.be/service/api/svo/{}"
+_BASE_URL = "https://solarnet.oma.be/service/api/svo/{}"
 
 __all__ = ["SOLARNETClient"]
 
@@ -49,7 +49,7 @@ class SOLARNETClient(BaseClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SOLARNETClient:
-    Source: https://solarnet2.oma.be
+    Source: https://solarnet.oma.be
     <BLANKLINE>
          OID               DATE_BEG                 DATE_END          WAVEMIN   WAVEMAX          DATE_OBS         EXPTIME MEASURE STEPS WAVELENG
     -------------- ------------------------ ------------------------ --------- --------- ------------------------ ------- ------- ----- --------
@@ -61,7 +61,7 @@ class SOLARNETClient(BaseClient):
 
     @property
     def info_url(self):
-        return 'https://solarnet2.oma.be'
+        return 'https://solarnet.oma.be'
 
     def search(self, *query):
         """
