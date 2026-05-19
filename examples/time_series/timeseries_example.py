@@ -148,7 +148,7 @@ plt.show()
 # involved, but these won't be picked up by `~sunpy.timeseries.TimeSeries`.
 # Take care when doing this to ensure dimensional consistency.
 
-df_downsampled = ts_goes_trunc.to_dataframe().resample('10T').mean()
+df_downsampled = ts_goes_trunc.to_dataframe().resample('10min').mean()
 ts_downsampled = sunpy.timeseries.TimeSeries(df_downsampled,
                                              ts_goes_trunc.meta,
                                              ts_goes_trunc.units)

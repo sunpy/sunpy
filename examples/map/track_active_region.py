@@ -30,7 +30,7 @@ query = Fido.search(a.Time('2018-05-30 00:00:00', '2018-05-30 12:00:00'),
                     a.Wavelength(171*u.angstrom),
                     a.Sample(1*u.h))
 print(query)
-files = Fido.fetch(query)
+files = Fido.fetch(query, site="NSO")
 
 ###############################################################################
 # Now that we have a set of images in time, we can create a `~sunpy.map.MapSequence` to hold all of them
