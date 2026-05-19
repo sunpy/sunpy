@@ -6,6 +6,7 @@ the `astropy.coordinates` module.
 """
 import os
 import re
+import threading
 import traceback
 
 import numpy as np
@@ -22,6 +23,8 @@ from astropy.coordinates.representation import (
     SphericalRepresentation,
     UnitSphericalRepresentation,
 )
+from astropy.io.misc.yaml import AstropyDumper, AstropyLoader
+from astropy.table import serialize as table_serialize
 from astropy.time import Time
 from astropy.utils.data import download_file
 
@@ -122,6 +125,49 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
       which can be overridden via the class variable ``_wrap_angle``.
     * Inject a nice way of representing the object which the coordinate represents.
     """
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        # Register the class with Astropy's table serialization
+        # Astropy does not provide an API for registering (see https://github.com/astropy/astropy/issues/13689),
+        # so we have to update a private variable
+        # TODO: Refactor this approach once a public API for registration exists
+        cls_name = f"{cls.__module__}.{cls.__name__}"
+        # We have to use getattr()/setattr() to avoid triggering Python name mangling
+        existing_classes = getattr(table_serialize, "__construct_mixin_classes")
+        if cls_name not in existing_classes:
+            setattr(table_serialize, "__construct_mixin_classes", existing_classes + (cls_name,))
+
+        # Register YAML representers/constructors for Astropy's table serialization
+        tag = f"!{cls_name}"
+
+        def representer(dumper, obj):
+            if hasattr(obj, "info") and hasattr(obj.info, "_represent_as_dict"):
+                mapping = obj.info._represent_as_dict()
+            else:
+                # Fallback for astropy < 7.0 where BaseCoordinateFrame did not have .info
+                mapping = {c: getattr(obj, c) for c in obj.representation_component_names}
+                for attr in obj.frame_attributes:
+                    mapping[attr] = getattr(obj, attr)
+                if hasattr(obj.representation_type, 'name'):
+                    mapping['representation_type'] = obj.representation_type.name
+                elif hasattr(obj.representation_type, 'get_name'):
+                    mapping['representation_type'] = obj.representation_type.get_name()
+                else:
+                    mapping['representation_type'] = obj.representation_type.__name__
+            return dumper.represent_mapping(tag, mapping)
+
+        def constructor(loader, node):
+            mapping = loader.construct_mapping(node)
+            if hasattr(cls, "info") and hasattr(cls.info, "_construct_from_dict"):
+                return cls.info._construct_from_dict(mapping)
+            else:
+                # Fallback for astropy < 7.0
+                return cls(**mapping)
+
+        AstropyDumper.add_multi_representer(cls, representer)
+        AstropyLoader.add_constructor(tag, constructor)
+
     obstime = TimeFrameAttributeSunPy()
 
     default_representation = SphericalRepresentation
@@ -528,7 +574,14 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
     rsun = QuantityAttribute(default=_RSUN, unit=u.km)
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
-    _assumed_screen = None
+
+    # Thread-safe storage of the currently active screen assumption, if any
+    # Otherwise, the screen on one thread can affect calculations on another thread
+    # Furthermore, context exits may restore a state that was supposed to have ended
+    class _Assumptions(threading.local):
+        def __init__(self):
+            self.screen = None
+    _assumptions = _Assumptions()
 
     @property
     def angular_radius(self):
@@ -590,9 +643,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         with np.errstate(invalid='ignore'):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
-        if self._assumed_screen:
-            d_screen = self._assumed_screen.calculate_distance(self)
-            d = np.fmin(d, d_screen) if self._assumed_screen.only_off_disk else d_screen
+        if self._assumptions.screen:
+            d_screen = self._assumptions.screen.calculate_distance(self)
+            d = np.fmin(d, d_screen) if self._assumptions.screen.only_off_disk else d_screen
 
         # This warning can be triggered in specific draw calls when plt.show() is called
         # we can not easily prevent this, so we check the specific function is being called

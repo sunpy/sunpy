@@ -156,6 +156,7 @@ def test_read_cdf_empty_variable():
     sunpy_cdf._known_units = known_units
 
 
+@pytest.mark.thread_unsafe(reason="changing log level is not thread safe")
 def test_read_empty_cdf(caplog):
     with caplog.at_level(logging.DEBUG, logger='sunpy'):
         ts_empty = sunpy.timeseries.TimeSeries(swa_filepath)

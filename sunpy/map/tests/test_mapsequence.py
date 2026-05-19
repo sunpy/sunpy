@@ -4,6 +4,7 @@ Test mapsequence functionality
 
 import numpy as np
 import pytest
+from matplotlib.figure import Figure
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
@@ -121,6 +122,7 @@ def test_repr_html(mapsequence_all_the_same):
         assert m._repr_html_() in html_string
 
 
+@pytest.mark.thread_unsafe(reason="mocks web browser")
 def test_quicklook(mocker, mapsequence_all_the_same):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
     mapsequence_all_the_same.quicklook()
@@ -154,6 +156,21 @@ def test_map_sequence_plot_custom_cmap_norm(aia171_test_map, hmi_test_map):
     seq = sunpy.map.Map([aia171_test_map, hmi_test_map], sequence=True)
     animation = seq.plot(cmap='Greys', norm=ImageNormalize(vmin=0, vmax=100))
     animation._step()
+
+
+def test_map_sequence_plot_respects_masks(aia171_test_map, aia171_test_map_with_mask):
+    seq = sunpy.map.Map([aia171_test_map, aia171_test_map_with_mask], sequence=True)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=seq.maps[0])
+
+    animation = seq.plot(axes=ax)
+    image = animation._fig.axes[0].images[0]
+    animation._func(1, *animation._args)
+    rendered_data = image.get_array()
+
+    assert np.ma.isMaskedArray(rendered_data)
+    assert np.array_equal(np.ma.getmaskarray(rendered_data), aia171_test_map_with_mask.mask)
 
 
 def test_save(aia171_test_map, hmi_test_map, tmp_path):
@@ -206,7 +223,11 @@ def test_mapsequence_plot_uint8_norm():
     # This code used to fail in this case.
     coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
     [coconut.plot_settings.pop("norm") for coconut in coconuts]
-    moving_coconut = coconuts.plot()
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=coconuts[0])
+
+    moving_coconut = coconuts.plot(axes=ax)
     moving_coconut._step()
 
 
@@ -215,15 +236,23 @@ def test_mapsequence_plot_uint8_norm_clip_interval():
     # This code used to fail in this case.
     coconuts = sunpy.map.Map([get_test_filepath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")]*10,sequence=True)
     [coconut.plot_settings.pop("norm") for coconut in coconuts]
-    moving_coconut = coconuts.plot(clip_interval=(1, 99.99)*u.percent)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=coconuts[0])
+
+    moving_coconut = coconuts.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
     moving_coconut._step()
 
 
 @skip_glymur
 def test_mapsequence_plot_set_norm_pass_vmin_vmax(aia171_test_map):
-    # CHecking that passing in interval values works if the map has a norm
+    # Checking that passing in interval values works if the map has a norm
     coconuts = sunpy.map.Map([aia171_test_map]*10,sequence=True)
-    moving_coconut = coconuts.plot(clip_interval=(1, 99.99)*u.percent)
+
+    fig = Figure()
+    ax = fig.add_subplot(projection=coconuts[0])
+
+    moving_coconut = coconuts.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
     moving_coconut._step()
-    moving_coconut = coconuts.plot(vmin=100, vmax=1000)
+    moving_coconut = coconuts.plot(axes=ax, vmin=100, vmax=1000)
     moving_coconut._step()

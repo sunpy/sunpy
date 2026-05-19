@@ -1,0 +1,2 @@
+The `Solar Orbiter Archive <https://soar.esac.esa.int/soar/>`__ can now be queried via `~sunpy.net.Fido` without installing any extra packages.
+The ``sunpy-soar`` package has been merged into sunpy, and no longer needs to be separately installed or imported.

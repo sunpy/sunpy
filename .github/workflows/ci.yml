@@ -67,6 +67,9 @@ jobs:
         - windows: py313
         - macos: py313
         - linux: py312-oldestdeps
+        - linux: py314
+          name: py314 (parallel threads)
+          posargs: --parallel-threads=auto --color=yes
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -181,7 +184,7 @@ jobs:
       - run: ls -lha dist/
 
       - name: Run upload
-        uses: pypa/gh-action-pypi-publish@v1.13.0  # zizmor: ignore[unpinned-uses]
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
 
   notify:
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') }}
@@ -192,7 +195,7 @@ jobs:
     steps:
       - uses: Cadair/matrix-notify-action@main  # zizmor: ignore[unpinned-uses]
         with:
-          workflow_description: "CI Workflow"
+          workflow_description: 'CI Workflow'
           matrix_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           homeserver: ${{ secrets.MATRIX_HOMESERVER }}

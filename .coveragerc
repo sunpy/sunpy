@@ -4,6 +4,8 @@ omit =
   sunpy/*setup_package*
   sunpy/extern/*
   sunpy/version*
+  sunpy/_dev/*
+  */sunpy/_dev/*
   */sunpy/conftest.py
   */sunpy/*setup_package*
   */sunpy/extern/*

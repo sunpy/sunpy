@@ -55,6 +55,7 @@ def test_reproject_to_hgs(aia171_test_map, hgs_header):
     aia171_test_map.reproject_to(hgs_header).plot()
 
 
+@pytest.mark.thread_unsafe(reason="bug fixed in matplotlib dev")
 @check_figures_equal(extensions=["png"])
 def test_reproject_to_hgs_wcs(fig_test, fig_ref, aia171_test_map, hgs_header):
     with warnings.catch_warnings():
@@ -73,6 +74,7 @@ def test_reproject_to_hgs_wcs(fig_test, fig_ref, aia171_test_map, hgs_header):
         wcs_map.plot(axes=ax_test)
 
 
+@pytest.mark.thread_unsafe(reason="bug fixed in matplotlib dev")
 @check_figures_equal(extensions=["png"])
 def test_reproject_to_hpc_default(fig_test, fig_ref, aia171_test_map, hpc_header):
     with warnings.catch_warnings():

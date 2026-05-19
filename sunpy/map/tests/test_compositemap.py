@@ -1,6 +1,8 @@
 """
 Test Composite Map
 """
+import copy
+
 import matplotlib as mpl
 import numpy as np
 import pytest
@@ -92,6 +94,7 @@ def test_plot_composite_map_mplkwargs(composite_test_map):
 
 
 def test_remove_composite_map(composite_test_map):
+    composite_test_map = copy.deepcopy(composite_test_map)  # for thread safety
     composite_test_map.remove_map(0)
     with pytest.raises(IndexError):
         composite_test_map.get_map(1)
@@ -134,6 +137,8 @@ def test_set_alpha_out_of_range_composite_map(composite_test_map, index, alpha):
 
 
 def test_set_levels_percent(composite_test_map):
+    composite_test_map = copy.deepcopy(composite_test_map)  # for thread safety
+
     numbers = np.arange(10, 100, 10)
     composite_test_map.set_levels(0, numbers)
     np.testing.assert_allclose(composite_test_map.get_levels(0), numbers)

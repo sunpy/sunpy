@@ -10,6 +10,8 @@ from sunpy.coordinates import NorthOffsetFrame
 from sunpy.coordinates.tests.helpers import assert_longitude_allclose
 from sunpy.coordinates.tests.strategies import latitudes, longitudes
 
+pytestmark = pytest.mark.thread_unsafe(reason="modifies frame_transform_graph for created frames")
+
 
 def test_null():
     """

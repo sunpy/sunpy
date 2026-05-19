@@ -7,6 +7,9 @@ from sunpy.util.exceptions import SunpyUserWarning
 from .mocks import MOCK_HASH
 
 
+pytestmark = pytest.mark.thread_unsafe(reason="uses shared cache")
+
+
 def test_cache_basic(cache):
     cache.download('https://example.com/abc.text')
     assert cache._downloader.times_called == 1

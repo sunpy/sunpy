@@ -132,6 +132,7 @@ def no_vso(f):
     from sunpy.net import Fido
     from sunpy.net.vso import VSOClient
 
+    @pytest.mark.thread_unsafe(reason="modifies Fido registry")
     @wraps(f)
     def wrapper(*args, **kwargs):
         Fido.registry[VSOClient] = lambda *args: False

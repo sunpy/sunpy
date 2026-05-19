@@ -1,0 +1,2 @@
+Fixed bugs when using thread-based parallel processing due to unintentionally shared state information.
+This primarily affected these context managers: :func:`~sunpy.coordinates.SphericalScreen`, :func:`~sunpy.coordinates.PlanarScreen`, :func:`~sunpy.coordinates.propagate_with_solar_surface`, and :func:`~sunpy.coordinates.transform_with_sun_center`.
