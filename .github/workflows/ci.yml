@@ -157,6 +157,12 @@ jobs:
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
   publish_pure:
+    if: |
+      github.event_name != 'pull_request' ||
+      (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run publish')
+      )
     needs: [test, docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2  # zizmor: ignore[unpinned-uses]
     with:
