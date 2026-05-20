@@ -54,18 +54,24 @@ repos:
     hooks:
       - id: generate-sunpy-net-hek-attrs
         name: generate sunpy.net.hek.attrs
-        entry: python tools/hek_mkcls.py
         language: python
+        entry: python tools/hek_mkcls.py
         pass_filenames: false
         files: (^tools/(hek_mkcls|hektemplate)\.py$)|(^sunpy/net/hek/attrs\.py$)
       - id: example-gallery-must-have-tags
         name: Check for tags in gallery examples
+        language: pygrep
         entry: "^# sphinx_gallery_tags"
         files: ^examples/.*\.py
-        language: pygrep
         args:
           - --multiline
           - --negate
+      - id: only-sunpy-warning-helpers
+        name: Disallow warnings other than sunpy warnings
+        language: pygrep
+        entry: (from warnings import warn|warnings\.warn)
+        types: [python]
+        exclude: "sunpy/version.py|sunpy/util/decorators.py|sunpy/util/exceptions.py|sunpy/extern/|sunpy/util/tests/"
       - id: git-diff
         name: git diff
         entry: git diff --color --exit-code
