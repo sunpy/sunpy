@@ -87,6 +87,7 @@ Documentation
 - Fixed errors and added elaborations to the docstring for `~sunpy.coordinates.Helioprojective`. (`#8293 <https://github.com/sunpy/sunpy/pull/8293>`__)
 - Added an example (:ref:`sphx_glr_generated_gallery_plotting_adding_earth.py`) showing how to add an Earth scale image to a Map plot. (`#8322 <https://github.com/sunpy/sunpy/pull/8322>`__)
 - Modified the example :ref:`sphx_glr_generated_gallery_plotting_adding_earth.py` to use mesh-based plotting instead of image-based plotting. (`#8340 <https://github.com/sunpy/sunpy/pull/8340>`__)
+- Added an example :ref:`sphx_glr_generated_gallery_plotting_offdisk_contours.py` to show how to overlay off-disk contours from one map onto another map. (`#8012 <https://github.com/sunpy/sunpy/pull/8012>`__)
 
 
 Internal Changes
