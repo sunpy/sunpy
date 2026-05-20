@@ -3,11 +3,12 @@
 Parallel Spectral Fitting with Astropy Modeling
 ===============================================
 
-In the 7.0 release of astropy, a new function was added `~astropy.modeling.fitting.parallel_fit_dask`, alongside multiple performance improvements to fitting astropy models with a non-linear fitter.
+This example fits the many spectra of a raster scan in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter mission.
+
+We make use of the `~astropy.modeling.fitting.parallel_fit_dask` helper and multiple performance improvements to fitting astropy models with a non-linear fitter added in astropy 7.0.
 These changes mean that it is now practical to fit many independent models to a large multi-dimensional array of data.
 For more information on using this functionality, refer to the :ref:`astropy:parallel-fitting` page in the astropy documentation.
 
-In this example we will demonstrate this functionality by fitting many spectra of a raster scan in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter mission.
 """
 # sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
 
