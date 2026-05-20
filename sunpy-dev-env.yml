@@ -54,6 +54,7 @@ dependencies:
   - pytest-rerunfailures
   - pytest-timeout
   - pytest-xdist
+  - pytest-run-parallel
   - responses
   - tox
 
