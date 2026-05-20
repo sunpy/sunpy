@@ -92,6 +92,9 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs
+          pytest: false
+          # Speed up CI builds by not building full nav tree
+          posargs: -D html_theme_options.collapse_navigation=True
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -108,6 +111,8 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs-gallery
+          # Speed up CI builds by not building full nav tree
+          posargs: -D html_theme_options.collapse_navigation=True
           pytest: false
           cache-path: |
             docs/_build/
