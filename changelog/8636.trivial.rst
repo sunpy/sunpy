@@ -1,0 +1,1 @@
+Added `post_checkout` hook in `.readthedocs.yaml` to cleanly cancel ReadTheDocs documentation builds when a commit message contains `[skip ci]` or `[ci skip]`.
