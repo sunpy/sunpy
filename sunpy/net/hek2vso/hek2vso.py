@@ -39,7 +39,7 @@ def translate_results_to_query(results):
     19
 
     >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
-    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) object at ...>, <sunpy.net.attrs.Instrument: HEK object at ...>, <sunpy.net.attrs.Wavelength(0.0, 0.0, 'Angstrom')>]]
+    [[<sunpy.net.attrs.Time(2011-08-08 01:30:04.000, 2011-08-10 00:00:04.000)>, <sunpy.net.attrs.Source(SDO: The Solar Dynamics Observatory.) ...>, <sunpy.net.attrs.Instrument(AIA: Data from the Atmospheric Imaging Assembly instrument.) ...>, <sunpy.net.attrs.Wavelength(210.999999, 210.999999, 'Angstrom')>]]
     """
     queries = []
     if isinstance(results, HEKTable):
