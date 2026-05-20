@@ -144,7 +144,7 @@ print(initial_model)
 # dimension which only returns a single `~astropy.coordinates.SpectralCoord` object
 # corresponding to the first array dimension of the cube.
 
-fitter = TRFLSQFitter(calc_uncertainties=True)
+fitter = TRFLSQFitter()
 average_fit = fitter(
     initial_model,
     spatial_mean.axis_world_coords("em.wl")[0].to(u.nm),
@@ -199,17 +199,6 @@ plt.legend()
 # axes of the data (so in this case 100x100 arrays).
 
 ###############################################################################
-# .. note::
-#
-#     All examples here are done with ``scheduler="single-threaded"``,
-#     this is to allow them to build on our documentation. When running this
-#     example yourself, you should set this to `None` to use the default
-#     parallel scheduler.
-
-dask_scheduler = "single-threaded"  # None
-dask_scheduler = None
-
-###############################################################################
 # We can therefore fit all our SPICE cube as follows, note we are
 # still passing the ``filter_non_finite`` argument as before.
 
@@ -218,7 +207,6 @@ spice_model_fit = parallel_fit_dask(
     model=average_fit,
     fitter=TRFLSQFitter(),
     fitting_axes=0,
-    scheduler=dask_scheduler,
     fitter_kwargs={"filter_non_finite": True},  # Filter out non-finite values,
 )
 
