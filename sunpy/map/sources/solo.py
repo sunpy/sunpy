@@ -1,6 +1,7 @@
 """
 Solar Orbiter Map subclass definitions.
 """
+# TODO remove warnings and use sunpy specific errors
 import warnings
 
 import numpy as np
@@ -263,8 +264,10 @@ class METISMap(GenericMap):
 
         self._nickname = f"{self.instrument}/{self.meta['filter']}"
         self._contr_cut = self._get_contr_cut()
-        self.update_plot_norm_settings()
         self.plot_settings["cmap"] = self._get_cmap_name()
+        self.mask = self._mask_occs()
+        self.update_plot_norm_settings()
+
 
 
     @property
@@ -371,10 +374,10 @@ class METISMap(GenericMap):
 
     def update_plot_norm_settings(self):
         """Update ``plot_settings['norm']`` from current data and contrast cutoff."""
-        img_vlim = self.get_img_vlim()
+        img_vlim = self._get_img_vlim()
         self.plot_settings["norm"] = ImageNormalize(vmin=img_vlim[0], vmax=img_vlim[1])
 
-    def get_img_vlim(self):
+    def _get_img_vlim(self):
         """
         Return display intensity limits based on the contrast cutoff.
 
@@ -392,7 +395,7 @@ class METISMap(GenericMap):
     # FOV and masking
     # ------------------------------------------------------------------
 
-    def get_fov_rsun(self):
+    def _get_fov_rsun(self):
         """
         Return the METIS field of view in solar radii.
 
@@ -410,16 +413,12 @@ class METISMap(GenericMap):
         board_rsun = board_deg /rsun_deg
         return rmin, rmax, board_rsun
 
-    def mask_occs(self, mask_val=np.nan):
+    def _mask_occs(self):
         """
         Mask pixels obscured by the internal and external occulters.
 
         Modifies ``self.data`` in-place.
 
-        Parameters
-        ----------
-        mask_val : float, optional
-            Value assigned to masked pixels. Default is ``np.nan``.
 
         Warns
         -----
@@ -455,11 +454,9 @@ class METISMap(GenericMap):
 
         dist_outcen = np.sqrt((xx * u.pix - out_xcen) ** 2 + (yy * u.pix - out_ycen) ** 2)
 
-        self.data[dist_inncen <= inn_fov] = mask_val
-        self.data[dist_outcen >= out_fov] = mask_val
-        self.update_plot_norm_settings()
-
-    def mask_bad_pix(self, qmat, mask_val=np.nan):
+        return np.asarray((dist_inncen <= inn_fov) | (dist_outcen >= out_fov))
+# TODO test _mask_bad_pix
+    def _mask_bad_pix(self, qmat):
         """
         Mask bad-quality pixels using a quality matrix.
 
@@ -470,9 +467,6 @@ class METISMap(GenericMap):
         qmat : numpy.ndarray
             Quality matrix, same shape as the image data.
             ``1`` = good pixel, ``0`` or ``nan`` = bad pixel.
-        mask_val : float, optional
-            Value assigned to bad pixels. Default is ``np.nan``.
-
         Raises
         ------
         TypeError
@@ -490,8 +484,8 @@ class METISMap(GenericMap):
                 f"data shape {self.data.shape}."
             )
 
-        self.data[qmat != 1] = mask_val
-        self.update_plot_norm_settings()
+        return qmat != 1
+
 
     # ------------------------------------------------------------------
     # internal helpers
