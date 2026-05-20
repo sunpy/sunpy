@@ -89,6 +89,9 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs
+          pytest: false
+          # Speed up CI builds by not building full nav tree
+          posargs: -D html_theme_options.collapse_navigation=True
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
@@ -105,6 +108,8 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs-gallery
+          # Speed up CI builds by not building full nav tree
+          posargs: -D html_theme_options.collapse_navigation=True
           pytest: false
           cache-path: |
             docs/_build/
@@ -148,6 +153,12 @@ jobs:
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
   publish_pure:
+    if: |
+      github.event_name != 'pull_request' ||
+      (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'Run publish')
+      )
     needs: [test, docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v2  # zizmor: ignore[unpinned-uses]
     with:

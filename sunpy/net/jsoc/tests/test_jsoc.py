@@ -285,7 +285,6 @@ def test_jsoc_attrs(client):
     assert len(attrs[a.jsoc.Segment]) != 0
 
 
-@pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
 def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     cutout = a.jsoc.Cutout(

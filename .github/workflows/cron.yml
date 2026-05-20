@@ -79,9 +79,7 @@ jobs:
       envs: |
         - linux: linkcheck
           pytest: false
-        - linux: py314-devdeps-online
-          posargs: -m "remote_data"
-        - windows: py313-online
+        - windows: py314-devdeps-online
           posargs: -m "remote_data"
 
     secrets:
