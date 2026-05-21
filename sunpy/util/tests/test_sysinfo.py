@@ -32,9 +32,6 @@ EXTRA_DEPS = [
 EXTRA_ALL_GROUPS = [
     "all",
     "asdf",
-    "dev",
-    "docs-gallery",
-    "docs",
     "image",
     "jpeg2000",
     "map",
@@ -42,7 +39,6 @@ EXTRA_ALL_GROUPS = [
     "opencv",
     "required",
     "spice",
-    "tests",
     "timeseries",
     "visualization",
 ]
