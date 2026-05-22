@@ -1,10 +1,6 @@
 """
 Solar Orbiter Map subclass definitions.
 """
-# TODO remove warnings and use sunpy specific errors
-import warnings
-
-import numpy as np
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
@@ -208,16 +204,6 @@ class PHIMap(GenericMap):
         """
         return self.meta.get('btype', 'Unknown')
 
-    def update_plot_norm_settings(self):
-        """
-        Update vmin and vmax values of plot_settings['norm'].
-
-        Updates the plot normalization settings based on current data and
-        contrast cutoff.
-        """
-        img_vlim = self.get_img_vlim()
-        self.plot_settings["norm"] = ImageNormalize(vmin=img_vlim[0], vmax=img_vlim[1])
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a PHI image"""
@@ -263,10 +249,10 @@ class METISMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self._nickname = f"{self.instrument}/{self.meta['filter']}"
-        self._contr_cut = self._get_contr_cut()
         self.plot_settings["cmap"] = self._get_cmap_name()
-        self.mask = self._mask_occs()
-        self.update_plot_norm_settings()
+        self._contr_cut = self._get_contr_cut()
+        vmin, vmax = self._get_img_vlim()
+        self.plot_settings['norm'] = ImageNormalize(vmin=vmin,vmax=vmax)
 
 
 
@@ -354,28 +340,6 @@ class METISMap(GenericMap):
 
         return contr_cut
 
-    @property
-    def contr_cut(self):
-        """Contrast cutoff fraction used for intensity scaling."""
-        return self._contr_cut
-
-    @contr_cut.setter
-    def contr_cut(self, value):
-        if not isinstance(value, (int, float)):
-            raise TypeError(f"contr_cut must be numeric, got {type(value)}")
-        if not 0.0 <= value <= 1.0:
-            raise ValueError(f"contr_cut must be between 0.0 and 1.0, got {value}")
-        self._contr_cut = value
-        self.update_plot_norm_settings()
-
-    # ------------------------------------------------------------------
-    # plot normalisation
-    # ------------------------------------------------------------------
-
-    def update_plot_norm_settings(self):
-        """Update ``plot_settings['norm']`` from current data and contrast cutoff."""
-        img_vlim = self._get_img_vlim()
-        self.plot_settings["norm"] = ImageNormalize(vmin=img_vlim[0], vmax=img_vlim[1])
 
     def _get_img_vlim(self):
         """
@@ -387,13 +351,9 @@ class METISMap(GenericMap):
             ``(vmin, vmax)`` intensity values.
         """
         return AsymmetricPercentileInterval(
-            self.contr_cut * 100,
-            (1 - self.contr_cut) * 100,
+            self._contr_cut * 100,
+            (1 - self._contr_cut) * 100,
         ).get_limits(self.data)
-
-    # ------------------------------------------------------------------
-    # FOV and masking
-    # ------------------------------------------------------------------
 
     def _get_fov_rsun(self):
         """
@@ -413,83 +373,6 @@ class METISMap(GenericMap):
         board_rsun = board_deg /rsun_deg
         return rmin, rmax, board_rsun
 
-    def _mask_occs(self):
-        """
-        Mask pixels obscured by the internal and external occulters.
-
-        Modifies ``self.data`` in-place.
-
-
-        Warns
-        -----
-        If ``CDELT1 != CDELT2`` (non-square pixels) the method exits without
-        masking, as the circular geometry assumption does not hold.
-        """
-        if self.scale[0] != self.scale[1]:
-            warnings.warn(
-                f"CDELT1 != CDELT2 for {self.meta.get('filename', 'unknown')}. "
-                "Exiting mask_occs — circular mask requires square pixels."
-            )
-            return
-
-        inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0]).decompose()
-        out_fov = (self.meta["out_fov"] * u.deg / self.scale[1]).decompose()
-
-        x = np.arange(0, self.meta["naxis1"])
-        y = np.arange(0, self.meta["naxis2"])
-        xx, yy = np.meshgrid(x, y, sparse=True)
-
-        in_xcen = (self.meta["io_xcen"] - 1) * u.pix
-        in_ycen = (self.meta["io_ycen"] - 1) * u.pix
-        dist_inncen = np.sqrt((xx * u.pix - in_xcen) ** 2 + (yy * u.pix - in_ycen) ** 2)
-
-        # DR1 workaround: fs_xcen/fs_ycen may be incorrectly set to crpix values.
-        if (self.meta["fs_xcen"] == self.meta["crpix1"]
-                and self.meta["fs_ycen"] == self.meta["crpix2"]):
-            out_xcen = (self.meta["sun_xcen"] - 1) * u.pix
-            out_ycen = (self.meta["sun_ycen"] - 1) * u.pix
-        else:
-            out_xcen = (self.meta["fs_xcen"] - 1) * u.pix
-            out_ycen = (self.meta["fs_ycen"] - 1) * u.pix
-
-        dist_outcen = np.sqrt((xx * u.pix - out_xcen) ** 2 + (yy * u.pix - out_ycen) ** 2)
-
-        return np.asarray((dist_inncen <= inn_fov) | (dist_outcen >= out_fov))
-# TODO test _mask_bad_pix
-    def _mask_bad_pix(self, qmat):
-        """
-        Mask bad-quality pixels using a quality matrix.
-
-        Modifies ``self.data`` in-place.
-
-        Parameters
-        ----------
-        qmat : numpy.ndarray
-            Quality matrix, same shape as the image data.
-            ``1`` = good pixel, ``0`` or ``nan`` = bad pixel.
-        Raises
-        ------
-        TypeError
-            If ``qmat`` is not a ``numpy.ndarray``.
-        ValueError
-            If ``qmat.shape`` does not match ``self.data.shape``.
-        """
-        if not isinstance(qmat, np.ndarray):
-            raise TypeError(
-                f"qmat must be a numpy.ndarray, got {type(qmat).__name__}"
-            )
-        if qmat.shape != self.data.shape:
-            raise ValueError(
-                f"Quality matrix shape {qmat.shape} does not match "
-                f"data shape {self.data.shape}."
-            )
-
-        return qmat != 1
-
-
-    # ------------------------------------------------------------------
-    # internal helpers
-    # ------------------------------------------------------------------
 
     def _get_cmap_name(self):
         """
@@ -502,10 +385,6 @@ class METISMap(GenericMap):
 
         """
         return f"solo{self.instrument}{self.measurement}".lower()
-
-    # ------------------------------------------------------------------
-    # datasource registration
-    # ------------------------------------------------------------------
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

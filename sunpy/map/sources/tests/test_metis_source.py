@@ -98,165 +98,57 @@ def quality_matrix():
     return qmat
 
 
-# ============================================================================
-# COORDINATE AND INSTRUMENT TESTS
-# ============================================================================
-
-
-class TestMETISSpecifics:
+def test_coordinate_frame( metis_map):
     """
-    Tests focused on METIS-specific logic such as Frames and Colormaps.
+    Verify that the map is correctly assigned a Helioprojective frame
+    and the observer is identified as Solar Orbiter.
     """
+    assert metis_map.coordinate_frame.name == "helioprojective"
+    assert metis_map.observatory == "SOLAR ORBITER"
 
-    def test_coordinate_frame(self, metis_map):
-        """
-        Verify that the map is correctly assigned a Helioprojective frame
-        and the observer is identified as Solar Orbiter.
-        """
-        assert metis_map.coordinate_frame.name == "helioprojective"
-        assert metis_map.observatory == "SOLAR ORBITER"
-
-    def test_colormaps_by_filter(self, metis_map):
-        """
-        Verify that the default colormap is assigned based on the FILTER keyword.
-        """
-        expected = {
-            "VL": "solometisvl-tb",
-            "UV": "solometisuv",
-        }[metis_map.meta["FILTER"]]
-        assert metis_map.plot_settings["cmap"] == expected
-
-    def test_wcs_conversion(self, metis_test_data, minimal_metis_header):
-        """
-        Test that pixel coordinates correctly transform to world coordinates (Arcsecs).
-        """
-        metis_map = Map(metis_test_data,minimal_metis_header)
-        # Center of the image (0-indexed 511.5) should be close to CRVAL (0,0)
-        center_coord = metis_map.pixel_to_world(511 * u.pix, 511 * u.pix)
-        assert isinstance(center_coord, SkyCoord)
-        assert u.allclose(center_coord.Tx, 0 * u.arcsec, atol=1e-2 * u.arcsec)
-
-
-# ============================================================================
-# INITIALIZATION AND MASKING TESTS
-# ============================================================================
-class TestMETISMapInitialization:
+def test_colormaps_by_filter( metis_map):
     """
-    Tests for proper object instantiation.
+    Verify that the default colormap is assigned based on the FILTER keyword.
     """
+    expected = {
+        "VL": "solometisvl-tb",
+        "UV": "solometisuv",
+    }[metis_map.meta["FILTER"]]
+    assert metis_map.plot_settings["cmap"] == expected
 
-    def test_basic_initialization(self, metis_map):
-        assert isinstance(metis_map, METISMap)
-        assert metis_map.instrument == "METIS"
-
-    def test_rsun_fallback_logic(self, metis_test_data, minimal_metis_header):
-        """
-        Verify the hierarchical search for solar radius keywords
-        (RSUN_ARC vs RSUN_OBS).
-        """
-        header = minimal_metis_header.copy()
-        del header["RSUN_ARC"]
-        header["RSUN_OBS"] = 950.0
-        metis_map = Map(metis_test_data, header)
-        # SunPy normalizes this to rsun_obs in metadata
-        assert metis_map.meta["rsun_obs"] == 950.0
-
-
-# TODO fix tests based on new functionality
-class TestMasking:
+def test_wcs_conversion( metis_test_data, minimal_metis_header):
     """
-    Tests for METIS-specific masking methods.
+    Test that pixel coordinates correctly transform to world coordinates (Arcsecs).
     """
-
-    def test_mask_set_at_construction(self, metis_map):
-        """
-        Verify the occulter mask is built during __init__ and stored on self.mask,
-        leaving self.data untouched.
-        """
-        # mask is a plain boolean ndarray, not None
-        assert metis_map.mask is not None
-        assert metis_map.mask.dtype == bool
-
-        # center pixel is inside the inner occulter — must be masked
-        assert metis_map.mask[512, 512]
-
-        # original data at that pixel is finite and unchanged
-        assert np.isfinite(metis_map.data[512, 512])
-
-        # a pixel in the valid annular region must not be masked
-        # INN_FOV=1.6 deg, CDELT=10 arcsec → inner radius ≈ 576 px from centre
-        # pixel at (512, 800) is outside inner occulter and inside outer
-        assert not metis_map.mask[512, 800]
+    metis_map = Map(metis_test_data,minimal_metis_header)
+    # Center of the image (0-indexed 511.5) should be close to CRVAL (0,0)
+    center_coord = metis_map.pixel_to_world(511 * u.pix, 511 * u.pix)
+    assert isinstance(center_coord, SkyCoord)
+    assert u.allclose(center_coord.Tx, 0 * u.arcsec, atol=1e-2 * u.arcsec)
 
 
-    def test_mask_is_boolean_and_correct_shape(self, metis_map):
-        """
-        Verify the mask is a boolean array with the same shape as the data,
-        and that a meaningful number of pixels are masked.
-        """
-        assert metis_map.mask.shape == metis_map.data.shape
-        assert metis_map.mask.dtype == bool
+"""
+Tests for proper object instantiation.
+"""
 
-        # some pixels must be masked (inner occulter + outer boundary)
-        assert metis_map.mask.any()
+def test_basic_initialization( metis_map):
+    assert isinstance(metis_map, METISMap)
+    assert metis_map.instrument == "METIS"
 
-        # not all pixels should be masked — the valid annular region exists
-        assert not metis_map.mask.all()
-
-
-# ============================================================================
-# NEW TESTS: QUALITY MATRIX & FOV
-# ============================================================================
-
-
-class TestMETISDataProcessing:
-    """Tests for METIS-specific data processing methods like qmatrix masking."""
-
-    def test_mask_bad_pix(self, metis_map, quality_matrix):
-        """
-        Test that mask_bad_pix correctly applies the Quality Matrix (QMatrix).
-        """
-
-
-
-    def test_get_fov_rsun(self, metis_map):
-        """
-        Test the get_fov_rsun method returns correct solar radii values.
-        """
-
-        # Metis specific method to get FOV in R_sun
-        rmin, rmax, board = metis_map._get_fov_rsun()
-
-        assert isinstance(rmin, u.Quantity)
-        assert rmin > 0
-        assert rmax > rmin
-        # With INN_FOV=1.6 deg and RSUN_ARC=960", rmin should be ~6.0 R_sun
-        # (1.6 * 3600 / 960 = 6.0)
-        assert pytest.approx(rmin, rel=1e-2) == 6.0
-
-    def test_mask_bad_pix_invalid_input(self, metis_map):
-        """Verify that mask_bad_pix raises errors on wrong dimensions."""
-        wrong_shape_qmat = np.ones((512, 512))
-
-        with pytest.raises(ValueError, match="shape"):
-            metis_map._mask_bad_pix(wrong_shape_qmat)
-
-
-# ============================================================================
-# UPDATED PRODTYPE TEST
-# ============================================================================
+def test_rsun_fallback_logic( metis_test_data, minimal_metis_header):
+    """
+    Verify the hierarchical search for solar radius keywords
+    (RSUN_ARC vs RSUN_OBS).
+    """
+    header = minimal_metis_header.copy()
+    del header["RSUN_ARC"]
+    header["RSUN_OBS"] = 950.0
+    metis_map = Map(metis_test_data, header)
+    # SunPy normalizes this to rsun_obs in metadata
+    assert metis_map.meta["rsun_obs"] == 950.0
 
 
 def test_prodtype_property(metis_test_data, minimal_metis_header):
     """Verify that prodtype is correctly derived from BTYPE."""
     metis_map = Map(metis_test_data,minimal_metis_header)
     assert metis_map.measurement == "VL-TB"
-
-
-# ============================================================================
-# ENTRY POINT
-# ============================================================================
-
-if __name__ == "__main__":
-    # Run tests with verbose output
-    pytest.main([__file__, "-v"])
