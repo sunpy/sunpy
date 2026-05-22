@@ -1,6 +1,7 @@
 """
 Solar Orbiter Map subclass definitions.
 """
+import numpy as np
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
@@ -353,7 +354,7 @@ class METISMap(GenericMap):
         return AsymmetricPercentileInterval(
             self._contr_cut * 100,
             (1 - self._contr_cut) * 100,
-        ).get_limits(self.data)
+        ).get_limits(self.data[np.isfinite(self.data)])
 
     def _get_fov_rsun(self):
         """

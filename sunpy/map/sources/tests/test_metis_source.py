@@ -86,18 +86,6 @@ def metis_test_data():
     return data.astype(np.float32)
 
 
-@pytest.fixture
-def quality_matrix():
-    """
-    Generates a mock METIS Quality Matrix (QMatrix).
-    Values: 1 = Good, 0 = Bad/Masked.
-    """
-    qmat = np.ones((1024, 1024), dtype=np.float32)
-    # Simulate a block of bad pixels
-    qmat[100:200, 100:200] = 0
-    return qmat
-
-
 def test_coordinate_frame( metis_map):
     """
     Verify that the map is correctly assigned a Helioprojective frame
