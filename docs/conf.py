@@ -5,6 +5,7 @@ Configuration file for the Sphinx documentation builder.
 
 import os
 import sys
+import logging
 import datetime
 import warnings
 
@@ -37,11 +38,19 @@ from matplotlib import MatplotlibDeprecationWarning
 from ruamel.yaml import YAML
 from sphinx_gallery.sorting import ExplicitOrder
 from sunpy_sphinx_theme import PNG_ICON
+from sphinx.util import logging as sphinx_logging
+sphx_logger = sphinx_logging.getLogger(__name__)
 
 from astropy.utils.exceptions import AstropyDeprecationWarning
 from astropy.io.fits.verify import VerifyWarning
 import sunpy
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
+
+# Hide log output during the sphinx build as it pollutes the output
+# and makes it harder to see real sphinx warnings
+sunpy.log.setLevel(logging.ERROR)
+spiceypy_log = logging.getLogger("spiceypy.utils.libspicehelper")
+spiceypy_log.setLevel(logging.ERROR)
 
 # -- Project information -------------------------------------------------------
 
@@ -108,7 +117,11 @@ linkcheck_ignore = [
     # This is super slow to check
     r"https://mathesaurus\.sourceforge\.net/idl-numpy\.html",
     # You have to be logged into GitHub in order to project wide issue searches
-    r"https://github.com/issues?.*"
+    r"https://github.com/issues?.*",
+    # They have an incomplete certificate chain which works in browsers but not CLI
+    r"https://suit.iucaa.in.*",
+    # I have no idea why these URLs 403 for linkcheck but pass every other way I try them
+    r"https://docutils.sourceforge.io/.*",
 ]
 linkcheck_anchors = False
 linkcheck_timeout = 120
@@ -379,7 +392,7 @@ def jinja_to_rst(app, docname, source):
     jinja_pages = ["reference/stability", "dev_guide/index"]
     if app.builder.format == 'html':
         if docname in jinja_pages:
-            print(f"Jinja rendering {docname}")
+            sphx_logger.info(f"Jinja rendering {docname}")
             rendered = app.builder.templates.render_string(
                 source[0], app.config.html_context
             )
