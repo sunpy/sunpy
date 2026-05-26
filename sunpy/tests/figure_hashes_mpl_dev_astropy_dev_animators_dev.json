@@ -90,5 +90,10 @@
   "sunpy.visualization.tests.test_drawing.test_draw_extent_3d": "4ce066dbbc0b9134dcdb87691888375bbfef3cf56e252917ce89138837412131",
   "sunpy.visualization.tests.test_drawing.test_draw_prime_meridian_aia171": "ee1ca9019c8873bd631ebea6e791792c6179f8f6436f9fa8bcf7ed4859ba09c3",
   "sunpy.visualization.tests.test_drawing.test_heliographic_equator_prime_meridian": "22a628bc8e1b644511f2e720d3fbf3252dd3c920c24cf2220ff6c58ec4818f01",
-  "sunpy.visualization.tests.test_visualization.test_show_hpr_impact_angle": "c5963b0e9a17c4a1ed592d99d7f0979073ecaaa5d2eed766d1a2d8ccd9c7a4f5"
+  "sunpy.visualization.tests.test_visualization.test_show_hpr_impact_angle": "c5963b0e9a17c4a1ed592d99d7f0979073ecaaa5d2eed766d1a2d8ccd9c7a4f5",
+  "sunpy.map.tests.test_plotting.test_auto_format_plot_methods[draw_grid-kwargs0]": "0a9fbe1581d78ad093d975ae675632a0acf4cf7ce58634f33759a9c93c8778e0",
+  "sunpy.map.tests.test_plotting.test_auto_format_plot_methods[draw_limb-kwargs1]": "53559fd44b08efb73a50169aa1eea6c72501f31aa5bad1085103feedcc641ce3",
+  "sunpy.map.tests.test_plotting.test_auto_format_plot_methods[draw_extent-kwargs2]": "53559fd44b08efb73a50169aa1eea6c72501f31aa5bad1085103feedcc641ce3",
+  "sunpy.map.tests.test_plotting.test_auto_format_plot_methods[draw_quadrangle-kwargs3]": "53559fd44b08efb73a50169aa1eea6c72501f31aa5bad1085103feedcc641ce3",
+  "sunpy.map.tests.test_plotting.test_auto_format_plot_methods[draw_contours-kwargs4]": "ca1b53cbff90b255b68f10a523ec5fa1a58e09c236541c095242048d48365999"
 }
