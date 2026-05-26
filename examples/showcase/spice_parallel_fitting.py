@@ -3,11 +3,17 @@
 Parallel Spectral Fitting with Astropy Modeling
 ===============================================
 
-This example fits the many spectra of a raster scan in an observation of the solar chromosphere by the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument on the Solar Orbiter mission.
+This example demonstrates how to fit a model independently to every spectrum in a spectral cube using `~astropy.modeling.fitting.parallel_fit_dask`. 
+The technique here can be applied to any spectral cube, but here we use a specific example dataset of a raster scan from the `SPICE <https://spice.ias.u-psud.fr/>__` instrument onboard Solar Orbiter, focusing on the O VI 1032 Å line.
 
-We make use of the `~astropy.modeling.fitting.parallel_fit_dask` helper and multiple performance improvements to fitting astropy models with a non-linear fitter added in astropy 7.0.
-These changes mean that it is now practical to fit many independent models to a large multi-dimensional array of data.
+The SPICE instrument on Solar Orbiter is an EUV imaging spectrograph that builds up rasters of the solar transition region and low corona by stepping its slit across the Sun. 
+Each raster pixel contains a full spectrum, so a single observation can produce tens of thousands of spectra that we'd like to fit independently, for example, to derive a Doppler velocity map from a line centroid.
+
+This example makes use of the `~astropy.modeling.fitting.parallel_fit_dask `helper and multiple performance improvements added in astropy 7.0 for fitting astropy models with non-linear fitters. 
+Together these changes mean it is now practical to fit many independent models to a large multi-dimensional array of data. 
 For more information on using this functionality, refer to the :ref:`astropy:parallel-fitting` page in the astropy documentation.
+This example demonstrates the *fitting workflow* and is **not** a science-grade Doppler analysis. 
+To keep the focus on`~astropy.modeling.fitting.parallel_fit_dask`, we use the SPICE Level 2 data as-is and skip several corrections that a real science analysis would need to apply to the SPICE data.
 
 """
 # sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
@@ -34,7 +40,7 @@ from sunpy.net import attrs as a
 # the SPICE instrument which is a rastering spectrograph onboard Solar
 # Orbiter. The focus will be on the spectral window containing the
 # Oxygen VI line.
-
+# Here we search for a specific observation and query the Solar Orbiter archive for the L2 SPICE data.
 res = Fido.search(
     a.Time("2022-04-02 13:00", "2022-04-02 13:25"),
     a.Instrument.spice,
@@ -42,13 +48,15 @@ res = Fido.search(
     a.Provider.soar,
     a.soar.Product.spice_n_ras,
 )
-filename = Fido.fetch(res, overwrite=True)[0]
+filename = Fido.fetch(res)[0]
 
 ###############################################################################
 # Reading the Data
 # ----------------
 #
-# We now open the FITS file and access the window via EXTNAME.
+# We now open the FITS file directly and pull out the O VI 1032 Å window by its `EXTNAME`.
+# SPICE L2 files store each spectral window as a separate HDU, and "Peak" denotes the narrow window cropped around the line peak.
+# This keeps the example simplified, but and shows what's in the file, but for routine SPICE work you'll want the dedicated tools mentioned below.
 
 hdul = fits.open(filename)
 hdu = hdul["O VI 1032 - Peak"]
@@ -66,7 +74,7 @@ hdu = hdul["O VI 1032 - Peak"]
 # FITS file to make a WCS object, the data and the unit of the data,
 # as well as constructing a mask for all points where the data is NaN.
 #
-# We then crop down the cube to make it faster to work with.
+# We then crop down the cube to a region of the field of view that we are interested in to make it faster to work with.
 
 spice = NDCube(
     hdu.data,
@@ -82,7 +90,7 @@ spice = spice.squeeze()
 spice = spice[6:-4, :, :]
 
 ###############################################################################
-# To ensure this example is quick, we will only do a subset of the data
+# Finally, we crop to a spatial subregion so the example runs quickly.
 # If you run this example locally you can comment out this line
 spice = spice[:, 200:500, 30:-50]
 
@@ -90,8 +98,8 @@ spice = spice[:, 200:500, 30:-50]
 # This cube we have constructed has three pixel and four world
 # dimensions, the first array dimension is wavelength followed by the
 # slit dimension and then the rastering dimension. The world axes are
-# wavelength, helioprojective latitude and longitude and time which
-# increases along the rastering dimension.
+# wavelength, helioprojective latitude and longitude and time, the time coordinate
+# increases along the rastering dimension because each raster step is acquired at a slightly later time as it rasters.
 
 print(spice)
 
@@ -124,9 +132,10 @@ ax.coords[0].set_major_formatter("x.xx")
 # Initial Model
 # -------------
 #
-# We now create an initial model for the line, and then fit the
-# average spectra to get a strong initial model for the parallel
+# We now create an initial model for the O VI line, and then fit the
+# average spectra to get a strong initial model guess as input for the per-pixel parallel
 # fitting.
+# The O VI window the spectrum is well-described by a single emission line on top of a roughly flat background, so our model is a constant continuum (`~astropy.modeling.models.Const1D`) plus one Gaussian (`~astropy.modeling.models.Gaussian1D`) centered near 103.2 nm.
 
 OVI_wave = 103.2 * u.nm
 
@@ -218,7 +227,8 @@ spice_model_fit = parallel_fit_dask(
 
 g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km / u.s, equivalencies=u.doppler_optical(OVI_wave))
 
-# We calculate the aspect ratio from the physical size of the pixels to scale the plot to the world coordinates.
+# SPICE pixels are non-square (along-slit ``CDELT2``<  raster step ``CDELT1``), so we set the aspect accordingly.
+# We can calculate the aspect ratio from the physical size of the pixels to scale the plot to the world coordinates.
 aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
 
 # Create a figure with one column and two rows using the WCS for the ``wl_sum`` cube.
@@ -260,7 +270,7 @@ for ax in axs:
 # Our input model is a ``CompoundModel`` which is a model that combines many models
 # together via various operators, in our case the ``+`` operator. Each individual model
 # can be accessed by using slicing notation, if we print out our model we can see that
-# we have three models (0, 1 and 2) all added together.
+# we have two models (0 and 1) added together.
 
 print(spice_model_fit)
 
@@ -324,7 +334,9 @@ print(wavelength.shape)
 all_fits = spice_model_fit(wavelength)
 
 ###############################################################################
-# We can now make a plot of all the fits.
+# Finally we can make a plot of every per-pixel fit  on top of the spatial-average spectrum and its model. 
+# The spread of red curves around the dashed line is a visual summary of how the line shifts, broadens, 
+# and changes intensity across the FOV.
 
 fig = plt.figure(figsize=(11, 5))
 
