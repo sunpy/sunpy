@@ -477,7 +477,7 @@ def test_plot_unit8(aia171_test_map):
 
 
 @figure_test
-@pytest.mark.parametrize("method, kwargs", [
+@pytest.mark.parametrize(("method", "kwargs"), [
     ("draw_grid", {"grid_spacing": (5, 5) * u.deg}),
     ("draw_limb", {}),
     ("draw_extent", {}),
