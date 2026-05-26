@@ -474,3 +474,25 @@ def test_plot_unit8(aia171_test_map):
     # Check that plotting a map with uint8 data does not raise an error
     aia171_unit8 = sunpy.map.Map(aia171_test_map.data.astype('uint8'), aia171_test_map.meta)
     aia171_unit8.plot()
+
+
+@figure_test
+@pytest.mark.parametrize("method, kwargs", [
+    ("draw_grid", {"grid_spacing": (5, 5) * u.deg}),
+    ("draw_limb", {}),
+    ("draw_extent", {}),
+    ("draw_quadrangle", {
+        "bottom_left": (50, 50) * u.pix,
+        "width": 30 * u.pix,
+        "height": 50 * u.pix
+    }),
+    ("draw_contours", {"levels": u.Quantity(np.arange(1, 100, 10), 'percent')}),
+])
+def test_auto_format_plot_methods(aia171_test_map, method, kwargs):
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    with sunpy.coordinates.SphericalScreen(aia171_test_map.observer_coordinate):
+        getattr(aia171_test_map, method)(axes=ax, **kwargs)
+    ax.set_xlim(0, aia171_test_map.data.shape[1] - 1)
+    ax.set_ylim(0, aia171_test_map.data.shape[0] - 1)
+    return fig
