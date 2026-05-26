@@ -48,31 +48,32 @@ def make_table(header, section_lines, supplementary_lines):
     for i, lines in enumerate(section_lines):
         if lines:
             key = list(meta_data['id'].keys())[i]
-            t1 = astropy.io.ascii.read(lines)
+            col_data_types = {
+                'ID' : np.str_,
+                'NMBR': np.int64,
+                'LOCATION': np.str_,
+                'LO': np.int64,
+                'AREA': np.int64,
+                'Z': np.str_,
+                'LL': np.int64,
+                'NN': np.int64,
+                'Magtype': np.bytes_,
+                'LAT': np.str_,
+            }
+            t1 = astropy.io.ascii.read(
+                lines,
+                converters=col_data_types,
+                header_start=0,
+                guess=False,
+                format="basic",
+            )
 
             # Change column names into titlecase
             column_names = list(t1.columns)
             t1.rename_columns(column_names, new_names=[col.title() for col in column_names])
 
             if len(t1) == 0:
-                col_data_types = {
-                    # ID : <class 'str'>
-                    'Nmbr': np.dtype('i4'),
-                    'Location': np.dtype('U6'),
-                    'Lo': np.dtype('i8'),
-                    'Area': np.dtype('i8'),
-                    'Z': np.dtype('U3'),
-                    'Ll': np.dtype('i8'),
-                    'Nn': np.dtype('i8'),
-                    'Magtype': np.dtype('S4'),
-                    'Lat': np.dtype('i8'),
-                }
-                for c in t1.itercols():
-                    # Put data types of columns in empty table to correct types,
-                    # or else vstack will fail.
-                    c.dtype = col_data_types[c._name]
-                t1.add_column(
-                    Column(data=None, name="ID", dtype=('S2')), index=0)
+                t1.add_column(Column(data=None, name="ID", dtype=('S2')), index=0)
             else:
                 t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
 
