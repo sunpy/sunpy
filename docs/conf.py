@@ -294,6 +294,7 @@ graphviz_dot_args = [
 autoclass_content = "both"
 
 bibtex_bibfiles = ['references.bib']
+bibtex_reference_style = "author_year"
 
 # -- Linking to source code ----------------------------------------------------
 
