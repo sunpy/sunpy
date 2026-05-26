@@ -3,18 +3,17 @@
 Parallel Spectral Fitting with Astropy Modeling
 ===============================================
 
-This example demonstrates how to fit a model independently to every spectrum in a spectral cube using `~astropy.modeling.fitting.parallel_fit_dask`. 
-The technique here can be applied to any spectral cube, but here we use a specific example dataset of a raster scan from the `SPICE <https://spice.ias.u-psud.fr/>__` instrument onboard Solar Orbiter, focusing on the O VI 1032 Å line.
+This example demonstrates how to fit a model independently to every spectrum in a spectral cube using `~astropy.modeling.fitting.parallel_fit_dask`.
+The technique here can be applied to any spectral cube, but here we use a specific example dataset of a raster scan from the `SPICE <https://spice.ias.u-psud.fr/>`__ instrument onboard Solar Orbiter, focusing on the O VI 1032 Å line.
 
-The SPICE instrument on Solar Orbiter is an EUV imaging spectrograph that builds up rasters of the solar transition region and low corona by stepping its slit across the Sun. 
+The SPICE instrument on Solar Orbiter is an EUV imaging spectrograph that builds up rasters of the solar transition region and low corona by stepping its slit across the Sun.
 Each raster pixel contains a full spectrum, so a single observation can produce tens of thousands of spectra that we'd like to fit independently, for example, to derive a Doppler velocity map from a line centroid.
 
-This example makes use of the `~astropy.modeling.fitting.parallel_fit_dask `helper and multiple performance improvements added in astropy 7.0 for fitting astropy models with non-linear fitters. 
-Together these changes mean it is now practical to fit many independent models to a large multi-dimensional array of data. 
+This example makes use of the `~astropy.modeling.fitting.parallel_fit_dask` helper and multiple performance improvements added in astropy 7.0 for fitting astropy models with non-linear fitters.
+Together these changes mean it is now practical to fit many independent models to a large multi-dimensional array of data.
 For more information on using this functionality, refer to the :ref:`astropy:parallel-fitting` page in the astropy documentation.
-This example demonstrates the *fitting workflow* and is **not** a science-grade Doppler analysis. 
-To keep the focus on`~astropy.modeling.fitting.parallel_fit_dask`, we use the SPICE Level 2 data as-is and skip several corrections that a real science analysis would need to apply to the SPICE data.
-
+This example demonstrates the *fitting workflow* and is **not** a science-grade Doppler analysis.
+To keep the focus on the fitting, we use the SPICE Level 2 data as-is and skip several corrections that a real science analysis would need to apply to the SPICE data.
 """
 # sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
 
@@ -54,7 +53,7 @@ filename = Fido.fetch(res)[0]
 # Reading the Data
 # ----------------
 #
-# We now open the FITS file directly and pull out the O VI 1032 Å window by its `EXTNAME`.
+# We now open the FITS file directly and pull out the O VI 1032 Å window by its ``EXTNAME``.
 # SPICE L2 files store each spectral window as a separate HDU, and "Peak" denotes the narrow window cropped around the line peak.
 # This keeps the example simplified, but and shows what's in the file, but for routine SPICE work you'll want the dedicated tools mentioned below.
 
@@ -62,7 +61,6 @@ hdul = fits.open(filename)
 hdu = hdul["O VI 1032 - Peak"]
 
 ###############################################################################
-# The next step is to create an `~ndcube.NDCube` object from the data we have opened.
 # If you are using SPICE data more regularly you might wish to look
 # into the `read_spice_l2_fits
 # <https://docs.sunpy.org/projects/sunraster/en/stable/generated/api/sunraster.instr.spice.read_spice_l2_fits.html>`__
@@ -70,11 +68,10 @@ hdu = hdul["O VI 1032 - Peak"]
 # <https://sospice.readthedocs.io/en/stable/>`__ package for more
 # SPICE tools.
 #
+# The next step is to create an `~ndcube.NDCube` object from the data we have opened.
 # To construct this `~ndcube.NDCube` object we use the header from the
 # FITS file to make a WCS object, the data and the unit of the data,
 # as well as constructing a mask for all points where the data is NaN.
-#
-# We then crop down the cube to a region of the field of view that we are interested in to make it faster to work with.
 
 spice = NDCube(
     hdu.data,
@@ -82,16 +79,16 @@ spice = NDCube(
     unit=hdu.header["BUNIT"],
     mask=np.isnan(hdu.data),
 )
-# The first dimension is length one so we will drop it
+
+###############################################################################
+# The first dimension (time / map repeat) is length one so we will drop it.
 spice = spice.squeeze()
 
 ###############################################################################
-# Also we crop out the edges of the wavelength axis where NaNs are present
-spice = spice[6:-4, :, :]
-
-###############################################################################
-# Finally, we crop to a spatial subregion so the example runs quickly.
-# If you run this example locally you can comment out this line
+# We also crop to a spatial subregion so the example runs quickly.
+# The dimensions of the remaining cube are (wavelength, slit, raster step),
+# so this slice reduces the size in both the spatial axes.
+# If you run this example locally you can comment out this line to run the full raster scan.
 spice = spice[:, 200:500, 30:-50]
 
 ###############################################################################
@@ -135,7 +132,7 @@ ax.coords[0].set_major_formatter("x.xx")
 # We now create an initial model for the O VI line, and then fit the
 # average spectra to get a strong initial model guess as input for the per-pixel parallel
 # fitting.
-# The O VI window the spectrum is well-described by a single emission line on top of a roughly flat background, so our model is a constant continuum (`~astropy.modeling.models.Const1D`) plus one Gaussian (`~astropy.modeling.models.Gaussian1D`) centered near 103.2 nm.
+# The O VI window the spectrum is well-described by a single emission line on top of a roughly flat background, so our model is a constant continuum (`~astropy.modeling.functional_models.Const1D`) plus one Gaussian (`~astropy.modeling.functional_models.Gaussian1D`) centered near 103.2 nm.
 
 OVI_wave = 103.2 * u.nm
 
@@ -240,7 +237,7 @@ wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
 fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.9)
 axs[0].set_title("Data (summed over wavelength)", pad=40)
 
-g1_max = np.percentile(np.abs(g1_peak_shift.value), 97)
+g1_max = np.nanpercentile(np.abs(g1_peak_shift.value), 97)
 mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(halfrange=g1_max), aspect=aspect)
 fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]", shrink=0.9)
 axs[1].set_title(f"O VI ({OVI_wave:latex})", pad=40)
@@ -251,6 +248,12 @@ for ax in axs:
     ax.coords[1].set_axislabel("Helioprojective Latitude")
     ax.coords[2].set_ticklabel(exclude_overlapping=True)
 
+####################################################################
+# Note that the velocity map above demonstrates the fitting machinery
+# but should not be read as science-grade Doppler measurements.  SPICE
+# has a known elliptical and rotated PSF :cite:p:`fludra_spice_2021` and
+# channel-dependent wavelength calibration offsets that bias raw line
+# centroids; see :cite:p:`plowman_spice_psf_2023,plowman_spice_doppler_2026` for correction methods.
 
 ###############################################################################
 # Working with the fit
@@ -334,8 +337,8 @@ print(wavelength.shape)
 all_fits = spice_model_fit(wavelength)
 
 ###############################################################################
-# Finally we can make a plot of every per-pixel fit  on top of the spatial-average spectrum and its model. 
-# The spread of red curves around the dashed line is a visual summary of how the line shifts, broadens, 
+# Finally we can make a plot of every per-pixel fit  on top of the spatial-average spectrum and its model.
+# The spread of red curves around the dashed line is a visual summary of how the line shifts, broadens,
 # and changes intensity across the FOV.
 
 fig = plt.figure(figsize=(11, 5))
