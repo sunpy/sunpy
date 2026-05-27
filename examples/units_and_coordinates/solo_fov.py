@@ -116,7 +116,7 @@ eui_hri.draw_extent(label="EUI HRI", color="C1")
 drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
 
 # Add the AIA limb
-visible, hidden = drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color="C3", lw=2)
+visible, hidden = aia.draw_limb()
 visible.set_label("AIA limb")
 hidden.set_label("AIA limb (hidden)")
 
@@ -142,7 +142,7 @@ eui_hri.draw_extent(label="EUI HRI")
 drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
 
 # Add the EUI FSI limb
-visible, hidden = drawing.limb(ax, eui_fsi.observer_coordinate, rsun=eui_fsi.rsun_meters, color="C3", lw=2)
+visible, hidden = eui_fsi.draw_limb()
 visible.set_label("EUI limb")
 hidden.set_label("EUI limb (hidden)")
 
@@ -173,7 +173,7 @@ eui_hri.draw_extent(label="EUI HRI", color="C1")
 drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
 
 # Add the AIA limb
-visible, hidden = drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color="C3", lw=2)
+visible, hidden = aia.draw_limb()
 visible.set_label("AIA limb")
 hidden.set_label("AIA limb (hidden)")
 
