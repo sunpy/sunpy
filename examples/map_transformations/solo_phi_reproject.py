@@ -1,15 +1,14 @@
 """
-======================================
-Downloading and Reprojecting a PHI Map
-======================================
+================================================================
+Downloading and Reprojecting a Solar Orbiter PHI/HRT Magnetogram
+================================================================
 
 This example demonstrates querying for Solar Orbiter PHI data and reprojecting it.
 """
 
-# sphinx_gallery_tags = ["Acquiring Data", "Solar Orbiter", "VSO", "SOAR"]
+# sphinx_gallery_tags = ["Acquiring Data", "Solar Orbiter",  "SOAR"]
 
 import matplotlib.pyplot as plt
-import sunpy_soar  # noqa
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u

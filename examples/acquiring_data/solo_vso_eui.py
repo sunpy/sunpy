@@ -10,7 +10,6 @@ both the SOAR client and VSO client.
 # sphinx_gallery_tags = ["Acquiring Data", "Solar Orbiter", "VSO", "SOAR"]
 
 import matplotlib.pyplot as plt
-import sunpy_soar  # noqa
 
 import astropy.units as u
 
@@ -19,23 +18,26 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ###############################################################################
-# This query (using no specific SOAR attributes) will query both the
-# SOAR and the VSO for matching files.
+# SunPy's Fido supports querying many different sources of data simultaneously.
+# This query will query both the SOAR and the VSO for matching files.
+# The VSO serves some Solar Orbiter data, and the Solar Orbiter Archive (SOAR) serves all of the Solar Orbiter data.
+# This example demonstrates a query which returns (the same) data from both sources and how to select between them.
+# Using `a.Provider <sunpy.net.attrs.Provider>` it is possible to restrict a Fido search to only one provider.
 combined_results = Fido.search(a.Time("2022-03-01", "2022-03-01 00:10"),
-                                      a.Instrument("EUI"),
-                                      a.Wavelength(17.4*u.nm),
-                                      a.Level(2))
+                               a.Instrument("EUI"),
+                               a.Wavelength(17.4*u.nm),
+                               a.Level(2))
 
 print(combined_results)
 
 ################################################################################
 # We can select one of the two clients like this:
-print("VSO Only")
+# VSO:
 print(combined_results["vso"])
 
-print("SOAR Only")
+################################################################################
+# SOAR:
 print(combined_results["soar"])
-
 
 ################################################################################
 # We shall download one file from the SOAR

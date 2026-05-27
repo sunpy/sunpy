@@ -54,8 +54,8 @@ print(results[:, 0])
 ################################################################################
 # We will then just download the first results for all our different data sources.
 files = Fido.fetch(results[:, 0], site="NSO")
-# Sort the files by filename
-files.sort()
+# Sort the files by filename, but lowercase
+files.sort(key=str.lower)
 # Put the file paths into a dict
 files = {name: path for name, path in zip(["AIA", "EUI-FSI", "EUI-HRI", "SPICE", "VBI", "VISP"], files)}
 
@@ -112,10 +112,22 @@ ax = fig.add_subplot(projection=eui_fsi_zoom)
 eui_fsi_zoom.plot(axes=ax)
 eui_hri.draw_extent(label="EUI HRI", color="C1")
 drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
-drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color="C3", lw=2, label="AIA limb")
-drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4", label="VISP")
+
+# Add the AIA limb
+visible, hidden = drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color="C3", lw=2)
+visible.set_label("AIA limb")
+hidden.set_label("AIA limb (hidden)")
+
+# Add the VISP FOV
+visible, hidden = drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4")
+visible.set_label("VISP")
+
+# The VBI data is a mosaic of 9 images, plot each one
 for ds in vbi.flat:
-    drawing.extent(ax, ds.wcs, color="C5", label="VBI")
+    visible, hidden = drawing.extent(ax, ds.wcs, color="C5")
+# Only add the last one to the legend
+visible.set_label("VBI")
+
 ax.legend()
 
 ################################################################################
@@ -125,11 +137,23 @@ fig = plt.figure()
 ax = fig.add_subplot(projection=aia)
 aia.plot(axes=ax)
 eui_hri.draw_extent(label="EUI HRI")
-drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="blue", label="SPICE")
-drawing.limb(ax, eui_fsi.observer_coordinate, rsun=eui_fsi.rsun_meters, color="C3", lw=2, label="EUI limb")
-drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4", label="VISP")
+drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
+
+# Add the EUI FSI limb
+visible, hidden = drawing.limb(ax, eui_fsi.observer_coordinate, rsun=eui_fsi.rsun_meters, color="C3", lw=2)
+visible.set_label("EUI limb")
+hidden.set_label("EUI limb (hidden)")
+
+# Add the VISP FOV
+visible, hidden = drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4")
+visible.set_label("VISP")
+
+# The VBI data is a mosaic of 9 images, plot each one
 for ds in vbi.flat:
-    drawing.extent(ax, ds.wcs, color="C5", label="VBI")
+    visible, hidden = drawing.extent(ax, ds.wcs, color="C5")
+# Only add the last one to the legend
+visible.set_label("VBI")
+
 ax.legend()
 
 plt.show()
