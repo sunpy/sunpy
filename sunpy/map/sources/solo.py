@@ -1,16 +1,11 @@
 """
 Solar Orbiter Map subclass definitions.
 """
-import numpy as np
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import (
-    AsinhStretch,
-    ImageNormalize,
-    AsymmetricPercentileInterval
-)
+from astropy.visualization import AsinhStretch, AsymmetricPercentileInterval, ImageNormalize
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
@@ -250,34 +245,29 @@ class METISMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        # Normalise solar radius keyword before calling super().__init__
-        # so that SunPy's internal machinery picks it up correctly.
-        if not any(k in header for k in ("RSUN_OBS", "SOLAR_R", "RADIUS")):
-            header["RSUN_OBS"] = header["RSUN_ARC"]
-
         super().__init__(data, header, **kwargs)
-
         self._nickname = f"{self.instrument}/{self.meta['filter']}"
-        self.plot_settings["cmap"] = self._get_cmap_name()
+        self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
         self._contr_cut = self._get_contr_cut()
-        vmin, vmax = self._get_img_vlim()
-        self.plot_settings['norm'] = ImageNormalize(vmin=vmin,vmax=vmax)
+        self.plot_settings['norm'] = ImageNormalize(
+            data=self.data,
+            interval=AsymmetricPercentileInterval(
+                self._contr_cut * 100,
+                (1 - self._contr_cut) * 100,
+            )
+        )
 
-
+    @property
+    def rsun_obs(self):
+        """
+        Normalise solar radius keyword.
+        """
+        if not any(k in self.meta for k in ("RSUN_OBS", "SOLAR_R", "RADIUS")):
+            return self.meta["RSUN_ARC"] * u.arcsec
+        return super().rsun_obs
 
     @property
     def measurement(self):
-        """
-        Product type identifier derived from BTYPE metadata.
-
-        Returns
-        -------
-        str
-            Short product-type string, e.g. ``'VL-TB'``, ``'VL-PB'``, ``'UV'``.
-        """
-        return self._get_prodtype()
-
-    def _get_prodtype(self):
         """
         Derive the product type string from the BTYPE header keyword.
 
@@ -319,7 +309,7 @@ class METISMap(GenericMap):
         self._nickname += nickname_add
         return prodtype
 
-
+    @property
     def _get_contr_cut(self):
         """
         Return the contrast cutoff for the current product type.
@@ -348,52 +338,6 @@ class METISMap(GenericMap):
         contr_cut = contr_cut_dict.get(self.measurement, 0.0) if "L2" in self.meta["level"] else 0.0
 
         return contr_cut
-
-
-    def _get_img_vlim(self):
-        """
-        Return display intensity limits based on the contrast cutoff.
-
-        Returns
-        -------
-        tuple of float
-            ``(vmin, vmax)`` intensity values.
-        """
-        return AsymmetricPercentileInterval(
-            self._contr_cut * 100,
-            (1 - self._contr_cut) * 100,
-        ).get_limits(self.data[np.isfinite(self.data)])
-
-    def _get_fov_rsun(self):
-        """
-        Return the METIS field of view in solar radii.
-
-        Returns
-        -------
-        tuple of float
-            ``(rmin, rmax, board)`` — inner radius, outer radius, and detector
-            board radius, all in solar radii as plain Python floats.
-        """
-        rsun_deg = self.rsun_obs.to(u.deg)
-
-        rmin = (self.meta["inn_fov"] * u.deg) / rsun_deg
-        rmax = (self.meta["out_fov"] * u.deg) / rsun_deg
-        board_deg = (2.9 * u.deg)
-        board_rsun = board_deg /rsun_deg
-        return rmin, rmax, board_rsun
-
-
-    def _get_cmap_name(self):
-        """
-        Build the colormap name for this METIS product.
-
-        Returns
-        -------
-        str
-            Colormap name, e.g. ``'solometisvl-tb'``.
-
-        """
-        return f"solo{self.instrument}{self.measurement}".lower()
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
