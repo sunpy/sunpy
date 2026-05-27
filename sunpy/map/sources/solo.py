@@ -5,7 +5,7 @@ from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import AsinhStretch, AsymmetricPercentileInterval, ImageNormalize
+from astropy.visualization import AsinhStretch, ImageNormalize
 
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
@@ -243,19 +243,26 @@ class METISMap(GenericMap):
     * `Metis Instrument Page <https://metis.oato.inaf.it/index.html>`_
     * Instrument Paper: :cite:t:`antonucci_metis_2020`
     """
+    _BTYPE_SUFF_DICT = {
+            "VL total brightness":              ("-TB",  "-TB"),
+            "VL polarized brightness":          ("-PB",  "-PB"),
+            "VL fixed-polarization intensity":  ("-FP",  "-Fix. Pol."),
+            "VL polarization angle":            ("-PA",  "-Pol. Angle"),
+            "Stokes I":                         ("-SI",  "-Stokes I"),
+            "Stokes Q":                         ("-SQ",  "-Stokes Q"),
+            "Stokes U":                         ("-SU",  "-Stokes U"),
+            "Pixel quality":                    ("-PQ",  "-Pixel quality"),
+            "Absolute error":                   ("-AE",  "-Abs. err."),
+            "Relative error":                   ("-RE",  "-Rel. err."),
+            "UV Lyman-alpha intensity":         ("",     ""),
+    }
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
-        self._nickname = f"{self.instrument}/{self.meta['filter']}"
+        btype = self.meta["btype"]
+        _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
+        self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
         self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
-        self._contr_cut = self._get_contr_cut()
-        self.plot_settings['norm'] = ImageNormalize(
-            data=self.data,
-            interval=AsymmetricPercentileInterval(
-                self._contr_cut * 100,
-                (1 - self._contr_cut) * 100,
-            )
-        )
 
     @property
     def rsun_obs(self):
@@ -283,61 +290,17 @@ class METISMap(GenericMap):
         ValueError
             If ``btype`` is not a recognised value.
         """
-        btype_suff_dict = {
-            "VL total brightness":              ("-TB",  "-TB"),
-            "VL polarized brightness":          ("-PB",  "-PB"),
-            "VL fixed-polarization intensity":  ("-FP",  "-Fix. Pol."),
-            "VL polarization angle":            ("-PA",  "-Pol. Angle"),
-            "Stokes I":                         ("-SI",  "-Stokes I"),
-            "Stokes Q":                         ("-SQ",  "-Stokes Q"),
-            "Stokes U":                         ("-SU",  "-Stokes U"),
-            "Pixel quality":                    ("-PQ",  "-Pixel quality"),
-            "Absolute error":                   ("-AE",  "-Abs. err."),
-            "Relative error":                   ("-RE",  "-Rel. err."),
-            "UV Lyman-alpha intensity":         ("",     ""),
-        }
+
         btype = self.meta["btype"]
         prodtype = self.meta["filter"]
 
-        if btype not in btype_suff_dict:
+        if btype not in METISMap._BTYPE_SUFF_DICT:
             raise ValueError(
                 f"self.meta['btype']='{btype}' is not a recognised METIS BTYPE."
             )
 
-        suff, nickname_add = btype_suff_dict[btype]
-        prodtype += suff
-        self._nickname += nickname_add
-        return prodtype
-
-    @property
-    def _get_contr_cut(self):
-        """
-        Return the contrast cutoff for the current product type.
-
-        Returns
-        -------
-        float
-            Contrast cutoff fraction (0.0-1.0), or ``0.0`` for non-L2 data.
-        """
-        contr_cut_dict = {
-            "VL-TB": 0.05,
-            "VL-PB": 0.005,
-            "VL-FP": 0.01,
-            "VL-PA": 0.01,
-            "VL-SQ": 0.01,
-            "VL-SU": 0.01,
-            "UV":    0.05,
-            "VL-PQ": 0.0,
-            "VL-AE": 0.1,
-            "VL-RE": 0.02,
-        }
-        contr_cut_dict["VL-SI"] = contr_cut_dict["VL-TB"]
-        contr_cut_dict["UV-PQ"] = contr_cut_dict["VL-PQ"]
-        contr_cut_dict["UV-AE"] = contr_cut_dict["VL-AE"]
-        contr_cut_dict["UV-RE"] = contr_cut_dict["VL-RE"]
-        contr_cut = contr_cut_dict.get(self.measurement, 0.0) if "L2" in self.meta["level"] else 0.0
-
-        return contr_cut
+        suff, _ = METISMap._BTYPE_SUFF_DICT[btype]
+        return prodtype + suff
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
