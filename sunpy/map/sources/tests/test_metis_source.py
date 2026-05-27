@@ -93,6 +93,7 @@ def test_coordinate_frame( metis_map):
     assert metis_map.coordinate_frame.name == "helioprojective"
     assert metis_map.observatory == "SOLAR ORBITER"
 
+
 def test_colormaps_by_filter( metis_map):
     """
     Verify that the default colormap is assigned based on the FILTER keyword.
@@ -102,6 +103,7 @@ def test_colormaps_by_filter( metis_map):
         "UV": "solometisuv",
     }[metis_map.meta["FILTER"]]
     assert metis_map.plot_settings["cmap"] == expected
+
 
 def test_wcs_conversion( metis_test_data, minimal_metis_header):
     """
@@ -121,6 +123,7 @@ Tests for proper object instantiation.
 def test_basic_initialization( metis_map):
     assert isinstance(metis_map, METISMap)
     assert metis_map.instrument == "METIS"
+
 
 def test_rsun_fallback_logic( metis_test_data, minimal_metis_header):
     """
