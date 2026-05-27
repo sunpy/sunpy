@@ -199,15 +199,6 @@ class PHIMap(GenericMap):
         """
         return self.meta.get('btype', 'Unknown')
 
-    def update_plot_norm_settings(self):
-        """
-        Updates vmin and vmax values of plot_settings['norm']
-        """
-        img_vlim = self.get_img_vlim()
-        self.plot_settings['norm'] = ImageNormalize(
-            vmin=img_vlim[0], vmax=img_vlim[1]
-        )
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a PHI image"""
@@ -218,7 +209,7 @@ class PHIMap(GenericMap):
 
 class METISMap(GenericMap):
     """
-    Metis Image Map.
+    Metis Map.
 
     Metis is the multi-wavelength coronagraph on board the Solar Orbiter mission,
     dedicated to the study of the solar corona. It observes the outer atmosphere
@@ -244,17 +235,17 @@ class METISMap(GenericMap):
     * Instrument Paper: :cite:t:`antonucci_metis_2020`
     """
     _BTYPE_SUFF_DICT = {
-            "VL total brightness":              ("-TB",  "-TB"),
-            "VL polarized brightness":          ("-PB",  "-PB"),
-            "VL fixed-polarization intensity":  ("-FP",  "-Fix. Pol."),
-            "VL polarization angle":            ("-PA",  "-Pol. Angle"),
-            "Stokes I":                         ("-SI",  "-Stokes I"),
-            "Stokes Q":                         ("-SQ",  "-Stokes Q"),
-            "Stokes U":                         ("-SU",  "-Stokes U"),
-            "Pixel quality":                    ("-PQ",  "-Pixel quality"),
-            "Absolute error":                   ("-AE",  "-Abs. err."),
-            "Relative error":                   ("-RE",  "-Rel. err."),
-            "UV Lyman-alpha intensity":         ("",     ""),
+        "VL total brightness":              ("-TB",  "-TB"),
+        "VL polarized brightness":          ("-PB",  "-PB"),
+        "VL fixed-polarization intensity":  ("-FP",  "-Fix. Pol."),
+        "VL polarization angle":            ("-PA",  "-Pol. Angle"),
+        "Stokes I":                         ("-SI",  "-Stokes I"),
+        "Stokes Q":                         ("-SQ",  "-Stokes Q"),
+        "Stokes U":                         ("-SU",  "-Stokes U"),
+        "Pixel quality":                    ("-PQ",  "-Pixel quality"),
+        "Absolute error":                   ("-AE",  "-Abs. err."),
+        "Relative error":                   ("-RE",  "-Rel. err."),
+        "UV Lyman-alpha intensity":         ("",     ""),
     }
 
     def __init__(self, data, header, **kwargs):
