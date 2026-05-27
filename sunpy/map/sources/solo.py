@@ -303,7 +303,8 @@ class METISMap(GenericMap):
         data : numpy.ndarray
         header : dict-like
         """
-        instrume = header.get("INSTRUME", "").strip().upper()
-        obsrvtry = header.get("OBSRVTRY", "").strip().upper()
-        level    = header.get("LEVEL",    "").strip().upper()
-        return "METIS" in instrume and "SOLAR ORBITER" in obsrvtry and "L2" in level
+        instrume = str(header.get("INSTRUME", "")).strip().upper()
+        obsrvtry = str(header.get("OBSRVTRY", "")).strip().upper()
+        level = str(header.get("LEVEL", "")).strip().upper()
+
+        return ("METIS" in instrume and "SOLAR ORBITER" in obsrvtry and "L2" in level)
