@@ -1,0 +1,1 @@
+Added `~sunpy.map.sources.METISMap` to handle imagery from the the multi-wavelength coronagraph for the Solar Orbiter mission.
