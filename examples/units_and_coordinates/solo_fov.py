@@ -8,6 +8,7 @@ In this example we shall demonstrate how to plot the fields of view of multiple 
 # sphinx_gallery_tags = ["Coordinates", "Solar Orbiter", "Map", "SOAR", "EUI", "SPICE", "AIA"]
 # sphinx_gallery_thumbnail_number = 2
 
+import dkist.net  # NOQA: F401
 import matplotlib.pyplot as plt
 import numpy as np
 from ndcube import NDCube
@@ -40,9 +41,13 @@ solo = (
 # As well as AIA 17.1 nm data.
 aia = a.Instrument.aia & a.Wavelength(171 * u.Angstrom) & a.Sample(10 * u.minute)
 
+dkist_visp = a.Instrument.visp
+
+dkist_vbi = a.Instrument.vbi & a.Wavelength(430 * u.nm, 431 * u.nm)
+
 results = Fido.search(
     time_range,
-    solo | aia,
+    solo | aia | dkist_vbi | dkist_visp,
 )
 print(results[:, 0])
 
@@ -51,14 +56,16 @@ print(results[:, 0])
 files = Fido.fetch(results[:, 0], site="NSO")
 # Sort the files by filename
 files.sort()
+# Put the file paths into a dict
+files = {name: path for name, path in zip(["AIA", "EUI-FSI", "EUI-HRI", "SPICE", "VBI", "VISP"], files)}
 
 ################################################################################
-# Open the first three into sunpy maps
-aia, eui_fsi, eui_hri = sunpy.map.Map(files[:-1])
+# Open the images as sunpy maps
+aia, eui_fsi, eui_hri = sunpy.map.Map(files["AIA"], files["EUI-FSI"], files["EUI-HRI"])
 
 ################################################################################
 # Load the SPICE file into a NDCube
-hdul = fits.open(files[-1])
+hdul = fits.open(files["SPICE"])
 hdu = hdul["N IV 765 - SH - Comp 8 ... Ne VIII 770 - LH - Comp 8 (Merged)"]
 
 spice = NDCube(
@@ -72,6 +79,14 @@ spice = NDCube(
 spice = spice.squeeze()
 
 spice_wl_sum = spice.rebin((-1, 1, 1), operation=np.sum).squeeze()
+
+################################################################################
+# Open the VBI and VISP ASDF files with the dkist package
+
+vbi = dkist.load_dataset(files["VBI"])
+visp = dkist.load_dataset(files["VISP"])
+
+visp_I_wl_sum = visp[0].rebin((1, -1, 1), operation=np.sum).squeeze()
 
 ################################################################################
 # Initial Plots
@@ -95,9 +110,12 @@ eui_fsi_zoom = eui_fsi.submap(
 fig = plt.figure()
 ax = fig.add_subplot(projection=eui_fsi_zoom)
 eui_fsi_zoom.plot(axes=ax)
-eui_hri.draw_extent(label="EUI HRI")
-drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="blue", label="SPICE")
-drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color='C3', lw=2, label='AIA limb')
+eui_hri.draw_extent(label="EUI HRI", color="C1")
+drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
+drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color="C3", lw=2, label="AIA limb")
+drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4", label="VISP")
+for ds in vbi.flat:
+    drawing.extent(ax, ds.wcs, color="C5", label="VBI")
 ax.legend()
 
 ################################################################################
@@ -108,7 +126,10 @@ ax = fig.add_subplot(projection=aia)
 aia.plot(axes=ax)
 eui_hri.draw_extent(label="EUI HRI")
 drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="blue", label="SPICE")
-drawing.limb(ax, eui_fsi.observer_coordinate, rsun=eui_fsi.rsun_meters, color='C3', lw=2, label='EUI limb')
+drawing.limb(ax, eui_fsi.observer_coordinate, rsun=eui_fsi.rsun_meters, color="C3", lw=2, label="EUI limb")
+drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4", label="VISP")
+for ds in vbi.flat:
+    drawing.extent(ax, ds.wcs, color="C5", label="VBI")
 ax.legend()
 
 plt.show()

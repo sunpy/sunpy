@@ -149,6 +149,7 @@ docs-gallery = [
   "pillow",
   "exifread",
   "ndcube>=2.3.0",
+  "dkist",
 ]
 dev = ["sunpy[docs,tests]"]
 
