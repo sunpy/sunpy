@@ -13,7 +13,6 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 from sunpy.map import Map
-# Ensure this import matches the actual file structure in your branch
 from sunpy.map.sources.solo import METISMap
 
 # ============================================================================
