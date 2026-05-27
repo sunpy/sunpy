@@ -66,6 +66,9 @@ cea_hdr = make_fitswcs_header(
 
 ################################################################################
 # Reproject the map to the new header
+# Note that this treats the LOS magnetic field values as scalar image data.
+# This is useful for visualisation, but it does not convert B_LOS into a radial
+# or local heliographic magnetic field component.
 
 outmap = blos_map.reproject_to(cea_hdr, algorithm="adaptive", kernel="Hann")
 

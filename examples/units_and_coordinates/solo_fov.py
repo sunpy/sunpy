@@ -3,9 +3,11 @@
 Plotting Solar Orbiter Fields of View
 =====================================
 
-In this example we shall demonstrate how to plot the fields of view of multiple Solar Orbiter instruments.
+In this example we demonstrate how to plot the fields of view of multiple
+Solar Orbiter instruments observed during the Long-Term Active Region SOOP (`R_SMALL_MRES_MCAD_AR-Long-Term`)
+with coordinated DKIST observations.
 """
-# sphinx_gallery_tags = ["Coordinates", "Solar Orbiter", "Map", "SOAR", "EUI", "SPICE", "AIA", "DKIST", "VBI", "VISP"]
+# sphinx_gallery_tags = ["Coordinates", "Solar Orbiter", "Map", "SOAR", "EUI", "SPICE", "AIA", "DKIST", "VBI", "VISP", "Visualization"]
 # sphinx_gallery_thumbnail_number = -1
 
 import dkist.net  # NOQA: F401
@@ -28,7 +30,7 @@ from sunpy.visualization import drawing
 # ---------------------------------------
 #
 # The first step is to search for and download multiple datasets.
-# During this time window a coordinated campaign between Solar Orbiter and DKIST (and PSP??!) was underway.
+# During this time window a coordinated campaign between Solar Orbiter and DKIST was underway.
 time_range = a.Time("2022-10-24T18:55", "2022-10-24T19:35")
 
 ################################################################################

@@ -19,8 +19,10 @@ from sunpy.net import attrs as a
 
 ###############################################################################
 # SunPy's Fido supports querying many different sources of data simultaneously.
-# This query will query both the SOAR and the VSO for matching files.
-# The VSO serves some Solar Orbiter data, and the Solar Orbiter Archive (SOAR) serves all of the Solar Orbiter data.
+# This query will search both the Solar Orbiter Archive (SOAR) and the VSO for Solar Orbiter data products.
+#
+# Some Solar Orbiter products are available through both services, so this
+# query may return overlapping results from the two clients.
 # This example demonstrates a query which returns (the same) data from both sources and how to select between them.
 # Using `a.Provider <sunpy.net.attrs.Provider>` it is possible to restrict a Fido search to only one provider.
 combined_results = Fido.search(a.Time("2022-03-01", "2022-03-01 00:10"),
