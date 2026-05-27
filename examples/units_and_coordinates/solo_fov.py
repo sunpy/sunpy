@@ -5,8 +5,8 @@ Plotting Solar Orbiter Fields of View
 
 In this example we shall demonstrate how to plot the fields of view of multiple Solar Orbiter instruments.
 """
-# sphinx_gallery_tags = ["Coordinates", "Solar Orbiter", "Map", "SOAR", "EUI", "SPICE", "AIA"]
-# sphinx_gallery_thumbnail_number = 2
+# sphinx_gallery_tags = ["Coordinates", "Solar Orbiter", "Map", "SOAR", "EUI", "SPICE", "AIA", "DKIST", "VBI", "VISP"]
+# sphinx_gallery_thumbnail_number = -1
 
 import dkist.net  # NOQA: F401
 import matplotlib.pyplot as plt
@@ -107,7 +107,7 @@ eui_fsi_zoom = eui_fsi.submap(
 ################################################################################
 # We shall now plot the extent of EUI HRI and SPICE, as well as the limb as seen from AIA on this image.
 
-fig = plt.figure()
+fig = plt.figure(figsize=(8, 6))
 ax = fig.add_subplot(projection=eui_fsi_zoom)
 eui_fsi_zoom.plot(axes=ax)
 eui_hri.draw_extent(label="EUI HRI", color="C1")
@@ -133,7 +133,7 @@ ax.legend()
 ################################################################################
 # We shall now do the same but based on the AIA image.
 
-fig = plt.figure()
+fig = plt.figure(figsize=(8, 6))
 ax = fig.add_subplot(projection=aia)
 aia.plot(axes=ax)
 eui_hri.draw_extent(label="EUI HRI")
@@ -143,6 +143,37 @@ drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
 visible, hidden = drawing.limb(ax, eui_fsi.observer_coordinate, rsun=eui_fsi.rsun_meters, color="C3", lw=2)
 visible.set_label("EUI limb")
 hidden.set_label("EUI limb (hidden)")
+
+# Add the VISP FOV
+visible, hidden = drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4")
+visible.set_label("VISP")
+
+# The VBI data is a mosaic of 9 images, plot each one
+for ds in vbi.flat:
+    visible, hidden = drawing.extent(ax, ds.wcs, color="C5")
+# Only add the last one to the legend
+visible.set_label("VBI")
+
+ax.legend()
+
+################################################################################
+# And finally let's zoom in on the shared FOV
+
+eui_fsi_crop = eui_fsi.submap(
+    bottom_left=SkyCoord(-100, -500, unit="arcsec", frame=eui_fsi.coordinate_frame),
+    top_right=SkyCoord(2000, 1500, unit="arcsec", frame=eui_fsi.coordinate_frame),
+)
+
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(projection=eui_fsi_crop)
+eui_fsi_crop.plot(axes=ax)
+eui_hri.draw_extent(label="EUI HRI", color="C1")
+drawing.extent(axes=ax, wcs=spice_wl_sum.wcs, color="C2", label="SPICE")
+
+# Add the AIA limb
+visible, hidden = drawing.limb(ax, aia.observer_coordinate, rsun=aia.rsun_meters, color="C3", lw=2)
+visible.set_label("AIA limb")
+hidden.set_label("AIA limb (hidden)")
 
 # Add the VISP FOV
 visible, hidden = drawing.extent(ax, wcs=visp_I_wl_sum.wcs, color="C4")
