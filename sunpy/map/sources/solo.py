@@ -262,8 +262,13 @@ class METISMap(GenericMap):
         """
         Normalise solar radius keyword.
         """
-        if not any(k in self.meta for k in ("RSUN_OBS", "SOLAR_R", "RADIUS")):
+        rsun_arcseconds = self._rsun_obs_no_default
+        if rsun_arcseconds is not None:
+            return rsun_arcseconds * u.arcsec
+
+        if "RSUN_ARC" in self.meta:
             return self.meta["RSUN_ARC"] * u.arcsec
+
         return super().rsun_obs
 
     @property
@@ -271,23 +276,18 @@ class METISMap(GenericMap):
         """
         Derive the product type string from the BTYPE header keyword.
 
-        Also appends a human-readable suffix to ``_nickname``.
-
         Returns
         -------
         str
             Product type string.
-
-        Raises
-        ------
-        ValueError
-            If ``btype`` is not a recognised value.
         """
 
-        btype = self.meta["btype"]
+        if "filter" not in self.meta:
+            return super().measurement
         prodtype = self.meta["filter"]
+        btype = self.meta.get("btype", "")
 
-        suff, _ = METISMap._BTYPE_SUFF_DICT[btype]
+        suff, _ = METISMap._BTYPE_SUFF_DICT.get(btype, ("", None))
         return prodtype + suff
 
     @classmethod
