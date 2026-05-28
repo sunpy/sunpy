@@ -260,7 +260,11 @@ class METISMap(GenericMap):
     @property
     def rsun_obs(self):
         """
-        Normalise solar radius keyword.
+        Angular radius of the observation from Sun center.
+        This value is taken (in order of preference) from the 'RSUN_OBS',
+        'SOLAR_R', 'RADIUS', or 'RSUN_ARC' FITS keywords. If none of these keys are present,
+        the angular radius is calculated from
+        `~sunpy.map.GenericMap.rsun_meters` and `~sunpy.map.GenericMap.dsun`.
         """
         rsun_arcseconds = self._rsun_obs_no_default
         if rsun_arcseconds is not None:
