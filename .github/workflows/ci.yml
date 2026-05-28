@@ -87,6 +87,11 @@ jobs:
         - linux: py314
           name: py314 (parallel threads)
           posargs: --parallel-threads=auto --color=yes
+        - linux: py314t-devdeps-minimal
+          name: py314t-devdeps
+        - linux: py314t-devdeps-minimal
+          name: py314t-devdeps (parallel threads)
+          posargs: --parallel-threads=auto --color=yes
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
