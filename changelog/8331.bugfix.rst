@@ -1,0 +1,1 @@
+Added standard plot formatting (title and axis labels) to the ``draw_contours``, ``draw_grid``, ``draw_limb``, ``draw_quadrangle``, and ``draw_extent`` methods on `~sunpy.map.GenericMap`.
