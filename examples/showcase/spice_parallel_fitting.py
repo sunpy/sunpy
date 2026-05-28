@@ -16,6 +16,8 @@ This example demonstrates the *fitting workflow* and is **not** a science-grade 
 To keep the focus on the fitting, we use the SPICE Level 2 data as-is and skip several corrections that a real science analysis would need to apply to the SPICE data.
 """
 # sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
+# sphinx_gallery_thumbnail_number = -2
+# sphinx_gallery_multi_image = "single"
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -236,41 +238,47 @@ aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
 # Create a figure with one column and two rows using the WCS for the
 # ``wl_sum`` cube.  Use the constrained layout for better use of space
 # in the figure.
-fig, axs = plt.subplots(
-    nrows=2,
+fig1, ax1 = plt.subplots(
     subplot_kw=dict(projection=wl_sum),
-    figsize=(4.5, 8),
+    figsize=(4.5, 4),
     layout="constrained",
 )
-fig.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
+fig1.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
 
-wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
-fig.colorbar(
-    axs[0].get_images()[0],
-    ax=axs[0],
+wl_sum.plot(axes=ax1, norm=LogNorm(), aspect=aspect)
+fig1.colorbar(
+    ax1.get_images()[0],
+    ax=ax1,
     extend="both",
     label=f"{wl_sum.unit:latex}",
     shrink=0.9,
 )
-axs[0].set_title("Data (summed over wavelength)", pad=40)
+ax1.set_title("Data (summed over wavelength)", pad=40)
+
+fig2, ax2 = plt.subplots(
+    subplot_kw=dict(projection=wl_sum),
+    figsize=(4.5, 4),
+    layout="constrained",
+)
+fig2.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
 
 g1_max = np.nanpercentile(np.abs(g1_peak_shift.value), 97)
-mean_1 = axs[1].imshow(
+mean_1 = ax2.imshow(
     g1_peak_shift.value,
     cmap="coolwarm",
     norm=CenteredNorm(halfrange=g1_max),
     aspect=aspect,
 )
-fig.colorbar(
+fig2.colorbar(
     mean_1,
-    ax=axs[1],
+    ax=ax2,
     extend="both",
     label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]",
     shrink=0.9,
 )
-axs[1].set_title(f"O VI ({OVI_wave:latex})", pad=40)
+ax2.set_title(f"O VI ({OVI_wave:latex})", pad=40)
 
-for ax in axs:
+for ax in [ax1, ax2]:
     ax.coords[0].set_ticklabel(exclude_overlapping=True)
     ax.coords[0].set_axislabel("Helioprojective Longitude")
     ax.coords[1].set_axislabel("Helioprojective Latitude")
