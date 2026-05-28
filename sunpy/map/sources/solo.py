@@ -251,6 +251,10 @@ class METISMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
         btype = self.meta["btype"]
+        if btype not in METISMap._BTYPE_SUFF_DICT:
+            raise ValueError(
+                f"self.meta['btype']='{btype}' is not a recognised METIS BTYPE."
+            )
         _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
         self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
         self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
@@ -284,11 +288,6 @@ class METISMap(GenericMap):
 
         btype = self.meta["btype"]
         prodtype = self.meta["filter"]
-
-        if btype not in METISMap._BTYPE_SUFF_DICT:
-            raise ValueError(
-                f"self.meta['btype']='{btype}' is not a recognised METIS BTYPE."
-            )
 
         suff, _ = METISMap._BTYPE_SUFF_DICT[btype]
         return prodtype + suff

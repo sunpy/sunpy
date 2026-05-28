@@ -142,3 +142,40 @@ def test_prodtype_property(metis_test_data, minimal_metis_header):
     """Verify that prodtype is correctly derived from BTYPE."""
     metis_map = Map(metis_test_data,minimal_metis_header)
     assert metis_map.measurement == "VL-TB"
+
+
+def test_invalid_btype(metis_test_data, minimal_metis_header):
+    """Invalid BTYPE values should raise ValueError during init."""
+    header = minimal_metis_header.copy()
+    header["BTYPE"] = "invalid"
+
+    with pytest.raises(
+        ValueError,
+        match="not a recognised METIS BTYPE",
+    ):
+        Map(metis_test_data, header)
+
+def test_rsun_obs_uses_super(metis_test_data, minimal_metis_header):
+    """
+    Verify rsun_obs uses GenericMap when RSUN_OBS exists.
+    """
+    header = minimal_metis_header.copy()
+    header["RSUN_OBS"] = 950.0
+
+    metis_map = Map(metis_test_data, header)
+
+    assert metis_map.rsun_obs == 950.0 * u.arcsec
+
+def test_fall_back_to_rsun_arc(metis_test_data, minimal_metis_header):
+    """
+    Verify rsun_obs falls back to RSUN_ARC when no other solar radius keywords exist.
+    """
+    header = minimal_metis_header.copy()
+
+    header.pop("RSUN_OBS", None)
+    header.pop("SOLAR_R", None)
+    header.pop("RADIUS", None)
+
+    metis_map = Map(metis_test_data, header)
+
+    assert metis_map.rsun_obs == 960.0 * u.arcsec
