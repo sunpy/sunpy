@@ -16,6 +16,8 @@ This example demonstrates the *fitting workflow* and is **not** a science-grade 
 To keep the focus on the fitting, we use the SPICE Level 2 data as-is and skip several corrections that a real science analysis would need to apply to the SPICE data.
 """
 # sphinx_gallery_tags = ["Solar Orbiter", "SPICE", "Spectral Fitting", "Visualization"]
+# sphinx_gallery_thumbnail_number = -2
+# sphinx_gallery_multi_image = "single"
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -105,9 +107,9 @@ print(spice)
 # this data, one summed along the wavelength dimension and one of the
 # spectra averaged over all spatial pixels.
 #
-# We use the shortcut value ``-1`` to `~ndcube.NDCube.rebin` to
-# represent no rebinning along that axis (output length equals number
-# of pixels in input).
+# We use the shortcut value ``-1`` to `~ndcube.NDCube.rebin` to set
+# the number of pixels in a bin equal to the number of pixels along
+# that axis, meaning that we put that whole axis into one bin.
 #
 # We then squeeze the resulting cubes to drop all length one axes.
 
@@ -137,7 +139,7 @@ ax.coords[0].set_major_formatter("x.xx")
 OVI_wave = 103.2 * u.nm
 
 initial_model = (
-    m.Const1D(amplitude=0.1 * spice.unit) +
+    m.Const1D(amplitude=5 * spice.unit) +
     m.Gaussian1D(amplitude=40 * spice.unit, mean=OVI_wave, stddev=0.05 * u.nm)
 )
 print(initial_model)
@@ -203,7 +205,7 @@ plt.legend()
 #
 # What is returned from `~astropy.modeling.fitting.parallel_fit_dask`
 # is a model with array parameters with the shape of the non-fitting
-# axes of the data (so in this case 100x100 arrays).
+# axes of the data, so in this case the array size of the non-wavelength axes.
 
 ###############################################################################
 # We can therefore fit all our SPICE cube as follows, note we are
@@ -222,27 +224,61 @@ spice_model_fit = parallel_fit_dask(
 # in the peak locations of the Gaussian fit. We shall talk more about
 # this later.
 
-g1_peak_shift = spice_model_fit.mean_1.quantity.to(u.km / u.s, equivalencies=u.doppler_optical(OVI_wave))
+g1_peak_shift = spice_model_fit.mean_1.quantity.to(
+    u.km / u.s,
+    equivalencies=u.doppler_optical(OVI_wave),
+)
 
-# SPICE pixels are non-square (along-slit ``CDELT2``<  raster step ``CDELT1``), so we set the aspect accordingly.
-# We can calculate the aspect ratio from the physical size of the pixels to scale the plot to the world coordinates.
+# SPICE pixels are non-square (along-slit ``CDELT2``< raster step
+# ``CDELT1``), so we set the aspect accordingly.  We can calculate the
+# aspect ratio from the physical size of the pixels to scale the plot
+# to the world coordinates.
 aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
 
-# Create a figure with one column and two rows using the WCS for the ``wl_sum`` cube.
-# Use the constrained layout for better use of space in the figure.
-fig, axs = plt.subplots(nrows=2, subplot_kw=dict(projection=wl_sum), figsize=(4.5, 8), layout="constrained")
-fig.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
+# Create a figure with one column and two rows using the WCS for the
+# ``wl_sum`` cube.  Use the constrained layout for better use of space
+# in the figure.
+fig1, ax1 = plt.subplots(
+    subplot_kw=dict(projection=wl_sum),
+    figsize=(4.5, 4),
+    layout="constrained",
+)
+fig1.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
 
-wl_sum.plot(axes=axs[0], norm=LogNorm(), aspect=aspect)
-fig.colorbar(axs[0].get_images()[0], ax=axs[0], extend="both", label=f"{wl_sum.unit:latex}", shrink=0.9)
-axs[0].set_title("Data (summed over wavelength)", pad=40)
+wl_sum.plot(axes=ax1, norm=LogNorm(), aspect=aspect)
+fig1.colorbar(
+    ax1.get_images()[0],
+    ax=ax1,
+    extend="both",
+    label=f"{wl_sum.unit:latex}",
+    shrink=0.9,
+)
+ax1.set_title("Data (summed over wavelength)", pad=40)
+
+fig2, ax2 = plt.subplots(
+    subplot_kw=dict(projection=wl_sum),
+    figsize=(4.5, 4),
+    layout="constrained",
+)
+fig2.suptitle(f"SPICE - {hdu.header['EXTNAME']} - {hdu.header['DATE-AVG']}")
 
 g1_max = np.nanpercentile(np.abs(g1_peak_shift.value), 97)
-mean_1 = axs[1].imshow(g1_peak_shift.value, cmap="coolwarm", norm=CenteredNorm(halfrange=g1_max), aspect=aspect)
-fig.colorbar(mean_1, ax=axs[1], extend="both", label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]", shrink=0.9)
-axs[1].set_title(f"O VI ({OVI_wave:latex})", pad=40)
+mean_1 = ax2.imshow(
+    g1_peak_shift.value,
+    cmap="coolwarm",
+    norm=CenteredNorm(halfrange=g1_max),
+    aspect=aspect,
+)
+fig2.colorbar(
+    mean_1,
+    ax=ax2,
+    extend="both",
+    label=f"Velocity from Doppler shift [{g1_peak_shift.unit:latex}]",
+    shrink=0.9,
+)
+ax2.set_title(f"O VI ({OVI_wave:latex})", pad=40)
 
-for ax in axs:
+for ax in [ax1, ax2]:
     ax.coords[0].set_ticklabel(exclude_overlapping=True)
     ax.coords[0].set_axislabel("Helioprojective Longitude")
     ax.coords[1].set_axislabel("Helioprojective Latitude")
@@ -311,14 +347,19 @@ print(spice_model_fit.mean_1.quantity.to(u.AA))
 # Astropy are for doppler shifts, we can use the `~astropy.units.doppler_optical`
 # equivalency to convert to velocity.
 
-spice_model_fit.mean_1.quantity.to(u.km/u.s, equivalencies=u.doppler_optical(OVI_wave))
+spice_model_fit.mean_1.quantity.to(
+    u.km/u.s,
+    equivalencies=u.doppler_optical(OVI_wave),
+)
 
 ###############################################################################
 # One other thing we may want to do is to evaluate the fitted model for all pixels,
 # for example, to plot them or otherwise inspect a single fit.
-# This can be done by passing in a wavelength array which is `broadcastable <https://numpy.org/doc/stable/user/basics.broadcasting.html>`__
-# to the shape of the non-fitting axes. We can do this by once again using the
-# `~ndcube.NDCube.axis_world_coords` method of `~ndcube.NDCube`.
+# This can be done by passing in a wavelength array which is
+# :external+numpy:doc:`broadcastable <user/basics.broadcasting>` to
+# the shape of the non-fitting axes. We can do this by once again
+# using the `~ndcube.NDCube.axis_world_coords` method of
+# `~ndcube.NDCube`.
 
 wavelength = spatial_mean.axis_world_coords("em.wl")[0]
 
@@ -340,6 +381,11 @@ all_fits = spice_model_fit(wavelength)
 # Finally we can make a plot of every per-pixel fit  on top of the spatial-average spectrum and its model.
 # The spread of red curves around the dashed line is a visual summary of how the line shifts, broadens,
 # and changes intensity across the FOV.
+# Notice that it looks like a few pixels have failed to converge on a physical fit.
+# These pixels could be excluded, or other things such as
+# :external+astropy:doc:`constraints
+# <modeling/example-fitting-constraints>`, could be included in the
+# fitting to control the fit.
 
 fig = plt.figure(figsize=(11, 5))
 
