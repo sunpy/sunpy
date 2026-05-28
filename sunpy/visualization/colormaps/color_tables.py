@@ -7,6 +7,7 @@ import pathlib
 
 import matplotlib.colors as colors
 import numpy as np
+from matplotlib import colormaps
 
 import astropy.units as u
 
@@ -15,7 +16,7 @@ __all__ = [
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
     'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table',
     'rhessi_color_table', 'std_gamma_2', 'euvi_color_table', 'solohri_lya1216_color_table',
-     'suit_color_table', 'punch_color_table',
+    'suit_color_table', 'punch_color_table', 'metis_color_table'
 ]
 
 
@@ -391,3 +392,77 @@ def suit_color_table(band):
 
 def punch_color_table():
     return cmap_from_rgb_file("PUNCH", "punch.csv")
+
+
+def metis_color_table(cmap_name):
+
+    aia_wave_dict = create_aia_wave_dict()
+    aia304_rgb = aia_wave_dict[304*u.angstrom]
+    metisvl_pb_cmap = _cmap_from_rgb(
+        *aia304_rgb, 'SolO Metis VL Polarized Brightness'
+    )
+
+    metisvl_fb_rgb = (np.arange(256), np.arange(256), np.arange(256))
+    metisvl_fb_cmap = _cmap_from_rgb(
+        *metisvl_fb_rgb, 'SolO Metis VL Fixed Polarization'
+    )
+
+    # cmap_name, cmap, cmap.name
+    cmap_dict = {
+        'solometisvl-tb': (
+            colormaps['cividis'].copy(), 'SolO Metis VL Total Brightness'
+        ),
+        'solometisvl-pb': (  # Metis VL/pB images uses AIA color table
+            metisvl_pb_cmap, None
+        ),
+        'solometisvl-fp': (
+            metisvl_fb_cmap, None
+        ),
+        'solometisvl-pa': (
+            colormaps['viridis'].copy(), 'SolO Metis VL Polarization Angle'
+        ),
+        'solometisvl-si': (
+            colormaps['cividis'].copy(), 'SolO Metis VL Stokes I'  # the same as solometisvl-tb
+        ),
+        'solometisvl-sq': (
+            colormaps['viridis'].copy(), 'SolO Metis VL Stokes Q'
+        ),
+        'solometisvl-su': (
+            colormaps['viridis'].copy(), 'SolO Metis VL Stokes U'
+        ),
+        'solometisvl-pq': (
+            colormaps['plasma'].copy(), 'SolO Metis VL Pixel Quality'
+        ),
+        'solometisvl-ae': (
+            colormaps['plasma'].copy(), 'SolO Metis VL Absolute Error'
+        ),
+        'solometisvl-re': (
+            colormaps['plasma'].copy(), 'SolO Metis VL Relative Error'
+        ),
+        'solometisuv': (
+            colormaps['Blues_r'].copy(), 'SolO Metis UV'
+        ),
+        'solometisuv-pq': (
+            colormaps['plasma'].copy(), 'SolO Metis UV Pixel Quality'  # the same as solometisvl-pq
+        ),
+        'solometisuv-ae': (
+            colormaps['plasma'].copy(), 'SolO Metis UV Absolute Error'  # the same as solometisvl-ae
+        ),
+        'solometisuv-re': (
+            colormaps['plasma'].copy(), 'SolO Metis UV Relative Error'  # the same as solometisvl-re
+        ),
+    }
+
+    if cmap_name in cmap_dict:
+        cmap, cname = cmap_dict[cmap_name]
+    else:
+        raise ValueError(
+            f'Invalid Metis cmap_name [{cmap_name}]. Valid values are: {", ".join(cmap_dict.keys())}.'
+        )
+
+    if cname is not None:
+        cmap.name = cname
+
+    cmap = cmap.with_extremes(bad='k')
+
+    return cmap
