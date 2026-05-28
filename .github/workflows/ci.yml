@@ -170,6 +170,8 @@ jobs:
       anaconda_user: scientific-python-nightly-wheels
       anaconda_package: sunpy
       anaconda_keep_n_latest: 1
+      env: |
+        EXTENSION_HELPERS_PY_LIMITED_API: 'cp312'
     secrets:
       anaconda_token: ${{ secrets.anaconda_org_upload_token }}
 
