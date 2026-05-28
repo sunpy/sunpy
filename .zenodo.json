@@ -120,6 +120,11 @@
             "affiliation": "School of Computing and Electrical Engineering, Indian Institute of Technology Mandi"
         },
         {
+            "name": "Shane Maloney",
+            "orcid": "0000-0002-4715-1805",
+            "affiliation": "Dublin Institute for Advanced Studies"
+        },
+        {
             "name": "Asish Panda"
         },
         {
@@ -149,18 +154,13 @@
             "affiliation": "Amrita Vishwa Vidyapeetham, Amritapuri"
         },
         {
-            "name": "Shane Maloney",
-            "orcid": "0000-0002-4715-1805",
-            "affiliation": "Dublin Institute for Advanced Studies"
+            "name": "Alasdair Wilson",
+            "orcid": "0000-0003-0820-8159",
+            "affiliation": "Oxford Research Software Engineering Team, University of Oxford"
         },
         {
             "name": "Pratham Hole",
             "orcid": "0009-0009-6926-1034"
-        },
-        {
-            "name": "Alasdair Wilson",
-            "orcid": "0000-0003-0820-8159",
-            "affiliation": "Oxford Research Software Engineering Team, University of Oxford"
         },
         {
             "name": "Md Akramul Haque",
@@ -172,12 +172,20 @@
             "affiliation": "Southwest Research Institute"
         },
         {
+            "name": "Jonas Sinjan"
+        },
+        {
             "name": "Michael S Kirk",
             "orcid": "0000-0001-9874-1429",
             "affiliation": "Catholic University of America & NASA Goddard Space Flight Center"
         },
         {
             "name": "Michael Mueller"
+        },
+        {
+            "name": "Samuel Bennett",
+            "orcid": "0000-0001-6420-4422",
+            "affiliation": "Aperio Software Ltd."
         },
         {
             "name": "Sudarshan Konge"
@@ -189,11 +197,6 @@
         },
         {
             "name": "Rajul Srivastava"
-        },
-        {
-            "name": "Samuel Bennett",
-            "orcid": "0000-0001-6420-4422",
-            "affiliation": "Aperio Software Ltd."
         },
         {
             "name": "Yash Jain",
@@ -275,12 +278,20 @@
             "orcid": "0000-0002-5662-9604"
         },
         {
+            "name": "Herman le Roux"
+        },
+        {
             "name": "Jose Ivan Campos Rozo",
             "orcid": "0000-0001-8883-6790",
             "affiliation": "Institut für Physik/IGAM, Karl-Franzens-Universität Graz"
         },
         {
             "name": "Larry Manley"
+        },
+        {
+            "name": "Manit Singh",
+            "orcid": "0009-0002-6031-3810",
+            "affiliation": "Netaji Subhas University of Technology"
         },
         {
             "name": "Kateryna Ivashkiv"
@@ -363,9 +374,9 @@
             "affiliation": "University of Warsaw"
         },
         {
-            "name": "Manit Singh",
-            "orcid": "0009-0002-6031-3810",
-            "affiliation": "Netaji Subhas University of Technology"
+            "name": "Rahul Gopalakrishnan",
+            "orcid": "0000-0002-1282-3480",
+            "affiliation": "Inter-University Centre for Astronomy and Astrophysics (IUCAA), Pune"
         },
         {
             "name": "Rajiv Ranjan Singh",
@@ -454,6 +465,9 @@
             "name": "Pankaj Mishra"
         },
         {
+            "name": "Aleksandr Burtovoi"
+        },
+        {
             "name": "Deepankar Sharma"
         },
         {
@@ -534,6 +548,9 @@
             "name": "William Russell"
         },
         {
+            "name": "yaochengchen"
+        },
+        {
             "name": "Abhigyan Bose"
         },
         {
@@ -566,6 +583,10 @@
         },
         {
             "name": "Chloé Guennou"
+        },
+        {
+            "name": "Clément Robert",
+            "orcid": "0000-0001-8629-7068"
         },
         {
             "name": "Daniel D'Avella"
@@ -664,6 +685,9 @@
             "name": "Duygu Keşkek"
         },
         {
+            "name": "Giovanna Jerse"
+        },
+        {
             "name": "Ishtyaq Habib"
         },
         {
@@ -756,8 +780,7 @@
             "affiliation": "Southwest Research Institute"
         },
         {
-            "name": "Clément Robert",
-            "orcid": "0000-0001-8629-7068"
+            "name": "Daragh Hollman"
         },
         {
             "name": "Ed Behn"
@@ -842,6 +865,9 @@
             "name": "Koustav Ghosh"
         },
         {
+            "name": "Kumar Amityush"
+        },
+        {
             "name": "Kurt McKee",
             "orcid": "0000-0002-8547-8489",
             "affiliation": "University of Chicago"
@@ -903,11 +929,6 @@
             "name": "Raghav Agrawal",
             "orcid": "0009-0000-1788-2917",
             "affiliation": "Netaji Subhas University of Technology, New Delhi (NSUT New Delhi) and Indian Institute of Technology, Madras (IIT Madras)"
-        },
-        {
-            "name": "Rahul Gopalakrishnan",
-            "orcid": "0000-0002-1282-3480",
-            "affiliation": "Inter-University Centre for Astronomy and Astrophysics (IUCAA), Pune"
         },
         {
             "name": "Rajasekhar Reddy Mekala"
