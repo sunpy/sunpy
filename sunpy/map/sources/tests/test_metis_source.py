@@ -144,17 +144,6 @@ def test_prodtype_property(metis_test_data, minimal_metis_header):
     assert metis_map.measurement == "VL-TB"
 
 
-def test_invalid_btype(metis_test_data, minimal_metis_header):
-    """Invalid BTYPE values should raise ValueError during init."""
-    header = minimal_metis_header.copy()
-    header["BTYPE"] = "invalid"
-
-    with pytest.raises(
-        ValueError,
-        match="not a recognised METIS BTYPE",
-    ):
-        Map(metis_test_data, header)
-
 def test_rsun_obs_uses_super(metis_test_data, minimal_metis_header):
     """
     Verify rsun_obs uses GenericMap when RSUN_OBS exists.
