@@ -463,6 +463,6 @@ def metis_color_table(cmap_name):
     if cname is not None:
         cmap.name = cname
 
-    cmap.set_bad(color='k')
+    cmap = cmap.with_extremes(bad='k')
 
     return cmap
