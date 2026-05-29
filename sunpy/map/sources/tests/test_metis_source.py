@@ -14,10 +14,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
-
-# ============================================================================
-# FIXTURES - Test data and metadata configuration
-# ============================================================================
+from sunpy.util.exceptions import SunpyUserWarning
 
 METIS_HEADER_VARIANTS = [
     pytest.param({}, id="baseline-VL"),
@@ -72,11 +69,13 @@ def minimal_metis_header():
     return _BASE_METIS_HEADER.copy()
 
 
+@pytest.fixture
+def metis_non_square_header():
+    return {**_BASE_METIS_HEADER, "CDELT1": 512.0, "CDELT2": 256.0}
+
 @pytest.fixture(scope="module")
 def metis_test_data():
-    """
-    Generates synthetic 1024x1024 image data with a radial gradient.
-    """
+    """Generates synthetic 1024x1024 image data with a radial gradient."""
     size = 1024
     y, x = np.ogrid[-size / 2 : size / 2, -size / 2 : size / 2]
     r = np.sqrt(x**2 + y**2)
@@ -95,9 +94,7 @@ def test_coordinate_frame( metis_map):
 
 
 def test_colormaps_by_filter( metis_map):
-    """
-    Verify that the default colormap is assigned based on the FILTER keyword.
-    """
+    """Verify that the default colormap is assigned based on the FILTER keyword."""
     expected = {
         "VL": "solometisvl-tb",
         "UV": "solometisuv",
@@ -106,9 +103,7 @@ def test_colormaps_by_filter( metis_map):
 
 
 def test_wcs_conversion( metis_test_data, minimal_metis_header):
-    """
-    Test that pixel coordinates correctly transform to world coordinates (Arcsecs).
-    """
+    """Test that pixel coordinates correctly transform to world coordinates (Arcsecs)."""
     metis_map = Map(metis_test_data,minimal_metis_header)
     # Center of the image (0-indexed 511.5) should be close to CRVAL (0,0)
     center_coord = metis_map.pixel_to_world(511 * u.pix, 511 * u.pix)
@@ -116,20 +111,13 @@ def test_wcs_conversion( metis_test_data, minimal_metis_header):
     assert u.allclose(center_coord.Tx, 0 * u.arcsec, atol=1e-2 * u.arcsec)
 
 
-"""
-Tests for proper object instantiation.
-"""
-
 def test_basic_initialization( metis_map):
     assert isinstance(metis_map, METISMap)
     assert metis_map.instrument == "METIS"
 
 
 def test_rsun_fallback_logic( metis_test_data, minimal_metis_header):
-    """
-    Verify the hierarchical search for solar radius keywords
-    (RSUN_ARC vs RSUN_OBS).
-    """
+    """Verify the hierarchical search for solar radius keywords(RSUN_ARC vs RSUN_OBS)."""
     header = minimal_metis_header.copy()
     del header["RSUN_ARC"]
     header["RSUN_OBS"] = 950.0
@@ -145,26 +133,43 @@ def test_prodtype_property(metis_test_data, minimal_metis_header):
 
 
 def test_rsun_obs_uses_super(metis_test_data, minimal_metis_header):
-    """
-    Verify rsun_obs uses GenericMap when RSUN_OBS exists.
-    """
+    """Verify rsun_obs uses GenericMap when RSUN_OBS exists."""
     header = minimal_metis_header.copy()
     header["RSUN_OBS"] = 950.0
-
     metis_map = Map(metis_test_data, header)
-
     assert metis_map.rsun_obs == 950.0 * u.arcsec
 
+
 def test_fall_back_to_rsun_arc(metis_test_data, minimal_metis_header):
-    """
-    Verify rsun_obs falls back to RSUN_ARC when no other solar radius keywords exist.
-    """
+    """Verify rsun_obs falls back to RSUN_ARC when no other solar radius keywords exist."""
     header = minimal_metis_header.copy()
-
-    header.pop("RSUN_OBS", None)
-    header.pop("SOLAR_R", None)
-    header.pop("RADIUS", None)
-
     metis_map = Map(metis_test_data, header)
-
     assert metis_map.rsun_obs == 960.0 * u.arcsec
+
+
+def test_mask_is_set(metis_map):
+    """Verify mask property before and after mask_occ() is called."""
+    assert metis_map.mask is not None
+
+
+def test_mask_values_are_bool(metis_map):
+    """Verify mask was created."""
+    assert metis_map.mask.dtype == bool
+
+
+def test_mask_occ_does_not_mask_entire_image(metis_map):
+    """Verify that mask_occ does not occult the entire image"""
+    assert not metis_map.mask.all()
+
+
+def test_mask_occ_center_occulted(metis_map):
+    """Verify that the center is masked"""
+    assert metis_map.mask[512,512]
+
+
+@pytest.fixture
+def metis_map_non_square(metis_test_data, metis_non_square_header):
+    """Verify that the mask correctly warns users when CDELT shape is unequal"""
+    with pytest.warns(SunpyUserWarning):
+        metis_map_no_mask =  Map(metis_test_data, metis_non_square_header)
+    assert metis_map_no_mask.mask is None

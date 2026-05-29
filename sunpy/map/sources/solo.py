@@ -1,6 +1,7 @@
 """
 Solar Orbiter Map subclass definitions.
 """
+import numpy as np
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
@@ -293,6 +294,69 @@ class METISMap(GenericMap):
 
         suff, _ = METISMap._BTYPE_SUFF_DICT.get(btype, ("", None))
         return prodtype + suff
+
+
+    @property
+    def mask(self):
+        """
+        Mask pixels obscured by the internal and external occulters.
+
+        Returns a mask set to ``True`` for pixels inside the inner occulter
+        and outside the outer field of view. Computed lazily on first access
+        and cached thereafter.
+
+        Warnings
+        --------
+        If CDELT1 and CDELT2 are not equal (non-square pixels), this method
+        will warn and return ``None`` without computing a mask, as the
+        circular mask calculation assumes square pixels.
+        """
+        if self._mask is None:
+            if self.scale[0] != self.scale[1]:
+                warn_user(
+                    f"Warning: CDELT1 != CDELT2 for {self.name}. Exiting mask_occs method..."
+                )
+                return None
+
+            # Calculate occulter radii in pixels
+            inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0]).decompose()
+            out_fov = (self.meta["out_fov"] * u.deg / self.scale[1]).decompose()
+
+            # Create coordinate grids
+            x = np.arange(0, self.meta["naxis1"], 1)
+            y = np.arange(0, self.meta["naxis2"], 1)
+            xx, yy = np.meshgrid(x, y, sparse=True)
+
+            # Calculate distance from internal occulter center
+            in_xcen = (self.meta["io_xcen"] - 1) * u.pix
+            in_ycen = (self.meta["io_ycen"] - 1) * u.pix
+            dist_inncen = np.sqrt((xx * u.pix - in_xcen) ** 2 + (yy * u.pix - in_ycen) ** 2)
+
+            # Calculate distance from external occulter/field stop center
+            # NOTE: Workaround for DR1 data where fs_*cen keywords are not correctly defined.
+            # In DR1, fs_xcen and fs_ycen are not available and as consequence the corresponding keywords in a FITS file are assigned to crpix1 and crpix2, respectively.
+            # When this occurs, sun_xcen and sun_ycen should be used as approximate coordinates of the field stop center.
+            # This problem is solved in DR2.
+            if self.meta["fs_xcen"] == self.meta["crpix1"] and self.meta["fs_ycen"] == self.meta["crpix2"]:
+                # DR1 workaround: use sun center instead; For the DR1 data fs_*cen keywords are not defined correctly in a FITS file header
+                out_xcen = (self.meta["sun_xcen"] - 1) * u.pix
+                out_ycen = (self.meta["sun_ycen"] - 1) * u.pix
+            else:
+                # Normal case: use field stop center
+                out_xcen = (self.meta["fs_xcen"] - 1) * u.pix
+                out_ycen = (self.meta["fs_ycen"] - 1) * u.pix
+
+            dist_outcen = np.sqrt((xx * u.pix - out_xcen) ** 2 + (yy * u.pix - out_ycen) ** 2)
+
+            mask_inner = dist_inncen <= inn_fov
+            mask_outer = dist_outcen >= out_fov
+            self._mask = mask_inner | mask_outer
+
+        return self._mask
+
+    @mask.setter
+    def mask(self, value):
+        self._mask = value
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
