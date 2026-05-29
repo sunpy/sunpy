@@ -73,6 +73,12 @@ def minimal_metis_header():
 def metis_non_square_header():
     return {**_BASE_METIS_HEADER, "CDELT1": 512.0, "CDELT2": 256.0}
 
+
+@pytest.fixture
+def metis_map_non_square(metis_test_data, metis_non_square_header):
+    return Map(metis_test_data, metis_non_square_header)
+
+
 @pytest.fixture(scope="module")
 def metis_test_data():
     """Generates synthetic 1024x1024 image data with a radial gradient."""
@@ -167,9 +173,8 @@ def test_mask_occ_center_occulted(metis_map):
     assert metis_map.mask[512,512]
 
 
-@pytest.fixture
-def metis_map_non_square(metis_test_data, metis_non_square_header):
-    """Verify that the mask correctly warns users when CDELT shape is unequal"""
-    with pytest.warns(SunpyUserWarning):
-        metis_map_no_mask =  Map(metis_test_data, metis_non_square_header)
-    assert metis_map_no_mask.mask is None
+def test_mask_warns_non_square(metis_map_non_square):
+    """Verify that the mask property warns when CDELT1 != CDELT2"""
+    with pytest.warns(SunpyUserWarning, match="CDELT1 != CDELT2"):
+        result = metis_map_non_square.mask
+    assert result is None
