@@ -14,4 +14,5 @@ We have three categories of extras:
   Subpackages will emit a clear import error message if the needed package is not installed.
 * groupings : These are the groups that are used to install multiple optional dependencies at once.
   These range from "all" which includes every optional dependency to "core" which only includes the dependencies that are needed to run the core functionality of sunpy.
-  This also includes the "test", "docs" and "dev" groups.
+
+In addition to this, developer specific dependencies are specified in `dependency groups <https://packaging.python.org/en/latest/specifications/dependency-groups>`__ including the "test", "docs" and "dev" groups.

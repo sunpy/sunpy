@@ -175,7 +175,7 @@ This will make submitting changes easier in the long term for you:
     $ git remote add upstream https://github.com/sunpy/sunpy.git
     # This retrieves the tags from the main sunpy repository, which are used for determining the version of your fork.
     $ git fetch --tags upstream
-    $ pip install -e ".[dev]"
+    $ pip install --group dev -e .
 
 .. note::
     If this does not work, it could be due to a missing C compiler (e.g., ``gcc``, ``clang`` or ``msvc``) that is required to build sunpy at install.
