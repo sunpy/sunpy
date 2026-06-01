@@ -16,7 +16,7 @@ PACKAGES = {
     "distro_license.rst": ["python-distro", "distro", "LICENSE"],
     # Inflect is not here to avoid a dependency on pydantic.
     # Since it only does one specific thing, we should be able to pin the version permanently.
-    "parse.py": ["r1chardj0n3s", "parse", "parse.py"],
+    "parse.py": ["r1chardj0n3s", "parse", "parse/__init__.py"],
     "parse_license.txt": ["r1chardj0n3s", "parse", "LICENSE"],
 }
 
@@ -25,6 +25,7 @@ def download_github_file(user: str, repo: str, src: Path, dest: Path):
     """
     Download a file from Github.
     """
+    print(f"Attempting to update {user}/{repo}")
     try:
         response = urllib.request.urlopen(f"https://api.github.com/repos/{user}/{repo}")
     except urllib.error.HTTPError as e:
