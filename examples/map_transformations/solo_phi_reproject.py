@@ -23,7 +23,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ################################################################################
-# Do a search from the SOAR for HRT line of sight magnetic field.
+# Search SOAR for HRT line of sight magnetic field.
 search_results_phi_hrt = Fido.search(
     a.Time("2024-10-14T00:25:00", "2024-10-14T00:35:00"),
     a.soar.Product("phi-hrt-blos"),

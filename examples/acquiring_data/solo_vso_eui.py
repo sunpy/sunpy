@@ -23,7 +23,7 @@ from sunpy.net import attrs as a
 #
 # Some Solar Orbiter products are available through both services, so this
 # query may return overlapping results from the two clients.
-# This example demonstrates a query which returns (the same) data from both sources and how to select between them.
+# This example demonstrates how to select results from a specific provider.
 # Using `a.Provider <sunpy.net.attrs.Provider>` it is possible to restrict a Fido search to only one provider.
 combined_results = Fido.search(a.Time("2022-03-01", "2022-03-01 00:10"),
                                a.Instrument("EUI"),

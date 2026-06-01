@@ -3,8 +3,8 @@
 Plotting Fields of View of Solar Orbiter and DKIST
 ==================================================
 
-In this example we demonstrate how to plot the fields of view of multiple
-Solar Orbiter instruments observed during the Long-Term Active Region SOOP (``R_SMALL_MRES_MCAD_AR-Long-Term``) with coordinated DKIST observations.
+In this example, we plot the fields of view of multiple Solar Orbiter instruments, alongside coordinated DKIST observations.
+These observations were taken during the Long-Term Active Region SOOP (``R_SMALL_MRES_MCAD_AR-Long-Term``).
 """
 # sphinx_gallery_tags = ["Coordinates", "Solar Orbiter", "Map", "SOAR", "EUI", "SPICE", "AIA", "DKIST", "VBI", "VISP", "Visualization"]
 # sphinx_gallery_thumbnail_number = -1
