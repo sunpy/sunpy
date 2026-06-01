@@ -17,34 +17,37 @@ On this page, you can read about some of the big changes in this release.
 
 **UPDATE RELEASE NOTES BEFORE RELEASE**
 
-This release of sunpy contains 408 commits in 65 merged pull requests closing 60 issues from 18 people, 7 of which are first-time contributors to sunpy.
+This release of sunpy contains 448 commits in 68 merged pull requests closing 60 issues from 19 people, 7 of which are first-time contributors to sunpy.
 
-* 408 commits have been added since 7.1
+* 448 commits have been added since 7.1
 * 60 issues have been closed since 7.1
-* 65 pull requests have been merged since 7.1
-* 18 people have contributed since 7.1
+* 68 pull requests have been merged since 7.1
+* 19 people have contributed since 7.1
 * 7 of which are new contributors
 
 The people who have contributed to the code for this release are:
 
 -  Alasdair Wilson
 -  Albert Y. Shih
+-  Aleksandr Burtovoi  *
 -  Clément Robert
--  Daragh Hollman  *
+-  Daragh M. Hollman  *
 -  David Stansby
+-  Giovanna Jerse  *
+-  Herman le Roux  *
 -  Jonas Sinjan  *
--  JonasSinjan  *
 -  Kumar Amityush  *
 -  Laura Hayes
 -  Manit Singh
 -  Nabil Freij
--  Rahul G  *
+-  Rahul Gopalakrishnan
 -  Samuel Bennett
 -  Shane Maloney
 -  Stuart J. Mumford
 -  Will Barnes
--  jonassinjan  *
--  yaochengchen  *
+-  Yaocheng Chen  *
+
+Where a * indicates that this release contains their first contribution to sunpy.
 
 
 Updates to minimum dependencies
