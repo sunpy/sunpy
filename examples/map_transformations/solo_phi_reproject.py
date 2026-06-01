@@ -6,7 +6,8 @@ Downloading and Reprojecting a Solar Orbiter PHI/HRT Magnetogram
 This example demonstrates querying for Solar Orbiter PHI data and reprojecting it.
 """
 
-# sphinx_gallery_tags = ["Acquiring Data", "Solar Orbiter",  "SOAR"]
+# sphinx_gallery_tags = ["Map", "Reproject", "Solar Orbiter",  "SOAR", "PHI"]
+# sphinx_gallery_thumbnail_number = -1
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import CenteredNorm
@@ -42,6 +43,7 @@ plt.colorbar()
 
 ################################################################################
 # Construct a Heliographic Stonyhurst header to reproject the image to.
+# We use the Cylindrical Equal Area "CEA" projection (see section 5.2.2 of :cite:t:`calabretta_representations_2002`).
 # We choose to build a map where the reference coordinate is at grid
 # center so that we have a rectilinear grid.
 
@@ -57,7 +59,7 @@ ny = int((lat_height / cea_scale[1]).to_value(u.pix))
 cea_hdr = make_fitswcs_header(
     (ny, nx),
     hgs_center,
-    reference_pixel=(nx / 2 - 200, ny) * u.pix,  # Offset the reference pixel to re-center the image
+    reference_pixel=(nx / 2 - 200, ny) * u.pix,  # Manually offset the reference pixel to re-center the image
     scale=cea_scale,
     projection_code="CEA",
     instrument=blos_map.instrument,
@@ -65,7 +67,7 @@ cea_hdr = make_fitswcs_header(
 )
 
 ################################################################################
-# Reproject the map to the new header
+# Reproject the map to the new header.
 # Note that this treats the LOS magnetic field values as scalar image data.
 # This is useful for visualisation, but it does not convert B_LOS into a radial
 # or local heliographic magnetic field component.
