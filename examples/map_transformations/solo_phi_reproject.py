@@ -43,23 +43,19 @@ plt.colorbar()
 
 ################################################################################
 # Construct a Heliographic Stonyhurst header to reproject the image to.
-# We use the Cylindrical Equal Area "CEA" projection (see section 5.2.2 of :cite:t:`calabretta_representations_2002`).
-# We choose to build a map where the reference coordinate is at grid
-# center so that we have a rectilinear grid.
+# We use the Cylindrical Equal Area "CEA" projection (see section 5.2.2 of
+# :cite:t:`calabretta_representations_2002`). For the Stonyhurst heliographic
+# lines to be horizontal in this projection, the reference coordinate must
+# be on the equator. We will be reprojecting using automatic extent
+# determination, so the header needs only placeholder values for the shape.
 
-hgs_center = SkyCoord(0, 0, unit=u.arcsec, frame="heliographic_stonyhurst", obstime=blos_map.reference_date)
+hgs_center = SkyCoord(0, 0, unit=u.deg, frame="heliographic_stonyhurst",
+                      obstime=blos_map.reference_date)
 cea_scale = (0.03, 0.03) * u.deg / u.pix
 
-lon_width = 50 * u.deg
-lat_height = 25 * u.deg
-
-nx = int((lon_width / cea_scale[0]).to_value(u.pix))
-ny = int((lat_height / cea_scale[1]).to_value(u.pix))
-
 cea_hdr = make_fitswcs_header(
-    (ny, nx),
+    (0, 0),  # the shape values are only placeholders
     hgs_center,
-    reference_pixel=(nx / 2 - 200, ny) * u.pix,  # Manually offset the reference pixel to re-center the image
     scale=cea_scale,
     projection_code="CEA",
     instrument=blos_map.instrument,
@@ -68,11 +64,15 @@ cea_hdr = make_fitswcs_header(
 
 ################################################################################
 # Reproject the map to the new header.
+# By specifying ``auto_extent="edges"``, the extent of the reprojected map is
+# automatically constructed by setting the appropriate array shape and reference
+# pixel such that the reprojected extent contains the edges of the original map.
 # Note that this treats the LOS magnetic field values as scalar image data.
 # This is useful for visualisation, but it does not convert B_LOS into a radial
 # or local heliographic magnetic field component.
 
-outmap = blos_map.reproject_to(cea_hdr, algorithm="adaptive", kernel="Hann")
+outmap = blos_map.reproject_to(cea_hdr, algorithm="adaptive", kernel="Hann",
+                               auto_extent="edges")
 
 fig = plt.figure()
 outmap.plot(norm=CenteredNorm(halfrange=1500, clip=True))
