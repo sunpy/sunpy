@@ -64,7 +64,7 @@ cea_hdr = make_fitswcs_header(
 
 ################################################################################
 # Reproject the map to the new header.
-# By specifing ``auto_extent="edges"``, the extent of the reprojected map is
+# By specifying ``auto_extent="edges"``, the extent of the reprojected map is
 # automatically constructed by setting the appropriate array shape and reference
 # pixel such that the reprojected extent contains the edges of the original map.
 # Note that this treats the LOS magnetic field values as scalar image data.
