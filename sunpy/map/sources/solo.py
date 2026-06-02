@@ -8,6 +8,7 @@ import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch, ImageNormalize
 
+from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -296,7 +297,7 @@ class METISMap(GenericMap):
         return prodtype + suff
 
 
-    @property
+    @GenericMap.mask.getter
     def mask(self):
         """
         Mask pixels obscured by the internal and external occulters.
@@ -311,16 +312,22 @@ class METISMap(GenericMap):
         will warn and return ``None`` without computing a mask, as the
         circular mask calculation assumes square pixels.
         """
+        if missing_keys := {"inn_fov", "out_fov",
+                            "io_xcen", "io_ycen",
+                            "fs_xcen", "fs_ycen"}.difference(self.meta.keys()):
+            warn_user(f"Missing {', '.join(missing_keys)} keys required to calculate occulter mask")
+            return super().mask
+
         if self._mask is None:
             if self.scale[0] != self.scale[1]:
-                warn_user(
-                    f"Warning: CDELT1 != CDELT2 for {self.name}. Exiting mask_occs method..."
+                log.warning(
+                    "CDELT1 != CDELT2, can not automatically compute the occulter mask."
                 )
                 return None
 
             # Calculate occulter radii in pixels
-            inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0]).decompose()
-            out_fov = (self.meta["out_fov"] * u.deg / self.scale[1]).decompose()
+            inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0])
+            out_fov = (self.meta["out_fov"] * u.deg / self.scale[1])
 
             # Create coordinate grids
             x = np.arange(0, self.meta["naxis1"], 1)
@@ -354,9 +361,6 @@ class METISMap(GenericMap):
 
         return self._mask
 
-    @mask.setter
-    def mask(self, value):
-        self._mask = value
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

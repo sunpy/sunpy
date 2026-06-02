@@ -14,7 +14,6 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
-from sunpy.util.exceptions import SunpyUserWarning
 
 METIS_HEADER_VARIANTS = [
     pytest.param({}, id="baseline-VL"),
@@ -175,6 +174,5 @@ def test_mask_occ_center_occulted(metis_map):
 
 def test_mask_warns_non_square(metis_map_non_square):
     """Verify that the mask property warns when CDELT1 != CDELT2"""
-    with pytest.warns(SunpyUserWarning, match="CDELT1 != CDELT2"):
-        result = metis_map_non_square.mask
+    result = metis_map_non_square.mask
     assert result is None
