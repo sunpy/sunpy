@@ -82,7 +82,10 @@ The minimum required versions of the following packages have been updated:
 Added support for PHI and Metis Instruments on Solar Orbiter
 ============================================================
 
-There is now support for PHI and Metis.
+This release adds two new map sources for the Polarimetric and Helioseismic Imager (PHI) and Metis on the Solar Orbiter mission.
+
+.. image:: 8.0-phi-map-inc.png
+   :alt: A plot from sunpy of a PHI Map showing a HRT image of magnetic field inclination.
 
 **ADD IMAGES HERE**
 
@@ -111,6 +114,7 @@ The ``sunpy_soar`` package will now be deprecated and no longer developed.
    :heading-level: -
 
    ../examples/acquiring_data/soar_*
+   ../examples/acquiring_data/solo_vso_eui.py
 
 
 New Examples in the Gallery
@@ -121,6 +125,9 @@ To coincide with the Solar Orbiter theme of the 8.0 a number of new examples usi
 .. minigallery::
 
    ../examples/showcase/spice_parallel_fitting.py
+   ../examples/map_transformations/solo_phi_reproject.py
+   ../examples/units_and_coordinates/solo_fov.py
+   ../examples/plotting/phi_example.py
 
 In addition to this some other examples have been added:
 
