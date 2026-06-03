@@ -14,6 +14,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
+from sunpy.util.exceptions import SunpyUserWarning
 
 METIS_HEADER_VARIANTS = [
     pytest.param({}, id="baseline-VL"),
@@ -176,3 +177,26 @@ def test_mask_warns_non_square(metis_map_non_square):
     """Verify that the mask property warns when CDELT1 != CDELT2"""
     result = metis_map_non_square.mask
     assert result is None
+
+
+def test_mask_missing_keys_falls_back_to_super(metis_test_data, minimal_metis_header):
+    """Verify that mask falls back to super().mask when occulter keys are missing."""
+    header = minimal_metis_header.copy()
+    del header["INN_FOV"]  # Remove one required key to trigger missing_keys
+    metis_map = Map(metis_test_data, header)
+    with pytest.warns(SunpyUserWarning, match="Missing.*keys required to calculate occulter mask"):
+        result = metis_map.mask
+    # GenericMap.mask returns None by default when no mask is set
+    assert result is None
+
+
+def test_mask_uses_field_stop_center_dr2(metis_test_data, minimal_metis_header):
+    """Verify the normal (DR2) mask path where fs_xcen != crpix1 or fs_ycen != crpix2."""
+    header = minimal_metis_header.copy()
+    # Shift the field stop center away from crpix so the DR1 workaround is NOT triggered
+    header["FS_XCEN"] = 514.0
+    header["FS_YCEN"] = 514.0
+    metis_map = Map(metis_test_data, header)
+    assert metis_map.mask is not None
+    assert metis_map.mask.dtype == bool
+    assert not metis_map.mask.all()
