@@ -309,6 +309,7 @@ def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     assert m.data.shape == (1085, 1085, 6)
 
 
+@pytest.mark.thread_unsafe(reason="mocks a method")
 def test_row_and_warning(mocker, client, jsoc_response_double):
     mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.get_request")
     request_data = mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.request_data")
