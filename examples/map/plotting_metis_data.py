@@ -73,7 +73,7 @@ fig.colorbar(im)
 # keep just the VL-TB maps, and combine them into a
 # `~sunpy.map.MapSequence` by passing ``sequence=True``
 
-vl_tb_maps = sunpy.map.Map(metis_data_product)
+vl_tb_maps = sunpy.map.Map(metis_files)
 m_seq_vltb = sunpy.map.Map([m for m in vl_tb_maps if m.measurement == "VL-TB"], sequence=True)
 
 ###############################################################################
