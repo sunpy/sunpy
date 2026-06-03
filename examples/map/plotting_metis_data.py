@@ -1,9 +1,15 @@
 """
-==============
-Plotting METIS
-==============
+==================================================
+Example showcase obtaining and plotting METIS data
+==================================================
 
-In this example, we plot the VL total brightness data product from METIS with the recommended contrast cutoffs.
+This example demonstrates how to download, load, and visualize visible-light
+total brightness observations from the METIS coronagraph aboard
+the Solar Orbiter mission.
+
+METIS observes the solar corona by occulting the bright solar disk,
+allowing faint coronal structures to be imaged in visible light and
+ultraviolet wavelengths.
 """
 # sphinx_gallery_tags = ["Map", "METIS", "SOAR", "Solar Orbiter", "Visualization"]
 # sphinx_gallery_thumbnail_number = -1
@@ -25,13 +31,19 @@ result = Fido.search(a.Time("2022-03-22 21:00", "2022-03-22 22:50"),
 metis_data_product = Fido.fetch(result)
 
 ###############################################################################
-# Then we use one of the data products to create a simple map.
-# A `~sunpy.map.sources.METISMap` is created with a default mask property that
-# excludes pixels inside the inner occulter and outside the outer field of view
+# The downloaded METIS FITS file contains multiple image header data units (HDUs).
+# When passed to `sunpy.map.Map`, SunPy creates a MapSequence containing one map
+# for each HDU.
+# We then filter the sequence to obtain only the VL total-brightness maps.
+# Finally, we select the first VL total-brightness map.
 
 vl_maps = sunpy.map.Map(metis_data_product[0])
 vl_tb_list = [m for m in vl_maps if m.measurement == "VL-TB"]
 vl_tb_example = vl_tb_list[0]
+
+###############################################################################
+# A `~sunpy.map.sources.METISMap` is created with a default mask property that
+# excludes pixels inside the inner occulter and outside the outer field of view
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=vl_tb_example)
