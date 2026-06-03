@@ -24,10 +24,10 @@ permissions: {}
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
+    uses: Cadair/github-actions-workflows/.github/workflows/tox.yml@fixup_gh_cov  # zizmor: ignore[unpinned-uses]
     with:
       submodules: false
-      coverage: github
+      coverage: github codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
