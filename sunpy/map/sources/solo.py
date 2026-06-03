@@ -6,7 +6,7 @@ from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import AsinhStretch, ImageNormalize
+from astropy.visualization import AsinhStretch, AsymmetricPercentileInterval, ImageNormalize
 
 from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
@@ -249,6 +249,22 @@ class METISMap(GenericMap):
         "Relative error":                   ("-RE",  "-Rel. err."),
         "UV Lyman-alpha intensity":         ("",     ""),
     }
+    _METIS_CONTRAST_CUTS = {
+        "VL-TB": 0.05,
+        "VL-PB": 0.005,
+        "VL-FP": 0.01,
+        "VL-PA": 0.01,
+        "VL-SQ": 0.01,
+        "VL-SU": 0.01,
+        "UV":    0.05,
+        "VL-PQ": 0.0,
+        "VL-AE": 0.1,
+        "VL-RE": 0.02,
+    }
+    _METIS_CONTRAST_CUTS["VL-SI"] = _METIS_CONTRAST_CUTS["VL-TB"]
+    _METIS_CONTRAST_CUTS["UV-PQ"] = _METIS_CONTRAST_CUTS["VL-PQ"]
+    _METIS_CONTRAST_CUTS["UV-AE"] = _METIS_CONTRAST_CUTS["VL-AE"]
+    _METIS_CONTRAST_CUTS["UV-RE"] = _METIS_CONTRAST_CUTS["VL-RE"]
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
@@ -258,6 +274,16 @@ class METISMap(GenericMap):
             _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
         self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
         self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
+
+        contr_cut = METISMap._METIS_CONTRAST_CUTS.get(self.measurement, 0.0) if "L2" in self.meta["level"] else 0.0
+        if contr_cut:
+            self.plot_settings["norm"] = ImageNormalize(
+                data=self.data,
+                interval=AsymmetricPercentileInterval(
+                    contr_cut * 100,
+                    (1 - contr_cut) * 100,
+                ),
+                clip=False)
 
     @property
     def rsun_obs(self):
@@ -297,14 +323,13 @@ class METISMap(GenericMap):
         return prodtype + suff
 
 
-    @GenericMap.mask.getter
+    @property
     def mask(self):
         """
         Mask pixels obscured by the internal and external occulters.
 
         Returns a mask set to ``True`` for pixels inside the inner occulter
-        and outside the outer field of view. Computed lazily on first access
-        and cached thereafter.
+        and outside the outer field of view.
 
         Warnings
         --------
@@ -320,7 +345,7 @@ class METISMap(GenericMap):
 
         if self._mask is None:
             if self.scale[0] != self.scale[1]:
-                log.warning(
+                log.info(
                     "CDELT1 != CDELT2, can not automatically compute the occulter mask."
                 )
                 return None
@@ -360,6 +385,11 @@ class METISMap(GenericMap):
             self._mask = mask_inner | mask_outer
 
         return self._mask
+
+
+    @mask.setter
+    def mask(self, value):
+        self._mask = value
 
 
     @classmethod
