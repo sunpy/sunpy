@@ -41,7 +41,7 @@ from sunpy.net import attrs as a
 vl_result = Fido.search(a.Time("2022-03-22 21:00", "2022-03-22 22:50"),
                      a.Instrument.metis, a.Level(2), a.Provider.soar,
                      a.soar.Product.metis_vl_tb)
-metis_data_product = Fido.fetch(vl_result)
+metis_files = Fido.fetch(vl_result)
 
 ###############################################################################
 # The downloaded Metis fits file contains multiple image header data units (HDUs).
@@ -50,7 +50,7 @@ metis_data_product = Fido.fetch(vl_result)
 # We then filter the sequence to obtain only the VL total-brightness maps.
 # Finally, we select the first VL total-brightness map.
 
-vl_maps = sunpy.map.Map(metis_data_product[0])
+vl_maps = sunpy.map.Map(metis_files[0])
 vl_tb_list = [m for m in vl_maps if m.measurement == "VL-TB"]
 vl_tb_example = vl_tb_list[0]
 
