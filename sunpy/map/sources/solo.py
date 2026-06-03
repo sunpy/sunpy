@@ -2,11 +2,12 @@
 Solar Orbiter Map subclass definitions.
 """
 import numpy as np
+from matplotlib import cm
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import AsinhStretch, AsymmetricPercentileInterval, ImageNormalize
+from astropy.visualization import AsinhStretch, ImageNormalize, PercentileInterval
 
 from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
@@ -210,7 +211,7 @@ class PHIMap(GenericMap):
         return is_solo and is_phi and is_not_phi_stokes
 
 class METISMap(GenericMap):
-    """
+    r"""
     Metis Map.
 
     Metis is the multi-wavelength coronagraph on board the Solar Orbiter mission,
@@ -229,6 +230,12 @@ class METISMap(GenericMap):
     disk center.
 
     Solar Orbiter was successfully launched on February 10th, 2020.
+
+    Notes
+    -----
+
+    This map source clips out the upper and lower :math:`0.5\%` of the pixels as many Metis files have some extreme spikes.
+    These clipped pixels are shown in red by default.
 
     References
     ----------
@@ -249,22 +256,6 @@ class METISMap(GenericMap):
         "Relative error":                   ("-RE",  "-Rel. err."),
         "UV Lyman-alpha intensity":         ("",     ""),
     }
-    _METIS_CONTRAST_CUTS = {
-        "VL-TB": 0.05,
-        "VL-PB": 0.005,
-        "VL-FP": 0.01,
-        "VL-PA": 0.01,
-        "VL-SQ": 0.01,
-        "VL-SU": 0.01,
-        "UV":    0.05,
-        "VL-PQ": 0.0,
-        "VL-AE": 0.1,
-        "VL-RE": 0.02,
-    }
-    _METIS_CONTRAST_CUTS["VL-SI"] = _METIS_CONTRAST_CUTS["VL-TB"]
-    _METIS_CONTRAST_CUTS["UV-PQ"] = _METIS_CONTRAST_CUTS["VL-PQ"]
-    _METIS_CONTRAST_CUTS["UV-AE"] = _METIS_CONTRAST_CUTS["VL-AE"]
-    _METIS_CONTRAST_CUTS["UV-RE"] = _METIS_CONTRAST_CUTS["VL-RE"]
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
@@ -273,17 +264,16 @@ class METISMap(GenericMap):
         if btype in METISMap._BTYPE_SUFF_DICT:
             _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
         self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
-        self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
+        cmap = cm.get_cmap(f"solo{self.instrument}{self.measurement}".lower())
 
-        contr_cut = METISMap._METIS_CONTRAST_CUTS.get(self.measurement, 0.0) if "L2" in self.meta["level"] else 0.0
-        if contr_cut:
-            self.plot_settings["norm"] = ImageNormalize(
-                data=self.data,
-                interval=AsymmetricPercentileInterval(
-                    contr_cut * 100,
-                    (1 - contr_cut) * 100,
-                ),
-                clip=False)
+        self.plot_settings["norm"] = ImageNormalize(
+            self.data,
+            interval=PercentileInterval(99.5),
+            clip=False,
+        )
+        # Set the under and over value for the colormap to be red, this will highlight pixels where the value is clipped
+        cmap = cmap.with_extremes(under="red", over="red")
+        self.plot_settings["cmap"] = cmap
 
     @property
     def rsun_obs(self):

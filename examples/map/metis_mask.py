@@ -5,7 +5,8 @@ Plotting METIS
 
 In this example, we plot the VL total brightness data product from METIS with the recommended contrast cutoffs.
 """
-# sphinx_gallery_tags = ["Map", "METIS"]
+# sphinx_gallery_tags = ["Map", "METIS", "SOAR", "Solar Orbiter", "Visualization"]
+# sphinx_gallery_thumbnail_number = -1
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,37 +35,35 @@ vl_tb_example = vl_tb_list[0]
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=vl_tb_example)
-norm = vl_tb_example.plot_settings["norm"]
-vl_tb_example.plot(axes=ax, cmap=vl_tb_example.plot_settings["cmap"])
-plt.show()
-
-
+im = vl_tb_example.plot(axes=ax)
+fig.colorbar(im)
 
 ##############################################################################
-# In this example, we also know there is a related event. To get a better idea
-# of what the event looks like we need to create a running difference.
-# To do this we need to create a list of maps and filter for the VL-TB.
+# In this example, we also know there is an eruption event.
+# We start by animating this time series.
+# To do this we load all the HDUs of all the files and filter down to
+# just the "VL-TB" HDUs and make a `~sunpy.map.MapSequence`.
 
-
-vl_tb_maps = sunpy.map.Map(metis_data_product,sequence=True)
-m_seq_vltb = [m for m in vl_tb_maps if m.measurement == "VL-TB"]
-
+vl_tb_maps = sunpy.map.Map(metis_data_product)
+m_seq_vltb = sunpy.map.Map([m for m in vl_tb_maps if m.measurement == "VL-TB"], sequence=True)
+fig = plt.figure()
+m_seq_vltb.plot()
 
 ###############################################################################
-# Now we calculate the running difference.
+# To get a better idea of what the event looks like we need to create
+# a running difference.
 
 m_seq_running = sunpy.map.Map(
     [m - prev_m.quantity for m, prev_m in zip(m_seq_vltb[1:], m_seq_vltb[:-1])],
     sequence=True
 )
 
-
 ###############################################################################
 # Now we can normalise the values from all the maps
 # and create a running difference animation
 
 all_diff_data = np.concatenate([m.data for m in m_seq_running])
-vmin, vmax = np.percentile(all_diff_data, [1, 99])
+vmin, vmax = np.percentile(all_diff_data, [0.05, 99.95])
 norm = colors.Normalize(vmin=vmin, vmax=vmax)
 
 fig = plt.figure()
