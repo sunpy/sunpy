@@ -1,3 +1,9 @@
+[paths]
+# This maps the location of the source inside tox's temp dirs to the source in the repo
+# https://coverage.readthedocs.io/en/7.14.1/config.html#config-paths
+source =
+  sunpy/
+  .tox/**/sunpy
 [run]
 omit =
   sunpy/conftest.py
