@@ -234,7 +234,6 @@ class METISMap(GenericMap):
     -----
 
     This map source clips out the upper and lower :math:`0.5\%` of the pixels as many Metis files have some extreme spikes.
-    These clipped pixels are shown in red by default.
 
     References
     ----------
@@ -377,11 +376,10 @@ class METISMap(GenericMap):
     def mask(self, value):
         self._mask = value
 
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
-        Return ``True`` if ``header`` corresponds to a METIS L2 product.
+        Return ``True`` if ``header`` corresponds to a Metis L2 product.
 
         Parameters
         ----------
