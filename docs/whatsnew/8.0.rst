@@ -94,7 +94,7 @@ Merged Solar Orbiter Archive (SOAR) Fido support into ``sunpy``
 
 The Fido client for the SOAR has been developed for a number of years in the ``sunpy_soar`` affiliated package.
 As this has reached a suitable level of maturity, this has now been merged into ``sunpy``.
-The ``sunpy_soar`` package will now be deprecated and no longer developed.
+The ``sunpy_soar`` package will now be deprecated, and SOAR support will be maintained within ``sunpy`` core going forward.
 
 .. code-block:: python
 
