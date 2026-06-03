@@ -22,7 +22,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6.0.2  # zizmor: ignore[unpinned-uses]
+      - uses: actions/checkout@v6  # zizmor: ignore[unpinned-uses]
         with:
           persist-credentials: false
 
