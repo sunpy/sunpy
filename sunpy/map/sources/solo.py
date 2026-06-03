@@ -2,7 +2,6 @@
 Solar Orbiter Map subclass definitions.
 """
 import numpy as np
-from matplotlib import cm
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
@@ -264,16 +263,13 @@ class METISMap(GenericMap):
         if btype in METISMap._BTYPE_SUFF_DICT:
             _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
         self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
-        cmap = cm.get_cmap(f"solo{self.instrument}{self.measurement}".lower())
+        self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
 
         self.plot_settings["norm"] = ImageNormalize(
             self.data,
             interval=PercentileInterval(99.5),
             clip=False,
         )
-        # Set the under and over value for the colormap to be red, this will highlight pixels where the value is clipped
-        cmap = cmap.with_extremes(under="red", over="red")
-        self.plot_settings["cmap"] = cmap
 
     @property
     def rsun_obs(self):
