@@ -55,7 +55,7 @@ vl_tb_list = [m for m in vl_maps if m.measurement == "VL-TB"]
 vl_tb_example = vl_tb_list[0]
 
 ###############################################################################
-# A `~sunpy.map.sources.METISMap` is created with a default ``mask`` property
+# A `~sunpy.map.sources.METISMap` is created with a default `~sunpy.map.sources.METISMap.mask` property
 # that # flags pixels inside the inner occulter and outside the outer field of
 # view. When the `~sunpy.map.sources.METISMap` is plotted, the masked # pixels
 # are not shown, so only the annular region observed by the coronagraph is
