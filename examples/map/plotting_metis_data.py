@@ -28,7 +28,7 @@ from sunpy.net import attrs as a
 # The Metis instrument provides visible-light (VL) and ultraviolet (UV) data
 # products.  In this example we will demonstrate the plotting of the VL
 # total-brightness data product. We first plot a single map, and then build
-# a `MapSequence` to animate a coronal eruption as a running-difference movie.
+# a `~sunpy.map.MapSequence` to animate a coronal eruption as a running-difference movie.
 # In the second example we will showcase the UV data and helpful operations
 
 
@@ -44,9 +44,9 @@ vl_result = Fido.search(a.Time("2022-03-22 21:00", "2022-03-22 22:50"),
 metis_files = Fido.fetch(vl_result)
 
 ###############################################################################
-# The downloaded Metis fits file contains multiple image header data units (HDUs).
-# When passed to `sunpy.map.Map`, SunPy creates a MapSequence containing one map
-# for each HDU.
+# The downloaded Metis fits file contains multiple image header data units
+# (HDUs). When passed to `~sunpy.map.Map`, SunPy creates a
+# `~sunpy.map.MapSequence` containing one map for each HDU.
 # We then filter the sequence to obtain only the VL total-brightness maps.
 # Finally, we select the first VL total-brightness map.
 
@@ -55,7 +55,7 @@ vl_tb_list = [m for m in vl_maps if m.measurement == "VL-TB"]
 vl_tb_example = vl_tb_list[0]
 
 ###############################################################################
-# A `~sunpy.map.sources.METISMap` is created with a default ``mask ``property
+# A `~sunpy.map.sources.METISMap` is created with a default ``mask`` property
 # that # flags pixels inside the inner occulter and outside the outer field of
 # view. When the `~sunpy.map.sources.METISMap` is plotted, the masked # pixels
 # are not shown, so only the annular region observed by the coronagraph is
@@ -119,14 +119,14 @@ metis_uv_file = Fido.fetch(uv_result)
 
 ###############################################################################
 # As with the VL product, the UV file stores several products as separate image
-# HDUs, so `sunpy.map.Map` again returns a list of maps. We keep just the UV
+# HDUs, so `~sunpy.map.Map` again returns a list of maps. We keep just the UV
 # intensity maps (``measurement == "UV"``) and select the first one.
 
 metis_uv_data = sunpy.map.Map(metis_uv_file[0])
 metis_map = metis_uv_data[0]
 
 ###############################################################################
-# By default, `~sunpy.map.sources.MetisMap` sets a norm using
+# By default, `~sunpy.map.sources.METISMap` sets a norm using
 # `~astropy.visualization.PercentileInterval` at 99.5 %. For data with
 # a wide dynamic range this is often a good starting point, but you can tighten
 # or loosen it by updating the norm's interval directly, or by passing
