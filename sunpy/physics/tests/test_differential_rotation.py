@@ -1,3 +1,4 @@
+import warnings
 
 import numpy as np
 import pytest
@@ -394,7 +395,12 @@ def test_warp_sun_coordinates(all_on_disk_map):
 @pytest.mark.array_compare
 def test_differential_rotation(aia171_test_map):
     pytest.importorskip("skimage")
-    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+    # pytest-run-parallel will run this test in parallel because pytest-arraydiff currently blocks
+    # the ability of pytest-run-parallel to recognize known thread-unsafe calls such as catching
+    # warnings.  So, we intentionally ignore warnings instead of checking what warnings were
+    # actually caught.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
         rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data
 
