@@ -1,12 +1,14 @@
 """
 Solar Orbiter Map subclass definitions.
 """
+import numpy as np
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import AsinhStretch, ImageNormalize
+from astropy.visualization import AsinhStretch, ImageNormalize, PercentileInterval
 
+from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -208,7 +210,7 @@ class PHIMap(GenericMap):
         return is_solo and is_phi and is_not_phi_stokes
 
 class METISMap(GenericMap):
-    """
+    r"""
     Metis Map.
 
     Metis is the multi-wavelength coronagraph on board the Solar Orbiter mission,
@@ -227,6 +229,11 @@ class METISMap(GenericMap):
     disk center.
 
     Solar Orbiter was successfully launched on February 10th, 2020.
+
+    Notes
+    -----
+
+    This map source clips out the upper and lower :math:`0.5\%` of the pixels as many Metis files have some extreme spikes.
 
     References
     ----------
@@ -256,6 +263,12 @@ class METISMap(GenericMap):
             _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
         self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
         self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
+
+        self.plot_settings["norm"] = ImageNormalize(
+            self.data,
+            interval=PercentileInterval(99.5),
+            clip=False,
+        )
 
     @property
     def rsun_obs(self):
@@ -294,10 +307,79 @@ class METISMap(GenericMap):
         suff, _ = METISMap._BTYPE_SUFF_DICT.get(btype, ("", None))
         return prodtype + suff
 
+
+    @property
+    def mask(self):
+        """
+        Mask pixels obscured by the internal and external occulters.
+
+        Returns a mask set to ``True`` for pixels inside the inner occulter
+        and outside the outer field of view.
+
+        Warnings
+        --------
+        If CDELT1 and CDELT2 are not equal (non-square pixels), this method
+        will warn and return ``None`` without computing a mask, as the
+        circular mask calculation assumes square pixels.
+        """
+        if missing_keys := {"inn_fov", "out_fov",
+                            "io_xcen", "io_ycen",
+                            "fs_xcen", "fs_ycen"}.difference(self.meta.keys()):
+            warn_user(f"Missing {', '.join(missing_keys)} keys required to calculate occulter mask")
+            return super().mask
+
+        if self._mask is None:
+            if self.scale[0] != self.scale[1]:
+                log.info(
+                    "CDELT1 != CDELT2, can not automatically compute the occulter mask."
+                )
+                return None
+
+            # Calculate occulter radii in pixels
+            inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0])
+            out_fov = (self.meta["out_fov"] * u.deg / self.scale[1])
+
+            # Create coordinate grids
+            x = np.arange(0, self.meta["naxis1"], 1)
+            y = np.arange(0, self.meta["naxis2"], 1)
+            xx, yy = np.meshgrid(x, y, sparse=True)
+
+            # Calculate distance from internal occulter center
+            in_xcen = (self.meta["io_xcen"] - 1) * u.pix
+            in_ycen = (self.meta["io_ycen"] - 1) * u.pix
+            dist_inncen = np.sqrt((xx * u.pix - in_xcen) ** 2 + (yy * u.pix - in_ycen) ** 2)
+
+            # Calculate distance from external occulter/field stop center
+            # NOTE: Workaround for DR1 data where fs_*cen keywords are not correctly defined.
+            # In DR1, fs_xcen and fs_ycen are not available and as consequence the corresponding keywords in a FITS file are assigned to crpix1 and crpix2, respectively.
+            # When this occurs, sun_xcen and sun_ycen should be used as approximate coordinates of the field stop center.
+            # This problem is solved in DR2.
+            if self.meta["fs_xcen"] == self.meta["crpix1"] and self.meta["fs_ycen"] == self.meta["crpix2"]:
+                # DR1 workaround: use sun center instead; For the DR1 data fs_*cen keywords are not defined correctly in a FITS file header
+                out_xcen = (self.meta["sun_xcen"] - 1) * u.pix
+                out_ycen = (self.meta["sun_ycen"] - 1) * u.pix
+            else:
+                # Normal case: use field stop center
+                out_xcen = (self.meta["fs_xcen"] - 1) * u.pix
+                out_ycen = (self.meta["fs_ycen"] - 1) * u.pix
+
+            dist_outcen = np.sqrt((xx * u.pix - out_xcen) ** 2 + (yy * u.pix - out_ycen) ** 2)
+
+            mask_inner = dist_inncen <= inn_fov
+            mask_outer = dist_outcen >= out_fov
+            self._mask = mask_inner | mask_outer
+
+        return self._mask
+
+
+    @mask.setter
+    def mask(self, value):
+        self._mask = value
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """
-        Return ``True`` if ``header`` corresponds to a METIS L2 product.
+        Return ``True`` if ``header`` corresponds to a Metis L2 product.
 
         Parameters
         ----------
