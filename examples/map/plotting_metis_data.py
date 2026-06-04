@@ -155,12 +155,12 @@ plt.show()
 
 
 ###############################################################################
-# The UV data can contain a small number of very bright outlier pixels.
-# We can flag them by building a quality mask from the 99.99th percentile of
-# the data and merging it with the map's existing occulter mask.
+# The UV data can contain a small number of very bright outlier pixels. We can
+# flag them by using the quality mask from Metis file that is provided in the
+# second map of the HDUs and merge it with the map's existing occulter mask.
 
-qmat = metis_map.data > np.percentile(metis_map.data, 99.99)
-metis_map.mask = metis_map.mask | qmat
+qmat = metis_uv_data[1].data
+metis_map.mask = metis_map.mask | ~qmat.astype(bool)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=metis_map)
