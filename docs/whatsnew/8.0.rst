@@ -87,7 +87,8 @@ This release adds two new map sources for the Polarimetric and Helioseismic Imag
 .. image:: 8.0-phi-map-inc.png
    :alt: A plot from sunpy of a PHI Map showing a HRT image of magnetic field inclination.
 
-**ADD IMAGES HERE**
+.. image:: 8.0-metis-map-vltb.png
+   :alt: A plot from sunpy of a Metis Map showing a visible-light total-brightness coronagraph image.
 
 Merged Solar Orbiter Archive (SOAR) Fido support into ``sunpy``
 ===============================================================
@@ -128,6 +129,7 @@ To coincide with the Solar Orbiter theme of the 8.0 a number of new examples usi
    ../examples/map_transformations/solo_phi_reproject.py
    ../examples/units_and_coordinates/solo_fov.py
    ../examples/plotting/phi_example.py
+   ../examples/map/plotting_metis_data.py
 
 In addition to this some other examples have been added:
 
