@@ -67,6 +67,23 @@ jobs:
         - windows: py313
         - macos: py313
         - linux: py312-oldestdeps
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  threading:
+    needs: [core, sdist_verify]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v2  # zizmor: ignore[unpinned-uses]
+    with:
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --color=yes
+      libraries: |
+        brew:
+          - openjpeg
+        apt:
+          - libopenjp2-7
+      envs: |
         - linux: py314
           name: py314 (parallel threads)
           posargs: --parallel-threads=auto --color=yes
