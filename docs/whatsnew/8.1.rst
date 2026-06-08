@@ -1,0 +1,23 @@
+.. _whatsnew-8.1:
+
+************************
+What's New in sunpy 8.1?
+************************
+
+The SunPy Project is pleased to announce the 8.1 release of the ``sunpy`` core package.
+
+On this page, you can read about some of the big changes in this release.
+
+.. contents::
+    :local:
+    :depth: 1
+
+``sunpy`` 8.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+
+Updates to minimum dependencies
+===============================
+
+The minimum required versions of the following packages have been updated:
+
+  - Update this when it happens
