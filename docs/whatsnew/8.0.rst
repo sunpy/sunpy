@@ -15,13 +15,11 @@ On this page, you can read about some of the big changes in this release.
 ``sunpy`` 8.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 
-**UPDATE RELEASE NOTES BEFORE RELEASE**
+This release of sunpy contains 491 commits in 76 merged pull requests closing 64 issues from 19 people, 7 of which are first-time contributors to sunpy.
 
-This release of sunpy contains 448 commits in 68 merged pull requests closing 60 issues from 19 people, 7 of which are first-time contributors to sunpy.
-
-* 448 commits have been added since 7.1
-* 60 issues have been closed since 7.1
-* 68 pull requests have been merged since 7.1
+* 491 commits have been added since 7.1
+* 64 issues have been closed since 7.1
+* 76 pull requests have been merged since 7.1
 * 19 people have contributed since 7.1
 * 7 of which are new contributors
 
