@@ -1,1 +1,0 @@
-Add an example of fitting spectra in parallel to Solar Orbiter SPICE data - :doc:`/generated/gallery/showcase/spice_parallel_fitting`.

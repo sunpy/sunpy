@@ -1,1 +1,0 @@
-Added a default `~sunpy.map.sources.METISMap.mask` property to `~sunpy.map.sources.METISMap` and a gallery example demonstrating how to download, load, and plot METIS observations.
