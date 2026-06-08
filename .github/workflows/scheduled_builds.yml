@@ -26,6 +26,7 @@ jobs:
           - branch: "main"
           - branch: "7.0"
           - branch: "7.1"
+          - branch: "8.0"
     steps:
       - name: Trigger workflow dispatch for CI workflow
         uses: benc-uk/workflow-dispatch@31e2b3319479a63f0ab15bf800eff9e913504e26 # v1.3.2
