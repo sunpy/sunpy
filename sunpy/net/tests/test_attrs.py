@@ -30,6 +30,7 @@ def test_wavelength_attr():
     assert wave.unconverted_value == (1*u.Mm, 2*u.Mm)
 
 
+@pytest.mark.thread_unsafe(reason="mocks a function")
 def test_instrument_show_in_notebook(mocker):
     pytest.importorskip("itables")
     mock_datagrid =  mocker.patch("itables.show")

@@ -186,6 +186,7 @@ def test_unifiedresponse_slicing():
     assert isinstance(results[0], QueryResponseTable)
 
 
+@pytest.mark.thread_unsafe(reason="mocks a function")
 def test_show_in_notebook(mocker):
     pytest.importorskip("itables")
     mock_datagrid =  mocker.patch("itables.show")
