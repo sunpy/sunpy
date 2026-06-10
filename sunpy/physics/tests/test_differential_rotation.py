@@ -1,4 +1,5 @@
 import warnings
+from copy import deepcopy
 
 import numpy as np
 import pytest
@@ -406,6 +407,8 @@ def test_differential_rotation(aia171_test_map):
 
 
 def test_rsun_fallback(aia171_test_map):
+    aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
+
     pytest.importorskip("skimage")
     # Remove the AIA-specific value of the solar radius
     assert_quantity_allclose(aia171_test_map.rsun_meters, 696 * u.Mm)

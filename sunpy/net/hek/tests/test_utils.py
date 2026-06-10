@@ -25,6 +25,8 @@ from sunpy.net.hek.utils import (
     _parse_unit,
 )
 
+pytestmark = pytest.mark.thread_unsafe(reason="unit parsing temporarily modifies the global unit registry")
+
 
 @pytest.mark.parametrize(('input_unit', 'expected_unit'), [
     ('DN/sec/pixel', u.DN/(u.pix*u.s)),
