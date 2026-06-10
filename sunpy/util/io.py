@@ -109,7 +109,7 @@ def is_url(obj):
     """
     try:
         result = urlparse(obj)
-        # Make sure scheme is http/https/fpt and has a non-empty netloc
+        # Make sure scheme is http/https/ftp and has a non-empty netloc
         return all([result.scheme in ("http", "https", "ftp"), result.netloc])
     except (ValueError, AttributeError):
         return False
