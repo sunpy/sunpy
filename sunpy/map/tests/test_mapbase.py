@@ -1376,9 +1376,11 @@ def test_missing_metadata_warnings():
         'ctype1': 'HPLN-TAN',
         'ctype2': 'HPLT-TAN',
     }
+    fig = Figure()
     with pytest.warns(Warning) as record:  # NOQA: PT030,PT031
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
-        array_map.peek()
+        ax = fig.add_subplot(projection=array_map)
+        array_map.plot(axes=ax)
     # There should be 2 warnings for missing metadata (obstime and observer location)
     assert len([w for w in record if w.category in (SunpyMetadataWarning, SunpyUserWarning)]) == 2
 

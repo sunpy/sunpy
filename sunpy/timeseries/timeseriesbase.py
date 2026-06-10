@@ -443,7 +443,7 @@ class GenericTimeSeries:
 
         # Make a copy of all the TimeSeries components.
         data = copy.copy(self._data)
-        meta = TimeSeriesMetaData(copy.copy(self.meta.metadata))
+        meta = TimeSeriesMetaData(copy.deepcopy(self.meta.metadata))
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
@@ -481,7 +481,7 @@ class GenericTimeSeries:
         data = self._data.drop(colname, axis='columns')
         units = self.units.copy()
         units.pop(colname)
-        return self.__class__(data, self.meta, units)
+        return self.__class__(data, copy.deepcopy(self.meta), units)
 
     def sort_index(self, **kwargs):
         """
@@ -496,7 +496,7 @@ class GenericTimeSeries:
             A new `~sunpy.timeseries.TimeSeries` in ascending chronological order.
         """
         return GenericTimeSeries(self._data.sort_index(**kwargs),
-                                 TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                 TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                  copy.copy(self.units))
 
     def truncate(self, a, b=None, int=None):
@@ -576,7 +576,7 @@ class GenericTimeSeries:
 
         # Build generic TimeSeries object and sanatise metadata and units.
         object = GenericTimeSeries(data.sort_index(),
-                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                    units)
         object._sanitize_metadata()
         return object

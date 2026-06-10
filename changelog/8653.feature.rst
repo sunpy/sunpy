@@ -1,0 +1,1 @@
+``sunpy`` can now be built for use with free-threaded Python, although some certain optional dependencies (e.g., OpenCV) are not yet compatible with free threading.
