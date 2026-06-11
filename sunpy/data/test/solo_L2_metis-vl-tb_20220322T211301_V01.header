@@ -1,11 +1,9 @@
-XTENSION= 'IMAGE   '           / Image Extension created by MWRFITS v1.14       
+SIMPLE  =                    T /   file comforms to FITS standard               
 BITPIX  =                  -32 /   number of bits per data pixel                
 NAXIS   =                    2 / number of data axes                            
 NAXIS1  =                 2048 / length of data axis 1                          
 NAXIS2  =                 2048 / length of data axis 2                          
-PCOUNT  =                    0 / parameter count                                
-GCOUNT  =                    1 / group count                                    
-EXTNAME = 'Quality matrix'     / extension name                                 
+EXTEND  =                    T /   FITS file contains extensions                
 LONGSTRN= 'OGIP 1.0'           / FITS header contains long strings              
 FILENAME= 'solo_L2_metis-vl-tb_20220322T211301_V01.fits' / FITS filename        
 FILE_RAW= '2022-03-22T21.40.24.436270Z-VL_IMAGE.raw' / filename of raw data     
@@ -51,10 +49,10 @@ OBS_ID  = 'SMET_060A_LF2_111_qewn_111' / unique ID of the individual observation
 TARGET  = 'TBD     '           / type of target from planning                   
 BSCALE  =                    1 / ratio of physical to array value at 0 offset   
 BZERO   =                    0 / physical value for the array value 0           
-BTYPE   = 'Pixel quality'      / science data object type                       
-BUNIT   = 'None    '           / units of physical value                        
-DATAMIN =              0.00000 / minimum value in data                          
-DATAMAX =              1.00000 / maximum value in data                          
+BTYPE   = 'VL total brightness' / science data object type                      
+BUNIT   = 'MSB     '           / units of physical value                        
+DATAMIN =   -2.95886188236E-06 / minimum value in data                          
+DATAMAX =    1.00506319352E-05 / maximum value in data                          
 NBIN1   =                    1 / binning factor in the dimension 1              
 NBIN2   =                    1 / binning factor in the dimension 2              
 NBIN    =                    1 / product of all NBIN values above               
@@ -177,10 +175,28 @@ DAC1POL4=                    0 /  [raw] DAC1 for pol. ID 4
 TSENSOR =       -28.4639110734 / [degC] VLDA temperature                        
 PMPTEMP =        29.9110796510 / [degC] PMP temperature                         
 MASKRMIN=                  460 /  [pixel] min. masking radius                   
+CHECKSUM= 'cpiFfmZCcmfCcmZC'   / HDU checksum updated 2022-10-10T08:49:27       
+DATASUM = '2340781283'         / data unit checksum updated 2022-10-10T08:49:27 
 INFO_URL= 'http://metis.oato.inaf.it' / link to more information on the instrume
-COMMENT Quality matrix values:                                                  
-COMMENT   NaN = saturated or null L0 pixel counts                               
-COMMENT   0   = unreliable pixel value                                          
-COMMENT   1   = good pixel                                                      
-DATASUM = '3205652999'         / data unit checksum created 2022-10-10T08:49:27 
-CHECKSUM= 'ZkG7akG5TkG5ZkG5'   / HDU checksum created 2022-10-10T08:49:27       
+COMMENT Image values were corrected for the total exposure time.                
+COMMENT Uncertainty matrix in the FITS extension is preliminary.                
+COMMENT Rotate CROTA degrees counter-clockwise to have Solar North up.          
+HISTORY Data acquired during nominal                                            
+HISTORY L0 FITS file created on 2022-10-04T15:56:20.747524                      
+HISTORY WCS and solar ephemeris:                                                
+HISTORY   SKD version = v107_20220711_001                                       
+HISTORY L1 FITS file created on 2022-10-07T16:17:47.93                          
+HISTORY Bias and dark-current corrections:                                      
+HISTORY   solo_CAL_metis-vl-bias_20220316a_V00.fits                             
+HISTORY   map_dark_it2_fit_wr.fits                                              
+HISTORY Demodulation performed for angles 181.8, 133.2, 84.3, 49.1 deg          
+HISTORY Flat-field correction:                                                  
+HISTORY   flat_vlda_JP_15MHZ_MPS_v1.fits                                        
+HISTORY Vignetting correction:                                                  
+HISTORY   VF.fits shifted by [0.0, 0.0] pixel                                   
+HISTORY Radiometric calibration:                                                
+HISTORY   cal. factor = 5.92E-15 MSB/DN                                         
+HISTORY   1 MSB = 4.67E+20 ph/cm2/s/sr                                          
+HISTORY Update WCS and solar ephemeris:                                         
+HISTORY   SKD version = v107_20220711_001                                       
+HISTORY L2 FITS file created on 2022-10-10T08:49:25.32                          
