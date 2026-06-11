@@ -1,1 +1,1 @@
-Update :func:`~sunpy.util.io.is_url` to use `urllib.parse.urlparse` instead of `urllib.request.urlopen` so no network requests are made or needed.
+Update ``sunpy.util.io.is_url()`` to use `urllib.parse.urlparse` instead of `urllib.request.urlopen` so no network requests are made or needed.
