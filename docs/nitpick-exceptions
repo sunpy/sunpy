@@ -97,3 +97,8 @@ py:obj RendererBase
 py:obj RuntimeError
 py:obj text
 py:obj Text
+
+# Legacy references to map utilities moved to sunpy.coordinates.utils
+# These appear in inherited docstrings and cannot be resolved after refactor.For issue #8445
+py:obj sunpy.map.maputils
+py:func sunpy.map.coordinate_is_on_solar_disk

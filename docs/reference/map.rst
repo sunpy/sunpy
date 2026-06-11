@@ -28,6 +28,9 @@ The result of a call to `~sunpy.map.Map` will be either a `~sunpy.map.mapbase.Ge
     :skip: make_fitswcs_header
     :skip: get_observer_meta
     :skip: make_heliographic_header
+    :skip: coordinate_is_on_solar_disk
+    :skip: solar_angular_radius
+
 
 Header helpers
 ==============
