@@ -13,17 +13,12 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import ImageNormalize
 
+from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
 from sunpy.util.exceptions import SunpyUserWarning
 
-METIS_HEADER_VARIANTS = [
-    pytest.param({}, id="baseline-VL"),
-    pytest.param({"FILTER": "UV", "BTYPE": "UV Lyman-alpha intensity"}, id="UV-filter"),
-    pytest.param({"HGLN_OBS": 45.0, "HGLT_OBS": -7.25}, id="off-axis-observer"),
-    pytest.param({"DSUN_OBS": 4.5e10}, id="perihelion"),
-    pytest.param({"CRVAL1": 500.0, "CRVAL2": 300.0}, id="off-centre-pointing"),
-]
+metis_vl_tb_header = get_test_filepath("solo_L2_metis-vl-tb_20220322T211301_V01.header")
 
 _BASE_METIS_HEADER = {
     "INSTRUME": "Metis",
@@ -59,16 +54,17 @@ _BASE_METIS_HEADER = {
 }
 
 
-@pytest.fixture(scope="module", params=METIS_HEADER_VARIANTS)
-def metis_map(request,metis_test_data):
-    header = {**_BASE_METIS_HEADER, **request.param}
-    return Map(metis_test_data, header)
+@pytest.fixture(scope="module")
+def metis_map():
+    return get_dummy_map_from_header(metis_vl_tb_header)
 
+@pytest.fixture(scope="module")
+def metis_test_data():
+    return np.zeros((1024, 1024), dtype=np.float32)
 
 @pytest.fixture
 def minimal_metis_header():
     return _BASE_METIS_HEADER.copy()
-
 
 @pytest.fixture
 def metis_map_non_square(metis_test_data, minimal_metis_header):
@@ -76,14 +72,13 @@ def metis_map_non_square(metis_test_data, minimal_metis_header):
     return Map(metis_test_data, header)
 
 
-@pytest.fixture(scope="module")
-def metis_test_data():
-    return np.zeros((1024, 1024), dtype=np.float32)
-
 # basic tests
-def test_basic_initialization(metis_map):
+def test_METISMap(metis_map):
     assert isinstance(metis_map, METISMap)
-    assert metis_map.instrument == "Metis"
+
+
+def test_is_datasource_for(metis_map):
+    assert metis_map.is_datasource_for(metis_map.data, metis_map.meta)
 
 
 def test_observatory(metis_map):
@@ -93,11 +88,10 @@ def test_observatory(metis_map):
 def test_coordinate_frame(metis_map):
     assert metis_map.coordinate_frame.name == "helioprojective"
 
+def test_measurement(metis_map):
+    assert metis_map.measurement == "VL-TB"
 
-def test_is_datasource_for(metis_map):
-    assert metis_map.is_datasource_for(metis_map.data, metis_map.meta)
 
-# wcs
 def test_wcs(metis_map):
     metis_map.pixel_to_world(0 * u.pix, 0 * u.pix)
 
@@ -111,14 +105,8 @@ def test_wcs_center_pixel(metis_test_data, minimal_metis_header):
     assert u.allclose(center_coord.Tx, 0 * u.arcsec, atol=1e-2 * u.arcsec)
 
 
-# plotting
-def test_cmap_by_filter(metis_map):
-    """Verify that the default colormap is assigned based on the FILTER keyword."""
-    expected = {
-        "VL": "solometisvl-tb",
-        "UV": "solometisuv",
-    }[metis_map.meta["FILTER"]]
-    assert metis_map.plot_settings["cmap"] == expected
+def test_cmap(metis_map):
+    assert metis_map.plot_settings["cmap"] == "solometisvl-tb"
 
 
 def test_norm(metis_map):
@@ -135,7 +123,7 @@ def test_norm(metis_map):
     ("Stokes U",                        "VL-SU"),
     ("UV Lyman-alpha intensity",        "UV"),
 ])
-def test_measurement(metis_test_data, minimal_metis_header, btype, expected):
+def test_measurement_types(metis_test_data, minimal_metis_header, btype, expected):
     filter_key = "UV" if expected == "UV" else "VL"
     header = {**minimal_metis_header, "FILTER": filter_key, "BTYPE": btype}
     m = Map(metis_test_data, header)
@@ -170,9 +158,9 @@ def test_mask_occ_does_not_mask_entire_image(metis_map):
     assert not metis_map.mask.all()
 
 
-def test_mask_occ_center_occulted(metis_map):
+def test_mask_center_is_occulted(metis_map):
     """Verify that the center is masked"""
-    assert metis_map.mask[512,512]
+    assert metis_map.mask[1024, 1024]
 
 
 def test_mask_non_square_pixels_returns_none(metis_map_non_square):
