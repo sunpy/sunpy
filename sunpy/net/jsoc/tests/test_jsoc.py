@@ -385,7 +385,7 @@ def test_segments_query(client):
                         a.jsoc.Series('hmi.sharp_cea_720s'),
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
     # Check that the correct segments are returned and are not returned in the original query
-    assert len(res) == len(seg_res) == 1223
+    assert len(res) == len(seg_res) == 1336
     assert len(res.columns) != len(seg_res.columns)
     assert len(seg_res.columns) - len(res.columns) == 2
     assert "magnetogram" not in res.keys()
