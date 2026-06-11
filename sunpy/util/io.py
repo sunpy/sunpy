@@ -3,7 +3,7 @@ import re
 import glob
 import pathlib
 import collections
-import urllib.request
+from urllib.parse import urlparse
 
 import fsspec
 
@@ -108,9 +108,10 @@ def is_url(obj):
         True if the object is a valid URL, False otherwise.
     """
     try:
-        urllib.request.urlopen(obj)
-        return True
-    except Exception:
+        result = urlparse(obj)
+        # Make sure scheme is http/https/ftp and has a non-empty netloc
+        return all([result.scheme in ("http", "https", "ftp"), result.netloc])
+    except (ValueError, AttributeError):
         return False
 
 
