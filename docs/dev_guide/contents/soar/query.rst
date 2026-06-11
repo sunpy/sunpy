@@ -36,8 +36,11 @@ Using the example below,
     Instrument     Data product    Level        Start time               End time        Filesize SOOP Name Sensor
                                                                                           Mbyte
     ---------- ------------------- ----- ----------------------- ----------------------- -------- --------- ------
-           RPW rpw-tds-surv-hist2d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.084      none    TDS
+           RPW rpw-tds-surv-rswf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    11.57      none    TDS
+           RPW  rpw-lfr-surv-swf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   14.368      none    LFR
     ...
+    <BLANKLINE>
+    <BLANKLINE>
 
 Here the query's "REQUEST" type to "doQueryFilteredByDistance", which is a special method that filters the entire database based on the specified distance value.
 
