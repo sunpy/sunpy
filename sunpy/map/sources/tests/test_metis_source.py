@@ -81,7 +81,6 @@ def metis_test_data():
     return np.zeros((1024, 1024), dtype=np.float32)
 
 # basic tests
-
 def test_basic_initialization(metis_map):
     assert isinstance(metis_map, METISMap)
     assert metis_map.instrument == "Metis"
@@ -98,8 +97,6 @@ def test_coordinate_frame(metis_map):
 def test_is_datasource_for(metis_map):
     assert metis_map.is_datasource_for(metis_map.data, metis_map.meta)
 
-
-
 # wcs
 def test_wcs(metis_map):
     metis_map.pixel_to_world(0 * u.pix, 0 * u.pix)
@@ -113,8 +110,8 @@ def test_wcs_center_pixel(metis_test_data, minimal_metis_header):
     assert isinstance(center_coord, SkyCoord)
     assert u.allclose(center_coord.Tx, 0 * u.arcsec, atol=1e-2 * u.arcsec)
 
-# plotting
 
+# plotting
 def test_cmap_by_filter(metis_map):
     """Verify that the default colormap is assigned based on the FILTER keyword."""
     expected = {
@@ -128,7 +125,6 @@ def test_norm(metis_map):
     assert isinstance(metis_map.plot_settings["norm"], ImageNormalize)
 
 # measurements
-
 @pytest.mark.parametrize(("btype", "expected"), [
     ("VL total brightness",             "VL-TB"),
     ("VL polarized brightness",         "VL-PB"),
@@ -147,7 +143,6 @@ def test_measurement(metis_test_data, minimal_metis_header, btype, expected):
 
 
 # rsun things
-
 def test_rsun_obs_uses_super(metis_test_data, minimal_metis_header):
     """Verify rsun_obs uses GenericMap when RSUN_OBS exists."""
     header = {**minimal_metis_header, "RSUN_OBS": 950.0}
@@ -161,7 +156,6 @@ def test_fall_back_to_rsun_arc(metis_test_data, minimal_metis_header):
     assert metis_map.rsun_obs == 960.0 * u.arcsec
 
 # testing the mask
-
 def test_mask_is_set(metis_map):
     assert metis_map.mask is not None
 
@@ -198,7 +192,7 @@ def test_mask_missing_keys_warns_and_returns_none(metis_test_data, minimal_metis
 
 
 def test_mask_dr1_workaround(metis_test_data, minimal_metis_header):
-    # DR1: fs_xcen == crpix1, so sun_xcen/ycen should be used
+    # data release 1: fs_xcen == crpix1, so sun_xcen/ycen should be used
     header = {**minimal_metis_header, "FS_XCEN": 512.0, "FS_YCEN": 512.0,
               "CRPIX1": 512.0, "CRPIX2": 512.0, "SUN_XCEN": 512.0, "SUN_YCEN": 512.0}
     m = Map(metis_test_data, header)
@@ -208,7 +202,7 @@ def test_mask_dr1_workaround(metis_test_data, minimal_metis_header):
 
 
 def test_mask_uses_field_stop_center_dr2(metis_test_data, minimal_metis_header):
-    """Verify the normal (DR2) mask path where fs_xcen != crpix1 or fs_ycen != crpix2."""
+    """Verify the normal (data release 2) mask path where fs_xcen != crpix1 or fs_ycen != crpix2."""
     header = {**minimal_metis_header, "FS_XCEN": 514.0, "FS_YCEN": 514.0}
     metis_map = Map(metis_test_data, header)
     assert metis_map.mask is not None
