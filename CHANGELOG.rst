@@ -95,6 +95,9 @@ Internal Changes
 - A low-resolution Earth image (PNG format) is now available as `sunpy.data.EARTH_IMAGE`. (`#8340 <https://github.com/sunpy/sunpy/pull/8340>`__)
 - Fixed a doctest that depended on the name of the person associated with a data set. (`#8348 <https://github.com/sunpy/sunpy/pull/8348>`__)
 - Stop using deprecated ``set_bad`` method on a matplotlib colormap. (`#8446 <https://github.com/sunpy/sunpy/pull/8446>`__)
+- Moved :func:`~sunpy.map.maputils.solar_angular_radius` and :func:`~sunpy.map.maputils.coordinate_is_on_solar_disk`
+  to :mod:`sunpy.coordinates.utils` so they can be used without importing the ``sunpy.map`` helpers.
+  The original import path continues to work. (`#8445 <https://github.com/sunpy/sunpy/issues/8445>`__)
 
 
 7.0.0 (2025-06-18)
