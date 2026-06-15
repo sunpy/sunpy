@@ -109,7 +109,7 @@ The ``sunpy_soar`` package will now be deprecated, and SOAR support will be main
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fbd78975610>
     Results from 1 Provider:
     <BLANKLINE>
-    43 Results from the SOARClient:
+    3 Results from the SOARClient:
     <BLANKLINE>
     Instrument   Data product   Level        Start time               End time        Filesize SOOP Name Detector Wavelength
                                                                                        Mbyte                                
