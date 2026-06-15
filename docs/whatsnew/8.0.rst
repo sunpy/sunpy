@@ -101,12 +101,24 @@ The ``sunpy_soar`` package will now be deprecated, and SOAR support will be main
     >>> from sunpy.net import Fido
 
     >>> instrument = a.Instrument("EUI")
-    >>> time = a.Time("2021-02-01", "2021-02-02")
+    >>> time = a.Time("2021-02-01", "2021-02-01T02:00:00")
     >>> level = a.Level(1)
     >>> product = a.soar.Product("EUI-FSI174-IMAGE")
 
     >>> Fido.search(instrument & time & level & product)  # doctest: +REMOTE_DATA
-
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fbd78975610>
+    Results from 1 Provider:
+    <BLANKLINE>
+    43 Results from the SOARClient:
+    <BLANKLINE>
+    Instrument   Data product   Level        Start time               End time        Filesize SOOP Name Detector Wavelength
+                                                                                       Mbyte                                
+    ---------- ---------------- ----- ----------------------- ----------------------- -------- --------- -------- ----------
+           EUI eui-fsi174-image    L1 2021-02-01 00:45:12.228 2021-02-01 00:45:22.228    3.393      none      FSI      174.0
+           EUI eui-fsi174-image    L1 2021-02-01 01:15:12.232 2021-02-01 01:15:22.232    0.418      none      FSI      174.0
+           EUI eui-fsi174-image    L1 2021-02-01 01:45:12.237 2021-02-01 01:45:22.237    0.406      none      FSI      174.0
+   <BLANKLINE>
+   <BLANKLINE>
 
 .. minigallery::
    :add-heading: Examples of searching the SOAR
