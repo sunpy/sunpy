@@ -184,7 +184,7 @@ def get_polygon_chaincode(coord):
                           z=1*u.R_sun,
                           frame=hcc_frame,
                           representation_type='cylindrical').T),
-    ("bound_chaincode", [SkyCoord(*np.random.rand(2,nb), unit='deg', frame='icrs') for nb in np.random.randint(6,11, size=len(obstime))]),
+    ("bound_chaincode", [SkyCoord(*np.random.rand(2, nb), unit='deg', frame='icrs') for nb in range(6, 6 + len(obstime))]),
 ])
 def test_chaincode_polygon_column_mapping(colname, coord):
     table = astropy.table.Table({
