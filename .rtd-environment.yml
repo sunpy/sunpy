@@ -6,5 +6,6 @@ dependencies:
   - pip
   - openjpeg
   - graphviz!=2.42.*,!=2.43.*
+  # Avoid native crashes in pandas 3.0.4 with Python 3.13 when handling TimeSeries data.
   - pandas!=3.0.4
   - pycairo

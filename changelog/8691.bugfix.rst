@@ -1,0 +1,1 @@
+Excluded pandas 3.0.4 from SunPy's dependencies because it can cause native crashes when handling `~sunpy.timeseries.TimeSeries` data with Python 3.13.
