@@ -120,7 +120,6 @@ The ``sunpy_soar`` package will now be deprecated, and SOAR support will be main
     <BLANKLINE>
     <BLANKLINE>
 
-
 .. minigallery::
    :add-heading: Examples of searching the SOAR
    :heading-level: -
