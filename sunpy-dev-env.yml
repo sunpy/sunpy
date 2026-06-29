@@ -15,7 +15,7 @@ dependencies:
   - mpl_animators
   - numpy
   - packaging
-  - pandas
+  - pandas!=3.0.4
   - parfive
   - pyerfa
   # - python  # Commented out to avoid triggering an upgrade
