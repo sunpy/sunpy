@@ -122,8 +122,7 @@ expected_fdt_norm_list = [
     (None, None)
 ]
 
-@pytest.fixture(scope="module", params=hrt_header_list)
-def phi_map_hrt(request):
+def get_phi_map_hrt(header):
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
@@ -140,7 +139,12 @@ def phi_map_hrt(request):
             category=SunpyUserWarning,
             message=r"This dataset was generated using on-board averaging of 3 individual observations."
         )
-        return get_dummy_map_from_header(request.param)
+        return get_dummy_map_from_header(header)
+
+
+@pytest.fixture(scope="module", params=hrt_header_list)
+def phi_map_hrt(request):
+    return get_phi_map_hrt(request.param)
 
 
 @pytest.fixture(scope="module", params=stokes_header_list)
@@ -148,15 +152,19 @@ def phi_map_stokes(request):
     return get_dummy_map_from_header(request.param)
 
 
-@pytest.fixture(scope="module", params=fdt_header_list)
-def phi_map_fdt(request):
+def get_phi_map_fdt(header):
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
             category=SunpyUserWarning,
             message=r".*averaging.*"
         )
-        return get_dummy_map_from_header(request.param)
+        return get_dummy_map_from_header(header)
+
+
+@pytest.fixture(scope="module", params=fdt_header_list)
+def phi_map_fdt(request):
+    return get_phi_map_fdt(request.param)
 
 
 @pytest.fixture(scope="module", params=test_hrt_cal_wcs_warning_header_list)
@@ -190,39 +198,39 @@ def test_fdt_proc_level(phi_map_fdt):
 
 
 @pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_refdate'),
+        ('header', 'expected_refdate'),
         list(zip(hrt_header_list, expected_hrt_refdates_list)),
-        indirect=['phi_map_hrt']
 )
-def test_reference_date(phi_map_hrt, expected_refdate):
+def test_reference_date(header, expected_refdate):
+    phi_map_hrt = get_phi_map_hrt(header)
     assert phi_map_hrt.reference_date.isot == expected_refdate
 
 
 @pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_date'),
+        ('header', 'expected_date'),
         list(zip(hrt_header_list, expected_hrt_dates_list)),
-        indirect=['phi_map_hrt']
         )
-def test_date(phi_map_hrt, expected_date):
+def test_date(header, expected_date):
+    phi_map_hrt = get_phi_map_hrt(header)
     assert phi_map_hrt.date.isot == expected_date
 
 
 @pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_cmap'),
+        ('header', 'expected_cmap'),
         list(zip(hrt_header_list, expected_hrt_cmap_list)),
-        indirect=['phi_map_hrt']
 )
-def test_hrt_cmap(phi_map_hrt, expected_cmap):
+def test_hrt_cmap(header, expected_cmap):
+    phi_map_hrt = get_phi_map_hrt(header)
     cmap = phi_map_hrt.plot_settings['cmap']
     assert cmap == expected_cmap
 
 
 @pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_norm'),
+        ('header', 'expected_norm'),
         list(zip(hrt_header_list, expected_hrt_norm_list)),
-        indirect=['phi_map_hrt']
 )
-def test_hrt_norm(phi_map_hrt, expected_norm):
+def test_hrt_norm(header, expected_norm):
+    phi_map_hrt = get_phi_map_hrt(header)
     norm = phi_map_hrt.plot_settings['norm']
 
     btype = phi_map_hrt.meta.get('btype', '').strip().lower()
@@ -238,11 +246,11 @@ def test_private_date_setters(phi_map_hrt):
 
 
 @pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_measurement'),
+        ('header', 'expected_measurement'),
         list(zip(hrt_header_list, expected_hrt_measurement_list)),
-        indirect=['phi_map_hrt']
         )
-def test_measurement(phi_map_hrt, expected_measurement):
+def test_measurement(header, expected_measurement):
+    phi_map_hrt = get_phi_map_hrt(header)
     assert phi_map_hrt.measurement == expected_measurement
 
 
@@ -265,11 +273,11 @@ def test_level_number(phi_map_hrt):
 
 
 @pytest.mark.parametrize(
-        ('phi_map_hrt', 'expected_unit'),
+        ('header', 'expected_unit'),
         list(zip(hrt_header_list, expected_hrt_units_list)),
-        indirect=['phi_map_hrt']
 )
-def test_unit(phi_map_hrt, expected_unit):
+def test_unit(header, expected_unit):
+    phi_map_hrt = get_phi_map_hrt(header)
     assert phi_map_hrt.unit == expected_unit
 
 
@@ -278,21 +286,21 @@ def test_wcs(phi_map_hrt):
     phi_map_hrt.pixel_to_world(0*u.pix, 0*u.pix)
 
 @pytest.mark.parametrize(
-        ('phi_map_fdt', 'expected_cmap'),
+        ('header', 'expected_cmap'),
         list(zip(fdt_header_list, expected_fdt_cmap_list)),
-        indirect=['phi_map_fdt']
 )
-def test_fdt_cmap(phi_map_fdt, expected_cmap):
+def test_fdt_cmap(header, expected_cmap):
+    phi_map_fdt = get_phi_map_fdt(header)
     cmap = phi_map_fdt.plot_settings['cmap']
     assert cmap == expected_cmap
 
 
 @pytest.mark.parametrize(
-        ('phi_map_fdt', 'expected_norm'),
+        ('header', 'expected_norm'),
         list(zip(fdt_header_list, expected_fdt_norm_list)),
-        indirect=['phi_map_fdt']
 )
-def test_fdt_norm(phi_map_fdt, expected_norm):
+def test_fdt_norm(header, expected_norm):
+    phi_map_fdt = get_phi_map_fdt(header)
     norm = phi_map_fdt.plot_settings['norm']
     assert norm.vmin == expected_norm[0]
     assert norm.vmax == expected_norm[1]
