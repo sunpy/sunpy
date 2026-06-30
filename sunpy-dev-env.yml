@@ -15,7 +15,8 @@ dependencies:
   - mpl_animators
   - numpy
   - packaging
-  - pandas
+  # Avoid native crashes in pandas 3.0.4 with Python 3.13 when handling TimeSeries data.
+  - pandas!=3.0.4
   - parfive
   - pyerfa
   # - python  # Commented out to avoid triggering an upgrade
