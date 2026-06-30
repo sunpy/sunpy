@@ -1,4 +1,4 @@
-8.0.0 (2026-06-15)
+8.0.0 (2026-06-30)
 ==================
 
 Breaking Changes
@@ -64,6 +64,7 @@ Bug Fixes
 - Update the ADAPT client for new filename patterns. (`#8637 <https://github.com/sunpy/sunpy/pull/8637>`__)
 - Fixed the `sunpy.net.solarnet.SOLARNETClient` to use ``solarnet.oma.be`` instead of the blocked ``solarnet2.oma.be`` host. (`#8639 <https://github.com/sunpy/sunpy/pull/8639>`__)
 - Fixed the potential sharing of metadata when using a `~sunpy.timeseries.TimeSeries` method to create a new instance base on an existing instance. (`#8653 <https://github.com/sunpy/sunpy/pull/8653>`__)
+- Excluded pandas 3.0.4 from dependencies due to segfaults when handling `~sunpy.timeseries.TimeSeries` data. (`#8691 <https://github.com/sunpy/sunpy/pull/8691>`__)
 
 
 Documentation
