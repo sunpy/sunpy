@@ -1,3 +1,90 @@
+8.0.0 (2026-06-30)
+==================
+
+Breaking Changes
+----------------
+
+- Adjusted the ``reference_date`` property of `~sunpy.map.sources.AIAMap` and `~sunpy.map.sources.HMIMap` so that its return value is in the same time scale as the ``date`` property, in order to avoid subtle user mistakes. (`#8477 <https://github.com/sunpy/sunpy/pull/8477>`__)
+- The minimum required versions of the following packages have been updated:
+
+  - asdf >=3.3.0
+  - asdf-astropy >=0.7.0
+  - astropy >=7.0.0
+  - contourpy >=1.3.0
+  - dask >=2024.6.0
+  - drms >=0.8.0
+  - fsspec >=2024.9.0
+  - glymur >=0.14.0.post1
+  - h5netcdf >=1.4.0
+  - h5py >=3.12.0
+  - lxml >=5.3.0
+  - matplotlib >=3.10.0
+  - numpy >=2.0.0
+  - packaging >=24.2
+  - pandas >=2.3.0
+  - parfive >=2.2.0
+  - reproject >=0.14.0
+  - requests >=2.33.0
+  - scikit-image >=0.24.0
+  - scipy >=1.14.0
+  - spiceypy >=7.0.0
+  - tqdm >=4.67.0 (`#8656 <https://github.com/sunpy/sunpy/pull/8656>`__)
+
+
+New Features
+------------
+
+- Added `~sunpy.map.sources.PHIMap` to handle imagery from the Polarimetric and Helioseismic Imager (PHI) on the Solar Orbiter mission. (`#8522 <https://github.com/sunpy/sunpy/pull/8522>`__)
+- Added support for saving and loading ``astropy.table.QTable`` containing ``SkyCoord`` objects in ``sunpy.coordinates`` frames to/from FITS files. (`#8548 <https://github.com/sunpy/sunpy/pull/8548>`__)
+- Added an option to :func:`~sunpy.coordinates.get_horizons_coord` to print out the response from JPL Horizons, which can contain useful contextual details. (`#8575 <https://github.com/sunpy/sunpy/pull/8575>`__)
+- The `Solar Orbiter Archive <https://soar.esac.esa.int/soar/>`__ can now be queried via `~sunpy.net.Fido` without installing any extra packages.
+  The ``sunpy-soar`` package has been merged into sunpy, and no longer needs to be separately installed or imported. (`#8605 <https://github.com/sunpy/sunpy/pull/8605>`__)
+- Added `~sunpy.map.sources.METISMap` to handle imagery from the the multi-wavelength coronagraph for the Solar Orbiter mission. (`#8641 <https://github.com/sunpy/sunpy/pull/8641>`__)
+- ``sunpy`` can now be built for use with free-threaded Python, although some certain optional dependencies (e.g., OpenCV) are not yet compatible with free threading. (`#8653 <https://github.com/sunpy/sunpy/pull/8653>`__)
+- Added a default `~sunpy.map.sources.METISMap.mask` property to `~sunpy.map.sources.METISMap` and a gallery example demonstrating how to download, load, and plot METIS observations. (`#8658 <https://github.com/sunpy/sunpy/pull/8658>`__)
+- Update ``sunpy.util.io.is_url()`` to use `urllib.parse.urlparse` instead of `urllib.request.urlopen` so no network requests are made or needed.
+  This may result in different exceptions being raised if URLs are unreachable, from multiple places in ``sunpy`` such as ``Map`` and ``Timeseries``. (`#8679 <https://github.com/sunpy/sunpy/pull/8679>`__)
+
+
+Bug Fixes
+---------
+
+- Fix ~`sunpy.net.scraper.Scraper` to correctly handle proper local file URI on Windows and make internal code more consistent. (`#8493 <https://github.com/sunpy/sunpy/pull/8493>`__)
+- Fixed bugs when using thread-based parallel processing due to unintentionally shared state information.
+  This primarily affected these context managers: :func:`~sunpy.coordinates.SphericalScreen`, :func:`~sunpy.coordinates.PlanarScreen`, :func:`~sunpy.coordinates.propagate_with_solar_surface`, and :func:`~sunpy.coordinates.transform_with_sun_center`. (`#8500 <https://github.com/sunpy/sunpy/pull/8500>`__)
+- Fix incorrect Level 1 detection in `sunpy.map.sources.EITMap`. (`#8515 <https://github.com/sunpy/sunpy/pull/8515>`__)
+- Correct SUIT colormap CSV files to match official values (`#8528 <https://github.com/sunpy/sunpy/pull/8528>`__)
+- Fixed a bug in `sunpy.coordinates.spice` when converting times to the time scale/format used by SPICE, which resulted in a time inaccuracy of up to 1.6 ms. (`#8534 <https://github.com/sunpy/sunpy/pull/8534>`__)
+- Fixed a bug where SIP distortion information in a Map WCS was ignored. (`#8573 <https://github.com/sunpy/sunpy/pull/8573>`__)
+- Fixed bugs where SIP distortion information was ignored when creating a `~sunpy.map.Map` using a `~astropy.wcs.WCS` instance with SIP information. (`#8586 <https://github.com/sunpy/sunpy/pull/8586>`__)
+- Improved `sunpy.map.Map` error messages when NumPy array inputs are missing metadata or WCS information or are passed in place of python lists. (`#8589 <https://github.com/sunpy/sunpy/pull/8589>`__)
+- Fixed a bug where `~sunpy.timeseries.sources.NOAAPredictIndicesTimeSeries` would always plot to the current pyplot-managed axes even when a different axes was specified. (`#8600 <https://github.com/sunpy/sunpy/pull/8600>`__)
+- Pass extra keyword arguments through from :func:`~sunpy.map.header_helper.make_heliographic_header` to :func:`~sunpy.map.header_helper.make_fitswcs_header`. (`#8611 <https://github.com/sunpy/sunpy/pull/8611>`__)
+- Fixed a bug where :meth:`~sunpy.map.MapSequence.plot` did not respect the mask of individual maps when updating animation frames. (`#8617 <https://github.com/sunpy/sunpy/pull/8617>`__)
+- Update the ADAPT client for new filename patterns. (`#8637 <https://github.com/sunpy/sunpy/pull/8637>`__)
+- Fixed the `sunpy.net.solarnet.SOLARNETClient` to use ``solarnet.oma.be`` instead of the blocked ``solarnet2.oma.be`` host. (`#8639 <https://github.com/sunpy/sunpy/pull/8639>`__)
+- Fixed the potential sharing of metadata when using a `~sunpy.timeseries.TimeSeries` method to create a new instance base on an existing instance. (`#8653 <https://github.com/sunpy/sunpy/pull/8653>`__)
+- Excluded pandas 3.0.4 from dependencies due to segfaults when handling `~sunpy.timeseries.TimeSeries` data. (`#8691 <https://github.com/sunpy/sunpy/pull/8691>`__)
+
+
+Documentation
+-------------
+
+- Add an example of fitting spectra in parallel to Solar Orbiter SPICE data - :doc:`/generated/gallery/showcase/spice_parallel_fitting`. (`#8291 <https://github.com/sunpy/sunpy/pull/8291>`__)
+- Add an example of interactively selecting coordinates with matplotlib :doc:`/generated/gallery/map/interactive_point_selection`. (`#8305 <https://github.com/sunpy/sunpy/pull/8305>`__)
+- Add tags to examples in our gallery. (`#8358 <https://github.com/sunpy/sunpy/pull/8358>`__)
+- Add `AI Usage <https://docs.sunpy.org/en/latest/dev_guide/contents/ai_usage.html>`__ document and update newcomers guide to cross reference. (`#8505 <https://github.com/sunpy/sunpy/pull/8505>`__)
+- Fix typos and grammar in installation.rst (`#8512 <https://github.com/sunpy/sunpy/pull/8512>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_artemis-ii-eclipse.py`) to visualise and analyse solar eclipse observed by Artemis-II. (`#8571 <https://github.com/sunpy/sunpy/pull/8571>`__)
+- Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_artemis-ii-trajectory.py`) to visualize the Artemis II trajectory in two different coordinate frames. (`#8574 <https://github.com/sunpy/sunpy/pull/8574>`__)
+
+
+Internal Changes
+----------------
+
+- The hash libraries for figure tests have been renamed to remove the version of ``freetype``. (`#8578 <https://github.com/sunpy/sunpy/pull/8578>`__)
+
+
 7.1.0 (2025-12-08)
 ==================
 

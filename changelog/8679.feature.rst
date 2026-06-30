@@ -1,2 +1,0 @@
-Update ``sunpy.util.io.is_url()`` to use `urllib.parse.urlparse` instead of `urllib.request.urlopen` so no network requests are made or needed.
-This may result in different exceptions being raised if URLs are unreachable, from multiple places in ``sunpy`` such as ``Map`` and ``Timeseries``.
