@@ -83,7 +83,8 @@ timeseries = [
   # We need to raise this to ensure the goes netcdf files open.
   "h5py>=3.9.0",
   "matplotlib>=3.8.0",
-  "pandas>=2.1.0",
+  # Avoid native crashes in pandas 3.0.4 with Python 3.13 when handling TimeSeries data.
+  "pandas>=2.1.0,!=3.0.4",
 ]
 visualization = [
   "matplotlib>=3.8.0",
