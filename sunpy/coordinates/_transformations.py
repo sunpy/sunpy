@@ -83,8 +83,32 @@ class TransformationOptions(threading.local):
 _transformation_options = TransformationOptions()
 
 
+# Storage of transformation options that have opted in to being visible to all threads (see
+# the ``propagate_to_threads`` keyword of the context managers), which is necessary for an
+# option to apply in worker threads spawned while the context manager is active (e.g., by
+# specifying ``parallel=True`` for a reprojection). An option enabled by the current thread
+# takes precedence over any shared option.
+_shared_options_lock = threading.Lock()
+_shared_ignore_sun_motion = 0  # the number of active contexts shared across threads
+_shared_autoapply_diffrot = []  # stack of rotation-model names shared across threads
+
+
+def _active_ignore_sun_motion():
+    if _transformation_options.ignore_sun_motion:
+        return True
+    with _shared_options_lock:
+        return _shared_ignore_sun_motion > 0
+
+
+def _active_autoapply_diffrot():
+    if _transformation_options.autoapply_diffrot is not None:
+        return _transformation_options.autoapply_diffrot
+    with _shared_options_lock:
+        return _shared_autoapply_diffrot[-1] if _shared_autoapply_diffrot else None
+
+
 @sunpycontextmanager
-def transform_with_sun_center():
+def transform_with_sun_center(propagate_to_threads=False):
     """
     Context manager for coordinate transformations to ignore the motion of the center of the Sun.
 
@@ -98,6 +122,16 @@ def transform_with_sun_center():
     Under this context manager, transformations will instead move the coordinate over time to
     "follow" the translational motion of the center of Sun, thus maintaining the position of the
     coordinate relative to the center of the Sun.
+
+    Parameters
+    ----------
+    propagate_to_threads : `bool`, optional
+        If `True`, this option also applies to calculations in other threads, which is
+        necessary when work is dispatched to worker threads while this context manager is
+        active (e.g., when specifying ``parallel=True`` for a reprojection). An option
+        enabled by a given thread always takes precedence over an option propagated from a
+        different thread. Defaults to `False`, i.e., the option applies only to
+        calculations in the thread that entered the context manager.
 
     Notes
     -----
@@ -132,21 +166,28 @@ def transform_with_sun_center():
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
         (0., 0., 0.)>
     """
+    global _shared_ignore_sun_motion
     try:
         old_ignore_sun_motion = _transformation_options.ignore_sun_motion  # nominally False
 
         if not old_ignore_sun_motion:
             log.debug("Ignoring the motion of the center of the Sun for transformations")
         _transformation_options.ignore_sun_motion = True
+        if propagate_to_threads:
+            with _shared_options_lock:
+                _shared_ignore_sun_motion += 1
         yield
     finally:
         if not old_ignore_sun_motion:
             log.debug("Stop ignoring the motion of the center of the Sun for transformations")
         _transformation_options.ignore_sun_motion = old_ignore_sun_motion
+        if propagate_to_threads:
+            with _shared_options_lock:
+                _shared_ignore_sun_motion -= 1
 
 
 @sunpycontextmanager
-def propagate_with_solar_surface(rotation_model='howard'):
+def propagate_with_solar_surface(rotation_model='howard', propagate_to_threads=False):
     """
     Context manager for coordinate transformations to automatically apply solar
     differential rotation for any change in observation time.
@@ -170,6 +211,13 @@ def propagate_with_solar_surface(rotation_model='howard'):
         ``'allen'``, and ``'rigid'``. See the documentation for
         :func:`~sunpy.sun.models.differential_rotation` for the differences
         between these models.
+    propagate_to_threads : `bool`, optional
+        If `True`, this option also applies to calculations in other threads, which is
+        necessary when work is dispatched to worker threads while this context manager is
+        active (e.g., when specifying ``parallel=True`` for a reprojection). An option
+        enabled by a given thread always takes precedence over an option propagated from a
+        different thread. Defaults to `False`, i.e., the option applies only to
+        calculations in the thread that entered the context manager.
 
     Notes
     -----
@@ -209,19 +257,30 @@ def propagate_with_solar_surface(rotation_model='howard'):
          (85.1064,   0., 1.), (85.1064,  30., 1.),
          (85.1064,  60., 1.)]>
     """
-    with transform_with_sun_center():
+    with transform_with_sun_center(propagate_to_threads=propagate_to_threads):
         try:
             old_autoapply_diffrot = _transformation_options.autoapply_diffrot  # nominally False
 
             log.debug("Enabling automatic solar differential rotation "
                       f"('{rotation_model}') for any changes in obstime")
             _transformation_options.autoapply_diffrot = rotation_model
+            if propagate_to_threads:
+                with _shared_options_lock:
+                    _shared_autoapply_diffrot.append(rotation_model)
             yield
         finally:
             if not old_autoapply_diffrot:
                 log.debug("Disabling automatic solar differential rotation "
                           "for any changes in obstime")
             _transformation_options.autoapply_diffrot = old_autoapply_diffrot
+            if propagate_to_threads:
+                with _shared_options_lock:
+                    # Remove the most recent matching entry so that concurrent contexts
+                    # in different threads cannot corrupt each other's state
+                    for i in reversed(range(len(_shared_autoapply_diffrot))):
+                        if _shared_autoapply_diffrot[i] == rotation_model:
+                            del _shared_autoapply_diffrot[i]
+                            break
 
 
 # Global counter to keep track of the layer of transformation
@@ -738,7 +797,7 @@ def _affine_params_hcrs_to_hgs(hcrs_time, hgs_time):
 
     # All of the above is calculated for the HGS observation time
     # If the HCRS observation time is different, calculate the translation in origin
-    if not _transformation_options.ignore_sun_motion and np.any(hcrs_time != hgs_time):
+    if not _active_ignore_sun_motion() and np.any(hcrs_time != hgs_time):
         sun_pos_old_icrs = get_body_barycentric('sun', hcrs_time)
         offset_icrf = sun_pos_old_icrs - sun_pos_icrs
     else:
@@ -807,9 +866,9 @@ def hgs_to_hgs(from_coo, to_frame):
     elif _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        if _transformation_options.autoapply_diffrot:
+        if (autoapply_diffrot := _active_autoapply_diffrot()) is not None:
             from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
-                                               _transformation_options.autoapply_diffrot)
+                                               autoapply_diffrot)
         return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 

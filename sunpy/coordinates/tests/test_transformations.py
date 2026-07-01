@@ -1234,3 +1234,52 @@ def test_propagate_with_solar_surface():
     assert_quantity_allclose(result4.lon, result1.lon)
     assert_quantity_allclose(result4.lat, result1.lat)
     assert_quantity_allclose(result4.distance, result1.distance)
+
+
+def test_context_managers_propagate_to_threads():
+    from concurrent.futures import ThreadPoolExecutor
+
+    sun_center = HeliographicStonyhurst(0*u.deg, 0*u.deg, 0*u.AU, obstime="2001-01-01")
+    hgs_end_frame = HeliographicStonyhurst(obstime="2001-02-01")
+
+    def sun_center_lon_in_other_thread():
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            return executor.submit(lambda: sun_center.transform_to(hgs_end_frame).lon).result()
+
+    # By default, the option does not apply to calculations in other threads
+    with transform_with_sun_center():
+        assert not u.allclose(sun_center_lon_in_other_thread(), sun_center.lon)
+
+    # With propagate_to_threads, the option applies to calculations in other threads
+    with transform_with_sun_center(propagate_to_threads=True):
+        assert_quantity_allclose(sun_center_lon_in_other_thread(), sun_center.lon)
+
+    # The shared option no longer applies after the context manager exits
+    assert not u.allclose(sun_center_lon_in_other_thread(), sun_center.lon)
+
+    meridian = HeliocentricInertial(0*u.deg, np.arange(0, 90, 10)*u.deg, 1*u.AU,
+                                    obstime='2001-01-01')
+    dt = 6*u.day
+    hci_end_frame = HeliocentricInertial(obstime=meridian.obstime + dt)
+
+    def meridian_lon_in_other_thread():
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            return executor.submit(lambda: meridian.transform_to(hci_end_frame).lon).result()
+
+    # With propagate_to_threads, differential rotation applies to calculations in other threads
+    with propagate_with_solar_surface(propagate_to_threads=True):
+        assert u.allclose(meridian_lon_in_other_thread(),
+                          differential_rotation(dt, meridian.lat, model='howard'))
+
+    # An option enabled by a thread takes precedence over a propagated option
+    with propagate_with_solar_surface('howard', propagate_to_threads=True):
+        def with_local_context():
+            with propagate_with_solar_surface('rigid'):
+                return meridian.transform_to(hci_end_frame).lon
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            local_lon = executor.submit(with_local_context).result()
+        assert u.allclose(local_lon, differential_rotation(dt, meridian.lat, model='rigid'))
+
+    # The shared option no longer applies after the context manager exits
+    assert u.allclose(meridian_lon_in_other_thread(), 0*u.deg, atol=1e-1*u.deg)

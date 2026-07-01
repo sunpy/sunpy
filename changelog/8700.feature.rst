@@ -1,5 +1,6 @@
-Added the ``propagate_to_threads`` keyword to `~sunpy.coordinates.SphericalScreen` and
-`~sunpy.coordinates.PlanarScreen`, which makes the screen assumption also apply to
-calculations in other threads. This is necessary for the screen to have an effect when
-work is dispatched to worker threads while the context manager is active, e.g., when
+Added the ``propagate_to_threads`` keyword to `~sunpy.coordinates.SphericalScreen`,
+`~sunpy.coordinates.PlanarScreen`, :func:`~sunpy.coordinates.transform_with_sun_center`,
+and :func:`~sunpy.coordinates.propagate_with_solar_surface`, which makes the assumption
+also apply to calculations in other threads. This is necessary for the context manager to
+have an effect when work is dispatched to worker threads while it is active, e.g., when
 reprojecting a map with ``parallel=True``.

@@ -11,7 +11,7 @@ from astropy.coordinates.representation import CartesianRepresentation, UnitSphe
 
 from sunpy import log
 from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
-from sunpy.coordinates._transformations import _transformation_options
+from sunpy.coordinates._transformations import _active_autoapply_diffrot
 from sunpy.util.decorators import _active_contexts
 from sunpy.util.exceptions import warn_user
 
@@ -222,7 +222,7 @@ class SphericalScreen(BaseScreen):
             distance = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
 
         # Iterate the calculation if differential rotation is being applied
-        if _transformation_options.autoapply_diffrot is not None and np.any(frame.obstime != self._center.obstime):
+        if _active_autoapply_diffrot() is not None and np.any(frame.obstime != self._center.obstime):
             screen_frame = Helioprojective(observer=self._center, obstime=self._center.obstime)
             distance = self._iterate_calculate_distance(frame, distance, screen_frame)
 
@@ -315,7 +315,7 @@ class PlanarScreen(BaseScreen):
         distance = d_from_plane / rep.dot(direction)
 
         # Iterate the calculation if differential rotation is being applied
-        if _transformation_options.autoapply_diffrot is not None and np.any(frame.obstime != self._vantage_point.obstime):
+        if _active_autoapply_diffrot() is not None and np.any(frame.obstime != self._vantage_point.obstime):
             screen_frame = Helioprojective(observer=self._vantage_point, obstime=self._vantage_point.obstime)
             distance = self._iterate_calculate_distance(frame, distance, screen_frame)
 
