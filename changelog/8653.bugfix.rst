@@ -1,1 +1,0 @@
-Fixed the potential sharing of metadata when using a `~sunpy.timeseries.TimeSeries` method to create a new instance base on an existing instance.
