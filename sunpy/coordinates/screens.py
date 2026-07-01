@@ -20,8 +20,9 @@ __all__ = ['BaseScreen', 'SphericalScreen', 'PlanarScreen']
 
 class BaseScreen(abc.ABC):
 
-    def __init__(self, only_off_disk=False):
+    def __init__(self, only_off_disk=False, propagate_to_threads=False):
         self.only_off_disk = only_off_disk
+        self.propagate_to_threads = propagate_to_threads
 
     @property
     def _context_name(self):
@@ -37,11 +38,22 @@ class BaseScreen(abc.ABC):
         _active_contexts.stack.append(self._context_name)
         self._old_assumed_screen = Helioprojective._assumptions.screen  # nominally None
         Helioprojective._assumptions.screen = self
+        if self.propagate_to_threads:
+            with Helioprojective._shared_screens_lock:
+                Helioprojective._shared_screens.append(self)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if (removed := _active_contexts.stack.pop()) != self._context_name:
             raise RuntimeError(f"Cannot remove {self._context_name} from tracking stack because {removed} is last active.")
         Helioprojective._assumptions.screen = self._old_assumed_screen
+        if self.propagate_to_threads:
+            with Helioprojective._shared_screens_lock:
+                # Remove by identity rather than by position so that concurrent contexts
+                # in different threads cannot corrupt each other's state
+                for i in reversed(range(len(Helioprojective._shared_screens))):
+                    if Helioprojective._shared_screens[i] is self:
+                        del Helioprojective._shared_screens[i]
+                        break
 
     def _iterate_calculate_distance(self, coord, distance, screen_frame):
         """
@@ -138,6 +150,13 @@ class SphericalScreen(BaseScreen):
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun. Defaults to `False`.
+    propagate_to_threads : `bool`, optional
+        If `True`, this screen also applies to calculations in other threads, which is
+        necessary when work is dispatched to worker threads while this context manager is
+        active (e.g., when specifying ``parallel=True`` for a reprojection). A screen
+        entered by a given thread always takes precedence over a screen propagated from a
+        different thread. Defaults to `False`, i.e., the screen applies only to
+        calculations in the thread that entered the context manager.
 
     See Also
     --------
@@ -231,6 +250,13 @@ class PlanarScreen(BaseScreen):
     only_off_disk : `bool`, optional
         If `True`, apply this assumption only to off-disk coordinates, with on-disk coordinates
         still mapped onto the surface of the Sun. Defaults to `False`.
+    propagate_to_threads : `bool`, optional
+        If `True`, this screen also applies to calculations in other threads, which is
+        necessary when work is dispatched to worker threads while this context manager is
+        active (e.g., when specifying ``parallel=True`` for a reprojection). A screen
+        entered by a given thread always takes precedence over a screen propagated from a
+        different thread. Defaults to `False`, i.e., the screen applies only to
+        calculations in the thread that entered the context manager.
 
     See Also
     --------

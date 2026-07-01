@@ -583,6 +583,22 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             self.screen = None
     _assumptions = _Assumptions()
 
+    # Storage of screens that have opted in to being visible to all threads (see the
+    # ``propagate_to_threads`` keyword of screen classes), which is necessary for a screen
+    # to apply in worker threads spawned while the context manager is active (e.g., by
+    # specifying ``parallel=True`` for a reprojection). A screen entered by the current
+    # thread takes precedence over any shared screen. Exits remove entries by identity,
+    # so concurrent contexts in different threads cannot corrupt each other's state.
+    _shared_screens = []
+    _shared_screens_lock = threading.Lock()
+
+    @classmethod
+    def _active_screen(cls):
+        if cls._assumptions.screen is not None:
+            return cls._assumptions.screen
+        with cls._shared_screens_lock:
+            return cls._shared_screens[-1] if cls._shared_screens else None
+
     @property
     def angular_radius(self):
         """
@@ -643,9 +659,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         with np.errstate(invalid='ignore'):
             d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2  # use the "near" solution
 
-        if self._assumptions.screen:
-            d_screen = self._assumptions.screen.calculate_distance(self)
-            d = np.fmin(d, d_screen) if self._assumptions.screen.only_off_disk else d_screen
+        if (screen := self._active_screen()) is not None:
+            d_screen = screen.calculate_distance(self)
+            d = np.fmin(d, d_screen) if screen.only_off_disk else d_screen
 
         # This warning can be triggered in specific draw calls when plt.show() is called
         # we can not easily prevent this, so we check the specific function is being called

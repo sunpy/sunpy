@@ -655,6 +655,43 @@ def test_spherical_screen_askew(off_limb_coord, only_off_disk, distance, non_ear
     assert u.quantity.allclose(olc_3d.distance, distance)
 
 
+@pytest.mark.parametrize('screen_class', [
+    SphericalScreen,
+    PlanarScreen,
+])
+def test_screen_propagate_to_threads(off_limb_coord, screen_class):
+    from concurrent.futures import ThreadPoolExecutor
+
+    def distance_in_other_thread():
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                return executor.submit(lambda: off_limb_coord.make_3d().spherical.distance).result()
+
+    # By default, a screen does not apply to calculations in other threads
+    with screen_class(off_limb_coord.observer):
+        assert np.isnan(distance_in_other_thread()).any()
+
+    # With propagate_to_threads, the screen applies to calculations in other threads
+    with screen_class(off_limb_coord.observer, propagate_to_threads=True):
+        assert not np.isnan(distance_in_other_thread()).any()
+
+    # The shared screen no longer applies after the context manager exits
+    assert np.isnan(distance_in_other_thread()).any()
+
+    # A screen entered by a thread takes precedence over a propagated screen
+    with screen_class(off_limb_coord.observer, propagate_to_threads=True):
+        shared_distance = off_limb_coord.make_3d().spherical.distance
+
+        def with_local_screen():
+            with SphericalScreen(off_limb_coord.observer, radius=2*u.AU):
+                return off_limb_coord.make_3d().spherical.distance
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            local_distance = executor.submit(with_local_screen).result()
+        assert not u.quantity.allclose(local_distance, shared_distance)
+
+
 @pytest.mark.parametrize(('screen', 'only_off_disk', 'distance'), [
     (SphericalScreen, False, [0.98405002, 0.98306592, 0.98253594]*u.AU),
     (SphericalScreen, True, [0.98405002, 0.97910333, 0.98253594]*u.AU),
