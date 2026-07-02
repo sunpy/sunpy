@@ -78,6 +78,8 @@ jobs:
       coverage: codecov
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
+      setenv: |
+        RUSTUP_TOOLCHAIN: stable
       libraries: |
         brew:
           - openjpeg
