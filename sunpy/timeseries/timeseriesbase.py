@@ -230,10 +230,11 @@ class GenericTimeSeries:
         drange = drange.replace("\n", "<br>")
 
         def _format_date(time):
-            # ``Time.value`` is format-dependent (it can be a ``datetime`` or a
-            # ``str``), neither of which supports ``.astype``. ``datetime64`` is
-            # always a NumPy ``datetime64`` regardless of the ``Time`` format.
-            return str(time.datetime64.astype('datetime64[s]')).replace("T", " ")
+            # ``time`` is an astropy ``Time``; ``.iso`` yields a
+            # ``YYYY-MM-DD HH:MM:SS.sss`` string regardless of the underlying
+            # ``Time.format`` (which ``.value`` is sensitive to). Slice to the
+            # seconds field to keep the previous second-resolution output.
+            return time.iso[:19]
 
         start = _format_date(self.time_range.start)
         end = _format_date(self.time_range.end)
