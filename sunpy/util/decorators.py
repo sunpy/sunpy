@@ -1,7 +1,7 @@
 """
 This module provides sunpy specific decorators.
 """
-import threading
+import contextvars
 from inspect import cleandoc
 from functools import wraps
 from contextlib import contextmanager
@@ -26,10 +26,7 @@ _NOT_FOUND = object()
 
 
 # Thread-safe stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
-class _ActiveContexts(threading.local):
-    def __init__(self):
-        self.stack = []
-_active_contexts = _ActiveContexts()
+_active_contexts = contextvars.ContextVar('_active_contexts', default=[])
 
 
 def deprecated(
@@ -260,7 +257,9 @@ def sunpycontextmanager(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         func_name = f"{func.__module__}.{func.__qualname__}"
-        _active_contexts.stack.append(func_name)
+        active_contexts_copy = _active_contexts.get().copy()
+        active_contexts_copy.append(func_name)
+        token = _active_contexts.set(active_contexts_copy)
         gen = func(*args, **kwargs)
         value = next(gen)
         try:
@@ -269,8 +268,9 @@ def sunpycontextmanager(func):
             gen.throw(e)
         else:
             next(gen, None)
-            if (removed := _active_contexts.stack.pop()) != func_name:
+            if (removed := _active_contexts.get()[-1]) != func_name:
                 raise RuntimeError(f"Cannot remove {func_name} from tracking stack because {removed} is last active.")
+            _active_contexts.reset(token)
     return contextmanager(wrapper)
 
 
