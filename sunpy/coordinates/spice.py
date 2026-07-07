@@ -28,6 +28,11 @@ Be aware that when converting a SPICE-based coordinate to/from a built-in frame,
 there can be small inconsistencies due to differing planetary ephemerides and
 models for various orientations.
 
+.. warning::
+    This module is not thread-safe: it relies on global state because the
+    wrapped SPICE code also relies on global state.  When parallel processing,
+    use multiple processes rather than multiple threads.
+
 Notes
 -----
 * 2D coordinates can be transformed only if the to/from frames have the same
