@@ -41,23 +41,23 @@ def test_context_tracking():
     ctx2_name = f"{ctx2.__module__}.{ctx2.__qualname__}"
 
     # Check that no sunpy contexts are active before entering
-    assert _active_contexts.stack == []
+    assert _active_contexts.get() == []
 
     with ctx1():
         # Check that the context is active while inside
-        assert _active_contexts.stack == [ctx1_name]
+        assert _active_contexts.get() == [ctx1_name]
 
         with ctx2():
             # Check nesting of contexts
-            assert _active_contexts.stack == [ctx1_name, ctx2_name]
+            assert _active_contexts.get() == [ctx1_name, ctx2_name]
 
             with ctx1():
                 # Check a repeated context in the nesting
-                assert _active_contexts.stack == [ctx1_name, ctx2_name, ctx1_name]
+                assert _active_contexts.get() == [ctx1_name, ctx2_name, ctx1_name]
 
             # Check that only the last context is removed and not its duplicate
-            assert _active_contexts.stack == [ctx1_name, ctx2_name]
+            assert _active_contexts.get() == [ctx1_name, ctx2_name]
 
-        assert _active_contexts.stack == [ctx1_name]
+        assert _active_contexts.get() == [ctx1_name]
 
-    assert _active_contexts.stack == []
+    assert _active_contexts.get() == []
