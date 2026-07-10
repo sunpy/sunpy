@@ -1,0 +1,1 @@
+Added support for ``cdf_epoch``, ``cdf_epoch16`` and ``cdf_tt2000`` formats to `sunpy.time.parse_time` by using `cdflib`.
