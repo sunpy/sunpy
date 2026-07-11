@@ -102,7 +102,11 @@ class VSOQueryResponseTable(QueryResponseTable):
                     mask = []
                     for i, t in enumerate(data[col]):
                         if t is not None:
-                            times.append(parse_time(t))
+                            try:
+                              times.append(parse_time(t))
+                            except ValueError:
+                                mask.append(i)
+                                times.append(Time(val=0, format='mjd'))
                         else:
                             # Create a dummy time and mask it later
                             times.append(Time(val=0, format='mjd'))
