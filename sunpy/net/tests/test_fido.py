@@ -221,6 +221,17 @@ def test_vso_unifiedresponse(mock_build_client):
     assert isinstance(uresp, UnifiedResponse)
 
 
+def test_all_colnames_multiple_tables():
+    # Regression test: all_colnames must collect columns from every table
+    # in the response, not just the first one.
+    table_one = QueryResponseTable({"Start Time": [1, 2], "Instrument": ["a", "b"]})
+    table_one.client = GenericClient()
+    table_two = QueryResponseTable({"Start Time": [3], "Provider": ["c"]})
+    table_two.client = GenericClient()
+    uresp = UnifiedResponse(table_one, table_two)
+    assert uresp.all_colnames == ["Instrument", "Provider", "Start Time"]
+
+
 @pytest.mark.remote_data
 def test_responses():
     results = Fido.search(
