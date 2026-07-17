@@ -532,7 +532,7 @@ def pixelate_coord_path(smap, coord_path, *, bresenham=False):
     ----------
     smap : `~sunpy.map.GenericMap`
         The sunpy map.
-    coord : `~astropy.coordinates.SkyCoord`
+    coord_path : `~astropy.coordinates.SkyCoord`
         The coordinate path.
     bresenham : `bool`
         If ``True``, use Bresenham's line algorithm instead of the default
