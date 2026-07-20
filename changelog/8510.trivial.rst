@@ -1,0 +1,1 @@
+Add automated checks for PHEP 3 compliance and PyHC Environment compatibility in CI.
