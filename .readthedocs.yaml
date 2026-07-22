@@ -7,6 +7,7 @@ build:
   jobs:
     post_checkout:
       - git fetch --unshallow || true
+      - bash tools/skip-rtd.sh
     pre_install:
       - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
 
