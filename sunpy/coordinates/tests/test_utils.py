@@ -299,6 +299,7 @@ def test_rectangle_mismatching_frames_missing_parameters(rectangle_args):
     with pytest.raises(ConvertError):
         bottom_left, top_right = get_rectangle_coordinates(bottom_left, top_right=top_right)
 
+
 def test_rectangle_top_right(rectangle_args):
     bottom_left, top_right, _, _ = rectangle_args
 
