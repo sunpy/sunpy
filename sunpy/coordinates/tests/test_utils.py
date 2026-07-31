@@ -299,7 +299,6 @@ def test_rectangle_mismatching_frames_missing_parameters(rectangle_args):
     with pytest.raises(ConvertError):
         bottom_left, top_right = get_rectangle_coordinates(bottom_left, top_right=top_right)
 
-
 def test_rectangle_top_right(rectangle_args):
     bottom_left, top_right, _, _ = rectangle_args
 
@@ -446,5 +445,16 @@ def test_solar_angular_radius():
 
 def test_coordinate_is_on_solar_disk():
     # On-disk coordinate (center of the Sun)
-    on_disk = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observe
-...(some characters truncated)
+    on_disk = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2020-01-01")
+    assert bool(coordinate_is_on_solar_disk(on_disk)) is True
+
+    # Off-disk coordinate (far beyond the limb)
+    off_disk = SkyCoord(2000*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2020-01-01")
+    assert bool(coordinate_is_on_solar_disk(off_disk)) is False
+
+    # Array input
+    coords = SkyCoord([0, 2000]*u.arcsec, [0, 0]*u.arcsec, frame='helioprojective', observer="earth", obstime="2020-01-01")
+    result = coordinate_is_on_solar_disk(coords)
+    assert result.shape == (2,)
+    assert bool(result[0]) is True
+    assert bool(result[1]) is False
