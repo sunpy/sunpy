@@ -17,15 +17,8 @@ from sunpy.coordinates import (
 )
 from sunpy.sun import constants
 
-__all__ = [
-    "GreatArc",
-    "get_rectangle_coordinates",
-    "solar_angle_equivalency",
-    "get_limb_coordinates",
-    "get_heliocentric_angle",
-    "solar_angular_radius",
-    "coordinate_is_on_solar_disk",
-]
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle',
+           'solar_angular_radius', 'coordinate_is_on_solar_disk']
 
 
 class GreatArc:
@@ -131,14 +124,12 @@ class GreatArc:
 
         # Set the center of the sphere
         if center is None:
-            self.center = SkyCoord(
-                0 * self.distance_unit,
-                0 * self.distance_unit,
-                0 * self.distance_unit,
-                obstime=self.obstime,
-                observer=self.observer,
-                frame=Heliocentric,
-            )
+            self.center = SkyCoord(0 * self.distance_unit,
+                                   0 * self.distance_unit,
+                                   0 * self.distance_unit,
+                                   obstime=self.obstime,
+                                   observer=self.observer,
+                                   frame=Heliocentric)
         else:
             self.center = center.transform_to(self.start_frame).transform_to(Heliocentric)
 
@@ -162,7 +153,8 @@ class GreatArc:
         self.v3 = self._r * self.v3 / np.linalg.norm(self.v3)
 
         # Inner angle between v1 and v2 in radians
-        self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)), np.dot(self.v1, self.v2)) * u.rad
+        self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
+                                      np.dot(self.v1, self.v2)) * u.rad
 
         # Radius of the sphere
         self.radius = self._r * self.distance_unit
@@ -180,9 +172,9 @@ class GreatArc:
             return np.linspace(0, 1, points)
         elif isinstance(points, np.ndarray):
             if points.ndim > 1:
-                raise ValueError("One dimensional numpy ndarrays only.")
+                raise ValueError('One dimensional numpy ndarrays only.')
             if np.any(points < 0) or np.any(points > 1):
-                raise ValueError("All value in points array must be strictly >=0 and <=1.")
+                raise ValueError('All value in points array must be strictly >=0 and <=1.')
             return points
         else:
             raise ValueError('Incorrectly specified "points" keyword value.')
@@ -212,7 +204,7 @@ class GreatArc:
 
         """
         these_points = self._points_handler(points)
-        return these_points.reshape(len(these_points), 1) * self.inner_angle
+        return these_points.reshape(len(these_points), 1)*self.inner_angle
 
     def distances(self, points=None):
         """
@@ -268,26 +260,23 @@ class GreatArc:
         these_inner_angles = self.inner_angles(points=points)
 
         # Calculate the Cartesian locations from the first to second points
-        great_arc_points_cartesian = (
-            self.v1[np.newaxis, :] * np.cos(these_inner_angles)
-            + self.v3[np.newaxis, :] * np.sin(these_inner_angles)
-            + self.center_cartesian
-        ) * self.distance_unit
+        great_arc_points_cartesian = (self.v1[np.newaxis, :] * np.cos(these_inner_angles) +
+                                      self.v3[np.newaxis, :] * np.sin(these_inner_angles) +
+                                      self.center_cartesian) * self.distance_unit
 
         # Return the coordinates of the great arc between the start and end
         # points
-        return SkyCoord(
-            great_arc_points_cartesian[:, 0],
-            great_arc_points_cartesian[:, 1],
-            great_arc_points_cartesian[:, 2],
-            obstime=self.obstime,
-            observer=self.observer,
-            frame=Heliocentric,
-        ).transform_to(self.start_frame)
+        return SkyCoord(great_arc_points_cartesian[:, 0],
+                        great_arc_points_cartesian[:, 1],
+                        great_arc_points_cartesian[:, 2],
+                        obstime=self.obstime,
+                        observer=self.observer,
+                        frame=Heliocentric).transform_to(self.start_frame)
 
 
 @u.quantity_input
-def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None):
+def get_rectangle_coordinates(bottom_left, *, top_right=None,
+                              width: u.deg = None, height: u.deg = None):
     """
     Specify a rectangular region of interest in longitude and latitude in a given coordinate frame.
 
@@ -348,37 +337,39 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
     that ``bottom_left`` has a lower value of latitude than ``top_right``, in case that orientation
     is valid for the intended use.
     """
-    if not (
-        hasattr(bottom_left, "transform_to") and hasattr(bottom_left, "shape") and hasattr(bottom_left, "spherical")
-    ):
-        raise TypeError("Invalid input, bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
+    if not (hasattr(bottom_left, 'transform_to') and
+            hasattr(bottom_left, 'shape') and
+            hasattr(bottom_left, 'spherical')):
+        raise TypeError(
+            "Invalid input, bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
 
-    if top_right is not None and not (
-        hasattr(top_right, "transform_to") and hasattr(top_right, "shape") and hasattr(top_right, "spherical")
-    ):
+    if (top_right is not None and not (hasattr(top_right, 'transform_to') and
+                                       hasattr(top_right, 'shape') and
+                                       hasattr(top_right, 'spherical'))):
         raise TypeError("Invalid input, top_right must be of type SkyCoord or BaseCoordinateFrame.")
 
     if bottom_left.shape == (2,) and any(x is not None for x in (width, height, top_right)):
-        raise ValueError("Invalid input, if bottom_left.shape == (2,) other parameters should not be passed.")
+        raise ValueError("Invalid input, if bottom_left.shape == (2,) "
+                         "other parameters should not be passed.")
 
     if all(x is not None for x in (width, height, top_right)):
-        raise ValueError("Invalid input, width, height and top_right parameters should not be passed simultaneously.")
+        raise ValueError("Invalid input, width, height and top_right "
+                         "parameters should not be passed simultaneously.")
 
     if top_right is None and bottom_left.shape != (2,) and (width is None or height is None):
-        raise ValueError(
-            "Invalid input, either bottom_left and top_right or bottom_left and height and width should be provided."
-        )
+        raise ValueError("Invalid input, either bottom_left and top_right "
+                         "or bottom_left and height and width should be provided.")
 
     if width is not None:
-        if width < 0 * u.deg:
+        if width < 0*u.deg:
             raise ValueError("The specified width cannot be negative.")
-        if width > 360 * u.deg:
+        if width > 360*u.deg:
             raise ValueError("The specified width cannot be greater than 360 degrees.")
 
     if height is not None:
-        if height < 0 * u.deg:
+        if height < 0*u.deg:
             raise ValueError("The specified height cannot be negative.")
-        if bottom_left.spherical.lat + height > 90 * u.deg:
+        if bottom_left.spherical.lat + height > 90*u.deg:
             raise ValueError("The specified height exceeds the maximum latitude.")
 
     if bottom_left.shape == (2,):
@@ -394,7 +385,9 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
         # ``frame``, the top right is typecasted to its respective
         # frame. This is done to ensure that the output coordinates
         # are of the same type.
-        top_right = SkyCoord(bottom_left.spherical.lon + width, bottom_left.spherical.lat + height, frame=bottom_left)
+        top_right = SkyCoord(bottom_left.spherical.lon + width,
+                             bottom_left.spherical.lat + height,
+                             frame=bottom_left)
 
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
@@ -435,17 +428,20 @@ def solar_angle_equivalency(observer):
     """
 
     if not isinstance(observer, SkyCoord | BaseCoordinateFrame):
-        raise TypeError("Invalid input, observer must be of type SkyCoord or BaseCoordinateFrame.")
+        raise TypeError(
+            "Invalid input, observer must be of type SkyCoord or BaseCoordinateFrame.")
     if observer.obstime is None:
-        raise ValueError("Observer must have an observation time, `obstime`.")
+        raise ValueError(
+            "Observer must have an observation time, `obstime`.")
 
     obstime = observer.obstime
     sun_coord = get_body_heliographic_stonyhurst("sun", time=obstime, observer=observer)
     sun_observer_distance = sun_coord.separation_3d(observer).to_value(u.m)
 
-    equiv = [
-        (u.radian, u.meter, lambda x: np.tan(x) * sun_observer_distance, lambda x: np.arctan(x / sun_observer_distance))
-    ]
+    equiv = [(u.radian,
+              u.meter,
+              lambda x: np.tan(x)*sun_observer_distance,
+              lambda x: np.arctan(x/sun_observer_distance))]
 
     return equiv
 
@@ -466,149 +462,11 @@ def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000
         Number of coordinates to return. The coordinates are equally spaced
         around the limb as seen from the observer.
     """
-    observer = observer.transform_to(HeliographicStonyhurst(obstime=observer.obstime))
+    observer = observer.transform_to(
+        HeliographicStonyhurst(obstime=observer.obstime))
     dsun = observer.radius
     if dsun <= rsun:
-        raise ValueError("Observer distance must be greater than rsun")
+        raise ValueError('Observer distance must be greater than rsun')
     # Create the limb coordinate array using Heliocentric Radial
-    limb_radial_distance = np.sqrt(dsun**2 - rsun**2)
-    limb_hcr_rho = limb_radial_distance * rsun / dsun
-    limb_hcr_z = dsun - np.sqrt(limb_radial_distance**2 - limb_hcr_rho**2)
-    limb_hcr_psi = np.linspace(0, 2 * np.pi, resolution + 1)[:-1] << u.rad
-    limb = SkyCoord(
-        limb_hcr_rho,
-        limb_hcr_psi,
-        limb_hcr_z,
-        representation_type="cylindrical",
-        frame="heliocentric",
-        observer=observer,
-        obstime=observer.obstime,
-    )
-    return limb
-
-
-def get_heliocentric_angle(coordinate_on_solar_disk):
-    r"""
-    Returns the heliocentric angle, the angle between the observer look direction
-    for a point on the surface of the Sun and the local vertical for that point.
-
-    If a point is on the visible side of the Sun for the observer, the angle ranges
-    between 0 :math:`^\circ` (at disk center) and 90 :math:`^\circ` (at the solar
-    limb). A point on the far side of the Sun has to be provided as a 3D coordinate,
-    and then the angle ranges from 90 :math:`^\circ` to 180 :math:`^\circ`.
-
-    The heliocentric angle is related to the parameter :math:`\mu` commonly used for
-    limb-darkening calculations:
-
-    .. math::
-
-        \mu = \cos(heliocentric\_angle)
-
-    Parameters
-    ----------
-    coordinate_on_solar_disk : `astropy.coordinates.SkyCoord`
-        A coordinate on the solar disk, requires the observer and obstime to be set.
-
-    Returns
-    -------
-    heliocentric_angle : `~astropy.units.Quantity`
-        The angle between the local solar vertical and the line of sight from
-        the observer to a point on the solar disk.
-
-    Examples
-    --------
-    >>> import numpy as np
-
-    >>> import astropy.units as u
-    >>> from astropy.coordinates import SkyCoord
-
-    >>> from sunpy.coordinates.utils import get_heliocentric_angle
-
-    >>> # At the center of the solar disk
-    >>> hpc_coord_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
-    >>> get_heliocentric_angle(hpc_coord_center)
-    <Quantity 0. deg>
-    >>> # mu
-    >>> np.cos(get_heliocentric_angle(hpc_coord_center))
-    <Quantity 1.>
-
-    >>> # Almost at the limb
-    >>> hpc_coord_limb = SkyCoord(944.35*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
-    >>> get_heliocentric_angle(hpc_coord_limb)
-    <Quantity 89.26429919 deg>
-    >>> # mu
-    >>> np.cos(get_heliocentric_angle(hpc_coord_limb))
-    <Quantity 0.01284005>
-    """
-    hcc = coordinate_on_solar_disk.heliocentric
-    normal = hcc.cartesian
-    to_observer = CartesianRepresentation(0, 0, 1) * hcc.observer.radius - normal
-    heliocentric_angle = np.arctan2(normal.cross(to_observer).norm(), normal.dot(to_observer))
-    return heliocentric_angle.to(u.deg)
-
-
-def _verify_coordinate_helioprojective(coordinates):
-    """
-    Raises an error if the coordinate is not in the
-    `~sunpy.coordinates.frames.Helioprojective` frame.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
-    """
-    frame = coordinates.frame if hasattr(coordinates, "frame") else coordinates
-    if not isinstance(frame, Helioprojective):
-        raise ValueError(
-            f"The input coordinate(s) is of type {type(frame).__name__}, but must be in the Helioprojective frame."
-        )
-
-
-def solar_angular_radius(coordinates):
-    """
-    Calculates the solar angular radius as seen by the observer.
-
-    The tangent vector from the observer to the edge of the Sun forms a
-    right-angle triangle with the radius of the Sun as the far side and the
-    Sun-observer distance as the hypotenuse. Thus, the sine of the angular
-    radius of the Sun is ratio of these two distances.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-    Returns
-    -------
-    angle : `~astropy.units.Quantity`
-        The solar angular radius.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
-
-
-@u.quantity_input
-def coordinate_is_on_solar_disk(coordinates):
-    """
-    Checks if the helioprojective Cartesian coordinates are on the solar disk.
-
-    The check is performed by comparing the coordinate's angular distance
-    to the angular size of the solar radius. The solar disk is assumed to be
-    a circle i.e., solar oblateness and other effects that cause the solar disk to
-    be non-circular are not taken in to account.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-    Returns
-    -------
-    `~bool`
-        Returns `True` if the coordinate is on disk, `False` otherwise.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    # Calculate the radial angle from the center of the Sun (do not assume small angles)
-    # and compare it to the angular radius of the Sun
-    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
+    limb_radial_distance =
+...(some characters truncated)

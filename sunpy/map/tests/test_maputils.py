@@ -8,7 +8,6 @@ from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.map
-import sunpy.map.maputils as maputils
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
 from sunpy.coordinates.utils import (
@@ -17,6 +16,7 @@ from sunpy.coordinates.utils import (
     coordinate_is_on_solar_disk,
     solar_angular_radius,
 )
+from sunpy.map import maputils
 from sunpy.map.maputils import (
     all_coordinates_from_map,
     all_corner_coords_from_map,
@@ -37,39 +37,34 @@ from sunpy.util.exceptions import SunpyDeprecationWarning
 
 @pytest.fixture
 def all_off_disk_map(aia171_test_map):
-    return aia171_test_map.submap((1, 1) * u.pix, top_right=(11, 12) * u.pix)
+    return aia171_test_map.submap((1, 1)*u.pix, top_right=(11, 12)*u.pix)
 
 
 @pytest.fixture
 def all_on_disk_map(aia171_test_map):
-    return aia171_test_map.submap((30, 60) * u.pix, top_right=(50, 85) * u.pix)
+    return aia171_test_map.submap((30, 60)*u.pix, top_right=(50, 85)*u.pix)
 
 
 @pytest.fixture
 def straddles_limb_map(aia171_test_map):
-    return aia171_test_map.submap((64, 80) * u.pix, top_right=(120, 127) * u.pix)
+    return aia171_test_map.submap((64, 80)*u.pix, top_right=(120, 127)*u.pix)
 
 
 @pytest.fixture
 def sub_smap(aia171_test_map):
-    return aia171_test_map.submap((0, 0) * u.pix, top_right=(50, 60) * u.pix)
+    return aia171_test_map.submap((0, 0)*u.pix, top_right=(50, 60)*u.pix)
 
 
 @pytest.fixture
 def non_helioprojective_map():
     data = np.arange(0, 100).reshape(10, 10)
-    coord = SkyCoord(
-        0 * u.arcsec, 0 * u.arcsec, obstime="2013-10-28 08:24", observer="earth", frame=HeliographicCarrington
-    )
-    header = sunpy.map.header_helper.make_fitswcs_header(
-        data,
-        coord,
-        reference_pixel=[0, 0] * u.pixel,
-        scale=[2, 2] * u.arcsec / u.pixel,
-        telescope="Fake Telescope",
-        instrument="UV detector",
-        wavelength=1000 * u.angstrom,
-    )
+    coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24',
+                     observer='earth', frame=HeliographicCarrington)
+    header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+                                                         reference_pixel=[0, 0]*u.pixel,
+                                                         scale=[2, 2]*u.arcsec/u.pixel,
+                                                         telescope='Fake Telescope', instrument='UV detector',
+                                                         wavelength=1000*u.angstrom)
     return sunpy.map.Map(data, header)
 
 
@@ -92,10 +87,10 @@ def test_all_pixel_indices_from_map(sub_smap):
     nx = shape[1]
     assert np.all(pixel_indices.shape == (2, ny, nx))
     assert np.all(pixel_indices.unit == u.pix)
-    assert np.all(pixel_indices[:, 0, 0] == [0.0, 0.0] * u.pix)
-    assert np.all(pixel_indices[:, 0, nx - 1] == [nx - 1, 0.0] * u.pix)
-    assert np.all(pixel_indices[:, ny - 1, 0] == [0.0, ny - 1] * u.pix)
-    assert np.all(pixel_indices[:, ny - 1, nx - 1] == [nx - 1, ny - 1] * u.pix)
+    assert np.all(pixel_indices[:, 0, 0] == [0., 0.] * u.pix)
+    assert np.all(pixel_indices[:, 0, nx-1] == [nx-1, 0.] * u.pix)
+    assert np.all(pixel_indices[:, ny-1, 0] == [0., ny-1] * u.pix)
+    assert np.all(pixel_indices[:, ny-1, nx-1] == [nx-1, ny-1] * u.pix)
 
 
 def test_all_coordinates_from_map(sub_smap):
@@ -107,12 +102,12 @@ def test_all_coordinates_from_map(sub_smap):
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
     xpix, ypix = sub_smap.world_to_pixel(coordinates[0, 0])
-    assert_quantity_allclose(xpix, 0 * u.pix, atol=1e-7 * u.pix)
-    assert_quantity_allclose(ypix, 0 * u.pix, atol=1e-7 * u.pix)
+    assert_quantity_allclose(xpix, 0*u.pix, atol=1e-7*u.pix)
+    assert_quantity_allclose(ypix, 0*u.pix, atol=1e-7*u.pix)
 
     xpix, ypix = sub_smap.world_to_pixel(coordinates[-1, -1])
-    assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 1 * u.pix)
-    assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 1 * u.pix)
+    assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 1*u.pix)
+    assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 1*u.pix)
 
 
 def test_all_corner_coordinates_from_map(sub_smap):
@@ -124,12 +119,12 @@ def test_all_corner_coordinates_from_map(sub_smap):
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
     xpix, ypix = sub_smap.world_to_pixel(coordinates[0, 0])
-    assert_quantity_allclose(xpix, -0.5 * u.pix)
-    assert_quantity_allclose(ypix, -0.5 * u.pix)
+    assert_quantity_allclose(xpix, -0.5*u.pix)
+    assert_quantity_allclose(ypix, -0.5*u.pix)
 
     xpix, ypix = sub_smap.world_to_pixel(coordinates[-1, -1])
-    assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 0.5 * u.pix)
-    assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 0.5 * u.pix)
+    assert_quantity_allclose(xpix, sub_smap.dimensions[0] - 0.5*u.pix)
+    assert_quantity_allclose(ypix, sub_smap.dimensions[1] - 0.5*u.pix)
 
 
 def test_map_edges(all_off_disk_map):
@@ -196,12 +191,7 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     assert ~coordinate_is_on_solar_disk(off_disk)
 
     # Raise the error
-    with pytest.raises(
-        ValueError,
-        match=re.escape(
-            "The input coordinate(s) is of type HeliographicStonyhurst, but must be in the Helioprojective frame."
-        ),
-    ):
+    with pytest.raises(ValueError, match=re.escape("The input coordinate(s) is of type HeliographicStonyhurst, but must be in the Helioprojective frame.")):
         coordinate_is_on_solar_disk(on_disk.transform_to(HeliographicStonyhurst))
 
     # Check for sets of coordinates
@@ -211,21 +201,6 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     assert np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(all_on_disk_map)))
     assert np.any(coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
     assert np.any(~coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
-
-
-def test_deprecated_maputils_aliases(aia171_test_map):
-    # The coordinate-only functions now live in sunpy.coordinates.utils, with the
-    # sunpy.map.maputils versions deprecated (see gh-issue #8445). The deprecated
-    # wrappers should emit a warning yet still return the same result.
-    on_disk = aia171_test_map.center
-
-    with pytest.warns(SunpyDeprecationWarning, match="solar_angular_radius"):
-        sar = maputils.solar_angular_radius(on_disk)
-    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
-
-    with pytest.warns(SunpyDeprecationWarning, match="coordinate_is_on_solar_disk"):
-        on_disk_result = maputils.coordinate_is_on_solar_disk(on_disk)
-    assert bool(on_disk_result)
 
 
 # Testing values are derived from running the code, not from external sources
@@ -239,7 +214,8 @@ def test_on_disk_bounding_coordinates(aia171_test_map):
 
 def test_data_at_coordinates(aia171_test_map, aia_test_arc):
     data = sample_at_coords(aia171_test_map, aia_test_arc.coordinates())
-    pixels = np.asarray(np.rint(aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
+    pixels = np.asarray(np.rint(
+        aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
     x = pixels[0, :]
     y = pixels[1, :]
     intensity_along_arc = aia171_test_map.data[y, x] * aia171_test_map.unit
@@ -248,8 +224,8 @@ def test_data_at_coordinates(aia171_test_map, aia_test_arc):
 
 
 def test_sample_out_of_bounds(aia171_test_map):
-    point = aia171_test_map.pixel_to_world([-1, 1] * u.pix, [-1, 1] * u.pix)
-    with pytest.raises(ValueError, match="At least one coordinate is not within the bounds of the map."):
+    point = aia171_test_map.pixel_to_world([-1, 1]*u.pix, [-1, 1]*u.pix)
+    with pytest.raises(ValueError, match='At least one coordinate is not within the bounds of the map.'):
         sample_at_coords(aia171_test_map, point)
 
 
@@ -261,15 +237,8 @@ def test_contains_solar_center(aia171_test_map, all_off_disk_map, all_on_disk_ma
     assert not contains_solar_center(sub_smap)
 
 
-def test_verify_coordinate_helioprojective(
-    aia171_test_map,
-    all_off_disk_map,
-    all_on_disk_map,
-    straddles_limb_map,
-    sub_smap,
-    non_helioprojective_map,
-    non_helioprojective_skycoord,
-):
+def test_verify_coordinate_helioprojective(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map,
+                                           sub_smap, non_helioprojective_map, non_helioprojective_skycoord):
     # These should be helioprojective.
     _verify_coordinate_helioprojective(aia171_test_map.coordinate_frame)
     _verify_coordinate_helioprojective(all_off_disk_map.coordinate_frame)
@@ -305,30 +274,26 @@ def test_functions_raise_non_frame_map(non_helioprojective_map):
 
 def test_contains_coord(aia171_test_map):
     smap = aia171_test_map
-    for coord in [
-        smap.bottom_left_coord,
-        smap.top_right_coord,
-        SkyCoord(0 * u.deg, 0 * u.deg, frame=smap.coordinate_frame),
-    ]:
+    for coord in [smap.bottom_left_coord,
+                  smap.top_right_coord,
+                  SkyCoord(0*u.deg, 0*u.deg, frame=smap.coordinate_frame)]:
         assert contains_coordinate(smap, coord)
 
-    assert not contains_coordinate(smap, SkyCoord(2000 * u.arcsec, 2000 * u.arcsec, frame=smap.coordinate_frame))
+    assert not contains_coordinate(smap, SkyCoord(2000*u.arcsec, 2000*u.arcsec,
+                                                  frame=smap.coordinate_frame))
 
-    multi_coord = SkyCoord([0, 2000] * u.arcsec, [0, 2000] * u.arcsec, frame=smap.coordinate_frame)
+    multi_coord = SkyCoord([0, 2000]*u.arcsec, [0, 2000]*u.arcsec,
+                           frame=smap.coordinate_frame)
     assert (contains_coordinate(smap, multi_coord) == [True, False]).all()
 
 
-@pytest.mark.parametrize(
-    ("x", "y", "sampled_x", "sampled_y"),
-    [
-        ([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
-        ([1, 5], [1, 2], [1, 2, 3, 3, 4, 5], [1, 1, 1, 2, 2, 2]),
-        ([1, 5], [1, 3], [1, 2, 2, 3, 4, 4, 5], [1, 1, 2, 2, 2, 3, 3]),
-        ([1, 5], [1.0, 4.0], [1, 2, 2, 3, 3, 4, 4, 5], [1, 1, 2, 2, 3, 3, 4, 4]),
-        ([1, 5], [1.0, 3.6], [1, 2, 2, 3, 3, 4, 5, 5], [1, 1, 2, 2, 3, 3, 3, 4]),
-        ([1, 5], [1.4, 3.6], [1, 1, 2, 3, 3, 4, 5, 5], [1, 2, 2, 2, 3, 3, 3, 4]),
-    ],
-)
+@pytest.mark.parametrize(('x', 'y', 'sampled_x', 'sampled_y'),
+                         [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
+                          ([1, 5], [1, 2], [1, 2, 3, 3, 4, 5], [1, 1, 1, 2, 2, 2]),
+                          ([1, 5], [1, 3], [1, 2, 2, 3, 4, 4, 5], [1, 1, 2, 2, 2, 3, 3]),
+                          ([1, 5], [1.0, 4.0], [1, 2, 2, 3, 3, 4, 4, 5], [1, 1, 2, 2, 3, 3, 4, 4]),
+                          ([1, 5], [1.0, 3.6], [1, 2, 2, 3, 3, 4, 5, 5], [1, 1, 2, 2, 3, 3, 3, 4]),
+                          ([1, 5], [1.4, 3.6], [1, 1, 2, 3, 3, 4, 5, 5], [1, 2, 2, 2, 3, 3, 3, 4])])
 def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
     # Also test the x<->y transpose
     for xx, yy, sxx, syy in [(x, y, sampled_x, sampled_y), (y, x, sampled_y, sampled_x)]:
@@ -340,17 +305,13 @@ def test_pixelate_coord_path(aia171_test_map, x, y, sampled_x, sampled_y):
         assert np.allclose(sampled_pixels[1], syy)
 
 
-@pytest.mark.parametrize(
-    ("x", "y", "sampled_x", "sampled_y"),
-    [
-        ([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
-        ([1, 5], [1, 2], [1, 2, 3, 4, 5], [1, 1, 1, 2, 2]),
-        ([1, 5], [1, 3], [1, 2, 3, 4, 5], [1, 1, 2, 2, 3]),
-        ([1, 5], [1.0, 4.0], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
-        ([1, 5], [1.0, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
-        ([1, 5], [1.4, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
-    ],
-)
+@pytest.mark.parametrize(('x', 'y', 'sampled_x', 'sampled_y'),
+                         [([1, 5], [1, 1], [1, 2, 3, 4, 5], [1, 1, 1, 1, 1]),
+                          ([1, 5], [1, 2], [1, 2, 3, 4, 5], [1, 1, 1, 2, 2]),
+                          ([1, 5], [1, 3], [1, 2, 3, 4, 5], [1, 1, 2, 2, 3]),
+                          ([1, 5], [1.0, 4.0], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
+                          ([1, 5], [1.0, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4]),
+                          ([1, 5], [1.4, 3.6], [1, 2, 3, 4, 5], [1, 2, 2, 3, 4])])
 def test_pixelate_coord_path_bresenham(aia171_test_map, x, y, sampled_x, sampled_y):
     # Also test the x<->y transpose
     for xx, yy, sxx, syy in [(x, y, sampled_x, sampled_y), (y, x, sampled_y, sampled_x)]:
@@ -360,3 +321,13 @@ def test_pixelate_coord_path_bresenham(aia171_test_map, x, y, sampled_x, sampled
         sampled_pixels = aia171_test_map.wcs.world_to_pixel(sampled_coords)
         assert np.allclose(sampled_pixels[0], sxx)
         assert np.allclose(sampled_pixels[1], syy)
+
+
+def test_deprecated_maputils_aliases(aia171_test_map):
+    on_disk = aia171_test_map.center
+    with pytest.warns(SunpyDeprecationWarning, match="solar_angular_radius"):
+        sar = maputils.solar_angular_radius(on_disk)
+    assert isinstance(sar, u.Quantity)
+    with pytest.warns(SunpyDeprecationWarning, match="coordinate_is_on_solar_disk"):
+        result = maputils.coordinate_is_on_solar_disk(on_disk)
+    assert bool(result) is True

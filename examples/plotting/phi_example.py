@@ -26,18 +26,10 @@ from sunpy.net import attrs as a
 # We first search for all **Solar Orbiter PHI-HRT** (High Resolution Telescope)
 # data products # (excluding 'phi-hrt-stokes' which is not compatible with sunpy.map)
 
-search_results_phi_hrt_all = Fido.search(
-    a.Instrument("PHI"),
-    a.Time("2024-03-23T20:00", "2024-03-23T23:59"),
-    (
-        a.soar.Product("phi-hrt-blos")
-        | a.soar.Product("phi-hrt-bmag")
-        | a.soar.Product("phi-hrt-binc")
-        | a.soar.Product("phi-hrt-bazi")
-        | a.soar.Product("phi-hrt-vlos")
-        | a.soar.Product("phi-hrt-icnt")
-    ),
-)
+search_results_phi_hrt_all = Fido.search(a.Instrument('PHI'), a.Time('2024-03-23T20:00', '2024-03-23T23:59'),
+                                         (a.soar.Product('phi-hrt-blos') | a.soar.Product('phi-hrt-bmag') |
+                                          a.soar.Product('phi-hrt-binc') | a.soar.Product('phi-hrt-bazi')|
+                                          a.soar.Product('phi-hrt-vlos') | a.soar.Product('phi-hrt-icnt')))
 
 print(search_results_phi_hrt_all)
 
@@ -99,18 +91,10 @@ plt.clim(0, 1.2)
 # We first search for all **Solar Orbiter PHI-FDT** (Full Disc Telescope) data products
 # (excluding 'phi-fdt-stokes' which is not compatible with sunpy.map)
 
-search_results_phi_fdt_all = Fido.search(
-    a.Instrument("PHI"),
-    a.Time("2025-02-25T20:00", "2025-02-25T23:59"),
-    (
-        a.soar.Product("phi-fdt-blos")
-        | a.soar.Product("phi-fdt-bmag")
-        | a.soar.Product("phi-fdt-binc")
-        | a.soar.Product("phi-fdt-bazi")
-        | a.soar.Product("phi-fdt-vlos")
-        | a.soar.Product("phi-fdt-icnt")
-    ),
-)
+search_results_phi_fdt_all = Fido.search(a.Instrument('PHI'), a.Time('2025-02-25T20:00', '2025-02-25T23:59'),
+                                          (a.soar.Product('phi-fdt-blos') | a.soar.Product('phi-fdt-bmag') |
+                                            a.soar.Product('phi-fdt-binc') | a.soar.Product('phi-fdt-bazi')|
+                                            a.soar.Product('phi-fdt-vlos')| a.soar.Product('phi-fdt-icnt')))
 
 print(search_results_phi_fdt_all)
 
