@@ -299,6 +299,7 @@ def _get_bounding_coordinates(coords):
                     [rotated_y_min, rotated_y_max] * u.arcsec,
                     frame=coords[0].frame)
 
+
 def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     """
     This function takes pixel coordinates in the warped image (`xy`) and
