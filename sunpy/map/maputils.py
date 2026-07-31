@@ -1,6 +1,3 @@
-"""
-This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
-"""
 import numbers
 from itertools import product
 
@@ -15,14 +12,23 @@ from sunpy.coordinates.utils import coordinate_is_on_solar_disk as _coordinate_i
 from sunpy.coordinates.utils import solar_angular_radius as _solar_angular_radius
 from sunpy.util.decorators import deprecated
 
-__all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
-           'all_corner_coords_from_map',
-           'map_edges', 'solar_angular_radius', 'sample_at_coords',
-           'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
-           'contains_limb', 'coordinate_is_on_solar_disk',
-           'on_disk_bounding_coordinates',
-           'contains_coordinate', 'contains_solar_center',
-           'pixelate_coord_path']
+__all__ = [
+    "all_pixel_indices_from_map",
+    "all_coordinates_from_map",
+    "all_corner_coords_from_map",
+    "map_edges",
+    "solar_angular_radius",
+    "sample_at_coords",
+    "contains_full_disk",
+    "is_all_off_disk",
+    "is_all_on_disk",
+    "contains_limb",
+    "coordinate_is_on_solar_disk",
+    "on_disk_bounding_coordinates",
+    "contains_coordinate",
+    "contains_solar_center",
+    "pixelate_coord_path",
+]
 
 
 def _clip_interval(data, clip_interval):
@@ -32,7 +38,7 @@ def _clip_interval(data, clip_interval):
     """
     if len(clip_interval) != 2:
         raise ValueError("Clip percentile interval must be specified as two numbers.")
-    clip_percentages = clip_interval.to('%').value
+    clip_percentages = clip_interval.to("%").value
     vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(data)
     return vmin, vmax
 
@@ -42,17 +48,19 @@ def _handle_norm(norm, imshow_args):
     Just a helper function to handle the norm of a map or map sequence.
     Avoids some code duplication.
     """
-    msg = ('Cannot manually specify {0}, as the norm '
-            'already has {0} set. To prevent this error set {0} on '
-            '`m.plot_settings["norm"]` or the norm passed to `m.plot`.')
-    if 'vmin' in imshow_args:
+    msg = (
+        "Cannot manually specify {0}, as the norm "
+        "already has {0} set. To prevent this error set {0} on "
+        '`m.plot_settings["norm"]` or the norm passed to `m.plot`.'
+    )
+    if "vmin" in imshow_args:
         if norm.vmin is not None:
-            raise ValueError(msg.format('vmin'))
-        norm.vmin = imshow_args.pop('vmin')
-    if 'vmax' in imshow_args:
+            raise ValueError(msg.format("vmin"))
+        norm.vmin = imshow_args.pop("vmin")
+    if "vmax" in imshow_args:
         if norm.vmax is not None:
-            raise ValueError(msg.format('vmax'))
-        norm.vmax = imshow_args.pop('vmax')
+            raise ValueError(msg.format("vmax"))
+        norm.vmax = imshow_args.pop("vmax")
 
 
 def all_pixel_indices_from_map(smap):
@@ -180,7 +188,7 @@ def sample_at_coords(smap, coordinates):
     .. minigallery:: sunpy.map.sample_at_coords
     """
     if not all(contains_coordinate(smap, coordinates)):
-        raise ValueError('At least one coordinate is not within the bounds of the map.')
+        raise ValueError("At least one coordinate is not within the bounds of the map.")
 
     return u.Quantity(smap.data[smap.wcs.world_to_array_index(coordinates)], smap.unit)
 
@@ -248,7 +256,7 @@ def contains_solar_center(smap):
         True if the map contains the solar center.
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
-    return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
+    return contains_coordinate(smap, SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=smap.coordinate_frame))
 
 
 @deprecated(since="8.1", alternative="sunpy.coordinates.utils.coordinate_is_on_solar_disk")
@@ -402,9 +410,11 @@ def on_disk_bounding_coordinates(smap):
     # the on disk coordinates.
     tx = on_disk_coordinates.Tx.value
     ty = on_disk_coordinates.Ty.value
-    return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
-                    [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
-                    frame=smap.coordinate_frame)
+    return SkyCoord(
+        [np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
+        [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
+        frame=smap.coordinate_frame,
+    )
 
 
 def contains_coordinate(smap, coordinates):
@@ -429,10 +439,7 @@ def contains_coordinate(smap, coordinates):
     ys, xs = smap.wcs.array_shape
     # Converting coordinates to pixels
     xc, yc = smap.wcs.world_to_pixel(coordinates)
-    return ((xc >= -0.5) &
-            (xc <= xs - 0.5) &
-            (yc >= -0.5) &
-            (yc <= ys - 0.5))
+    return (xc >= -0.5) & (xc <= xs - 0.5) & (yc >= -0.5) & (yc <= ys - 0.5)
 
 
 def _bresenham(*, x1, y1, x2, y2):
@@ -452,7 +459,7 @@ def _bresenham(*, x1, y1, x2, y2):
     """
     for x in [x1, y1, x2, y2]:
         if not isinstance(x, numbers.Integral):
-            raise TypeError('All pixel coordinates must be of type int')
+            raise TypeError("All pixel coordinates must be of type int")
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
     sx = 1 if x1 < x2 else -1
@@ -485,7 +492,7 @@ def _intersected_pixels(*, x1, y1, x2, y2):
     """
     dx = x2 - x1
     dy = y2 - y1
-    dr = np.sqrt(dx ** 2 + dy ** 2)
+    dr = np.sqrt(dx**2 + dy**2)
 
     # Get the integer pixels for the start and end points
     ix1, iy1, ix2, iy2 = np.rint([x1, y1, x2, y2]).astype(int)
@@ -562,7 +569,7 @@ def pixelate_coord_path(smap, coord_path, *, bresenham=False):
     pix = []
     for i in range(len(px) - 1):
         algorithm = _bresenham if bresenham else _intersected_pixels
-        this_pix = algorithm(x1=px[i], y1=py[i], x2=px[i+1], y2=py[i+1])
+        this_pix = algorithm(x1=px[i], y1=py[i], x2=px[i + 1], y2=py[i + 1])
 
         # After the first line segment, skip the start point since it is the same as the end point
         # of the previous line segment

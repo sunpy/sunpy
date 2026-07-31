@@ -1,56 +1,142 @@
 """
-========================================
-Combining Datasets and Plotting PHI Data
-========================================
+===============================
+Plotting Solar Orbiter PHI Data
+===============================
 
-This example shows how to combine various PHI datasets and plot them together.
-The example uses data from the PHI instrument on board Solar Orbiter.
+This example demonstrates how to plot Solar Orbiter PHI images.
 
-.. warning::
-
-    This example requires the `sunkit-image <https://docs.sunpy.org/projects/sunkit-image/en/latest/>`__ package.
+The Polarimetric and Helioseismic Imager (PHI) is an imager on the Solar
+Orbiter mission.  See `this page <https://www.mps.mpg.de/solar-physics/solar-orbiter-phi>`__
+for instrument details.
 """
-# sphinx_gallery_tags = ["Solar Orbiter", "PHI", "Visualization"]
+
+# sphinx_gallery_tags = ["Visualization", "SOAR", "Solar Orbiter", "PHI"]
 
 import matplotlib.pyplot as plt
 
-import astropy.units as u
-from astropy.coordinates import SkyCoord
-from astropy.visualization import ImageNormalize, SqrtStretch
-
 import sunpy.map
 from sunpy.coordinates.utils import coordinate_is_on_solar_disk
-from sunpy.data.sample import (
-    PHI_FDT_BINC_IMAGE,
-    PHI_FDT_BAZI_IMAGE,
-    PHI_FDT_BMAG_IMAGE,
-    PHI_FDT_ICNT_IMAGE,
-    PHI_FDT_VLOS_IMAGE,
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+
+###############################################################################
+# Searching for PHI-HRT Data
+# --------------------------
+#
+# We first search for all **Solar Orbiter PHI-HRT** (High Resolution Telescope)
+# data products # (excluding 'phi-hrt-stokes' which is not compatible with sunpy.map)
+
+search_results_phi_hrt_all = Fido.search(
+    a.Instrument("PHI"),
+    a.Time("2024-03-23T20:00", "2024-03-23T23:59"),
+    (
+        a.soar.Product("phi-hrt-blos")
+        | a.soar.Product("phi-hrt-bmag")
+        | a.soar.Product("phi-hrt-binc")
+        | a.soar.Product("phi-hrt-bazi")
+        | a.soar.Product("phi-hrt-vlos")
+        | a.soar.Product("phi-hrt-icnt")
+    ),
 )
-from sunpy.map.maputils import all_coordinates_from_map
+
+print(search_results_phi_hrt_all)
 
 ###############################################################################
-# We start by loading each image. The individual maps can be downloaded using
-# the sample data downloader.
+# Fetching the First Available PHI-HRT Files
+# ------------------------------------------
+files_phi_hrt_all = Fido.fetch(search_results_phi_hrt_all[:, 0])
 
-phi_fdt_bmag_map = sunpy.map.Map(PHI_FDT_BMAG_IMAGE)
-phi_fdt_binc_map = sunpy.map.Map(PHI_FDT_BINC_IMAGE)
-phi_fdt_bazi_map = sunpy.map.Map(PHI_FDT_BAZI_IMAGE)
-phi_fdt_vlos_map = sunpy.map.Map(PHI_FDT_VLOS_IMAGE)
-phi_fdt_icnt_map = sunpy.map.Map(PHI_FDT_ICNT_IMAGE)
 
 ###############################################################################
-# The data contains NaN values off the solar disk. We now create a mask using
-# the ``coordinate_is_on_solar_disk`` function. This is a useful function for
-# creating masks, as we have done in other examples such as
-# :ref:`sphx_glr_generated_gallery_plotting_masked_composite_plot.py`.
+# Loading and Plotting PHI-HRT Data
+# ---------------------------------
 
-hpc_coords = all_coordinates_from_map(phi_fdt_bmag_map)
+phi_hrt_blos_map = sunpy.map.Map(files_phi_hrt_all[0])
+phi_hrt_bmag_map = sunpy.map.Map(files_phi_hrt_all[1])
+phi_hrt_binc_map = sunpy.map.Map(files_phi_hrt_all[2])
+phi_hrt_bazi_map = sunpy.map.Map(files_phi_hrt_all[3])
+phi_hrt_vlos_map = sunpy.map.Map(files_phi_hrt_all[4])
+phi_hrt_icnt_map = sunpy.map.Map(files_phi_hrt_all[5])
+
+########################################
+
+phi_hrt_blos_map.plot()
+plt.colorbar(label=phi_hrt_blos_map.unit.to_string())
+plt.clim(-1500, 1500)
+
+########################################
+
+phi_hrt_bmag_map.plot()
+plt.colorbar(label=phi_hrt_bmag_map.unit.to_string())
+plt.clim(0, 2500)
+
+########################################
+
+phi_hrt_binc_map.plot()
+plt.colorbar(label=phi_hrt_binc_map.unit.to_string())
+
+########################################
+
+phi_hrt_bazi_map.plot()
+plt.colorbar(label=phi_hrt_bazi_map.unit.to_string())
+
+########################################
+
+phi_hrt_vlos_map.plot()
+plt.colorbar(label=phi_hrt_vlos_map.unit.to_string())
+plt.clim(-2, 2)
+
+########################################
+
+phi_hrt_icnt_map.plot()
+plt.colorbar(label=phi_hrt_icnt_map.unit.to_string())
+plt.clim(0, 1.2)
+
+###############################################################################
+# Searching for PHI-FDT Data
+# --------------------------
+#
+# We first search for all **Solar Orbiter PHI-FDT** (Full Disc Telescope) data products
+# (excluding 'phi-fdt-stokes' which is not compatible with sunpy.map)
+
+search_results_phi_fdt_all = Fido.search(
+    a.Instrument("PHI"),
+    a.Time("2025-02-25T20:00", "2025-02-25T23:59"),
+    (
+        a.soar.Product("phi-fdt-blos")
+        | a.soar.Product("phi-fdt-bmag")
+        | a.soar.Product("phi-fdt-binc")
+        | a.soar.Product("phi-fdt-bazi")
+        | a.soar.Product("phi-fdt-vlos")
+        | a.soar.Product("phi-fdt-icnt")
+    ),
+)
+
+print(search_results_phi_fdt_all)
+
+###############################################################################
+# Fetching the First Available PHI-FDT File
+# -----------------------------------------
+files_phi_fdt_all = Fido.fetch(search_results_phi_fdt_all)
+
+###############################################################################
+# Loading PHI-FDT Data
+# --------------------
+# We load each map and rotate to point Solar North up
+phi_fdt_blos_map = sunpy.map.Map(files_phi_fdt_all[0]).rotate(recenter=True)
+phi_fdt_bmag_map = sunpy.map.Map(files_phi_fdt_all[1]).rotate(recenter=True)
+phi_fdt_binc_map = sunpy.map.Map(files_phi_fdt_all[2]).rotate(recenter=True)
+phi_fdt_bazi_map = sunpy.map.Map(files_phi_fdt_all[3]).rotate(recenter=True)
+phi_fdt_vlos_map = sunpy.map.Map(files_phi_fdt_all[4]).rotate(recenter=True)
+phi_fdt_icnt_map = sunpy.map.Map(files_phi_fdt_all[5]).rotate(recenter=True)
+
+###############################################################################
+# Make a mask to mask out off-disc pixels and make new maps
+# ---------------------------------------------------------------
+hpc_coords = sunpy.map.all_coordinates_from_map(phi_fdt_blos_map)
 mask = ~coordinate_is_on_solar_disk(hpc_coords)
 
-###############################################################################
-# We now apply the mask to each of the maps.
-
+phi_fdt_blos_map = sunpy.map.Map(phi_fdt_blos_map.data, phi_fdt_blos_map.meta, mask=mask)
 phi_fdt_bmag_map = sunpy.map.Map(phi_fdt_bmag_map.data, phi_fdt_bmag_map.meta, mask=mask)
 phi_fdt_binc_map = sunpy.map.Map(phi_fdt_binc_map.data, phi_fdt_binc_map.meta, mask=mask)
 phi_fdt_bazi_map = sunpy.map.Map(phi_fdt_bazi_map.data, phi_fdt_bazi_map.meta, mask=mask)
@@ -58,60 +144,37 @@ phi_fdt_vlos_map = sunpy.map.Map(phi_fdt_vlos_map.data, phi_fdt_vlos_map.meta, m
 phi_fdt_icnt_map = sunpy.map.Map(phi_fdt_icnt_map.data, phi_fdt_icnt_map.meta, mask=mask)
 
 ###############################################################################
-# Next, we plot each of the maps using a colormap appropriate for the
-# respective quantity. We also add a colorbar to each plot.
+# Plotting PHI-FDT Data
+# ---------------------
 
-fig = plt.figure(figsize=(10, 15))
+phi_fdt_blos_map.plot()
+plt.colorbar(label=phi_fdt_blos_map.unit.to_string())
+plt.clim(-1500, 1500)
 
 ########################################
 
-norm = ImageNormalize(vmin=0, vmax=1500, stretch=SqrtStretch(), clip=False)
-ax1 = fig.add_subplot(5, 1, 1, projection=phi_fdt_bmag_map)
-transparent_cmap = plt.get_cmap("cubehelix")
-transparent_cmap.set_bad(alpha=0.0)
-phi_fdt_bmag_map.plot(axes=ax1, cmap=transparent_cmap, norm=norm, annotate=False)
-ax1.set_title(f"{phi_fdt_bmag_map.instrument} {phi_fdt_bmag_map.measurement}")
-ax1.set_xlabel("Solar-X [arcsec]")
-ax1.set_ylabel("Solar-Y [arcsec]")
+phi_fdt_bmag_map.plot()
 plt.colorbar(label=phi_fdt_bmag_map.unit.to_string())
 plt.clim(0, 1500)
 
 ########################################
 
-ax2 = fig.add_subplot(5, 1, 2, projection=phi_fdt_binc_map)
-phi_fdt_binc_map.plot(axes=ax2)
-ax2.set_title(f"{phi_fdt_binc_map.instrument} {phi_fdt_binc_map.measurement}")
-ax2.set_xlabel("Solar-X [arcsec]")
-ax2.set_ylabel("Solar-Y [arcsec]")
+phi_fdt_binc_map.plot()
 plt.colorbar(label=phi_fdt_binc_map.unit.to_string())
 
 ########################################
 
-ax3 = fig.add_subplot(5, 1, 3, projection=phi_fdt_bazi_map)
-phi_fdt_bazi_map.plot(axes=ax3)
-ax3.set_title(f"{phi_fdt_bazi_map.instrument} {phi_fdt_bazi_map.measurement}")
-ax3.set_xlabel("Solar-X [arcsec]")
-ax3.set_ylabel("Solar-Y [arcsec]")
+phi_fdt_bazi_map.plot()
 plt.colorbar(label=phi_fdt_bazi_map.unit.to_string())
 
 ########################################
 
-ax4 = fig.add_subplot(5, 1, 4, projection=phi_fdt_vlos_map)
-phi_fdt_vlos_map.plot(axes=ax4)
-ax4.set_title(f"{phi_fdt_vlos_map.instrument} {phi_fdt_vlos_map.measurement}")
-ax4.set_xlabel("Solar-X [arcsec]")
-ax4.set_ylabel("Solar-Y [arcsec]")
+phi_fdt_vlos_map.plot()
 plt.colorbar(label=phi_fdt_vlos_map.unit.to_string())
 plt.clim(-2, 2)
 
 ########################################
 
-ax5 = fig.add_subplot(5, 1, 5, projection=phi_fdt_icnt_map)
-phi_fdt_icnt_map.plot(axes=ax5)
-ax5.set_title(f"{phi_fdt_icnt_map.instrument} {phi_fdt_icnt_map.measurement}")
-ax5.set_xlabel("Solar-X [arcsec]")
-ax5.set_ylabel("Solar-Y [arcsec]")
+phi_fdt_icnt_map.plot()
 plt.colorbar(label=phi_fdt_icnt_map.unit.to_string())
 plt.clim(0, 1.2)
-
-plt.show()
