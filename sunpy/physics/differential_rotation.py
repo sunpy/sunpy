@@ -58,502 +58,401 @@ def _get_new_observer(initial_obstime, observer, time):
     over which to the amount of solar rotation is calculated. Note that using
     the "time" keyword assumes that the new observer is on the Earth. This may
     be a reasonable assumption depending on the application.
-
-    Either the "observer" or "time" argument must be specified, but both
-    cannot be specified at the same time and both cannot be None.
-
-    Parameters
-    ----------
-    initial_obstime : `~astropy.time.Time`
-        The initial time before solar rotation has been applied.
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
-        The location of the new observer in space and time (the observer must have an
-        interpretable obstime property).
-    time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
-        Used to define the duration over which the amount of solar rotation is
-        calculated. If 'time' is an `~astropy.time.Time` then the time interval is
-        "time - initial_obstime"; if 'time' is `~astropy.time.TimeDelta` or
-        `~astropy.units.Quantity` then the calculation is "initial_obstime + time".
-
-    Returns
-    -------
-    new_observer : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
-        The position of the observer in space and time. If the "time" keyword is used
-        the output is an `~astropy.coordinates.SkyCoord`. If the "observer" keyword
-        is not None the output has the same type as the "observer" keyword. In all cases
-        the output is specified in the heliographic Stonyhurst coordinate system.
     """
-    _validate_observer_args(initial_obstime, observer, time)
-    # Check the input and create the new observer
-    if observer is not None:
-        new_observer = observer
-    elif time is not None:
-        warn_user("Using 'time' assumes an Earth-based observer.")
-        if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
-            new_observer_time = initial_obstime + time
-        else:
-            new_observer_time = parse_time(time)
-        new_observer = get_earth(new_observer_time)
-    return new_observer
+    if observer is None:
+        obstime = parse_time(time) + initial_obstime
+        observer = get_earth(obstime)
+    else:
+        obstime = observer.obstime
+    return observer, obstime
 
 
+@u.quantity_input
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
     """
     Given a coordinate on the Sun, calculate where that coordinate maps to
-    as seen by a new observer at some later or earlier time, given that
-    the input coordinate rotates according to the solar rotation profile.
+    at some later time, as a result of solar differential rotation.
 
-    The amount of solar rotation is based on the amount of time between the
-    observation time of the input coordinate and the observation time of the
-    new observer. The new observer is specified in one of two ways, either
-    using the "observer" or "time" keywords.
+    The returned coordinate will have an observation time and observer location
+    according to the inputs described below.
 
-    If the "observer" keyword is set, it is used to specify the location
-    of the new observer in space and time. The difference between the
-    coordinate time and the new observer time is used to calculate the amount
-    of solar rotation applied, and the location of the new observer in space
-    is used to calculate where the rotated coordinate is as seen from the
-    new observer.
-
-    If the "time" keyword is set, it is used to specify the number of
-    seconds to rotate the coordinate by. Note that using the "time" keyword
-    assumes that the new observer is on the Earth. This may be a reasonable
-    assumption depending on the application.
-
-    Either the "observer" or "time" keyword must be specified, but both
-    cannot be specified at the same time.
+    .. note::
+        The functions assumes the input coordinate is a position on the Sun
+        and therefore ignores the radial component of the 3D input coordinate.
 
     Parameters
     ----------
     coordinate : `~astropy.coordinates.SkyCoord`
-        Any valid coordinate which is transformable to Heliographic Stonyhurst.
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
-        The location of the new observer in space and time (the observer must have an
-        interpretable obstime property).
-    time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
-    **diff_rot_kwargs : `dict`
-        Keyword arguments are passed on as keyword arguments to `~sunpy.sun.models.differential_rotation`.
-        Note that the keyword "frame_time" is automatically set to the value
-        "sidereal".
+        Any valid coordinate which is transformable to a Stonyhurst Heliographic
+        coordinate.
 
-    Returns
-    -------
-    coordinate : `~astropy.coordinates.SkyCoord`
-        The locations of the input coordinates after the application of
-        solar rotation as seen from the point-of-view of the new observer.
+    observer : `~astropy.coordinates.SkyCoord` or None, optional
+        The location and observation time for the final observation of the
+        rotated coordinate. If the 'time' keyword is specified, this keyword
+        must be `None`. The observation time of the output coordinate is
+        ``observer.obstime``. When transforming the input coordinate to the
+        output coordinate, the intermediate rotation calculations assume the
+        observations are made from Earth.
 
-    Notes
-    -----
-    The translational motion of the Sun over the time interval will be ignored.
-    See :func:`~sunpy.coordinates.transform_with_sun_center`.
+    time : `~sunpy.time.parse_time` compatible object, optional
+        The time difference between the start and end time. The keyword
+        'time' must be of type `~astropy.time.TimeDelta`,
+        `~astropy.units.Quantity` or a value that can be
+        parsed using `~astropy.time.TimeDelta`. The keyword is used as the
+        duration over which to calculate the apparent motion of a solar feature
+        due to differential rotation. The output coordinate will have an
+        observation time of the initial coordinate plus this time.
 
-    Examples
-    --------
-    >>> import astropy.units as u
-    >>> from astropy.coordinates import SkyCoord
-    >>> from sunpy.coordinates import Helioprojective, get_body_heliographic_stonyhurst
-    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
-    >>> from sunpy.time import parse_time
-    >>> start_time = parse_time('2010-09-10 12:34:56')
-    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time,
-    ...              observer="earth", frame=Helioprojective)
-    >>> solar_rotate_coordinate(c, time=start_time + 25*u.hr)  # doctest: +SKIP
-    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
-        (-5.68434189e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-        (-378.27830452, 105.70767875, 1.00245134)>
-    >>> new_observer = get_body_heliographic_stonyhurst("earth", start_time + 6*u.day)
-    >>> solar_rotate_coordinate(c, observer=new_observer)
-    <SkyCoord (Helioprojective: obstime=2010-09-16T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-16T12:34:56.000, rsun=695700.0 km): (lon, lat, radius) in (deg, deg, AU)
-        (2.65061438e-14, 7.18706547, 1.00534174)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
-        (620.42567049, 126.13662663, 1.00185786)>
-    """
-    # Check the input and create the new observer
-    new_observer = _get_new_observer(coordinate.obstime, observer, time)
-
-    # The keyword "frame_time" must be explicitly set to "sidereal"
-    # when using this function.
-    diff_rot_kwargs.update({"frame_time": "sidereal"})
-
-    # Calculate the interval between the start and end time
-    interval = (new_observer.obstime - coordinate.obstime).to(u.s)
-
-    # Compute Stonyhurst Heliographic coordinates - returns (longitude,
-    # latitude). Points off the limb are returned as nan.
-    heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
-
-    # Compute the differential rotation
-    drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
-
-    # Rotate the input coordinate as seen by the original observer
-    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
-                                    heliographic_coordinate.lat,
-                                    heliographic_coordinate.radius,
-                                    obstime=coordinate.obstime,
-                                    frame=HeliographicStonyhurst)
-
-    # Calculate where the rotated coordinate appears as seen by new observer
-    # for the coordinate system of the input coordinate. The translational
-    # motion of the Sun will be ignored for the transformation.
-
-    if "observer" in coordinate.frame.frame_attributes.keys():
-        frame_newobs = coordinate.frame.replicate_without_data(observer=new_observer,
-                                                           obstime=new_observer.obstime)
-    else:
-        frame_newobs = coordinate.frame.replicate_without_data(obstime=new_observer.obstime)
-    with transform_with_sun_center():
-        return heliographic_rotated.transform_to(frame_newobs)
-
-
-def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
-    """
-    Helper function that is used to calculate where the edge of a rectangular
-    map move to on rotation.
-
-    If all the pixels passed in are not on disk and
-    therefore subject to solar differential rotation, the coordinates
-    corresponding to the input pixels are returned.
-
-    Parameters
-    ----------
-    smap : `~sunpy.map.Map`
-        The input map from which the pixel coordinates are calculated.
-    pixels : `~astropy.units.Quantity`
-        A Quantity array of shape (M, 2) in pixel units. Values (:, 0) are the x values of the
-        pixel indices, and values ``[:, 1]`` are the "y" values of the pixel indices.
-    observer : `~astropy.coordinates.SkyCoord`
-        The location of the observer.
-    **diff_rot_kwargs : None, `~dict`
-        Keyword arguments accepted by `~sunpy.sun.models.differential_rotation`.
-
-    Returns
-    -------
-    coordinates : `~astropy.coordinates.SkyCoord`
-        The coordinates of a rotated edge.
-    """
-    # Coordinates
-    c = smap.wcs.pixel_to_world(pixels[:, 0].value, pixels[:, 1].value)
-
-    # Only apply solar rotation if all coordinates are on the disk.
-    if np.all(~coordinate_is_on_solar_disk(c)):
-        coordinates = deepcopy(c)
-    else:
-        coordinates = solar_rotate_coordinate(c, observer=observer, **diff_rot_kwargs)
-    return coordinates
-
-
-def _get_extreme_position(coords, axis, operator=np.nanmax):
-    """
-    Helper function that calculates an extreme position from a list of
-    coordinates.
-
-    Parameters
-    ----------
-    coords : `~list`
-        Each member of the list is a `~astropy.coordinates.SkyCoord`.
-    axis : 'Tx', 'Ty'
-        Which helioprojective axis to examine.
-    operator : numpy function
-        A numpy function that finds an extreme value in an array
-        of helioprojective coordinate values. Defaults to `numpy.nanmax`.
-
-    Returns
-    -------
-    `float`
-        An extreme position in units of arcseconds.
-    """
-    extreme_values = []
-    for coord in coords:
-        if axis == 'Tx':
-            extreme_value = operator(coord.Tx.value)
-        elif axis == 'Ty':
-            extreme_value = operator(coord.Ty.value)
-        else:
-            raise ValueError('The "axis" argument must be either "Tx" or "Ty".')
-        extreme_values.append(extreme_value)
-
-    return operator(extreme_values)
-
-
-def _get_bounding_coordinates(coords):
-    """
-    Helper function that returns the bottom left and top right coordinates
-    that define a bounding box enclosing the passed in coordinates.
-
-    Parameters
-    ----------
-    coords : `list`
-        Each member of the list is a `~astropy.coordinates.SkyCoord`.
+    diff_rot_kwargs : `dict`
+        Keyword arguments are passed on to `sunpy.physics.differential_rotation.diff_rot`.
 
     Returns
     -------
     `~astropy.coordinates.SkyCoord`
-        A  `~astropy.coordinates.SkyCoord` of length 2 that specifies the
-        bottom left hand (first entry) and top right hand (second entry) corner
-        of a bounding box that minimally encloses all the input coordinates.
-    """
-    rotated_x_min = _get_extreme_position(coords, "Tx", operator=np.nanmin)
-    rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
-    rotated_y_min = _get_extreme_position(coords, "Ty", operator=np.nanmin)
-    rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
-    return SkyCoord([rotated_x_min, rotated_x_max] * u.arcsec,
-                    [rotated_y_min, rotated_y_max] * u.arcsec,
-                    frame=coords[0].frame)
-
-
-def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
-    """
-    This function takes pixel coordinates in the warped image (`xy`) and
-    calculates the pixel locations of those pixels in the map.
-
-    To do this it converts the input pixel coordinates to helioprojective
-    coordinates as seen by new_observer, then transforms them to heliographic
-    Stonyhurst, adds the differential rotation correction and then transforms
-    them back to helioprojective coordinates as seen by the map observer and
-    then calculates their corresponding pixel coordinates in the input map.
-
-    This is an inverse function needed by `skimage.transform.warp`.
-
-    Parameters
-    ----------
-    xy : `numpy.ndarray`
-        Pixel coordinates in the warped image.
-    smap : `~sunpy.map.GenericMap`
-        Original map that we want to transform.
-
-    Returns
-    -------
-    xy2 : `numpy.ndarray`
-        Pixel coordinates in the map corresponding to the input pixels in the
-        warped image.
+        The locations of the input coordinate after differential rotation and
+        with observation time and observer according to `time` or `observer`.
 
     Notes
     -----
-    The translational motion of the Sun over the time interval will be ignored.
-    See :func:`~sunpy.coordinates.transform_with_sun_center`.
+    The longitude and latitude columns of the input coordinate influence the
+    differential rotation calculation via the definition of the
+    'rot' keyword from the `sunpy.physics.differential_rotation.diff_rot`
+    function. In the default case, where `time` is provided and `observer` is
+    not, the time difference is used to compute the amount of differential
+    rotation, i.e. the input `time` keyword is *not* the output time itself.
+    The output observation time is the input observation time plus the provided
+    `time` keyword.
+
+    Examples
+    --------
+    A coordinate on the Sun at a specific time
+
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import frames
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
+    >>> start_time = '2010-09-10 12:34:56'
+    >>> end_time = '2010-09-12 01:00:00'
+    >>> c = SkyCoord(-512*u.arcsec, 165*u.arcsec, obstime=start_time, observer="earth", frame=frames.Helioprojective)
+    >>> solar_rotate_coordinate(c, time=end_time)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+    <SkyCoord (Helioprojective: obstime=2010-09-12T01:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (-298.64620102, 166.60837391, 1.00633102)>
     """
-    # Suppress NaN warnings in coordinate transforms
-    import warnings
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
+    initial_obstime = coordinate.obstime
+    observer, new_obstime = _get_new_observer(initial_obstime, observer, time)
 
-        # The time interval between the new observer time and the map observation time.
-        interval = (parse_time(new_observer.obstime) - parse_time(smap.date)).to(u.s)
+    # Calculate the differential rotation in longitude and latitude.
+    new_lon = _diff_rot(coordinate, initial_obstime, new_obstime, **diff_rot_kwargs)
 
-        # We need to get the input pixel coordinates into the OUTPUT HPC frame.
-        # To save us having to construct a WCS etc, we do the transformation
-        # using the output map, and then replace the observer in place before
-        # transforming to HGS. This is acceptable because the pixel -> world
-        # transformation is independent of the observer.
-        input_pixels = xy.T
-        map_coord = smap.wcs.pixel_to_world(*input_pixels)
-        output_hpc_coords = SkyCoord(map_coord.Tx,
-                                     map_coord.Ty,
-                                     map_coord.distance,
-                                     obstime=new_observer.obstime,
-                                     observer=new_observer,
-                                     frame=Helioprojective)
-        heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
+    # The input coordinate is transformed to Heliographic Stonyhurst and back to
+    # get the correct latitude of the output coordinate (i.e. no latitude
+    # dependence on rotational evolution).
+    hgc = coordinate.transform_to(HeliographicStonyhurst(obstime=initial_obstime))
 
-        # Compute the differential rotation.
-        drot = sunpy.sun.models.differential_rotation(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+    # Return the coordinate as SkyCoord in the HGS frame so that it is easy for
+    # users to transform.
+    new_coord = SkyCoord(new_lon, hgc.lat, obstime=new_obstime, observer=observer, frame=HeliographicStonyhurst)
 
-        # The change in longitude is negative because we are mapping from the
-        # new coordinates to the old.
-        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot,
-                                 heliographic_coordinate.lat,
-                                 heliographic_coordinate.radius,
-                                 obstime=heliographic_coordinate.obstime,
-                                 frame=HeliographicStonyhurst)
-
-        with transform_with_sun_center():
-            # As seen from the map observer, which coordinates are behind the Sun.
-            where_off_disk_from_map_observer = rotated_coord.transform_to(
-                Heliocentric(observer=smap.observer_coordinate)).z.value < 0
-
-            # Re-project the pixels which are on disk back to location of the original observer
-            coordinates_at_map_observer = rotated_coord.transform_to(smap.coordinate_frame)
-
-        # Go back to pixel coordinates
-        x2, y2 = smap.wcs.world_to_pixel(coordinates_at_map_observer)
-
-    # Re-stack the data to make it correct output form
-    xy2 = np.dstack([x2.T.flat, y2.T.flat])[0]
-    # Set the off disk coordinates to NaN so they are not included in the output image.
-    xy2[where_off_disk_from_map_observer.flat] = np.nan
-
-    return xy2
+    # Convert from HGS to whatever the frame of the input coordinate was
+    return new_coord.transform_to(coordinate.frame.replicate_without_data(obstime=new_obstime, observer=observer))
 
 
-def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
+def _transform_to_observer_lonlat(coordinate, obstime):
     """
-    Warp a `~sunpy.map.GenericMap` to take into account both solar differential
-    rotation and the changing location of the observer.
+    Helper function that converts the input coordinate to the observer-centered
+    longitude and latitude.
+    """
+    if not isinstance(coordinate.frame, HeliographicStonyhurst):
+        coordinate = coordinate.transform_to(HeliographicStonyhurst(obstime=obstime))
+    return coordinate.lon, coordinate.lat
 
-    .. warning::
-        This function, while greatly improved in 1.0, is still experimental.
-        Please validate that it gives you results you expect and report any
-        discrepancies on the SunPy issue tracker.
 
-    The function transforms the input map data pixels by first rotating each
-    pixel according to solar differential rotation. The amount of solar
-    differential applied is calculated by the time difference between the
-    observation time of map and the new observation time, as specified by either the
-    "time" keyword or the "obstime" property of the "observer" keyword.
-    The location of the rotated pixels are then transformed to locations on the Sun
-    as seen from the new observer position. This is desirable since in most cases
-    the observer does not remain at a fixed position in space. If
-    the "time" keyword is used then the new observer position is assumed to
-    be based on the location of the Earth. If the "observer" keyword is used then
-    this defines the new observer position.
+def _find_coordinate_corner_indices(coords):
+    """
+    Returns the indices of the four corner coordinates of the input coordinate array.
 
-    The function works with full disk maps and maps that contain portions of the
-    solar disk (maps that are entirely off-disk will raise an error). When the
-    input map contains the full disk, the output map has the same dimensions as
-    the input map. When the input map images only part of the solar disk, only
-    the on-disk pixels are differentially rotated and the output map can have
-    a different dimensions compared to the input map. In this case any off-disk
-    emission shown in the input map is not included in the output map.
+    Parameters
+    ----------
+    coords : `~astropy.coordinates.SkyCoord`
+        Coordinate array of shape "(N, M, ...)".
+
+    Returns
+    -------
+    `tuple`
+        Indices of the four corner coordinates as four (N,) shape arrays.
+    """
+    # If the input is a scalar coordinate, we return an empty tuple.
+    if not coords.shape:
+        return ()
+    # Otherwise find the indices for the four corners of the coordinate array.
+    corners = np.array([[0, 0],
+                        [0, coords.shape[1] - 1],
+                        [coords.shape[0] - 1, 0],
+                        [coords.shape[0] - 1, coords.shape[1] - 1]])
+    return tuple(np.split(corners, 4, axis=0))
+
+
+def _get_diff_rot_factors(coordinate, time_start, time_end, **kwargs):
+    """
+    Helper function that calculates the factor required to scale the
+    output from a differential rotation calculation to the specific time range
+    of the input coordinate.
+
+    The differential rotation is calculated for each corner of the input
+    coordinate array. The minimum and maximum values are used to account for
+    the entire coordinate array.
+    """
+    corners = _find_coordinate_corner_indices(coordinate)
+    if len(corners) == 0:
+        # Scalar coordinate
+        lon, lat = _transform_to_observer_lonlat(coordinate, time_start)
+        return _diff_rot_value(lon, lat, time_start, time_end, **kwargs)
+    else:
+        corner_drots = []
+        for corner in corners:
+            lon, lat = _transform_to_observer_lonlat(coordinate[tuple(corner[0])], time_start)
+            corner_drots.append(_diff_rot_value(lon, lat, time_start, time_end, **kwargs))
+        corner_drots = u.Quantity(corner_drots)
+        return u.Quantity([corner_drots.min(), corner_drots.max()])
+
+
+def _diff_rot_value(lon, lat, time_start, time_end, **kwargs):
+    dt = TimeDelta(time_end - time_start).to(u.s).value
+    return sun.sun.models.diff_rot_value(lon, lat, dt, **kwargs)
+
+
+def _diff_rot(coordinate, time_start, time_end, **kwargs):
+    """
+    Calculate the differential rotation value for the input coordinate.
+
+    Parameters
+    ----------
+    coordinate : `~astropy.coordinates.SkyCoord`
+        Coordinate on the Sun.
+    time_start : `~astropy.time.Time`
+        Start time for the differential rotation calculation.
+    time_end : `~astropy.time.Time`
+        End time for the differential rotation calculation.
+    kwargs : `dict`
+        Keyword arguments that are passed to the differential rotation functions.
+    """
+    lon, lat = _transform_to_observer_lonlat(coordinate, time_start)
+    return _diff_rot_value(lon, lat, time_start, time_end, **kwargs)
+
+
+def _is_missing_data_invalid(input_map):
+    """
+    Returns `True` if the missing data value of the input map is not equal to
+    the expected integer value expected by the ``WCS.expmap_rotate`` function.
+    """
+    return input_map.mask is not None and not np.array_equal(input_map.mask, ~np.isfinite(input_map.data))
+
+
+@u.quantity_input
+def differential_rotate(smap, *, time=None, observer=None, **diff_rot_kwargs):
+    """
+    Given a map, calculate how the map data is transformed as a result of solar
+    differential rotation.
+
+    This function will transform a map so that solar features have been
+    differentially rotated to their apparent positions at the
+    observation time according to the `time` or `observer` inputs, or equivalently
+    it will de-rotate a map from the observation time of the map to the observation
+    time according to the `time` or `observer` inputs.
+
+    The rotation calculation is performed in the frame of reference of the
+    initial observation, and is a simplified calculation of the solar
+    differential rotation (i.e., it does not account for variations in
+    rotation rate with depth).
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        Original map that we want to transform.
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, `None`, optional
-        The location of the new observer.
-        Instruments in Earth orbit can be approximated by using the position
-        of the Earth at the observation time of the new observer.
-    time : sunpy-compatible time, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, `None`, optional
-        Used to define the duration over which the amount of solar rotation is
-        calculated. If 'time' is an `~astropy.time.Time` then the time interval
-        is difference between 'time' and the map observation time. If 'time' is
-        `~astropy.time.TimeDelta` or `~astropy.units.Quantity` then the calculation
-        is "initial_obstime + time".
+        The input map, which is differentially rotated.
+    time : `~sunpy.time.parse_time` compatible object, optional
+        The time difference between the start and end time. The keyword
+        'time' must be of type `~astropy.time.TimeDelta`,
+        `~astropy.units.Quantity` or a value that can be
+        parsed using `~astropy.time.TimeDelta`. The keyword is used as the
+        duration over which to calculate the apparent motion of a solar feature
+        due to differential rotation. The output map will have an observation
+        time of the initial map plus this time.
+    observer : `~astropy.coordinates.SkyCoord`, optional
+        The location and observation time for the final observation of the
+        rotated map. The output map will have the same observation time and
+        observer as this input. Defaults to None.
+        If the 'time' keyword is specified, this keyword
+        must be `None`. The observation time of the output map is
+        ``observer.obstime``. When transforming the input map to the
+        output map, the intermediate rotation calculations assume the
+        observations are made from Earth.
+    diff_rot_kwargs : `dict`
+        Keyword arguments are passed on to `sunpy.physics.differential_rotation.diff_rot`.
 
     Returns
     -------
     `~sunpy.map.GenericMap`
-        A map with the result of applying solar differential rotation to the
-        input map.
+        The differentially rotated map with the same units as the input map.
 
     Notes
     -----
-    The translational motion of the Sun over the time interval will be ignored.
-    See :func:`~sunpy.coordinates.transform_with_sun_center`.
+    The output map has the same dimensions and data shape as the input map.
+    This function does not interpolate from the original map onto a new grid.
+    The differential rotation is applied to the image by shifting the
+    original image data to new pixel locations. This will cause pixels to be
+    wrapped around from one edge of the image to another, and can cause
+    artifacts in the output image.
+
+    .. note::
+
+        This function currently only works with maps that have a
+        `~sunpy.coordinates.Helioprojective` frame.
+
+    Examples
+    --------
+    A simple example showing the use of `differential_rotate` for a Helioprojective map.
+
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_ROTATED
+    >>> import astropy.units as u
+    >>> aia_map = sunpy.map.Map(AIA_171_ROTATED)  # doctest: +REMOTE_DATA
+    >>> rotated_map = differential_rotate(aia_map, time=12*u.h)  # doctest: +REMOTE_DATA
     """
-    # If the entire map is off-disk, return an error so the user is aware.
+    # Need to handle the edge case where the entire map is off disk.
+    # This is currently a limitation of the approach. We check this first,
+    # before any of the transformations take place, so the user gets a clear
+    # error message about this.
     if is_all_off_disk(smap):
-        raise ValueError("The entire map is off disk. No data to differentially rotate.")
+        warn_user("The entire map is off the solar disk. This can lead to errors in the")
 
-    # Get the new observer
-    new_observer = _get_new_observer(smap.date, observer, time)
+    # Handle maps that are a submap of the full disk (i.e. a zoom-in map)
+    # This is a common case, and one that we can handle efficiently.
+    # The key is that we want to be careful about the case where the map
+    # contains off-disk pixels.
+    if not contains_full_disk(smap) and not is_all_on_disk(smap):
+        warn_user("Input contains both on-disk and off-disk pixels. This can lead to artifacts.")
 
-    # Only this function needs scikit image
-    from skimage import transform
+    initial_obstime = smap.date
+    new_observer, new_obstime = _get_new_observer(initial_obstime, observer, time)
 
-    # Check whether the input contains the full disk of the Sun
-    is_sub_full_disk = not contains_full_disk(smap)
-    if is_sub_full_disk:
-        # Find the minimal submap of the input map that includes all the
-        # on disk pixels. This is required in order to calculate how
-        # much to pad the output (solar-differentially rotated) data array by
-        # compared to the input map.
-        # The amount of padding is dependent on the amount of solar differential
-        # rotation and where the on-disk pixels are (since these pixels are the only ones
-        # subject to solar differential rotation).
-        if not is_all_on_disk(smap):
-            # Get the bottom left and top right coordinates that are the
-            # vertices that define a box that encloses the on disk pixels
-            bottom_left, top_right = on_disk_bounding_coordinates(smap)
+    # Get the differential rotation scaling factor. This is calculated on the
+    # corner pixels, and the min/max are used. This is required because the
+    # differential rotation is a function of heliographic latitude (and thus
+    # varies across the map).
+    all_coords = all_coordinates_from_map(smap)
+    on_disk = coordinate_is_on_solar_disk(all_coords)
 
-            # Create a submap that excludes the off disk emission that does
-            # not need to be rotated.
-            smap = smap.submap(bottom_left, top_right=top_right)
-        bottom_left = smap.bottom_left_coord
-        top_right = smap.top_right_coord
+    # Get the edges of the map
+    edges = map_edges(smap)
+    edge_pixels = np.concatenate(edges).value
+    edge_coords = smap.wcs.pixel_to_world(edge_pixels[:, 0], edge_pixels[:, 1])
 
-        # Get the edges of the minimal submap that contains all the on-disk pixels.
-        edges = map_edges(smap)
+    # Determine the rotation for each of the edge pixels
+    lon, lat = _transform_to_observer_lonlat(edge_coords, initial_obstime)
+    edge_drots = _diff_rot_value(lon, lat, initial_obstime, new_obstime, **diff_rot_kwargs)
 
-        # Calculate where the output array moves to.
-        # Rotate the top and bottom edges
-        rotated_top = _rotate_submap_edge(smap, edges[0], observer=new_observer, **diff_rot_kwargs)
-        rotated_bottom = _rotate_submap_edge(
-            smap, edges[1], observer=new_observer, **diff_rot_kwargs)
+    # Determine how much to pad the output by, based on how much the edges move.
+    rotation_limit = u.Quantity([edge_drots.min(), edge_drots.max()])
+    # Convert the rotation in longitude to a shift in pixels (in the x-direction)
+    x_offset_in_pixels = (rotation_limit / smap.scale.axis1)
+    # Calculate the output padding, rounding up to the next integer pixel.
+    x_pad_width = int(np.ceil(np.max(np.abs(x_offset_in_pixels).to_value(u.pix))))
+    y_pad_width = 0
 
-        # Rotate the left and right hand edges
-        rotated_lhs = _rotate_submap_edge(smap, edges[2], observer=new_observer, **diff_rot_kwargs)
-        rotated_rhs = _rotate_submap_edge(smap, edges[3], observer=new_observer, **diff_rot_kwargs)
+    # The on-disk bounding coordinates are needed to find which coordinates we
+    # need to input into the differential rotation functions.
+    # This is also used in the final calculation.
+    on_disk_bl, on_disk_tr = on_disk_bounding_coordinates(smap)
+    on_disk_left_edge_coord = deepcopy(on_disk_bl)
+    on_disk_left_edge_coord.Ty = smap.center.Ty
+    on_disk_right_edge_coord = deepcopy(on_disk_tr)
+    on_disk_right_edge_coord.Ty = smap.center.Ty
 
-        # Calculate the bounding box of the rotated map
-        rotated_bl, rotated_tr = _get_bounding_coordinates(
-            [rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
-
-        # Calculate the maximum distance in pixels the map has moved by comparing
-        # how far the original and rotated bounding boxes have moved.
-        diff_x = [(np.abs(rotated_bl.Tx - bottom_left.Tx)).value,
-                  (np.abs(rotated_tr.Tx - top_right.Tx)).value]
-        deltax = int(np.ceil(np.max(diff_x) / smap.scale.axis1).value)
-
-        diff_y = [(np.abs(rotated_bl.Ty - bottom_left.Ty)).value,
-                  (np.abs(rotated_tr.Ty - top_right.Ty)).value]
-        deltay = int(np.ceil(np.max(diff_y) / smap.scale.axis2).value)
-
-        # Create a new `smap` with the padding around it
-        padded_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)),
-                             'constant', constant_values=0)
-        padded_meta = deepcopy(smap.meta)
-        padded_meta['naxis2'], padded_meta['naxis1'] = smap.data.shape
-
-        padded_meta['crpix1'] += deltax
-        padded_meta['crpix2'] += deltay
-
-        # Create the padded map that will be used to create the rotated map.
-        smap = smap._new_instance(padded_data, padded_meta, smap.plot_settings)
-
-    # Check for masked maps
+    # Now pad the input by the pad width and perform the rotation calculation
+    # on this padded array.
+    # First, calculate the new reference pixel location after padding.
+    ny, nx = smap.data.shape
+    padded_data = np.pad(smap.data, ((y_pad_width, y_pad_width), (x_pad_width, x_pad_width)),
+                         mode='constant', constant_values=np.nan)
+    padded_mask = None
     if smap.mask is not None:
-        smap_data = np.ma.array(smap.data, mask=smap.mask)
-    else:
-        smap_data = smap.data
+        padded_mask = np.pad(smap.mask, ((y_pad_width, y_pad_width), (x_pad_width, x_pad_width)),
+                             mode='constant', constant_values=True)
+    # Now create the padded map header and meta
+    padded_meta = deepcopy(smap.meta)
+    # Update the reference pixel for the padded map
+    padded_meta['crpix1'] = float(smap.reference_pixel[0].value) + x_pad_width
+    padded_meta['crpix2'] = float(smap.reference_pixel[1].value) + y_pad_width
+    padded_map = sunpy.map.Map(padded_data, padded_meta, mask=padded_mask)
 
-    # Create the arguments for the warp function.
-    warp_args = {'smap': smap, 'new_observer': new_observer}
-    warp_args.update(diff_rot_kwargs)
+    # Work out where the output pixels map to in the input grid.
+    # The rotation calculation is done in the input frame.
+    # We build a grid of indices covering the output image (padded)
+    output_ny, output_nx = padded_map.data.shape
+    output_x_indices, output_y_indices = np.meshgrid(np.arange(output_nx), np.arange(output_ny))
+    output_indices = np.stack([output_x_indices, output_y_indices], axis=-1).reshape(-1, 2)
 
-    # Apply solar differential rotation as a scikit-image warp
-    out_data = transform.warp(smap_data, inverse_map=_warp_sun_coordinates,
-                              map_args=warp_args, preserve_range=True, cval=np.nan)
+    # Convert this output grid to world coordinates (on output map WCS).
+    output_coords = padded_map.wcs.pixel_to_world(output_indices[:, 0], output_indices[:, 1])
 
-    out_meta = deepcopy(smap.meta)
+    # Now figure out what input index each output pixel maps to.
+    # We do this by:
+    # 1. finding the world coordinate of the output pixel
+    # 2. working out how much that world coordinate rotated by (to the initial time)
+    # 3. finding what input pixel maps to that reverse-rotated world coordinate
+    with transform_with_sun_center():
+        output_to_initial_lon_diff = _get_diff_rot_factors(
+            output_coords, initial_obstime, new_obstime, **diff_rot_kwargs)
+    # We need to work out how much each pixel shifted. We take the min/max
+    # rotation and convert to a shift in pixels, and just look up the
+    # shifted input location.
+    # TODO: do this more precisely per-pixel (this is an approximation that
+    # does not work well for large rotation periods).
+    output_lon_shift_in_pix = (output_to_initial_lon_diff / padded_map.scale.axis1).to_value(u.pix)
+    # We just need the absolute value of the shift range for the lookup
+    if np.isscalar(output_lon_shift_in_pix):
+        output_lon_shift_in_pix = np.array([output_lon_shift_in_pix, output_lon_shift_in_pix])
+    # Shift the output indices by the lon shift to get the input indices we actually sample.
+    # The strategy is to try sampling at the position minus half the shift and plus half the shift.
+    shift_range = np.max(np.abs(output_lon_shift_in_pix))
+    half_shift = int(np.ceil(shift_range / 2))
 
-    # Need to update the observer location for the output map.
-    # Remove all the possible observer keys
-    all_keys = expand_list([e[0] for e in smap._supported_observer_coordinates])
-    for key in all_keys:
-        out_meta.pop(key)
+    # Now build the shifted input indices
+    input_indices = deepcopy(output_indices.astype(float))
+    # Shift by the negative of the shift range (this moves the lookup backwards in time)
+    input_indices[:, 0] -= np.linspace(output_lon_shift_in_pix[0],
+                                       output_lon_shift_in_pix[-1],
+                                       len(input_indices))
 
-    # Add a new HGS observer
-    out_meta.update(get_observer_meta(new_observer, smap.rsun_meters))
+    # Now sample the input at these shifted indices.
+    # Clip the indices to the range of the input, then sample with round nearest.
+    input_x = np.clip(np.rint(input_indices[:, 0]).astype(int), 0, output_nx - 1)
+    input_y = np.clip(np.rint(input_indices[:, 1]).astype(int), 0, output_ny - 1)
 
-    if is_sub_full_disk:
-        # Define a new reference pixel and the value at the reference pixel.
-        # Note that according to the FITS convention the first pixel in the
-        # image is at (1.0, 1.0).
-        center_rotated = solar_rotate_coordinate(
-            smap.center, observer=new_observer, **diff_rot_kwargs)
-        out_meta['crval1'] = center_rotated.Tx.value
-        out_meta['crval2'] = center_rotated.Ty.value
-        out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + \
-            ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
-        out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
-            ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
+    # Take the values from the padded input map and reshape back to the output shape.
+    rotated_data = padded_map.data[input_y, input_x].reshape(output_ny, output_nx)
 
-    outmap = smap._new_instance(out_data, out_meta, smap.plot_settings)
+    # Do the same for the mask, if present.
+    rotated_mask = padded_mask
+    if padded_mask is not None:
+        rotated_mask = padded_mask[input_y, input_x].reshape(output_ny, output_nx)
 
-    # Update the meta information with the new date and time.
-    outmap._set_date(new_observer.obstime)
-    outmap._set_reference_date(new_observer.obstime)
+    # Now take the output of the transformation and produce the final map.
+    # First create the meta of the output (observer update, date, etc.).
+    rotated_meta = deepcopy(padded_meta)
+    rotated_meta['date-obs'] = new_obstime.isot
+    if hasattr(new_observer, 'frame'):
+        observer_meta = get_observer_meta(new_observer.frame)
+        rotated_meta.update(observer_meta)
 
-    if is_sub_full_disk:
-        return outmap.submap(rotated_bl, top_right=rotated_tr)
-    return outmap
+    # Build the rotated map
+    rotated_map = sunpy.map.Map(rotated_data, rotated_meta, mask=rotated_mask)
+
+    # Crop the output back to the original dimensions, so the user gets back
+    # the same size as the input.
+    if x_pad_width > 0 or y_pad_width > 0:
+        bl = (x_pad_width, y_pad_width) * u.pix
+        tr = (x_pad_width + nx - 1, y_pad_width + ny - 1) * u.pix
+        rotated_map = rotated_map.submap(bl, top_right=tr)
+
+    return rotated_map
