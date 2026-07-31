@@ -10,7 +10,10 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
-from sunpy.coordinates import Helioprojective, sun
+from sunpy.coordinates.utils import _verify_coordinate_helioprojective
+from sunpy.coordinates.utils import coordinate_is_on_solar_disk as _coordinate_is_on_solar_disk
+from sunpy.coordinates.utils import solar_angular_radius as _solar_angular_radius
+from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -125,24 +128,13 @@ def map_edges(smap):
     return top, bottom, left_hand_side, right_hand_side
 
 
-def _verify_coordinate_helioprojective(coordinates):
-    """
-    Raises an error if the coordinate is not in the
-    `~sunpy.coordinates.frames.Helioprojective` frame.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
-    """
-    frame = coordinates.frame if hasattr(coordinates, 'frame') else coordinates
-    if not isinstance(frame, Helioprojective):
-        raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
-                         "but must be in the Helioprojective frame.")
-
-
+@deprecated(since="8.1", alternative="sunpy.coordinates.utils.solar_angular_radius")
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
+
+    .. deprecated:: 8.1
+        Use `sunpy.coordinates.utils.solar_angular_radius` instead.
 
     The tangent vector from the observer to the edge of the Sun forms a
     right-angle triangle with the radius of the Sun as the far side and the
@@ -160,8 +152,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
-    _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
+    return _solar_angular_radius(coordinates)
 
 
 def sample_at_coords(smap, coordinates):
@@ -237,7 +228,7 @@ def contains_full_disk(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Check that the edge pixels are all beyond the limb yet the Sun center is in the map
-    return np.all(~coordinate_is_on_solar_disk(edge_of_world)) and contains_solar_center(smap)
+    return np.all(~_coordinate_is_on_solar_disk(edge_of_world)) and contains_solar_center(smap)
 
 
 def contains_solar_center(smap):
@@ -260,10 +251,13 @@ def contains_solar_center(smap):
     return contains_coordinate(smap, SkyCoord(0*u.arcsec, 0*u.arcsec, frame=smap.coordinate_frame))
 
 
-@u.quantity_input
+@deprecated(since="8.1", alternative="sunpy.coordinates.utils.coordinate_is_on_solar_disk")
 def coordinate_is_on_solar_disk(coordinates):
     """
     Checks if the helioprojective Cartesian coordinates are on the solar disk.
+
+    .. deprecated:: 8.1
+        Use `sunpy.coordinates.utils.coordinate_is_on_solar_disk` instead.
 
     The check is performed by comparing the coordinate's angular distance
     to the angular size of the solar radius. The solar disk is assumed to be
@@ -281,10 +275,7 @@ def coordinate_is_on_solar_disk(coordinates):
     `~bool`
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
-    _verify_coordinate_helioprojective(coordinates)
-    # Calculate the radial angle from the center of the Sun (do not assume small angles)
-    # and compare it to the angular radius of the Sun
-    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
+    return _coordinate_is_on_solar_disk(coordinates)
 
 
 def is_all_off_disk(smap):
@@ -314,7 +305,7 @@ def is_all_off_disk(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
     # Check that the edge pixels are all beyond the limb and the Sun center is not in the map
-    return np.all(~coordinate_is_on_solar_disk(edge_of_world)) and ~contains_solar_center(smap)
+    return np.all(~_coordinate_is_on_solar_disk(edge_of_world)) and ~contains_solar_center(smap)
 
 
 def is_all_on_disk(smap):
@@ -339,7 +330,7 @@ def is_all_on_disk(smap):
     """
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     edge_of_world = _edge_coordinates(smap)
-    return np.all(coordinate_is_on_solar_disk(edge_of_world))
+    return np.all(_coordinate_is_on_solar_disk(edge_of_world))
 
 
 def contains_limb(smap):
@@ -373,7 +364,7 @@ def contains_limb(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     if contains_full_disk(smap):
         return True
-    on_disk = coordinate_is_on_solar_disk(_edge_coordinates(smap))
+    on_disk = _coordinate_is_on_solar_disk(_edge_coordinates(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 
@@ -404,7 +395,7 @@ def on_disk_bounding_coordinates(smap):
     coordinates = all_coordinates_from_map(smap)
 
     # Find which coordinates are on the disk
-    on_disk = coordinate_is_on_solar_disk(coordinates)
+    on_disk = _coordinate_is_on_solar_disk(coordinates)
     on_disk_coordinates = coordinates[on_disk]
 
     # The bottom left and top right coordinates that contain

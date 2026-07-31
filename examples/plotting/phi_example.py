@@ -117,7 +117,7 @@ phi_fdt_icnt_map = sunpy.map.Map(files_phi_fdt_all[5]).rotate(recenter=True)
 # Make a mask to mask out off-disc pixels and make new maps
 # ---------------------------------------------------------------
 hpc_coords = sunpy.map.all_coordinates_from_map(phi_fdt_blos_map)
-mask = ~sunpy.map.coordinate_is_on_solar_disk(hpc_coords)
+mask = ~sunpy.coordinates.utils.coordinate_is_on_solar_disk(hpc_coords)
 
 phi_fdt_blos_map = sunpy.map.Map(phi_fdt_blos_map.data, phi_fdt_blos_map.meta, mask=mask)
 phi_fdt_bmag_map = sunpy.map.Map(phi_fdt_bmag_map.data, phi_fdt_bmag_map.meta, mask=mask)

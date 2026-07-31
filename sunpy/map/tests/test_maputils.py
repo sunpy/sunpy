@@ -8,11 +8,16 @@ from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.map
+import sunpy.map.maputils as maputils
 from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
-from sunpy.coordinates.utils import GreatArc
-from sunpy.map.maputils import (
+from sunpy.coordinates.utils import (
+    GreatArc,
     _verify_coordinate_helioprojective,
+    coordinate_is_on_solar_disk,
+    solar_angular_radius,
+)
+from sunpy.map.maputils import (
     all_coordinates_from_map,
     all_corner_coords_from_map,
     all_pixel_indices_from_map,
@@ -20,15 +25,14 @@ from sunpy.map.maputils import (
     contains_full_disk,
     contains_limb,
     contains_solar_center,
-    coordinate_is_on_solar_disk,
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
     pixelate_coord_path,
     sample_at_coords,
-    solar_angular_radius,
 )
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 @pytest.fixture
@@ -197,6 +201,21 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     assert np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(all_on_disk_map)))
     assert np.any(coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
     assert np.any(~coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
+
+
+def test_deprecated_maputils_aliases(aia171_test_map):
+    # The coordinate-only functions now live in sunpy.coordinates.utils, with the
+    # sunpy.map.maputils versions deprecated (see gh-issue #8445). The deprecated
+    # wrappers should emit a warning yet still return the same result.
+    on_disk = aia171_test_map.center
+
+    with pytest.warns(SunpyDeprecationWarning, match="solar_angular_radius"):
+        sar = maputils.solar_angular_radius(on_disk)
+    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
+
+    with pytest.warns(SunpyDeprecationWarning, match="coordinate_is_on_solar_disk"):
+        on_disk_result = maputils.coordinate_is_on_solar_disk(on_disk)
+    assert bool(on_disk_result)
 
 
 # Testing values are derived from running the code, not from external sources
