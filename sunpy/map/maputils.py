@@ -390,7 +390,7 @@ def on_disk_bounding_coordinates(smap):
     _verify_coordinate_helioprojective(smap.coordinate_frame)
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
-        raise ValueError("The entire map is off disk.")
+        raise ValueError("The entire map is off disk. No data to differentially rotate.")
 
     # Get all the coordinates from the input map
     coordinates = all_coordinates_from_map(smap)
