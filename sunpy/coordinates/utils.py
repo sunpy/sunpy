@@ -297,7 +297,8 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
         The height of the rectangle.
         Must be omitted if the coordinates of both corners have been specified.
 
-    Returns    -------
+    Returns
+    -------
     `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
         The bottom left coordinate of the rectangular region of interest.
     `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
@@ -596,7 +597,8 @@ def coordinate_is_on_solar_disk(coordinates):
     Returns
     -------
     `~bool`
-        Returns `True` if the coordinate is on disk, `False` otherwise.    """
+        Returns `True` if the coordinate is on disk, `False` otherwise.
+    """
     _verify_coordinate_helioprojective(coordinates)
     # Calculate the radial angle from the center of the Sun (do not assume small angles)
     # and compare it to the angular radius of the Sun
