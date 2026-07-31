@@ -11,9 +11,12 @@ from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import (
     GreatArc,
+    _verify_coordinate_helioprojective,
+    coordinate_is_on_solar_disk,
     get_heliocentric_angle,
     get_limb_coordinates,
     get_rectangle_coordinates,
+    solar_angular_radius,
     solar_angle_equivalency,
 )
 from sunpy.sun import constants
@@ -418,3 +421,46 @@ def test_get_heliocentric_angle_errors():
     bad_skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst', observer="earth")
     with pytest.raises(ConvertError, match="frame needs a specified obstime"):
         get_heliocentric_angle(bad_skycoord)
+
+
+def test_solar_angular_radius(aia171_test_map):
+    on_disk = aia171_test_map.center
+    sar = solar_angular_radius(on_disk)
+    assert isinstance(sar, u.Quantity)
+    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
+
+
+def test_solar_angular_radius_error():
+    # Non-helioprojective coordinate should raise ValueError
+    bad_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst',
+                         observer="earth", obstime="2017-07-26")
+    with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective"):
+        solar_angular_radius(bad_coord)
+
+
+def test_coordinate_is_on_solar_disk(aia171_test_map):
+    on_disk = aia171_test_map.center
+    off_disk = aia171_test_map.bottom_left_coord
+
+    # Check for individual coordinates
+    assert coordinate_is_on_solar_disk(on_disk)
+    assert ~coordinate_is_on_solar_disk(off_disk)
+
+
+def test_coordinate_is_on_solar_disk_error():
+    # Non-helioprojective coordinate should raise ValueError
+    bad_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst',
+                         observer="earth", obstime="2017-07-26")
+    with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective"):
+        coordinate_is_on_solar_disk(bad_coord)
+
+
+def test_verify_coordinate_helioprojective(aia171_test_map):
+    # Helioprojective coordinate should not raise
+    _verify_coordinate_helioprojective(aia171_test_map.coordinate_frame)
+
+    # Non-helioprojective coordinate should raise
+    bad_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst',
+                         observer="earth", obstime="2017-07-26")
+    with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective"):
+        _verify_coordinate_helioprojective(bad_coord)
