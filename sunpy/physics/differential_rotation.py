@@ -299,7 +299,6 @@ def _get_bounding_coordinates(coords):
                     [rotated_y_min, rotated_y_max] * u.arcsec,
                     frame=coords[0].frame)
 
-
 def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     """
     This function takes pixel coordinates in the warped image (`xy`) and
@@ -432,5 +431,128 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     Returns
     -------
     `~sunpy.map.GenericMap`
-        A map with
-...(some characters truncated)
+        A map with the result of applying solar differential rotation to the
+        input map.
+
+    Notes
+    -----
+    The translational motion of the Sun over the time interval will be ignored.
+    See :func:`~sunpy.coordinates.transform_with_sun_center`.
+    """
+    # If the entire map is off-disk, return an error so the user is aware.
+    if is_all_off_disk(smap):
+        raise ValueError("The entire map is off disk. No data to differentially rotate.")
+
+    # Get the new observer
+    new_observer = _get_new_observer(smap.date, observer, time)
+
+    # Only this function needs scikit image
+    from skimage import transform
+
+    # Check whether the input contains the full disk of the Sun
+    is_sub_full_disk = not contains_full_disk(smap)
+    if is_sub_full_disk:
+        # Find the minimal submap of the input map that includes all the
+        # on disk pixels. This is required in order to calculate how
+        # much to pad the output (solar-differentially rotated) data array by
+        # compared to the input map.
+        # The amount of padding is dependent on the amount of solar differential
+        # rotation and where the on-disk pixels are (since these pixels are the only ones
+        # subject to solar differential rotation).
+        if not is_all_on_disk(smap):
+            # Get the bottom left and top right coordinates that are the
+            # vertices that define a box that encloses the on disk pixels
+            bottom_left, top_right = on_disk_bounding_coordinates(smap)
+
+            # Create a submap that excludes the off disk emission that does
+            # not need to be rotated.
+            smap = smap.submap(bottom_left, top_right=top_right)
+        bottom_left = smap.bottom_left_coord
+        top_right = smap.top_right_coord
+
+        # Get the edges of the minimal submap that contains all the on-disk pixels.
+        edges = map_edges(smap)
+
+        # Calculate where the output array moves to.
+        # Rotate the top and bottom edges
+        rotated_top = _rotate_submap_edge(smap, edges[0], observer=new_observer, **diff_rot_kwargs)
+        rotated_bottom = _rotate_submap_edge(
+            smap, edges[1], observer=new_observer, **diff_rot_kwargs)
+
+        # Rotate the left and right hand edges
+        rotated_lhs = _rotate_submap_edge(smap, edges[2], observer=new_observer, **diff_rot_kwargs)
+        rotated_rhs = _rotate_submap_edge(smap, edges[3], observer=new_observer, **diff_rot_kwargs)
+
+        # Calculate the bounding box of the rotated map
+        rotated_bl, rotated_tr = _get_bounding_coordinates(
+            [rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
+
+        # Calculate the maximum distance in pixels the map has moved by comparing
+        # how far the original and rotated bounding boxes have moved.
+        diff_x = [(np.abs(rotated_bl.Tx - bottom_left.Tx)).value,
+                  (np.abs(rotated_tr.Tx - top_right.Tx)).value]
+        deltax = int(np.ceil(np.max(diff_x) / smap.scale.axis1).value)
+
+        diff_y = [(np.abs(rotated_bl.Ty - bottom_left.Ty)).value,
+                  (np.abs(rotated_tr.Ty - top_right.Ty)).value]
+        deltay = int(np.ceil(np.max(diff_y) / smap.scale.axis2).value)
+
+        # Create a new `smap` with the padding around it
+        padded_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)),
+                             'constant', constant_values=0)
+        padded_meta = deepcopy(smap.meta)
+        padded_meta['naxis2'], padded_meta['naxis1'] = smap.data.shape
+
+        padded_meta['crpix1'] += deltax
+        padded_meta['crpix2'] += deltay
+
+        # Create the padded map that will be used to create the rotated map.
+        smap = smap._new_instance(padded_data, padded_meta, smap.plot_settings)
+
+    # Check for masked maps
+    if smap.mask is not None:
+        smap_data = np.ma.array(smap.data, mask=smap.mask)
+    else:
+        smap_data = smap.data
+
+    # Create the arguments for the warp function.
+    warp_args = {'smap': smap, 'new_observer': new_observer}
+    warp_args.update(diff_rot_kwargs)
+
+    # Apply solar differential rotation as a scikit-image warp
+    out_data = transform.warp(smap_data, inverse_map=_warp_sun_coordinates,
+                              map_args=warp_args, preserve_range=True, cval=np.nan)
+
+    out_meta = deepcopy(smap.meta)
+
+    # Need to update the observer location for the output map.
+    # Remove all the possible observer keys
+    all_keys = expand_list([e[0] for e in smap._supported_observer_coordinates])
+    for key in all_keys:
+        out_meta.pop(key)
+
+    # Add a new HGS observer
+    out_meta.update(get_observer_meta(new_observer, smap.rsun_meters))
+
+    if is_sub_full_disk:
+        # Define a new reference pixel and the value at the reference pixel.
+        # Note that according to the FITS convention the first pixel in the
+        # image is at (1.0, 1.0).
+        center_rotated = solar_rotate_coordinate(
+            smap.center, observer=new_observer, **diff_rot_kwargs)
+        out_meta['crval1'] = center_rotated.Tx.value
+        out_meta['crval2'] = center_rotated.Ty.value
+        out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + \
+            ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
+        out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
+            ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
+
+    outmap = smap._new_instance(out_data, out_meta, smap.plot_settings)
+
+    # Update the meta information with the new date and time.
+    outmap._set_date(new_observer.obstime)
+    outmap._set_reference_date(new_observer.obstime)
+
+    if is_sub_full_disk:
+        return outmap.submap(rotated_bl, top_right=rotated_tr)
+    return outmap
