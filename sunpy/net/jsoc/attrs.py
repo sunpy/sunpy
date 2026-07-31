@@ -6,7 +6,7 @@ from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrComparison, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'PrimeKey', 'Cutout', "Keyword"]
+__all__ = ["Series", "Protocol", "Notify", "Segment", "PrimeKey", "Cutout", "Keyword"]
 
 
 # Define a custom __dir__ to restrict tab-completion to __all__
@@ -66,22 +66,22 @@ class Keyword(SimpleAttr):
     """
 
     def __lt__(self, other):
-        return KeywordComparison(self.value, '<', other)
+        return KeywordComparison(self.value, "<", other)
 
     def __le__(self, other):
-        return KeywordComparison(self.value, '<=', other)
+        return KeywordComparison(self.value, "<=", other)
 
     def __gt__(self, other):
-        return KeywordComparison(self.value, '>', other)
+        return KeywordComparison(self.value, ">", other)
 
     def __ge__(self, other):
-        return KeywordComparison(self.value, '>=', other)
+        return KeywordComparison(self.value, ">=", other)
 
     def __eq__(self, other):
-        return KeywordComparison(self.value, '=', other)
+        return KeywordComparison(self.value, "=", other)
 
     def __ne__(self, other):
-        return KeywordComparison(self.value, '!=', other)
+        return KeywordComparison(self.value, "!=", other)
 
     def collides(self, other):
         return isinstance(other, Keyword)
@@ -114,9 +114,8 @@ class Notify(SimpleAttr):
         super().__init__(value)
         if value is None:
             raise ValueError("Notify attribute must contain an email address")
-        if value.find('@') == -1:
-            raise ValueError("Notify attribute must contain an '@' symbol "
-                             "to be a valid email address")
+        if value.find("@") == -1:
+            raise ValueError("Notify attribute must contain an '@' symbol to be a valid email address")
         self.value = value
 
 
@@ -163,15 +162,25 @@ class Cutout(DataAttr):
     If ``tracking`` is `True`, the center of the cutout is required to be on the
     solar disk, otherwise the JSOC will produce unexpected output.
     """
+
     @u.quantity_input
-    def __init__(self, bottom_left, top_right=None, width: u.arcsec = None,
-                 height: u.arcsec = None, tracking=False, register=False,
-                 nan_off_limb=False):
+    def __init__(
+        self,
+        bottom_left,
+        top_right=None,
+        width: u.arcsec = None,
+        height: u.arcsec = None,
+        tracking=False,
+        register=False,
+        nan_off_limb=False,
+    ):
         super().__init__()
         bl, tr = get_rectangle_coordinates(bottom_left, top_right=top_right, width=width, height=height)
         if not isinstance(bl.frame, Helioprojective):
-            raise ValueError("`bottom_left` must be in the `Helioprojective` frame, but is instead "
-                             f"in the `{bl.frame.__class__.__name__}` frame")
+            raise ValueError(
+                "`bottom_left` must be in the `Helioprojective` frame, but is instead "
+                f"in the `{bl.frame.__class__.__name__}` frame"
+            )
 
         center_x = (bl.Tx + tr.Tx) / 2
         center_y = (bl.Ty + tr.Ty) / 2
@@ -179,22 +188,25 @@ class Cutout(DataAttr):
         if tracking:
             # import here so net won't depend on map
             from sunpy.coordinates.utils import coordinate_is_on_solar_disk
+
             if not coordinate_is_on_solar_disk(center):
-                raise ValueError("Tracking is enabled, but the center of the cutout "
-                                 f"(Tx={center_x}, Ty={center_y}) is not on the solar disk.")
+                raise ValueError(
+                    "Tracking is enabled, but the center of the cutout "
+                    f"(Tx={center_x}, Ty={center_y}) is not on the solar disk."
+                )
 
         self.value = {
-            't_ref': bl.obstime.isot,
+            "t_ref": bl.obstime.isot,
             # JSOC input is disable tracking so take the negative
-            't': int(not tracking),
-            'r': int(register),
-            'c': int(nan_off_limb),
-            'locunits': 'arcsec',
-            'boxunits': 'arcsec',
-            'x': center_x.to_value('arcsec'),
-            'y': center_y.to_value('arcsec'),
-            'width': (tr.Tx - bl.Tx).to_value('arcsec'),
-            'height': (tr.Ty - bl.Ty).to_value('arcsec'),
+            "t": int(not tracking),
+            "r": int(register),
+            "c": int(nan_off_limb),
+            "locunits": "arcsec",
+            "boxunits": "arcsec",
+            "x": center_x.to_value("arcsec"),
+            "y": center_y.to_value("arcsec"),
+            "width": (tr.Tx - bl.Tx).to_value("arcsec"),
+            "height": (tr.Ty - bl.Ty).to_value("arcsec"),
         }
 
     def collides(self, other):
@@ -232,7 +244,7 @@ def _apply1(wlk, query, imap):
 
 @walker.add_applier(PrimeKey)
 def _apply1(wlk, query, imap):
-    key = 'primekey'
+    key = "primekey"
     if key in imap:
         imap[key][query.label] = query.value
     else:
@@ -246,7 +258,7 @@ def _apply1(wlk, query, imap):
 
 @walker.add_applier(KeywordComparison)
 def _apply1(wlk, query, imap):
-    key = 'keyword'
+    key = "keyword"
     if key in imap:
         imap[key][query.name] = {"operator": query.operator, "value": query.value}
     else:
@@ -255,7 +267,7 @@ def _apply1(wlk, query, imap):
 
 @walker.add_applier(Segment)
 def _apply1(wlk, query, imap):
-    key = 'segment'
+    key = "segment"
     if key in imap:
         imap[key].append(query.value)
     else:
@@ -269,14 +281,13 @@ def _apply1(wlk, query, imap):
 
 @walker.add_applier(Time)
 def _apply1(wlk, query, imap):
-    imap['start_time'] = query.start
-    imap['end_time'] = query.end
+    imap["start_time"] = query.start
+    imap["end_time"] = query.end
 
 
 @walker.add_applier(Wavelength)
 def _apply1(wlk, query, imap):
     if query.min != query.max:
-        raise ValueError(
-            "For JSOC queries Wavelength.min must equal Wavelength.max")
+        raise ValueError("For JSOC queries Wavelength.min must equal Wavelength.max")
 
     imap[query.__class__.__name__.lower()] = query.min
