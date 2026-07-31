@@ -34,7 +34,7 @@ hpc_coords = all_coordinates_from_map(aia)
 
 mask = coordinate_is_on_solar_disk(hpc_coords)
 palette = aia.cmap.copy()
-palette.set_bad('black')
+palette.set_bad("black")
 
 ###############################################################################
 # Finally we create a new map with our new mask.
