@@ -1,0 +1,1 @@
+The coordinate-only functions `sunpy.map.maputils.solar_angular_radius` and `sunpy.map.maputils.coordinate_is_on_solar_disk` have been moved to `sunpy.coordinates.utils`. The old locations in `sunpy.map.maputils` are now deprecated and will be removed in a future release.
