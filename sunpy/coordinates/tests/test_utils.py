@@ -16,8 +16,8 @@ from sunpy.coordinates.utils import (
     get_heliocentric_angle,
     get_limb_coordinates,
     get_rectangle_coordinates,
-    solar_angular_radius,
     solar_angle_equivalency,
+    solar_angular_radius,
 )
 from sunpy.sun import constants
 from sunpy.util.exceptions import SunpyUserWarning
@@ -464,3 +464,43 @@ def test_verify_coordinate_helioprojective(aia171_test_map):
                          observer="earth", obstime="2017-07-26")
     with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective"):
         _verify_coordinate_helioprojective(bad_coord)
+
+
+def test_verify_coordinate_helioprojective_skycoord(aia171_test_map):
+    # Passing a SkyCoord (not just a frame) should also work
+    _verify_coordinate_helioprojective(aia171_test_map.center)
+
+
+def test_solar_angular_radius_array(aia171_test_map):
+    # solar_angular_radius should work with coordinate arrays
+    on_disk = aia171_test_map.center
+    off_disk = aia171_test_map.bottom_left_coord
+    coords = SkyCoord([on_disk.Tx, off_disk.Tx], [on_disk.Ty, off_disk.Ty],
+                      frame=on_disk.frame)
+    sar = solar_angular_radius(coords)
+    # The result should be a valid Quantity (broadcast if needed). Use to_value to be safe.
+    # With the same observer, each coordinate gives the same angular radius
+    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
+
+
+def test_coordinate_is_on_solar_disk_array(aia171_test_map):
+    # coordinate_is_on_solar_disk with arrays should return boolean arrays
+    on_disk = aia171_test_map.center
+    off_disk = aia171_test_map.bottom_left_coord
+    coords = SkyCoord([on_disk.Tx, off_disk.Tx], [on_disk.Ty, off_disk.Ty],
+                      frame=on_disk.frame)
+    result = coordinate_is_on_solar_disk(coords)
+    assert result.shape == (2,)
+    assert bool(result[0]) is True
+    assert bool(result[1]) is False
+
+
+def test_coordinate_is_on_solar_disk_many_points(aia171_test_map):
+    # Test with a large number of coordinates (all_coordinates_from_map style)
+    all_coords = aia171_test_map.wcs.pixel_to_world(
+        *np.meshgrid(np.arange(0, 128, 10), np.arange(0, 128, 10)))
+    result = coordinate_is_on_solar_disk(all_coords)
+    # Should be a boolean array matching the input coordinate shape
+    assert result.shape == (13, 13)
+    # Center region should be True
+    assert bool(result[6, 6]) is True  # approximately center pixel
