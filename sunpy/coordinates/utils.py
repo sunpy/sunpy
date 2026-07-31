@@ -297,8 +297,7 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
         The height of the rectangle.
         Must be omitted if the coordinates of both corners have been specified.
 
-    Returns
-    -------
+    Returns    -------
     `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
         The bottom left coordinate of the rectangular region of interest.
     `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
@@ -468,5 +467,137 @@ def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000
     if dsun <= rsun:
         raise ValueError('Observer distance must be greater than rsun')
     # Create the limb coordinate array using Heliocentric Radial
-    limb_radial_distance =
-...(some characters truncated)
+    limb_radial_distance = np.sqrt(dsun**2 - rsun**2)
+    limb_hcr_rho = limb_radial_distance * rsun / dsun
+    limb_hcr_z = dsun - np.sqrt(limb_radial_distance**2 - limb_hcr_rho**2)
+    limb_hcr_psi = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
+    limb = SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z,
+                    representation_type='cylindrical',
+                    frame='heliocentric',
+                    observer=observer, obstime=observer.obstime)
+    return limb
+
+
+def get_heliocentric_angle(coordinate_on_solar_disk):
+    r"""
+    Returns the heliocentric angle, the angle between the observer look direction
+    for a point on the surface of the Sun and the local vertical for that point.
+
+    If a point is on the visible side of the Sun for the observer, the angle ranges
+    between 0 :math:`^\circ` (at disk center) and 90 :math:`^\circ` (at the solar
+    limb). A point on the far side of the Sun has to be provided as a 3D coordinate,
+    and then the angle ranges from 90 :math:`^\circ` to 180 :math:`^\circ`.
+
+    The heliocentric angle is related to the parameter :math:`\mu` commonly used for
+    limb-darkening calculations:
+
+    .. math::
+
+        \mu = \cos(heliocentric\_angle)
+
+    Parameters
+    ----------
+    coordinate_on_solar_disk : `astropy.coordinates.SkyCoord`
+        A coordinate on the solar disk, requires the observer and obstime to be set.
+
+    Returns
+    -------
+    heliocentric_angle : `~astropy.units.Quantity`
+        The angle between the local solar vertical and the line of sight from
+        the observer to a point on the solar disk.
+
+    Examples
+    --------
+    >>> import numpy as np
+
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+
+    >>> from sunpy.coordinates.utils import get_heliocentric_angle
+
+    >>> # At the center of the solar disk
+    >>> hpc_coord_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    >>> get_heliocentric_angle(hpc_coord_center)
+    <Quantity 0. deg>
+    >>> # mu
+    >>> np.cos(get_heliocentric_angle(hpc_coord_center))
+    <Quantity 1.>
+
+    >>> # Almost at the limb
+    >>> hpc_coord_limb = SkyCoord(944.35*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    >>> get_heliocentric_angle(hpc_coord_limb)
+    <Quantity 89.26429919 deg>
+    >>> # mu
+    >>> np.cos(get_heliocentric_angle(hpc_coord_limb))
+    <Quantity 0.01284005>
+    """
+    hcc = coordinate_on_solar_disk.heliocentric
+    normal = hcc.cartesian
+    to_observer = CartesianRepresentation(0, 0, 1) * hcc.observer.radius - normal
+    heliocentric_angle = np.arctan2(normal.cross(to_observer).norm(), normal.dot(to_observer))
+    return heliocentric_angle.to(u.deg)
+
+
+def _verify_coordinate_helioprojective(coordinates):
+    """
+    Raises an error if the coordinate is not in the
+    `~sunpy.coordinates.frames.Helioprojective` frame.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
+    """
+    frame = coordinates.frame if hasattr(coordinates, 'frame') else coordinates
+    if not isinstance(frame, Helioprojective):
+        raise ValueError(f"The input coordinate(s) is of type {type(frame).__name__}, "
+                         "but must be in the Helioprojective frame.")
+
+
+def solar_angular_radius(coordinates):
+    """
+    Calculates the solar angular radius as seen by the observer.
+
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse. Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    angle : `~astropy.units.Quantity`
+        The solar angular radius.
+    """
+    _verify_coordinate_helioprojective(coordinates)
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
+
+
+@u.quantity_input
+def coordinate_is_on_solar_disk(coordinates):
+    """
+    Checks if the helioprojective Cartesian coordinates are on the solar disk.
+
+    The check is performed by comparing the coordinate's angular distance
+    to the angular size of the solar radius. The solar disk is assumed to be
+    a circle i.e., solar oblateness and other effects that cause the solar disk to
+    be non-circular are not taken in to account.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    `~bool`
+        Returns `True` if the coordinate is on disk, `False` otherwise.    """
+    _verify_coordinate_helioprojective(coordinates)
+    # Calculate the radial angle from the center of the Sun (do not assume small angles)
+    # and compare it to the angular radius of the Sun
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
