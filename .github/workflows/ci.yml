@@ -83,6 +83,8 @@ jobs:
           - openjpeg
         apt:
           - libopenjp2-7
+      setenv: |
+        RUSTUP_TOOLCHAIN: stable  # needed for building mocpy (a dependency of reproject)
       envs: |
         - linux: py314
           name: py314 (parallel threads)
