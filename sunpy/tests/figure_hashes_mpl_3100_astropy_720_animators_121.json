@@ -1,6 +1,6 @@
 {
-  "sunpy.image.tests.test_transform.test_clipping": "f36c82068789b048d5855315f295e2404c85b0a63ec77de0e294d58b43c9acaf",
-  "sunpy.image.tests.test_transform.test_nans": "776e5a2c12bbbff9f5f9de647052cd2ad1be03b39586b91502c8ebba08e87c1b",
+  "sunpy.image.tests.test_transform.test_clipping": "7eb931a82ac467200266c815b0096854966471a4e1c4616168ac183e343db803",
+  "sunpy.image.tests.test_transform.test_nans": "ca84a08316c405619e1a49f383d9e36a530d75ac4db163fe5f6222c4a188b1f7",
   "sunpy.map.tests.test_compositemap.test_autoalign_needed": "12a284018acc0dda759811d4c1a9284b64a7e5daf1e734af81bbe08186e71a8b",
   "sunpy.map.tests.test_compositemap.test_autoalign_not_needed": "a63a3f9869f2469d4c8bd28aabbdb8af60b149c98c6fa6621a29033c834b870d",
   "sunpy.map.tests.test_compositemap.test_plot_composite_map": "12a284018acc0dda759811d4c1a9284b64a7e5daf1e734af81bbe08186e71a8b",
@@ -17,7 +17,7 @@
   "sunpy.map.tests.test_mapbase.test_draw_carrington_map": "cc9e66c8928c9dea753c2b2d5894873a199c3e5137df2387b1c0427e69a66833",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scipy]": "c15c6c707b3b0e707936988054aeb818eee7b39e2249db5309ca43585d325a51",
   "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[scikit-image]": "911a0442055922f0d31dd48d8f1ede3d1b8b4d11a55f00a3403e8124761c2346",
-  "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[opencv]": "072505693731f65824dcaa7f0843087990f15f34b519285a2bc8965a1fa0ed37",
+  "sunpy.map.tests.test_mapbase.test_derotating_nonpurerotation_pcij[opencv]": "4293d909ee0e7dadca8a6f63867c57080314c3accaf9bb942091fc9d4a6c844d",
   "sunpy.map.tests.test_mapsequence.test_norm_animator": "2241b65ed7126250eb14ebbcd095ef4a1f696ad737a4e975ff8e66a007667487",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot": "86f2d19643fbeeaea8bd7097b9002a77da455eeeb46d4ac707bd3c55df15dc22",
   "sunpy.map.tests.test_mapsequence.test_map_sequence_plot_custom_cmap_norm": "541450f6bb90fce447bc49875d9eb44fba2522989bcac73867bde73891f61b4d",

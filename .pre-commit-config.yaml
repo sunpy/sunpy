@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.25.2
+    rev: v1.26.1
     hooks:
       - id: zizmor
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.15.15"
+    rev: "v0.15.20"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -13,7 +13,7 @@ repos:
         # Define here once and then reference using YAML anchor
         exclude: &exclude_dirs ^sunpy/(data|extern)/
   - repo: https://github.com/PyCQA/isort
-    rev: 8.0.1
+    rev: 9.0.0a3
     hooks:
       - id: isort
         types: [python]
@@ -45,7 +45,7 @@ repos:
       - id: mixed-line-ending
         types_or: [python, rst]
   - repo: https://github.com/adhtruong/mirrors-typos
-    rev: v1.45.0
+    rev: v1.48.0
     hooks:
       - id: typos
         types_or: [python, rst]
