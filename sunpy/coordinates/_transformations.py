@@ -74,8 +74,11 @@ __all__ = ['transform_with_sun_center',
 # Thread-safe storage of the current states of the transformation options
 # Otherwise, enabling an option on one thread can affect the calculations on another thread
 # Furthermore, context exits may restore a state that was supposed to have ended
+
+# Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
 _ignore_sun_motion = ContextVar('_ignore_sun_motion', default=False)
-_autoapply_diffrot = ContextVar('_autoapply_diffrot', default=False)
+# If not None, the name of the differential-rotation model to use for any obstime change
+_autoapply_diffrot = ContextVar('_autoapply_diffrot', default=None)
 
 
 @sunpycontextmanager

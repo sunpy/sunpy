@@ -26,6 +26,8 @@ _NOT_FOUND = object()
 
 
 # Thread-safe stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
+# It is not thread-safe to modify the list directly
+# Instead, the list should be copied and then the context variable set with the modified copy
 _active_contexts = contextvars.ContextVar('_active_contexts', default=[])
 
 
