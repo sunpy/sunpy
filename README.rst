@@ -113,3 +113,4 @@ For more information on contributing to SunPy, please read our `Newcomers' guide
 .. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/contents/newcomers.html
 
 When you are interacting with the SunPy community you are asked at to follow our `code of conduct <https://sunpy.org/coc>`__.
+test
