@@ -520,6 +520,25 @@ def test_repr_html_(generic_ts):
     assert isinstance(html_string, str)
 
 
+def test_text_summary_time_index():
+    # Regression test for https://github.com/sunpy/sunpy/issues/7932
+    # A TimeSeries built from a DataFrame indexed by an astropy Time array used
+    # to raise ``AttributeError: 'datetime.datetime' object has no attribute
+    # 'astype'`` in ``_text_summary`` because ``Time.value`` is format-dependent
+    # and is not always a NumPy ``datetime64``.
+    times = parse_time("2020-01-01") + TimeDelta(np.arange(60) * u.minute)
+    intensity = np.sin(np.linspace(0, 2 * np.pi, 60))
+    df = pd.DataFrame(intensity, index=times, columns=["intensity"])
+    ts = sunpy.timeseries.TimeSeries(df, {}, {"intensity": u.W / u.m**2})
+
+    summary = ts._text_summary()
+    assert "Start Date:\t\t\t2020-01-01 00:00:00" in summary
+    assert "End Date:\t\t\t2020-01-01 00:59:00" in summary
+    assert "Center Date:\t\t\t2020-01-01 00:29:30" in summary
+    # The full string representation must not raise either.
+    assert isinstance(str(ts), str)
+
+
 @pytest.mark.thread_unsafe(reason="mocks web browser")
 def test_quicklook(mocker, generic_ts):
     mockwbopen = mocker.patch('webbrowser.open_new_tab')
