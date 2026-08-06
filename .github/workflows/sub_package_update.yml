@@ -22,11 +22,19 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v7  # zizmor: ignore[unpinned-uses]
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
 
+<<<<<<<
+<<<<<<<
       - uses: actions/setup-python@v7  # zizmor: ignore[unpinned-uses]
+=======
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+>>>>>>>
+=======
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+>>>>>>>
         with:
           python-version: "3.14"
 
@@ -79,7 +87,7 @@ jobs:
 
       - name: Create pull request
         if: steps.cruft_json.outputs.has_changes == '1'
-        uses: peter-evans/create-pull-request@v8  # zizmor: ignore[unpinned-uses]
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1  # v8.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           add-paths: "."
@@ -107,7 +115,7 @@ jobs:
       issues: write
     steps:
       - name: Open an issue if workflow fails
-        uses: actions/github-script@v9  # zizmor: ignore[unpinned-uses]
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3  # v9.0.0
         with:
           github-token: ${{ github.token }}
           # This script is adapted from https://github.com/scientific-python/issue-from-pytest-log-action

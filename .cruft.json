@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "fb26c9794c872939b7e72bc7f30b943628384a8e",
+  "commit": "a31905a50a3889e42d9ca50065a4a4276ea62511",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -24,6 +24,7 @@
       "include_cruft_update_github_workflow": "y",
       "use_extended_ruff_linting": "n",
       "matrix_room_id": "!JYqfIVJjWANcHnfktY:cadair.com",
+      "extra_ci_jobs": "online,threading",
       "_sphinx_theme": "sunpy",
       "_parent_project": "",
       "_install_requires": "",
@@ -33,7 +34,7 @@
         ".github/workflows/sub_package_update.yml"
       ],
       "_template": "https://github.com/sunpy/package-template",
-      "_commit": "fb26c9794c872939b7e72bc7f30b943628384a8e"
+      "_commit": "a31905a50a3889e42d9ca50065a4a4276ea62511"
     }
   },
   "directory": null
