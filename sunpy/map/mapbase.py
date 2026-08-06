@@ -2805,14 +2805,15 @@ class GenericMap(NDData):
             if title:
                 axes.set_title(title)
 
-            # WCSAxes has unit identifiers on the tick labels, so no need
-            # to add unit information to the label
+                    # WCSAxes has unit identifiers on the tick labels, so no need
+        # to add unit information to the label
+        if hasattr(axes.wcs, 'wcs'):
             ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
-
-        # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
-        # by setting it's vmin and vmax
+        else:
+            # For slicedLowLevelWCS, we need to get ctype differently
+            ctype = axes.wcs.world_axis_names
+        axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
+        axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
         imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
@@ -2828,10 +2829,14 @@ class GenericMap(NDData):
         else:
             data = np.ma.array(np.asarray(self.data), mask=self.mask)
 
-        # Disable autoalignment if it is not necessary
+                # Disable autoalignment if it is not necessary
         # TODO: revisit tolerance value
-        if autoalign is True and axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
-            autoalign = False
+        if autoalign is True:
+            # Safely get the WCS objects
+            axes_wcs = axes.wcs.wcs if hasattr(axes.wcs, 'wcs') else axes.wcs
+            self_wcs = self.wcs.wcs if hasattr(self.wcs, 'wcs') else self.wcs
+            if axes_wcs.compare(self_wcs, tolerance=0.01):
+                autoalign = False
 
         if autoalign in {True, 'image'}:
             ny, nx = self.data.shape
