@@ -123,3 +123,18 @@ Format output by the ``anytim2tai`` routine in SolarSoft (see the documentation 
 
     >>> parse_time(1824441848, format='tai_seconds')
     <Time object: scale='tai' format='tai_seconds' value=1824441848.0>
+
+CDF Epochs
+==========
+
+If you have ``cdflib`` installed, you can also parse CDF epoch formats such as ``CDF_EPOCH``, ``CDF_EPOCH16``, and ``RTT2000``.
+These are typically stored as arrays of numbers.
+
+.. code-block:: python
+
+    >>> import numpy as np
+    >>> cdf_epoch = np.array([63830592000000.0])  # ~2023 AD
+    >>> parse_time(cdf_epoch, format='cdf_epoch')  # doctest: +SKIP
+    <Time object: scale='utc' format='cdf_epoch' value=[6.3830592e+13]>
+
+Supported formats are ``'cdf_epoch'``, ``'cdf_epoch16'``, and ``'cdf_tt2000'``.
