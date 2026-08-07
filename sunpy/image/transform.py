@@ -99,7 +99,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
 
 def _get_transform_method(method):
-    # This is re-used in affine_transform and GenericMap.rotate
+    # This is reused in affine_transform and GenericMap.rotate
     if method not in _rotation_registry:
         raise ValueError(f'Method {method} not in supported methods: '
                          f'{_rotation_registry.keys()}')
