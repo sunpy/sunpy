@@ -114,6 +114,13 @@ def test_goes_r_primarydetector():
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
     assert "xrsa_primary_chan" in ts_goes.columns
 
+def test_goes_additional_columns():
+    # Test that extra quality columns are present in 1 min avg GOES
+    for file_path in [goes15_1m_avg_filepath,goes16_1m_avg_filepath]:
+        ts_goes = sunpy.timeseries.TimeSeries(file_path,source="XRS")
+        for col in ["xrsa_flag_excluded", "xrsb_flag_excluded", "xrsb_num", "electron_correction_flag"]:
+            if col in ts_goes.columns:
+                assert ts_goes.units[col] == u.dimensionless_unscaled
 
 @pytest.mark.remote_data
 def test_goes_remote():

@@ -245,16 +245,10 @@ class XRSTimeSeries(GenericTimeSeries):
                 detector_info = True
                 xrsa_primary_chan = np.asarray(h5nc["xrsa_primary_chan"])
                 xrsb_primary_chan = np.asarray(h5nc["xrsb_primary_chan"])
-            avg1m_detector = False
-            electron_flag_detector = False
-            if "xrsa_flag_excluded" in h5nc:
-                avg1m_detector = True
-                xrsa_flag_excluded = np.asarray(h5nc["xrsa_flag_excluded"])
-                xrsb_flag_excluded = np.asarray(h5nc["xrsb_flag_excluded"])
-                xrsb_num           = np.asarray(h5nc["xrsb_num"])
-                if "electron_correction_flag" in h5nc:
-                    electron_flag_detector = True
-                    electron_correction_flag = np.asarray(h5nc["electron_correction_flag"])
+            # Checks for additional columns in 1 min avg GOES file 
+            extra_quality_columns = ["xrsa_flag_excluded","xrsb_flag_excluded","xrsb_num","electron_correction_flag"]
+            available_extra_quality_columns = set(extra_quality_columns) & set(h5nc.keys())
+            extra_quality_data = {qual: np.asarray(h5nc[qual]) for qual in available_extra_quality_columns}
         try:
             times = times.datetime
         except ValueError:
@@ -290,18 +284,9 @@ class XRSTimeSeries(GenericTimeSeries):
             units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
                           "xrsb_primary_chan": u.dimensionless_unscaled})
         # Adds 1 min avg GOES for flagging bad data for flare detection
-        if avg1m_detector:
-            data["xrsa_flag_excluded"] = xrsa_flag_excluded
-            data["xrsb_flag_excluded"] = xrsb_flag_excluded
-            data["xrsb_num"] = xrsb_num
-            
-            units.update({"xrsa_flag_excluded":u.dimensionless_unscaled,
-                          "xrsb_flag_excluded":u.dimensionless_unscaled,
-                          "xrsb_num":u.dimensionless_unscaled})
-            if electron_flag_detector:
-                data["electron_correction_flag"] = electron_correction_flag
-                units.update({"electron_correction_flag":u.dimensionless_unscaled})
-
+        for qual in available_extra_quality_columns:
+            data[qual] = extra_quality_data[qual]
+            units[qual] = u.dimensionless_unscaled
         data = data.replace(-9999, np.nan)
         return data, header, units
 
