@@ -245,6 +245,10 @@ class XRSTimeSeries(GenericTimeSeries):
                 detector_info = True
                 xrsa_primary_chan = np.asarray(h5nc["xrsa_primary_chan"])
                 xrsb_primary_chan = np.asarray(h5nc["xrsb_primary_chan"])
+            # Checks for additional columns in 1 min avg GOES file
+            extra_quality_columns = ["xrsa_flag_excluded","xrsb_flag_excluded","xrsb_num","electron_correction_flag"]
+            available_extra_quality_columns = set(extra_quality_columns) & set(h5nc.keys())
+            extra_quality_data = {qual: np.asarray(h5nc[qual]) for qual in available_extra_quality_columns}
         try:
             times = times.datetime
         except ValueError:
@@ -279,6 +283,10 @@ class XRSTimeSeries(GenericTimeSeries):
             data["xrsb_primary_chan"] = xrsb_primary_chan
             units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
                           "xrsb_primary_chan": u.dimensionless_unscaled})
+        # Adds 1 min avg GOES for flagging bad data for flare detection
+        for qual in available_extra_quality_columns:
+            data[qual] = extra_quality_data[qual]
+            units[qual] = u.dimensionless_unscaled
         data = data.replace(-9999, np.nan)
         return data, header, units
 
