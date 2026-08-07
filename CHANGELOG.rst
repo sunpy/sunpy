@@ -285,7 +285,7 @@ Breaking Changes
   A new submodule called ``scraper.net.scraper_utils`` is created and Scraper helper functions like ``date_floor()``, ``extract_timestep()``, ``check_timerange()`` and ``get_timerange_from_exdict()`` can be accessed directly from there.
 
   *All* the extracted timeranges have a millisecond subtracted from the end date, i.e. they end on 59:59:59 of the date just before, instead of the inconsistent issue where some could end with 00:00:00 of the end date which lead to undesirable cases like January 1, 2015 data also showing up in the 2014 year-long timerange. (`#7077 <https://github.com/sunpy/sunpy/pull/7077>`__)
-- Update our dependancy policy to follow `SPEC 0 <https://scientific-python.org/specs/spec-0000/>`__ rather than the older NEP 29. The only difference between the old (NEP 29) policy and the new (SPEC 0) policy is that we only support Python versions for 3 years after their initial release, rather than 4. (`#7796 <https://github.com/sunpy/sunpy/pull/7796>`__)
+- Update our dependency policy to follow `SPEC 0 <https://scientific-python.org/specs/spec-0000/>`__ rather than the older NEP 29. The only difference between the old (NEP 29) policy and the new (SPEC 0) policy is that we only support Python versions for 3 years after their initial release, rather than 4. (`#7796 <https://github.com/sunpy/sunpy/pull/7796>`__)
 - Increased minimum versions for these dependencies:
 
   - asdf-astropy >= 0.5.0

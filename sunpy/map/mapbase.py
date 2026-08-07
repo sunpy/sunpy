@@ -622,11 +622,11 @@ class GenericMap(NDData):
         DATE-AVG key if it is in the metadata, but see that property for the logic
         otherwise.
 
-        ``datebeg`` is conditonally populated with the start of the observation period
+        ``datebeg`` is conditionally populated with the start of the observation period
         as provided by the `.date_start` property, which normally returns a value only
         if the DATE-BEG key is in the metadata.
 
-        ``dateend`` is conditonally populated with the end of the observation period as
+        ``dateend`` is conditionally populated with the end of the observation period as
         provided by the `.date_end` property, which normally returns a value only if the
         DATE-END key is in the metadata.
         """
