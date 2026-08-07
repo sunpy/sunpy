@@ -19,6 +19,32 @@ Non-Compliance
 ==============
 Contributions which that appear to violate this principle can be summarily closed or removed.
 
+All pull requests **must** include the AI Assistance Disclosure checklist (listed below) in their description::
+
+    ## AI Assistance Disclosure
+
+    <!--
+    To support transparency and sustainable collaboration, please indicate whether AI-assisted tools were used in preparing this pull request.
+    Your pull request will not be reviewed until you have completed this checklist.
+    Removing this checklist may result in your pull request being automatically closed without a review.
+    For further details see our documentation on the fair and appropriate [usage of AI](https://docs.sunpy.org/en/latest/dev_guide/contents/ai_usage.html).
+    -->
+
+    AI tools were used for:
+    - [ ] Code generation (e.g., when writing an implementation or fixing a bug)
+    - [ ] Test/benchmark generation
+    - [ ] Documentation (including examples)
+    - [ ] Research and understanding
+    - [ ] No AI tools were used
+
+    > Regardless of AI use, the human contributor remains fully responsible for correctness, design choices, licensing compatibility, and long-term maintainability.
+
+This is automatically added to the pull request description when you open a pull request.
+If it is not automatically added to the pull request description (e.g. if using the GitHub API), then the contributor is responsible for manually adding the above checklist to the pull request description.
+Pull requests which fail to complete the AI Assistance Disclosure checklist **will be marked as draft and will not be reviewed until the checklist is completed**.
+Pull requests which remove the AI Assistance Disclosure checklist entirely **may be immediately closed without a review**.
+Removing or failing to complete this checklist may be deemed a form of non-compliance.
+
 Repeated non-compliance may be considered a `code of conduct <https://sunpy.org/coc/>`__ violation.
 
 Responsible Uses of AI
