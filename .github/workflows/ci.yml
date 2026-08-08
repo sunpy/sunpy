@@ -24,7 +24,7 @@ permissions: {}
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       submodules: false
       coverage: codecov
@@ -51,7 +51,7 @@ jobs:
 
   test:
     needs: [core, sdist_verify]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       submodules: false
       coverage: codecov
@@ -72,7 +72,7 @@ jobs:
 
   threading:
     needs: [core, sdist_verify]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       submodules: false
       coverage: codecov
@@ -99,7 +99,7 @@ jobs:
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       default_python: '3.13'
       submodules: false
@@ -123,7 +123,7 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       default_python: '3.13'
       submodules: false
@@ -158,7 +158,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
@@ -190,7 +190,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
     with:
       python-version: "3.13"
       test_extras: 'tests'
