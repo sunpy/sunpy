@@ -24,18 +24,7 @@ permissions: {}
 
 jobs:
   core:
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
-=======
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3  # zizmor: ignore[unpinned-uses]
->>>>>>>
-=======
-
-jobs:
-  core:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
->>>>>>>
     with:
       submodules: false
       coverage: codecov
@@ -52,15 +41,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
-<<<<<<<
-<<<<<<<
-      - uses: actions/setup-python@v7  # zizmor: ignore[unpinned-uses]
-=======
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
->>>>>>>
-=======
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
->>>>>>>
         with:
           python-version: '3.13'
       - run: python -m pip install -U --user build
@@ -70,15 +51,7 @@ jobs:
 
   test:
     needs: [core, sdist_verify]
-<<<<<<<
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
-=======
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3  # zizmor: ignore[unpinned-uses]
->>>>>>>
-=======
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
->>>>>>>
     with:
       submodules: false
       coverage: codecov
@@ -97,44 +70,9 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  threading:
-    needs: [core, sdist_verify]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
-    with:
-      submodules: false
-      coverage: codecov
-      toxdeps: tox-pypi-filter
-      posargs: -n auto --color=yes
-      libraries: |
-        brew:
-          - openjpeg
-        apt:
-          - libopenjp2-7
-      setenv: |
-        RUSTUP_TOOLCHAIN: stable  # needed for building mocpy (a dependency of reproject)
-      envs: |
-        - linux: py314
-          name: py314 (parallel threads)
-          posargs: --parallel-threads=auto --color=yes
-        - linux: py314t-devdeps-minimal
-          name: py314t-devdeps
-        - linux: py314t-devdeps-minimal
-          name: py314t-devdeps (parallel threads)
-          posargs: --parallel-threads=auto --color=yes
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
   docs:
     needs: [core]
-<<<<<<<
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
-=======
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3  # zizmor: ignore[unpinned-uses]
->>>>>>>
-=======
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
->>>>>>>
     with:
       default_python: '3.13'
       submodules: false
@@ -151,28 +89,6 @@ jobs:
           - graphviz
       envs: |
         - linux: build_docs
-<<<<<<<
-=======
-  online:
-    needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
-    with:
-      submodules: false
-      toxdeps: tox-pypi-filter
-      envs: |
-  
-  threading:
-    needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
-    with:
-      submodules: false
-      toxdeps: tox-pypi-filter
-      envs: |
-  
-
-  build_dists:
-    # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
->>>>>>>
           pytest: false
           # Speed up CI builds by not building full nav tree
           posargs: -D html_theme_options.collapse_navigation=True
@@ -180,7 +96,7 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
     with:
       default_python: '3.13'
       submodules: false
@@ -205,6 +121,33 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  threading:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    with:
+      submodules: false
+      coverage: codecov
+      toxdeps: tox-pypi-filter
+      posargs: -n auto --color=yes
+      libraries: |
+        brew:
+          - openjpeg
+        apt:
+          - libopenjp2-7
+      setenv: |
+        RUSTUP_TOOLCHAIN: stable  # needed for building mocpy (a dependency of reproject)
+      envs: |
+        - linux: py314
+          name: py314 (parallel threads)
+          posargs: --parallel-threads=auto --color=yes
+        - linux: py314t-devdeps-minimal
+          name: py314t-devdeps
+        - linux: py314t-devdeps-minimal
+          name: py314t-devdeps (parallel threads)
+          posargs: --parallel-threads=auto --color=yes
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
   build_dists:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
     # see https://github-actions-workflows.openastronomy.org/en/latest/publish.html#upload-to-pypi
@@ -215,11 +158,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
-=======
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@v3  # zizmor: ignore[unpinned-uses]
->>>>>>>
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
@@ -251,11 +190,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-<<<<<<<
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@v3.0.1  # zizmor: ignore[unpinned-uses]
-=======
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
->>>>>>>
     with:
       python-version: "3.13"
       test_extras: 'tests'
@@ -286,11 +221,7 @@ jobs:
       - run: ls -lha dist/
 
       - name: Run upload
-<<<<<<<
-        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247  # v1.14.1
-=======
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
->>>>>>>
 
   notify:
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') }}

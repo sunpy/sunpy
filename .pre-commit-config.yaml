@@ -1,19 +1,11 @@
 repos:
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-<<<<<<<
-    rev: v1.26.1
-=======
     rev: v1.28.0
->>>>>>>
     hooks:
       - id: zizmor
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-<<<<<<<
-    rev: "v0.15.20"
-=======
     rev: "v0.16.1"
->>>>>>>
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -56,6 +48,7 @@ repos:
     rev: v2.4.3
     hooks:
       - id: codespell
+        args: [ "--write-changes" ]
         types_or: [python, rst]
         exclude: *exclude_dirs
   - repo: local
