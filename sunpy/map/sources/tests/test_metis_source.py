@@ -15,7 +15,6 @@ from astropy.coordinates import SkyCoord
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
 from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.time import parse_time
 from .helpers import _test_private_date_setters
 
 METIS_HEADER_VARIANTS = [
