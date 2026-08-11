@@ -15,6 +15,8 @@ from astropy.coordinates import SkyCoord
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.time import parse_time
+from .helpers import _test_private_date_setters
 
 METIS_HEADER_VARIANTS = [
     pytest.param({}, id="baseline-VL"),
@@ -200,3 +202,6 @@ def test_mask_uses_field_stop_center_dr2(metis_test_data, minimal_metis_header):
     assert metis_map.mask is not None
     assert metis_map.mask.dtype == bool
     assert not metis_map.mask.all()
+
+def test_private_date_setters(metis_map):
+    _test_private_date_setters(metis_map)
