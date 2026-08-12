@@ -1,5 +1,5 @@
-import pathlib
 import functools
+import pathlib
 from contextlib import contextmanager
 from urllib.parse import urlparse
 

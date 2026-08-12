@@ -5,8 +5,8 @@ using sqlite.
 """
 import sqlite3
 from abc import ABCMeta, abstractmethod
-from pathlib import Path
 from contextlib import contextmanager
+from pathlib import Path
 
 __all__ = [
     'StorageProviderBase',

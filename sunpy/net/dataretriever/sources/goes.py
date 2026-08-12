@@ -2,8 +2,8 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-from datetime import datetime
 from collections import OrderedDict
+from datetime import datetime
 
 import astropy.units as u
 from astropy.time import Time

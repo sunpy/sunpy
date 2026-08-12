@@ -1,10 +1,10 @@
 """
 Facilities to interface with the Heliophysics Events Knowledgebase.
 """
-import json
 import codecs
-import urllib
 import inspect
+import json
+import urllib
 from itertools import chain
 
 import astropy.table
