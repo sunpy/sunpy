@@ -25,15 +25,15 @@ permissions: {}
 jobs:
   core:
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    permissions:
+      id-token: write
     with:
       submodules: false
-      coverage: codecov
+      coverage: codecov-oidc
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
         - linux: py313-minimal
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   sdist_verify:
     runs-on: ubuntu-latest
@@ -52,9 +52,11 @@ jobs:
   test:
     needs: [core, sdist_verify]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    permissions:
+      id-token: write
     with:
       submodules: false
-      coverage: codecov
+      coverage: codecov-oidc
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       libraries: |
@@ -67,8 +69,6 @@ jobs:
         - windows: py313
         - macos: py313
         - linux: py312-oldestdeps
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   docs:
     needs: [core]
@@ -97,11 +97,12 @@ jobs:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    permissions:
+      id-token: write
     with:
-      default_python: '3.13'
       submodules: false
-      coverage: codecov
       toxdeps: tox-pypi-filter
+      coverage: codecov-oidc
       libraries: |
         apt:
           - libopenjp2-7
@@ -118,15 +119,15 @@ jobs:
           cache-key: docs-${{ github.run_id }}
         - linux: py313-online
           posargs: -n auto --dist loadgroup --color=yes
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   threading:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    permissions:
+      id-token: write
     with:
       submodules: false
-      coverage: codecov
+      coverage: codecov-oidc
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       libraries: |
