@@ -27,6 +27,7 @@ from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util.decorators import deprecated_renamed_argument
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
 from sunpy.util.util import _figure_to_base64
@@ -549,30 +550,41 @@ class GenericTimeSeries:
         object._sanitize_metadata()
         return object
 
-    def extract(self, column_name):
+    @deprecated_renamed_argument("column_name", "columns", since="8.1")
+    def extract(self, columns):
         """
-        Returns a new time series with the chosen column.
+        Returns a new time series with the chosen column or columns.
 
         Parameters
         ----------
-        column_name : `str`
-            A valid column name.
+        columns : `str` or `list` of `str`
+            A valid column name, or a sequence of valid column names.
 
         Returns
         -------
         `~sunpy.timeseries.TimeSeries`
-            A new `~sunpy.timeseries.TimeSeries` with only the selected column.
-        """
-        # TODO: allow the extract function to pick more than one column
-        # TODO: Fix this?
-        # if isinstance(self, pandas.Series):
-        #    return self
-        # else:
-        #    return GenericTimeSeries(self._data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
+            A new `~sunpy.timeseries.TimeSeries` with only the selected columns.
 
-        # Extract column and remove empty rows
-        data = self._data[[column_name]].dropna()
-        units = {column_name: self.units[column_name]}
+        Notes
+        -----
+        Rows in which every selected column is missing are dropped. When a
+        single column is selected this is equivalent to dropping every row in
+        which that column is missing.
+        """
+        if isinstance(columns, str):
+            columns = [columns]
+        columns = list(columns)
+
+        missing = [col for col in columns if col not in self.columns]
+        if missing:
+            raise ValueError(
+                f"Given column name(s) ({', '.join(missing)}) "
+                f"not in list of columns {self.columns}"
+            )
+
+        # Extract the columns and remove rows that are empty across all of them.
+        data = self._data[columns].dropna(how="all")
+        units = {col: self.units[col] for col in columns}
 
         # Build generic TimeSeries object and sanatise metadata and units.
         object = GenericTimeSeries(data.sort_index(),
