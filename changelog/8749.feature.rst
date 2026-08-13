@@ -1,0 +1,1 @@
+Generalised :meth:`sunpy.timeseries.GenericTimeSeries.extract` to accept multiple column names. Rows are now dropped only when every selected column is missing.
