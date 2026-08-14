@@ -39,7 +39,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         A new data descriptor to hold a frame attribute
     """
     def __get__(self, instance, frame_cls=None):
-        if (assumed_value := _assumed_attributes.get()[self.name]) is not None:
+        if instance is not None and (assumed_value := _assumed_attributes.get()[self.name]) is not None:
             return assumed_value
         return super().__get__(instance, frame_cls=frame_cls)
 

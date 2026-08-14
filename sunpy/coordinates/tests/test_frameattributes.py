@@ -228,10 +228,8 @@ def test_assume_obstime():
 
     assert hpc1.obstime != assumed_obstime
 
-    from sunpy.coordinates.frameattributes import _assumed_attributes
-    _assumed_attributes.set({"obstime": assumed_obstime})
-
-    assert hpc1.obstime == assumed_obstime
+    with _assumed_attributes.set({"obstime": assumed_obstime}):
+        assert hpc1.obstime == assumed_obstime
 
 
 def test_assume_observer():
@@ -244,20 +242,19 @@ def test_assume_observer():
     assumed_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=assumed_obstime))
 
     hpc1 = Helioprojective(observer=original_observer, obstime=original_obstime)
+    _assumed_attributes.set(defaultdict(lambda: None))
+
 
     assert hpc1.obstime != assumed_obstime
     # This errors as the frames aren't compatible
     # assert hpc1.observer != assumed_observer
 
-    _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer})
-
-    assert hpc1.obstime == assumed_obstime
-    assert hpc1.observer == assumed_observer
-
-    _assumed_attributes.set(defaultdict(lambda: None))
+    with _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer}): 
+        assert hpc1.obstime == assumed_obstime
+        assert hpc1.observer == assumed_observer
 
 
-def test_transform_assume_observer():
+def test_transform_assume_observerd():
     original_obstime = Time('2026-08-12 19:09:00')
     out_icrs = ICRS(get_body_barycentric("mars", original_obstime))
     original_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=original_obstime))
@@ -273,10 +270,7 @@ def test_transform_assume_observer():
     assert not u.allclose(original_transform.Tx, 0*u.arcsec)
     assert not u.allclose(original_transform.Ty, 0*u.arcsec)
 
-    _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer})
-
-    assumed_transform = hpc1.transform_to(hpc2)
-    assert u.allclose(assumed_transform.Tx, 0*u.arcsec)
-    assert u.allclose(assumed_transform.Ty, 0*u.arcsec)
-
-    _assumed_attributes.set(defaultdict(lambda: None))
+    with _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer}):   
+        assumed_transform = hpc1.transform_to(hpc2)
+        assert u.allclose(assumed_transform.Tx, 0*u.arcsec)
+        assert u.allclose(assumed_transform.Ty, 0*u.arcsec)
