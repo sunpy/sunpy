@@ -130,6 +130,29 @@ def test_truncation_dates(eve_test_ts):
             eve_test_ts.time_range.split(3)[1])
 
 
+def test_truncation_to_empty_summary(eve_test_ts):
+    # Truncating to a time range that contains no data should still produce a
+    # usable object rather than raising when it is summarised or displayed.
+    # See https://github.com/sunpy/sunpy/issues/7914
+    tr = TimeRange(eve_test_ts.time_range.end + TimeDelta(10*u.day),
+                   eve_test_ts.time_range.end + TimeDelta(11*u.day))
+    truncated = eve_test_ts.truncate(tr)
+
+    assert truncated.shape[0] == 0
+    assert truncated.time_range is None
+
+    summary = truncated._text_summary()
+    assert "Start Date:\t\t\tNone" in summary
+    assert "End Date:\t\t\tNone" in summary
+    assert "Center Date:\t\t\tNone" in summary
+    assert "Resolution:\t\t\tNone" in summary
+
+    # These must not raise for an empty timeseries.
+    str(truncated)
+    repr(truncated)
+    truncated._repr_html_()
+
+
 def test_truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
     a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
