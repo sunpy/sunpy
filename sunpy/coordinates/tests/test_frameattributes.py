@@ -249,7 +249,7 @@ def test_assume_observer():
     # This errors as the frames aren't compatible
     # assert hpc1.observer != assumed_observer
 
-    with _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer}): 
+    with _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer}):
         assert hpc1.obstime == assumed_obstime
         assert hpc1.observer == assumed_observer
 
@@ -270,7 +270,7 @@ def test_transform_assume_observerd():
     assert not u.allclose(original_transform.Tx, 0*u.arcsec)
     assert not u.allclose(original_transform.Ty, 0*u.arcsec)
 
-    with _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer}):   
+    with _assumed_attributes.set({"obstime": assumed_obstime, "observer": assumed_observer}):
         assumed_transform = hpc1.transform_to(hpc2)
         assert u.allclose(assumed_transform.Tx, 0*u.arcsec)
         assert u.allclose(assumed_transform.Ty, 0*u.arcsec)

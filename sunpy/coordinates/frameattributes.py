@@ -1,12 +1,11 @@
 import datetime
-from typing import Any
 from collections import defaultdict
 from contextvars import ContextVar
 
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, CoordinateAttribute, SkyCoord, TimeAttribute
+from astropy.coordinates import Attribute, BaseCoordinateFrame, CoordinateAttribute, SkyCoord, TimeAttribute
 from astropy.time import Time
 from astropy.utils import ShapedLikeNDArray
 
@@ -18,8 +17,53 @@ __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 # TODO: I have no idea if sticking a dict in here makes it actually threadsafe, I assume not as it's mutable
 _assumed_attributes = ContextVar('_assumed_attributes', default=defaultdict(lambda: None))
 
+class _AssumedAttributeMixin(Attribute):  # Inherit for type checking mainly
+    # This class re-implements the astropy.coordinates.attributes.Attribute.__get__ method
+    # to support assumed attributes, maybe this will be upstreamed at somepoint
+    def __get__(self, instance, frame_cls=None):
+        if instance is None:
+            # Return the descriptor instance to enable the retrieval of the docstring
+            return self
 
-class TimeFrameAttributeSunPy(TimeAttribute):
+        if (assumed_value := _assumed_attributes.get().get(self.name)) is not None:
+            out = assumed_value
+        else:
+            out = getattr(instance, "_" + self.name, self.default)
+
+        if out is None:
+            out = getattr(instance, self.secondary_attribute, self.default)
+
+        out, converted = self.convert_input(out)
+        if instance is not None:
+            # None if instance (frame) has no data!
+            instance_shape = getattr(instance, "shape", None)
+            if instance_shape is not None and (
+                getattr(out, "shape", ()) and out.shape != instance_shape
+            ):
+                # If the shapes do not match, try broadcasting.
+                try:
+                    if isinstance(out, ShapedLikeNDArray):
+                        out = out._apply(
+                            np.broadcast_to, shape=instance_shape, subok=True
+                        )
+                    else:
+                        out = np.broadcast_to(out, instance_shape, subok=True)
+                except ValueError:
+                    # raise more informative exception.
+                    raise ValueError(
+                        f"attribute {self.name} should be scalar or have shape"
+                        f" {instance_shape}, but it has shape {out.shape} and could not"
+                        " be broadcast."
+                    )
+
+                converted = True
+
+            if converted:
+                setattr(instance, "_" + self.name, out)
+
+        return out
+
+class TimeFrameAttributeSunPy(_AssumedAttributeMixin, TimeAttribute):
     """
     Frame attribute descriptor for quantities that are Time objects.
     See the `~astropy.coordinates.Attribute` API doc for further
@@ -38,11 +82,6 @@ class TimeFrameAttributeSunPy(TimeAttribute):
     frame_attr : descriptor
         A new data descriptor to hold a frame attribute
     """
-    def __get__(self, instance, frame_cls=None):
-        if instance is not None and (assumed_value := _assumed_attributes.get()[self.name]) is not None:
-            return assumed_value
-        return super().__get__(instance, frame_cls=frame_cls)
-
     def convert_input(self, value):
         """
         Convert input value to a Time object and validate by running through the
@@ -90,7 +129,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         return out, converted
 
 
-class ObserverCoordinateAttribute(CoordinateAttribute):
+class ObserverCoordinateAttribute(_AssumedAttributeMixin, CoordinateAttribute):
     """
     An Attribute to describe the location of the observer in the solar system.
     The observer location can be given as a string of a known observer, which
@@ -155,11 +194,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
     def __get__(self, instance, frame_cls=None):
         # If instance is None then we can't get obstime so it doesn't matter.
         if instance is not None:
-            assumed_observer = True
-            observer: Any | None = _assumed_attributes.get()[self.name]
-            if observer is None:
-                assumed_observer = False
-                observer = getattr(instance, '_' + self.name)
+            observer = getattr(instance, '_' + self.name)
             obstime = getattr(instance, 'obstime', None)  # TODO: Why is this `None` needed?
 
             # If the observer is a string and we have obstime then calculate
@@ -171,31 +206,5 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                     setattr(instance, '_' + self.name, new_observer)
                 else:
                     return observer
-
-            if assumed_observer:
-                # This is horrible but super.__get__ can't be used (for now)
-                out, converted = self.convert_input(observer)
-                if instance is not None:
-                    # None if instance (frame) has no data!
-                    instance_shape = getattr(instance, "shape", None)
-                    if instance_shape is not None and (
-                        getattr(out, "shape", ()) and out.shape != instance_shape
-                    ):
-                        # If the shapes do not match, try broadcasting.
-                        try:
-                            if isinstance(out, ShapedLikeNDArray):
-                                out = out._apply(
-                                    np.broadcast_to, shape=instance_shape, subok=True
-                                )
-                            else:
-                                out = np.broadcast_to(out, instance_shape, subok=True)
-                        except ValueError:
-                            # raise more informative exception.
-                            raise ValueError(
-                                f"attribute {self.name} should be scalar or have shape"
-                                f" {instance_shape}, but it has shape {out.shape} and could not"
-                                " be broadcast."
-                            )
-                return out
 
         return super().__get__(instance, frame_cls=frame_cls)
