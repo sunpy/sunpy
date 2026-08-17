@@ -1,4 +1,5 @@
 import datetime
+from contextlib import contextmanager
 from collections import defaultdict
 from contextvars import ContextVar
 
@@ -16,6 +17,16 @@ __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 
 # TODO: I have no idea if sticking a dict in here makes it actually threadsafe, I assume not as it's mutable
 _assumed_attributes = ContextVar('_assumed_attributes', default=defaultdict(lambda: None))
+
+
+@contextmanager
+def assume_frame_attributes(**kwargs):
+    """
+    Assume a value of a given frame attribute.
+    """
+    with _assumed_attributes.set(kwargs):
+        yield
+
 
 class _AssumedAttributeMixin(Attribute):  # Inherit for type checking mainly
     # This class re-implements the astropy.coordinates.attributes.Attribute.__get__ method
