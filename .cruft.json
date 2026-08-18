@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "9fff6e66fecd5ab2ed7fefbc0687791e83f46a8a",
+  "commit": "2a6434a5c749ecde69d00b937a3fef27ecbad656",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -26,6 +26,7 @@
       "use_extended_ruff_linting": "n",
       "matrix_room_id": "!JYqfIVJjWANcHnfktY:cadair.com",
       "extra_ci_jobs": "online,threading",
+      "use_sunpy_pr_template": "y",
       "_sphinx_theme": "sunpy",
       "_parent_project": "",
       "_install_requires": "",
@@ -35,7 +36,7 @@
         ".github/workflows/zizmor.yml"
       ],
       "_template": "https://github.com/sunpy/package-template",
-      "_commit": "9fff6e66fecd5ab2ed7fefbc0687791e83f46a8a"
+      "_commit": "2a6434a5c749ecde69d00b937a3fef27ecbad656"
     }
   },
   "directory": null
