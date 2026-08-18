@@ -1,0 +1,1 @@
+Add two new context managers `~sunpy.coordinates.assume_observer` and `~sunpy.coordinates.assume_frame_attributes` which can be used for assuming the position of the observer (or obstime) during coordinate operations. This can be particularly applicable when doing operations on two frames with the same observer but only a small difference in position / time between frames.
