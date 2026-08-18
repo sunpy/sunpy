@@ -88,6 +88,32 @@ def assume_observer(observer):
     ----------
     observer: astropy.coordinates.SkyCoord
         The observer to assume, should have an obstime which will also be assumed.
+
+    Examples
+    --------
+    >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
+    >>> from sunpy.coordinates import Helioprojective
+    >>> import astropy.units as u
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojective")
+    >>> sc
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (0., 0., 5.)>
+
+    This transformation does an observer shift and round trip through Heliographic coordinates:
+
+    >>> target_frame = Helioprojective(observer="mars", obstime=sc.obstime)
+    >>> sc.transform_to(target_frame)
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'mars'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-79535.05476998, -424.5843386, 1.105226e+08)>
+
+    This transformation does not, because the observer of the input and output coordinates are the same, so in this case the transform does nothing.
+
+    >>> with assume_observer(target_frame.observer):
+    ...     sc.transform_to(Helioprojective(obstime="2010/01/02T00:00:00"))
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'mars'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (0., 0., 5.)>
     """
     with assume_frame_attributes(observer=observer, obstime=observer.obstime):
         yield
@@ -158,6 +184,7 @@ class TimeFrameAttributeSunPy(_AssumedAttributeMixin, TimeAttribute):
     frame_attr : descriptor
         A new data descriptor to hold a frame attribute
     """
+
     def convert_input(self, value):
         """
         Convert input value to a Time object and validate by running through the
