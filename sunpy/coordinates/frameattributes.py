@@ -14,18 +14,30 @@ from sunpy.time import parse_time
 
 __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 
-
-# TODO: I have no idea if sticking a dict in here makes it actually threadsafe, I assume not as it's mutable
 _assumed_attributes = ContextVar('_assumed_attributes', default=defaultdict(lambda: None))
 
 
 @contextmanager
 def assume_frame_attributes(**kwargs):
     """
-    Assume a value of a given frame attribute.
+    Assume a value of one or more frame attributes.
+
+    Parameters
+    ----------
+    kwargs
+        This function accepts any keyword arguments and will override
+        any frame attribute with a name matching that of the keyword
+        name.
     """
-    with _assumed_attributes.set(kwargs):
-        yield
+    # Get the current assumed attributes
+    current_attrs = _assumed_attributes.get()
+    # Build the new set, overriding current with kwargs
+    new_attrs = {**current_attrs, **kwargs}
+    # Set the new assumed attrs, but make sure it's still a defaultdict
+    token = _assumed_attributes.set(defaultdict(lambda: None, new_attrs))
+    yield
+    # Reset to previous value using token
+    _assumed_attributes.reset(token)
 
 
 class _AssumedAttributeMixin(Attribute):  # Inherit for type checking mainly
