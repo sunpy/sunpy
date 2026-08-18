@@ -72,9 +72,11 @@ def assume_frame_attributes(**kwargs):
     new_attrs = {**current_attrs, **kwargs}
     # Set the new assumed attrs, but make sure it's still a defaultdict
     token = _assumed_attributes.set(defaultdict(lambda: None, new_attrs))
-    yield
-    # Reset to previous value using token
-    _assumed_attributes.reset(token)
+    try:
+        yield
+    finally:
+        # Reset to previous value using token
+        _assumed_attributes.reset(token)
 
 
 @contextmanager
