@@ -77,6 +77,20 @@ def assume_frame_attributes(**kwargs):
     _assumed_attributes.reset(token)
 
 
+@contextmanager
+def assume_observer(observer):
+    """
+    Assume the provided observer and it's obstime.
+
+    Parameters
+    ----------
+    observer: astropy.coordinates.SkyCoord
+        The observer to assume, should have an obstime which will also be assumed.
+    """
+    with assume_frame_attributes(observer=observer, obstime=observer.obstime):
+        yield
+
+
 class _AssumedAttributeMixin(Attribute):  # Inherit for type checking mainly
     # This class re-implements the astropy.coordinates.attributes.Attribute.__get__ method
     # to support assumed attributes, maybe this will be upstreamed at somepoint

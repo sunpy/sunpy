@@ -11,6 +11,7 @@ from sunpy.coordinates.frameattributes import (
     ObserverCoordinateAttribute,
     TimeFrameAttributeSunPy,
     assume_frame_attributes,
+    assume_observer,
 )
 from sunpy.coordinates.frames import (
     Heliocentric,
@@ -251,7 +252,7 @@ def test_assume_observer():
         assert hpc1.observer == assumed_observer
 
 
-def test_transform_assume_observerd():
+def test_transform_assume_attributes():
     original_obstime = Time('2026-08-12 19:09:00')
     out_icrs = ICRS(get_body_barycentric("mars", original_obstime))
     original_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=original_obstime))
@@ -281,3 +282,25 @@ def test_transform_assume_observerd():
 
         # Test that exiting the inner context manager only reset the observer.
         assert hpc1.obstime == assumed_obstime
+
+
+def test_transform_assume_observer():
+    original_obstime = Time('2026-08-12 19:09:00')
+    out_icrs = ICRS(get_body_barycentric("mars", original_obstime))
+    original_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=original_obstime))
+
+    assumed_obstime = Time('2012-01-01 00:00:00')
+    out_icrs = ICRS(get_body_barycentric("mars", assumed_obstime))
+    assumed_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=assumed_obstime))
+
+    hpc1 = Helioprojective(0*u.arcsec, 0*u.arcsec, observer=original_observer, obstime=original_obstime)
+    hpc2 = Helioprojective(observer=assumed_observer, obstime=assumed_obstime)
+
+    original_transform = hpc1.transform_to(hpc2)
+    assert not u.allclose(original_transform.Tx, 0*u.arcsec)
+    assert not u.allclose(original_transform.Ty, 0*u.arcsec)
+
+    with assume_observer(assumed_observer):
+        assumed_transform = hpc1.transform_to(hpc2)
+        assert u.allclose(assumed_transform.Tx, 0*u.arcsec)
+        assert u.allclose(assumed_transform.Ty, 0*u.arcsec)
