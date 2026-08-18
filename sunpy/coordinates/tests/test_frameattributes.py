@@ -271,3 +271,13 @@ def test_transform_assume_observerd():
         assumed_transform = hpc1.transform_to(hpc2)
         assert u.allclose(assumed_transform.Tx, 0*u.arcsec)
         assert u.allclose(assumed_transform.Ty, 0*u.arcsec)
+
+    # Test that nesting works
+    with assume_frame_attributes(obstime=assumed_obstime):
+        with assume_frame_attributes(observer=assumed_observer):
+            assumed_transform = hpc1.transform_to(hpc2)
+            assert u.allclose(assumed_transform.Tx, 0*u.arcsec)
+            assert u.allclose(assumed_transform.Ty, 0*u.arcsec)
+
+        # Test that exiting the inner context manager only reset the observer.
+        assert hpc1.obstime == assumed_obstime
