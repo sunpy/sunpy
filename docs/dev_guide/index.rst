@@ -59,6 +59,7 @@ This section contains the various guidelines to be followed by anyone working on
             contents/dependencies
             contents/ci_jobs
             contents/backports
+            contents/deprecation
             contents/funding
 
     .. grid-item-card::
@@ -73,6 +74,10 @@ This section contains the various guidelines to be followed by anyone working on
             contents/public_api
             contents/logger
             contents/remote_data_manager
+            contents/extending_fido
+            contents/new_map_class
+            contents/custom_map_rotate
+            contents/scraper_migration
             contents/soar/index
 
 {%else%}
