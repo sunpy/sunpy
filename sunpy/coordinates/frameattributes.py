@@ -14,7 +14,12 @@ from sunpy.time import parse_time
 
 __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 
-_assumed_attributes = ContextVar('_assumed_attributes', default=defaultdict(lambda: None))
+_assumed_attributes: ContextVar[defaultdict | None] = ContextVar('_assumed_attributes', default=None)
+
+
+def _get_assumed_attributes():
+    """A helper function so that we don't have a mutable default in ContextVar."""
+    return _assumed_attributes.get() or {}
 
 
 @contextmanager
@@ -22,15 +27,47 @@ def assume_frame_attributes(**kwargs):
     """
     Assume a value of one or more frame attributes.
 
+    .. note::
+
+        This currently applies only to sunpy frames for observer
+        coordinates and times (``obstime`` and ``observer`` attributes by
+        convention).
+
     Parameters
     ----------
     kwargs
         This function accepts any keyword arguments and will override
         any frame attribute with a name matching that of the keyword
         name.
+
+    Examples
+    --------
+    >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
+    >>> from sunpy.coordinates import Helioprojective
+    >>> import astropy.units as u
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojective")
+    >>> sc
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (0., 0., 5.)>
+
+    This transformation does an observer shift and round trip through Heliographic coordinates:
+
+    >>> sc.transform_to(Helioprojective(obstime="2010/01/02T00:00:00"))
+    <SkyCoord (Helioprojective: obstime=2010-01-02T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-0.82228008, 0.08095055, 4.99999994)>
+
+    This transformation does not, because the input obstime is assumed to be the same as the output obstime
+
+    >>> with assume_frame_attributes(obstime="2010/01/02T00:00:00"):
+    ...     sc.transform_to(Helioprojective(obstime="2010/01/02T00:00:00"))
+    <SkyCoord (Helioprojective: obstime=2010-01-02T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (0., 0., 5.)>
+
     """
     # Get the current assumed attributes
-    current_attrs = _assumed_attributes.get()
+    current_attrs = _get_assumed_attributes()
     # Build the new set, overriding current with kwargs
     new_attrs = {**current_attrs, **kwargs}
     # Set the new assumed attrs, but make sure it's still a defaultdict
@@ -48,7 +85,7 @@ class _AssumedAttributeMixin(Attribute):  # Inherit for type checking mainly
             # Return the descriptor instance to enable the retrieval of the docstring
             return self
 
-        if (assumed_value := _assumed_attributes.get().get(self.name)) is not None:
+        if (assumed_value := _get_assumed_attributes().get(self.name)) is not None:
             out = assumed_value
         else:
             out = getattr(instance, "_" + self.name, self.default)
