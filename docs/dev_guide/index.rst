@@ -56,7 +56,7 @@ This section contains the various guidelines to be followed by anyone working on
     .. grid-item-card::
         :class-card: card
 
-        Extending SunPy
+        Extending sunpy
         ^^^^^^^^^^^^^^^
 
         * :doc:`contents/public_api`
