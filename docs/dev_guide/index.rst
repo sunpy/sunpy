@@ -22,12 +22,9 @@ This section contains the various guidelines to be followed by anyone working on
         Getting started
         ^^^^^^^^^^^^^^^
 
-        .. toctree::
-            :maxdepth: 3
-
-            contents/newcomers
-            contents/pr_checklist
-            contents/conda_for_dependencies
+        * :doc:`contents/newcomers`
+        * :doc:`contents/pr_checklist`
+        * :doc:`contents/conda_for_dependencies`
 
     .. grid-item-card::
         :class-card: card
@@ -35,16 +32,13 @@ This section contains the various guidelines to be followed by anyone working on
         Conventions
         ^^^^^^^^^^^
 
-        .. toctree::
-            :maxdepth: 1
-
-            contents/ai_usage
-            contents/code_standards
-            contents/tests
-            contents/documentation
-            contents/example_gallery
-            contents/pr_review_procedure
-            contents/units_quantities
+        * :doc:`contents/ai_usage`
+        * :doc:`contents/code_standards`
+        * :doc:`contents/tests`
+        * :doc:`contents/documentation`
+        * :doc:`contents/example_gallery`
+        * :doc:`contents/pr_review_procedure`
+        * :doc:`contents/units_quantities`
 
     .. grid-item-card::
         :class-card: card
@@ -52,33 +46,36 @@ This section contains the various guidelines to be followed by anyone working on
         Repo management
         ^^^^^^^^^^^^^^^
 
-        .. toctree::
-            :maxdepth: 1
-
-            contents/maintainer_workflow
-            contents/dependencies
-            contents/ci_jobs
-            contents/backports
-            contents/deprecation
-            contents/funding
+        * :doc:`contents/maintainer_workflow`
+        * :doc:`contents/dependencies`
+        * :doc:`contents/ci_jobs`
+        * :doc:`contents/backports`
+        * :doc:`contents/deprecation`
+        * :doc:`contents/funding`
 
     .. grid-item-card::
         :class-card: card
 
-        Extending sunpy
+        Extending SunPy
         ^^^^^^^^^^^^^^^
 
-        .. toctree::
-            :maxdepth: 1
+        * :doc:`contents/public_api`
+        * :doc:`contents/logger`
+        * :doc:`contents/remote_data_manager`
+        * :doc:`contents/extending_fido`
+        * :doc:`contents/new_map_class`
+        * :doc:`contents/custom_map_rotate`
+        * :doc:`contents/scraper_migration`
+        * :doc:`contents/soar/index`
 
-            contents/public_api
-            contents/logger
-            contents/remote_data_manager
-            contents/extending_fido
-            contents/new_map_class
-            contents/custom_map_rotate
-            contents/scraper_migration
-            contents/soar/index
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+
+    getting_started
+    conventions
+    repo_management
+    extending_sunpy
 
 {%else%}
 
