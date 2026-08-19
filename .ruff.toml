@@ -74,11 +74,6 @@ extend-ignore = [
 [lint.pydocstyle]
 convention = "numpy"
 
-<<<<<<<
-[lint.flake8-tidy-imports]
-[lint.flake8-tidy-imports.banned-api]
-"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
-=======
 [lint.isort]
 default-section = "third-party"
 section-order = [
@@ -93,4 +88,7 @@ no-lines-before = ["local-folder"]
 
 [lint.isort.sections]
 "astropy" = ["astropy", "asdf", "gwcs", "reproject"]
->>>>>>>
+
+[lint.flake8-tidy-imports]
+[lint.flake8-tidy-imports.banned-api]
+"warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
