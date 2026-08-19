@@ -1,6 +1,6 @@
 import os
-from os.path import basename
 from collections import OrderedDict
+from os.path import basename
 
 import numpy as np
 from pandas import DataFrame, to_datetime

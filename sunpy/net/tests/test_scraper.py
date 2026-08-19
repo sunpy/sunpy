@@ -1,7 +1,7 @@
-import logging
 import datetime
-from urllib.error import URLError, HTTPError
+import logging
 from unittest.mock import Mock, patch
+from urllib.error import HTTPError, URLError
 
 import pytest
 
