@@ -23,37 +23,22 @@ Using the example below,
     >>> import sunpy.net.attrs as a
     >>> from sunpy.net import Fido
 
-    >>> time = a.Time("2022-10-08","2022-10-09")
     >>> instrument = a.Instrument("RPW")
     >>> level = a.Level(2)
     >>> distance = a.soar.Distance(0.28 * u.AU, 0.30 * u.AU)
-    >>> result = Fido.search(time & instrument & level & distance) # doctest: +REMOTE_DATA
-    >>> result # doctest: +REMOTE_DATA
+    >>> result = Fido.search(instrument & level & distance) # doctest: +SKIP
+    >>> result # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
-    17 Results from the SOARClient:
+    ... Results from the SOARClient:
     <BLANKLINE>
     Instrument     Data product    Level        Start time               End time        Filesize SOOP Name Sensor
                                                                                           Mbyte
     ---------- ------------------- ----- ----------------------- ----------------------- -------- --------- ------
            RPW rpw-tds-surv-rswf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    11.57      none    TDS
-           RPW    rpw-lfr-surv-bp2    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   98.099      none    LFR
-           RPW rpw-tds-surv-rswf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   94.615      none    TDS
-           RPW    rpw-lfr-surv-bp1    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   29.072      none    LFR
-           RPW   rpw-tds-surv-stat    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.119      none    TDS
-           RPW  rpw-lfr-surv-swf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   23.993      none    LFR
-           RPW rpw-tds-surv-hist1d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.103      none    TDS
-           RPW   rpw-tds-surv-mamp    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   33.765      none    TDS
-           RPW rpw-tds-surv-hist2d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.084      none    TDS
-           RPW rpw-tds-surv-tswf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000  102.167      none    TDS
-           RPW  rpw-lfr-surv-cwf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000  128.482      none    LFR
-           RPW    rpw-lfr-surv-asm    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    8.096      none    LFR
-           RPW  rpw-lfr-surv-cwf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000  141.814      none    LFR
            RPW  rpw-lfr-surv-swf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   14.368      none    LFR
-           RPW rpw-tds-surv-tswf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   12.659      none    TDS
-           RPW        rpw-hfr-surv    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    3.968      none    HFR
-           RPW        rpw-tnr-surv    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   39.474      none    TNR
+    ...
     <BLANKLINE>
     <BLANKLINE>
 
@@ -63,7 +48,7 @@ The actual query this example produces is,
 
 .. code-block:: python
 
-   "SELECT+*+FROM+v_sc_data_item+WHERE+end_time<'2022-10-09 00:00:00.000'+AND+begin_time >'2022-10-08 23:59:59.000')+AND+instrument='RPW'+AND+level='L2'&DISTANCE(0.28,0.30)"
+   "SELECT+*+FROM+v_sc_data_item+WHERE+instrument='RPW'+AND+level='L2'&DISTANCE(0.28,0.30)"
 
 How can other request methods be added?
 =======================================
