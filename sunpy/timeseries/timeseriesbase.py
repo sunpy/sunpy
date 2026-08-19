@@ -550,15 +550,23 @@ class GenericTimeSeries:
         object._sanitize_metadata()
         return object
 
-    @deprecated_renamed_argument("column_name", "columns", since="8.1")
-    def extract(self, columns):
+    @deprecated_renamed_argument("column_name", "column_names", since="8.1")
+    def extract(self, column_names, *, drop="all"):
         """
         Returns a new time series with the chosen column or columns.
 
+        By default, rows in which every selected column is missing are dropped.
+        See the notes below for details and for how to change this.
+
         Parameters
         ----------
-        columns : `str` or `list` of `str`
+        column_names : `str` or `list` of `str`
             A valid column name, or a sequence of valid column names.
+        drop : `str` or `None`, optional
+            Which rows to drop from the result. ``"all"`` (the default) drops
+            rows in which every selected column is missing, ``"any"`` drops
+            rows in which any selected column is missing, and `None` keeps
+            every row.
 
         Returns
         -------
@@ -567,24 +575,38 @@ class GenericTimeSeries:
 
         Notes
         -----
-        Rows in which every selected column is missing are dropped. When a
-        single column is selected this is equivalent to dropping every row in
-        which that column is missing.
-        """
-        if isinstance(columns, str):
-            columns = [columns]
-        columns = list(columns)
+        When a single column is selected, ``drop="all"`` and ``drop="any"`` are
+        equivalent, and both reproduce the behaviour of earlier versions of
+        this method.
 
-        missing = [col for col in columns if col not in self.columns]
+        When several columns are selected the two differ, because instrument
+        channels do not generally have coincident data gaps. ``drop="any"``
+        keeps only those times at which every selected column has a
+        measurement, which can discard a large fraction of the rows.
+        ``drop=None`` performs no row filtering at all and so preserves the
+        times of the original series.
+        """
+        if isinstance(column_names, str):
+            column_names = [column_names]
+        column_names = list(column_names)
+
+        missing = [col for col in column_names if col not in self.columns]
         if missing:
             raise ValueError(
                 f"Given column name(s) ({', '.join(missing)}) "
                 f"not in list of columns {self.columns}"
             )
 
-        # Extract the columns and remove rows that are empty across all of them.
-        data = self._data[columns].dropna(how="all")
-        units = {col: self.units[col] for col in columns}
+        if drop not in ("all", "any", None):
+            raise ValueError(
+                f"drop must be one of 'all', 'any' or None, not {drop!r}."
+            )
+
+        # Extract the columns, optionally removing rows with missing values.
+        data = self._data[column_names]
+        if drop is not None:
+            data = data.dropna(how=drop)
+        units = {col: self.units[col] for col in column_names}
 
         # Build generic TimeSeries object and sanatise metadata and units.
         object = GenericTimeSeries(data.sort_index(),

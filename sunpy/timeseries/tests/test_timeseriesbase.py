@@ -306,6 +306,28 @@ def test_extraction_dropna_semantics(staggered_nan_ts):
     assert len(single.to_dataframe()) == 2
 
 
+def test_extraction_drop_keyword(staggered_nan_ts):
+    columns = ['intensity', 'intensity2']
+
+    # "any" keeps only the times at which both columns have a measurement.
+    assert len(staggered_nan_ts.extract(columns, drop='any').to_dataframe()) == 1
+    # "all" keeps every time at which at least one column has a measurement.
+    assert len(staggered_nan_ts.extract(columns, drop='all').to_dataframe()) == 3
+    # None does no row filtering at all.
+    assert len(staggered_nan_ts.extract(columns, drop=None).to_dataframe()) == 4
+
+    # For a single column "any" and "all" agree.
+    assert_frame_equal(
+        staggered_nan_ts.extract('intensity', drop='any').to_dataframe(),
+        staggered_nan_ts.extract('intensity', drop='all').to_dataframe(),
+    )
+
+
+def test_extraction_invalid_drop(staggered_nan_ts):
+    with pytest.raises(ValueError, match="drop must be one of"):
+        staggered_nan_ts.extract('intensity', drop='sometimes')
+
+
 def test_extraction_invalid_column(eve_test_ts):
     with pytest.raises(ValueError, match='not in list of columns'):
         eve_test_ts.extract('NOT_A_COLUMN')
