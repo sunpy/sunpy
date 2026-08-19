@@ -29,6 +29,13 @@ Instrument   Data product   Level        Start time               End time      
 <BLANKLINE>
 <BLANKLINE>
 
+.. minigallery::
+   :add-heading: Examples of searching the SOAR
+   :heading-level: -
+
+   ../examples/acquiring_data/soar_*
+   ../examples/acquiring_data/solo_vso_eui.py
+
 """
 
 from sunpy.net.soar.client import SOARClient
