@@ -93,8 +93,9 @@ magnetogram_map = magnetogram_map.rotate()
 
 ##############################################################################
 # Plotting an arrow at every pixel would be unreadable, so we sample the
-# field on a coarser grid. We also mask out weak transverse fields (which
-# are dominated by noise) as well as unphysically strong ones.
+# field on a coarser grid. We also mask out weak transverse fields, which
+# are dominated by noise, and the strongest fields, so that a few long
+# arrows do not dominate the plot.
 
 ny, nx = magnetogram_map.data.shape
 step = 5
@@ -115,19 +116,19 @@ good = (b_transverse > b_min) & (b_transverse < b_max)
 
 fig = plt.figure(figsize=(8, 8))
 ax = fig.add_subplot(projection=magnetogram_map)
-# Adjust the vmin/vmax of the normalisation like so:
+# Adjust the vmin/vmax of the normalization like so:
 magnetogram_map.plot_settings["norm"].vmin = -1500
 magnetogram_map.plot_settings["norm"].vmax = 1500
 magnetogram_map.plot(axes=ax, cmap="Greys_r")
 ax.set_title(r'$B_{LOS}$ & Vector Field - ' + magnetogram_map.date.isot)
 
-# We want to crop the plot to a tighter region of interest.
+# We want to crop the plot to a tighter region of interest
 corners = SkyCoord(Tx=[-150, 0] * u.arcsec, Ty=[80, 230] * u.arcsec,
                    frame=magnetogram_map.coordinate_frame)
 x_pix, y_pix = magnetogram_map.wcs.world_to_pixel(corners)
 ax.set_xlim(x_pix)
 ax.set_ylim(y_pix)
 
-ax.quiver(xx[good], yy[good], b_x[good], b_y[good], color="red", alpha=0.5)
+ax.quiver(xx[good], yy[good], b_x[good], b_y[good], color="red", alpha=0.5, pivot="middle")
 
 plt.show()
