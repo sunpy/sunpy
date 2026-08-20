@@ -1,0 +1,1 @@
+Fixed `~sunpy.net.fido_factory.UnifiedResponse.all_colnames` only returning column names from the first table in the response instead of all tables.
