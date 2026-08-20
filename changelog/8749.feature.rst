@@ -1,0 +1,1 @@
+Generalised :meth:`sunpy.timeseries.GenericTimeSeries.extract` to accept multiple column names, and added a ``drop`` keyword controlling which rows with missing values are removed.
