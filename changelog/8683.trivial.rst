@@ -1,1 +1,1 @@
-Tidied and expanded the ~sunpy.map.sources.solo.METISMap tests.
+Tidied and expanded the `~sunpy.map.sources.solo.METISMap` tests.

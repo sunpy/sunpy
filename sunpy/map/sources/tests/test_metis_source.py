@@ -72,7 +72,6 @@ def metis_map_non_square(metis_test_data, minimal_metis_header):
     return Map(metis_test_data, header)
 
 
-# basic tests
 def test_METISMap(metis_map):
     assert isinstance(metis_map, METISMap)
 
@@ -112,7 +111,6 @@ def test_cmap(metis_map):
 def test_norm(metis_map):
     assert isinstance(metis_map.plot_settings["norm"], ImageNormalize)
 
-# measurements
 @pytest.mark.parametrize(("btype", "expected"), [
     ("VL total brightness",             "VL-TB"),
     ("VL polarized brightness",         "VL-PB"),
@@ -130,7 +128,6 @@ def test_measurement_types(metis_test_data, minimal_metis_header, btype, expecte
     assert m.measurement == expected
 
 
-# rsun things
 def test_rsun_obs_uses_super(metis_test_data, minimal_metis_header):
     """Verify rsun_obs uses GenericMap when RSUN_OBS exists."""
     header = {**minimal_metis_header, "RSUN_OBS": 950.0}
@@ -143,7 +140,6 @@ def test_fall_back_to_rsun_arc(metis_test_data, minimal_metis_header):
     metis_map = Map(metis_test_data, minimal_metis_header)
     assert metis_map.rsun_obs == 960.0 * u.arcsec
 
-# testing the mask
 def test_mask_is_set(metis_map):
     assert metis_map.mask is not None
 
