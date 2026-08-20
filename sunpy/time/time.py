@@ -1,9 +1,9 @@
 """
 This module provides a collection of time handing functions.
 """
+import contextlib
 import re
 import textwrap
-import contextlib
 from datetime import date, datetime
 from functools import singledispatch
 
@@ -17,6 +17,7 @@ from astropy.time import conf as astropy_time_conf
 from astropy.utils.introspection import minversion
 
 from sunpy import log
+
 # This is not called but imported to register time formats
 from sunpy.time.timeformats import *  # NOQA
 from sunpy.util.decorators import add_common_docstring

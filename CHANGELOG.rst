@@ -49,7 +49,7 @@ New Features
 Bug Fixes
 ---------
 
-- Fix ~`sunpy.net.scraper.Scraper` to correctly handle proper local file URI on Windows and make internal code more consistent. (`#8493 <https://github.com/sunpy/sunpy/pull/8493>`__)
+- Fix `~sunpy.net.scraper.Scraper` to correctly handle proper local file URI on Windows and make internal code more consistent. (`#8493 <https://github.com/sunpy/sunpy/pull/8493>`__)
 - Fixed bugs when using thread-based parallel processing due to unintentionally shared state information.
   This primarily affected these context managers: :func:`~sunpy.coordinates.SphericalScreen`, :func:`~sunpy.coordinates.PlanarScreen`, :func:`~sunpy.coordinates.propagate_with_solar_surface`, and :func:`~sunpy.coordinates.transform_with_sun_center`. (`#8500 <https://github.com/sunpy/sunpy/pull/8500>`__)
 - Fix incorrect Level 1 detection in `sunpy.map.sources.EITMap`. (`#8515 <https://github.com/sunpy/sunpy/pull/8515>`__)
@@ -154,7 +154,7 @@ Bug Fixes
 - Fixed a bug where the time format ``2001-02-03T04:05:06Z`` was being parsed through different code than ``2001-02-03T04:05:06`` or ``2001-02-03T04:05:06.0Z``. (`#8265 <https://github.com/sunpy/sunpy/pull/8265>`__)
 - Fixed a bug where :func:`sunpy.util.system_info` would report `sunpy` as an optional dependency of itself instead of properly reporting all of the optional dependencies. (`#8294 <https://github.com/sunpy/sunpy/pull/8294>`__)
 - Fixed :func:`sunpy.util.system_info` so that the version reported for a development installation of `sunpy` itself or of a dependency is accurate. (`#8297 <https://github.com/sunpy/sunpy/pull/8297>`__)
-- Fix inconsistent behaviour between local and remote (http/ftp) ~`sunpy.net.scraper.Scraper` searches. Local searches will no longer crash if an expected directory does not exist during search. (`#8316 <https://github.com/sunpy/sunpy/pull/8316>`__)
+- Fix inconsistent behaviour between local and remote (http/ftp) `~sunpy.net.scraper.Scraper` searches. Local searches will no longer crash if an expected directory does not exist during search. (`#8316 <https://github.com/sunpy/sunpy/pull/8316>`__)
 - Fixed a bug where the `~sunpy.net.jsoc.attrs.Cutout` class for requesting JSOC cutouts did not require the supplied coordinate to be in the `~sunpy.coordinates.Helioprojective` coordinate frame. (`#8346 <https://github.com/sunpy/sunpy/pull/8346>`__)
 - For the `~sunpy.net.jsoc.attrs.Cutout` class for requesting JSOC cutouts, added protection to require the center of the cutout to be on the solar disk when tracking is enabled, due to confusing output from JSOC. (`#8346 <https://github.com/sunpy/sunpy/pull/8346>`__)
 - Fix ``GONGMagnetogramMap`` for headers which have standard ``DATE-OBS`` keys vs ones which have split ``DATE-OBS`` & ``TIME-OBS``. (`#8347 <https://github.com/sunpy/sunpy/pull/8347>`__)
@@ -285,7 +285,7 @@ Breaking Changes
   A new submodule called ``scraper.net.scraper_utils`` is created and Scraper helper functions like ``date_floor()``, ``extract_timestep()``, ``check_timerange()`` and ``get_timerange_from_exdict()`` can be accessed directly from there.
 
   *All* the extracted timeranges have a millisecond subtracted from the end date, i.e. they end on 59:59:59 of the date just before, instead of the inconsistent issue where some could end with 00:00:00 of the end date which lead to undesirable cases like January 1, 2015 data also showing up in the 2014 year-long timerange. (`#7077 <https://github.com/sunpy/sunpy/pull/7077>`__)
-- Update our dependancy policy to follow `SPEC 0 <https://scientific-python.org/specs/spec-0000/>`__ rather than the older NEP 29. The only difference between the old (NEP 29) policy and the new (SPEC 0) policy is that we only support Python versions for 3 years after their initial release, rather than 4. (`#7796 <https://github.com/sunpy/sunpy/pull/7796>`__)
+- Update our dependency policy to follow `SPEC 0 <https://scientific-python.org/specs/spec-0000/>`__ rather than the older NEP 29. The only difference between the old (NEP 29) policy and the new (SPEC 0) policy is that we only support Python versions for 3 years after their initial release, rather than 4. (`#7796 <https://github.com/sunpy/sunpy/pull/7796>`__)
 - Increased minimum versions for these dependencies:
 
   - asdf-astropy >= 0.5.0
@@ -640,7 +640,7 @@ Bug Fixes
 - Updated the url of the `~sunpy.net.dataretriever.GBMClient` to match on files other than those that end with version 0 (i.e., V0.pha). (`#7148 <https://github.com/sunpy/sunpy/pull/7148>`__)
 - When directly instantiating a `~astropy.wcs.WCS` from a FITS header that contains both Stonyhurst and Carrington heliographic coordinates for the observer location, the Stonyhurst coordinates will now be prioritized.
   This behavior is now consistent with the `~sunpy.map.Map` class, which has always prioritized Stonyhurst coordinates over Carrington coordinates. (`#7188 <https://github.com/sunpy/sunpy/pull/7188>`__)
-- Fixed a bug with :func:`~sunpy.map.sample_at_coords()` where sampling outside the bounds of the map would sometimes not error and instead return strange pixel values. (`#7206 <https://github.com/sunpy/sunpy/pull/7206>`__)
+- Fixed a bug with :func:`~sunpy.map.sample_at_coords` where sampling outside the bounds of the map would sometimes not error and instead return strange pixel values. (`#7206 <https://github.com/sunpy/sunpy/pull/7206>`__)
 - Improved code when loading CDF files to improve performance and avoid raising of pandas performance warnings. (`#7247 <https://github.com/sunpy/sunpy/pull/7247>`__)
 - Fixed a bug with :meth:`sunpy.map.GenericMap.plot` where setting ``norm`` to ``None`` would result in an error. (`#7261 <https://github.com/sunpy/sunpy/pull/7261>`__)
 
@@ -1395,7 +1395,7 @@ New Features
   that allows plotting a subset of the columns present. (`#5557 <https://github.com/sunpy/sunpy/pull/5557>`__)
 - Added a new CDAWeb client, along with helper utilities to `sunpy.net.cdaweb`. (`#5558 <https://github.com/sunpy/sunpy/pull/5558>`__)
 - Support for filtering searches with JSOC keywords has been added to ``Fido.search``. (`#5566 <https://github.com/sunpy/sunpy/pull/5566>`__)
-- Added support for arithmetic operations between`~sunpy.map.GenericMap` and array-like
+- Added support for arithmetic operations between `~sunpy.map.GenericMap` and array-like
   objects. (`#5614 <https://github.com/sunpy/sunpy/pull/5614>`__)
 - Added ``quantity`` attribute to `~sunpy.map.GenericMap` to expose the ``data``
   attribute as a `~astropy.units.Quantity` using the ``unit`` attribute. (`#5614 <https://github.com/sunpy/sunpy/pull/5614>`__)
@@ -1892,7 +1892,7 @@ Features
 - Added a `~sunpy.map.sources.MDISynopticMap` map source class. (`#4054 <https://github.com/sunpy/sunpy/pull/4054>`__)
 - Created `~sunpy.net.dataretriever.GONGClient` for accessing magnetogram synoptic map archives of NSO-GONG. (`#4055 <https://github.com/sunpy/sunpy/pull/4055>`__)
 - All coordinate frames will now show the velocity if it exists in the underlying data. (`#4102 <https://github.com/sunpy/sunpy/pull/4102>`__)
-- The ephemeris functions :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst()`, :func:`~sunpy.coordinates.ephemeris.get_earth()`, and :func:`~sunpy.coordinates.ephemeris.get_horizons_coord()` can now optionally return the body's velocity as part of the output coordinate. (`#4102 <https://github.com/sunpy/sunpy/pull/4102>`__)
+- The ephemeris functions :func:`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`, :func:`~sunpy.coordinates.ephemeris.get_earth`, and :func:`~sunpy.coordinates.ephemeris.get_horizons_coord` can now optionally return the body's velocity as part of the output coordinate. (`#4102 <https://github.com/sunpy/sunpy/pull/4102>`__)
 - `~sunpy.util.metadata.MetaDict` now maintains coherence between its keys and their corresponding keycomments. Calling ``del`` on a ``MetaDict`` object key is now case-insensitive. (`#4129 <https://github.com/sunpy/sunpy/pull/4129>`__)
 - Allow ``sunpy.visualization.animator.ArrayAnimatorWCS`` to disable ticks for
   a coordinate, by setting ``ticks: False`` in the ``coord_params`` dictionary. (`#4270 <https://github.com/sunpy/sunpy/pull/4270>`__)
@@ -2377,7 +2377,7 @@ Backwards Incompatible Changes
   The construction of a ``zeep.Client`` object is now handled by ``sunpy.net.vso.vso.build_client`` which has a more flexible API for customising the ``zeep.Client`` interface. (`#3330 <https://github.com/sunpy/sunpy/pull/3330>`__)
 - Importing ``sunpy.timeseries.timeseriesbase`` no longer automatically imports
   Matplotlib. (`#3376 <https://github.com/sunpy/sunpy/pull/3376>`__)
-- :meth:`sunpy.timeseries.sources.NOAAIndicesTimeSeries.peek()` now checks that the `type` argument is a
+- :meth:`sunpy.timeseries.sources.NOAAIndicesTimeSeries.peek` now checks that the `type` argument is a
   valid string, and raises a `ValueError` if it isn't. (`#3378 <https://github.com/sunpy/sunpy/pull/3378>`__)
 - Observer-based coordinate frames (`~sunpy.coordinates.frames.Heliocentric` and `~sunpy.coordinates.frames.Helioprojective`) no longer assume a default observer (Earth) if no observer is specified. These frames can now be used with no observer specified, but most transformations cannot be performed for such frames. This removal of a default observer only affects `sunpy.coordinates`, and has no impact on the default observer in `sunpy.map`. (`#3388 <https://github.com/sunpy/sunpy/pull/3388>`__)
 - The callback functions provided to
