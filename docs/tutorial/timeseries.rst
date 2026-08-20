@@ -52,16 +52,16 @@ To make sure this has all worked correctly, we can take a quick look at ``my_tim
     <sunpy.timeseries.sources.goes.XRSTimeSeries object at ...>
     SunPy TimeSeries
     ----------------
-    Observatory:		 GOES-15
-    Instrument:		 <a href=https://www.swpc.noaa.gov/products/goes-x-ray-flux target="_blank">X-ray Detector</a>
-    Channel(s):		 xrsa<br>xrsb
-    Start Date:		 2011-06-07 00:00:00
-    End Date:		 2011-06-07 23:59:58
-    Center Date:		 2011-06-07 11:59:58
-    Resolution:		 2.048 s
-    Samples per Channel:		 42177
-    Data Range(s):		 xrsa   3.64E-06<br>xrsb   2.54E-05
-    Units:		 W / m2
+    Observatory:         GOES-15
+    Instrument:          <a href=https://www.swpc.noaa.gov/products/goes-x-ray-flux target="_blank">X-ray Detector</a>
+    Channel(s):          xrsa<br>xrsb
+    Start Date:          2011-06-07 00:00:00
+    End Date:        2011-06-07 23:59:58
+    Center Date:         2011-06-07 11:59:58
+    Resolution:          2.048 s
+    Samples per Channel:         42177
+    Data Range(s):       xrsa   3.64E-06<br>xrsb   2.54E-05
+    Units:       W / m2
                                            xrsa          xrsb
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
