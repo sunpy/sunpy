@@ -288,12 +288,12 @@ def read_genx(filename):
     with open(filename, mode='rb') as xdrfile:
         xdrfile_data = xdrfile.read()
         # Before Unpacking, let's check if it is actually an IDL savefile!
-        _IDL_file_signature_uncompressed = b'SR\x00\x04' # Standard uncompressed IDL savefile signature
-        _IDL_file_signature_compressed = b'SR\x00\x06' # Standard compressed IDL savefile signature
+        IDL_file_signature_uncompressed = b'SR\x00\x04' # Standard uncompressed IDL savefile signature
+        IDL_file_signature_compressed = b'SR\x00\x06' # Standard compressed IDL savefile signature
         # Put a length guard on the read to avoid reading past the end of the file.
         if len(xdrfile_data) < 8:
             raise ValueError(f"{filename} is too short to be a valid genx file.")
-        if (xdrfile_data[:4] == _IDL_file_signature_uncompressed or xdrfile_data[:4] == _IDL_file_signature_compressed):
+        if (xdrfile_data[:4] == IDL_file_signature_uncompressed or xdrfile_data[:4] == IDL_file_signature_compressed):
             raise ValueError(f"{filename} is an IDL savefile, not a genx file. Please use `scipy.io.readsav` to read it.")
         xdrdata = SSWUnpacker(xdrfile_data)
 
