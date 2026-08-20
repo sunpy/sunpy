@@ -1,11 +1,11 @@
 """
 Functions for geometrical image transformation and warping.
 """
+import numbers
 import sys
 import time
-import numbers
-from functools import wraps
 from collections import namedtuple
+from functools import wraps
 
 import numpy as np
 import scipy.ndimage

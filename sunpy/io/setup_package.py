@@ -1,6 +1,6 @@
 import os
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 import numpy
 from extension_helpers import get_compiler

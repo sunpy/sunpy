@@ -26,8 +26,8 @@ Using the example below,
     >>> instrument = a.Instrument("RPW")
     >>> level = a.Level(2)
     >>> distance = a.soar.Distance(0.28 * u.AU, 0.30 * u.AU)
-    >>> result = Fido.search(instrument & level & distance) # doctest: +REMOTE_DATA
-    >>> result # doctest: +REMOTE_DATA
+    >>> result = Fido.search(instrument & level & distance) # doctest: +SKIP
+    >>> result # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>

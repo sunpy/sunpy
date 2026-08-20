@@ -2,9 +2,9 @@
 This module provides sunpy specific decorators.
 """
 import contextvars
-from inspect import cleandoc
-from functools import wraps
 from contextlib import contextmanager
+from functools import wraps
+from inspect import cleandoc
 
 import numpy as np
 
