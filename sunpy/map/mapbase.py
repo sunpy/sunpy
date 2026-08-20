@@ -1,25 +1,26 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-import re
 import copy
 import html
 import inspect
+import itertools
 import numbers
+import re
 import textwrap
 import warnings
-import itertools
 import webbrowser
-from typing import Literal
-from tempfile import NamedTemporaryFile
 from collections import namedtuple
+from tempfile import NamedTemporaryFile
+from typing import Literal
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import reproject
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+
+import reproject
 
 try:
     from dask.array import Array as DaskArray

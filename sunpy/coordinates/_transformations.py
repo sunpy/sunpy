@@ -13,9 +13,9 @@ This module contains the functions for converting one
 
 """
 import logging
+from contextvars import ContextVar
 from copy import deepcopy
 from functools import wraps
-from contextvars import ContextVar
 
 import erfa
 import numpy as np
