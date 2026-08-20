@@ -30,6 +30,7 @@ from sunpy.net import attrs as a
 # The ``hmi.sharp_720s`` series provides the full magnetic field vector as
 # three segments: the field strength ("field"), inclination and azimuth,
 # alongside the line-of-sight magnetogram ("magnetogram").
+#
 # Here we download all four for HARP number 4536.
 #
 # Exporting data from the JSOC requires registering your email first.
@@ -50,7 +51,7 @@ result = Fido.search(
 print(result)
 
 ##############################################################################
-# Now we can download the files and load them into maps.
+# Now we can download the files and create a few maps.
 
 files = Fido.fetch(result)
 # Sorting the filenames puts the segments in alphabetical order:
@@ -58,11 +59,13 @@ files = Fido.fetch(result)
 azimuth_map, field_map, inclination_map, magnetogram_map = sunpy.map.Map(sorted(files))
 
 ##############################################################################
-# The field strength, inclination and azimuth describe the magnetic field
-# vector in spherical coordinates, so we first convert it to a Cartesian
-# form. The azimuth is measured counterclockwise from the "up" direction
-# (+y) of the CCD image, so the components of the field transverse to the
-# line of sight are given by (see equation 1 of :cite:t:`sun_coordinate_2013`):
+# The magnetic field vector is described in a spherical form: the field
+# strength, its inclination to the line of sight, and the azimuth of its
+# transverse component, measured counterclockwise from the "up" direction
+# (+y) of the CCD image. The SHARP azimuth already has its 180-degree
+# ambiguity resolved :cite:p:`hoeksema_helioseismic_2014`. Equation 1 of
+# :cite:t:`sun_coordinate_2013` gives the transverse components along the
+# CCD axes:
 
 inclination = np.deg2rad(inclination_map.data)
 azimuth = np.deg2rad(azimuth_map.data)
@@ -71,17 +74,21 @@ b_x = -field_map.data * np.sin(inclination) * np.sin(azimuth)
 b_y = field_map.data * np.sin(inclination) * np.cos(azimuth)
 
 ##############################################################################
-# HMI images have solar north pointing down, so we rotate the maps to put
-# solar north up. We deliberately computed the vector components *before* rotating
-# them, so that the sign of both components is flipped when we rotate the
-# magnetogram map. The azimuth map directly would interpolate its values
-# across the 0/360 degree wrap and corrupt them. Instead, we place the components
-# into maps that share the magnetogram's coordinate information and rotate those.
-# Rotating the image by 180 degrees also rotates the direction each vector points,
-# which amounts to flipping the sign of both components.
+# HMI images have solar north pointing approximately down, so we rotate the
+# maps to put north up. We rotate the component arrays rather than the
+# azimuth map, as interpolating angles across the 0/360 degree wrap would
+# corrupt them; reusing the magnetogram's metadata supplies the coordinate
+# information. Rotating a map only resamples its values, so we must also
+# rotate the vectors into the new image axes using the map's
+# :attr:`~sunpy.map.GenericMap.rotation_matrix`, which for HMI is nearly
+# (but not exactly) a 180-degree rotation, i.e. a sign flip of both
+# components.
 
-b_x = -sunpy.map.Map(b_x, magnetogram_map.meta).rotate().data
-b_y = -sunpy.map.Map(b_y, magnetogram_map.meta).rotate().data
+rmatrix = magnetogram_map.rotation_matrix
+b_x_ccd = sunpy.map.Map(b_x, magnetogram_map.meta).rotate().data
+b_y_ccd = sunpy.map.Map(b_y, magnetogram_map.meta).rotate().data
+b_x = rmatrix[0, 0] * b_x_ccd + rmatrix[0, 1] * b_y_ccd
+b_y = rmatrix[1, 0] * b_x_ccd + rmatrix[1, 1] * b_y_ccd
 magnetogram_map = magnetogram_map.rotate()
 
 ##############################################################################
