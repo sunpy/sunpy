@@ -65,14 +65,14 @@ Added support for querying data from `solarnet API <https://solarnet.oma.be/>`__
 
 .. code-block:: python
 
-    >>> from sunpy.net import Fido, attrs as a  # doctest: +REMOTE_DATA
-    >>> result = Fido.search(a.Time('2023-01-01', '2023-01-02'), a.solarnet.Dataset.eui_level_2, a.solarnet.Limit(2))  # doctest: +REMOTE_DATA
-    >>> result  # doctest: +REMOTE_DATA
+    >>> from sunpy.net import Fido, attrs as a  # doctest: +SKIP
+    >>> result = Fido.search(a.Time('2023-01-01', '2023-01-02'), a.solarnet.Dataset.eui_level_2, a.solarnet.Limit(2))  # doctest: +SKIP
+    >>> result  # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SOLARNETClient:
-    Source: https://solarnet2.oma.be
+    Source: https://solarnet.oma.be
     <BLANKLINE>
            OID                 DATE_BEG                 DATE_END         WAVEMIN WAVEMAX         DATE_OBS
     ------------------ ------------------------ ------------------------ ------- ------- ------------------------

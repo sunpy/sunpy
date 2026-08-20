@@ -85,6 +85,7 @@ def send_to_log(message, kind='INFO'):
 
 # Most of the logging functionality is tested in Astropy's tests for AstropyLogger
 
+@pytest.mark.thread_unsafe(reason="overrides warning.showwarning")
 def test_sunpy_warnings_logging():
     # Test that our logger intercepts our warnings but not Astropy warnings
 

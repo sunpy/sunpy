@@ -3,7 +3,7 @@ version: 2
 build:
   os: ubuntu-lts-latest
   tools:
-    python: "mambaforge-latest"
+    python: "miniforge3-latest"
   jobs:
     post_checkout:
       - git fetch --unshallow || true

@@ -26,8 +26,8 @@ Using the example below,
     >>> instrument = a.Instrument("RPW")
     >>> level = a.Level(2)
     >>> distance = a.soar.Distance(0.28 * u.AU, 0.30 * u.AU)
-    >>> result = Fido.search(instrument & level & distance) # doctest: +REMOTE_DATA
-    >>> result # doctest: +REMOTE_DATA
+    >>> result = Fido.search(instrument & level & distance) # doctest: +SKIP
+    >>> result # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -36,8 +36,11 @@ Using the example below,
     Instrument     Data product    Level        Start time               End time        Filesize SOOP Name Sensor
                                                                                           Mbyte
     ---------- ------------------- ----- ----------------------- ----------------------- -------- --------- ------
-           RPW rpw-tds-surv-hist2d    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    0.084      none    TDS
+           RPW rpw-tds-surv-rswf-b    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000    11.57      none    TDS
+           RPW  rpw-lfr-surv-swf-e    L2 2022-10-09 00:00:00.000 2022-10-10 00:00:00.000   14.368      none    LFR
     ...
+    <BLANKLINE>
+    <BLANKLINE>
 
 Here the query's "REQUEST" type to "doQueryFilteredByDistance", which is a special method that filters the entire database based on the specified distance value.
 

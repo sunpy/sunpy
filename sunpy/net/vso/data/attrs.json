@@ -229,16 +229,16 @@
       "None"
     ],
     [
-      "LVA",
-      "None"
-    ],
-    [
       "LW",
       "Long wavelengths"
     ],
     [
       "LW2",
       "None"
+    ],
+    [
+      "LYA",
+      "Ly-alpha"
     ],
     [
       "LYRA",
@@ -513,6 +513,10 @@
     [
       "CELIAS",
       "Charge, Element, and Isotope Analysis System"
+    ],
+    [
+      "CLASP1",
+      "None"
     ],
     [
       "COSTEP",
@@ -909,6 +913,10 @@
   ],
   "level": [
     [
+      "0.5",
+      "0.5"
+    ],
+    [
       "0C",
       "0C"
     ],
@@ -921,6 +929,10 @@
       "1"
     ],
     [
+      "1.0",
+      "1.0"
+    ],
+    [
       "1.5",
       "1.5"
     ],
@@ -931,6 +943,10 @@
     [
       "2",
       "2"
+    ],
+    [
+      "2.0",
+      "2.0"
     ],
     [
       "3",
@@ -949,6 +965,10 @@
     [
       "LOS_velocity",
       "the displacement of line center from rest wavelength/frequency in an arbitrary polarization state"
+    ],
+    [
+      "Stokes",
+      "None"
     ],
     [
       "Stokes_parameters",
@@ -1106,6 +1126,10 @@
     ]
   ],
   "source": [
+    [
+      "CLASP1",
+      "None"
+    ],
     [
       "CLASP2",
       "Chromospheric LAyer SpectroPolarimeter 2"

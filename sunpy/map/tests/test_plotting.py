@@ -470,7 +470,9 @@ def test_plot_autoalign_image_fail(aia171_test_map):
         aia.plot(axes=ax, autoalign='image')
 
 
-def test_plot_unit8(aia171_test_map):
+def test_plot_uint8(aia171_test_map):
     # Check that plotting a map with uint8 data does not raise an error
-    aia171_unit8 = sunpy.map.Map(aia171_test_map.data.astype('uint8'), aia171_test_map.meta)
-    aia171_unit8.plot()
+    aia171_uint8 = sunpy.map.Map(aia171_test_map.data.astype('uint8'), aia171_test_map.meta)
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_uint8)
+    aia171_uint8.plot(axes=ax)

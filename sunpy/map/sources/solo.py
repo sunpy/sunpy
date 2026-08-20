@@ -1,18 +1,20 @@
 """
 Solar Orbiter Map subclass definitions.
 """
+import numpy as np
 from matplotlib.colors import CenteredNorm
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation
-from astropy.visualization import AsinhStretch, ImageNormalize
+from astropy.visualization import AsinhStretch, ImageNormalize, PercentileInterval
 
+from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.util.exceptions import warn_user
 
-__all__ = ['EUIMap', 'PHIMap']
+__all__ = ['EUIMap', 'PHIMap', 'METISMap']
 
 
 class EUIMap(GenericMap):
@@ -206,3 +208,186 @@ class PHIMap(GenericMap):
         is_phi = str(header.get('instrume', '')).startswith('PHI')
         is_not_phi_stokes = str(header.get('btype', '')).lower() != 'stokes'
         return is_solo and is_phi and is_not_phi_stokes
+
+class METISMap(GenericMap):
+    r"""
+    Metis Map.
+
+    Metis is the multi-wavelength coronagraph on board the Solar Orbiter mission,
+    dedicated to the study of the solar corona. It observes the outer atmosphere
+    of the Sun simultaneously in:
+
+    - Total and polarized visible light (580-640 nm), scattered by free electrons
+      through the Thomson scattering
+    - Ultraviolet band in the hydrogen Lyman-alpha line (121.6 nm), emitted by
+      the few neutral hydrogen atoms surviving in the hot corona.
+
+    By occulting the solar disk, Metis observes the faint coronal emission in an
+    annular zone 1.6-2.9 deg wide, around the disk center. When Solar Orbiter
+    is at its closest approach to the Sun, at the minimum perihelion of 0.28
+    astronomical units, the annular zone is within 1.7 and 3.1 solar radii from
+    disk center.
+
+    Solar Orbiter was successfully launched on February 10th, 2020.
+
+    Notes
+    -----
+
+    This map source clips out the upper and lower :math:`0.5\%` of the pixels as many Metis files have some extreme spikes.
+
+    References
+    ----------
+    * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`_
+    * `Metis Instrument Page <https://metis.oato.inaf.it/index.html>`_
+    * Instrument Paper: :cite:t:`antonucci_metis_2020`
+    """
+    _BTYPE_SUFF_DICT = {
+        "VL total brightness":              ("-TB",  "-TB"),
+        "VL polarized brightness":          ("-PB",  "-PB"),
+        "VL fixed-polarization intensity":  ("-FP",  "-Fix. Pol."),
+        "VL polarization angle":            ("-PA",  "-Pol. Angle"),
+        "Stokes I":                         ("-SI",  "-Stokes I"),
+        "Stokes Q":                         ("-SQ",  "-Stokes Q"),
+        "Stokes U":                         ("-SU",  "-Stokes U"),
+        "Pixel quality":                    ("-PQ",  "-Pixel quality"),
+        "Absolute error":                   ("-AE",  "-Abs. err."),
+        "Relative error":                   ("-RE",  "-Rel. err."),
+        "UV Lyman-alpha intensity":         ("",     ""),
+    }
+
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+        btype = self.meta["btype"]
+        nickname_add = ""
+        if btype in METISMap._BTYPE_SUFF_DICT:
+            _, nickname_add = METISMap._BTYPE_SUFF_DICT[btype]
+        self._nickname = f"{self.instrument}/{self.meta['filter']}{nickname_add}"
+        self.plot_settings["cmap"] = f"solo{self.instrument}{self.measurement}".lower()
+
+        self.plot_settings["norm"] = ImageNormalize(
+            self.data,
+            interval=PercentileInterval(99.5),
+            clip=False,
+        )
+
+    @property
+    def rsun_obs(self):
+        """
+        Angular radius of the observation from Sun center.
+        This value is taken (in order of preference) from the 'RSUN_OBS',
+        'SOLAR_R', 'RADIUS', or 'RSUN_ARC' FITS keywords. If none of these keys are present,
+        the angular radius is calculated from
+        `~sunpy.map.GenericMap.rsun_meters` and `~sunpy.map.GenericMap.dsun`.
+        """
+        rsun_arcseconds = self._rsun_obs_no_default
+        if rsun_arcseconds is not None:
+            return rsun_arcseconds * u.arcsec
+
+        if "RSUN_ARC" in self.meta:
+            return self.meta["RSUN_ARC"] * u.arcsec
+
+        return super().rsun_obs
+
+    @property
+    def measurement(self):
+        """
+        Derive the product type string from the BTYPE header keyword.
+
+        Returns
+        -------
+        str
+            Product type string.
+        """
+
+        if "filter" not in self.meta:
+            return super().measurement
+        prodtype = self.meta["filter"]
+        btype = self.meta.get("btype", "")
+
+        suff, _ = METISMap._BTYPE_SUFF_DICT.get(btype, ("", None))
+        return prodtype + suff
+
+
+    @property
+    def mask(self):
+        """
+        Mask pixels obscured by the internal and external occulters.
+
+        Returns a mask set to ``True`` for pixels inside the inner occulter
+        and outside the outer field of view.
+
+        Warnings
+        --------
+        If CDELT1 and CDELT2 are not equal (non-square pixels), this method
+        will warn and return ``None`` without computing a mask, as the
+        circular mask calculation assumes square pixels.
+        """
+        if missing_keys := {"inn_fov", "out_fov",
+                            "io_xcen", "io_ycen",
+                            "fs_xcen", "fs_ycen"}.difference(self.meta.keys()):
+            warn_user(f"Missing {', '.join(missing_keys)} keys required to calculate occulter mask")
+            return super().mask
+
+        if self._mask is None:
+            if self.scale[0] != self.scale[1]:
+                log.info(
+                    "CDELT1 != CDELT2, can not automatically compute the occulter mask."
+                )
+                return None
+
+            # Calculate occulter radii in pixels
+            inn_fov = (self.meta["inn_fov"] * u.deg / self.scale[0])
+            out_fov = (self.meta["out_fov"] * u.deg / self.scale[1])
+
+            # Create coordinate grids
+            x = np.arange(0, self.meta["naxis1"], 1)
+            y = np.arange(0, self.meta["naxis2"], 1)
+            xx, yy = np.meshgrid(x, y, sparse=True)
+
+            # Calculate distance from internal occulter center
+            in_xcen = (self.meta["io_xcen"] - 1) * u.pix
+            in_ycen = (self.meta["io_ycen"] - 1) * u.pix
+            dist_inncen = np.sqrt((xx * u.pix - in_xcen) ** 2 + (yy * u.pix - in_ycen) ** 2)
+
+            # Calculate distance from external occulter/field stop center
+            # NOTE: Workaround for DR1 data where fs_*cen keywords are not correctly defined.
+            # In DR1, fs_xcen and fs_ycen are not available and as consequence the corresponding keywords in a FITS file are assigned to crpix1 and crpix2, respectively.
+            # When this occurs, sun_xcen and sun_ycen should be used as approximate coordinates of the field stop center.
+            # This problem is solved in DR2.
+            if self.meta["fs_xcen"] == self.meta["crpix1"] and self.meta["fs_ycen"] == self.meta["crpix2"]:
+                # DR1 workaround: use sun center instead; For the DR1 data fs_*cen keywords are not defined correctly in a FITS file header
+                out_xcen = (self.meta["sun_xcen"] - 1) * u.pix
+                out_ycen = (self.meta["sun_ycen"] - 1) * u.pix
+            else:
+                # Normal case: use field stop center
+                out_xcen = (self.meta["fs_xcen"] - 1) * u.pix
+                out_ycen = (self.meta["fs_ycen"] - 1) * u.pix
+
+            dist_outcen = np.sqrt((xx * u.pix - out_xcen) ** 2 + (yy * u.pix - out_ycen) ** 2)
+
+            mask_inner = dist_inncen <= inn_fov
+            mask_outer = dist_outcen >= out_fov
+            self._mask = mask_inner | mask_outer
+
+        return self._mask
+
+
+    @mask.setter
+    def mask(self, value):
+        self._mask = value
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """
+        Return ``True`` if ``header`` corresponds to a Metis L2 product.
+
+        Parameters
+        ----------
+        data : numpy.ndarray
+        header : dict-like
+        """
+        instrume = str(header.get("INSTRUME", "")).strip().upper()
+        obsrvtry = str(header.get("OBSRVTRY", "")).strip().upper()
+        level = str(header.get("LEVEL", "")).strip().upper()
+
+        return ("METIS" in instrume and "SOLAR ORBITER" in obsrvtry and "L2" in level)

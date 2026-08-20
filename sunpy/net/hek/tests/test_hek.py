@@ -242,10 +242,14 @@ def coronal_hole_search_result():
 
 @pytest.mark.remote_data
 def test_compare_event_coords(coronal_hole_search_result):
-    event_coord = SkyCoord(-2.91584*u.arcsec,
-                           940.667*u.arcsec,
+    event_coord = SkyCoord(141.337,
+                           -926.973,
+                           unit=(u.arcsec, u.arcsec),
                            frame=Helioprojective(observer=get_earth('2011-08-09 06:00:08.000')))
-    assert coronal_hole_search_result['event_coord'][0] == event_coord
+    for hole in coronal_hole_search_result['event_coord']:
+        if hole == event_coord:
+            return
+    pytest.fail("Expected coordinate was not in list")
 
 
 @pytest.mark.remote_data

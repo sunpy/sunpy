@@ -5,6 +5,7 @@
   "chromis": "Data acquired with the CHROMIS instrument processed with the [SSTRED](https://dubshen.astro.su.se/wiki/index.php/SSTRED) data processing pipeline",
   "chrotel_level_1": "Chromospheric Telescope (ChroTel) at the Observatorio del Teide on Tenerife is a multi-wavelength imaging telescope for full-disk synoptic observations of the solar chromosphere",
   "crisp": "Data acquired with the CRISP instrument processed with the  [SSTRED](https://dubshen.astro.su.se/wiki/index.php/SSTRED) data processing pipeline",
+  "crisp2": "Data acquired with the CRISP instrument processed with the  [SSTRED](https://dubshen.astro.su.se/wiki/index.php/SSTRED) data processing pipeline",
   "eit_level_0": "The dataset consist of full sun images of the solar corona in the extreme ultraviolet range in 4 wavelengths: 17.1",
   "eit_synoptic": "Synchronous synoptic maps of the corona in the extreme-UV (EUV)",
   "eui_level_1": "EUI scientific data consists of calibrated and raw data images acquired by the three EUI telescopes",
@@ -19,11 +20,13 @@
   "lyra_level_2": "LYRA level 2 files corresponds to the full time-resolution calibrated data",
   "lyra_level_3": "LYRA level 3 files are similar to level 2",
   "rosa": "This data was taken as part of the special DST service mode run ran entirely for flare studies in October 2014",
+  "spoca_coronal_hole": "Maps of Coronal Holes detected using the SPoCA software suite on SDO/AIA 19.3nm Level 2 images",
   "swap_level_1": "SWAP level 1 files correspond to the calibrated images",
   "uset_calciumii-k_level_1": "Full-disk solar images from the USET CalciumII-K instrument",
   "uset_h-alpha_level_1": "Full sun images from the USET  H-alpha instrument",
   "uset_white_light_level_1": "Full sun images from the USET White Light instrument",
-  "xrt_level_1": "For more information on the instrument please see:\r\n-  [The\u00a0Hinode\u00a0X-Ray Telescope (XRT): Camera Design",
+  "xrt_level_0": "For more information on the dataset please see:\r\n- [The\u00a0Hinode\u00a0X-Ray Telescope (XRT): Camera Design",
+  "xrt_level_1": "XRT data prepocessed to level 1\r\n\r\nFor more information on the dataset please see:\r\n- [The\u00a0Hinode\u00a0X-Ray Telescope (XRT): Camera Design",
   "zimpol+spectrograph@gregor": "The dataset consists of calibrated spectropolarimetric observations of the solar atmosphere obtained with the Zurich IMaging POLarimeter (ZIMPOL) at GREGOR",
   "zimpol+spectrograph@irsol": "The dataset consists of calibrated spectropolarimetric observations of the solar atmosphere obtained with the Zurich IMaging POLarimeter (ZIMPOL) at IRSOL"
 }

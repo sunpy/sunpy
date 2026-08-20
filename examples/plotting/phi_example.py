@@ -13,7 +13,6 @@ for instrument details.
 # sphinx_gallery_tags = ["Visualization", "SOAR", "Solar Orbiter", "PHI"]
 
 import matplotlib.pyplot as plt
-import sunpy_soar  # noqa: F401
 
 import sunpy.map
 from sunpy.net import Fido

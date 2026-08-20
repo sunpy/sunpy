@@ -11,7 +11,7 @@ from decimal import Decimal
 from functools import partial
 
 
-__version__ = "1.20.2"
+__version__ = "1.22.1"
 __all__ = ["parse", "search", "findall", "with_pattern"]
 
 log = logging.getLogger(__name__)
@@ -219,7 +219,7 @@ def date_convert(
             H, M, S = t
             if "." in S:
                 S, u = S.split(".")
-                u = int(float("." + u) * 1000000)
+                u = int(u.ljust(6, "0")[:6])
             S = int(S)
         H = int(H)
         M = int(M)
@@ -288,7 +288,7 @@ def strf_date_convert(x, _, type):
     elif is_time:
         return dt.time()
     else:
-        ValueError("Datetime not a date nor a time?")
+        raise ValueError("Datetime not a date nor a time?")
 
 
 # ref: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
@@ -349,7 +349,7 @@ ALLOWED_TYPES = set(list("nbox%fFegwWdDsSl") + ["t" + c for c in "ieahgcts"])
 
 
 def extract_format(format, extra_types):
-    """Pull apart the format [[fill]align][sign][0][width][.precision][type]"""
+    """Pull apart the format [[fill]align][sign][0][width][grouping][.precision][type]"""
     fill = align = None
     if format[0] in "<>=^":
         align = format[0]
@@ -373,6 +373,14 @@ def extract_format(format, extra_types):
             break
         width += format[0]
         format = format[1:]
+
+    # Extract grouping option
+    if format.startswith(","):
+        format = format[1:]
+        grouping = ","
+    elif format.startswith("_"):
+        format = format[1:]
+        grouping = "_"
 
     if format.startswith("."):
         # Precision isn't needed but we need to capture it so that
@@ -719,10 +727,11 @@ class Parser(object):
             self._group_index += 1
             conv[group] = percentage
         elif type == "f":
-            s = r"\d*\.\d+"
+            # precision 0 formats without a decimal point (e.g. format(20.0, ".0f") == "20")
+            s = r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
             conv[group] = convert_first(float)
         elif type == "F":
-            s = r"\d*\.\d+"
+            s = r"\d+" if format.get("precision") == "0" else r"\d*\.\d+"
             conv[group] = convert_first(Decimal)
         elif type == "e":
             s = r"\d*\.\d+[eE][-+]?\d+|nan|NAN|[-+]?inf|[-+]?INF"
@@ -736,8 +745,9 @@ class Parser(object):
                 width = r"{1,%s}" % int(format["width"])
             else:
                 width = "+"
-            s = r"\d{w}|[-+ ]?0[xX][0-9a-fA-F]{w}|[-+ ]?0[bB][01]{w}|[-+ ]?0[oO][0-7]{w}".format(
-                w=width
+            s = r"[-+ ]?[0-9{g}]{w}|[-+ ]?0[xX][0-9a-fA-F{g}]{w}|[-+ ]?0[bB][01{g}]{w}|[-+ ]?0[oO][0-7{g}]{w}".format(
+                w=width,
+                g=format.get("grouping", ""),
             )
             conv[group] = int_convert()
             # do not specify number base, determine it automatically

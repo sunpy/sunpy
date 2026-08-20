@@ -1,6 +1,8 @@
 """
 Test cases for ASO-S HXIMap subclass.
 """
+from copy import deepcopy
+
 import pytest
 
 import astropy.units as u
@@ -45,6 +47,8 @@ def test_unit(hxi_map):
 
 
 def test_broken_units(hxi_map):
+    hxi_map = deepcopy(hxi_map)  # for thread safety
+
     # Check that no unit or bunit leads to no unit
     hxi_map.meta["unit"] = None
     assert hxi_map.unit is None

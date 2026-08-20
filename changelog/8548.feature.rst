@@ -1,1 +1,0 @@
-Added support for saving and loading ``astropy.table.QTable`` containing ``SkyCoord`` objects in ``sunpy.coordinates`` frames to/from FITS files.

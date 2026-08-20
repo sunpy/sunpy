@@ -3,10 +3,12 @@ Test the `GenericMap.reproject_to()` method
 """
 import warnings
 
+import dask
 import numpy as np
 import pytest
 from matplotlib.figure import Figure
 from matplotlib.testing.decorators import check_figures_equal
+from packaging.version import Version
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -48,6 +50,31 @@ def hpc_header(aia171_test_map):
         scale=u.Quantity(aia171_test_map.scale),
         projection_code='TAN'
     )
+
+
+@pytest.fixture
+def diffrot_header(aia171_test_map):
+    new_time = aia171_test_map.date + 5*u.day
+    return {
+        'naxis1': 150,
+        'naxis2': 150,
+        'crpix1': 75.5,
+        'crpix2': 75.5,
+        'crval1': 0,
+        'crval2': 0,
+        'cdelt1': 20,
+        'cdelt2': 20,
+        'cunit1': 'arcsec',
+        'cunit2': 'arcsec',
+        'ctype1': 'HPLN-TAN',
+        'ctype2': 'HPLT-TAN',
+        'hgln_obs': 0,
+        'hglt_obs': 30,
+        'rsun_ref': aia171_test_map.rsun_meters.value,
+        'dsun_obs': aia171_test_map.dsun.value,
+        'date-obs': new_time.isot,
+        'mjd-obs': new_time.mjd,
+    }
 
 
 @figure_test
@@ -228,33 +255,11 @@ def test_reproject_to_auto_extent_wcs(aia171_test_map, auto_extent, crpix, pixel
 
 @figure_test
 @pytest.mark.parametrize("screen", [sunpy.coordinates.SphericalScreen, sunpy.coordinates.PlanarScreen])
-def test_reproject_to_screen_plus_diffrot(aia171_test_map, screen):
-    new_time = aia171_test_map.date + 5*u.day
-    header = {
-        'naxis1': 150,
-        'naxis2': 150,
-        'crpix1': 75.5,
-        'crpix2': 75.5,
-        'crval1': 0,
-        'crval2': 0,
-        'cdelt1': 20,
-        'cdelt2': 20,
-        'cunit1': 'arcsec',
-        'cunit2': 'arcsec',
-        'ctype1': 'HPLN-TAN',
-        'ctype2': 'HPLT-TAN',
-        'hgln_obs': 0,
-        'hglt_obs': 30,
-        'rsun_ref': aia171_test_map.rsun_meters.value,
-        'dsun_obs': aia171_test_map.dsun.value,
-        'date-obs': new_time.isot,
-        'mjd-obs': new_time.mjd,
-    }
-
+def test_reproject_to_screen_plus_diffrot(aia171_test_map, diffrot_header, screen):
     with sunpy.coordinates.transform_with_sun_center(), screen(aia171_test_map.observer_coordinate, only_off_disk=True):
-        without_diffrot = aia171_test_map.reproject_to(header)
+        without_diffrot = aia171_test_map.reproject_to(diffrot_header)
         with sunpy.coordinates.propagate_with_solar_surface():
-            with_diffrot = aia171_test_map.reproject_to(header)
+            with_diffrot = aia171_test_map.reproject_to(diffrot_header)
 
     fig = Figure(figsize=(11, 4))
     ax1 = fig.add_subplot(121, projection=without_diffrot)
@@ -310,3 +315,21 @@ def test_reproject_to_preserve_date_obs_raises_exception_missing_date_obs_avg(m_
     target_header.set('NAXIS2', value=m_eit_1.data.shape[0])
     with pytest.raises(ValueError, match="The target_wcs has neither a DATE-AVG or DATE-OBS."):
         m_eit_2.reproject_to(target_header, preserve_date_obs=True)
+
+
+@pytest.mark.skipif(Version(dask.__version__) < Version("2026.3.0"),
+                    reason="dask>=2026.3.0 is required for threads to inherit context variables")
+def test_reproject_to_screen_parallel(aia171_test_map, hpc_header):
+    with sunpy.coordinates.SphericalScreen(aia171_test_map.observer_coordinate):
+        serial = aia171_test_map.reproject_to(hpc_header)
+        parallel = aia171_test_map.reproject_to(hpc_header, parallel=True)
+    assert_quantity_allclose(serial.data, parallel.data)
+
+
+@pytest.mark.skipif(Version(dask.__version__) < Version("2026.3.0"),
+                    reason="dask>=2026.3.0 is required for threads to inherit context variables")
+def test_reproject_to_diffrot_parallel(aia171_test_map, diffrot_header):
+    with sunpy.coordinates.propagate_with_solar_surface():
+        serial = aia171_test_map.reproject_to(diffrot_header)
+        parallel = aia171_test_map.reproject_to(diffrot_header, parallel=True)
+    assert_quantity_allclose(serial.data, parallel.data)

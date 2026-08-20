@@ -1,9 +1,9 @@
 """
 This module provides SunPy's configuration file functionality.
 """
+import configparser
 import os
 import shutil
-import configparser
 from pathlib import Path
 
 import sunpy

@@ -13,9 +13,8 @@ from parfive.utils import FailedDownload
 import astropy.units as u
 
 from sunpy import config
-from sunpy.net import Fido, attr
+from sunpy.net import Fido, attr, jsoc
 from sunpy.net import attrs as a
-from sunpy.net import jsoc
 from sunpy.net.base_client import QueryResponseColumn, QueryResponseRow, QueryResponseTable
 from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
@@ -186,6 +185,7 @@ def test_unifiedresponse_slicing():
     assert isinstance(results[0], QueryResponseTable)
 
 
+@pytest.mark.thread_unsafe(reason="mocks a function")
 def test_show_in_notebook(mocker):
     pytest.importorskip("itables")
     mock_datagrid =  mocker.patch("itables.show")

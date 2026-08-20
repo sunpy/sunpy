@@ -4,14 +4,12 @@ This file defines the net attributes that can be used to search the SOAR.
 The attrs are imported from ``attrs.py`` to ensure the namespace is clean.
 """
 
-import warnings
-
 import astropy.units as u
 from astropy.units import quantity_input
 
 import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, Range, SimpleAttr
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import warn_user
 
 __all__ = ["SOOP", "Distance", "Product"]
 
@@ -160,11 +158,7 @@ def _(wlk, attr, params) -> None:
     level = level.upper()
     allowed_levels = ("L0", "L1", "L2", "L3", "LL01", "LL02", "LL03")
     if level not in allowed_levels:
-        warnings.warn(
-            f"level not in list of allowed levels for SOAR: {allowed_levels}",
-            SunpyUserWarning,
-            stacklevel=2,
-        )
+        warn_user(f"level not in list of allowed levels for SOAR: {allowed_levels}")
 
     params.append(f"level='{level}'")
 
@@ -217,9 +211,5 @@ def _(wlk, attr, params):
     max_possible = 1.0
 
     if not (min_possible <= dmin <= max_possible) or not (min_possible <= dmax <= max_possible):
-        warnings.warn(
-            "Distance values must be within the range 0.28 AU to 1.0 AU.",
-            SunpyUserWarning,
-            stacklevel=2,
-        )
+        warn_user("Distance values must be within the range 0.28 AU to 1.0 AU.")
     params.append(f"DISTANCE({dmin},{dmax})")

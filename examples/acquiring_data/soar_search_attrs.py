@@ -1,7 +1,7 @@
 """
-===========================
-Available search attributes
-===========================
+========================================
+Available search attributes for the SOAR
+========================================
 
 This example demonstrates the available search attributes
 for SOAR currently supported by ``Fido``.
@@ -39,6 +39,7 @@ import sunpy.net.attrs as a
 #
 # For product:
 a.soar.Product
+
 #####################################################
 # For specific instrument detectors or sensors, see ``a.Detector``.
 # However, some SOAR products require the use of ``a.soar.Sensor`` attribute instead:

@@ -25,6 +25,8 @@ from sunpy.net.hek.utils import (
     _parse_unit,
 )
 
+pytestmark = pytest.mark.thread_unsafe(reason="unit parsing temporarily modifies the global unit registry")
+
 
 @pytest.mark.parametrize(('input_unit', 'expected_unit'), [
     ('DN/sec/pixel', u.DN/(u.pix*u.s)),
@@ -182,7 +184,7 @@ def get_polygon_chaincode(coord):
                           z=1*u.R_sun,
                           frame=hcc_frame,
                           representation_type='cylindrical').T),
-    ("bound_chaincode", [SkyCoord(*np.random.rand(2,nb), unit='deg', frame='icrs') for nb in np.random.randint(6,11, size=len(obstime))]),
+    ("bound_chaincode", [SkyCoord(*np.random.rand(2, nb), unit='deg', frame='icrs') for nb in range(6, 6 + len(obstime))]),
 ])
 def test_chaincode_polygon_column_mapping(colname, coord):
     table = astropy.table.Table({

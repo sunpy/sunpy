@@ -1,1 +1,0 @@
-Correct SUIT colormap CSV files to match official values
