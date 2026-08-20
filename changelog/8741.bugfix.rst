@@ -1,1 +1,1 @@
-Fixed `~sunpy.map.sources.SUITMap` writing observation times to ``DATE-OBS``, a keyword it does not read, so that setting the date had no effect on `~sunpy.map.GenericMap.date` or `~sunpy.map.GenericMap.reference_date` and left the header inconsistent. Times are now written to ``T_OBS``. This chiefly affects maps returned by :func:`~sunpy.physics.differential_rotation.differential_rotate`.
+Fixed `~sunpy.map.sources.SUITMap` modifying the ``DATE-OBS`` keyword rather than the ``T_OBS`` keyword used to construct the ``.date`` property.
