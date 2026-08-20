@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suit import SUITMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -54,3 +55,6 @@ def test_norm_clip(suit_map):
 def test_wcs(suit_map):
     """Test WCS is valid and can transform from pixels to world coordinates"""
     suit_map.pixel_to_world(0*u.pix, 0*u.pix)
+
+def test_private_date_setters(suit_map):
+    _test_private_date_setters(suit_map)
