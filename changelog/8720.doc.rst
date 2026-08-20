@@ -1,0 +1,1 @@
+Documented the approximate seasonal magnitude (+0.034/-0.032 deg/day near perihelion/aphelion) of the circular-orbit assumption in the synodic differential rotation correction in :func:`sunpy.sun.models.differential_rotation`.
