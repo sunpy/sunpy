@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "2a6434a5c749ecde69d00b937a3fef27ecbad656",
+  "commit": "632ed04aee0058dd88dc6b7972ca8f8061fbd6da",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -36,7 +36,7 @@
         ".github/workflows/zizmor.yml"
       ],
       "_template": "https://github.com/sunpy/package-template",
-      "_commit": "2a6434a5c749ecde69d00b937a3fef27ecbad656"
+      "_commit": "632ed04aee0058dd88dc6b7972ca8f8061fbd6da"
     }
   },
   "directory": null

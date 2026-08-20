@@ -1,15 +1,15 @@
 """
 This module provides general utility functions.
 """
-import os
 import hashlib
 import inspect
-from io import BytesIO
+import os
 from base64 import b64encode
-from shutil import get_terminal_size
-from itertools import chain, count
 from collections import UserList
 from collections.abc import Iterator
+from io import BytesIO
+from itertools import chain, count
+from shutil import get_terminal_size
 
 import numpy as np
 
