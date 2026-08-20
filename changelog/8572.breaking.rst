@@ -1,0 +1,1 @@
+The class attributes ``Instruments``, ``Waves``, and ``Observation_Type`` on `~sunpy.map.sources.SOTMap` have made them private as they are intended for internal use only.
