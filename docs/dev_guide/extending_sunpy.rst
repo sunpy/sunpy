@@ -1,7 +1,7 @@
 .. _dev-guide-extending-sunpy:
 
 ****************
-Extending SunPy
+Extending sunpy
 ****************
 
 .. toctree::

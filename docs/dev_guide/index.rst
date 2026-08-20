@@ -19,63 +19,34 @@ This section contains the various guidelines to be followed by anyone working on
     .. grid-item-card::
         :class-card: card
 
-        Getting started
-        ^^^^^^^^^^^^^^^
+        .. toctree::
+            :maxdepth: 2
 
-        * :doc:`contents/newcomers`
-        * :doc:`contents/pr_checklist`
-        * :doc:`contents/conda_for_dependencies`
+            getting_started
 
     .. grid-item-card::
         :class-card: card
 
-        Conventions
-        ^^^^^^^^^^^
+        .. toctree::
+            :maxdepth: 2
 
-        * :doc:`contents/ai_usage`
-        * :doc:`contents/code_standards`
-        * :doc:`contents/tests`
-        * :doc:`contents/documentation`
-        * :doc:`contents/example_gallery`
-        * :doc:`contents/pr_review_procedure`
-        * :doc:`contents/units_quantities`
+            conventions
 
     .. grid-item-card::
         :class-card: card
 
-        Repo management
-        ^^^^^^^^^^^^^^^
+        .. toctree::
+            :maxdepth: 2
 
-        * :doc:`contents/maintainer_workflow`
-        * :doc:`contents/dependencies`
-        * :doc:`contents/ci_jobs`
-        * :doc:`contents/backports`
-        * :doc:`contents/deprecation`
-        * :doc:`contents/funding`
+            repo_management
 
     .. grid-item-card::
         :class-card: card
 
-        Extending sunpy
-        ^^^^^^^^^^^^^^^
+        .. toctree::
+            :maxdepth: 2
 
-        * :doc:`contents/public_api`
-        * :doc:`contents/logger`
-        * :doc:`contents/remote_data_manager`
-        * :doc:`contents/extending_fido`
-        * :doc:`contents/new_map_class`
-        * :doc:`contents/custom_map_rotate`
-        * :doc:`contents/scraper_migration`
-        * :doc:`contents/soar/index`
-
-.. toctree::
-    :hidden:
-    :maxdepth: 2
-
-    getting_started
-    conventions
-    repo_management
-    extending_sunpy
+            extending_sunpy
 
 {%else%}
 
