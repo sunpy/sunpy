@@ -15,6 +15,7 @@ from .sources.eve import *
 from .sources.fermi_gbm import *
 from .sources.goes import *
 from .sources.gong import *
+from .sources.hinode import *
 from .sources.lyra import *
 from .sources.noaa import *
 from .sources.norh import *
