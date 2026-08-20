@@ -22,7 +22,7 @@ Contributions which that appear to violate this principle can be summarily close
 All pull requests **must** include the AI Assistance Disclosure checklist (listed below) in their description
 
 .. literalinclude:: /../.github/PULL_REQUEST_TEMPLATE.md
-    :lines: 33-49
+    :lines: 33,42-49
 
 This is automatically added to the pull request description when you open a pull request.
 If it is not automatically added to the pull request description (e.g. if using the GitHub API), then the contributor is responsible for manually adding the above checklist to the pull request description.
