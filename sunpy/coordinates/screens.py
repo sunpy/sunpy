@@ -11,7 +11,7 @@ from astropy.coordinates.representation import CartesianRepresentation, UnitSphe
 
 from sunpy import log
 from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
-from sunpy.coordinates._transformations import _transformation_options
+from sunpy.coordinates._transformations import _autoapply_diffrot
 from sunpy.util.decorators import _active_contexts
 from sunpy.util.exceptions import warn_user
 
@@ -34,14 +34,16 @@ class BaseScreen(abc.ABC):
         ...
 
     def __enter__(self):
-        _active_contexts.stack.append(self._context_name)
-        self._old_assumed_screen = Helioprojective._assumptions.screen  # nominally None
-        Helioprojective._assumptions.screen = self
+        active_contexts_copy = _active_contexts.get().copy()
+        active_contexts_copy.append(self._context_name)
+        self._active_contexts_token = _active_contexts.set(active_contexts_copy)
+        self._assumed_screen_token = Helioprojective._assumed_screen.set(self)
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        if (removed := _active_contexts.stack.pop()) != self._context_name:
+        if (removed := _active_contexts.get()[-1]) != self._context_name:
             raise RuntimeError(f"Cannot remove {self._context_name} from tracking stack because {removed} is last active.")
-        Helioprojective._assumptions.screen = self._old_assumed_screen
+        _active_contexts.reset(self._active_contexts_token)
+        Helioprojective._assumed_screen.reset(self._assumed_screen_token)
 
     def _iterate_calculate_distance(self, coord, distance, screen_frame):
         """
@@ -203,7 +205,7 @@ class SphericalScreen(BaseScreen):
             distance = ((-1*b) + np.sqrt(b**2 - 4*c)) / 2  # use the "far" solution
 
         # Iterate the calculation if differential rotation is being applied
-        if _transformation_options.autoapply_diffrot is not None and np.any(frame.obstime != self._center.obstime):
+        if _autoapply_diffrot.get() is not None and np.any(frame.obstime != self._center.obstime):
             screen_frame = Helioprojective(observer=self._center, obstime=self._center.obstime)
             distance = self._iterate_calculate_distance(frame, distance, screen_frame)
 
@@ -289,7 +291,7 @@ class PlanarScreen(BaseScreen):
         distance = d_from_plane / rep.dot(direction)
 
         # Iterate the calculation if differential rotation is being applied
-        if _transformation_options.autoapply_diffrot is not None and np.any(frame.obstime != self._vantage_point.obstime):
+        if _autoapply_diffrot.get() is not None and np.any(frame.obstime != self._vantage_point.obstime):
             screen_frame = Helioprojective(observer=self._vantage_point, obstime=self._vantage_point.obstime)
             distance = self._iterate_calculate_distance(frame, distance, screen_frame)
 

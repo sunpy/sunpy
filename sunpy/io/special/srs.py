@@ -1,8 +1,8 @@
 """
 This module implements a SRS File Reader.
 """
-import re
 import datetime
+import re
 from collections import OrderedDict
 
 import numpy as np

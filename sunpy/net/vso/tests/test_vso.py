@@ -1,7 +1,7 @@
 from functools import partial
-from xml.etree import ElementTree
-from urllib.error import URLError, HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
+from xml.etree import ElementTree
 
 import numpy as np
 import pytest
