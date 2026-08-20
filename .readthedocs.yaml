@@ -6,8 +6,8 @@ build:
     python: "miniforge3-latest"
   jobs:
     post_checkout:
-      - git fetch --unshallow || true
       - bash tools/skip-rtd.sh
+      - git fetch --unshallow || true
     pre_install:
       - git update-index --assume-unchanged .rtd-environment.yml docs/conf.py
 
