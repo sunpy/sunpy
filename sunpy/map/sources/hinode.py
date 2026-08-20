@@ -169,15 +169,21 @@ class SOTMap(GenericMap):
     * `SOT Data Analysis Guide <https://sot.lmsal.com/data/sot/sotguide/book/title.html>`__
     * `FITS header references <https://sot.lmsal.com/data/sot/sotguide/book/ch-kw/keywords.html>`__
     """
-    Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
-    Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
-             'Ca II H line', 'G band 4305', 'NFI no move',
-             'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896',
-             'blue cont 4504', 'green cont 5550', 'red cont 6684']
-    Observation_Type = ['FG (simple)', 'FG focus scan',
-                        'FG shuttered I and V', 'FG shutterless I and V',
-                        'FG shutterless I and V with 0.2s intervals',
-                        'FG shutterless Stokes', 'SP IQUV 4D array']
+    _instruments = [
+        'SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT'
+        ]
+    _waves = [
+        '6302A', 'BFI no move', 'CN bandhead 3883',
+        'Ca II H line', 'G band 4305', 'NFI no move',
+        'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896',
+        'blue cont 4504', 'green cont 5550', 'red cont 6684'
+    ]
+    _observation_type = [
+        'FG (simple)', 'FG focus scan',
+        'FG shuttered I and V', 'FG shutterless I and V',
+        'FG shutterless I and V with 0.2s intervals',
+        'FG shutterless Stokes', 'SP IQUV 4D array'
+    ]
 
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
@@ -219,4 +225,4 @@ class SOTMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SOT image."""
-        return header.get('instrume') in cls.Instruments
+        return header.get('instrume') in cls._instruments
