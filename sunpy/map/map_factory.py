@@ -1,7 +1,7 @@
 import os
 import pathlib
-from functools import singledispatchmethod
 from collections import OrderedDict
+from functools import singledispatchmethod
 from urllib.request import Request
 
 import fsspec

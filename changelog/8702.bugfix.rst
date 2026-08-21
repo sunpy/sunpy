@@ -1,0 +1,1 @@
+Fix bug in `~sunpy.net.vso.vso.VSOClient` where unparsable times would cause a crash. Now unparsable times are replaced with a dummy value and the entry is masked, similar to how missing values are already treated.

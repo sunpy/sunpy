@@ -1,8 +1,8 @@
-import os
-import re
-import glob
-import pathlib
 import collections
+import glob
+import os
+import pathlib
+import re
 from urllib.parse import urlparse
 
 import fsspec

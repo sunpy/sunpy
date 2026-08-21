@@ -2,15 +2,15 @@
 This module provides a wrapper around the VSO API.
 """
 
-import os
 import copy
-import json
-import inspect
 import datetime
+import inspect
 import itertools
-from pathlib import Path
+import json
+import os
 from functools import partial
-from urllib.error import URLError, HTTPError
+from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
