@@ -1,3 +1,4 @@
+import h5netcdf
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -114,6 +115,45 @@ def test_goes_r_primarydetector():
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
     assert "xrsa_primary_chan" in ts_goes.columns
 
+def test_goes_additional_columns():
+    # Test that additional GOES data is exposed
+    additional_columns = {
+        "au_factor",
+        "corrected_current_xrsb2",
+        "roll_angle",
+        "xrsa1_flux",
+        "xrsa1_flux_electrons",
+        "xrsa2_flux",
+        "xrsa2_flux_electrons",
+        "xrsa_flag_excluded",
+        "xrsa_num",
+        "xrsb1_flux",
+        "xrsb1_flux_electrons",
+        "xrsb1_flux_observed",
+        "xrsb2_flux",
+        "xrsb2_flux_electrons",
+        "xrsb_flag_excluded",
+        "xrsb_num",
+        "xrsa_flux_observed",
+        "xrsb_flux_observed",
+    }
+    for file_path in [goes15_1m_avg_filepath, goes16_1m_avg_filepath]:
+        ts_goes = sunpy.timeseries.TimeSeries(file_path, source="XRS")
+
+        with h5netcdf.File(file_path) as h5nc:
+            available_columns = additional_columns & set(h5nc.keys())
+
+        if "corrected_current_xrsb2" in available_columns:
+            available_columns.remove("corrected_current_xrsb2")
+            available_columns.update(
+                {
+                    "quad_diode0",
+                    "quad_diode1",
+                    "quad_diode2",
+                    "quad_diode3",
+                }
+            )
+        assert available_columns <= set(ts_goes.columns)
 
 @pytest.mark.remote_data
 def test_goes_remote():

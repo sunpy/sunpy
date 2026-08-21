@@ -245,6 +245,31 @@ class XRSTimeSeries(GenericTimeSeries):
                 detector_info = True
                 xrsa_primary_chan = np.asarray(h5nc["xrsa_primary_chan"])
                 xrsb_primary_chan = np.asarray(h5nc["xrsb_primary_chan"])
+            # Checks for additional columns in 1 min avg GOES file
+            extra_columns = {
+                "au_factor": u.dimensionless_unscaled,
+                "corrected_current_xrsb2": u.A,
+                "roll_angle": u.deg,
+                "xrsa1_flux": u.W / u.m**2,
+                "xrsa1_flux_electrons": u.W / u.m**2,
+                "xrsa2_flux": u.W / u.m**2,
+                "xrsa2_flux_electrons": u.W / u.m**2,
+                "xrsa_flag_excluded": u.dimensionless_unscaled,
+                "xrsa_num": u.dimensionless_unscaled,
+                "xrsb1_flux": u.W / u.m**2,
+                "xrsb1_flux_electrons": u.W / u.m**2,
+                "xrsb1_flux_observed": u.W / u.m**2,
+                "xrsb2_flux": u.W / u.m**2,
+                "xrsb2_flux_electrons": u.W / u.m**2,
+                "xrsb_flag_excluded": u.dimensionless_unscaled,
+                "xrsb_num": u.dimensionless_unscaled,
+                "xrsa_flux_observed": u.W / u.m**2,
+                "xrsb_flux_observed": u.W / u.m**2,
+            }
+            available_extra_columns = set(extra_columns) & set(h5nc.keys())
+            extra_column_data = {column: np.asarray(h5nc[column]) for column in available_extra_columns }
+            corrected_current = extra_column_data.pop("corrected_current_xrsb2", None)
+            available_extra_columns.discard("corrected_current_xrsb2")
         try:
             times = times.datetime
         except ValueError:
@@ -279,6 +304,15 @@ class XRSTimeSeries(GenericTimeSeries):
             data["xrsb_primary_chan"] = xrsb_primary_chan
             units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
                           "xrsb_primary_chan": u.dimensionless_unscaled})
+        # Adds additional columns from 1 min avg GOES
+        for column in available_extra_columns:
+            data[column] = extra_column_data[column]
+            units[column] = extra_columns[column]
+        if corrected_current is not None:
+            for index in range(corrected_current.shape[1]):
+                column = f"quad_diode{index}"
+                data[column] = corrected_current[:, index]
+                units[column] = u.A
         data = data.replace(-9999, np.nan)
         return data, header, units
 
