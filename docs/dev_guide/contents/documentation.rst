@@ -65,9 +65,9 @@ If you get the wrong pre-qualifier, it will break the link, so we suggest that y
 
 .. code-block:: rst
 
-    :class:`numpy.mean()`
-    :meth:`numpy.mean()`
-    :func:`numpy.mean()`
+    :class:`numpy.mean`
+    :meth:`numpy.mean`
+    :func:`numpy.mean`
 
 will return two broken links ("class" and "meth") but "func" will work.
 

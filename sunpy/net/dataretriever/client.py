@@ -1,5 +1,5 @@
-from pathlib import Path
 from collections import OrderedDict
+from pathlib import Path
 
 import numpy as np
 

@@ -1,8 +1,8 @@
-import os
-import logging
 import datetime
-from pathlib import Path
+import logging
+import os
 from collections import OrderedDict
+from pathlib import Path
 
 import numpy as np
 import pytest

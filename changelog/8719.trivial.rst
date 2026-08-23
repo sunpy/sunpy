@@ -1,0 +1,1 @@
+Added support to find GOES-19 XRS data in `~sunpy.net.dataretriever.XRSClient`.

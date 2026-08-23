@@ -1,0 +1,1 @@
+Reorganise the topic guides and developer guides sidebar into sidebar categories, and move some developer-specific topic guides into the developer guide.

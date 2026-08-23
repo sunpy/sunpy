@@ -19,61 +19,34 @@ This section contains the various guidelines to be followed by anyone working on
     .. grid-item-card::
         :class-card: card
 
-        Getting started
-        ^^^^^^^^^^^^^^^
-
         .. toctree::
-            :maxdepth: 3
+            :maxdepth: 2
 
-            contents/newcomers
-            contents/pr_checklist
-            contents/conda_for_dependencies
+            getting_started
 
     .. grid-item-card::
         :class-card: card
 
-        Conventions
-        ^^^^^^^^^^^
-
         .. toctree::
-            :maxdepth: 1
+            :maxdepth: 2
 
-            contents/ai_usage
-            contents/code_standards
-            contents/tests
-            contents/documentation
-            contents/example_gallery
-            contents/pr_review_procedure
-            contents/units_quantities
+            conventions
 
     .. grid-item-card::
         :class-card: card
 
-        Repo management
-        ^^^^^^^^^^^^^^^
-
         .. toctree::
-            :maxdepth: 1
+            :maxdepth: 2
 
-            contents/maintainer_workflow
-            contents/dependencies
-            contents/ci_jobs
-            contents/backports
-            contents/funding
+            repo_management
 
     .. grid-item-card::
         :class-card: card
 
-        Extending sunpy
-        ^^^^^^^^^^^^^^^
-
         .. toctree::
-            :maxdepth: 1
+            :maxdepth: 2
 
-            contents/public_api
-            contents/logger
-            contents/remote_data_manager
-            contents/soar/index
+            extending_sunpy
 
 {%else%}
 

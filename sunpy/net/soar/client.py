@@ -3,9 +3,9 @@ This file defines the SOARClient class which is used to access the Solar
 Orbiter Archive (SOAR).
 """
 
-import re
 import json
 import pathlib
+import re
 from copy import copy
 from json.decoder import JSONDecodeError
 

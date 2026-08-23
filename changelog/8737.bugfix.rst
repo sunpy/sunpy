@@ -1,0 +1,2 @@
+Improved file-validation in :func:`~sunpy.io.special.genx.read_genx` to fail early for files that are too short to be valid genx files, or for files that are not genx files at all.
+IDL save files (verified by their header contents), which are sometimes given a ".geny" extension, are detected specifically and the error points to `scipy.io.readsav`.

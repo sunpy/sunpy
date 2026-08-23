@@ -1,8 +1,8 @@
 """
 This module provides NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 """
-from pathlib import Path
 from collections import OrderedDict
+from pathlib import Path
 
 import numpy as np
 import pandas as pd

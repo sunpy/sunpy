@@ -12,13 +12,13 @@ They are implemented using `functools.singledispatch` modified to dispatch on th
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
-import re
-import string
 import inspect
 import keyword
+import re
+import string
 import textwrap
+from collections import defaultdict, namedtuple
 from textwrap import dedent
-from collections import namedtuple, defaultdict
 
 import numpy as np
 

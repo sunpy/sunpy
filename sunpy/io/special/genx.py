@@ -271,6 +271,10 @@ def read_genx(filename):
         A dictionary with possibly nested dictionaries with the data in
         the genx file.
 
+    See Also
+    --------
+    scipy.io.readsav : IDL save file reader, they have different header and structures.
+
     Notes
     -----
     The reader aims to maintain the shape and type of the arrays, but take care with the
@@ -282,10 +286,21 @@ def read_genx(filename):
     **Strings** read from genx files are assumed to be UTF-8.
     """
     with open(filename, mode='rb') as xdrfile:
-        xdrdata = SSWUnpacker(xdrfile.read())
+        xdrfile_data = xdrfile.read()
+        # Before Unpacking, let's check if it is actually an IDL savefile!
+        IDL_file_signature_uncompressed = b'SR\x00\x04' # Standard uncompressed IDL savefile signature
+        IDL_file_signature_compressed = b'SR\x00\x06' # Standard compressed IDL savefile signature
+        # Put a length guard on the read to avoid reading past the end of the file.
+        if len(xdrfile_data) < 8:
+            raise ValueError(f"{filename} is too short to be a valid genx file.")
+        if (xdrfile_data[:4] == IDL_file_signature_uncompressed or xdrfile_data[:4] == IDL_file_signature_compressed):
+            raise ValueError(f"{filename} is an IDL savefile, not a genx file. Please use `scipy.io.readsav` to read it.")
+        xdrdata = SSWUnpacker(xdrfile_data)
 
     # HEADER information
     version, xdr = xdrdata.unpack_int(), xdrdata.unpack_int()
+    if version not in [1, 2]:
+        raise ValueError(f"{filename} is not a 'genx' file with version {version}. Only versions 1 and 2 are supported.")
     creation = xdrdata.unpack_string()
     if version == 2:
         arch = xdrdata.unpack_string()

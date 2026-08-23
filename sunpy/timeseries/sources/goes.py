@@ -1,8 +1,8 @@
 """
 This module provides GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
-from pathlib import Path
 from collections import OrderedDict
+from pathlib import Path
 
 import h5netcdf
 import numpy as np

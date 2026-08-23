@@ -1,10 +1,10 @@
 """
 This module provides functions to retrieve system information.
 """
-import sys
 import platform
+import sys
 from collections import defaultdict
-from importlib.metadata import PackageNotFoundError, version, requires, distribution
+from importlib.metadata import PackageNotFoundError, distribution, requires, version
 
 from packaging.markers import Marker
 from packaging.requirements import Requirement

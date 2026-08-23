@@ -129,6 +129,17 @@ def test_fixed_satellite(LCClient):
         assert "go08" in resp['url']
 
 
+@pytest.mark.remote_data
+def test_goes_19(LCClient):
+    # GOES-19 XRS data is available from September 2024 onwards.
+    results = LCClient.search(a.Time("2025/06/01", "2025/06/01 23:00"),
+                              a.Instrument.xrs,
+                              a.goes.SatelliteNumber(19))
+    assert len(results) == 2
+    for resp in results:
+        assert "g19" in resp["url"]
+
+
 @pytest.mark.parametrize("time", [
     Time('2005/4/27', '2005/4/27 12:00'),
     Time('2016/2/4', '2016/2/10')])

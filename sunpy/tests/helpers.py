@@ -1,9 +1,9 @@
-import sys
 import platform
+import sys
 import warnings
-from pathlib import Path
 from functools import wraps
 from importlib.metadata import entry_points
+from pathlib import Path
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
