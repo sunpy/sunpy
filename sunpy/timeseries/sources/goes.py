@@ -85,7 +85,7 @@ class XRSTimeSeries(GenericTimeSeries):
         axes, columns = self._setup_axes_columns(axes, columns)
         valid_cols = [c for c in columns if c in ["xrsa","xrsb"]]
         if not valid_cols:
-            raise ValueError(f"XRSTimeSeries.plot() only supports the flux channels: 'xrsa' and 'xrsb'.")
+            raise ValueError("XRSTimeSeries.plot() only supports the flux channels: 'xrsa' and 'xrsb'.")
         columns = valid_cols
         plot_settings = {"xrsa": ["blue", r"0.5$-$4.0 $\mathrm{\AA}$"], "xrsb": ["red", r"1.0$-$8.0 $\mathrm{\AA}$"]}
         data = self.to_dataframe()
@@ -318,7 +318,7 @@ class XRSTimeSeries(GenericTimeSeries):
             data["xrsb_primary_chan"] = xrsb_primary_chan
             units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
                           "xrsb_primary_chan": u.dimensionless_unscaled})
-        # Adds additional columns info for GOES File 
+        # Adds additional columns info for GOES File
         for col, value in extra_col_data.items():
             data[col] = value
             units[col] = extra_col_units[col]
