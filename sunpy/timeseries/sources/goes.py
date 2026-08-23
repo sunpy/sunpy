@@ -278,7 +278,6 @@ class XRSTimeSeries(GenericTimeSeries):
                     if var.ndim == 1 and var.shape[0] == len(times):
                         extra_col_data[key] = np.asarray(var)
                         extra_col_units[key] = unit
-                        
                     elif key == "corrected_current_xrsb2" and var.ndim == 2:
                         corrected_current = np.asarray(var)
                         for index in range(corrected_current.shape[1]):
