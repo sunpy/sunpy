@@ -109,6 +109,9 @@ def test_goes_plot_column(goes_test_ts):
     assert len(ax.lines) == 1
     assert '0.5$-$4.0' == ax.lines[0].get_label().split()[0]
 
+def test_goes_plot_column_filter(goes_test_ts):
+    with pytest.raises(ValueError,match = r"XRSTimeSeries\.plot\(\) only supports the flux channels: 'xrsa' and 'xrsb'\."):
+        goes_test_ts.plot(columns=["quad_diode0"])
 
 def test_goes_r_primarydetector():
     # Test that the primary channel column added for the GOES-R satellites
@@ -116,44 +119,21 @@ def test_goes_r_primarydetector():
     assert "xrsa_primary_chan" in ts_goes.columns
 
 def test_goes_additional_columns():
-    # Test that additional GOES data is exposed
-    additional_columns = {
-        "au_factor",
-        "corrected_current_xrsb2",
-        "roll_angle",
-        "xrsa1_flux",
-        "xrsa1_flux_electrons",
-        "xrsa2_flux",
-        "xrsa2_flux_electrons",
-        "xrsa_flag_excluded",
-        "xrsa_num",
-        "xrsb1_flux",
-        "xrsb1_flux_electrons",
-        "xrsb1_flux_observed",
-        "xrsb2_flux",
-        "xrsb2_flux_electrons",
-        "xrsb_flag_excluded",
-        "xrsb_num",
-        "xrsa_flux_observed",
-        "xrsb_flux_observed",
-    }
-    for file_path in [goes15_1m_avg_filepath, goes16_1m_avg_filepath]:
-        ts_goes = sunpy.timeseries.TimeSeries(file_path, source="XRS")
-
-        with h5netcdf.File(file_path) as h5nc:
-            available_columns = additional_columns & set(h5nc.keys())
-
-        if "corrected_current_xrsb2" in available_columns:
-            available_columns.remove("corrected_current_xrsb2")
-            available_columns.update(
-                {
-                    "quad_diode0",
-                    "quad_diode1",
-                    "quad_diode2",
-                    "quad_diode3",
-                }
-            )
-        assert available_columns <= set(ts_goes.columns)
+    # Test additional goes columns for 1 min avg files
+    for file_path in [goes15_1m_avg_filepath,goes16_1m_avg_filepath]:
+        ts_goes = sunpy.timeseries.TimeSeries(file_path,source="XRS")
+        ts_columns = set(ts_goes.columns)
+        with h5netcdf.File(file_path,mode="r") as h5nc:
+            goes_keys = set(h5nc.variables.keys())
+        if "corrected_current_xrsb2" in goes_keys:
+            assert "corrected_current_xrsb2" not in ts_columns
+            assert {"quad_diode0", "quad_diode1", "quad_diode2", "quad_diode3"} <= ts_columns
+        if "roll_angle" in goes_keys:
+            assert "roll_angle" in ts_columns
+        assert "xrsa_flux" not in ts_columns
+        assert "xrsb_flux" not in ts_columns
+        assert "xrsa_flag" not in ts_columns
+        assert "xrsb_flag" not in ts_columns
 
 @pytest.mark.remote_data
 def test_goes_remote():
