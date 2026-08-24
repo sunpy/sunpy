@@ -67,11 +67,11 @@ azimuth_map, field_map, inclination_map, magnetogram_map = sunpy.map.Map(sorted(
 # :cite:t:`sun_coordinate_2013` gives the transverse components along the
 # CCD axes:
 
-inclination = np.deg2rad(inclination_map.data)
-azimuth = np.deg2rad(azimuth_map.data)
+inclination = inclination_map.data << u.deg
+azimuth = azimuth_map.data << u.deg
 
-b_x = -field_map.data * np.sin(inclination) * np.sin(azimuth)
-b_y = field_map.data * np.sin(inclination) * np.cos(azimuth)
+b_x_ccd = -field_map.data * np.sin(inclination) * np.sin(azimuth)
+b_y_ccd = field_map.data * np.sin(inclination) * np.cos(azimuth)
 
 ##############################################################################
 # HMI images have solar north pointing approximately down, so we rotate the
@@ -85,8 +85,8 @@ b_y = field_map.data * np.sin(inclination) * np.cos(azimuth)
 # components.
 
 rmatrix = magnetogram_map.rotation_matrix
-b_x_ccd = sunpy.map.Map(b_x, magnetogram_map.meta).rotate().data
-b_y_ccd = sunpy.map.Map(b_y, magnetogram_map.meta).rotate().data
+b_x_ccd = sunpy.map.Map(b_x_ccd, magnetogram_map.meta).rotate().data
+b_y_ccd = sunpy.map.Map(b_y_ccd, magnetogram_map.meta).rotate().data
 b_x = rmatrix[0, 0] * b_x_ccd + rmatrix[0, 1] * b_y_ccd
 b_y = rmatrix[1, 0] * b_x_ccd + rmatrix[1, 1] * b_y_ccd
 magnetogram_map = magnetogram_map.rotate()
