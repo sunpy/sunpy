@@ -26,7 +26,7 @@ jobs:
   cron:
     # Run on all triggers other than pull_request unless there's a label
     if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@22ddf09dfabb443adddfb9f861b7d41a787d6b1a # v3.0.3
     with:
       default_python: '3.12'
       submodules: false
@@ -58,7 +58,7 @@ jobs:
 
       - run: ls -lha pytest-log/
 
-      - uses: scientific-python/issue-from-pytest-log-action@054799b34bd75a5fd6c86277a4a8a575224e60c6 # v1.6.1
+      - uses: scientific-python/issue-from-pytest-log-action@35b4e0a9e06f8e7e261778289cf4b968b722662d # v1.6.2
         with:
           log-path: pytest-log/pytest-log.jsonl
           issue-title: "Cron devdeps build failure"
@@ -67,7 +67,7 @@ jobs:
   cron-online:
     # Run on all triggers other than pull_request unless there's a label
     if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@22ddf09dfabb443adddfb9f861b7d41a787d6b1a # v3.0.3
     with:
       default_python: '3.12'
       submodules: false
