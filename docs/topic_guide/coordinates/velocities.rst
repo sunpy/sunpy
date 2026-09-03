@@ -12,7 +12,8 @@ Creating a SkyCoord with velocity
 =================================
 
 Velocity information can be added as keyword arguments to `~astropy.coordinates.SkyCoord`.
-For sunpy's frames, the names of the velocities components are the names of the position components prepended by "d\_", e.g.,:
+The names of the velocity components depend on the representation that is being used.
+For a spherical representation, which is the default for most of sunpy's frames, the names of the velocity components are the names of the position components prepended by "d\_", e.g.,:
 
 .. code-block:: python
 
@@ -29,6 +30,29 @@ For sunpy's frames, the names of the velocities components are the names of the 
         (10., 20., 1.)
      (d_lon, d_lat, d_distance) in (arcsec / s, arcsec / s, km / s)
         (0.00029762, 0.00277778, 0.08333333)>
+
+For a Cartesian representation, however, the names of the velocity components are ``v_x``, ``v_y`` and ``v_z`` rather than ``d_x``, ``d_y`` and ``d_z``, e.g.,:
+
+.. code-block:: python
+
+    >>> sc_cartesian = SkyCoord(x=1*u.AU, y=0*u.AU, z=0*u.AU,
+    ...                         v_x=1*u.AU/u.yr, v_y=0*u.AU/u.yr, v_z=0*u.AU/u.yr,
+    ...                         frame='heliocentricinertial', representation_type='cartesian',
+    ...                         obstime='2021-01-01')
+    >>> sc_cartesian
+    <SkyCoord (HeliocentricInertial: obstime=2021-01-01T00:00:00.000): (x, y, z) in AU
+        (1., 0., 0.)
+     (v_x, v_y, v_z) in km / s
+        (4.74047046, 0., 0.)>
+
+The velocity-component names for any combination of frame and representation can be looked up using :meth:`~astropy.coordinates.BaseCoordinateFrame.get_representation_component_names`, where the argument ``'s'`` selects the derivative of position with respect to time, e.g.,:
+
+.. code-block:: python
+
+    >>> from sunpy.coordinates import HeliocentricInertial
+
+    >>> list(HeliocentricInertial(representation_type='cartesian').get_representation_component_names('s'))
+    ['v_x', 'v_y', 'v_z']
 
 See :ref:`astropy-coordinates-velocities` for ways to add velocity information to existing coordinates.
 
