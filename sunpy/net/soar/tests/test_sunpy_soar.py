@@ -698,3 +698,13 @@ def test_add_join_no_instrument_table():
     assert "h2.detector" not in select
     assert "h2.wavelength" not in select
     assert "h2.dimension_index" not in select
+
+def test_custom_tap_endpoint():
+    # Verify default endpoint
+    client = SOARClient()
+    assert client.tap_endpoint == "http://soar.esac.esa.int/soar-sl-tap/tap"
+
+    # Verify custom endpoint override
+    custom_url = "http://custom.tap.server/tap"
+    custom_client = SOARClient(custom_url)
+    assert custom_client.tap_endpoint == custom_url

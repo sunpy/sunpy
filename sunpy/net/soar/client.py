@@ -33,6 +33,10 @@ class SOARClient(BaseClient):
     * `SOAR <https://soar.esac.esa.int/soar/>`__
     """
 
+    def __init__(self, tap_endpoint = "http://soar.esac.esa.int/soar-sl-tap/tap", **kwargs):
+        super().__init__(**kwargs)
+        self.tap_endpoint = tap_endpoint
+
     def search(self, *query, **kwargs):
         r"""
         Query this client for a list of results.
@@ -194,8 +198,8 @@ class SOARClient(BaseClient):
             )
         return {"REQUEST": query_method, "LANG": "ADQL", "FORMAT": "json", "QUERY": adql_query_str}
 
-    @staticmethod
-    def _do_search(query):
+    
+    def _do_search(self, query):
         """
         Query the SOAR server with a single query.
 
@@ -209,12 +213,11 @@ class SOARClient(BaseClient):
         astropy.table.QTable
             Query results.
         """
-        tap_endpoint = "http://soar.esac.esa.int/soar-sl-tap/tap"
         payload = SOARClient._construct_payload(query)
         # Need to force requests to not form-encode the parameters
         payload = "&".join([f"{key}={val}" for key, val in payload.items()])
         # Get request info
-        r = requests.get(f"{tap_endpoint}/sync", params=payload, timeout=60)
+        r = requests.get(f"{self.tap_endpoint}/sync", params=payload, timeout=60)
         log.debug(f"Sent query: {r.url}")
         r.raise_for_status()
 
