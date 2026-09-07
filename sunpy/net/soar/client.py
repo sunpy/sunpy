@@ -33,7 +33,7 @@ class SOARClient(BaseClient):
     * `SOAR <https://soar.esac.esa.int/soar/>`__
     """
 
-    def __init__(self, tap_endpoint = "http://soar.esac.esa.int/soar-sl-tap/tap", **kwargs):
+    def __init__(self, tap_endpoint="http://soar.esac.esa.int/soar-sl-tap/tap", **kwargs):
         super().__init__(**kwargs)
         self.tap_endpoint = tap_endpoint
 

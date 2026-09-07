@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest import mock
 
 import pytest
 import responses
@@ -11,7 +12,6 @@ from sunpy.net import attrs as a
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.soar.client import SOARClient
 from sunpy.util.exceptions import SunpyUserWarning
-from unittest import mock
 
 
 @pytest.mark.remote_data
@@ -711,23 +711,30 @@ def test_custom_tap_endpoint():
     assert custom_client.tap_endpoint == custom_url
 
 
-from unittest import mock
-
-
 def test_custom_tap_endpoint_search():
     """Covers line 220 (_do_search using self.tap_endpoint)."""
     custom_url = "http://custom.tap.server/tap"
     client = SOARClient(tap_endpoint=custom_url)
 
     mock_resp = mock.MagicMock()
-    mock_resp.json.return_value = {"data": []}
+    mock_resp.json.return_value = {
+        "metadata": [
+            {"name": "instrument"},
+            {"name": "descriptor"},
+            {"name": "level"},
+            {"name": "begin_time"},
+            {"name": "end_time"},
+            {"name": "data_item_id"},
+            {"name": "filename"},
+            {"name": "filesize"},
+            {"name": "soop_name"}
+        ],
+        "data": []
+    }
     mock_resp.status_code = 200
 
-    with mock.patch("requests.get", return_value=mock_resp) as mock_get:
-        try:
-            client._do_search(["instrument='EUI'"])
-        except Exception:
-            pass
+    with mock.patch("sunpy.net.soar.client.requests.get", return_value=mock_resp) as mock_get:
+        client._do_search(["instrument='EUI'"])
 
         assert mock_get.called
         assert mock_get.call_args[0][0] == f"{custom_url}/sync"
