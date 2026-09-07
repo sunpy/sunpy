@@ -706,5 +706,34 @@ def test_custom_tap_endpoint():
 
     # Verify custom endpoint override
     custom_url = "http://custom.tap.server/tap"
-    custom_client = SOARClient(custom_url)
+    custom_client = SOARClient(tap_endpoint=custom_url)
     assert custom_client.tap_endpoint == custom_url
+
+
+@pytest.mark.thread_unsafe(reason="patches remote response")
+@responses.activate
+def test_custom_tap_endpoint_search():
+    """Covers line 220 (_do_search using self.tap_endpoint)."""
+    custom_url = "http://custom.tap.server/tap"
+    client = SOARClient(tap_endpoint=custom_url)
+
+    expected_url = f"{custom_url}/sync"
+    responses.add(
+        responses.GET,
+        expected_url,
+        json={"data": []},
+        status=200,
+    )
+
+    query = [
+        "instrument='EUI'",
+        "begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'",
+        "level='L1'",
+    ]
+    try:
+        client._do_search(query)
+    except Exception:
+        # We only care that the URL hit was dispatched to the custom endpoint
+        pass
+
+    assert responses.calls[0].request.url.startswith(custom_url)
