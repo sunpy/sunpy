@@ -198,7 +198,7 @@ class SOARClient(BaseClient):
             )
         return {"REQUEST": query_method, "LANG": "ADQL", "FORMAT": "json", "QUERY": adql_query_str}
 
-    
+
     def _do_search(self, query):
         """
         Query the SOAR server with a single query.
