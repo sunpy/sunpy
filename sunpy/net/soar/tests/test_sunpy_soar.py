@@ -11,6 +11,7 @@ from sunpy.net import attrs as a
 from sunpy.net.base_client import QueryResponseTable
 from sunpy.net.soar.client import SOARClient
 from sunpy.util.exceptions import SunpyUserWarning
+from unittest import mock
 
 
 @pytest.mark.remote_data
@@ -710,30 +711,23 @@ def test_custom_tap_endpoint():
     assert custom_client.tap_endpoint == custom_url
 
 
-@pytest.mark.thread_unsafe(reason="patches remote response")
-@responses.activate
+from unittest import mock
+
+
 def test_custom_tap_endpoint_search():
     """Covers line 220 (_do_search using self.tap_endpoint)."""
     custom_url = "http://custom.tap.server/tap"
     client = SOARClient(tap_endpoint=custom_url)
 
-    expected_url = f"{custom_url}/sync"
-    responses.add(
-        responses.GET,
-        expected_url,
-        json={"data": []},
-        status=200,
-    )
+    mock_resp = mock.MagicMock()
+    mock_resp.json.return_value = {"data": []}
+    mock_resp.status_code = 200
 
-    query = [
-        "instrument='EUI'",
-        "begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'",
-        "level='L1'",
-    ]
-    try:
-        client._do_search(query)
-    except Exception:
-        # We only care that the URL hit was dispatched to the custom endpoint
-        pass
+    with mock.patch("requests.get", return_value=mock_resp) as mock_get:
+        try:
+            client._do_search(["instrument='EUI'"])
+        except Exception:
+            pass
 
-    assert responses.calls[0].request.url.startswith(custom_url)
+        assert mock_get.called
+        assert mock_get.call_args[0][0] == f"{custom_url}/sync"
