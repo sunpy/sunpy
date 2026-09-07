@@ -1,0 +1,1 @@
+Allow configurable TAP endpoint URL in ``sunpy.net.soar.SOARClient``.
