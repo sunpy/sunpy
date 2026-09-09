@@ -10,7 +10,7 @@ except Exception:
     import warnings
 
     warnings.warn(
-        f'could not determine {__name__.split(".")[0]} package version; this indicates a broken installation',
+        f"could not determine {__name__.split('.')[0]} package version; this indicates a broken installation",
         stacklevel=2,
     )
     del warnings
