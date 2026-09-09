@@ -17,7 +17,7 @@ select = [
   "PT",
   "I",
 ]
-extend-ignore = [
+ignore = [
   # pycodestyle (E, W)
   "E501", # ignore line length will use a formatter instead
   # pytest (PT)
@@ -32,6 +32,8 @@ extend-ignore = [
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF013", # PEP 484 prohibits implicit `Optional`
   "RUF015", # Prefer `next(iter(...))` over single element slice
+  # Bugbear (B)
+  "B9", # Very opinionated checks
 ]
 
 [lint.per-file-ignores]

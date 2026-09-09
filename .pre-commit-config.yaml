@@ -4,7 +4,7 @@ repos:
     rev: "v0.16.5"
     hooks:
       - id: ruff-check
-        args: ["--fix"]
+        args: ["--fix", "--show-fixes"]
         types: [python]
         # Define here once and then reference using YAML anchor
         exclude: &exclude_dirs ^sunpy/(data|extern)/
@@ -47,6 +47,10 @@ repos:
       - id: sphinx-lint
         types_or: [python, rst]
         exclude: *exclude_dirs
+  - repo: https://github.com/scientific-python/cookie
+    rev: 2026.08.14
+    hooks:
+      - id: sp-repo-review
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs
