@@ -40,8 +40,7 @@ class MapPlotter:
         self.smap = smap
         self.plot_settings = {'cmap': 'gray',
                               'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
+                              'origin': 'lower'}
         if self.smap.data.dtype != np.uint8:
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
