@@ -201,7 +201,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
                          index=times.isot.astype('datetime64'))
-        data.sort_index(inplace=True)
+        data = data.sort_index()
 
         # Add the units
         units = OrderedDict([('xrsa', u.W/u.m**2),
