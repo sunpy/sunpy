@@ -19,6 +19,7 @@ from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
 import reproject
+from ndcube import NDCube
 
 try:
     from dask.array import Array as DaskArray
@@ -106,7 +107,7 @@ to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representa
 __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
-class GenericMap(MapMetaMixin, NDData):
+class GenericMap(MapMetaMixin, NDCube):
     """
     A Generic spatially-aware 2D data array
 
@@ -227,6 +228,19 @@ class GenericMap(MapMetaMixin, NDData):
                 cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
+        # These have to be set before calling the parent __init__, because
+        # NDCube.__init__ checks that the WCS is not None, which for a Map means
+        # building it from the metadata, which in turn needs these attributes.
+        self._metadata_validated = False
+        self._nickname = None
+        # These are placeholders for default attributes, which are only set
+        # once if their data isn't present in the map metadata.
+        self._default_time = None
+        self._default_dsun = None
+        self._default_carrington_longitude = None
+        self._default_heliographic_latitude = None
+        self._default_heliographic_longitude = None
+
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -241,26 +255,20 @@ class GenericMap(MapMetaMixin, NDData):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        params = list(inspect.signature(NDData).parameters)
-        nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
+        params = list(inspect.signature(NDCube).parameters)
+        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        if ndcube_kwargs.pop("wcs", None) is not None:
+            raise ValueError("Passing a WCS to GenericMap is not supported, "
+                             "the WCS is derived from the metadata.")
+        # The WCS is derived from the metadata, so pass None here. The metadata is
+        # validated as part of building it, see the wcs property below.
+        super().__init__(data, wcs=None, meta=MetaDict(header), **ndcube_kwargs)
 
-        # Setup some attributes
-        self._nickname = None
-        # These are placeholders for default attributes, which are only set
-        # once if their data isn't present in the map metadata.
-        self._default_time = None
-        self._default_dsun = None
-        self._default_carrington_longitude = None
-        self._default_heliographic_latitude = None
-        self._default_heliographic_longitude = None
-
-        # Validate header
-        # TODO: This should be a function of the header, not of the map
-        self._validate_meta()
-        self.plotter = MapPlotter(self)
+        # The plotter is an NDCube descriptor, so it is assigned the plotter
+        # class rather than an instance of it.
+        self.plotter = MapPlotter
         if plot_settings:
-            self.plot_settings.update(plot_settings)
+            self.plotter.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -601,6 +609,13 @@ class GenericMap(MapMetaMixin, NDData):
         provided by the `.date_end` property, which normally returns a value only if the
         DATE-END key is in the metadata.
         """
+        # The metadata has to be validated before the WCS is built, but it is not
+        # available until the parent __init__ has run, which is also what triggers
+        # the first build. Doing it here is the only point where both are true.
+        if not self._metadata_validated:
+            self._validate_meta()
+            self._metadata_validated = True
+
         w2 = astropy.wcs.WCS(naxis=2)
 
         # Add one to go from zero-based to one-based indexing
@@ -653,6 +668,14 @@ class GenericMap(MapMetaMixin, NDData):
         # Validate the WCS here.
         w2.wcs.set()
         return w2
+
+    @wcs.setter
+    def wcs(self, value):
+        # NDData.__init__ assigns to wcs, so this has to exist. A Map derives its
+        # WCS from the metadata and cannot be given one.
+        if value is not None:
+            raise ValueError("Passing a WCS to GenericMap is not supported, "
+                             "the WCS is derived from the metadata.")
 
     def _as_mpl_axes(self):
         """
