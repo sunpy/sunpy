@@ -10,6 +10,7 @@ How to edit the display of a map.
 import matplotlib
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
+import numpy as np
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
@@ -26,7 +27,7 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 # Let's replace the colormap and normalization.
 
 aiamap.plot_settings['cmap'] = matplotlib.colormaps['Greys_r']
-aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
+aiamap.plot_settings['norm'] = colors.LogNorm(100, np.nanmax(aiamap.data))
 
 ###############################################################################
 # To see all of the colormaps sunpy provides see `sunpy.visualization.colormaps`.
