@@ -3,8 +3,11 @@ import pytest
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.trace import TRACEMap
-from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
+
+# The observer is now resolved when the map is constructed rather than on first
+# use of the WCS, so these maps emit the warning during fixture setup.
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture(scope="module")
@@ -57,5 +60,4 @@ def test_norm_clip(trace_map):
 
 def test_wcs(trace_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        trace_map.wcs.pixel_to_world(0, 0)
+    trace_map.wcs.pixel_to_world(0, 0)
