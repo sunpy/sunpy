@@ -283,7 +283,7 @@ def test_unit(header, expected_unit):
 
 def test_wcs(phi_map_hrt):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    phi_map_hrt.pixel_to_world(0*u.pix, 0*u.pix)
+    phi_map_hrt.wcs.pixel_to_world(0, 0)
 
 @pytest.mark.parametrize(
         ('header', 'expected_cmap'),
