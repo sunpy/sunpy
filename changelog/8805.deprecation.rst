@@ -1,0 +1,3 @@
+Deprecated the ``dtype``, ``ndim``, ``min``, ``max``, ``mean`` and ``std`` attributes of `~sunpy.map.GenericMap` in favour of working with ``GenericMap.data`` directly.
+``map.dtype`` and ``map.ndim`` become ``map.data.dtype`` and ``map.data.ndim``.
+For the statistics, use `numpy.nanmin`, `numpy.nanmax`, `numpy.nanmean` and `numpy.nanstd` on ``map.data``, rather than the `~numpy.ndarray` methods of the same name, which do not skip NaNs.
