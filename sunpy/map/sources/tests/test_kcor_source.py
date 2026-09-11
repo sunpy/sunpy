@@ -58,7 +58,7 @@ def test_private_date_setters(kcor):
 
 def test_wcs(kcor):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    kcor.pixel_to_world(0*u.pix, 0*u.pix)
+    kcor.wcs.pixel_to_world(0, 0)
 
 
 def test_observer_coordinate(kcor):

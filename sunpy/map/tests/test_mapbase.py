@@ -517,7 +517,7 @@ def test_observer_hgln_crln_priority():
               'rsun_ref': 690000000}
     generic_map = sunpy.map.Map((data, header))
 
-    c = generic_map.pixel_to_world(0*u.pix, 0*u.pix)
+    c = generic_map.wcs.pixel_to_world(0, 0)
     assert c.observer.lon == 0 * u.deg
     # Note: don't test whether crlt or hglt is used---according to
     # coordinates.wcs_utils._set_wcs_aux_obs_coord, those are expected to
@@ -672,29 +672,31 @@ def test_crota_scale():
     map2 = sunpy.map.Map(data, header)
 
     # Lower left coord
-    coord1 = map1.pixel_to_world(*(-0.5, -0.5) * u.pix)
+    coord1 = map1.wcs.pixel_to_world(-0.5, -0.5)
     # After rotating by 90 deg about the center of the map (CRPIX),
     # this should map to the lower right coordinate
-    coord2 = map2.pixel_to_world(*(-0.5, n - 0.5) * u.pix)
+    coord2 = map2.wcs.pixel_to_world(-0.5, n - 0.5)
     assert coord1.separation(coord2) < 1e-6 * u.arcsec
 
 
 def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally consistent"""
-    test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate)
-    assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+    test_pixel = generic_map.wcs.world_to_pixel(generic_map.reference_coordinate)
+    assert_quantity_allclose(u.Quantity(test_pixel, u.pix), generic_map.reference_pixel)
 
 
 def test_world_to_pixel_error(generic_map):
     strerr = 'Expected the following order of world arguments: SkyCoord'
     with pytest.raises(ValueError, match=strerr):
-        generic_map.world_to_pixel(1)
+        generic_map.wcs.world_to_pixel(1)
 
 
 def test_world_pixel_roundtrip(simple_map):
     pix = 1 * u.pix, 1 * u.pix
-    coord = simple_map.pixel_to_world(*pix)
-    pix_roundtrip = simple_map.world_to_pixel(coord)
+    with pytest.warns(SunpyDeprecationWarning):
+        coord = simple_map.pixel_to_world(*pix)
+    with pytest.warns(SunpyDeprecationWarning):
+        pix_roundtrip = simple_map.world_to_pixel(coord)
 
     assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
     assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
@@ -867,10 +869,10 @@ def test_submap_pixel(simple_map, rect, submap_out):
 @pytest.mark.parametrize(("rect", "submap_out"), pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
-    corner1 = simple_map.pixel_to_world(*rect[0])
-    corner2 = simple_map.pixel_to_world(*rect[1])
-    corners = simple_map.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
-                                        u.Quantity([rect[0][1], rect[1][1]]))
+    corner1 = simple_map.wcs.pixel_to_world(*rect[0])
+    corner2 = simple_map.wcs.pixel_to_world(*rect[1])
+    corners = simple_map.wcs.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
+                                            u.Quantity([rect[0][1], rect[1][1]]))
     for r in [dict(bottom_left=corner1, top_right=corner2),
               dict(bottom_left=corner2, top_right=corner1),
               dict(bottom_left=corners, ),
@@ -960,14 +962,14 @@ def test_resample(simple_map, shape):
         assert resampled.data == np.array([[40]])
 
     # Check that the corner coordinates of the input and output are the same
-    resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    original_lower_left = simple_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    resampled_lower_left = resampled.wcs.pixel_to_world(-0.5, -0.5)
+    original_lower_left = simple_map.wcs.pixel_to_world(-0.5, -0.5)
     assert u.allclose(resampled_lower_left.Tx, original_lower_left.Tx)
     assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
-    resampled_upper_right = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
-                                                    (shape[1] - 0.5) * u.pix)
-    original_upper_right = simple_map.pixel_to_world(8.5 * u.pix, 8.5 * u.pix)
+    resampled_upper_right = resampled.wcs.pixel_to_world((shape[0] - 0.5),
+                                                         (shape[1] - 0.5))
+    original_upper_right = simple_map.wcs.pixel_to_world(8.5, 8.5)
     assert u.allclose(resampled_upper_right.Tx, original_upper_right.Tx)
     assert u.allclose(resampled_upper_right.Ty, original_upper_right.Ty)
 
@@ -1174,9 +1176,9 @@ def test_resample_rotated_map_pc(pc, method, simple_map):
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
-    ll_pix = [-0.5, -0.5]*u.pix
-    assert smap.pixel_to_world(*ll_pix).separation(
-        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+    ll_pix = [-0.5, -0.5]
+    assert smap.wcs.pixel_to_world(*ll_pix).separation(
+        new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
@@ -1196,9 +1198,9 @@ def test_resample_rotated_map_cd(cd, method, simple_map):
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
-    ll_pix = [-0.5, -0.5]*u.pix
-    assert smap.pixel_to_world(*ll_pix).separation(
-        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+    ll_pix = [-0.5, -0.5]
+    assert smap.wcs.pixel_to_world(*ll_pix).separation(
+        new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
 def test_superpixel_err(generic_map):
@@ -1424,7 +1426,7 @@ def test_hg_coord(heliographic_test_map):
 
 
 def test_hg_pix_to_data(heliographic_test_map):
-    out = heliographic_test_map.pixel_to_world(180 * u.pix, 90 * u.pix)
+    out = heliographic_test_map.wcs.pixel_to_world(180, 90)
     assert isinstance(out, SkyCoord)
     assert isinstance(out.frame, sunpy.coordinates.HeliographicCarrington)
     assert_quantity_allclose(out.lon, 0 * u.deg)
@@ -1432,11 +1434,11 @@ def test_hg_pix_to_data(heliographic_test_map):
 
 
 def test_hg_data_to_pix(heliographic_test_map):
-    out = heliographic_test_map.world_to_pixel(
+    out = heliographic_test_map.wcs.world_to_pixel(
         SkyCoord(
             0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
-    assert_quantity_allclose(out[0], 180 * u.pix)
-    assert_quantity_allclose(out[1], 90 * u.pix)
+    assert_quantity_allclose(out[0], 180)
+    assert_quantity_allclose(out[1], 90)
 
 
 @pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
