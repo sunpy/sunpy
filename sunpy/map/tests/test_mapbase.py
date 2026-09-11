@@ -259,23 +259,64 @@ def test_header_immutability(aia171_test_map):
 
 
 def test_dtype(generic_map):
-    assert generic_map.dtype == np.float64
+    with pytest.warns(SunpyDeprecationWarning, match="dtype"):
+        assert generic_map.dtype == np.float64
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 0
+    with pytest.warns(SunpyDeprecationWarning, match="min"):
+        assert generic_map.min() == 0
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 35
+    with pytest.warns(SunpyDeprecationWarning, match="max"):
+        assert generic_map.max() == 35
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 17.5
+    with pytest.warns(SunpyDeprecationWarning, match="mean"):
+        assert generic_map.mean() == 17.5
 
 
 def test_std(generic_map):
-    np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
+    with pytest.warns(SunpyDeprecationWarning, match="std"):
+        np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
+
+
+@pytest.mark.parametrize(("name", "is_property"), [
+    ("dtype", True),
+    ("ndim", True),
+    ("min", False),
+    ("max", False),
+    ("mean", False),
+    ("std", False),
+])
+def test_deprecated_attributes_warn(simple_map, name, is_property):
+    if is_property:
+        with pytest.warns(SunpyDeprecationWarning, match=name):
+            getattr(simple_map, name)
+    else:
+        with pytest.warns(SunpyDeprecationWarning, match=name):
+            getattr(simple_map, name)()
+
+
+def test_deprecated_stats_ignore_nans():
+    data = np.array([[1.0, 2.0], [3.0, np.nan]])
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00',
+                         unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
+                                           frame='heliographic_stonyhurst'))
+    smap = sunpy.map.Map(data, sunpy.map.make_fitswcs_header(data, ref_coord))
+
+    for name, expected in [("min", 1.0), ("max", 3.0), ("mean", 2.0)]:
+        with pytest.warns(SunpyDeprecationWarning, match=name):
+            assert getattr(smap, name)() == expected
+    with pytest.warns(SunpyDeprecationWarning, match="std"):
+        np.testing.assert_allclose(smap.std(), np.nanstd(data))
+
+    # ``map.data.min()`` does not ignore NaNs, which is why the deprecation
+    # messages point at ``np.nanmin`` and friends rather than the ndarray methods.
+    assert np.isnan(smap.data.min())
 
 
 def test_unit(generic_map):
@@ -1185,12 +1226,12 @@ def test_rotate(aia171_test_map):
     assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
     assert np.isnan(rotated_map_1.data[0, 0])
     assert np.isnan(rotated_map_2.data[0, 0])
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_1.mean(), rtol=5e-3)
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_2.mean(), rtol=5e-3)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_1.data), rtol=5e-3)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_2.data), rtol=5e-3)
 
     # A scaled-up map should have the same mean because the output map should be expanded
     rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=0, scale=2)
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_3.mean(), rtol=1e-4)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_3.data), rtol=1e-4)
 
     # Mean and std should be equal for a 90 degree rotation as long as 1 pixel is cropped out on
     # all sides
@@ -1411,7 +1452,7 @@ def test_more_than_two_dimensions():
         with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
             bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
-    assert bad_map.ndim == 2
+    assert bad_map.data.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
 
 
