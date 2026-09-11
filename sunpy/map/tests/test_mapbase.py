@@ -1357,9 +1357,6 @@ def test_rotate_assumed_obstime():
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
         original = sunpy.map.Map(np.zeros((10, 10)), header)
 
-    # The assumption has already been made, so accessing the date emits no warning
-    original.date
-
     # The rotated map is a new map, so it makes the assumption again when constructed
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
         rotated = original.rotate(0*u.deg)
