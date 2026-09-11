@@ -1,8 +1,6 @@
 
 import pytest
 
-import astropy.units as u
-
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.adapt import ADAPTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
@@ -59,4 +57,4 @@ def test_observatory(adapt_map):
 def test_wcs(adapt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
-        adapt_map.pixel_to_world(0*u.pix, 0*u.pix)
+        adapt_map.wcs.pixel_to_world(0, 0)
