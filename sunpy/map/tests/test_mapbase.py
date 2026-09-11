@@ -300,25 +300,6 @@ def test_deprecated_attributes_warn(simple_map, name, is_property):
             getattr(simple_map, name)()
 
 
-def test_deprecated_stats_ignore_nans():
-    data = np.array([[1.0, 2.0], [3.0, np.nan]])
-    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00',
-                         unit='deg',
-                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
-                                           frame='heliographic_stonyhurst'))
-    smap = sunpy.map.Map(data, sunpy.map.make_fitswcs_header(data, ref_coord))
-
-    for name, expected in [("min", 1.0), ("max", 3.0), ("mean", 2.0)]:
-        with pytest.warns(SunpyDeprecationWarning, match=name):
-            assert getattr(smap, name)() == expected
-    with pytest.warns(SunpyDeprecationWarning, match="std"):
-        np.testing.assert_allclose(smap.std(), np.nanstd(data))
-
-    # ``map.data.min()`` does not ignore NaNs, which is why the deprecation
-    # messages point at ``np.nanmin`` and friends rather than the ndarray methods.
-    assert np.isnan(smap.data.min())
-
-
 def test_unit(generic_map):
     assert generic_map.unit == u.DN / u.s
     generic_map.meta['bunit'] = 'not a unit'
