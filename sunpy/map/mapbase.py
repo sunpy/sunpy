@@ -263,8 +263,7 @@ class GenericMap(MapMetaMixin, NDCube):
         if ndcube_kwargs.pop("wcs", None) is not None:
             raise ValueError("Passing a WCS to GenericMap is not supported, "
                              "the WCS is derived from the metadata.")
-        # The WCS is derived from the metadata, so pass None here. The metadata is
-        # validated as part of building it, see the wcs property below.
+        # The WCS is derived from the metadata, so pass None here. The wcs is built by the NDCube constructor when it accesses the `.wcs` property.
         super().__init__(data, wcs=None, meta=MetaDict(header), **ndcube_kwargs)
 
         # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
