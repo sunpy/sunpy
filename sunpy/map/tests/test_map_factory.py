@@ -83,6 +83,7 @@ def test_mapsequence_sortby(eit_fits_directory):
     assert isinstance(sequence, sunpy.map.MapSequence)
 
 
+@pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 def test_composite():
     # Test making a CompositeMap
     comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
@@ -92,6 +93,7 @@ def test_composite():
 # the AIA test data
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyMetadataWarning")
 @pytest.mark.filterwarnings("ignore:Invalid 'BLANK' keyword in header")
 def test_patterns(eit_fits_directory):
     # Test different Map pattern matching
@@ -339,6 +341,7 @@ def test_map_list_uri():
     ("swap_lv1_20140606_000113.header", sunpy.map.sources.SWAPMap),
     ("HinodeXRT.header", sunpy.map.sources.XRTMap),
 ])
+@pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 def test_sources(file, mapcls):
     p = pathlib.Path(get_test_filepath(file))
     m = get_dummy_map_from_header(p) if p.suffix == '.header' else sunpy.map.Map(p)
