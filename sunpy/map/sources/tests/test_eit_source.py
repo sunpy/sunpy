@@ -11,6 +11,10 @@ from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import EITMap
 from .helpers import _test_private_date_setters
 
+# The observer is now resolved when the map is constructed rather than on first
+# use of the WCS, so these maps emit the warning during fixture setup.
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
+
 
 @pytest.fixture()
 def eit_map():
