@@ -67,6 +67,7 @@ def test_cached_property_based_on():
     class Foo:
         def __init__(self, attr):
             self._attr = attr
+            self._value = attr
             self.n_calls = 0
 
         @property
@@ -81,19 +82,22 @@ def test_cached_property_based_on():
         @cached_property_based_on('attr')
         def prop(self):
             self.n_calls += 1
-            return self._attr
+            return self._value
 
     foo = Foo(1)
     assert foo.prop == 1
     assert foo.n_calls == 1
 
-    # Accessing the property again without changing `attr` should not
-    # recompute it.
+    # Changing `_value` while `attr` stays the same should not cause the
+    # property to be recomputed, so `prop` must not move even though the
+    # underlying value did.
+    foo._value = 99
     assert foo.prop == 1
     assert foo.n_calls == 1
 
     # Changing `attr` should cause the property to be recomputed.
     foo._attr = 2
+    foo._value = 2
     assert foo.prop == 2
     assert foo.n_calls == 2
 
@@ -108,31 +112,30 @@ def test_cached_property_based_on_none_always_recomputes():
     nothing has changed.
     """
     class Foo:
-        def __init__(self, attr):
-            self._attr = attr
-            self.n_calls = 0
+        def __init__(self, value):
+            self._value = value
 
         @property
         def attr(self):
-            return self._attr
+            # Always `None`, simulating an attribute whose value cannot be
+            # reliably computed (e.g. `MetaDict.item_hash` returning `None`
+            # because the metadata contains an unhashable value).
+            return None
 
         @property
         @cached_property_based_on('attr')
         def prop(self):
-            self.n_calls += 1
-            return self._attr
+            return self._value
 
-    # `attr` is `None` throughout, simulating an attribute whose value
-    # cannot be reliably computed (e.g. `MetaDict.item_hash` returning
-    # `None` because the metadata contains an unhashable value).
-    foo = Foo(None)
-    assert foo.prop is None
-    assert foo.n_calls == 1
+    foo = Foo(1)
+    assert foo.prop == 1
 
     # Even though `attr` is unchanged (`None`), the property must be
     # recomputed on every access, because a `None` attribute value means
-    # "could not determine whether anything changed".
-    assert foo.prop is None
-    assert foo.n_calls == 2
-    assert foo.prop is None
-    assert foo.n_calls == 3
+    # "could not determine whether anything changed". This is asserted by
+    # changing the underlying value and checking that `prop` picks it up,
+    # which would not happen if a stale cached value were returned.
+    foo._value = 2
+    assert foo.prop == 2
+    foo._value = 3
+    assert foo.prop == 3
