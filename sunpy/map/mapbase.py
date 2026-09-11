@@ -17,9 +17,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
+from ndcube import NDCube
 
 import reproject
-from ndcube import NDCube
 
 try:
     from dask.array import Array as DaskArray
@@ -30,7 +30,6 @@ except ImportError:
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
-from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
