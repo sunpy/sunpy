@@ -475,4 +475,3 @@ def test_coordinate_is_on_solar_disk():
     coord_non_hpc = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst')
     with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective frame."):
         coordinate_is_on_solar_disk(coord_non_hpc)
-
