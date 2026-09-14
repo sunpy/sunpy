@@ -11,10 +11,13 @@ from sunpy.coordinates import frames, get_earth, sun
 from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import (
     GreatArc,
+    _verify_coordinate_helioprojective,
+    coordinate_is_on_solar_disk,
     get_heliocentric_angle,
     get_limb_coordinates,
     get_rectangle_coordinates,
     solar_angle_equivalency,
+    solar_angular_radius,
 )
 from sunpy.sun import constants
 from sunpy.util.exceptions import SunpyUserWarning
@@ -418,3 +421,57 @@ def test_get_heliocentric_angle_errors():
     bad_skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst', observer="earth")
     with pytest.raises(ConvertError, match="frame needs a specified obstime"):
         get_heliocentric_angle(bad_skycoord)
+
+
+def test_verify_coordinate_helioprojective():
+    coord_hpc = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    _verify_coordinate_helioprojective(coord_hpc)
+    _verify_coordinate_helioprojective(coord_hpc.frame)
+
+    coord_hgs = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst', observer="earth", obstime="2017-07-26")
+    with pytest.raises(ValueError, match=re.escape("The input coordinate(s) is of type HeliographicStonyhurst, but must be in the Helioprojective frame.")):
+        _verify_coordinate_helioprojective(coord_hgs)
+
+    with pytest.raises(ValueError, match=re.escape("The input coordinate(s) is of type HeliographicStonyhurst, but must be in the Helioprojective frame.")):
+        _verify_coordinate_helioprojective(coord_hgs.frame)
+
+
+def test_solar_angular_radius():
+    coord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    sar = solar_angular_radius(coord)
+    assert isinstance(sar, u.Quantity)
+    expected_sar = sun._angular_radius(coord.rsun, coord.observer.radius)
+    assert_quantity_allclose(sar, expected_sar)
+    assert_quantity_allclose(sar, 944.428*u.arcsec, atol=1e-3*u.arcsec)
+
+    # Frame directly
+    sar_frame = solar_angular_radius(coord.frame)
+    assert_quantity_allclose(sar_frame, expected_sar)
+
+    # Non-helioprojective coordinate raises
+    coord_non_hpc = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst')
+    with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective frame."):
+        solar_angular_radius(coord_non_hpc)
+
+
+def test_coordinate_is_on_solar_disk():
+    center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    inside = SkyCoord(500*u.arcsec, 500*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    outside = SkyCoord(1000*u.arcsec, 0*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+    far_outside = SkyCoord(1500*u.arcsec, 1500*u.arcsec, frame='helioprojective', observer="earth", obstime="2017-07-26")
+
+    assert coordinate_is_on_solar_disk(center)
+    assert coordinate_is_on_solar_disk(inside)
+    assert not coordinate_is_on_solar_disk(outside)
+    assert not coordinate_is_on_solar_disk(far_outside)
+
+    # Vector coordinates
+    coords = SkyCoord([0, 500, 1000, 1500]*u.arcsec, [0, 500, 0, 1500]*u.arcsec,
+                      frame='helioprojective', observer="earth", obstime="2017-07-26")
+    result = coordinate_is_on_solar_disk(coords)
+    np.testing.assert_array_equal(result, [True, True, False, False])
+
+    # Non-helioprojective coordinate raises
+    coord_non_hpc = SkyCoord(0*u.deg, 0*u.deg, frame='heliographic_stonyhurst')
+    with pytest.raises(ValueError, match="HeliographicStonyhurst, but must be in the Helioprojective frame."):
+        coordinate_is_on_solar_disk(coord_non_hpc)
