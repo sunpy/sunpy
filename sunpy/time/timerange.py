@@ -136,7 +136,7 @@ class TimeRange:
                 self._t2 = x
 
     @property
-    def start(self):
+    def start(self) -> Time:
         """
         Get the start time.
 
@@ -148,7 +148,7 @@ class TimeRange:
         return self._t1
 
     @property
-    def end(self):
+    def end(self) -> Time:
         """
         Get the end time.
 
@@ -172,7 +172,7 @@ class TimeRange:
         return self._t2 - self._t1
 
     @property
-    def center(self):
+    def center(self) -> Time:
         """
         Gets the center of the time range.
 
