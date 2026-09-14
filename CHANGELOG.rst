@@ -541,7 +541,7 @@ Bug Fixes
   This was causing the JSOC to error. (`#7467 <https://github.com/sunpy/sunpy/pull/7467>`__)
 - The EVE L0CS client now uses the new URLs for the data from LASP. (`#7483 <https://github.com/sunpy/sunpy/pull/7483>`__)
 - JPEG2000 files are now saved with the correct orientation. Previously they would be vertically flipped when saved. (`#7486 <https://github.com/sunpy/sunpy/pull/7486>`__)
-- Fixed a very minor inaccuracy in three `sunpy.map` utility functions (:func:`~sunpy.map.contains_full_disk`, :func:`~sunpy.map.coordinate_is_on_solar_disk`, and :func:`~sunpy.map.is_all_off_disk`) resulting from the accidental use of the small-angle approximation. (`#7512 <https://github.com/sunpy/sunpy/pull/7512>`__)
+- Fixed a very minor inaccuracy in three `sunpy.map` utility functions (:func:`~sunpy.map.contains_full_disk`, :func:`~sunpy.coordinates.coordinate_is_on_solar_disk`, and :func:`~sunpy.map.is_all_off_disk`) resulting from the accidental use of the small-angle approximation. (`#7512 <https://github.com/sunpy/sunpy/pull/7512>`__)
 - The :meth:`~sunpy.map.GenericMap.rotate` function now correctly updates the NAXISi. (`#7522 <https://github.com/sunpy/sunpy/pull/7522>`__)
 - Added a check in `sunpy.physics.differential_rotation.solar_rotate_coordinate` to ensure the input frame has an "observer" attribute before replicating frame
   attributes, preventing potential issues with frames lacking this attribute. (`#7526 <https://github.com/sunpy/sunpy/pull/7526>`__)
@@ -1681,7 +1681,7 @@ Added/Improved Documentation
 - Added a gallery example  (:ref:`sphx_glr_generated_gallery_plotting_plotting_blank_map.py`) on how to create a blank map and mark locations. (`#5077 <https://github.com/sunpy/sunpy/pull/5077>`__)
 - Added a gallery example (:ref:`sphx_glr_generated_gallery_showcase_hmi_cutout.py`)
   demonstrating how to add a HMI zoomed-in region next to a full disk HMI image. (`#5090 <https://github.com/sunpy/sunpy/pull/5090>`__)
-- Updated the :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py` example to generate the mask using :func:`sunpy.map.coordinate_is_on_solar_disk`. (`#5114 <https://github.com/sunpy/sunpy/pull/5114>`__)
+- Updated the :ref:`sphx_glr_generated_gallery_computer_vision_techniques_mask_disk.py` example to generate the mask using :func:`sunpy.coordinates.coordinate_is_on_solar_disk`. (`#5114 <https://github.com/sunpy/sunpy/pull/5114>`__)
 - Added a gallery example (:ref:`sphx_glr_generated_gallery_map_map_segment.py`)
   demonstrating how to create a segment of a particular map from transformed coordinates. (`#5121 <https://github.com/sunpy/sunpy/pull/5121>`__)
 - For the various subclasses of `~sunpy.map.GenericMap` (e.g., `~sunpy.map.sources.AIAMap`), the online documentation now shows all of the inherited attributes and methods. (`#5142 <https://github.com/sunpy/sunpy/pull/5142>`__)

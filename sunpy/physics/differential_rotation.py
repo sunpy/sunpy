@@ -13,10 +13,11 @@ from sunpy.coordinates import (
     Helioprojective,
     get_earth,
     transform_with_sun_center,
+    coordinate_is_on_solar_disk,
+
 )
 from sunpy.map import (
     contains_full_disk,
-    coordinate_is_on_solar_disk,
     is_all_off_disk,
     is_all_on_disk,
     map_edges,
