@@ -1,0 +1,1 @@
+Moved coordinate-only functions solar_angular_radius and coordinate_is_on_solar_disk from sunpy.map.maputils to sunpy.coordinates.utils.
