@@ -294,6 +294,8 @@ class GenericTimeSeries:
             ncols=1,
             sharex=True,
         )
+        # Guarantee a 1D iterable to prevent scalar zip failures
+        axs = np.atleast_1d(axs)
         for i, (ax, column) in enumerate(zip(axs, self.columns)):
             values = dat[column].values
             ax.plot(

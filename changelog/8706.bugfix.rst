@@ -1,0 +1,1 @@
+Fixed a bug where calling `_repr_html_()` on a single-column TimeSeries raised a `TypeError`.
