@@ -1,0 +1,1 @@
+Documented that the velocity components of a coordinate in a Cartesian representation are named ``v_x``, ``v_y`` and ``v_z``, rather than being the position-component names prepended by ``d_`` as is the case for a spherical representation.
