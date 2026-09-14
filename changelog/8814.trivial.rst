@@ -1,0 +1,1 @@
+Moved coordinate-only functions from map utils to coordinates utils
