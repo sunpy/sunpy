@@ -30,14 +30,14 @@ class MapPlotter:
 
     Parameters
     ----------
-    smap : `~sunpy.map.GenericMap`
-        The map to be plotted.
-    plot_settings : dict, optional
-        Plot settings, which override the defaults.
+    ndcube : `~sunpy.map.GenericMap`
+        The map to be plotted. Named ``ndcube`` rather than ``smap`` to match
+        the signature of ``ndcube.visualization.BasePlotter``, which this class
+        will eventually inherit from.
     """
 
-    def __init__(self, smap, plot_settings=None):
-        self.smap = smap
+    def __init__(self, ndcube=None):
+        self._ndcube = ndcube
         self.plot_settings = {
             'cmap': 'gray',
             'interpolation': 'nearest',
@@ -47,8 +47,6 @@ class MapPlotter:
             # Put import here to reduce sunpy.map import time
             from matplotlib import colors
             self.plot_settings['norm'] = colors.Normalize()
-        if plot_settings:
-            self.plot_settings.update(plot_settings)
 
         # Try and set the colormap. This is not always possible if this method
         # is run before map sources fix some of their metadata, so
@@ -59,6 +57,13 @@ class MapPlotter:
                 self.plot_settings['cmap'] = cmap
         except Exception:
             pass
+
+    @property
+    def smap(self):
+        """
+        The `~sunpy.map.GenericMap` being plotted.
+        """
+        return self._ndcube
 
     @property
     def cmap(self):
