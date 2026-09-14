@@ -257,7 +257,9 @@ class GenericMap(MapMetaMixin, NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
-        self.plotter = MapPlotter(self, plot_settings)
+        self.plotter = MapPlotter(self)
+        if plot_settings:
+            self.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
