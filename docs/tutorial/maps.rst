@@ -153,10 +153,12 @@ Data attributes like dimensionality and type are also accessible as attributes o
 
 .. code-block:: python
 
-    >>> my_map.dimensions  # doctest: +REMOTE_DATA
-    PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
+    >>> my_map.shape  # doctest: +REMOTE_DATA
+    (1024, 1024)
     >>> my_map.data.dtype  # doctest: +REMOTE_DATA
     dtype('float32')
+
+Note that, like the array itself, ``shape`` is in (row, column) order.
 
 Additionally, basic summary statistics of the data can be calculated using `numpy`:
 
