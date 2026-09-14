@@ -11,7 +11,7 @@ from astropy.coordinates.representation import CartesianRepresentation
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, get_body_heliographic_stonyhurst, sun
 from sunpy.sun import constants
 
-__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle']
+__all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle', 'solar_angular_radius', 'coordinate_is_on_solar_disk']
 
 from sunpy.map.maputils import _verify_coordinate_helioprojective
 
@@ -83,30 +83,7 @@ class GreatArc:
     >>> plt.show()  # doctest: +SKIP
 
     """
-    def solar_angular_radius(coordinates):
-        """
-        Calculates the solar angular radius as seen by the observer.
-
-        The tangent vector from the observer to the edge of the Sun forms a
-        right-angle triangle with the radius of the Sun as the far side and the
-        Sun-observer distance as the hypotenuse. Thus, the sine of the angular
-        radius of the Sun is ratio of these two distances.
-
-        Parameters
-        ----------
-        coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-        Returns
-        -------
-        angle : `~astropy.units.Quantity`
-        The solar angular radius.
-        """
-        _verify_coordinate_helioprojective(coordinates)
-        return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
-
- 
+    
     def __init__(self, start, end, center=None, points=None):
 
         # Observer
@@ -289,6 +266,56 @@ class GreatArc:
                         obstime=self.obstime,
                         observer=self.observer,
                         frame=Heliocentric).transform_to(self.start_frame)
+
+
+def solar_angular_radius(coordinates):
+    """
+    Calculates the solar angular radius as seen by the observer.
+
+    The tangent vector from the observer to the edge of the Sun forms a
+    right-angle triangle with the radius of the Sun as the far side and the
+    Sun-observer distance as the hypotenuse. Thus, the sine of the angular
+    radius of the Sun is ratio of these two distances.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+    The input coordinate. The coordinate frame must be
+    `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    angle : `~astropy.units.Quantity`
+    The solar angular radius.
+    """
+    _verify_coordinate_helioprojective(coordinates)
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius) 
+
+
+def coordinate_is_on_solar_disk(coordinates):
+    """
+    Checks if the helioprojective Cartesian coordinates are on the solar disk.
+
+    The check is performed by comparing the coordinate's angular distance
+    to the angular size of the solar radius. The solar disk is assumed to be
+    a circle i.e., solar oblateness and other effects that cause the solar disk to
+    be non-circular are not taken in to account.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+    The input coordinate. The coordinate frame must be
+    `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    `~bool`
+    Returns `True` if the coordinate is on disk, `False` otherwise.
+    """
+    _verify_coordinate_helioprojective(coordinates)
+        # Calculate the radial angle from the center of the Sun (do not assume small angles)
+        # and compare it to the angular radius of the Sun
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
 
 
 @u.quantity_input

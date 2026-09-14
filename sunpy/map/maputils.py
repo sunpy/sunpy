@@ -11,12 +11,12 @@ from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
 from sunpy.coordinates import Helioprojective, sun
-
+from sunpy.coordinates.utils import coordinate_is_on_solar_disk
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
-           'map_edges', 'solar_angular_radius', 'sample_at_coords',
+           'map_edges', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
-           'contains_limb', 'coordinate_is_on_solar_disk',
+           'contains_limb', 
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
            'pixelate_coord_path']
@@ -239,30 +239,6 @@ def contains_solar_center(smap):
 
 
 @u.quantity_input
-def coordinate_is_on_solar_disk(coordinates):
-    """
-    Checks if the helioprojective Cartesian coordinates are on the solar disk.
-
-    The check is performed by comparing the coordinate's angular distance
-    to the angular size of the solar radius. The solar disk is assumed to be
-    a circle i.e., solar oblateness and other effects that cause the solar disk to
-    be non-circular are not taken in to account.
-
-    Parameters
-    ----------
-    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate. The coordinate frame must be
-        `~sunpy.coordinates.Helioprojective`.
-
-    Returns
-    -------
-    `~bool`
-        Returns `True` if the coordinate is on disk, `False` otherwise.
-    """
-    _verify_coordinate_helioprojective(coordinates)
-    # Calculate the radial angle from the center of the Sun (do not assume small angles)
-    # and compare it to the angular radius of the Sun
-    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):
