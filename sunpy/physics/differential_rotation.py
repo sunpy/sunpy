@@ -11,10 +11,9 @@ from sunpy.coordinates import (
     Heliocentric,
     HeliographicStonyhurst,
     Helioprojective,
+    coordinate_is_on_solar_disk,
     get_earth,
     transform_with_sun_center,
-    coordinate_is_on_solar_disk,
-
 )
 from sunpy.map import (
     contains_full_disk,

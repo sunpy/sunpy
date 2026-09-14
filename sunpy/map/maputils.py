@@ -10,13 +10,14 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
-from sunpy.coordinates import Helioprojective, sun
+from sunpy.coordinates import Helioprojective
 from sunpy.coordinates.utils import coordinate_is_on_solar_disk
+
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
            'map_edges', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
-           'contains_limb', 
+           'contains_limb',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
            'pixelate_coord_path']

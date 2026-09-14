@@ -82,7 +82,7 @@ class GreatArc:
     >>> plt.show()  # doctest: +SKIP
 
     """
-    
+
     def __init__(self, start, end, center=None, points=None):
 
         # Observer
@@ -289,7 +289,7 @@ def solar_angular_radius(coordinates):
     """
     from sunpy.map.maputils import _verify_coordinate_helioprojective
     _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius) 
+    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
 
 
 def coordinate_is_on_solar_disk(coordinates):

@@ -12,10 +12,9 @@ from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.coordinates.frames import HeliographicCarrington
 from sunpy.coordinates.utils import (
     GreatArc,
-    solar_angular_radius,
     coordinate_is_on_solar_disk,
-) 
-
+    solar_angular_radius,
+)
 from sunpy.map.maputils import (
     _verify_coordinate_helioprojective,
     all_coordinates_from_map,
