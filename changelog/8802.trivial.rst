@@ -1,0 +1,1 @@
+Moved the plotting functionality of `~sunpy.map.GenericMap` into a new internal ``MapPlotter`` class, accessible as ``GenericMap.plotter``.
