@@ -13,7 +13,6 @@ from sunpy.sun import constants
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates', 'solar_angle_equivalency', 'get_limb_coordinates', 'get_heliocentric_angle', 'solar_angular_radius', 'coordinate_is_on_solar_disk']
 
-from sunpy.map.maputils import _verify_coordinate_helioprojective
 
 class GreatArc:
     """
@@ -288,6 +287,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
     The solar angular radius.
     """
+    from sunpy.map.maputils import _verify_coordinate_helioprojective
     _verify_coordinate_helioprojective(coordinates)
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius) 
 
@@ -312,6 +312,7 @@ def coordinate_is_on_solar_disk(coordinates):
     `~bool`
     Returns `True` if the coordinate is on disk, `False` otherwise.
     """
+    from sunpy.map.maputils import _verify_coordinate_helioprojective
     _verify_coordinate_helioprojective(coordinates)
         # Calculate the radial angle from the center of the Sun (do not assume small angles)
         # and compare it to the angular radius of the Sun
