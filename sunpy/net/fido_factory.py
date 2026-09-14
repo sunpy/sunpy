@@ -295,7 +295,7 @@ class UnifiedResponse(Sequence):
         """
         colnames = set(self[0].colnames)
         for resp in self[1:]:
-            colnames.union(resp.colnames)
+            colnames.update(resp.colnames)
         return sorted(list(colnames))
 
 
