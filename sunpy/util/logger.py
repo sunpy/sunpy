@@ -56,10 +56,18 @@ class SunpyLogger(AstropyLogger):
         else:
             self.warning(message)
 
+class OriginFilter(logging.Filter):
+    """
+    Ensure any child record propagating to the Sunpy (Astropy) logger handlers has an origin.
+    """
+    def filter(self, record):
+        if not hasattr(record, "origin"):
+            record.origin = getattr(record, "name", "sunpy")
+        return True
 
 def _init_log(config=None):
     """
-    Initializes the SunPy log.
+    Initialises the SunPy log.
 
     In most circumstances this is called automatically when importing
     SunPy. This code is based on that provided by Astropy see
@@ -72,6 +80,11 @@ def _init_log(config=None):
         if config is not None:
             _config_to_loggerConf(config)
         log._set_defaults()
+
+        # Ensure records propagating to child loggers have .origin
+        origin_filter = OriginFilter()
+        for handler in log.handlers:
+            handler.addFilter(origin_filter)
     finally:
         logging.setLoggerClass(orig_logger_cls)
 
