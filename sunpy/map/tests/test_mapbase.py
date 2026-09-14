@@ -171,6 +171,53 @@ def test_wcs_cache(aia171_test_map):
     assert new_wcs.wcs.crpix[0] == new_crpix
 
 
+def test_wcs_cache_unhashable_meta(aia171_test_map):
+    """
+    Regression test for https://github.com/sunpy/sunpy/issues/8780
+
+    If ``.meta`` contains an unhashable value, ``MetaDict.item_hash()``
+    returns `None`, and `.wcs` must still be recomputed whenever ``.meta``
+    subsequently changes, instead of getting stuck returning a stale value.
+    """
+    aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
+
+    # Make the metadata hash always fail by adding an unhashable value.
+    aia171_test_map.meta['unhashable'] = ['this', 'is', 'a', 'list']
+    assert aia171_test_map._meta_hash is None
+
+    wcs1 = aia171_test_map.wcs
+
+    # Change something that should affect the WCS, while the metadata is
+    # still unhashable.
+    new_crpix = 20
+    assert new_crpix != wcs1.wcs.crpix[0]
+    aia171_test_map.meta['crpix1'] = new_crpix
+    assert aia171_test_map._meta_hash is None
+
+    new_wcs = aia171_test_map.wcs
+    assert new_wcs.wcs.crpix[0] == new_crpix
+
+
+def test_obs_coord_cache_unhashable_meta(aia171_test_map):
+    """
+    Regression test for https://github.com/sunpy/sunpy/issues/8780
+    """
+    aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
+
+    aia171_test_map.meta['unhashable'] = ['this', 'is', 'a', 'list']
+    assert aia171_test_map._meta_hash is None
+
+    coord1 = aia171_test_map.observer_coordinate
+
+    aia171_test_map.meta['haex_obs'] += 10
+    assert aia171_test_map._meta_hash is None
+
+    new_coord = aia171_test_map.observer_coordinate
+    assert new_coord.lon != coord1.lon
+    assert new_coord.lat != coord1.lat
+    assert new_coord.radius != coord1.radius
+
+
 def test_wcs_error_not_cached(aia171_test_map):
     aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
 
