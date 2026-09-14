@@ -1,0 +1,1 @@
+Added support for querying calibration and ancillary data to `sunpy.net.soar.SOARClient` via the new `a.soar.Category` attribute.
