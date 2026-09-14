@@ -1,3 +1,3 @@
-from . import adapt, goes
+from . import adapt, goes, hinode
 
-__all__ = ['adapt', 'goes']
+__all__ = ['adapt', 'goes', 'hinode']
