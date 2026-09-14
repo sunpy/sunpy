@@ -2,7 +2,7 @@ import warnings
 
 import pytest
 
-from sunpy.util.decorators import _active_contexts, deprecated, sunpycontextmanager
+from sunpy.util.decorators import _active_contexts, cached_property_based_on, deprecated, sunpycontextmanager
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
@@ -61,3 +61,81 @@ def test_context_tracking():
         assert _active_contexts.get() == [ctx1_name]
 
     assert _active_contexts.get() == []
+
+
+def test_cached_property_based_on():
+    class Foo:
+        def __init__(self, attr):
+            self._attr = attr
+            self._value = attr
+            self.n_calls = 0
+
+        @property
+        def attr(self):
+            # `attr_name` must be a property (not a plain instance attribute)
+            # so that `getattr(instance, attr_name)` always reflects the
+            # current state instead of the decorator's own cached copy,
+            # which is stored under the same key in `instance.__dict__`.
+            return self._attr
+
+        @property
+        @cached_property_based_on('attr')
+        def prop(self):
+            self.n_calls += 1
+            return self._value
+
+    foo = Foo(1)
+    assert foo.prop == 1
+    assert foo.n_calls == 1
+
+    # Changing `_value` while `attr` stays the same should not cause the
+    # property to be recomputed, so `prop` must not move even though the
+    # underlying value did.
+    foo._value = 99
+    assert foo.prop == 1
+    assert foo.n_calls == 1
+
+    # Changing `attr` should cause the property to be recomputed.
+    foo._attr = 2
+    foo._value = 2
+    assert foo.prop == 2
+    assert foo.n_calls == 2
+
+
+def test_cached_property_based_on_none_always_recomputes():
+    """
+    Regression test for https://github.com/sunpy/sunpy/issues/8780
+
+    If the attribute that cache-invalidation is based on evaluates to
+    `None` (e.g. because computing it failed), the property must always be
+    recomputed, since `None == None` cannot be used to conclude that
+    nothing has changed.
+    """
+    class Foo:
+        def __init__(self, value):
+            self._value = value
+
+        @property
+        def attr(self):
+            # Always `None`, simulating an attribute whose value cannot be
+            # reliably computed (e.g. `MetaDict.item_hash` returning `None`
+            # because the metadata contains an unhashable value).
+            return None
+
+        @property
+        @cached_property_based_on('attr')
+        def prop(self):
+            return self._value
+
+    foo = Foo(1)
+    assert foo.prop == 1
+
+    # Even though `attr` is unchanged (`None`), the property must be
+    # recomputed on every access, because a `None` attribute value means
+    # "could not determine whether anything changed". This is asserted by
+    # changing the underlying value and checking that `prop` picks it up,
+    # which would not happen if a stale cached value were returned.
+    foo._value = 2
+    assert foo.prop == 2
+    foo._value = 3
+    assert foo.prop == 3
