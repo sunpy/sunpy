@@ -2108,14 +2108,28 @@ def reset_map_registry():
     GenericMap._registry = reg
 
 
-def test_genericmap_old_sig_subclass_factory(simple_map, reset_map_registry):
-    class MyOldSourceMap(GenericMap):
-        def __init__(self, data, header, **kwargs):
-            super().__init__(data, header, **kwargs)
+def test_genericmap_subclass_warn():
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyMap(GenericMap):
+            def __init__(self, data, header, plot_settings=None): pass
 
-        @classmethod
-        def is_datasource_for(cls, data, header, **kwargs):
-            return str(header.get("instrume", "")).startswith("MyOldSource")
+            @classmethod
+            def _is_datasource_for(cls, data, header, **kwargs): return True
+
+    # Check this one doesn't warn
+    class MyMapNew(GenericMap):
+        def __init__(self, data, wcs=None, meta=None, **kwargs): pass
+
+
+def test_genericmap_old_sig_subclass_factory(simple_map, reset_map_registry):
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyOldSourceMap(GenericMap):
+            def __init__(self, data, header, **kwargs):
+                super().__init__(data, header, **kwargs)
+
+            @classmethod
+            def is_datasource_for(cls, data, header, **kwargs):
+                return str(header.get("instrume", "")).startswith("MyOldSource")
 
     # A Translator class was injected between the subclass and GenericMap
     assert MyOldSourceMap.__mro__[1].__name__ == "GenericMapTranslator"
@@ -2129,8 +2143,9 @@ def test_genericmap_old_sig_subclass_factory(simple_map, reset_map_registry):
 
 
 def test_genericmap_subclass_sig_rewriting():
-    class MyMap(GenericMap):
-        def __init__(self, data, header, plot_settings=None): pass
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyMap(GenericMap):
+            def __init__(self, data, header, plot_settings=None): pass
 
     sig = inspect.signature(MyMap.__init__)
     assert "header" not in sig.parameters

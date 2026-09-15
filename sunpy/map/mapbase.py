@@ -53,7 +53,7 @@ from sunpy.map.mixins.mapmeta import (
     SpatialPair,  # noqa: F401 -- re-exported for backwards compatibility with `sunpy.map.mapbase.SpatialPair`
 )
 from sunpy.map.plotting.mpl_plotter import MapPlotter
-from sunpy.util import MetaDict, extent_in_other_wcs
+from sunpy.util import MetaDict, extent_in_other_wcs, warn_deprecated
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
@@ -190,6 +190,7 @@ class GenericMapDeprecationMeta(ABCMeta):
         if original_init is not None and not hasattr(original_init, "__wrapped__"):
             sig = inspect.signature(original_init)
             if "header" in sig.parameters:
+                warn_deprecated("The old GenericMap(data, header, **kwargs) signature is deprecated in favour of the NDCube constructor signature. You should pass the header as the ``meta=header`` keyword argument.", stacklevel=2)
                 namespace['__init__'] = old_to_new_converter(original_init)
                 gmbase = [b for b in bases if issubclass(b, GenericMap)][0]
                 Translator = type(
