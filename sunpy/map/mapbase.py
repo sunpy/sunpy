@@ -117,10 +117,41 @@ class GenericMap(MapMetaMixin, NDCube):
 
     Parameters
     ----------
-    data : `numpy.ndarray`, list
-        A 2d list or ndarray containing the map data.
-    header : dict
-        A dictionary of the original image header tags.
+    data : array-like or `astropy.nddata.NDData`
+        The array holding the actual data in this object.
+
+    wcs : `None`
+        The ``WCS`` should not be set, it must always be `None` as it
+        is built from the `meta`.
+
+    uncertainty : Any, optional
+        Uncertainty in the dataset. Should have an attribute uncertainty_type
+        that defines what kind of uncertainty is stored, for example "std"
+        for standard deviation or "var" for variance. A metaclass defining such
+        an interface is `~astropy.nddata.NDUncertainty` - but isn't mandatory.
+        If the uncertainty has no such attribute the uncertainty is stored as
+        `~astropy.nddata.UnknownUncertainty`.
+        Defaults to `None`.
+
+    mask : Any, optional
+        Mask for the dataset. Masks should follow the numpy convention
+        that valid data points are marked by `False` and invalid ones with `True`.
+        Defaults to `None`.
+
+    meta : dict-like, optional
+        Additional meta information about the dataset. If no meta is provided
+        an empty dictionary is created.
+
+    unit : `astropy.units.Unit` or `str`, optional
+        Unit for the dataset. Strings that can be converted to a `~astropy.units.Unit` are allowed.
+        Default is `None` which results in dimensionless units.
+
+    copy : bool, optional
+        Indicates whether to save the arguments as copy. `True` copies every attribute
+        before saving it while `False` tries to save every parameter as reference.
+        Note however that it is not always possible to save the input as reference.
+        Default is `False`.
+
     plot_settings : dict, optional
         Plot settings.
 
@@ -131,7 +162,7 @@ class GenericMap(MapMetaMixin, NDCube):
         Use this to set the unit of the data after converting it. e.g. when converting units from counts
         to counts per second.
     **kwargs :
-        Additional keyword arguments are passed to `~astropy.nddata.NDData`
+        Additional keyword arguments are passed to `~ndcube.NDCube`
         init.
 
 
@@ -235,7 +266,22 @@ class GenericMap(MapMetaMixin, NDCube):
             if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
         # These have to be set before calling the parent __init__, because
         # NDCube.__init__ checks that the WCS is not None, which for a Map means
         # building it from the metadata, which in turn needs these attributes.
@@ -262,13 +308,27 @@ class GenericMap(MapMetaMixin, NDCube):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        params = list(inspect.signature(NDCube).parameters)
-        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        if ndcube_kwargs.pop("wcs", None) is not None:
+        if wcs is not None:
             raise ValueError("Passing a WCS to GenericMap is not supported, "
                              "the WCS is derived from the metadata.")
+
+        # We can get superfluous kwargs from the factories so strip them out here
+        params = list(inspect.signature(NDCube).parameters)
+        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
         # The WCS is derived from the metadata, so pass None here. The wcs is built by the NDCube constructor when it accesses the `.wcs` property.
-        super().__init__(data, wcs=None, meta=MetaDict(header), **ndcube_kwargs)
+        super().__init__(
+            data,
+            wcs=None,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=MetaDict(meta),
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            **ndcube_kwargs,
+        )
 
         # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
         # lost unless written there. Compared as units but note that this is done only so
@@ -529,7 +589,7 @@ class GenericMap(MapMetaMixin, NDCube):
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
-        new_map = cls(data, meta, **kwargs)
+        new_map = cls(data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
@@ -1862,7 +1922,7 @@ class GenericMap(MapMetaMixin, NDCube):
             target_header['DATE-OBS'] = self.date.utc.isot
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_header,
+        outmap = GenericMap(output_array, meta=target_header,
                             plot_settings=self.plot_settings)
 
         # Check rsun mismatch
