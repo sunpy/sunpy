@@ -8,6 +8,7 @@ import itertools
 import numbers
 import textwrap
 import webbrowser
+from abc import ABCMeta
 from functools import wraps
 from tempfile import NamedTemporaryFile
 from typing import Literal
@@ -108,7 +109,100 @@ to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representa
 __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
-class GenericMap(MapMetaMixin, NDCube):
+# We want to deprecate the old ``GenericMap.__init__``, but without
+# breaking the old constructor right away, The main complication with
+# this is that if an non-updated class calls ``super().__init__`` with
+# the old signature, so we also need to inject a class above an old
+# class to translate the call in the old class to it's superclass to
+# the new signature as well.  So we define to decorators (wrappers)
+# which convert in both directions.
+def old_to_new_converter(old_init):
+    """
+    Wraps an old init to call it as a new init.
+    """
+    def wrapper(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        kwargs.update(
+            {
+                "wcs": wcs,
+                "uncertainty": uncertainty,
+                "mask": mask,
+                "unit": unit,
+                "copy": copy,
+                "psf": psf,
+                "extra_coords": extra_coords,
+                "global_coords": global_coords,
+                "plot_settings": plot_settings,
+            }
+        )
+        return old_init(self, data=data, header=meta, **kwargs)
+
+    # Pass wrapped through so we know we've wrapped it
+    wrapper.__wrapped__ = old_init
+    # But set the signature to the un-wrapped version
+    wrapper.__signature__ = inspect.signature(wrapper, follow_wrapped=False)
+    return wrapper
+
+
+def new_to_old_converter(new_init):
+    """
+    Wraps an new init to call it as a old init.
+    """
+    def wrapper(
+        self,
+        data,
+        header,
+        plot_settings=None,
+        **kwargs,
+    ):
+        return new_init(self, data=data, meta=header, plot_settings=plot_settings, **kwargs)
+
+    # Pass wrapped through so we know we've wrapped it
+    wrapper.__wrapped__ = new_init
+    # But set the signature to the un-wrapped version
+    wrapper.__signature__ = inspect.signature(wrapper, follow_wrapped=False)
+    return wrapper
+
+
+class GenericMapDeprecationMeta(ABCMeta):
+    """
+    A metaclass which translates old ``__init__`` methods to new ones.
+
+    This also injects a mixin class to override the ``super().__init__``.
+    """
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        original_init = namespace.get('__init__')
+        # Don't wrap again if we already wrapped
+        if original_init is not None and not hasattr(original_init, "__wrapped__"):
+            sig = inspect.signature(original_init)
+            if "header" in sig.parameters:
+                namespace['__init__'] = old_to_new_converter(original_init)
+                gmbase = [b for b in bases if issubclass(b, GenericMap)][0]
+                Translator = type(
+                    f"{gmbase.__name__}Translator",
+                    (object,),
+                    {"__init__": new_to_old_converter(gmbase.__init__)},
+                )
+                bases = (Translator,) + bases
+
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     """
     A Generic spatially-aware 2D data array
 

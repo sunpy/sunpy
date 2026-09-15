@@ -1,6 +1,7 @@
 """
 Test Generic Map
 """
+import inspect
 import re
 import tempfile
 from copy import deepcopy
@@ -35,7 +36,7 @@ from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
-from sunpy.util import SunpyUserWarning
+from sunpy.util import MetaDict, SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from .strategies import matrix_meta
@@ -2097,3 +2098,42 @@ def test_map_copy_arg(simple_map):
 def test_map_plot_settings_arg(simple_map):
     smap = GenericMap(simple_map.data, meta=simple_map.meta, plot_settings={"cmap": "plasma"})
     assert smap.plot_settings["cmap"] == "plasma"
+
+
+# Tests for deprecation machinery
+@pytest.fixture
+def reset_map_registry():
+    reg = deepcopy(GenericMap._registry)
+    yield
+    GenericMap._registry = reg
+
+
+def test_genericmap_old_sig_subclass_factory(simple_map, reset_map_registry):
+    class MyOldSourceMap(GenericMap):
+        def __init__(self, data, header, **kwargs):
+            super().__init__(data, header, **kwargs)
+
+        @classmethod
+        def is_datasource_for(cls, data, header, **kwargs):
+            return str(header.get("instrume", "")).startswith("MyOldSource")
+
+    # A Translator class was injected between the subclass and GenericMap
+    assert MyOldSourceMap.__mro__[1].__name__ == "GenericMapTranslator"
+
+    assert MyOldSourceMap in GenericMap._registry
+    meta = dict(simple_map.meta)
+    meta["instrume"] = "MyOldSource"
+    smap = sunpy.map.Map(simple_map.data, meta)
+    assert isinstance(smap, MyOldSourceMap)
+    assert isinstance(smap.meta, MetaDict)
+
+
+def test_genericmap_subclass_sig_rewriting():
+    class MyMap(GenericMap):
+        def __init__(self, data, header, plot_settings=None): pass
+
+    sig = inspect.signature(MyMap.__init__)
+    assert "header" not in sig.parameters
+    assert sig == inspect.signature(GenericMap.__init__)
+    assert "header" not in sig.parameters
+    assert "meta" in sig.parameters
