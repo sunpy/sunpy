@@ -76,6 +76,17 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_wcs_revalidates_modified_meta(simple_map):
+    # A valid unit of the wrong physical type is accepted by astropy's parser
+    # our own GenericMap._validate_meta validation rejects it.
+    simple_map.wcs # wcs is valid
+    simple_map.meta['cunit1'] = 'm' # incorrect unit (also busts cache)
+    with pytest.raises(sunpy.map.MapMetaValidationError, match="angular units"):
+        simple_map.wcs
+    with pytest.raises(sunpy.map.MapMetaValidationError, match="angular units"):
+        simple_map.coordinate_frame
+
+
 def test_wcs_pv():
     # Test that PVi_m values are preserved in the reconstructed WCS
     zpn_header = {
