@@ -40,7 +40,7 @@ HTML(itables.to_html_datatable(_create_table(a.cdaweb.Dataset).to_pandas()))
 
 ###############################################################################
 # Once you've found the dataset you want, you can pass its name straight to
-# `~sunpy.net.attrs.cdaweb.Dataset`.
+# `~sunpy.net.cdaweb.attrs.Dataset`.
 trange = a.Time('2021/07/01', '2021/07/08')
 dataset = a.cdaweb.Dataset('SOLO_L2_MAG-RTN-NORMAL-1-MINUTE')
 result = Fido.search(trange, dataset)
