@@ -35,8 +35,8 @@ class EUVIMap(GenericMap):
         euvi_map.plot()
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
         self.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
@@ -89,8 +89,8 @@ class CORMap(GenericMap):
     * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
         self.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
@@ -127,8 +127,8 @@ class HIMap(GenericMap):
     * `HI Instrument Page <https://www.stereo.rl.ac.uk/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
         self.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
