@@ -52,7 +52,7 @@ def test_fits_data_comparison(aia171_test_map):
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
-            AIAMap(hdu[0].data, hdu[0].header)
+            AIAMap(hdu[0].data, meta=hdu[0].header)
 
 
 def test_get_item(generic_map):
@@ -1513,7 +1513,7 @@ def test_non_str_key():
               None: None,  # Cannot parse this into WCS
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
-        sunpy.map.GenericMap(np.zeros((10, 10)), header)
+        sunpy.map.GenericMap(np.zeros((10, 10)), meta=header)
 
 
 def test_updating_of_naxisi_on_rotate(aia171_test_map):
@@ -2072,3 +2072,28 @@ def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
                                                               aia171_test_map.meta["CRPIX2"])
 
     assert np.allclose(sliced_ref_coord, ori_ref_coord)
+
+
+# Test that args get passed through to NDCube correctly
+def test_map_mask_arg(simple_map):
+    mask = np.zeros(simple_map.data.shape, dtype=bool)
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, mask=mask)
+    np.testing.assert_array_equal(smap.mask, mask)
+
+
+def test_map_uncertainty_arg(simple_map):
+    uncertainty = np.ones(simple_map.data.shape)
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, uncertainty=uncertainty)
+    np.testing.assert_array_equal(smap.uncertainty.array, uncertainty)
+
+
+def test_map_copy_arg(simple_map):
+    data = np.ones(simple_map.data.shape)
+    smap = GenericMap(data, meta=simple_map.meta, copy=True)
+    data[0, 0] = 42
+    assert smap.data[0, 0] == 1
+
+
+def test_map_plot_settings_arg(simple_map):
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, plot_settings={"cmap": "plasma"})
+    assert smap.plot_settings["cmap"] == "plasma"
