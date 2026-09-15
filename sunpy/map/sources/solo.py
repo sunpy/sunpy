@@ -35,8 +35,8 @@ class EUIMap(GenericMap):
     * Instrument Paper: :cite:t:`rochus_solar_2020`
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
@@ -115,8 +115,8 @@ class PHIMap(GenericMap):
     * FDT Magnetic Field Comparison with HMI Paper: :cite:t:`moreno_vacas_mag_fdt_hmi_comparison_2024`
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
 
         btype = self.meta.get('btype','').strip().lower()
@@ -255,8 +255,8 @@ class METISMap(GenericMap):
         "UV Lyman-alpha intensity":         ("",     ""),
     }
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         btype = self.meta["btype"]
         nickname_add = ""
         if btype in METISMap._BTYPE_SUFF_DICT:
