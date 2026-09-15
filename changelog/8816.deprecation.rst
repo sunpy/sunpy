@@ -1,0 +1,1 @@
+The constructor for `~.GenericMap` has been changed to match `ndcube.NDCube`, custom Map classes will continue to work for a deprecation cycle as long as they are instantiated by the ``Map`` factory.

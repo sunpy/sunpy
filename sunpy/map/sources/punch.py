@@ -25,8 +25,8 @@ class PUNCHMap(GenericMap):
     * `PUNCH SOC Development <https://github.com/punch-mission/>`__
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self.nickname = f"{self.observatory} - {self.instrument}"
         self.plot_settings["cmap"] = "punch"
         self.plot_settings["norm"] = ImageNormalize(
