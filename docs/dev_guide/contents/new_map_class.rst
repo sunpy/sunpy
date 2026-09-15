@@ -48,10 +48,11 @@ The following example shows how this works and includes a sample doc string that
       * Mission documents
       """
 
-        def __init__(self, data, header, **kwargs):
+        def __init__(self, data, **kwargs):
 
-            # Will process the header according to FITS common standards
-            super().__init__(data, header, **kwargs)
+            # Will process the metadata (passed as the ``meta`` keyword argument)
+            # according to FITS common standards
+            super().__init__(data, **kwargs)
 
             # Any NextGenerationTelescope Instrument-specific manipulation.
             # Any metadata changes should be done by overloading

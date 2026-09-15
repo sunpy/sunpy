@@ -1,0 +1,1 @@
+Directly instantiating a map class, not using the ``Map`` factory, now requires you use the new function signature. Specifically ``MyMap(data, header)`` should now be written as ``MyMap(data, meta=header)``. However, we **strongly** recommend not directly instantiating a map class, the factory should always be used.
