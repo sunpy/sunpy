@@ -165,8 +165,8 @@ class GONGMagnetogramMap(GenericMap):
     * `Instrument Paper (pp. 203-208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
     * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         data_abs_max = np.nanmax(np.abs(self.data))
         self.plot_settings['norm'] =  SymLogNorm(50, vmin=-data_abs_max, vmax=data_abs_max)
 
