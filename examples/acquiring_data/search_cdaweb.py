@@ -10,12 +10,8 @@ full of heliospheric insitu datasets.
 """
 # sphinx_gallery_tags = ["Acquiring Data", "CDAWeb", "Solar Orbiter"]
 
-import itables
-from IPython.display import HTML
-
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.net.attr import _create_table
 from sunpy.timeseries import TimeSeries
 
 ###############################################################################
@@ -31,12 +27,9 @@ from sunpy.timeseries import TimeSeries
 # ``a.cdaweb.Dataset.show_in_notebook()``.
 #
 # The same table is shown below, and you can type into the search box to
-# filter it down to the dataset you're after. ``show_in_notebook`` only
-# displays a table when it's called inside a live notebook, so here we build
-# the same table by hand from the underlying attr registry, and bump
-# ``maxBytes`` so none of the ~3000 rows get dropped.
-itables.options.maxBytes = "1MB"
-HTML(itables.to_html_datatable(_create_table(a.cdaweb.Dataset).to_pandas()))
+# filter it down to the dataset you're after. We bump ``maxBytes`` so none of
+# the ~3000 rows get dropped.
+a.cdaweb.Dataset.to_html_datatable(maxBytes="1MB")
 
 ###############################################################################
 # Once you've found the dataset you want, you can pass its name straight to
