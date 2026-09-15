@@ -42,8 +42,8 @@ class RHESSIMap(GenericMap):
         rhessi_map.plot()
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
         self._nickname = self.detector
         self.plot_settings['cmap'] = 'rhessi'
 
