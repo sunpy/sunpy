@@ -230,7 +230,6 @@ class GenericMap(MapMetaMixin, NDCube):
         # These have to be set before calling the parent __init__, because
         # NDCube.__init__ checks that the WCS is not None, which for a Map means
         # building it from the metadata, which in turn needs these attributes.
-        self._metadata_validated = False
         self._nickname = None
         # These are placeholders for default attributes, which are only set
         # once if their data isn't present in the map metadata.
@@ -610,9 +609,9 @@ class GenericMap(MapMetaMixin, NDCube):
         # The metadata has to be validated before the WCS is built, but it is not
         # available until the parent __init__ has run, which is also what triggers
         # the first build. Doing it here is the only point where both are true.
-        if not self._metadata_validated:
-            self._validate_meta()
-            self._metadata_validated = True
+
+        # Validate meta before building the WCS, to emit useful errors.
+        self._validate_meta()
 
         w2 = astropy.wcs.WCS(naxis=2)
 
