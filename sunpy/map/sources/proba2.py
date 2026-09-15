@@ -33,8 +33,8 @@ class SWAPMap(GenericMap):
         swap_map.plot(clip_interval=(1, 99)*u.percent)
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(self, data, **kwargs):
+        super().__init__(data, **kwargs)
 
         self._nickname = self.detector
         self.plot_settings['cmap'] = 'sdoaia171'
