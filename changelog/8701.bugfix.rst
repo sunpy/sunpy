@@ -1,0 +1,1 @@
+Fixed an `AttributeError` when printing or displaying a `~sunpy.timeseries.GenericTimeSeries` built from a `~pandas.DataFrame` indexed by an `~astropy.time.Time` array.
