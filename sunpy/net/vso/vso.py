@@ -445,7 +445,7 @@ class VSOClient(BaseClient):
         jsoc = maps.pop('JSOC', [])
         # Make DRIs for everything that's not JSOC one per provider
         dris = [self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
-                for k, v in maps.items()]
+                for k, v in maps.items() if k and str(k).strip()]
 
         def series_func(x):
             """ Extract the series from the fileid. """

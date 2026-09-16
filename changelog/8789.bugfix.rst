@@ -1,0 +1,1 @@
+Fixed a bug where `sunpy.net.vso.VSOClient.fetch` would crash when the Virtual Solar Observatory (VSO) server returned a blank provider name.
