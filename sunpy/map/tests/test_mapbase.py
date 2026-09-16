@@ -127,10 +127,26 @@ def test_crop_matches_submap(generic_map):
     assert cropped.meta['crpix2'] == submap.meta['crpix2']
 
 
+def test_get_item_preserves_source_class(aia171_test_map):
+    # Slicing rebuilds the map through the source class, so the subclass should survive
+    sliced = aia171_test_map[10:20, 10:20]
+    assert type(sliced) is type(aia171_test_map)
+    assert sliced.instrument == aia171_test_map.instrument
+    assert sliced.plot_settings['cmap'] == aia171_test_map.plot_settings['cmap']
+
+
+def test_crop_preserves_source_class(aia171_test_map):
+    cropped = aia171_test_map.crop([aia171_test_map.wcs.pixel_to_world(10, 10)],
+                                   [aia171_test_map.wcs.pixel_to_world(20, 20)])
+    assert type(cropped) is type(aia171_test_map)
+    assert cropped.instrument == aia171_test_map.instrument
+    assert cropped.plot_settings['cmap'] == aia171_test_map.plot_settings['cmap']
+
+
 def test_crop_returns_a_map(generic_map):
     cropped = generic_map.crop([generic_map.wcs.pixel_to_world(1, 1)],
                                [generic_map.wcs.pixel_to_world(4, 4)])
-    assert isinstance(cropped, sunpy.map.GenericMap)
+    assert type(cropped) is type(generic_map)
     assert cropped.meta['naxis1'] == cropped.shape[1]
     assert cropped.meta['naxis2'] == cropped.shape[0]
 
