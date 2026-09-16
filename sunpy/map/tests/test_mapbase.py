@@ -75,6 +75,15 @@ def test_get_item_integer_index(generic_map):
         generic_map[1:3, 3]
 
 
+def test_get_item_step(generic_map):
+    # astropy cannot slice a WCS with a step, and striding is not the same operation as
+    # superpixel anyway, so it is rejected
+    with pytest.raises(IndexError, match="not possible to slice a map with a step"):
+        generic_map[::2, ::2]
+    # An explicit step of one is still an ordinary slice
+    assert generic_map[::1, ::1].shape == generic_map.shape
+
+
 def test_get_item_updates_reference_pixel(generic_map):
     # An offset slice has to move the reference pixel,
     sliced = generic_map[2:5, 1:4]

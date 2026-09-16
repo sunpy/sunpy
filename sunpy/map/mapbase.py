@@ -443,6 +443,15 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 "apply the same slice without dropping a dimension do "
                 f"mymap[{strslice}]."
             )
+
+        # astropy's SlicedLowLevelWCS rejects a step, so catch it here to say something
+        # more useful than "Slicing WCS with a step is not supported".
+        if any(isinstance(k, slice) and k.step not in (None, 1) for k in key):
+            raise IndexError(
+                "It is not possible to slice a map with a step. To reduce the "
+                "resolution of a map use GenericMap.superpixel, noting that it "
+                "combines pixels rather than discarding them."
+            )
         return super().__getitem__(key)
 
     def _text_summary(self):
