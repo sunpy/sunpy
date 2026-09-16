@@ -479,10 +479,36 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             self.plotter.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        def format_slice(key):
+            if not isinstance(key, slice):
+                return f"{key}"
+            start = "" if key.start is None else key.start
+            stop = "" if key.stop is None else key.stop
+            step = "" if key.step is None else f":{key.step}"
+            return f"{start}:{stop}{step}"
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if any(intidx := [isinstance(k, numbers.Integral) for k in key]):
+            strslice = ", ".join([f"{k}:{k+1}" if isint else format_slice(k)
+                                  for k, isint in zip(key, intidx)])
+            raise TypeError(
+                "It is not possible to slice a map with an integer as it will "
+                "reduce the number of data dimensions by one.\nIn order to "
+                "apply the same slice without dropping a dimension do "
+                f"mymap[{strslice}]."
+            )
+
+        # astropy's SlicedLowLevelWCS rejects a step, so catch it here to say something
+        # more useful than "Slicing WCS with a step is not supported".
+        if any(isinstance(k, slice) and k.step not in (None, 1) for k in key):
+            raise IndexError(
+                "It is not possible to slice a map with a step. To reduce the "
+                "resolution of a map use GenericMap.superpixel, noting that it "
+                "combines pixels rather than discarding them."
+            )
+        return super().__getitem__(key)
 
     def _text_summary(self):
         dt = self.exposure_time
