@@ -330,6 +330,26 @@ def test_distance_join_query():
     )
 
 
+def test_soop_join_query():
+    result = SOARClient._construct_payload(
+        [
+            "instrument='EUI'",
+            "level='L2'",
+            "(soop_name='L_FULL_HRES_HCAD' OR soop_name LIKE 'L_FULL_HRES_HCAD;%' "
+            "OR soop_name LIKE '%;L_FULL_HRES_HCAD' OR soop_name LIKE '%;L_FULL_HRES_HCAD;%')",
+        ]
+    )
+
+    assert result["QUERY"] == (
+        "SELECT h1.instrument, h1.descriptor, h1.level, h1.begin_time, h1.end_time, "
+        "h1.data_item_id, h1.filesize, h1.filename, h1.soop_name, h2.detector, h2.wavelength, "
+        "h2.dimension_index FROM v_sc_data_item AS h1 JOIN v_eui_sc_fits AS h2 USING (data_item_oid)"
+        " WHERE h1.instrument='EUI' AND h1.level='L2' AND (h1.soop_name='L_FULL_HRES_HCAD'"
+        " OR h1.soop_name LIKE 'L_FULL_HRES_HCAD;%' OR h1.soop_name LIKE '%;L_FULL_HRES_HCAD'"
+        " OR h1.soop_name LIKE '%;L_FULL_HRES_HCAD;%')"
+    )
+
+
 def test_construct_payload_insitu_no_join():
     """In-situ instruments (e.g. MAG) should produce SELECT * with no JOIN."""
     result = SOARClient._construct_payload(
@@ -478,6 +498,27 @@ def test_soar_server_down() -> None:
     assert "The SOAR server returned an invalid JSON response. It may be down or not functioning correctly." == str(
         query["soar"].errors
     )
+
+
+@pytest.mark.thread_unsafe(reason="patches remote response")
+@responses.activate
+def test_like_wildcard_is_escaped_in_url() -> None:
+    # The "%" wildcards in the SOOP LIKE clause have to reach the server as "%25",
+    # otherwise it rejects the URL with a 400 error.
+    responses.add(
+        responses.GET, "http://soar.esac.esa.int/soar-sl-tap/tap/sync", body="Invalid JSON response", status=200
+    )
+    query = [
+        "instrument='STIX'",
+        "(soop_name='A' OR soop_name LIKE 'A;%' OR soop_name LIKE '%;A' OR soop_name LIKE '%;A;%')",
+    ]
+    with pytest.raises(RuntimeError, match="invalid JSON response"):
+        SOARClient()._do_search(query)
+
+    url = responses.calls[0].request.url
+    assert "LIKE%20'A;%25'" in url
+    assert "LIKE%20'%25;A'" in url
+    assert "LIKE%20'%25;A;%25'" in url
 
 
 def test_can_handle_with_time_and_instrument():
