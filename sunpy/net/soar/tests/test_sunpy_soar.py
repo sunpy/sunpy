@@ -262,6 +262,35 @@ def test_wavelength_range() -> None:
         assert all(table["Wavelength"] == 174)
 
 
+def test_calibration_query() -> None:
+    result = SOARClient._construct_payload(
+        [
+            "instrument='STIX'",
+            "category='calibration'",
+            "begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'",
+        ]
+    )
+
+    assert result["QUERY"] == (
+        "SELECT * FROM v_calibration_file"
+        " WHERE instrument='STIX' AND begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'"
+    )
+
+
+def test_ancillary_query() -> None:
+    result = SOARClient._construct_payload(
+        [
+            "category='ancillary'",
+            "begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'",
+        ]
+    )
+
+    assert result["QUERY"] == (
+        "SELECT * FROM v_ancillary_file"
+        " WHERE begin_time>='2021-02-01 00:00:00' AND begin_time<='2021-02-02 00:00:00'"
+    )
+
+
 def test_join_science_query() -> None:
     result = SOARClient._construct_payload(
         [
