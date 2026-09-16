@@ -128,7 +128,7 @@ tests = [
   "sunpy[all,s3,tests-only,asdf-tests,jupyter]",
 ]
 docs = [
-  "sunpy[all]",
+  "sunpy[all,jupyter]",
   "sphinx>=7.4.0",
   "sphinx-automodapi>=0.18.0",
   "hvpy>=1.1.0",
