@@ -674,10 +674,16 @@ class GenericMap(MapMetaMixin, NDCube):
         Map uses the meta dict as the source of truth.
         When setting the wcs of the map we convert it to a header and then update the header of the map.
         """
+        # A Map is constructed with wcs=None, so there is nothing to merge in that case
+        if wcs is None:
+            return
         # Unwrap any wrapper classes to FITS WCS
         unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
-        # Convert to a header
+        # Convert to a header. wcslib omits NAXIS, so it has to be added back or the
+        # metadata keeps describing the shape of the array we started with.
         new_header = unwrapped.to_header()
+        for n in range(1, unwrapped.naxis + 1):
+            new_header[f"NAXIS{n}"] = unwrapped._naxis[n - 1]
         old_wcs_header = self.wcs.to_header()
         # Reduce the new header to just the keys which differ from the current WCS
         # We do this to figure out what's been changed post wcslib doing any
