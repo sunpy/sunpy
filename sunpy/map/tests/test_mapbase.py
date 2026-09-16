@@ -1,6 +1,7 @@
 """
 Test Generic Map
 """
+import inspect
 import re
 import tempfile
 from copy import deepcopy
@@ -35,7 +36,7 @@ from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
-from sunpy.util import SunpyUserWarning
+from sunpy.util import MetaDict, SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from .strategies import matrix_meta
@@ -52,7 +53,7 @@ def test_fits_data_comparison(aia171_test_map):
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
-            AIAMap(hdu[0].data, hdu[0].header)
+            AIAMap(hdu[0].data, meta=hdu[0].header)
 
 
 def test_get_item(generic_map):
@@ -1513,7 +1514,7 @@ def test_non_str_key():
               None: None,  # Cannot parse this into WCS
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
-        sunpy.map.GenericMap(np.zeros((10, 10)), header)
+        sunpy.map.GenericMap(np.zeros((10, 10)), meta=header)
 
 
 def test_updating_of_naxisi_on_rotate(aia171_test_map):
@@ -2072,3 +2073,82 @@ def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
                                                               aia171_test_map.meta["CRPIX2"])
 
     assert np.allclose(sliced_ref_coord, ori_ref_coord)
+
+
+# Test that args get passed through to NDCube correctly
+def test_map_mask_arg(simple_map):
+    mask = np.zeros(simple_map.data.shape, dtype=bool)
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, mask=mask)
+    np.testing.assert_array_equal(smap.mask, mask)
+
+
+def test_map_uncertainty_arg(simple_map):
+    uncertainty = np.ones(simple_map.data.shape)
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, uncertainty=uncertainty)
+    np.testing.assert_array_equal(smap.uncertainty.array, uncertainty)
+
+
+def test_map_copy_arg(simple_map):
+    data = np.ones(simple_map.data.shape)
+    smap = GenericMap(data, meta=simple_map.meta, copy=True)
+    data[0, 0] = 42
+    assert smap.data[0, 0] == 1
+
+
+def test_map_plot_settings_arg(simple_map):
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, plot_settings={"cmap": "plasma"})
+    assert smap.plot_settings["cmap"] == "plasma"
+
+
+# Tests for deprecation machinery
+@pytest.fixture
+def reset_map_registry():
+    reg = deepcopy(GenericMap._registry)
+    yield
+    GenericMap._registry = reg
+
+
+def test_genericmap_subclass_warn():
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyMap(GenericMap):
+            def __init__(self, data, header, plot_settings=None): pass
+
+            @classmethod
+            def _is_datasource_for(cls, data, header, **kwargs): return True
+
+    # Check this one doesn't warn
+    class MyMapNew(GenericMap):
+        def __init__(self, data, wcs=None, meta=None, **kwargs): pass
+
+
+def test_genericmap_old_sig_subclass_factory(simple_map, reset_map_registry):
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyOldSourceMap(GenericMap):
+            def __init__(self, data, header, **kwargs):
+                super().__init__(data, header, **kwargs)
+
+            @classmethod
+            def is_datasource_for(cls, data, header, **kwargs):
+                return str(header.get("instrume", "")).startswith("MyOldSource")
+
+    # A Translator class was injected between the subclass and GenericMap
+    assert MyOldSourceMap.__mro__[1].__name__ == "GenericMapTranslator"
+
+    assert MyOldSourceMap in GenericMap._registry
+    meta = dict(simple_map.meta)
+    meta["instrume"] = "MyOldSource"
+    smap = sunpy.map.Map(simple_map.data, meta)
+    assert isinstance(smap, MyOldSourceMap)
+    assert isinstance(smap.meta, MetaDict)
+
+
+def test_genericmap_subclass_sig_rewriting():
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyMap(GenericMap):
+            def __init__(self, data, header, plot_settings=None): pass
+
+    sig = inspect.signature(MyMap.__init__)
+    assert "header" not in sig.parameters
+    assert sig == inspect.signature(GenericMap.__init__)
+    assert "header" not in sig.parameters
+    assert "meta" in sig.parameters
