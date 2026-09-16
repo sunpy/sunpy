@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap` can now be sliced, e.g. ``my_map[10:20, 30:40]``, returning a new map whose metadata describes the sliced region.
