@@ -57,8 +57,98 @@ def test_header_fits_io():
 
 
 def test_get_item(generic_map):
-    with pytest.raises(NotImplementedError):
+    sliced = generic_map[0:1, :]
+    np.testing.assert_allclose(sliced.data, np.array([[0., 1., 2., 3., 4., 5.]]))
+    assert sliced.shape == (1, 6)
+    assert sliced.meta['naxis1'] == sliced.shape[1]
+    assert sliced.meta['naxis2'] == sliced.shape[0]
+    # Only the keywords this slice actually changes are rewritten. It starts at the
+    # origin, so the reference pixel and plate scale are both left alone.
+    assert sorted(sliced.meta.modified_items.keys()) == ['naxis2']
+
+
+def test_get_item_integer_index(generic_map):
+    # Indexing with an integer would drop a dimension, which a Map cannot represent
+    with pytest.raises(TypeError, match="It is not possible to slice a map with an integer"):
         generic_map[10, 10]
+    with pytest.raises(TypeError, match=re.escape("mymap[1:3, 3:4]")):
+        generic_map[1:3, 3]
+
+
+def test_get_item_step(generic_map):
+    # astropy cannot slice a WCS with a step, and striding is not the same operation as
+    # superpixel anyway, so it is rejected
+    with pytest.raises(IndexError, match="not possible to slice a map with a step"):
+        generic_map[::2, ::2]
+    # An explicit step of one is still an ordinary slice
+    assert generic_map[::1, ::1].shape == generic_map.shape
+
+
+def test_get_item_updates_reference_pixel(generic_map):
+    # An offset slice has to move the reference pixel,
+    sliced = generic_map[2:5, 1:4]
+    assert sorted(sliced.meta.modified_items.keys()) == ['crpix1', 'crpix2', 'naxis1', 'naxis2']
+    assert sliced.meta['crpix1'] == generic_map.meta['crpix1'] - 1
+    assert sliced.meta['crpix2'] == generic_map.meta['crpix2'] - 2
+    # Slicing does not change the plate scale, so those keywords must not be rewritten
+    assert sliced.meta['cdelt1'] == generic_map.meta['cdelt1']
+    assert sliced.meta['cunit1'] == generic_map.meta['cunit1']
+    # A given pixel holds the same world coordinate before and after slicing
+    assert_quantity_allclose(u.Quantity(sliced.wcs.pixel_to_world(0, 0).Tx),
+                             u.Quantity(generic_map.wcs.pixel_to_world(1, 2).Tx))
+
+
+def test_get_item_propagates_mask_and_uncertainty(generic_map):
+    generic_map.mask = generic_map.data > 20
+    # Poisson-like errors
+    generic_map.uncertainty = np.sqrt(generic_map.data)
+    sliced = generic_map[2:5, 1:4]
+    np.testing.assert_array_equal(sliced.mask, generic_map.mask[2:5, 1:4])
+    np.testing.assert_array_equal(sliced.uncertainty.array,
+                                  generic_map.uncertainty.array[2:5, 1:4])
+
+
+def test_get_item_matches_submap(generic_map):
+    # Slicing and submap describe the same region, so they must agree
+    sliced = generic_map[1:4, 2:5]
+    submap = generic_map.submap([2, 1] * u.pix, top_right=[4, 3] * u.pix)
+    np.testing.assert_array_equal(sliced.data, submap.data)
+    for key in ('crpix1', 'crpix2', 'naxis1', 'naxis2'):
+        assert sliced.meta[key] == submap.meta[key]
+
+
+def test_crop_matches_submap(generic_map):
+    # crop goes via __getitem__, so it must land on the same pixels as submap
+    cropped = generic_map.crop([generic_map.wcs.pixel_to_world(2, 1)],
+                               [generic_map.wcs.pixel_to_world(4, 3)])
+    submap = generic_map.submap([2, 1] * u.pix, top_right=[4, 3] * u.pix)
+    np.testing.assert_array_equal(cropped.data, submap.data)
+    assert cropped.meta['crpix1'] == submap.meta['crpix1']
+    assert cropped.meta['crpix2'] == submap.meta['crpix2']
+
+
+def test_get_item_preserves_source_class(aia171_test_map):
+    # Slicing rebuilds the map through the source class, so the subclass should survive
+    sliced = aia171_test_map[10:20, 10:20]
+    assert type(sliced) is type(aia171_test_map)
+    assert sliced.instrument == aia171_test_map.instrument
+    assert sliced.plot_settings['cmap'] == aia171_test_map.plot_settings['cmap']
+
+
+def test_crop_preserves_source_class(aia171_test_map):
+    cropped = aia171_test_map.crop([aia171_test_map.wcs.pixel_to_world(10, 10)],
+                                   [aia171_test_map.wcs.pixel_to_world(20, 20)])
+    assert type(cropped) is type(aia171_test_map)
+    assert cropped.instrument == aia171_test_map.instrument
+    assert cropped.plot_settings['cmap'] == aia171_test_map.plot_settings['cmap']
+
+
+def test_crop_returns_a_map(generic_map):
+    cropped = generic_map.crop([generic_map.wcs.pixel_to_world(1, 1)],
+                               [generic_map.wcs.pixel_to_world(4, 4)])
+    assert type(cropped) is type(generic_map)
+    assert cropped.meta['naxis1'] == cropped.shape[1]
+    assert cropped.meta['naxis2'] == cropped.shape[0]
 
 
 def test_wcs(aia171_test_map):
