@@ -1,0 +1,1 @@
+Moved the metadata-derived properties of `~sunpy.map.GenericMap` into a new internal `~sunpy.map.mixins.mapmeta.MapMetaMixin`.
