@@ -48,19 +48,18 @@ def parse_path(path, f, **kwargs):
     path = path.expanduser()
     if is_file(path):
         return f(path, **kwargs)
-    elif is_dir(path):
+    if is_dir(path):
         read_files = []
         for afile in sorted(path.glob("*")):
             read_files += f(afile, **kwargs)
         return read_files
-    elif glob.glob(str(path)):
+    if glob.glob(str(path)):
         read_files = []
         for afile in sorted(glob.glob(str(path))):
             afile = pathlib.Path(afile)
             read_files += f(afile, **kwargs)
         return read_files
-    else:
-        raise ValueError(f"Did not find any files at {path}")
+    raise ValueError(f"Did not find any files at {path}")
 
 
 # In python<3.8 paths with un-representable chars (ie. '*' on windows)

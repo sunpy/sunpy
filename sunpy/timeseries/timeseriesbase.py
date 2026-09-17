@@ -193,8 +193,7 @@ class GenericTimeSeries:
         """
         if len(self._data) > 0:
             return TimeRange(self._data.index.min(), self._data.index.max())
-        else:
-            return None
+        return None
 
     @property
     def url(self):
@@ -622,7 +621,7 @@ class GenericTimeSeries:
         # Check to see if nothing needs to be done in case the same TimeSeries is provided.
         if self == others:
             return self
-        elif isinstance(others, Iterable):
+        if isinstance(others, Iterable):
             if len(others) == 1 and self == next(iter(others)):
                 return self
 
@@ -633,7 +632,7 @@ class GenericTimeSeries:
             and not all(isinstance(series, self.__class__) for series in others)
         ):
             raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
-        elif (
+        if (
             same_source
             and not isinstance(others, Iterable)
             and not isinstance(others, self.__class__)
@@ -850,8 +849,7 @@ class GenericTimeSeries:
         """
         if hasattr(self._data, "to_numpy"):
             return self._data.to_numpy(**kwargs)
-        else:
-            return self._data.values
+        return self._data.values
 
     def __eq__(self, other):
         """

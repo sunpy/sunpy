@@ -225,6 +225,7 @@ def parse_longitude(value):
     lonsign = {'W': 1, 'E': -1}
     if "W" in value or "E" in value:
         return lonsign[value[3]] * float(value[4:])
+    return None
 
 
 def parse_latitude(value):
@@ -234,6 +235,7 @@ def parse_latitude(value):
     latsign = {'N': 1, 'S': -1}
     if "N" in value or "S" in value:
         return latsign[value[0]] * float(value[1:3])
+    return None
 
 
 def parse_location(column):

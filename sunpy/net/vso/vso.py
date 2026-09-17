@@ -94,6 +94,7 @@ def get_online_vso_url():
             if not check_cgi_connection(url):
                 continue
             return mirror
+    return None
 
 
 def build_client(url=None, port_name=None, **kwargs):
@@ -296,10 +297,9 @@ class VSOClient(BaseClient):
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
-        fname = pattern.format(file=name,
+        return pattern.format(file=name,
                                **queryresponserow.response_block_map)
 
-        return fname
 
     def fetch(self, query_response, path=None, methods=None, site=None,
               progress=True, overwrite=False, downloader=None, wait=True, **kwargs):

@@ -181,7 +181,7 @@ class XRSClient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        adict = {attrs.Instrument: [
+        return {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
             ("XRS", "GOES X-ray Sensor")],
             attrs.Physobs: [('irradiance', 'the flux of radiant energy per unit area.')],
@@ -191,7 +191,6 @@ class XRSClient(GenericClient):
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
             attrs.Resolution: [('flx1s', 'High-cadence measurements XRS observation, 1s for GOES-R, 2s for GOES 13-15, 3s for GOES<13'),
                                ('avg1m', '1-minute averages of XRS measurements')]}
-        return adict
 
 
 class SUVIClient(GenericClient):
@@ -318,7 +317,7 @@ class SUVIClient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         goes_number = [16, 17, 18]
-        adict = {attrs.Instrument: [
+        return {attrs.Instrument: [
             ("SUVI", "GOES Solar Ultraviolet Imager.")],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number],
             attrs.Source: [('GOES', 'The Geostationary Operational Environmental Satellite Program.')],
@@ -327,4 +326,3 @@ class SUVIClient(GenericClient):
             attrs.Level: [('1b', 'Solar images at six wavelengths with image exposures 10 msec or 1 sec.'),
                           ('2', 'Weighted average of level-1b product files of SUVI.')],
             attrs.Wavelength: [('*')]}
-        return adict

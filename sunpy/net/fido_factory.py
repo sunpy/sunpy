@@ -482,7 +482,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 results.data += dr.data
                 results._errors += dr._errors
             return results
-        elif any(retries):
+        if any(retries):
             raise TypeError("If any arguments to fetch are `parfive.Results` objects, all arguments must be.")
 
         reslist = []

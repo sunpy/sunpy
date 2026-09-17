@@ -85,8 +85,7 @@ class BasicRegistrationFactory:
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")
-            else:
-                candidate_widget_types = [self.default_widget_type]
+            candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
             raise MultipleMatchError(f"Too many candidate types identified ({n_matches})."
                                      "Specify enough keywords to guarantee unique type "
@@ -132,8 +131,7 @@ class BasicRegistrationFactory:
                         self.registry[WidgetType] = vfunc
                         found = True
                         break
-                    else:
-                        raise ValidationFunctionError(f"{WidgetType.__name__}.{vfunc_str} must be a classmethod.")
+                    raise ValidationFunctionError(f"{WidgetType.__name__}.{vfunc_str} must be a classmethod.")
             if not found:
                 raise ValidationFunctionError(f"No proper validation function for class {WidgetType.__name__} "
                                               "found.")

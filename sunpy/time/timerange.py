@@ -102,8 +102,7 @@ class TimeRange:
             x = parse_time(a[0], format=format)
             if len(a) != 2:
                 raise ValueError('If b is None a must have two elements')
-            else:
-                y = a[1]
+            y = a[1]
         else:
             x = parse_time(a, format=format)
             y = b
@@ -430,11 +429,10 @@ class TimeRange:
         Return all partial days contained within the time range.
         """
         delta = self.end.to_datetime().date() - self.start.to_datetime().date()
-        dates = [
+        return [
             parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
             for i in range(delta.days + 1)
         ]
-        return dates
 
     @add_common_docstring(**_variables_for_parse_time_docstring())
     def __contains__(self, time):

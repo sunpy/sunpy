@@ -32,18 +32,17 @@ def extract_timestep(directoryPattern):
     """
     if "%S" in directoryPattern:
         return relativedelta(seconds=1)
-    elif "%M" in directoryPattern:
+    if "%M" in directoryPattern:
         return relativedelta(minutes=1)
-    elif any(hour in directoryPattern for hour in ["%H"]):
+    if any(hour in directoryPattern for hour in ["%H"]):
         return relativedelta(hours=1)
-    elif any(day in directoryPattern for day in ["%d", "%j"]):
+    if any(day in directoryPattern for day in ["%d", "%j"]):
         return relativedelta(days=1)
-    elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
+    if any(month in directoryPattern for month in ["%b", "%B", "%m"]):
         return relativedelta(months=1)
-    elif any(year in directoryPattern for year in ["%Y", "%y"]):
+    if any(year in directoryPattern for year in ["%Y", "%y"]):
         return relativedelta(years=1)
-    else:
-        return None
+    return None
 
 
 def date_floor(date, timestep):

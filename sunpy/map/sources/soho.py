@@ -232,8 +232,7 @@ class LASCOMap(GenericMap):
             log.debug("LASCOMap: Ignoring CROTAn keywords "
                       "because the map has already been rotated by Helioviewer")
             return np.identity(2)
-        else:
-            return super().rotation_matrix
+        return super().rotation_matrix
 
     @property
     def date(self):
@@ -322,8 +321,9 @@ class MDIMap(GenericMap):
             # Helioviewer MDI files have the full date in DATE_OBS, but we still
             # want to let normal FITS files use DATE-OBS
             return parse_time(self.meta['date-obs'])
-        elif 'date_obs' in self.meta:
+        if 'date_obs' in self.meta:
             return parse_time(self.meta['date_obs'])
+        return None
 
     @property
     def unit(self):
@@ -416,7 +416,7 @@ class MDISynopticMap(MDIMap):
     def unit(self):
         bunit = self.meta.get('bunit', None)
         if bunit is None:
-            return
+            return None
         # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
         # The mapbase unit property forces this validation, so we must override it to prevent it.
         return u.Unit(bunit)
@@ -429,6 +429,7 @@ class MDISynopticMap(MDIMap):
             # Reference: Section 5.5, Thompson 2006
             return SpatialPair(np.abs(self.meta['cdelt1']) * self.spatial_units[0] / u.pixel,
                                180 / np.pi * self.meta['cdelt2'] * u.deg / u.pixel)
+        return None
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

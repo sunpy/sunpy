@@ -115,8 +115,7 @@ class MapFactory(BasicRegistrationFactory):
                 else:
                     _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
                 with asdf.open(fname,** _NO_MEMMAP_KWARGS) as af:
-                    pairs = [value for value in af.tree.values() if isinstance(value, GenericMap)]
-                    return pairs
+                    return [value for value in af.tree.values() if isinstance(value, GenericMap)]
             else:
                 pairs = read_file(os.fspath(fname), filetype=filetype, **kwargs)
         except Exception as e:
@@ -148,10 +147,9 @@ class MapFactory(BasicRegistrationFactory):
         """
         if isinstance(meta, astropy.io.fits.header.Header):
             return True
-        elif isinstance(meta, dict):
+        if isinstance(meta, dict):
             return True
-        else:
-            return False
+        return False
 
     def _parse_args(self, *args, allow_errors=False, **kwargs):
         """
@@ -265,8 +263,7 @@ class MapFactory(BasicRegistrationFactory):
     def _parse_url(self, arg, **kwargs):
         url = arg.full_url
         path = str(cache.download(url).absolute())
-        pairs = self._read_file(path, **kwargs)
-        return pairs
+        return self._read_file(path, **kwargs)
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, arg, **kwargs):
@@ -353,8 +350,7 @@ class MapFactory(BasicRegistrationFactory):
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")
-            else:
-                candidate_widget_types = [self.default_widget_type]
+            candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
             raise MultipleMatchError(
                 "Too many candidate types identified "

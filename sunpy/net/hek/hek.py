@@ -99,8 +99,7 @@ class HEKClient(BaseClient):
             if not result['overmax']:
                 if len(results) > 0:
                     return astropy.table.Table(dict_keys_same(results))
-                else:
-                    return astropy.table.Table()
+                return astropy.table.Table()
             page += 1
 
 
@@ -137,8 +136,7 @@ class HEKClient(BaseClient):
             ndata.append(new)
         if len(ndata) == 1:
             return HEKTable._from_search(self._download(ndata[0]), client=self)
-        else:
-            return HEKTable._from_search(self._merge(self._download(data) for data in ndata), client=self)
+        return HEKTable._from_search(self._merge(self._download(data) for data in ndata), client=self)
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
@@ -206,8 +204,7 @@ class HEKRow(Row):
         # Return a string or dict
         if as_dict:
             return xml_to_dict(response)
-        else:
-            return response
+        return response
 
     def get(self, key, default=None):
         try:

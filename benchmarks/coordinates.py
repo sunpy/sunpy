@@ -16,7 +16,7 @@ class TransformationHeliographic:
         obstime = '2023-01-01'
         vect = SphericalRepresentation(0*u.deg, 0*u.deg, 1*u.AU)
         observer = f.HeliographicStonyhurst(vect, obstime=obstime)
-        frames = {
+        return {
             'HCRS': HCRS(vect, obstime=obstime),
             'HGS': f.HeliographicStonyhurst(vect, obstime=obstime),
             'HGC': f.HeliographicCarrington(vect, obstime=obstime, observer=observer),
@@ -25,7 +25,6 @@ class TransformationHeliographic:
             'HPR': f.HelioprojectiveRadial(vect, obstime=obstime, observer=observer),
             'HCI': f.HeliocentricInertial(vect, obstime=obstime),
         }
-        return frames
 
     def setup(self, frames, src, dest):
         if src == dest:
@@ -44,13 +43,12 @@ class TransformationEcliptic:
     def setup_cache(self):
         obstime = '2023-01-01'
         vect = SphericalRepresentation(0*u.deg, 0*u.deg, 1*u.AU)
-        frames = {
+        return {
             'HAE': HeliocentricMeanEcliptic(vect, obstime=obstime, equinox='J2000'),
             'HEE': f.HeliocentricEarthEcliptic(vect, obstime=obstime),
             'GSE': f.GeocentricSolarEcliptic(vect, obstime=obstime),
             'GEI': f.GeocentricEarthEquatorial(vect, obstime=obstime, equinox='J2000'),
         }
-        return frames
 
     def setup(self, frames, src, dest):
         if src == dest:
@@ -69,13 +67,12 @@ class TransformationMagnetic:
     def setup_cache(self):
         obstime = '2023-01-01'
         vect = SphericalRepresentation(0*u.deg, 0*u.deg, 1*u.AU)
-        frames = {
+        return {
             'GEO': ITRS(vect, obstime=obstime),
             'MAG': f.Geomagnetic(vect, obstime=obstime),
             'SM': f.SolarMagnetic(vect, obstime=obstime),
             'GSM': f.GeocentricSolarMagnetospheric(vect, obstime=obstime),
         }
-        return frames
 
     def setup(self, frames, src, dest):
         if src == dest:

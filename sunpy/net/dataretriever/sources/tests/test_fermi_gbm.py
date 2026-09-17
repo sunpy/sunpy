@@ -115,8 +115,7 @@ def mock_query_object(LCClient):
         'url': ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
                 '2016/01/01/current/glg_cspec_n5_160101_v00.pha')
     }
-    results = QueryResponse([obj], client=LCClient)
-    return results
+    return QueryResponse([obj], client=LCClient)
 
 
 def test_show(LCClient):

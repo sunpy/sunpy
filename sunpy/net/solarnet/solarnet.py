@@ -137,8 +137,7 @@ class SOLARNETClient(BaseClient):
         data_set = {Dataset: list(data.items())}
         target = {Target: [("AR", "Active Region"),("CH","Coronal Hole"),("FS","Flare"),("QR","Quiet Region")]}
         tags = {Tags:list(tags.items())}
-        attrs = data_set | target | tags
-        return attrs
+        return data_set | target | tags
 
     @staticmethod
     def _update_solarnet_data():

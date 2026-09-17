@@ -35,10 +35,11 @@ DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 def init_frame(frame, args, kwargs):
     if args and kwargs:
         return frame(*args, **kwargs)
-    elif args:
+    if args:
         return frame(*args)
-    elif kwargs:
+    if kwargs:
         return frame(**kwargs)
+    return None
 
 
 """

@@ -119,8 +119,7 @@ def mock_query_object(LCClient):
         'url': ('https://proba2.sidc.be/lyra/data/bsd/2016/01/01/'
                 'lyra_20160101-000000_lev2_std.fits')
     }
-    results = QueryResponse([obj], client=LCClient)
-    return results
+    return QueryResponse([obj], client=LCClient)
 
 
 def test_show(LCClient):

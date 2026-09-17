@@ -133,9 +133,8 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     else:
         body_icrs = get_body_barycentric(body, emitted_time)
 
-    body_hgs = ICRS(body_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
+    return ICRS(body_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
 
-    return body_hgs
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -370,8 +369,7 @@ def get_horizons_coord(body, time='now', id_type=None, *,
     if not success:
         if error_message:
             raise ValueError(error_message)
-        else:
-            raise RuntimeError(f"Unknown JPL Horizons error:\n{output.text}")
+        raise RuntimeError(f"Unknown JPL Horizons error:\n{output.text}")
 
     if log_response:
         log.info(f"Response from JPL Horizons:\n{output.text}")

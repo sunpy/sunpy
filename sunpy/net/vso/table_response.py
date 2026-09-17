@@ -44,8 +44,7 @@ def iter_sort_response(response):
             else:
                 has_notime_recs.append(rec)
     has_time_recs = sorted(has_time_recs, key=lambda x: x.time.start)
-    all_recs = has_time_recs + has_notime_recs
-    return all_recs
+    return has_time_recs + has_notime_recs
 
 
 class VSOQueryResponseTable(QueryResponseTable):

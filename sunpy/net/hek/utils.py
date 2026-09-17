@@ -350,5 +350,4 @@ def _parse_unit(unit_string):
             unit_string = split_unit_string[0]
     with u.add_enabled_units(enabled_units), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=u.UnitsWarning, message='.*contains multiple slashes*')
-        parsed_unit = u.Unit(unit_string)
-        return parsed_unit
+        return u.Unit(unit_string)

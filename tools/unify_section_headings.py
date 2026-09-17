@@ -32,9 +32,8 @@ def replace_header_chars(filename):
                             f"ERROR misorder new_level={new_level} level={level} "
                             f"char={char} header_chars={header_chars} on line {i}"
                         )
-                    else:
-                        level = new_level
-                        print(f"s/{char}/{HEADER_CHAR_LEVELS[level]}/")
+                    level = new_level
+                    print(f"s/{char}/{HEADER_CHAR_LEVELS[level]}/")
                 else:
                     # New header char - create a deeper level
                     if level == len(header_chars) - 1:

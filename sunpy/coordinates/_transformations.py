@@ -307,12 +307,12 @@ def _check_observer_defined(frame):
     if frame.observer is None:
         raise ConvertError("This transformation cannot be performed because the "
                            f"{frame.__class__.__name__} frame has observer=None.")
-    elif isinstance(frame.observer, str):
+    if isinstance(frame.observer, str):
         if frame.observer != "self":
             raise ConvertError("This transformation cannot be performed because the "
                                f"{frame.__class__.__name__} frame needs a specified obstime "
                                f"to fully resolve observer='{frame.observer}'.")
-        elif not isinstance(frame, HeliographicCarrington):
+        if not isinstance(frame, HeliographicCarrington):
             raise ConvertError(f"The {frame.__class__.__name__} frame has observer='self' "
                                "but this is valid for only HeliographicCarrington frames.")
 
@@ -347,8 +347,7 @@ def _transform_obstime(frame, obstime):
     new_frame = frame.replicate(obstime=obstime)
     if frame.obstime is not None:
         return frame.transform_to(new_frame)
-    else:
-        return new_frame
+    return new_frame
 
 
 def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
@@ -579,9 +578,8 @@ def hpc_to_hpc(from_coo, to_frame):
     _check_observer_defined(to_frame)
 
     hgs = from_coo.transform_to(HeliographicStonyhurst(obstime=to_frame.obstime))
-    hpc = hgs.transform_to(to_frame)
+    return hgs.transform_to(to_frame)
 
-    return hpc
 
 
 def _matrix_hpc_to_hpr():
@@ -681,9 +679,8 @@ def _rotation_matrix_reprs_to_xz_about_z(representations):
 
     # Rotate the resulting vector to the X axis
     x_axis = CartesianRepresentation(1, 0, 0)
-    matrix = _rotation_matrix_reprs_to_reprs(A_no_z, x_axis)
+    return _rotation_matrix_reprs_to_reprs(A_no_z, x_axis)
 
-    return matrix
 
 
 def _sun_earth_icrf(time):
@@ -802,13 +799,12 @@ def hgs_to_hgs(from_coo, to_frame):
     """
     if to_frame.obstime is None:
         return from_coo.replicate()
-    elif _times_are_equal(from_coo.obstime, to_frame.obstime):
+    if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
-    else:
-        if _autoapply_diffrot.get():
-            from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
-                                               _autoapply_diffrot.get())
-        return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
+    if _autoapply_diffrot.get():
+        from_coo = from_coo._apply_diffrot((to_frame.obstime - from_coo.obstime).to('day'),
+                                           _autoapply_diffrot.get())
+    return from_coo.transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -922,10 +918,9 @@ def hee_to_hee(from_coo, to_frame):
     """
     if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
-    elif to_frame.obstime is None:
+    if to_frame.obstime is None:
         return from_coo
-    else:
-        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
+    return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -1127,9 +1122,8 @@ def hci_to_hci(from_coo, to_frame):
     """
     if _times_are_equal(from_coo.obstime, to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
-    else:
-        return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-            transform_to(to_frame)
+    return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
+        transform_to(to_frame)
 
 
 def _rotation_matrix_obliquity(time):
@@ -1442,9 +1436,8 @@ def _make_sunpy_graph():
     docstr = make_transform_graph_docs(small_graph)
 
     # Make adjustments to the graph
-    docstr = _tweak_graph(docstr)
+    return _tweak_graph(docstr)
 
-    return docstr
 
 
 def _add_astropy_node(graph):
@@ -1499,16 +1492,15 @@ def _tweak_graph(docstr):
                             '        rankdir=LR\n'
                             '        {rank=same; ICRS; HCRS; Astropy}')
 
-    output = output.replace('<ul>\n\n',
+    return output.replace('<ul>\n\n',
                             '<ul>\n\n' +
                             _add_legend_row('SunPy frames', 'white') +
                             _add_legend_row('Astropy frames', 'lightcyan'))
 
-    return output
 
 
 def _add_legend_row(label, color):
-    row = '        <li style="list-style: none;">\n'\
+    return '        <li style="list-style: none;">\n'\
           '            <p style="font-size: 12px;line-height: 24px;font-weight: normal;'\
           'color: #848484;padding: 0;margin: 0;">\n'\
           '                <b>' + label + ':</b>\n'\
@@ -1517,4 +1509,3 @@ def _add_legend_row(label, color):
           'display: inline-block;"></span>\n'\
           '            </p>\n'\
           '        </li>\n\n\n'
-    return row

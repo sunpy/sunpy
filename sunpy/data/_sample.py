@@ -85,8 +85,7 @@ def _download_sample_data(base_url, sample_files, overwrite):
         url = urljoin(base_url, url_file_name)
         dl.enqueue_file(url, filename=fname)
 
-    results = dl.download()
-    return results
+    return dl.download()
 
 
 def _retry_sample_data(results, new_url_base):

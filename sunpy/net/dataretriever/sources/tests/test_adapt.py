@@ -46,8 +46,7 @@ def mock_query_object_new_pattern(adapt_client):
         "Provider": "NSO",
         "url": ("https://gong.nso.edu/adapt/maps/gong/2024/adapt41311_044012_202409290200_i00013600n1.fts.gz"),
     }
-    results = QueryResponse([obj], client=adapt_client)
-    return results
+    return QueryResponse([obj], client=adapt_client)
 
 
 @pytest.mark.remote_data

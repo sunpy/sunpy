@@ -127,8 +127,7 @@ def make_fitswcs_header(data,
             dsun_obs = coordinate.observer.radius
         meta_wcs['rsun_obs'] = sun._angular_radius(coordinate.rsun, dsun_obs).to_value(u.arcsec)
 
-    meta_dict = MetaDict(meta_wcs)
-    return meta_dict
+    return MetaDict(meta_wcs)
 
 
 def _validate_coordinate(coordinate):
@@ -391,8 +390,7 @@ def make_heliographic_header(date, observer_coordinate, shape, *, frame, project
             (180 / np.pi) / (int(shape[0]) / 2)
         ] * u.deg / u.pix
 
-    header = make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code, **kwargs)
-    return header
+    return make_fitswcs_header(shape, frame_out, scale=scale, projection_code=projection_code, **kwargs)
 
 
 @u.quantity_input
@@ -484,6 +482,5 @@ def make_hpr_header(observer_coordinate, shape, theta_binsize: u.Quantity[u.arcs
 
     scale = u.Quantity([360*u.deg / int(shape[1]), theta_binsize]) / u.pix
 
-    header = make_fitswcs_header(shape, reference_coord, reference_pixel=reference_pixel,
+    return make_fitswcs_header(shape, reference_coord, reference_pixel=reference_pixel,
                                  scale=scale, projection_code="CAR")
-    return header

@@ -24,9 +24,8 @@ def Times(draw, max_value, min_value):
     time = one_of(datetimes(max_value=max_value, min_value=min_value),
                   TIME_LEAP_SECONDS)
 
-    time = Time(draw(time))
+    return Time(draw(time))
 
-    return time
 
 
 @st.composite
@@ -67,9 +66,8 @@ def online_instruments():
     a query.
     """
     online_instr = ['lyra', 'goes', 'eve', 'rhessi', 'norh', 'soon']
-    online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
+    return st.builds(a.Instrument, st.sampled_from(online_instr))
 
-    return online_instr
 
 
 @st.composite

@@ -235,9 +235,8 @@ def test_missing_times():
 @pytest.fixture(scope="session")
 def coronal_hole_search_result():
     client = hek.HEKClient()
-    result = client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
+    return client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
                            attrs.hek.EventType('CH'))
-    return result
 
 
 @pytest.mark.remote_data

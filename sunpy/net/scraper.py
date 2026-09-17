@@ -149,14 +149,13 @@ class Scraper:
         timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
-        else:
-            directories = []
-            cur = date_floor(timerange.start, timestep)
-            end = date_floor(timerange.end, timestep) + timestep
-            while cur < end:
-                directories.append(cur.strftime(directorypattern))
-                cur = cur + timestep
-            return directories
+        directories = []
+        cur = date_floor(timerange.start, timestep)
+        end = date_floor(timerange.end, timestep) + timestep
+        while cur < end:
+            directories.append(cur.strftime(directorypattern))
+            cur = cur + timestep
+        return directories
 
     def filelist(self, timerange):
         """
@@ -210,12 +209,11 @@ class Scraper:
         directories = self.range(timerange)
         if urlsplit(directories[0]).scheme == "ftp":
             return self._ftpfilelist(timerange)
-        elif urlsplit(directories[0]).scheme == "file":
+        if urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
-        elif urlsplit(directories[0]).scheme in ["http", "https"]:
+        if urlsplit(directories[0]).scheme in ["http", "https"]:
             return self._httpfilelist(timerange)
-        else:
-            return ValueError("The provided pattern should either be an FTP or a local file-path, or an HTTP address.")
+        return ValueError("The provided pattern should either be an FTP or a local file-path, or an HTTP address.")
 
     def _ftpfilelist(self, timerange):
         """
@@ -238,10 +236,9 @@ class Scraper:
                         if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
-        filesurls = ['ftp://' + f"{urlsplit(url).netloc}{urlsplit(url).path}"
+        return ['ftp://' + f"{urlsplit(url).netloc}{urlsplit(url).path}"
                      for url in filesurls]
 
-        return filesurls
 
     def _localfilelist(self, timerange):
         """

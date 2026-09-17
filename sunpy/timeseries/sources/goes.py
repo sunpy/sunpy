@@ -306,3 +306,4 @@ class XRSTimeSeries(GenericTimeSeries):
                 # Any error reading the file means it is not a GOES XRS datasource
                 log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False
+        return None

@@ -342,9 +342,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 if self.allow_errors:
                     warn_user(msg)
                     continue
-                else:
-                    msg += "\nTo bypass these errors, set `allow_errors=True`."
-                    raise type(e)(msg) from e
+                msg += "\nTo bypass these errors, set `allow_errors=True`."
+                raise type(e)(msg) from e
             except Exception as e:
                 msg = f"Something went wrong: {e}"
                 raise type(e)(msg) from e
@@ -358,39 +357,37 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         if isinstance(r, GenericTimeSeries):
             return [r]
-        elif isinstance(r, pathlib.Path):
+        if isinstance(r, pathlib.Path):
             return [self._check_registered_widgets(filepath=r, **kwargs)]
-        else:
-            pairs = r
-            # Pairs may be x long where x is the number of HDUs in the file.
-            headers = [pair.header for pair in pairs]
+        pairs = r
+        # Pairs may be x long where x is the number of HDUs in the file.
+        headers = [pair.header for pair in pairs]
 
-            types = []
-            for header in headers:
-                try:
-                    match = self._get_matching_widget(meta=header, **kwargs)
-                    if not match == GenericTimeSeries:
-                        types.append(match)
-                except (MultipleMatchError, NoMatchError):
-                    continue
+        types = []
+        for header in headers:
+            try:
+                match = self._get_matching_widget(meta=header, **kwargs)
+                if not match == GenericTimeSeries:
+                    types.append(match)
+            except (MultipleMatchError, NoMatchError):
+                continue
 
-            if not types:
-                # If no specific classes have been found we can read the data
-                # if we only have one data header pair:
-                if len(pairs) == 1:
-                    return [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
+        if not types:
+            # If no specific classes have been found we can read the data
+            # if we only have one data header pair:
+            if len(pairs) == 1:
+                return [GenericTimeSeries(pairs[0]._data, pairs[0].header)]
 
-                else:
-                    raise NoMatchError(
-                        "Input read by sunpy.io can not find a " "matching class for reading multiple HDUs"
-                    )
-            if len(set(types)) > 1:
-                raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
+            raise NoMatchError(
+                "Input read by sunpy.io can not find a " "matching class for reading multiple HDUs"
+            )
+        if len(set(types)) > 1:
+            raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
 
-            cls = types[0]
+        cls = types[0]
 
-            data_header_unit_tuple = cls._parse_hdus(pairs)
-            return self._parse_arg(data_header_unit_tuple)
+        data_header_unit_tuple = cls._parse_hdus(pairs)
+        return self._parse_arg(data_header_unit_tuple)
 
     @seconddispatch
     def _parse_arg(self, arg, **kwargs):
@@ -483,8 +480,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")
-            else:
-                candidate_widget_types = [self.default_widget_type]
+            candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
             raise MultipleMatchError(
                 f"Too many candidate types identified ({n_matches})."

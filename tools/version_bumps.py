@@ -34,8 +34,7 @@ def get_package_releases(package):
         if not release_date:
             continue
         file_date[version].append(release_date)
-    release_date = {v: min(file_date[v]) for v in file_date}
-    return release_date
+    return {v: min(file_date[v]) for v in file_date}
 
 
 def is_version_old(package, version_str, threshold=timedelta(days=365*2)):

@@ -57,8 +57,7 @@ class Time(Range):
             # The hash is the hash of the start and end time
             return hash((self.start.jd1, self.start.jd2, self.start.scale,
                          self.end.jd1, self.end.jd2, self.end.scale))
-        else:
-            return super().__hash__()
+        return super().__hash__()
 
     def collides(self, other):
         # Use exact type checking here, because otherwise it collides with all

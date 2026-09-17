@@ -161,9 +161,8 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
             mapping = loader.construct_mapping(node)
             if hasattr(cls, "info") and hasattr(cls.info, "_construct_from_dict"):
                 return cls.info._construct_from_dict(mapping)
-            else:
-                # Fallback for astropy < 7.0
-                return cls(**mapping)
+            # Fallback for astropy < 7.0
+            return cls(**mapping)
 
         AstropyDumper.add_multi_representer(cls, representer)
         AstropyLoader.add_constructor(tag, constructor)
@@ -214,8 +213,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         # observer as the string and not the whole massive coordinate.
         if getattr(self, "object_name", None):
             return f"<{self.__class__.__name__} Coordinate for '{self.object_name}'>"
-        else:
-            return super().__str__()
+        return super().__str__()
 
     @property
     def _is_2d(self):
@@ -1043,8 +1041,7 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
         {igrf_reference}
         """
         g10, g11, h11 = self._lowest_igrf_coeffs
-        moment = np.sqrt(g10**2 + g11**2 + h11**2) * R_earth**3
-        return moment
+        return np.sqrt(g10**2 + g11**2 + h11**2) * R_earth**3
 
 
 @add_common_docstring(**_frame_parameters())

@@ -821,7 +821,7 @@ class GenericMap(NDData):
         """
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
-            return
+            return None
         return self._parse_fits_unit(unit_str)
 
 # #### Keyword attribute and other attribute definitions #### #
@@ -845,8 +845,7 @@ class GenericMap(NDData):
         """LaTeX formatted description of the Map."""
         if isinstance(self.measurement, u.Quantity):
             return self._base_name().format(measurement=self.measurement._repr_latex_())
-        else:
-            return self.name
+        return self.name
 
     @property
     def nickname(self):
@@ -861,7 +860,7 @@ class GenericMap(NDData):
     def _get_date(self, key):
         time = self.meta.get(key, None)
         if not time:
-            return
+            return None
 
         # Get the time scale
         if 'TAI' in time:
@@ -926,8 +925,9 @@ class GenericMap(NDData):
         # Get observation date from date-obs, falling back to date_obs
         if is_time(self.meta.get("date-obs", None)):
             return self._get_date('date-obs')
-        elif is_time(self.meta.get('date_obs', None)):
+        if is_time(self.meta.get('date_obs', None)):
             return self._get_date('date_obs')
+        return None
 
     @property
     def reference_date(self):
@@ -1067,6 +1067,7 @@ class GenericMap(NDData):
         exptime = self.meta.get('xposure') or self.meta.get('exptime')
         if exptime is not None:
             return exptime * self.timeunit
+        return None
 
     @property
     def instrument(self):
@@ -1099,10 +1100,10 @@ class GenericMap(NDData):
         """
         if 'waveunit' in self.meta:
             return u.Unit(self.meta['waveunit'])
-        else:
-            wunit = extract_waveunit(self.meta)
-            if wunit is not None:
-                return u.Unit(wunit)
+        wunit = extract_waveunit(self.meta)
+        if wunit is not None:
+            return u.Unit(wunit)
+        return None
 
     @property
     def wavelength(self):
@@ -1115,6 +1116,7 @@ class GenericMap(NDData):
         """
         if 'wavelnth' in self.meta:
             return u.Quantity(self.meta['wavelnth'], self.waveunit)
+        return None
 
     @property
     def observatory(self):
@@ -1190,9 +1192,8 @@ class GenericMap(NDData):
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+        return self._new_instance(self.data, new_meta, self.plot_settings)
 
-        return new_map
 
     def _rsun_meters(self, dsun=None):
         """
@@ -1203,14 +1204,13 @@ class GenericMap(NDData):
         rsun = self.meta.get('rsun_ref', None)
         if rsun is not None:
             return rsun * u.m
-        elif self._rsun_obs_no_default is not None:
+        if self._rsun_obs_no_default is not None:
             if dsun is None:
                 dsun = self.dsun
             return sun._radius_from_angular_radius(self.rsun_obs, dsun)
-        else:
-            log.info("Missing metadata for solar radius: assuming "
-                     "the standard radius of the photosphere.")
-            return constants.radius
+        log.info("Missing metadata for solar radius: assuming "
+                 "the standard radius of the photosphere.")
+        return constants.radius
 
     @property
     def rsun_meters(self):
@@ -1250,8 +1250,7 @@ class GenericMap(NDData):
 
         if rsun_arcseconds is not None:
             return rsun_arcseconds * u.arcsec
-        else:
-            return sun._angular_radius(self.rsun_meters, self.dsun)
+        return sun._angular_radius(self.rsun_meters, self.dsun)
 
     @property
     def coordinate_system(self):
@@ -1348,7 +1347,7 @@ class GenericMap(NDData):
                 # observer coordinate is specified in a cartesian
                 # representation)
                 return SkyCoord(sc.replicate(rsun=self._rsun_meters(sc.radius)))
-            elif missing_keys != keys:
+            if missing_keys != keys:
                 frame = kwargs['frame'] if isinstance(kwargs['frame'], str) else kwargs['frame'].name
                 warning_message.append(f"For frame '{frame}' the following metadata is missing: "
                                        f"{','.join(missing_keys)}")
@@ -1360,12 +1359,11 @@ class GenericMap(NDData):
                                + warning_message)
             log.debug("\n".join(warning_message))
             return default
-        else:
-            # If a map source does not specify a default observer, we assume Earth center and warn
-            warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
-                               + warning_message + [""])
-            warn_metadata("\n".join(warning_message), stacklevel=3)
-            return get_earth(self.reference_date)
+        # If a map source does not specify a default observer, we assume Earth center and warn
+        warning_message = (["Missing metadata for observer: assuming Earth-based observer."]
+                           + warning_message + [""])
+        warn_metadata("\n".join(warning_message), stacklevel=3)
+        return get_earth(self.reference_date)
 
     @property
     def heliographic_latitude(self):
@@ -1484,7 +1482,7 @@ class GenericMap(NDData):
                     [self.meta.get('PC2_1', 0), self.meta.get('PC2_2', 1)]
                 ]
             )
-        elif any(key in self.meta for key in ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']):
+        if any(key in self.meta for key in ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']):
             cd = np.array(
                 [
                     [self.meta.get('CD1_1', 0), self.meta.get('CD1_2', 0)],
@@ -1496,8 +1494,7 @@ class GenericMap(NDData):
 
             # Divide each row by each CDELT
             return cd / np.expand_dims(cdelt, axis=1)
-        else:
-            return self._rotation_matrix_from_crota()
+        return self._rotation_matrix_from_crota()
 
     @staticmethod
     def _pc_matrix(lam, angle):
@@ -1751,8 +1748,7 @@ class GenericMap(NDData):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
-        return new_map
+        return self._new_instance(new_data, new_meta, self.plot_settings)
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
     @u.quantity_input
@@ -1828,7 +1824,7 @@ class GenericMap(NDData):
         """
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a rotation matrix.")
-        elif angle is None and rmatrix is None:
+        if angle is None and rmatrix is None:
             # Be aware that self.rotation_matrix may not actually be a pure rotation matrix
             rmatrix = self.rotation_matrix
 
@@ -1946,9 +1942,8 @@ class GenericMap(NDData):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        return self._new_instance(new_data, new_meta, self.plot_settings)
 
-        return new_map
 
     @u.quantity_input
     def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
@@ -2133,11 +2128,9 @@ class GenericMap(NDData):
         if self.mask is not None:
             new_mask = self.mask[arr_slice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
-            return new_map
+            return self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
-        return new_map
+        return self._new_instance(new_data, new_meta, self.plot_settings)
 
     @seconddispatch
     def _parse_submap_input(self, bottom_left, top_right, width, height):
@@ -2301,8 +2294,7 @@ class GenericMap(NDData):
             new_data = new_array
 
         # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
-        return new_map
+        return self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
 
 # #### Visualization #### #
 
@@ -2524,21 +2516,19 @@ class GenericMap(NDData):
             if self.unit is None:
                 # No map units, so allow non-quantity through
                 return levels
-            else:
-                raise TypeError("The levels argument has no unit attribute, "
-                                "it should be an Astropy Quantity object.")
+            raise TypeError("The levels argument has no unit attribute, "
+                            "it should be an Astropy Quantity object.")
 
         if levels.unit == u.percent:
             return 0.01 * levels.to_value('percent') * np.nanmax(self.data)
-        elif self.unit is not None:
+        if self.unit is not None:
             return levels.to_value(self.unit)
-        elif levels.unit.is_equivalent(u.dimensionless_unscaled):
+        if levels.unit.is_equivalent(u.dimensionless_unscaled):
             # Handle case where map data has no units
             return levels.to_value(u.dimensionless_unscaled)
-        else:
-            # Map data has no units, but levels doesn't have dimensionless units
-            raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
-                               "or in u.dimensionless_unscaled units.")
+        # Map data has no units, but levels doesn't have dimensionless units
+        raise u.UnitsError("This map has no unit, so levels can only be specified in percent "
+                           "or in u.dimensionless_unscaled units.")
 
 
     def _update_contour_args(self, contour_args):
@@ -2990,10 +2980,9 @@ class GenericMap(NDData):
         level = self._process_levels_arg(level)
         if level.size != 1:
             raise ValueError("level must be a single scalar value")
-        else:
-            # _process_levels_arg converts level to a 1D array, but
-            # find_contours expects a scalar below
-            level = level[0]
+        # _process_levels_arg converts level to a 1D array, but
+        # find_contours expects a scalar below
+        level = level[0]
 
         if method == 'contourpy':
             from contourpy import contour_generator
@@ -3033,7 +3022,7 @@ class GenericMap(NDData):
             raise TypeError("The axes need to be an instance of WCSAxes. "
                             "To fix this pass set the `projection` keyword "
                             "to this map when creating the axes.")
-        elif warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
+        if warn_different_wcs and not axes.wcs.wcs.compare(self.wcs.wcs, tolerance=0.01):
             warn_user('The map world coordinate system (WCS) is different from the axes WCS. '
                       'The map data axes may not correctly align with the coordinate axes. '
                       'To automatically transform the data to the coordinate axes, specify '

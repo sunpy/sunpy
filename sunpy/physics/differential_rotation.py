@@ -35,7 +35,7 @@ def _validate_observer_args(initial_obstime, observer, time):
         raise ValueError(
             "Either the 'observer' or the 'time' keyword must be specified, "
             "but not both simultaneously.")
-    elif observer is not None:
+    if observer is not None:
         # Check that the new_observer is specified correctly.
         if not (isinstance(observer, BaseCoordinateFrame | SkyCoord)):
             raise ValueError(

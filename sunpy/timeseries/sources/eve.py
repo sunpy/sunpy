@@ -150,6 +150,7 @@ class ESPTimeSeries(GenericTimeSeries):
             return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('TELESCOP', '').endswith('SDO/EVE')
+        return None
 
 
 class EVESpWxTimeSeries(GenericTimeSeries):
@@ -256,8 +257,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
         if line1.startswith("Date"):
             raise NotImplementedError("Reading SDO/EVE level 0CS average files is not implemented.")
-        elif line1.startswith(";"):
+        if line1.startswith(";"):
             return cls._parse_level_0cs(filepath)
+        return None
 
     @staticmethod
     def _parse_level_0cs(filepath):
@@ -283,7 +285,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         for hline in header:
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
-            elif ('Created' in hline) or ('Source' in hline):
+            if ('Created' in hline) or ('Source' in hline):
                 meta[hline.split(':',
                                  1)[0].replace(';',
                                                ' ').strip()] = hline.split(':', 1)[1].strip()
@@ -352,3 +354,4 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None

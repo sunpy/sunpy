@@ -53,7 +53,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
-        elif isinstance(value, Time):
+        if isinstance(value, Time):
             out = value
             converted = False
 
@@ -105,24 +105,23 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         # Keep string here.
         if isinstance(value, str):
             return value, False
-        else:
-            # Make sure that the coordinate is 3D
-            if hasattr(value, 'make_3d'):
-                value = value.make_3d()
+        # Make sure that the coordinate is 3D
+        if hasattr(value, 'make_3d'):
+            value = value.make_3d()
 
-            # Upgrade the coordinate to a `SkyCoord` so that frame attributes will be merged
-            if isinstance(value, BaseCoordinateFrame) and not isinstance(value, self._frame):
-                value = SkyCoord(value)
+        # Upgrade the coordinate to a `SkyCoord` so that frame attributes will be merged
+        if isinstance(value, BaseCoordinateFrame) and not isinstance(value, self._frame):
+            value = SkyCoord(value)
 
-            result, converted = super().convert_input(value)
+        result, converted = super().convert_input(value)
 
-            # If already in the correct frame, make sure it has the default representation
-            if (not converted and isinstance(result, BaseCoordinateFrame) and
-                    not issubclass(result.representation_type, result.default_representation)):
-                result = result.replicate(representation_type=result.default_representation)
-                converted = True
+        # If already in the correct frame, make sure it has the default representation
+        if (not converted and isinstance(result, BaseCoordinateFrame) and
+                not issubclass(result.representation_type, result.default_representation)):
+            result = result.replicate(representation_type=result.default_representation)
+            converted = True
 
-            return result, converted
+        return result, converted
 
     def _convert_string_to_coord(self, out, obstime):
         """

@@ -562,8 +562,7 @@ class JSOCClient(BaseClient):
         if dl_set and not wait:
             return Results()
 
-        results = downloader.download()
-        return results
+        return downloader.download()
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',
                         segment='', primekey=None, keyword=None, **kwargs):
@@ -746,7 +745,7 @@ class JSOCClient(BaseClient):
             if not isinstance(segments_passed, list) and not isinstance(segments_passed, str):
                 error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
-            elif isinstance(segments_passed, str):
+            if isinstance(segments_passed, str):
                 segments_passed = segments_passed.replace(' ', '').split(',')
             if not set(segments_passed) <= set(segments):
                 error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segments}"
@@ -862,5 +861,4 @@ class JSOCClient(BaseClient):
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}
         segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
-        attrs = series_dict | segments_dict
-        return attrs
+        return series_dict | segments_dict

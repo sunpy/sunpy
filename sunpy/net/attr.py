@@ -59,10 +59,9 @@ def _create_table(attr):
     sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs)))) if attrs.name else make_tuple()
     *other_row_data, descs = sorted_attrs
     descs = [(dsc[:77] + '...') if len(dsc) > 80 else dsc for dsc in descs]
-    table = Table(names=["Attribute Name", "Client", "Full Name", "Description"],
+    return Table(names=["Attribute Name", "Client", "Full Name", "Description"],
                   dtype=["U80", "U80", "U80", "U80"],
                   data=[*other_row_data, descs])
-    return table
 
 
 def _print_attrs(attr, html=False):
@@ -278,7 +277,7 @@ class Attr(metaclass=AttrMeta):
                 for pair in attr_values:
                     if len(pair) > 2:
                         raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
-                    elif len(pair) == 1:
+                    if len(pair) == 1:
                         if pair[0] != "*":
                             raise ValueError(
                                 f'Invalid value given for * registration: {attr_values}.')
@@ -494,8 +493,7 @@ class Range(DataAttr):
     def __contains__(self, other):
         if isinstance(other, Range):
             return self.min <= other.min and self.max >= other.max
-        else:
-            return self.min <= other <= self.max
+        return self.min <= other <= self.max
 
 
 class AttrAnd(Attr):

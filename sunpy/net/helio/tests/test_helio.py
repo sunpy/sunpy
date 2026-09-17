@@ -23,8 +23,7 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Unverified HTTPS request is bei
 @pytest.fixture(scope="session")
 def client():
     try:
-        client = HECClient()
-        return client
+        return HECClient()
     # If no links are found, the client should raise a ValueError
     except ValueError:
         pytest.xfail("No HELIO working links found.")

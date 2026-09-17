@@ -145,8 +145,7 @@ class HECClient(BaseClient):
         <BLANKLINE>
         """
         if self.hec_client is None:
-            table = HECResponse([], client=self)
-            return table
+            return HECResponse([], client=self)
         qrdict = {}
         for elem in args:
             if isinstance(elem, a.Time):
@@ -238,8 +237,7 @@ class HECClient(BaseClient):
             if user_input.isdigit() and 1 <= int(user_input) <= len(table_list):
                 table_no = int(user_input)
                 return table_list[table_no - 1]
-            else:
-                print(f"Input must be an integer between 1 and {len(table_list)}")  # noqa: T201
+            print(f"Input must be an integer between 1 and {len(table_list)}")  # noqa: T201
 
     def fetch(self, *args, **kwargs):
         """

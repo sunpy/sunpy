@@ -219,8 +219,7 @@ def convert_time_npdatetime64(time_string, **kwargs):
 def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
         return Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
-    else:
-        return convert_time.dispatch(object)(time_string, **kwargs)
+    return convert_time.dispatch(object)(time_string, **kwargs)
 
 
 @convert_time.register(astropy.time.Time)
@@ -388,7 +387,7 @@ def is_time(time_string, time_format=None):
     """
     if time_string is None:
         return False
-    elif isinstance(time_string, Time):
+    if isinstance(time_string, Time):
         return True
 
     try:

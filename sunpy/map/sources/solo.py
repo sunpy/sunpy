@@ -50,6 +50,7 @@ class EUIMap(GenericMap):
         if self.meta.get('level'):
             # The level number is prepended by the letter L
             return int(self.meta.get('level')[1:])
+        return None
 
     @property
     def waveunit(self):
@@ -164,9 +165,9 @@ class PHIMap(GenericMap):
             # LL01 (raw) are rarely downlinked as LL is processed on board
             if self.meta.get('level').startswith('LL'):
                 return int(self.meta.get('level')[3:])
-            else:
-                # For Regular data products, the level number is prepended by the letter L
-                return int(self.meta.get('level')[1:])
+            # For Regular data products, the level number is prepended by the letter L
+            return int(self.meta.get('level')[1:])
+        return None
 
     @property
     def waveunit(self):
@@ -187,10 +188,10 @@ class PHIMap(GenericMap):
         """
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
-            return
-        elif unit_str == "Normalised Intensity" or unit_str == "Normalized":
+            return None
+        if unit_str == "Normalised Intensity" or unit_str == "Normalized":
             return u.dimensionless_unscaled
-        elif unit_str == 'Degrees':
+        if unit_str == 'Degrees':
             return u.deg
 
         return u.Unit(unit_str)

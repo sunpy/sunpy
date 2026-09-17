@@ -130,8 +130,7 @@ class CompositeMap:
         """
         if index is None:
             return [_map.alpha for _map in self._maps]
-        else:
-            return self._maps[index].alpha
+        return self._maps[index].alpha
 
     def get_levels(self, index=None):
         """Returns the list of contour levels for a map within the
@@ -151,8 +150,7 @@ class CompositeMap:
         """
         if index is None:
             return [_map.levels for _map in self._maps]
-        else:
-            return self._maps[index].levels
+        return self._maps[index].levels
 
     def get_plot_settings(self, index=None):
         """Returns the plot settings for a map within the composite map.
@@ -171,8 +169,7 @@ class CompositeMap:
 
         if index is None:
             return [_map.plot_settings for _map in self._maps]
-        else:
-            return self._maps[index].plot_settings
+        return self._maps[index].plot_settings
 
     def get_zorder(self, index=None):
         """Returns the layering preference (z-order) for a map within the
@@ -192,8 +189,7 @@ class CompositeMap:
         """
         if index is None:
             return [_map.zorder for _map in self._maps]
-        else:
-            return self._maps[index].zorder
+        return self._maps[index].zorder
 
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image.
@@ -344,8 +340,7 @@ class CompositeMap:
             raise ValueError("Specified index does not have all"
                              " the required attributes to draw grid.")
 
-        ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
-        return ax
+        return self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
 
     @add_common_docstring(
         ACCEPTED_IMSHOW_KWARGS=sorted(ACCEPTED_IMSHOW_KWARGS),

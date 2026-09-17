@@ -15,7 +15,7 @@ __all__ = ['read', 'get_header', 'write']
 
 def _sanative_value(value):
     if value is None:
-        return
+        return None
     if value.isdigit() or value.isnumeric():
         value = int(value)
     elif string_is_float(value):

@@ -199,7 +199,7 @@ class MetaDict(OrderedDict):
             return hash(frozenset(self_copy.items()))
         except TypeError:
             # Unhashable values, e.g. lists, can't be hashed
-            return
+            return None
 
     def get(self, key, default=None):
         """
