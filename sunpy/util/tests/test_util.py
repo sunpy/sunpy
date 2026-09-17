@@ -1,5 +1,6 @@
 import copy
 from inspect import cleandoc
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -46,7 +47,7 @@ def test_replacement_filename_path_not_exists(mocker):
     If a candidate path does not exist, then just return it as it is OK to use.
     """
     path_not_exists = '/tmp'
-    mocker.patch('os.path.exists', return_value=False)
+    mocker.patch.object(Path, 'exists', return_value=False)
 
     assert util.replacement_filename(path_not_exists) == path_not_exists
 

@@ -4,10 +4,10 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
-import os
 import re
 import traceback
 from contextvars import ContextVar
+from pathlib import Path
 
 import numpy as np
 
@@ -161,9 +161,8 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
             mapping = loader.construct_mapping(node)
             if hasattr(cls, "info") and hasattr(cls.info, "_construct_from_dict"):
                 return cls.info._construct_from_dict(mapping)
-            else:
-                # Fallback for astropy < 7.0
-                return cls(**mapping)
+            # Fallback for astropy < 7.0
+            return cls(**mapping)
 
         AstropyDumper.add_multi_representer(cls, representer)
         AstropyLoader.add_constructor(tag, constructor)
@@ -214,8 +213,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         # observer as the string and not the whole massive coordinate.
         if getattr(self, "object_name", None):
             return f"<{self.__class__.__name__} Coordinate for '{self.object_name}'>"
-        else:
-            return super().__str__()
+        return super().__str__()
 
     @property
     def _is_2d(self):
@@ -625,7 +623,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         lat, lon = rep.lat, rep.lon
 
         # Check for the use of floats with lower precision than the native Python float
-        if not set([lon.dtype.type, lat.dtype.type]).issubset([float, np.float64, np.longdouble]):
+        if not {lon.dtype.type, lat.dtype.type}.issubset([float, np.float64, np.longdouble]):
             warn_user("The Helioprojective component values appear to be lower "
                       "precision than the native Python float: "
                       f"Tx is {lon.dtype.name}, and Ty is {lat.dtype.name}. "
@@ -649,7 +647,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         # within the stack trace.
         stack_trace = traceback.format_stack()
         matching_string = 'wcsaxes.*(_draw_grid|_update_ticks)'
-        bypass = any([re.search(matching_string, string) for string in stack_trace])
+        bypass = any(re.search(matching_string, string) for string in stack_trace)
         if not bypass and np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "
                       "because off-disk coordinates need an additional assumption to be mapped to "
@@ -965,9 +963,8 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
             raise ValueError
 
         # First look if the file is bundled in package
-        local_file = os.path.join(os.path.dirname(__file__), "data",
-                                  f"{self.magnetic_model}coeffs.txt")
-        if os.path.exists(local_file):
+        local_file = Path(__file__).parent / "data" / f"{self.magnetic_model}coeffs.txt"
+        if local_file.exists():
             return local_file
 
         # Otherwise download the file and cache it
@@ -1043,8 +1040,7 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
         {igrf_reference}
         """
         g10, g11, h11 = self._lowest_igrf_coeffs
-        moment = np.sqrt(g10**2 + g11**2 + h11**2) * R_earth**3
-        return moment
+        return np.sqrt(g10**2 + g11**2 + h11**2) * R_earth**3
 
 
 @add_common_docstring(**_frame_parameters())

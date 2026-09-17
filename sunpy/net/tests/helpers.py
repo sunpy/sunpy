@@ -15,8 +15,7 @@ def create_norh_url(date, wavelength):
     elif wavelength == 17 * u.GHz:
         freq = 'tca'
     value_ = year[-2:] + month + day
-    base = f"https://solar.nro.nao.ac.jp/norh/data/tcx/{year}/{month}/{freq}{value_}"
-    return (base)
+    return f"https://solar.nro.nao.ac.jp/norh/data/tcx/{year}/{month}/{freq}{value_}"
 
 
 def mock_query_object(timerange, client):

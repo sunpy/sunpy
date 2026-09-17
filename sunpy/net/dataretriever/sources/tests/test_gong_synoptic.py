@@ -72,7 +72,7 @@ def test_fido(time, instrument):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
-    assert all(map(lambda x: x.endswith('.gz'), response))
+    assert all(x.endswith('.gz') for x in response)
 
 
 def test_attr_reg():

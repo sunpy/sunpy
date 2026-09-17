@@ -259,9 +259,9 @@ class UnifiedResponse(Sequence):
 
         nprov = len(self)
         if nprov == 1:
-            print(f'Results from {len(self)} Provider:')
+            print(f'Results from {len(self)} Provider:')  # noqa: T201
         else:
-            print(f'Results from {len(self)} Providers:')
+            print(f'Results from {len(self)} Providers:')  # noqa: T201
 
         for i , table in enumerate(self._list):
             block = self[i]
@@ -296,7 +296,7 @@ class UnifiedResponse(Sequence):
         colnames = set(self[0].colnames)
         for resp in self[1:]:
             colnames.union(resp.colnames)
-        return sorted(list(colnames))
+        return sorted(colnames)
 
 
 query_walker = attr.AttrWalker()
@@ -462,9 +462,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         is_jsoc_only = False
         for query_result in query_results:
             if isinstance(query_result, UnifiedResponse):
-                is_jsoc_only = all([isinstance(result.client, JSOCClient) for result in query_result])
+                is_jsoc_only = all(isinstance(result.client, JSOCClient) for result in query_result)
             elif isinstance(query_result, QueryResponseTable):
-                is_jsoc_only = all([isinstance(result.table.client, JSOCClient) for result in query_result])
+                is_jsoc_only = all(isinstance(result.table.client, JSOCClient) for result in query_result)
         if downloader is None:
             if is_jsoc_only:
                 max_conn = 1
@@ -482,7 +482,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 results.data += dr.data
                 results._errors += dr._errors
             return results
-        elif any(retries):
+        if any(retries):
             raise TypeError("If any arguments to fetch are `parfive.Results` objects, all arguments must be.")
 
         reslist = []
@@ -520,7 +520,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def _check_registered_widgets(self, *args):
         """Factory helper function"""
-        candidate_widget_types = list()
+        candidate_widget_types = []
         for key in self.registry:
             if self.registry[key](*args):
                 candidate_widget_types.append(key)
@@ -555,7 +555,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             tmpclient = client()
             try:
                 res = tmpclient.search(*query)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
+                # Any error raised by a client's search is recorded in the
+                # results table so the user can see which client failed.
                 res = QueryResponseTable([], client=tmpclient, errors=err)
             results.append(res)
 

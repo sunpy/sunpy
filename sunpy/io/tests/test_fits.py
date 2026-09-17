@@ -114,8 +114,6 @@ def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
         assert hdul[1].header['TELESCOP'] == 'SDO/AIA'
         assert hdul[1].header['NAXIS'] == 2
         data_preserved = hdul[1].data == pytest.approx(data, abs=10)
-        print(np.abs(hdul[1].data - data).max())
-        print(kwargs)
         if should_fail:  # high compression setting preserved
             assert not data_preserved
         else:

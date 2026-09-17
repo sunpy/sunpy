@@ -219,8 +219,7 @@ def convert_time_npdatetime64(time_string, **kwargs):
 def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
         return Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
-    else:
-        return convert_time.dispatch(object)(time_string, **kwargs)
+    return convert_time.dispatch(object)(time_string, **kwargs)
 
 
 @convert_time.register(astropy.time.Time)
@@ -307,7 +306,7 @@ def _variables_for_parse_time_docstring():
         # Need to try importing cdflib, as if it is present it will register
         # extra formats with time
         import cdflib  # NOQA
-    except Exception:
+    except ImportError:
         pass
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
                                                 subsequent_indent=' '*10)
@@ -388,7 +387,7 @@ def is_time(time_string, time_format=None):
     """
     if time_string is None:
         return False
-    elif isinstance(time_string, Time):
+    if isinstance(time_string, Time):
         return True
 
     try:

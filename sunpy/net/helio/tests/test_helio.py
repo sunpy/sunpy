@@ -23,8 +23,7 @@ pytestmark = [pytest.mark.filterwarnings('ignore:Unverified HTTPS request is bei
 @pytest.fixture(scope="session")
 def client():
     try:
-        client = HECClient()
-        return client
+        return HECClient()
     # If no links are found, the client should raise a ValueError
     except ValueError:
         pytest.xfail("No HELIO working links found.")
@@ -248,7 +247,7 @@ def test_link_test_on_valueerror(mock_link_test):
     If `link_test` internally raises `ValueError`, ensure it
     returns `None`
     """
-    link_test('') is None
+    assert link_test('') is None
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', side_effect=urllib.error.URLError)
@@ -257,7 +256,7 @@ def test_link_test_on_urlerror(mock_link_test):
     If `link_test` internally raises `URLError`, ensure it
     returns `None`
     """
-    link_test('') is None
+    assert link_test('') is None
 
 
 @mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=wsdl_urls())

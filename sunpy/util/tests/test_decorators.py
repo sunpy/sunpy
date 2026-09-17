@@ -41,7 +41,7 @@ def test_context_tracking():
     ctx2_name = f"{ctx2.__module__}.{ctx2.__qualname__}"
 
     # Check that no sunpy contexts are active before entering
-    assert _active_contexts.get() == []
+    assert _active_contexts.get() == ()
 
     with ctx1():
         # Check that the context is active while inside
@@ -60,7 +60,7 @@ def test_context_tracking():
 
         assert _active_contexts.get() == [ctx1_name]
 
-    assert _active_contexts.get() == []
+    assert _active_contexts.get() == ()
 
 
 def test_cached_property_based_on():

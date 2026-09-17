@@ -16,15 +16,13 @@ def shape(aia171_test_map):
 def nan_data_map(aia171_test_map):
     data = aia171_test_map.data.copy()
     data[1 :10] = np.nan
-    nan_map = aia171_test_map._new_instance(data, aia171_test_map.meta)
-    return nan_map
+    return aia171_test_map._new_instance(data, aia171_test_map.meta)
 
 @pytest.fixture
 def inf_data_map(aia171_test_map):
     data = aia171_test_map.data.copy()
     data[1:10] = np.inf
-    inf_map = aia171_test_map._new_instance(data, aia171_test_map.meta)
-    return inf_map
+    return aia171_test_map._new_instance(data, aia171_test_map.meta)
 
 def resample_meta(aia171_test_map, dimensions, method, center, minusone):
     map_resampled = aia171_test_map.resample(dimensions, method=method)

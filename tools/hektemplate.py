@@ -71,8 +71,7 @@ class EventType(_attr.Attr):
     def __or__(self, other):
         if isinstance(other, EventType):
             return EventType(self.item + ',' + other.item)
-        else:
-            return super().__or__(other)
+        return super().__or__(other)
 
 
 class SpatialRegion(_attr.Attr):

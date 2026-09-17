@@ -28,9 +28,8 @@ def create_cdict(r, g, b):
     Create the color tuples in the correct format.
     """
     i = np.linspace(0, 1, r.size)
-    cdict = {name: list(zip(i, el / 255.0, el / 255.0))
+    return {name: list(zip(i, el / 255.0, el / 255.0))
              for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
-    return cdict
 
 
 def _cmap_from_rgb(r, g, b, name):
@@ -82,7 +81,7 @@ def create_aia_wave_dict():
     c2 = (np.arange(256)**2 / 255.0).astype('f')
     c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
-    aia_wave_dict = {
+    return {
         1600*u.angstrom: (c3, c3, c2),
         1700*u.angstrom: (c1, c0, c0),
         4500*u.angstrom: (c0, c0, b0 / 2.0),
@@ -94,7 +93,6 @@ def create_aia_wave_dict():
         304*u.angstrom: (r0, g0, b0),
         335*u.angstrom: (c2, c0, c1)
     }
-    return aia_wave_dict
 
 
 @u.quantity_input
@@ -463,6 +461,5 @@ def metis_color_table(cmap_name):
     if cname is not None:
         cmap.name = cname
 
-    cmap = cmap.with_extremes(bad='k')
+    return cmap.with_extremes(bad='k')
 
-    return cmap

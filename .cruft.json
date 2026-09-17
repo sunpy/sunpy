@@ -23,7 +23,7 @@
       "include_example_code": "n",
       "include_cruft_update_github_workflow": "n",
       "use_pat_in_cruft_update_workflow": "y",
-      "use_extended_ruff_linting": "n",
+      "use_extended_ruff_linting": "y",
       "matrix_room_id": "!JYqfIVJjWANcHnfktY:cadair.com",
       "extra_ci_jobs": "online,threading",
       "use_sunpy_pr_template": "y",

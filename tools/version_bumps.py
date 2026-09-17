@@ -6,7 +6,7 @@ from importlib import metadata
 
 import requests
 from packaging.requirements import Requirement
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 
 @cache
@@ -23,19 +23,18 @@ def get_package_releases(package):
         ver = f["filename"].split("-")[1]
         try:
             version = Version(ver)
-        except Exception:
+        except InvalidVersion:
             continue
         release_date = None
-        for format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:
+        for date_format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:
             try:
-                release_date = datetime.strptime(f["upload-time"], format)
+                release_date = datetime.strptime(f["upload-time"], date_format)
             except ValueError:
                 continue
         if not release_date:
             continue
         file_date[version].append(release_date)
-    release_date = {v: min(file_date[v]) for v in file_date}
-    return release_date
+    return {v: min(file_date[v]) for v in file_date}
 
 
 def is_version_old(package, version_str, threshold=timedelta(days=365*2)):

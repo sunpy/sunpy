@@ -1,6 +1,5 @@
-import os
 from collections import OrderedDict
-from os.path import basename
+from pathlib import Path
 
 import numpy as np
 from pandas import DataFrame, to_datetime
@@ -150,6 +149,7 @@ class ESPTimeSeries(GenericTimeSeries):
             return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('TELESCOP', '').endswith('SDO/EVE')
+        return None
 
 
 class EVESpWxTimeSeries(GenericTimeSeries):
@@ -224,7 +224,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             else:
                 if self._filename is not None:
                     base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
+                    kwargs['title'] = Path(base).stem
                 else:
                     kwargs['title'] = 'EVE Averages'
 
@@ -249,15 +249,16 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         Parses an EVE CSV file.
         """
-        cls._filename = basename(filepath)
+        cls._filename = Path(filepath).name
         with open(filepath, encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
 
         if line1.startswith("Date"):
             raise NotImplementedError("Reading SDO/EVE level 0CS average files is not implemented.")
-        elif line1.startswith(";"):
+        if line1.startswith(";"):
             return cls._parse_level_0cs(filepath)
+        return None
 
     @staticmethod
     def _parse_level_0cs(filepath):
@@ -283,7 +284,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         for hline in header:
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
-            elif ('Created' in hline) or ('Source' in hline):
+            if ('Created' in hline) or ('Source' in hline):
                 meta[hline.split(':',
                                  1)[0].replace(';',
                                                ' ').strip()] = hline.split(':', 1)[1].strip()
@@ -352,3 +353,4 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None

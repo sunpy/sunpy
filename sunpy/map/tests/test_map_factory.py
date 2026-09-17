@@ -58,17 +58,17 @@ def test_read_asdf_and_verify(tmpdir):
 
 @asdf_entry_points
 def test_map_meta_changes_in_asdf(tmpdir):
-    map = sunpy.map.Map(AIA_171_IMAGE)
-    map = map.rotate(90 * u.deg)
+    smap = sunpy.map.Map(AIA_171_IMAGE)
+    smap = smap.rotate(90 * u.deg)
 
-    assert "pc1_2" in map.meta.added_items
-    assert "crota2" in map.meta.removed_items
-    assert "crval1" in map.meta.modified_items
+    assert "pc1_2" in smap.meta.added_items
+    assert "crota2" in smap.meta.removed_items
+    assert "crval1" in smap.meta.modified_items
 
-    map.save(f"{tmpdir}/check.asdf")
+    smap.save(f"{tmpdir}/check.asdf")
     map_in_asdf = sunpy.map.Map(f"{tmpdir}/check.asdf")
 
-    assert dict(map_in_asdf.meta) == dict(map.meta)
+    assert dict(map_in_asdf.meta) == dict(smap.meta)
 
 
 def test_mapsequence(eit_fits_directory):
@@ -106,7 +106,7 @@ def test_patterns(eit_fits_directory):
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Test that returned maps are sorted
-    files_sorted = sorted(list(eit_fits_directory.glob('*')))
+    files_sorted = sorted(eit_fits_directory.glob('*'))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
     assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
@@ -125,7 +125,7 @@ def test_patterns(eit_fits_directory):
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Glob
-    pattern = os.path.join(eit_fits_directory, "*")
+    pattern = eit_fits_directory / "*"
     maps = sunpy.map.Map(pattern)
     assert isinstance(maps, list)
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
@@ -139,14 +139,14 @@ def test_patterns(eit_fits_directory):
     assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 
     # Single character wildcard (?)
-    pattern = os.path.join(eit_fits_directory, "efz20040301.0?0010_s.fits")
+    pattern = eit_fits_directory / "efz20040301.0?0010_s.fits"
     maps = sunpy.map.Map(pattern)
     assert isinstance(maps, list)
     assert len(maps) == 7
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Character ranges
-    pattern = os.path.join(eit_fits_directory, "efz20040301.0[2-6]0010_s.fits")
+    pattern = eit_fits_directory / "efz20040301.0[2-6]0010_s.fits"
     maps = sunpy.map.Map(pattern)
     assert isinstance(maps, list)
     assert len(maps) == 4

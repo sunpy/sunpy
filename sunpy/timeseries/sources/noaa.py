@@ -141,8 +141,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
-        else:
-            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
+        raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
 
     @staticmethod
     def _parse_json_file(filepath):
@@ -184,6 +183,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None
 
 
 class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
@@ -265,8 +265,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         suffix = Path(filepath).suffix
         if suffix == '.json':
             return cls._parse_json_file(filepath)
-        else:
-            raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
+        raise ValueError(f"{Path(filepath).name} does not have a suffix of '.json'")
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
@@ -276,6 +275,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+        return None
 
     @staticmethod
     def _parse_json_file(filepath):

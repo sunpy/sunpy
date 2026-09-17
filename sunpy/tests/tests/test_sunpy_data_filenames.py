@@ -6,10 +6,9 @@ import sunpy.data.test
 
 
 def mockreturn(path):
-    paths = [
-        (os.path.join('test', 'data', ''), (), ('code.py', 'test_file', 'code.pyc', '__init__.py'))
+    return [
+        (Path('test') / 'data', (), ('code.py', 'test_file', 'code.pyc', '__init__.py'))
     ]
-    return paths
 
 
 def test_get_test_data_filenames(monkeypatch):

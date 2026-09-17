@@ -383,7 +383,7 @@ def test_parse_time_long_list():
 
 
 def test_is_time():
-    time.is_time(datetime.now(UTC)) is True
+    assert time.is_time(datetime.now(UTC)) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
     assert time.is_time(Time.now()) is True
 

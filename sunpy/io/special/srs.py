@@ -175,7 +175,7 @@ def split_lines(file_lines):
         supplementary_lines = None
 
     lines = [t1_lines, t2_lines, t3_lines]
-    for i, ll in enumerate(lines):
+    for ll in lines:
         if len(ll) > 2 and ll[2].strip().title() == 'None':
             del ll[2]
 
@@ -225,6 +225,7 @@ def parse_longitude(value):
     lonsign = {'W': 1, 'E': -1}
     if "W" in value or "E" in value:
         return lonsign[value[3]] * float(value[4:])
+    return None
 
 
 def parse_latitude(value):
@@ -234,6 +235,7 @@ def parse_latitude(value):
     latsign = {'N': 1, 'S': -1}
     if "N" in value or "S" in value:
         return latsign[value[0]] * float(value[1:3])
+    return None
 
 
 def parse_location(column):

@@ -20,7 +20,7 @@ from astropy.coordinates.representation import (
     CartesianRepresentation,
     SphericalRepresentation,
 )
-from astropy.io import ascii
+from astropy.io import ascii as io_ascii
 from astropy.time import Time
 
 from sunpy import log
@@ -133,9 +133,8 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None, *, include
     else:
         body_icrs = get_body_barycentric(body, emitted_time)
 
-    body_hgs = ICRS(body_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
+    return ICRS(body_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
 
-    return body_hgs
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -317,7 +316,7 @@ def get_horizons_coord(body, time='now', id_type=None, *,
         raise ValueError("Invalid id_type")
 
     if isinstance(time, dict):
-        if set(time.keys()) != set(['start', 'stop', 'step']):
+        if set(time.keys()) != {'start', 'stop', 'step'}:
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
         jpl_fmt = "'%Y-%m-%d %H:%M:%S.%f'"
         args['START_TIME'] = parse_time(time['start']).tdb.strftime(jpl_fmt)
@@ -370,14 +369,13 @@ def get_horizons_coord(body, time='now', id_type=None, *,
     if not success:
         if error_message:
             raise ValueError(error_message)
-        else:
-            raise RuntimeError(f"Unknown JPL Horizons error:\n{output.text}")
+        raise RuntimeError(f"Unknown JPL Horizons error:\n{output.text}")
 
     if log_response:
         log.info(f"Response from JPL Horizons:\n{output.text}")
 
     column_names = [name.strip() for name in lines[start_index - 3].split(',')]
-    result = ascii.read(lines[start_index:stop_index], names=column_names)
+    result = io_ascii.read(lines[start_index:stop_index], names=column_names)
 
     if isinstance(time, dict):
         obstime_tdb = parse_time(result['JDTDB'], format='jd', scale='tdb')

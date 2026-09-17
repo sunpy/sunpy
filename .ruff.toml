@@ -16,6 +16,23 @@ select = [
   "UP",
   "PT",
   "I",
+  "B",
+  "BLE",
+  "A",
+  "C4",
+  "INP",
+  "PIE",
+  "T20",
+  "RET",
+  "TID",
+  "PTH",
+  "PD",
+  "PLC",
+  "PLE",
+  "FLY",
+  "NPY",
+  "PERF",
+  "RUF",
 ]
 ignore = [
   # pycodestyle (E, W)
@@ -43,6 +60,17 @@ ignore = [
 "conftest.py" = [
   "INP001", # File is part of an implicit namespace package.
 ]
+"tools/**.py" = [
+  "INP001", # These are standalone scripts, not part of a package.
+  "T201", # These are scripts, printing to stdout is by design.
+]
+# These modules print to stdout as part of their public API
+"sunpy/util/sysinfo.py" = ["T201"]  # system_info()
+"sunpy/util/config.py" = ["T201"]  # print_config()
+"sunpy/coordinates/sun.py" = ["T201"]  # print_params()
+"sunpy/tests/self_test.py" = ["T201"]  # self_test()
+# This is a script to regenerate the attrs data files
+"sunpy/net/soar/data/_update_attrs_data.py" = ["T201"]
 "docs/conf.py" = [
   "E402", # Module imports not at top of file
   "I", # isort
@@ -95,3 +123,6 @@ no-lines-before = ["local-folder"]
 [lint.flake8-tidy-imports]
 [lint.flake8-tidy-imports.banned-api]
 "warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
+
+[lint.flake8-builtins]
+builtins-ignorelist = ["format"] # `format` is a standard argument name for our time APIs, mirroring astropy

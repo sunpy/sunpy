@@ -46,8 +46,7 @@ def source_stretch(meta, fits_stretch):
         # Helioviewer JPEG2000 files already have a stretched data values, so
         # just use a linear stretch.
         return LinearStretch()
-    else:
-        # Not a Helioviewer JPEG2000 file, so assume the data has not been
-        # stretched and so use the FITS stretching as defined in the instrument
-        # source.
-        return fits_stretch
+    # Not a Helioviewer JPEG2000 file, so assume the data has not been
+    # stretched and so use the FITS stretching as defined in the instrument
+    # source.
+    return fits_stretch

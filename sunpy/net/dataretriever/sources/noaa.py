@@ -61,13 +61,12 @@ class NOAAIndicesClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        adict = {attrs.Instrument: [
+        return {attrs.Instrument: [
             ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')],
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
             attrs.Source: [('SIDC', 'The Solar Influence Data Analysis Center')],
             attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
             attrs.Time: [('*')]}
-        return adict
 
 
 class NOAAPredictClient(GenericClient):
@@ -122,13 +121,12 @@ class NOAAPredictClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        adict = {attrs.Instrument: [
+        return {attrs.Instrument: [
             ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')],
             attrs.Physobs: [('sunspot number', 'Sunspot Number.')],
             attrs.Source: [('ISES', 'The International Space Environmental Services.')],
             attrs.Provider: [('SWPC', 'The Space Weather Prediction Center.')],
             attrs.Time: [('*')]}
-        return adict
 
 
 class SRSClient(GenericClient):
@@ -167,9 +165,8 @@ class SRSClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        adict = {attrs.Instrument: [("SOON", "Solar Region Summary."),
+        return {attrs.Instrument: [("SOON", "Solar Region Summary."),
                                     ("SRS-Table", "Solar Region Summary.")],
                  attrs.Physobs: [('SRS', 'Solar Region Summary.')],
                  attrs.Source: [('SWPC', 'The Space Weather Prediction Center.')],
                  attrs.Provider: [('NOAA', 'The National Oceanic and Atmospheric Administration.')]}
-        return adict

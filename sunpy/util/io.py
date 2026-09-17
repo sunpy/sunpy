@@ -1,8 +1,7 @@
 import collections
-import glob
 import os
-import pathlib
 import re
+from pathlib import Path
 from urllib.parse import urlparse
 
 import fsspec
@@ -48,19 +47,18 @@ def parse_path(path, f, **kwargs):
     path = path.expanduser()
     if is_file(path):
         return f(path, **kwargs)
-    elif is_dir(path):
+    if is_dir(path):
         read_files = []
         for afile in sorted(path.glob("*")):
             read_files += f(afile, **kwargs)
         return read_files
-    elif glob.glob(str(path)):
+    glob_files = sorted(path.parent.glob(path.name))
+    if glob_files:
         read_files = []
-        for afile in sorted(glob.glob(str(path))):
-            afile = pathlib.Path(afile)
+        for afile in glob_files:
             read_files += f(afile, **kwargs)
         return read_files
-    else:
-        raise ValueError(f"Did not find any files at {path}")
+    raise ValueError(f"Did not find any files at {path}")
 
 
 # In python<3.8 paths with un-representable chars (ie. '*' on windows)
@@ -70,14 +68,14 @@ def parse_path(path, f, **kwargs):
 def is_file(path):
     try:
         return path.is_file()
-    except Exception:
+    except (OSError, ValueError):
         return False
 
 
 def is_dir(path):
     try:
         return path.is_dir()
-    except Exception:
+    except (OSError, ValueError):
         return False
 
 
@@ -87,9 +85,9 @@ def possibly_a_path(obj):
     Does *not* check if the path exists.
     """
     try:
-        pathlib.Path(obj)
+        Path(obj)
         return True
-    except Exception:
+    except TypeError:
         return False
 
 
@@ -132,7 +130,7 @@ def is_uri(obj):
     try:
         _RFC3896_ = re.compile(r"^[A-Za-z][A-Za-z0-9+\-+.]*://")
         return bool(_RFC3896_.match(obj)) and not obj.startswith(("http://", "https://"))
-    except Exception:
+    except TypeError:
         return False
 
 

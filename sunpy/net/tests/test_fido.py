@@ -30,10 +30,12 @@ TIMEFORMAT = config.get("general", "time_format")
 
 
 @st.composite
-def offline_query(draw, instrument=offline_instruments()):
+def offline_query(draw, instrument=None):
     """
     Strategy for any valid offline query
     """
+    if instrument is None:
+        instrument = offline_instruments()
     query = draw(instrument)
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'goes':
@@ -44,7 +46,9 @@ def offline_query(draw, instrument=offline_instruments()):
 
 
 @st.composite
-def online_query(draw, instrument=online_instruments()):
+def online_query(draw, instrument=None):
+    if instrument is None:
+        instrument = online_instruments()
     query = draw(instrument)
 
     if isinstance(query, a.Instrument) and query.value == 'eve':
@@ -261,7 +265,7 @@ def test_path_read_only(tmp_path):
         a.Time("2012/1/1", "2012/1/1"), a.Instrument.lyra, a.Level.two
     )
     # chmod doesn't seem to work correctly on the windows CI
-    os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)
+    tmp_path.chmod(S_IREAD | S_IRGRP | S_IROTH)
     # Check to see if it's actually read only before running the test
     if not os.access(tmp_path, os.W_OK):
         with pytest.raises(PermissionError):

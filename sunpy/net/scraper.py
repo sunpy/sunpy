@@ -5,6 +5,7 @@ import os
 import re
 from datetime import datetime
 from ftplib import FTP
+from pathlib import Path
 from time import sleep
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
@@ -149,14 +150,13 @@ class Scraper:
         timestep = extract_timestep(directorypattern)
         if timestep is None:
             return [directorypattern]
-        else:
-            directories = []
-            cur = date_floor(timerange.start, timestep)
-            end = date_floor(timerange.end, timestep) + timestep
-            while cur < end:
-                directories.append(cur.strftime(directorypattern))
-                cur = cur + timestep
-            return directories
+        directories = []
+        cur = date_floor(timerange.start, timestep)
+        end = date_floor(timerange.end, timestep) + timestep
+        while cur < end:
+            directories.append(cur.strftime(directorypattern))
+            cur = cur + timestep
+        return directories
 
     def filelist(self, timerange):
         """
@@ -210,25 +210,25 @@ class Scraper:
         directories = self.range(timerange)
         if urlsplit(directories[0]).scheme == "ftp":
             return self._ftpfilelist(timerange)
-        elif urlsplit(directories[0]).scheme == "file":
+        if urlsplit(directories[0]).scheme == "file":
             return self._localfilelist(timerange)
-        elif urlsplit(directories[0]).scheme in ["http", "https"]:
+        if urlsplit(directories[0]).scheme in ["http", "https"]:
             return self._httpfilelist(timerange)
-        else:
-            return ValueError("The provided pattern should either be an FTP or a local file-path, or an HTTP address.")
+        return ValueError("The provided pattern should either be an FTP or a local file-path, or an HTTP address.")
 
     def _ftpfilelist(self, timerange):
         """
         Goes over archives available over ftp to return list of files in the given timerange.
         """
         directories = self.range(timerange)
-        filesurls = list()
+        filesurls = []
         ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
                 try:
                     ftp.cwd(urlsplit(directory).path)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
+                    # Any error changing directory is logged and skipped
                     log.debug(f"FTP CWD: {e}")
                     continue
                 for file_i in ftp.nlst():
@@ -237,10 +237,9 @@ class Scraper:
                         if self._check_timerange(fullpath, timerange):
                             filesurls.append(fullpath)
 
-        filesurls = ['ftp://' + f"{urlsplit(url).netloc}{urlsplit(url).path}"
+        return ['ftp://' + f"{urlsplit(url).netloc}{urlsplit(url).path}"
                      for url in filesurls]
 
-        return filesurls
 
     def _localfilelist(self, timerange):
         """
@@ -260,11 +259,11 @@ class Scraper:
         # Change pattern variables class-wide
         self.pattern, self.datetime_pattern = pattern_temp, datetime_pattern_temp
         directories = self.range(timerange)
-        filepaths = list()
+        filepaths = []
         for directory in directories:
             try:
-                for file_i in os.listdir(directory):
-                    fullpath = directory + file_i
+                for file_i in Path(directory).iterdir():
+                    fullpath = directory + file_i.name
                     if self._url_follows_pattern(fullpath):
                         if self._check_timerange(fullpath, timerange):
                             filepaths.append(fullpath)
@@ -280,7 +279,7 @@ class Scraper:
         Goes over http archives hosted on the web, to return list of files in the given timerange.
         """
         directories = self.range(timerange)
-        filesurls = list()
+        filesurls = []
         retry_counts = {}
         while directories:
             directory = directories.pop(0)
@@ -314,7 +313,7 @@ class Scraper:
                     try:
                         # Ensure that we can parse the header as an int in sec
                         retry_after = int(retry_after)
-                    except Exception as e:
+                    except (TypeError, ValueError) as e:
                         log.debug(f"Converting retry_after failed: {e}")
                         retry_after = 2
                     log.debug(
@@ -414,8 +413,8 @@ class Scraper:
         for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
         # Lists to contain the unique elements of the date and the pattern
-        final_date = list()
-        final_pattern = list()
+        final_date = []
+        final_pattern = []
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
         for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':

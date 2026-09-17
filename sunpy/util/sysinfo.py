@@ -111,8 +111,7 @@ def resolve_requirement_versions(package_versions):
 
 def format_requirement_string(requirement):
     formatted_string = f"Missing {requirement}"
-    formatted_string = formatted_string.replace("or extra ==", "or").strip()
-    return formatted_string
+    return formatted_string.replace("or extra ==", "or").strip()
 
 
 def find_dependencies(package="sunpy", extras=None):

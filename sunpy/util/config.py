@@ -184,7 +184,7 @@ def copy_default_config(overwrite=False):
             message = "User config file already exists. " \
                       "This will be overwritten with a backup written in the same location."
             warn_user(message)
-            os.rename(str(user_config_file), str(user_config_file) + ".bak")
+            user_config_file.rename(f"{user_config_file}.bak")
             shutil.copyfile(config_file, user_config_file)
         else:
             message = "User config file already exists. " \

@@ -46,18 +46,17 @@ def compare_results(expect, result, allclose=True):
     # original image
     if not allclose:
         return t1
-    else:
-        notclose = ~np.isclose(exp, res, rtol=RTOL)
-        t2 = not np.any(notclose)
+    notclose = ~np.isclose(exp, res, rtol=RTOL)
+    t2 = not np.any(notclose)
 
-        # Print out every mismatch
-        if not t2:
-            with np.errstate(divide='ignore'):
-                mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
-                for row in mismatches:
-                    print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: ",
-                          f"expected={row[2]}, result={row[3]}, "
-                          f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
+    # Print out every mismatch
+    if not t2:
+        with np.errstate(divide='ignore'):
+            mismatches = np.stack([*notclose.nonzero(), exp[notclose], res[notclose]]).T
+            for row in mismatches:
+                print(f"i={int(row[0]+1)}, j={int(row[1]+1)}: ",  # noqa: T201
+                      f"expected={row[2]}, result={row[3]}, "
+                      f"adiff={row[2]-row[3]}, rdiff={(row[2]-row[3])/row[2]}")
 
     return t1 and t2
 
@@ -266,7 +265,7 @@ def test_reproducible_matrix_multiplication():
         result = src @ matrix
         mismatches[i] = (~np.isclose(result, expected)).sum()
         if mismatches[i] != 0:
-            print(f"{mismatches[i]} mismatching elements in multiplication #{i}")
+            print(f"{mismatches[i]} mismatching elements in multiplication #{i}")  # noqa: T201
 
     assert np.sum(mismatches != 0) == 0
 

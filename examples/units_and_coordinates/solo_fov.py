@@ -64,7 +64,7 @@ files = Fido.fetch(results[:, 0], site="NSO")
 files.sort(key=str.lower)
 
 # Put the file paths into a dict
-files = {name: path for name, path in zip(["AIA", "EUI-FSI", "EUI-HRI", "SPICE", "VBI", "VISP"], files)}
+files = dict(zip(["AIA", "EUI-FSI", "EUI-HRI", "SPICE", "VBI", "VISP"], files))
 
 ################################################################################
 # Open the images as sunpy maps

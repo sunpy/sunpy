@@ -37,7 +37,7 @@ class MetaDict(OrderedDict):
     def __init__(self, *args, save_original=True):
         # Store all keys as lower-case to allow for case-insensitive indexing
         # OrderedDict can be instantiated from a list of lists or a tuple of tuples
-        tags = dict()
+        tags = {}
         if args:
             args = list(args)
             adict = args[0]
@@ -118,7 +118,7 @@ class MetaDict(OrderedDict):
     @staticmethod
     def _check_str_keys(items):
         bad_keys = []
-        for k, v in items:
+        for k, _ in items:
             if not isinstance(k, str):
                 bad_keys.append(str(k))
         if len(bad_keys):
@@ -197,8 +197,9 @@ class MetaDict(OrderedDict):
         self_copy.pop('keycomments', None)
         try:
             return hash(frozenset(self_copy.items()))
-        except Exception:
-            return
+        except TypeError:
+            # Unhashable values, e.g. lists, can't be hashed
+            return None
 
     def get(self, key, default=None):
         """

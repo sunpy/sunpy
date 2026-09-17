@@ -24,9 +24,8 @@ def Times(draw, max_value, min_value):
     time = one_of(datetimes(max_value=max_value, min_value=min_value),
                   TIME_LEAP_SECONDS)
 
-    time = Time(draw(time))
+    return Time(draw(time))
 
-    return time
 
 
 @st.composite
@@ -67,19 +66,21 @@ def online_instruments():
     a query.
     """
     online_instr = ['lyra', 'goes', 'eve', 'rhessi', 'norh', 'soon']
-    online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
+    return st.builds(a.Instrument, st.sampled_from(online_instr))
 
-    return online_instr
 
 
 @st.composite
-def time_attr(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
-              min_value=datetime.datetime(1981, 1, 1, 0, 0)),
-              delta=TimeDelta()):
+def time_attr(draw, time=None, delta=None):
     """
     Create an a.Time where it's always positive.
     """
+    if time is None:
+        time = Times(
+            max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
+            min_value=datetime.datetime(1981, 1, 1, 0, 0))
+    if delta is None:
+        delta = TimeDelta()
     t1 = draw(time)
     t2 = t1 + draw(delta)
     # We can't download data from the future.
@@ -89,13 +90,16 @@ def time_attr(draw, time=Times(
 
 
 @st.composite
-def goes_time(draw, time=Times(
-              max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
-              min_value=datetime.datetime(1981, 1, 1, 0, 0)),
-              delta=TimeDelta()):
+def goes_time(draw, time=None, delta=None):
     """
     Create an a.Time where it's always positive.
     """
+    if time is None:
+        time = Times(
+            max_value=datetime.datetime(datetime.datetime.now(datetime.UTC).year, 1, 1, 0, 0),
+            min_value=datetime.datetime(1981, 1, 1, 0, 0))
+    if delta is None:
+        delta = TimeDelta()
     t1 = draw(time)
     delta = draw(delta)
     t2 = t1 + delta
@@ -115,17 +119,22 @@ def goes_time(draw, time=Times(
 
 
 @st.composite
-def srs_time(draw, time=Times(
-             max_value=datetime.datetime.now(datetime.UTC),
-             min_value=datetime.datetime(1996, 1, 1)),
-             delta=TimeDelta()):
+def srs_time(draw, time=None, delta=None):
+    if time is None:
+        time = Times(
+            max_value=datetime.datetime.now(datetime.UTC),
+            min_value=datetime.datetime(1996, 1, 1))
+    if delta is None:
+        delta = TimeDelta()
     t1 = draw(time)
     t2 = t1 + draw(delta)
     assume(t1 < t2)
     return a.Time(TimeRange(t1, t2))
 
 
-def range_time(min_date, max_date=Time.now()):
+def range_time(min_date, max_date=None):
+    if max_date is None:
+        max_date = Time.now()
     time = Times(
         min_value=parse_time(min_date).datetime,
         max_value=parse_time(max_date).datetime

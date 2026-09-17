@@ -9,6 +9,7 @@ from collections import UserList
 from collections.abc import Iterator
 from io import BytesIO
 from itertools import chain, count
+from pathlib import Path
 from shutil import get_terminal_size
 
 import numpy as np
@@ -67,16 +68,16 @@ def replacement_filename(path: str):
     `str`:
         A string path.
     """
-    if not os.path.exists(path):
+    if not Path(path).exists():
         return path
-    else:
-        dir_, filename = os.path.split(path)
-        base, ext = os.path.splitext(filename)
-        for c in count():
-            name = base + '.' + str(c) + ext
-            newpath = os.path.join(dir_, name)
-            if not os.path.exists(newpath):
-                return newpath
+    dir_, filename = os.path.split(path)
+    base, ext = Path(filename).stem, Path(filename).suffix
+    for c in count():
+        name = base + '.' + str(c) + ext
+        newpath = os.fspath(Path(dir_) / name)
+        if not Path(newpath).exists():
+            return newpath
+    return None
 
 
 def expand_list(inp):
@@ -249,9 +250,8 @@ def get_keywords(func):
             keywords.update(get_keywords(f))
         return keywords
     sig = inspect.signature(func)
-    keywords = {param.name for param in sig.parameters.values()
+    return {param.name for param in sig.parameters.values()
                 if param.default is not inspect.Parameter.empty}
-    return keywords
 
 
 def get_set_methods(obj):
@@ -391,12 +391,11 @@ def extent_in_other_wcs(original_wcs, target_wcs, *, method, original_shape=None
         if method == 'corners':
             raise RuntimeError("The extent could not be automatically determined from the corners. "
                                "Try specifying 'all' or 'edges'.")
-        elif method == 'edges':
+        if method == 'edges':
             raise RuntimeError("The extent could not be automatically determined from the edges. "
                                "Try specifying 'all'.")
-        else:
-            raise RuntimeError("The extent could not be automatically determined because all of "
-                               "the coordinates in the original WCS transformed to NaNs.")
+        raise RuntimeError("The extent could not be automatically determined because all of "
+                           "the coordinates in the original WCS transformed to NaNs.")
 
     min_xy = np.min(xy, axis=1)
     max_xy = np.max(xy, axis=1)

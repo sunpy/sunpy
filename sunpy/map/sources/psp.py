@@ -40,7 +40,7 @@ class WISPRMap(GenericMap):
     def processing_level(self):
         lvl = self.meta.get('level', None)
         if lvl is None:
-            return
+            return None
         # Chop off the leading 'L' if present
         if lvl[0] == 'L':
             lvl = lvl[1:]

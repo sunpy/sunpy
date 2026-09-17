@@ -28,7 +28,7 @@ _NOT_FOUND = object()
 # Thread-safe stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
 # It is not thread-safe to modify the list directly
 # Instead, the list should be copied and then the context variable set with the modified copy
-_active_contexts = contextvars.ContextVar('_active_contexts', default=[])
+_active_contexts = contextvars.ContextVar('_active_contexts', default=())
 
 
 def deprecated(
@@ -267,14 +267,16 @@ def sunpycontextmanager(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         func_name = f"{func.__module__}.{func.__qualname__}"
-        active_contexts_copy = _active_contexts.get().copy()
+        active_contexts_copy = list(_active_contexts.get())
         active_contexts_copy.append(func_name)
         token = _active_contexts.set(active_contexts_copy)
         gen = func(*args, **kwargs)
         value = next(gen)
         try:
             yield value
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
+            # The exception is re-raised in the wrapped generator, it is not
+            # handled or suppressed here.
             gen.throw(e)
         else:
             next(gen, None)

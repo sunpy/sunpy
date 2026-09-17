@@ -31,7 +31,7 @@ for _keyname, _filename in sorted(_SAMPLE_DATA.items()):
 
 
 # file_dict and file_list are not normal variables; see __getattr__() below
-__all__ = list(sorted(_SAMPLE_DATA.keys())) + ['download_all', 'file_dict', 'file_list']  # NOQA: F822
+__all__ = sorted(_SAMPLE_DATA.keys()) + ['download_all', 'file_dict', 'file_list']  # NOQA: F822
 
 
 # See PEP 562 (https://peps.python.org/pep-0562/) for module-level __dir__()
@@ -43,13 +43,12 @@ def __dir__():
 def __getattr__(name):
     if name in _SAMPLE_DATA:
         return _get_sample_files([_SAMPLE_DATA[name]])[0]
-    elif name == 'file_dict':
+    if name == 'file_dict':
         return dict(sorted(zip(_SAMPLE_DATA.keys(),
                                _get_sample_files(_SAMPLE_DATA.values(), no_download=True))))
-    elif name == 'file_list':
+    if name == 'file_list':
         return [v for v in __getattr__('file_dict').values() if v]
-    else:
-        raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
 def download_all(force_download=False):

@@ -1,6 +1,6 @@
 import logging
-import os
 import sys
+from pathlib import Path
 
 from astropy.logger import AstropyLogger
 
@@ -39,13 +39,14 @@ class SunpyLogger(AstropyLogger):
         # find the module object and thus the fully-package-specified module
         # name. The module.__file__ is the original source file name.
         mod_name = None
-        mod_path, ext = os.path.splitext(mod_path)
-        for name, mod in list(sys.modules.items()):
+        mod_path = Path(mod_path).with_suffix('')
+        for _, mod in list(sys.modules.items()):
             try:
                 # Believe it or not this can fail in some cases:
                 # https://github.com/astropy/astropy/issues/2671
-                path = os.path.splitext(getattr(mod, '__file__', ''))[0]
-            except Exception:
+                mod_file = getattr(mod, '__file__', '')
+                path = Path(mod_file).with_suffix('') if mod_file else None
+            except Exception:  # noqa: BLE001
                 continue
             if path == mod_path:
                 mod_name = mod.__name__
@@ -55,6 +56,7 @@ class SunpyLogger(AstropyLogger):
             self.warning(message, extra={'origin': mod_name})
         else:
             self.warning(message)
+        return None
 
 
 def _init_log(config=None):

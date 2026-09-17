@@ -64,7 +64,7 @@ def test_broken_units(hxi_map):
     # Check that non-fits units still raise
     hxi_map.meta["unit"] = "spam"
     with pytest.warns(SunpyMetadataWarning):
-        hxi_map.unit
+        _ = hxi_map.unit
 
 
 def test_private_date_setters(hxi_map):

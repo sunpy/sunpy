@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 import time
 import urllib
 from pathlib import Path
@@ -505,36 +504,35 @@ class JSOCClient(BaseClient):
                 requests[i] = r
 
         # We only download if all are finished
-        if not all([r.has_succeeded() for r in requests]):
+        if not all(r.has_succeeded() for r in requests):
             raise NotExportedError("Can not download as not all the requests "
                                    "have been exported for download yet.")
 
         # Ensure path has a {file} in it
         if path is None:
             default_dir = config.get("downloads", "download_dir")
-            path = os.path.join(default_dir, '{file}')
+            path = str(Path(default_dir) / '{file}')
         elif isinstance(path, Path):
             path = str(path)
 
         if isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
+            path = str(Path(path) / '{file}')
 
         paths = []
         for request in requests:
             if request.method == 'url-tar':
                 fname = path.format(file=Path(request.tarfile).name)
-                paths.append(os.path.expanduser(fname))
+                paths.append(Path(fname).expanduser())
             else:
                 for filename in request.data['filename']:
                     # Ensure we don't duplicate the file extension
-                    ext = os.path.splitext(filename)[1]
+                    ext = Path(filename).suffix
                     if path.endswith(ext):
                         fname = path.strip(ext)
                     else:
                         fname = path
                     fname = fname.format(file=filename)
-                    fname = os.path.expanduser(fname)
-                    paths.append(fname)
+                    paths.append(Path(fname).expanduser())
 
         dl_set = True
         if not downloader:
@@ -562,11 +560,10 @@ class JSOCClient(BaseClient):
         if dl_set and not wait:
             return Results()
 
-        results = downloader.download()
-        return results
+        return downloader.download()
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',
-                        segment='', primekey={}, keyword={}, **kwargs):
+                        segment='', primekey=None, keyword=None, **kwargs):
         """
         Take the query arguments and build a record string.
 
@@ -621,6 +618,10 @@ class JSOCClient(BaseClient):
         an empty {}, if it occurs before any passed prime-key. Any empty curly braces
         that is present at last of the pkstr, can be skipped.
         """
+        if primekey is None:
+            primekey = {}
+        if keyword is None:
+            keyword = {}
         # Extract and format segment
         # Convert list of segments into a comma-separated string
         if segment:
@@ -722,7 +723,7 @@ class JSOCClient(BaseClient):
         # whether the passed PrimeKeys is a subset of that.
         primekeys = client.pkeys(iargs['series'])
         primekeys_passed = iargs.get('primekey', None)  # primekeys_passes is a dict, with key-value pairs.
-        if primekeys_passed is not None and not set(list(primekeys_passed.keys())) <= set(primekeys):
+        if primekeys_passed is not None and not set(primekeys_passed) <= set(primekeys):
             error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following Keywords: {primekeys}"
             raise ValueError(error_message.format(series=iargs['series'], primekeys=primekeys))
         # Raise special error for wavelength (even though the code would ignore it anyway)
@@ -742,7 +743,7 @@ class JSOCClient(BaseClient):
             if not isinstance(segments_passed, list) and not isinstance(segments_passed, str):
                 error_message = "Segments can only be passed as a comma-separated string or a list of strings."
                 raise TypeError(error_message)
-            elif isinstance(segments_passed, str):
+            if isinstance(segments_passed, str):
                 segments_passed = segments_passed.replace(' ', '').split(',')
             if not set(segments_passed) <= set(segments):
                 error_message = f"Unexpected Segments were passed. The series {iargs['series']} contains the following Segments {segments}"
@@ -797,7 +798,7 @@ class JSOCClient(BaseClient):
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
         """
-        here = os.path.dirname(os.path.realpath(__file__))
+        here = Path(__file__).resolve().parent
         client = drms.Client()
         # Series we are after
         data_sources = ["hmi", "mdi", "aia"]
@@ -808,13 +809,15 @@ class JSOCClient(BaseClient):
             info = client.series(rf'{series}\.')
             for item in info:
                 try:
-                    print(f'🛰 Getting info for {series}: {item}')
+                    print(f'🛰 Getting info for {series}: {item}')  # noqa: T201
                     data = client.info(item)
                     series_store.append((data.name, data.note))
                     if not data.segments.empty:
                         segments.extend((row[0], row[1].iloc[-1]) for row in data.segments.iterrows())
-                except Exception as e:
-                    print(f"⚠️  {series} failed with error: {e}")
+                except Exception as e:  # noqa: BLE001
+                    # Any error getting info for a series is reported and the
+                    # remaining series are still processed.
+                    print(f"⚠️  {series} failed with error: {e}")  # noqa: T201
                     if item in ["hmi.V_avg120", "mdi.fdV_avg120"]:
                         # The following is from a private email from JSOC:
                         #
@@ -827,10 +830,10 @@ class JSOCClient(BaseClient):
                         # converting to utf8 from ascii". PostgreSQL ignores any byte that is not an
                         # ascii byte and simply returns it as is. So now jsocexintfo.py has a byte,
                         # 0xC5, that it expects is a UTF-8 byte, which it isn't.
-                        print(f"🛈 {item} has a known issue with the JSOC database.")
+                        print(f"🛈 {item} has a known issue with the JSOC database.")  # noqa: T201
         series_store = list(set(series_store))
         segments = list(set(segments))
-        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+        with open(Path(here) / 'data' / 'attrs.json', 'w') as attrs_file:
             keyword_info = {
                 "series_store": sorted(series_store),
                 "segments": sorted(segments),
@@ -850,11 +853,10 @@ class JSOCClient(BaseClient):
         # Import here to prevent circular imports
         from sunpy.net import attrs as a
 
-        here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
+        here = Path(__file__).resolve().parent
+        with open(here / 'data' / 'attrs.json') as attrs_file:
             keyword_info = json.load(attrs_file)
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}
         segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
-        attrs = series_dict | segments_dict
-        return attrs
+        return series_dict | segments_dict

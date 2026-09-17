@@ -35,10 +35,11 @@ DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 def init_frame(frame, args, kwargs):
     if args and kwargs:
         return frame(*args, **kwargs)
-    elif args:
+    if args:
         return frame(*args)
-    elif kwargs:
+    if kwargs:
         return frame(**kwargs)
+    return None
 
 
 """
@@ -578,13 +579,13 @@ def test_angular_radius():
 def test_angular_radius_no_observer():
     coord = Helioprojective(0*u.deg, 0*u.deg, 5*u.km, obstime="2010/01/01T00:00:00", observer=None)
     with pytest.raises(ValueError, match=r"The observer must be defined, not `None`"):
-        coord.angular_radius
+        _ = coord.angular_radius
 
 
 def test_angular_radius_no_obstime():
     coord = Helioprojective(0*u.deg, 0*u.deg, 5*u.km, obstime=None, observer="earth")
     with pytest.raises(ValueError, match=r"The observer must be fully defined by specifying `obstime`."):
-        coord.angular_radius
+        _ = coord.angular_radius
 
 
 @pytest.fixture

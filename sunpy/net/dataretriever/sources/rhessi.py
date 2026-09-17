@@ -229,9 +229,8 @@ class RHESSIClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        adict = {attrs.Instrument: [('RHESSI',
+        return {attrs.Instrument: [('RHESSI',
                                      'Reuven Ramaty High Energy Solar Spectroscopic Imager.')],
                  attrs.Physobs: [("summary_lightcurve", "A summary lightcurve.")],
                  attrs.Source: [('RHESSI', 'Reuven Ramaty High Energy Solar Spectroscopic Imager.')],
                  attrs.Provider: [('NASA', 'The National Aeronautics and Space Administration.')]}
-        return adict

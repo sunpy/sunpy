@@ -208,8 +208,7 @@ def mock_query_object(LCClient):
         'url': ('https://hesperia.gsfc.nasa.gov/hessidata/metadata/'
                 'catalog/hsi_obssumm_20160101_078.fits')
     }
-    results = QueryResponse([obj], client=LCClient)
-    return results
+    return QueryResponse([obj], client=LCClient)
 
 
 def test_show(LCClient):

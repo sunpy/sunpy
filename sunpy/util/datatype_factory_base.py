@@ -32,7 +32,7 @@ class BasicRegistrationFactory:
         Class of the default widget. Defaults to `None`.
     additional_validation_functions : `list` of `str`, optional
         List of strings corresponding to additional validation function names.
-        Defaults to `list`.
+        Defaults to `None`, which is treated as an empty list.
     registry : `dict`, optional
         Dictionary mapping classes (key) to function (value) which validates input.
         Defaults to `None`.
@@ -44,9 +44,11 @@ class BasicRegistrationFactory:
     """
 
     def __init__(self, default_widget_type=None,
-                 additional_validation_functions=[], registry=None):
+                 additional_validation_functions=None, registry=None):
+        if additional_validation_functions is None:
+            additional_validation_functions = []
         if registry is None:
-            self.registry = dict()
+            self.registry = {}
         else:
             self.registry = registry
 
@@ -70,7 +72,7 @@ class BasicRegistrationFactory:
         """
         Implementation of a basic check to see if arguments match a widget.
         """
-        candidate_widget_types = list()
+        candidate_widget_types = []
 
         for key in self.registry:
 
@@ -83,8 +85,7 @@ class BasicRegistrationFactory:
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")
-            else:
-                candidate_widget_types = [self.default_widget_type]
+            candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
             raise MultipleMatchError(f"Too many candidate types identified ({n_matches})."
                                      "Specify enough keywords to guarantee unique type "
@@ -130,8 +131,7 @@ class BasicRegistrationFactory:
                         self.registry[WidgetType] = vfunc
                         found = True
                         break
-                    else:
-                        raise ValidationFunctionError(f"{WidgetType.__name__}.{vfunc_str} must be a classmethod.")
+                    raise ValidationFunctionError(f"{WidgetType.__name__}.{vfunc_str} must be a classmethod.")
             if not found:
                 raise ValidationFunctionError(f"No proper validation function for class {WidgetType.__name__} "
                                               "found.")

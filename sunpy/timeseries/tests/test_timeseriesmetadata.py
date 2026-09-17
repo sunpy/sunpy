@@ -418,7 +418,7 @@ def test_to_string_basic(basic_1_md):
     assert isinstance(default_str, str)
 
     # check this matches the __str__ and __repr__ methods
-    default_str == basic_1_md.__str__() == basic_1_md.__repr__()
+    assert default_str == basic_1_md.__str__() == basic_1_md.__repr__()
 
 
 def test_to_string_depth(basic_1_md):

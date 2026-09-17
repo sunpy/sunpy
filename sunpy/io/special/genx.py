@@ -229,7 +229,7 @@ def struct_to_data(xdrdata, subskeleton):
         if isinstance(subskeleton[key], OrderedDict):
             struct_to_data(xdrdata, subskeleton[key])
         elif isinstance(subskeleton[key], np.ndarray):
-            testlist = list()
+            testlist = []
             struct_shape = subskeleton[key].shape
             for elem in subskeleton[key].flatten():
                 elem2 = copy.deepcopy(elem)

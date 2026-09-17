@@ -15,7 +15,7 @@ def test_skeleton():
                      'MYNUMBER': 1, 'MYNUMBER_ARRAY': 3, 'MYNUMBER_ARRAY_DIMENSION': (2, 3, 4, 5),
                      'MYUINT': 1, 'MYSTRUCTURE': 14,  # the elements inside the OrderedDict
                      'MYSTRUCTURE_ARRAY': 6, 'HEADER': 5}
-    assert sorted(list(TESTING.keys())) == sorted(list(toplevel_dims.keys()))
+    assert sorted(TESTING.keys()) == sorted(toplevel_dims.keys())
     for key, val in toplevel_dims.items():
         if isinstance(val, tuple):
             assert TESTING[key].shape == tuple(reversed(val))
@@ -39,13 +39,13 @@ def test_array_elements_values():
     assert TESTING['MYSTRUCTURE']['NESTEDSTRUCT']['MYL64NUMBER'] == 9223372036854775807
 
 
-@pytest.mark.parametrize(('slice', 'value'), [((0, 0, 0, 0), 0),
+@pytest.mark.parametrize(('slice_index', 'value'), [((0, 0, 0, 0), 0),
                                               ((4, 0, 0, 0), 96),
                                               ((0, 2, 2, 0), 16),
                                               ((0, 3, 2, 0), 22),
                                               ((4, 3, 2, 0), 118)])
-def test_value_slice(slice, value):
-    assert TESTING['MYNUMBER_ARRAY_DIMENSION'][slice] == value
+def test_value_slice(slice_index, value):
+    assert TESTING['MYNUMBER_ARRAY_DIMENSION'][slice_index] == value
 
 
 @pytest.mark.parametrize(('myarray', 'dtype'), [(TESTING['MYNUMBER_ARRAY'], np.int16),

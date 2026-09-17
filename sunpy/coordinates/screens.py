@@ -34,7 +34,7 @@ class BaseScreen(abc.ABC):
         ...
 
     def __enter__(self):
-        active_contexts_copy = _active_contexts.get().copy()
+        active_contexts_copy = list(_active_contexts.get())
         active_contexts_copy.append(self._context_name)
         self._active_contexts_token = _active_contexts.set(active_contexts_copy)
         self._assumed_screen_token = Helioprojective._assumed_screen.set(self)

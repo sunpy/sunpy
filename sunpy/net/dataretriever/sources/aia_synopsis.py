@@ -102,7 +102,7 @@ class AIASynopsisClient(GenericClient):
 
     @classmethod
     def register_values(cls):
-        adict = {
+        return {
             a.Instrument: [("AIA", "Data from the Atmospheric Imaging Assembly instrument.")],
             a.Physobs: [
                 ("intensity", "Brightness or intensity of the solar atmosphere at different wavelengths.")
@@ -111,4 +111,3 @@ class AIASynopsisClient(GenericClient):
             a.Provider: [("JSOC", "Joint Science Operations Center at Stanford.")],
             a.Level: [("1.5s", "Level 1.5 data processed for quicker analysis.")],
         }
-        return adict

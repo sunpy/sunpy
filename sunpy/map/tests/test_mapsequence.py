@@ -56,7 +56,7 @@ def mapsequence_different(aia171_test_map):
 def test_as_array_different_shapes(mapsequence_different):
     # Should raise a ValueError if the mapsequence has differently shaped maps
     with pytest.raises(ValueError, match='Not all maps have the same shape.'):
-        mapsequence_different.data
+        _ = mapsequence_different.data
 
 
 def test_as_array_no_masks(mapsequence_all_the_same):

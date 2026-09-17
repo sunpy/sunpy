@@ -61,7 +61,7 @@ def solar_wcs_frame_mapping(wcs):
     observer = None
     for frame, attr_names in required_attrs.items():
         attrs = [getattr(wcs.wcs.aux, attr_name) for attr_name in attr_names]
-        if all([attr is not None for attr in attrs]):
+        if all(attr is not None for attr in attrs):
             kwargs = {'obstime': dateobs}
             if rsun is not None:
                 kwargs['rsun'] = rsun
@@ -103,6 +103,7 @@ def solar_wcs_frame_mapping(wcs):
             frame_args.pop('rsun', None)
 
         return frame_class(**frame_args)
+    return None
 
 
 def _sunpy_frame_class_from_ctypes(ctypes):
@@ -120,6 +121,7 @@ def _sunpy_frame_class_from_ctypes(ctypes):
     for frame_class, ctype_pair in mapping.items():
         if ctype_pair <= ctypes:
             return frame_class
+    return None
 
 
 def _set_wcs_aux_obs_coord(wcs, obs_frame):

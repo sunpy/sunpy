@@ -119,20 +119,20 @@ class XRSTimeSeries(GenericTimeSeries):
         # The ordering of where we get the metadata from is important.
         # We always want to check ID first as that will most likely have the correct information.
         # The other fields are fallback and sometimes have data in them that is "useless".
-        id = (
+        sat_id = (
             self.meta.metas[0].get("id", "").strip()
             or self.meta.metas[0].get("filename_id", "").strip()
             or self.meta.metas[0].get("TELESCOP", "").strip()
             or self.meta.metas[0].get("Instrument", "").strip()
         )
-        if isinstance(id, bytes):
+        if isinstance(sat_id, bytes):
             # Needed for h5netcdf < 0.14.0
-            id = id.decode('ascii')
-        if id is None:
+            sat_id = sat_id.decode('ascii')
+        if sat_id is None:
             log.debug("Unable to get a satellite number from 'Instrument', 'TELESCOP' or 'id' ")
             return None
         for pattern in [pattern_inst, pattern_new, pattern_old, pattern_r, pattern_1m, pattern_telescop]:
-            parsed = parse(pattern, id)
+            parsed = parse(pattern, sat_id)
             if parsed is not None:
                 return f"GOES-{parsed['SatelliteNumber']}"
         log.debug('Satellite Number not found in metadata')
@@ -237,7 +237,7 @@ class XRSTimeSeries(GenericTimeSeries):
             # h5netcdf < 0.14 return bytes instead of a str
             if isinstance(start_time_str, bytes):
                 start_time_str = start_time_str.decode("utf-8")
-            start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC").strip()
+            start_time_str = start_time_str.removeprefix("seconds since").removesuffix("UTC").strip()
             times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix")
             # Checks for primary detector information
             detector_info = False
@@ -302,6 +302,8 @@ class XRSTimeSeries(GenericTimeSeries):
                             # h5netcdf<0.14
                             summary = summary.astype(str)
                         return "XRS" in summary
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
+                # Any error reading the file means it is not a GOES XRS datasource
                 log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False
+        return None

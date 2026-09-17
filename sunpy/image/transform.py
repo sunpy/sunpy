@@ -93,9 +93,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     method = _get_transform_method(method)
 
     # Transform the image using the appropriate function
-    rotated_image = _rotation_registry[method].function(image, rmatrix, shift, order, missing, clip)
+    return _rotation_registry[method].function(image, rmatrix, shift, order, missing, clip)
 
-    return rotated_image
 
 
 def _get_transform_method(method):
@@ -284,10 +283,9 @@ def _rotation_scipy(image, matrix, shift, order, missing, clip):
     * The ``mode`` parameter for :func:`~scipy.ndimage.affine_transform` is fixed to
       be ``'constant'``
     """
-    rotated_image = scipy.ndimage.affine_transform(image.T, matrix, offset=shift, order=order,
+    return scipy.ndimage.affine_transform(image.T, matrix, offset=shift, order=order,
                                                    mode='constant', cval=missing).T
 
-    return rotated_image
 
 
 @add_rotation_function("scikit-image", allowed_orders=range(6),

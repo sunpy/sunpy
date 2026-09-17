@@ -30,8 +30,8 @@ def iter_sort_response(response):
     `list`
         Sorted record items w.r.t. their start time.
     """
-    has_time_recs = list()
-    has_notime_recs = list()
+    has_time_recs = []
+    has_notime_recs = []
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue
@@ -44,8 +44,7 @@ def iter_sort_response(response):
             else:
                 has_notime_recs.append(rec)
     has_time_recs = sorted(has_time_recs, key=lambda x: x.time.start)
-    all_recs = has_time_recs + has_notime_recs
-    return all_recs
+    return has_time_recs + has_notime_recs
 
 
 class VSOQueryResponseTable(QueryResponseTable):
@@ -95,7 +94,7 @@ class VSOQueryResponseTable(QueryResponseTable):
                 try:
                     # Try to use a vectorised call to parse_time
                     data[col] = parse_time(data[col])
-                except Exception:
+                except (TypeError, ValueError):
                     # If that fails, parse dates one by one. This is needed if
                     # VSO returns a variety of different date format strings
                     times = []

@@ -7,6 +7,7 @@ Find the sets of characters used in RST section headers, and replace with a stan
 import re
 import shutil
 import tempfile
+from pathlib import Path
 
 HEADER_CHAR_LEVELS = '*=-^"+:~'
 
@@ -32,9 +33,8 @@ def replace_header_chars(filename):
                             f"ERROR misorder new_level={new_level} level={level} "
                             f"char={char} header_chars={header_chars} on line {i}"
                         )
-                    else:
-                        level = new_level
-                        print(f"s/{char}/{HEADER_CHAR_LEVELS[level]}/")
+                    level = new_level
+                    print(f"s/{char}/{HEADER_CHAR_LEVELS[level]}/")
                 else:
                     # New header char - create a deeper level
                     if level == len(header_chars) - 1:
@@ -59,8 +59,6 @@ def replace_header_chars(filename):
 
 
 if __name__ == "__main__":
-    from glob import glob
-    from pathlib import Path
     here = Path(__file__).parent.absolute()
-    rst_files = glob(str(here/Path("../docs/**/*rst")), recursive=True)
+    rst_files = here.glob("../docs/**/*rst")
     [replace_header_chars(filename) for filename in rst_files]

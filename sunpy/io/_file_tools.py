@@ -204,7 +204,9 @@ def detect_filetype(filepath, **kwargs):
         fsspec_kw = kwargs.get("fsspec_kwargs", {})
         try:
             fileobj = fsspec.open(filepath, 'rb', **fsspec_kw).open()
-        except Exception:
+        except Exception:  # noqa: BLE001
+            # Any error opening the file with fsspec means it is not readable,
+            # so we cannot detect the filetype from the contents.
             return None
     else:
         fileobj = open(filepath, 'rb')

@@ -92,8 +92,7 @@ def print_all():
             str(this_constant.unit), this_constant.reference
         ])
 
-    t = Table(rows=data_rows, names=('key', 'name', 'value', 'uncertainty', 'unit', 'Reference'))
-    return t
+    return Table(rows=data_rows, names=('key', 'name', 'value', 'uncertainty', 'unit', 'Reference'))
 
 
 def _build_docstring():

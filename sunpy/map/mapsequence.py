@@ -84,15 +84,14 @@ class MapSequence:
 
         if isinstance(self.maps[key], GenericMap):
             return self.maps[key]
-        else:
-            return MapSequence(self.maps[key])
+        return MapSequence(self.maps[key])
 
     def __len__(self):
         """Return the number of maps in a mapsequence."""
         return len(self.maps)
 
     def __repr__(self):
-        names = set([m.__class__.__name__ for m in self.maps])
+        names = {m.__class__.__name__ for m in self.maps}
         return (object.__repr__(self) + "\n" +
                 f'MapSequence of {len(self.maps)} elements, with maps from {", ".join(names)}')
 
@@ -353,13 +352,12 @@ class MapSequence:
                 annotate_frame(i, title=kwargs.get('title'))
             removes += list(plot_function(fig, axes, ani_data[i]))
 
-        ani = matplotlib.animation.FuncAnimation(fig, updatefig,
+        return matplotlib.animation.FuncAnimation(fig, updatefig,
                                                  frames=list(range(0, len(ani_data))),
                                                  fargs=[im, annotate, ani_data, removes],
                                                  interval=interval,
                                                  blit=False)
 
-        return ani
 
     def peek(self, **kwargs):
         """

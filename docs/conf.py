@@ -30,7 +30,7 @@ from sunpy.util import missing_dependencies_by_extra
 
 missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
 if missing_requirements:
-    print(
+    print(  # noqa: T201
         f"The {' '.join(missing_requirements.keys())} package(s) could not be found and "
         "is needed to build the documentation, please install the 'docs' requirements."
     )
@@ -72,7 +72,7 @@ is_release = not(_version.is_prerelease or _version.is_devrelease)
 
 project = "sunpy"
 author = "The SunPy Community"
-copyright = f'{datetime.datetime.now().year}, {author}'
+copyright = f'{datetime.datetime.now().year}, {author}'  # noqa: A001  # sphinx requires this variable name
 
 # Register remote data option with doctest
 import doctest
@@ -371,9 +371,9 @@ else:
 # see https://github.com/sunpy/sunpy/wiki/Home:-JSOC
 os.environ["JSOC_EMAIL"] = "jsoc@sunpy.org"
 sphinx_gallery_conf = {
-    'backreferences_dir': os.path.join('generated', 'modules'),
+    'backreferences_dir': 'generated/modules',
     'filename_pattern': '^((?!skip_).)*$',
-    'examples_dirs': os.path.join('..', 'examples'),
+    'examples_dirs': '../examples',
     'subsection_order': ExplicitOrder([
         '../examples/acquiring_data',
         '../examples/map',
@@ -387,7 +387,7 @@ sphinx_gallery_conf = {
         '../examples/showcase',
     ]),
     'within_subsection_order': "ExampleTitleSortKey",
-    'gallery_dirs': os.path.join('generated', 'gallery'),
+    'gallery_dirs': 'generated/gallery',
     'matplotlib_animations': True,
     # Comes from the theme.
     "default_thumb_file": PNG_ICON,
@@ -417,7 +417,7 @@ try:
     # Construct the full URL for warpAffine/filter2D
     warpAffine_full = f"{cv_url}{warpAffine}"
     filter2D_full = f"{cv_url}{filter2D}"
-except Exception:
+except Exception:  # noqa: BLE001
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
     filter2D_full = ""

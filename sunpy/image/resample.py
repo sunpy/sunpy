@@ -106,11 +106,10 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
                   range(len(dimensions))]
     new_coords = np.stack(np.meshgrid(*new_coords, indexing='ij'), axis=-1)
     # fill_value = None extrapolates outside the domain
-    new_data = scipy.interpolate.interpn(old_coords, orig, new_coords,
+    return scipy.interpolate.interpn(old_coords, orig, new_coords,
                                          method=method, bounds_error=False,
                                          fill_value=None)
 
-    return new_data
 
 
 def _resample_spline(orig, dimensions, offset, m1):

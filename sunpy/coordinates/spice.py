@@ -306,7 +306,7 @@ def initialize(kernels):
     global _center_registry
     if len(_center_registry) > 1:
         log.info(f"Removing {len(_center_registry) - 1} existing SPICE origin classes")
-        for spice_center_name, center_cls in _center_registry.items():
+        for _spice_center_name, center_cls in _center_registry.items():
             if center_cls != ICRS:
                 _uninstall_frame_by_class(center_cls, ICRS)
         _center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}
@@ -467,11 +467,10 @@ def get_fov(instrument, time, *, resolution=100):
         vectors = np.broadcast_to(vectors[:, np.newaxis, :], (num_vectors, *obstime.shape, 3))
         obstime = Time(np.tile(obstime, num_vectors)).reshape((num_vectors, *obstime.shape)).T
 
-    fov = SkyCoord(CartesianRepresentation(vectors.T),
+    return SkyCoord(CartesianRepresentation(vectors.T),
                    frame=_frame_registry[spice_frame][0],
                    obstime=obstime,
                    representation_type='unitspherical')
-    return fov
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -537,6 +536,5 @@ def get_rotation_matrix(source_frame, target_frame, from_time, to_time=None):
     combined_transform = spiceypy.mxmg(from_j2000_to_target, from_source_to_j2000)
 
     # Extract the rotation matrix (upper left 3x3 block)
-    rotation_matrix = combined_transform[:3, :3]
+    return combined_transform[:3, :3]
 
-    return rotation_matrix

@@ -21,7 +21,7 @@ from sunpy.util.config import (
 
 pytestmark = pytest.mark.thread_unsafe(reason="modifies environment variable and filesystem")
 
-USER = os.path.expanduser('~')
+USER = Path.home()
 
 
 def test_is_writable_dir(tmpdir, tmp_path):
@@ -37,7 +37,7 @@ def test_is_writable_dir(tmpdir, tmp_path):
 
 def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     # Default
-    assert USER in CONFIG_DIR
+    assert str(USER) in CONFIG_DIR
     assert CONFIG_DIR.split(os.path.sep)[-1] == "sunpy"
     assert CONFIG_DIR == _get_user_configdir()
     # Try to set a manual one (already created)
@@ -103,15 +103,15 @@ def test_find_config_user_site_files(tmpdir, tmp_path, undo_download_dir_patch, 
 def test_get_and_create_download_dir(undo_download_dir_patch):
     # test default config
     path = get_and_create_download_dir()
-    assert Path(path) == Path(USER) / 'sunpy' / 'data'
+    assert Path(path) == USER / 'sunpy' / 'data'
     # test updated config
-    new_path = os.path.join(USER, 'sunpy_data_here_please')
-    config.set('downloads', 'download_dir', new_path)
+    new_path = USER / 'sunpy_data_here_please'
+    config.set('downloads', 'download_dir', str(new_path))
     path = get_and_create_download_dir()
-    assert path == os.path.join(USER, new_path)
+    assert Path(path) == USER / new_path
     # Set the config back
-    os.rmdir(new_path)
-    config.set('downloads', 'download_dir', os.path.join(USER, 'sunpy', 'data'))
+    new_path.rmdir()
+    config.set('downloads', 'download_dir', str(USER / 'sunpy' / 'data'))
 
 
 def test_get_and_create_sample_dir():
@@ -119,13 +119,13 @@ def test_get_and_create_sample_dir():
     path = get_and_create_sample_dir()
     assert Path(path) == Path(dirs.user_data_dir)
     # test updated config
-    new_path = os.path.join(USER, 'sample_data_here_please')
-    config.set('downloads', 'sample_dir', new_path)
+    new_path = USER / 'sample_data_here_please'
+    config.set('downloads', 'sample_dir', str(new_path))
     path = get_and_create_sample_dir()
-    assert path == new_path
+    assert Path(path) == new_path
     # Set the config back
-    os.rmdir(new_path)
-    config.set('downloads', 'sample_dir', os.path.join(USER, 'sunpy', 'data', 'sample_data'))
+    new_path.rmdir()
+    config.set('downloads', 'sample_dir', str(USER / 'sunpy' / 'data' / 'sample_data'))
 
 
 def test_copy_default_config(tmpdir, undo_config_dir_patch, monkeypatch):

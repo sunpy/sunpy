@@ -3,7 +3,6 @@ This package contains all of SunPy's test data.
 """
 import os
 import re
-import glob
 import fnmatch
 from pathlib import Path
 
@@ -24,8 +23,8 @@ __all__ = [
     'write_header_file_from_image_file',
 ]
 
-rootdir = Path(os.path.dirname(sunpy.__file__)) / "data" / "test"
-file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
+rootdir = Path(sunpy.__file__).parent / "data" / "test"
+file_list = list(rootdir.glob('*.[!p]*'))
 
 
 def get_test_filepath(filename, package="sunpy.data.test", **kwargs):

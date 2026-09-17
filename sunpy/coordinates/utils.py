@@ -161,16 +161,15 @@ class GreatArc:
         """
         if points is None:
             return self.default_points
-        elif isinstance(points, int):
+        if isinstance(points, int):
             return np.linspace(0, 1, points)
-        elif isinstance(points, np.ndarray):
+        if isinstance(points, np.ndarray):
             if points.ndim > 1:
                 raise ValueError('One dimensional numpy ndarrays only.')
             if np.any(points < 0) or np.any(points > 1):
                 raise ValueError('All value in points array must be strictly >=0 and <=1.')
             return points
-        else:
-            raise ValueError('Incorrectly specified "points" keyword value.')
+        raise ValueError('Incorrectly specified "points" keyword value.')
 
     def inner_angles(self, points=None):
         """
@@ -431,12 +430,11 @@ def solar_angle_equivalency(observer):
     sun_coord = get_body_heliographic_stonyhurst("sun", time=obstime, observer=observer)
     sun_observer_distance = sun_coord.separation_3d(observer).to_value(u.m)
 
-    equiv = [(u.radian,
+    return [(u.radian,
               u.meter,
               lambda x: np.tan(x)*sun_observer_distance,
               lambda x: np.arctan(x/sun_observer_distance))]
 
-    return equiv
 
 
 @u.quantity_input
@@ -465,11 +463,10 @@ def get_limb_coordinates(observer, rsun: u.m = constants.radius, resolution=1000
     limb_hcr_rho = limb_radial_distance * rsun / dsun
     limb_hcr_z = dsun - np.sqrt(limb_radial_distance**2 - limb_hcr_rho**2)
     limb_hcr_psi = np.linspace(0, 2*np.pi, resolution+1)[:-1] << u.rad
-    limb = SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z,
+    return SkyCoord(limb_hcr_rho, limb_hcr_psi, limb_hcr_z,
                     representation_type='cylindrical',
                     frame='heliocentric',
                     observer=observer, obstime=observer.obstime)
-    return limb
 
 
 def get_heliocentric_angle(coordinate_on_solar_disk):

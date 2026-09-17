@@ -218,7 +218,7 @@ def test_chaincode_parsing(coronal_hole_search_result):
     for attribute in chaincode_attributes:
         if attribute["name"] in coronal_hole_search_result.colnames:
             if isinstance(coronal_hole_search_result[attribute['name']], MaskedColumn):
-                assert all([isinstance(r, SkyCoord) for r in coronal_hole_search_result[attribute['name']]])
+                assert all(isinstance(r, SkyCoord) for r in coronal_hole_search_result[attribute['name']])
             else:
                 assert isinstance(coronal_hole_search_result[attribute['name']], SkyCoord)
 
@@ -235,9 +235,8 @@ def test_missing_times():
 @pytest.fixture(scope="session")
 def coronal_hole_search_result():
     client = hek.HEKClient()
-    result = client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
+    return client.search(attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
                            attrs.hek.EventType('CH'))
-    return result
 
 
 @pytest.mark.remote_data
@@ -287,7 +286,7 @@ def test_flares_peak_flux_and_position(flare_search):
                          attrs.hek.Event.Coord1 > 800,
                          attrs.hek.FL.PeakFlux > 1000)
     assert len(result[0]) == 7
-    assert all([c.Tx > 800*u.arcsec for c in result[0]['event_coord']])
+    assert all(c.Tx > 800*u.arcsec for c in result[0]['event_coord'])
     assert (result[0]['fl_peakflux'] > 1000.0*u.DN/(u.pix*u.s)).all()
 
 
@@ -296,7 +295,7 @@ def test_flares_python_logical_ops(flare_search):
     result = Fido.search(*flare_search,
                          (attrs.hek.Event.Coord1 > 50) and (attrs.hek.FL.PeakFlux > 1000))
     assert len(result[0]) == 7
-    assert all([c.Tx > 50*u.arcsec for c in result[0]['event_coord']])
+    assert all(c.Tx > 50*u.arcsec for c in result[0]['event_coord'])
     assert (result[0]['fl_peakflux'] > 1000.0*u.DN/(u.pix*u.s)).all()
 
 

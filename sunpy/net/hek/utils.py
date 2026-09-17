@@ -238,7 +238,7 @@ def _map_chain_code_columns_to_coordinates(table):
         # broadcasting of coordinate frame information later on if all shapes are the
         # same.
         coord_data = [np.full(shape, np.nan) if c is None else c for c in coord_data]
-        if all([coord_data[0].shape==c.shape for c in coord_data]):
+        if all(coord_data[0].shape==c.shape for c in coord_data):
             # NOTE: Taking the transpose of the coordinate such that the first
             # dimension of the coordinate is the number of rows in the table. The
             # transpose is not taken of the data prior to construction so that the
@@ -350,5 +350,4 @@ def _parse_unit(unit_string):
             unit_string = split_unit_string[0]
     with u.add_enabled_units(enabled_units), u.set_enabled_aliases(aliases), warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=u.UnitsWarning, message='.*contains multiple slashes*')
-        parsed_unit = u.Unit(unit_string)
-        return parsed_unit
+        return u.Unit(unit_string)

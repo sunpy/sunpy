@@ -94,6 +94,7 @@ def get_online_vso_url():
             if not check_cgi_connection(url):
                 continue
             return mirror
+    return None
 
 
 def build_client(url=None, port_name=None, **kwargs):
@@ -207,7 +208,9 @@ class VSOClient(BaseClient):
                 responses.append(
                     VSOQueryResponse(query_response)
                 )
-            except Exception as ex:
+            except Exception as ex:  # noqa: BLE001
+                # Any error searching for a block is recorded and reported to
+                # the user after all blocks have been processed.
                 exceptions.append(ex)
 
         responses = self.merge(responses)
@@ -294,10 +297,9 @@ class VSOClient(BaseClient):
         if not name:
             name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
-        fname = pattern.format(file=name,
+        return pattern.format(file=name,
                                **queryresponserow.response_block_map)
 
-        return fname
 
     def fetch(self, query_response, path=None, methods=None, site=None,
               progress=True, overwrite=False, downloader=None, wait=True, **kwargs):
@@ -478,7 +480,9 @@ class VSOClient(BaseClient):
         ]
 
         for dresponse in response.getdataresponseitem:
-            for version, (from_, to) in GET_VERSION:
+            # from_ and to are used after the loop, relying on the value from the
+            # iteration where the break happened (see comment below the loop).
+            for version, (from_, to) in GET_VERSION:  # noqa: B007
                 if getattr(dresponse, version, '0.6') >= version:
                     break
             else:
@@ -600,7 +604,8 @@ class VSOClient(BaseClient):
         """
         try:
             self.api.transport.session.close()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
+            # Best-effort cleanup in a destructor, never raise here
             log.debug(f"Failed to close VSO API connection with: {e}")
 
     @classmethod
@@ -620,8 +625,8 @@ class VSOClient(BaseClient):
         """
         from sunpy.net import attrs as a
 
-        here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
+        here = Path(__file__).resolve().parent
+        with open(here / 'data' / 'attrs.json') as attrs_file:
             keyword_info = json.load(attrs_file)
 
         # Now to traverse the saved dict and give them attr keys.
@@ -639,7 +644,7 @@ class VSOClient(BaseClient):
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
         """
-        here = os.path.dirname(os.path.realpath(__file__))
+        here = Path(__file__).resolve().parent
 
         # Keywords we are after
         keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
@@ -667,7 +672,7 @@ class VSOClient(BaseClient):
         for attr in attrs:
             attrs[attr] = sorted(attrs[attr], key=lambda _list: _list[0])
 
-        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+        with open(here / 'data' / 'attrs.json', 'w') as attrs_file:
             json.dump(dict(sorted(attrs.items())), attrs_file, indent=2)
 
     @property

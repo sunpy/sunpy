@@ -220,8 +220,7 @@ def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
     b = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
-    truncated = truncated.truncate(tr)
-    return truncated
+    return truncated.truncate(tr)
 
 
 @pytest.fixture
@@ -231,8 +230,7 @@ def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
     b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(2*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
-    truncated = truncated.truncate(tr)
-    return truncated
+    return truncated.truncate(tr)
 
 
 def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts,
@@ -285,7 +283,7 @@ def test_concatenation_of_slices_ts(eve_test_ts, concatenated_slices_test_ts):
     assert eve_test_ts.meta.time_range == concatenated_slices_test_ts.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_ts.time_range
     # Test metadata MetaDict matches
-    eve_test_ts.meta.metadata[0][
+    assert eve_test_ts.meta.metadata[0][
         2] == concatenated_slices_test_ts.meta.metadata[0][
             2] == concatenated_slices_test_ts.meta.metadata[1][2]
     # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?
@@ -299,7 +297,7 @@ def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list
     assert eve_test_ts.meta.time_range == concatenated_slices_test_list.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_list.time_range
     # Test metadata MetaDict matches
-    eve_test_ts.meta.metadata[0][
+    assert eve_test_ts.meta.metadata[0][
         2] == concatenated_slices_test_list.meta.metadata[0][
             2] == concatenated_slices_test_list.meta.metadata[1][2]
     # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?

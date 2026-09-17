@@ -148,7 +148,7 @@ NAIF_IDS = {
     "neptune": 899
 }
 
-coords =  {name: get_horizons_coord(str(id), obstime) for name, id in NAIF_IDS.items()}
+coords =  {name: get_horizons_coord(str(naif_id), obstime) for name, naif_id in NAIF_IDS.items()}
 
 ###############################################################################
 # Find and Fit Moon's Limb and Center

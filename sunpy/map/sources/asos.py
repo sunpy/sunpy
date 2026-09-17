@@ -55,8 +55,9 @@ class HXIMap(GenericMap):
 
     @property
     def _default_observer_coordinate(self):
-        if not (set(['HGLN_OBS','HGLT_OBS','DSUN_OBS']) < set(self.fits_header)):
+        if not ({'HGLN_OBS','HGLT_OBS','DSUN_OBS'} < set(self.fits_header)):
             return  get_earth(self.reference_date)
+        return None
 
     def _get_cmap_name(self):
         return "rhessi"
@@ -128,8 +129,7 @@ class HXIMap(GenericMap):
         waves = [self.meta.get('energy_l', None), self.meta.get('energy_h', None)]
         if None in waves:
             return None
-        else:
-            return waves*self.waveunit
+        return waves*self.waveunit
 
     @property
     def observatory(self):

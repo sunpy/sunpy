@@ -32,8 +32,7 @@ class Creation:
 
 class Resample:
     def setup_cache(self):
-        aiamap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        return aiamap
+        return sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
     def time_resample(self, aiamap):
         aiamap.resample([100, 100] * u.pix)
@@ -47,8 +46,7 @@ class Rotate:
     param_names = ['method', 'order']
 
     def setup_cache(self):
-        aiamap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        return aiamap
+        return sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
     def setup(self, aiamap, method, order):
         if method == 'opencv' and order not in {0, 1, 3}:
@@ -66,8 +64,7 @@ class Reproject:
     param_names = ['algorithm']
 
     def setup_cache(self):
-        maps = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.HMI_LOS_IMAGE)
-        return maps
+        return sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.HMI_LOS_IMAGE)
 
     def time_reproject_to(self, maps, algorithm):
         maps[1].reproject_to(maps[0].wcs, algorithm=algorithm)
@@ -89,8 +86,7 @@ class Autoalign:
     param_names = ['autoalign']
 
     def setup_cache(self):
-        maps = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.HMI_LOS_IMAGE)
-        return maps
+        return sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE, sunpy.data.sample.HMI_LOS_IMAGE)
 
     def time_autoalign(self, maps, autoalign):
         fig = Figure()

@@ -104,7 +104,7 @@ class AIAMap(GenericMap):
     def unit(self):
         unit_str = self.meta.get('bunit', self.meta.get('pixlunit'))
         if unit_str is None:
-            return
+            return None
 
         return self._parse_fits_unit(unit_str)
 
@@ -173,8 +173,7 @@ class HMIMap(GenericMap):
         if len(content) > 1 and content[0].lower() == 'hmi':
             # Sharp files have 'HMI' in the CONTENT header, but not all HMI files do.
             return content[1].lower()
-        else:
-            return content[0].lower()
+        return content[0].lower()
 
     @property
     def observatory(self):
@@ -200,13 +199,12 @@ class HMIMap(GenericMap):
     def unit(self):
         unit_str = self.meta.get('bunit', None)
         if unit_str is None:
-            return
+            return None
         # Maxwells aren't in the IAU unit style manual and therefore not a valid FITS unit
         # The mapbase unit property forces this validation, so we must override it to prevent it.
         if (parsed_unit := u.Unit(unit_str)) == u.Unit('Mx/cm2'):
             return parsed_unit
-        else:
-            return super().unit
+        return super().unit
 
     @property
     def detector(self):

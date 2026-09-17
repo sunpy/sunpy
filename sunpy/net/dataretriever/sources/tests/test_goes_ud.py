@@ -237,8 +237,7 @@ def mock_query_object(LCClient):
         'SatelliteNumber': '15',
         'url': 'https://umbra.nascom.nasa.gov/goes/fits/2016/go1520160101.fits'
     }
-    results = QueryResponse([obj], client=LCClient)
-    return results
+    return QueryResponse([obj], client=LCClient)
 
 
 def test_show(LCClient):

@@ -580,5 +580,4 @@ def pixelate_coord_path(smap, coord_path, *, bresenham=False):
         pix.append(this_pix)
     pix = np.vstack(pix)
 
-    pixel_coords = smap.wcs.pixel_to_world(pix[:, 0], pix[:, 1])
-    return pixel_coords
+    return smap.wcs.pixel_to_world(pix[:, 0], pix[:, 1])

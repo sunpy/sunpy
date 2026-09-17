@@ -85,7 +85,7 @@ class GenericTimeSeries:
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
-    _registry = dict()
+    _registry = {}
 
     # Title to show when .peek()ing
     _peek_title = ''
@@ -193,8 +193,7 @@ class GenericTimeSeries:
         """
         if len(self._data) > 0:
             return TimeRange(self._data.index.min(), self._data.index.max())
-        else:
-            return None
+        return None
 
     @property
     def url(self):
@@ -499,7 +498,9 @@ class GenericTimeSeries:
                                  TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                  copy.copy(self.units))
 
-    def truncate(self, a, b=None, int=None):
+    def truncate(self, a, b=None, int=None):  # noqa: A002
+        # The argument is called ``int`` for backwards compatibility, although
+        # it is a poor choice of name.
         """
         Returns a truncated version of the TimeSeries object.
 
@@ -545,9 +546,9 @@ class GenericTimeSeries:
             truncated_meta._truncate(tr)
 
         # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
-        object._sanitize_metadata()
-        return object
+        new_ts = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
+        new_ts._sanitize_metadata()
+        return new_ts
 
     def extract(self, column_name):
         """
@@ -575,11 +576,11 @@ class GenericTimeSeries:
         units = {column_name: self.units[column_name]}
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(),
+        new_ts = GenericTimeSeries(data.sort_index(),
                                    TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                    units)
-        object._sanitize_metadata()
-        return object
+        new_ts._sanitize_metadata()
+        return new_ts
 
     def concatenate(self, others, same_source=False, **kwargs):
         """
@@ -620,7 +621,7 @@ class GenericTimeSeries:
         # Check to see if nothing needs to be done in case the same TimeSeries is provided.
         if self == others:
             return self
-        elif isinstance(others, Iterable):
+        if isinstance(others, Iterable):
             if len(others) == 1 and self == next(iter(others)):
                 return self
 
@@ -631,7 +632,7 @@ class GenericTimeSeries:
             and not all(isinstance(series, self.__class__) for series in others)
         ):
             raise TypeError("TimeSeries classes must match if 'same_source' is specified.")
-        elif (
+        if (
             same_source
             and not isinstance(others, Iterable)
             and not isinstance(others, self.__class__)
@@ -646,27 +647,27 @@ class GenericTimeSeries:
         kwargs["sort"] = kwargs.pop("sort", False)
         meta = self.meta.concatenate([series.meta for series in others])
         data = pd.concat(
-            [self._data.copy(), *list(series.to_dataframe() for series in others)], **kwargs
+            [self._data.copy(), *[series.to_dataframe() for series in others]], **kwargs
         )
 
         # Add all the new units to the dictionary.
         units = OrderedDict()
         units.update(self.units)
         units.update(
-            {k: v for unit in list(series.units for series in others) for k, v in unit.items()}
+            {k: v for unit in [series.units for series in others] for k, v in unit.items()}
         )
         units = {k: v for k, v in units.items() if k in data.columns}
 
         # If sources match then build similar TimeSeries.
         if all(self.__class__ == series.__class__ for series in others):
-            object = self.__class__(data.sort_index(), meta, units)
+            new_ts = self.__class__(data.sort_index(), meta, units)
         else:
             # Build generic time series if the sources don't match.
-            object = GenericTimeSeries(data.sort_index(), meta, units)
+            new_ts = GenericTimeSeries(data.sort_index(), meta, units)
 
         # Sanatise metadata and units
-        object._sanitize_metadata()
-        return object
+        new_ts._sanitize_metadata()
+        return new_ts
 
 # #### Plotting Methods #### #
 
@@ -694,7 +695,7 @@ class GenericTimeSeries:
 
         axes = self._data[columns].plot(ax=axes, **plot_args)
 
-        units = set([self.units[col] for col in columns])
+        units = {self.units[col] for col in columns}
         if len(units) == 1:
             # If units of all columns being plotted are the same, add a unit
             # label to the y-axis.
@@ -848,8 +849,7 @@ class GenericTimeSeries:
         """
         if hasattr(self._data, "to_numpy"):
             return self._data.to_numpy(**kwargs)
-        else:
-            return self._data.values
+        return self._data.values
 
     def __eq__(self, other):
         """

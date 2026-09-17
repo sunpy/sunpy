@@ -54,7 +54,7 @@ def get_observatory_groups():
     names = [obs['Name'] for obs in obs_groups['ObservatoryGroupDescription']]
     obs_ids = [obs['ObservatoryId'] for obs in obs_groups['ObservatoryGroupDescription']]
     # Join all IDs into a single string
-    obs_ids = ["'" + "', '".join(id) + "'" for id in obs_ids]
+    obs_ids = ["'" + "', '".join(ids) + "'" for ids in obs_ids]
 
     t = Table([names, obs_ids], names=['Group', 'Observatories'])
     t.add_index('Group')
@@ -130,7 +130,7 @@ def _update_cdaweb_dataset_data():
     N = 3
 
     def _fetch_cdaweb_dataset(group, url=url):
-        print(f'🛰 Getting datasets for {group}')
+        print(f'🛰 Getting datasets for {group}')  # noqa: T201
         u = url + f'?observatoryGroup={group}'
         res = requests.get(u, headers=_CDAS_HEADERS)
         datasets = res.json()['DatasetDescription']

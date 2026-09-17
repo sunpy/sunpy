@@ -1,6 +1,6 @@
-import os
 import sys
 from io import StringIO
+from pathlib import Path
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
@@ -48,8 +48,9 @@ class Generate(Directive):
             raw_node = nodes.raw('', text, **attributes)
             raw_node.source, raw_node.line = source, lineno
             return [raw_node]
-        except Exception as e:
-            message = f"Unable to execute Python code at {os.path.basename(source)}:{lineno}"
+        except Exception as e:  # noqa: BLE001
+            # Any error executing the code is reported in the docs as an error node
+            message = f"Unable to execute Python code at {Path(source).name}:{lineno}"
             return [nodes.error(None, nodes.paragraph(text=message)),
                     nodes.paragraph(text=str(e))]
         finally:

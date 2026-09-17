@@ -59,8 +59,7 @@ class RHESSIMap(GenericMap):
         if ('TIMESYS' in self.meta and
                 self.meta['keycomments']['TIMESYS'] == 'Reference Time'):
             return 'UTC'
-        else:
-            return super()._timesys
+        return super()._timesys
 
     def _rotation_matrix_from_crota(self):
         """

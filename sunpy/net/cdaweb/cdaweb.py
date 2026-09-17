@@ -96,15 +96,14 @@ class CDAWEBClient(BaseClient):
                  'Start time': [],
                  'End time': [],
                  'URL': []})
-        else:
-            stimes = [f['StartTime'] for f in response['FileDescription']]
-            etimes = [f['EndTime'] for f in response['FileDescription']]
-            urls = [f['Name'] for f in response['FileDescription']]
-            return astropy.table.QTable(
-                {'Dataset': [query['dataset']] * len(stimes),
-                 'Start time': Time.strptime(stimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
-                 'End time': Time.strptime(etimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
-                 'URL': urls})
+        stimes = [f['StartTime'] for f in response['FileDescription']]
+        etimes = [f['EndTime'] for f in response['FileDescription']]
+        urls = [f['Name'] for f in response['FileDescription']]
+        return astropy.table.QTable(
+            {'Dataset': [query['dataset']] * len(stimes),
+             'Start time': Time.strptime(stimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
+             'End time': Time.strptime(etimes, '%Y-%m-%dT%H:%M:%S.%fZ').iso,
+             'URL': urls})
 
     @staticmethod
     def _get_remote_files(dataset, start, end):
@@ -152,5 +151,5 @@ class CDAWEBClient(BaseClient):
             all_datasets = json.load(attrs_file)
 
         # Convert from dict to list of tuples
-        all_datasets = [(id, desc) for id, desc in all_datasets.items()]
+        all_datasets = [(dataset_id, desc) for dataset_id, desc in all_datasets.items()]
         return {a.cdaweb.Dataset: all_datasets}

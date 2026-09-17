@@ -1,5 +1,5 @@
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from urllib.request import urlopen
 
 import astropy.units as u
@@ -156,7 +156,9 @@ class Cache:
                 self._downloader.download(url, path, overwrite=True)
                 shahash = hash_file(path)
                 return path, shahash, url
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
+                # Any error downloading from a URL is recorded, if all URLs
+                # fail the errors are raised below.
                 errors.append(e)
         else:
             if len(errors) == 1:
