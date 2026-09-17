@@ -1,0 +1,1 @@
+Added :func:`sunpy.map.on_disk_mask`, which returns a boolean array that is `True` for the pixels of a map that are on the solar disk.
