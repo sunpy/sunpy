@@ -1,5 +1,5 @@
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from urllib.request import urlopen
 
 import astropy.units as u

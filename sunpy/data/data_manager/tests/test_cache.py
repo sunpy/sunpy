@@ -6,7 +6,6 @@ from sunpy.util import hash_file
 from sunpy.util.exceptions import SunpyUserWarning
 from .mocks import MOCK_HASH
 
-
 pytestmark = pytest.mark.thread_unsafe(reason="uses shared cache")
 
 
