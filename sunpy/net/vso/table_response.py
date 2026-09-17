@@ -95,7 +95,7 @@ class VSOQueryResponseTable(QueryResponseTable):
                 try:
                     # Try to use a vectorised call to parse_time
                     data[col] = parse_time(data[col])
-                except Exception:
+                except (TypeError, ValueError):
                     # If that fails, parse dates one by one. This is needed if
                     # VSO returns a variety of different date format strings
                     times = []

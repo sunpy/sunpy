@@ -63,13 +63,17 @@ class TimeFrameAttributeSunPy(TimeAttribute):
 
             try:
                 out = Time(parse_time(value))
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
+                # Any exception from parsing a user supplied value is converted
+                # to a ValueError with more information about the input.
                 raise ValueError(f'Invalid time input {self.name}={value!r}\n{err}')
             converted = True
         else:
             try:
                 out = Time(value)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
+                # Any exception from parsing a user supplied value is converted
+                # to a ValueError with more information about the input.
                 raise ValueError(f'Invalid time input {self.name}={value!r}\n{err}')
             converted = True
 

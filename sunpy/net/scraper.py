@@ -228,7 +228,8 @@ class Scraper:
             for directory in directories:
                 try:
                     ftp.cwd(urlsplit(directory).path)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
+                    # Any error changing directory is logged and skipped
                     log.debug(f"FTP CWD: {e}")
                     continue
                 for file_i in ftp.nlst():
@@ -314,7 +315,7 @@ class Scraper:
                     try:
                         # Ensure that we can parse the header as an int in sec
                         retry_after = int(retry_after)
-                    except Exception as e:
+                    except (TypeError, ValueError) as e:
                         log.debug(f"Converting retry_after failed: {e}")
                         retry_after = 2
                     log.debug(

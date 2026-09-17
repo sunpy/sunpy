@@ -285,7 +285,7 @@ class GenericMap(NDData):
             cmap = self._get_cmap_name()
             if cmap in sunpy_cm.cmlist:
                 self.plot_settings['cmap'] = cmap
-        except Exception:
+        except Exception:  # noqa: BLE001
             pass
 
     def __getitem__(self, key):

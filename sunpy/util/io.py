@@ -70,14 +70,14 @@ def parse_path(path, f, **kwargs):
 def is_file(path):
     try:
         return path.is_file()
-    except Exception:
+    except (OSError, ValueError):
         return False
 
 
 def is_dir(path):
     try:
         return path.is_dir()
-    except Exception:
+    except (OSError, ValueError):
         return False
 
 
@@ -89,7 +89,7 @@ def possibly_a_path(obj):
     try:
         pathlib.Path(obj)
         return True
-    except Exception:
+    except TypeError:
         return False
 
 
@@ -132,7 +132,7 @@ def is_uri(obj):
     try:
         _RFC3896_ = re.compile(r"^[A-Za-z][A-Za-z0-9+\-+.]*://")
         return bool(_RFC3896_.match(obj)) and not obj.startswith(("http://", "https://"))
-    except Exception:
+    except TypeError:
         return False
 
 

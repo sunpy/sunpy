@@ -6,7 +6,7 @@ from importlib import metadata
 
 import requests
 from packaging.requirements import Requirement
-from packaging.version import Version
+from packaging.version import InvalidVersion, Version
 
 
 @cache
@@ -23,7 +23,7 @@ def get_package_releases(package):
         ver = f["filename"].split("-")[1]
         try:
             version = Version(ver)
-        except Exception:
+        except InvalidVersion:
             continue
         release_date = None
         for format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:

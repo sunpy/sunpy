@@ -182,7 +182,8 @@ def link_test(link):
     try:
         with closing(urlopen(link, timeout=LINK_TIMEOUT)) as fd:
             return fd.read()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
+        # Any error fetching the URL is logged and results in a None return
         log.debug(f"Failed to get {link} with {e}")
         return None
 

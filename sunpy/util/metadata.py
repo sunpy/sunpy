@@ -197,7 +197,8 @@ class MetaDict(OrderedDict):
         self_copy.pop('keycomments', None)
         try:
             return hash(frozenset(self_copy.items()))
-        except Exception:
+        except TypeError:
+            # Unhashable values, e.g. lists, can't be hashed
             return
 
     def get(self, key, default=None):

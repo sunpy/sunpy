@@ -555,7 +555,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             tmpclient = client()
             try:
                 res = tmpclient.search(*query)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
+                # Any error raised by a client's search is recorded in the
+                # results table so the user can see which client failed.
                 res = QueryResponseTable([], client=tmpclient, errors=err)
             results.append(res)
 

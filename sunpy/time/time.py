@@ -307,7 +307,7 @@ def _variables_for_parse_time_docstring():
         # Need to try importing cdflib, as if it is present it will register
         # extra formats with time
         import cdflib  # NOQA
-    except Exception:
+    except ImportError:
         pass
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
                                                 subsequent_indent=' '*10)

@@ -146,7 +146,8 @@ class PHIMap(GenericMap):
                 if not cal_wcs:
                     warn_user("The WCS of this SO/PHI-HRT PHIMap may not be fully calibrated. "
                               "Use caution when using the WCS for scientific analysis.")
-            except Exception:
+            except Exception:  # noqa: BLE001
+                # Any error determining the calibration status results in a warning
                 warn_user("Could not determine if the WCS of this SO/PHI-HRT PHIMap is calibrated. "
                     "Use caution when using the WCS for scientific analysis.")
 

@@ -274,7 +274,9 @@ def sunpycontextmanager(func):
         value = next(gen)
         try:
             yield value
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
+            # The exception is re-raised in the wrapped generator, it is not
+            # handled or suppressed here.
             gen.throw(e)
         else:
             next(gen, None)

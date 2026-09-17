@@ -207,7 +207,9 @@ class VSOClient(BaseClient):
                 responses.append(
                     VSOQueryResponse(query_response)
                 )
-            except Exception as ex:
+            except Exception as ex:  # noqa: BLE001
+                # Any error searching for a block is recorded and reported to
+                # the user after all blocks have been processed.
                 exceptions.append(ex)
 
         responses = self.merge(responses)
@@ -602,7 +604,8 @@ class VSOClient(BaseClient):
         """
         try:
             self.api.transport.session.close()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
+            # Best-effort cleanup in a destructor, never raise here
             log.debug(f"Failed to close VSO API connection with: {e}")
 
     @classmethod

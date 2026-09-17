@@ -45,7 +45,7 @@ class SunpyLogger(AstropyLogger):
                 # Believe it or not this can fail in some cases:
                 # https://github.com/astropy/astropy/issues/2671
                 path = os.path.splitext(getattr(mod, '__file__', ''))[0]
-            except Exception:
+            except Exception:  # noqa: BLE001
                 continue
             if path == mod_path:
                 mod_name = mod.__name__

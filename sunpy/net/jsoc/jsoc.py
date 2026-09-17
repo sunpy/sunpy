@@ -817,7 +817,9 @@ class JSOCClient(BaseClient):
                     series_store.append((data.name, data.note))
                     if not data.segments.empty:
                         segments.extend((row[0], row[1].iloc[-1]) for row in data.segments.iterrows())
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
+                    # Any error getting info for a series is reported and the
+                    # remaining series are still processed.
                     print(f"⚠️  {series} failed with error: {e}")
                     if item in ["hmi.V_avg120", "mdi.fdV_avg120"]:
                         # The following is from a private email from JSOC:

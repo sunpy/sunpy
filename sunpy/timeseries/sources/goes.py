@@ -302,6 +302,7 @@ class XRSTimeSeries(GenericTimeSeries):
                             # h5netcdf<0.14
                             summary = summary.astype(str)
                         return "XRS" in summary
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
+                # Any error reading the file means it is not a GOES XRS datasource
                 log.debug(f'Reading {kwargs["filepath"]} failed with the following exception:\n{e}')
                 return False

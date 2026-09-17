@@ -48,7 +48,8 @@ class Generate(Directive):
             raw_node = nodes.raw('', text, **attributes)
             raw_node.source, raw_node.line = source, lineno
             return [raw_node]
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
+            # Any error executing the code is reported in the docs as an error node
             message = f"Unable to execute Python code at {os.path.basename(source)}:{lineno}"
             return [nodes.error(None, nodes.paragraph(text=message)),
                     nodes.paragraph(text=str(e))]

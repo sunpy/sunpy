@@ -417,7 +417,7 @@ try:
     # Construct the full URL for warpAffine/filter2D
     warpAffine_full = f"{cv_url}{warpAffine}"
     filter2D_full = f"{cv_url}{filter2D}"
-except Exception:
+except Exception:  # noqa: BLE001
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
     filter2D_full = ""
