@@ -20,7 +20,7 @@ from astropy.coordinates.representation import (
     CartesianRepresentation,
     SphericalRepresentation,
 )
-from astropy.io import ascii
+from astropy.io import ascii as io_ascii
 from astropy.time import Time
 
 from sunpy import log
@@ -377,7 +377,7 @@ def get_horizons_coord(body, time='now', id_type=None, *,
         log.info(f"Response from JPL Horizons:\n{output.text}")
 
     column_names = [name.strip() for name in lines[start_index - 3].split(',')]
-    result = ascii.read(lines[start_index:stop_index], names=column_names)
+    result = io_ascii.read(lines[start_index:stop_index], names=column_names)
 
     if isinstance(time, dict):
         obstime_tdb = parse_time(result['JDTDB'], format='jd', scale='tdb')

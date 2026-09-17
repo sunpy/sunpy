@@ -26,9 +26,9 @@ def get_package_releases(package):
         except InvalidVersion:
             continue
         release_date = None
-        for format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:
+        for date_format in ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"]:
             try:
-                release_date = datetime.strptime(f["upload-time"], format)
+                release_date = datetime.strptime(f["upload-time"], date_format)
             except ValueError:
                 continue
         if not release_date:

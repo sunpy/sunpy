@@ -259,8 +259,8 @@ class LASCOMap(GenericMap):
 
     @property
     def nickname(self):
-        filter = self.meta.get('filter', '')
-        return f'{self.instrument}-{self.detector} {filter}'
+        filter_name = self.meta.get('filter', '')
+        return f'{self.instrument}-{self.detector} {filter_name}'
 
     @nickname.setter
     def nickname(self, value):

@@ -499,7 +499,9 @@ class GenericTimeSeries:
                                  TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                  copy.copy(self.units))
 
-    def truncate(self, a, b=None, int=None):
+    def truncate(self, a, b=None, int=None):  # noqa: A002
+        # The argument is called ``int`` for backwards compatibility, although
+        # it is a poor choice of name.
         """
         Returns a truncated version of the TimeSeries object.
 
@@ -545,9 +547,9 @@ class GenericTimeSeries:
             truncated_meta._truncate(tr)
 
         # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
-        object._sanitize_metadata()
-        return object
+        new_ts = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
+        new_ts._sanitize_metadata()
+        return new_ts
 
     def extract(self, column_name):
         """
@@ -575,11 +577,11 @@ class GenericTimeSeries:
         units = {column_name: self.units[column_name]}
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(),
+        new_ts = GenericTimeSeries(data.sort_index(),
                                    TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                    units)
-        object._sanitize_metadata()
-        return object
+        new_ts._sanitize_metadata()
+        return new_ts
 
     def concatenate(self, others, same_source=False, **kwargs):
         """
@@ -659,14 +661,14 @@ class GenericTimeSeries:
 
         # If sources match then build similar TimeSeries.
         if all(self.__class__ == series.__class__ for series in others):
-            object = self.__class__(data.sort_index(), meta, units)
+            new_ts = self.__class__(data.sort_index(), meta, units)
         else:
             # Build generic time series if the sources don't match.
-            object = GenericTimeSeries(data.sort_index(), meta, units)
+            new_ts = GenericTimeSeries(data.sort_index(), meta, units)
 
         # Sanatise metadata and units
-        object._sanitize_metadata()
-        return object
+        new_ts._sanitize_metadata()
+        return new_ts
 
 # #### Plotting Methods #### #
 

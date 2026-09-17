@@ -112,3 +112,6 @@ no-lines-before = ["local-folder"]
 [lint.flake8-tidy-imports]
 [lint.flake8-tidy-imports.banned-api]
 "warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
+
+[lint.flake8-builtins]
+builtins-allowed-list = ["format"] # `format` is a standard argument name for our time APIs, mirroring astropy

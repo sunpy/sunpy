@@ -152,5 +152,5 @@ class CDAWEBClient(BaseClient):
             all_datasets = json.load(attrs_file)
 
         # Convert from dict to list of tuples
-        all_datasets = [(id, desc) for id, desc in all_datasets.items()]
+        all_datasets = [(dataset_id, desc) for dataset_id, desc in all_datasets.items()]
         return {a.cdaweb.Dataset: all_datasets}

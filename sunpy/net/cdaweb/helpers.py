@@ -54,7 +54,7 @@ def get_observatory_groups():
     names = [obs['Name'] for obs in obs_groups['ObservatoryGroupDescription']]
     obs_ids = [obs['ObservatoryId'] for obs in obs_groups['ObservatoryGroupDescription']]
     # Join all IDs into a single string
-    obs_ids = ["'" + "', '".join(id) + "'" for id in obs_ids]
+    obs_ids = ["'" + "', '".join(ids) + "'" for ids in obs_ids]
 
     t = Table([names, obs_ids], names=['Group', 'Observatories'])
     t.add_index('Group')

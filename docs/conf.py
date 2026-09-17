@@ -72,7 +72,7 @@ is_release = not(_version.is_prerelease or _version.is_devrelease)
 
 project = "sunpy"
 author = "The SunPy Community"
-copyright = f'{datetime.datetime.now().year}, {author}'
+copyright = f'{datetime.datetime.now().year}, {author}'  # noqa: A001  # sphinx requires this variable name
 
 # Register remote data option with doctest
 import doctest

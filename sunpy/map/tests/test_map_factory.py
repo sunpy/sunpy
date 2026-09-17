@@ -58,17 +58,17 @@ def test_read_asdf_and_verify(tmpdir):
 
 @asdf_entry_points
 def test_map_meta_changes_in_asdf(tmpdir):
-    map = sunpy.map.Map(AIA_171_IMAGE)
-    map = map.rotate(90 * u.deg)
+    smap = sunpy.map.Map(AIA_171_IMAGE)
+    smap = smap.rotate(90 * u.deg)
 
-    assert "pc1_2" in map.meta.added_items
-    assert "crota2" in map.meta.removed_items
-    assert "crval1" in map.meta.modified_items
+    assert "pc1_2" in smap.meta.added_items
+    assert "crota2" in smap.meta.removed_items
+    assert "crval1" in smap.meta.modified_items
 
-    map.save(f"{tmpdir}/check.asdf")
+    smap.save(f"{tmpdir}/check.asdf")
     map_in_asdf = sunpy.map.Map(f"{tmpdir}/check.asdf")
 
-    assert dict(map_in_asdf.meta) == dict(map.meta)
+    assert dict(map_in_asdf.meta) == dict(smap.meta)
 
 
 def test_mapsequence(eit_fits_directory):

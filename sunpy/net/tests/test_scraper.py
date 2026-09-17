@@ -279,7 +279,7 @@ def test_connection_error():
 @pytest.mark.thread_unsafe(reason="changing log level is not thread safe")
 def test_http_404_error_debug_message(caplog):
     with caplog.at_level(logging.DEBUG, logger='sunpy'):
-        def patch_range(self, range):
+        def patch_range(self, timerange):
             return ['https://test.com/']
         with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
             with patch.object(Scraper, 'range', patch_range):
