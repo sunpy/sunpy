@@ -79,7 +79,7 @@ def test_synoptic_source(mdi_synoptic):
     assert isinstance(mdi_synoptic, MDISynopticMap)
     # Check that the WCS is valid
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        mdi_synoptic.wcs
+        _ = mdi_synoptic.wcs
 
 
 def test_wcs(mdi, mdi_synoptic):

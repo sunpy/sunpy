@@ -254,7 +254,7 @@ def test_obs_coord_cache(aia171_test_map):
 def test_header_immutability(aia171_test_map):
     # Check that accessing the wcs of a map doesn't modify the meta data
     assert 'KEYCOMMENTS' in aia171_test_map.meta
-    aia171_test_map.wcs
+    _ = aia171_test_map.wcs
     assert 'KEYCOMMENTS' in aia171_test_map.meta
 
 
@@ -508,7 +508,7 @@ def test_remove_observers(aia171_test_map):
     aia171_test_map._remove_existing_observer_location()
     with pytest.warns(SunpyMetadataWarning,
                       match='Missing metadata for observer: assuming Earth-based observer.*'):
-        aia171_test_map.observer_coordinate
+        _ = aia171_test_map.observer_coordinate
 
 
 def test_partially_missing_observers(generic_map):
@@ -521,7 +521,7 @@ def test_partially_missing_observers(generic_map):
                       match="Missing metadata for observer: assuming Earth-based observer.\n"
                             "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n"
                             "For frame 'heliographic_carrington' the following metadata is missing: dsun_obs\n"):
-        generic_map.observer_coordinate
+        _ = generic_map.observer_coordinate
 
 # ==============================================================================
 # Test Rotation WCS conversion
@@ -1307,7 +1307,7 @@ def test_rotate_assumed_obstime():
 
     # Accessing the date makes the assumption of "now" for obstime
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
-        original.date
+        _ = original.date
 
     # The assumption has already been made, so no further warning should be emitted by rotate()
     rotated = original.rotate(0*u.deg)
@@ -1319,7 +1319,7 @@ def test_rotate_assumed_obstime():
 
     # The returned map should also be missing observing time
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
-        rotated.date
+        _ = rotated.date
 
 
 def test_as_mpl_axes_aia171(aia171_test_map):

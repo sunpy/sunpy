@@ -566,7 +566,7 @@ class JSOCClient(BaseClient):
         return results
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',
-                        segment='', primekey={}, keyword={}, **kwargs):
+                        segment='', primekey=None, keyword=None, **kwargs):
         """
         Take the query arguments and build a record string.
 
@@ -621,6 +621,10 @@ class JSOCClient(BaseClient):
         an empty {}, if it occurs before any passed prime-key. Any empty curly braces
         that is present at last of the pkstr, can be skipped.
         """
+        if primekey is None:
+            primekey = {}
+        if keyword is None:
+            keyword = {}
         # Extract and format segment
         # Convert list of segments into a comma-separated string
         if segment:

@@ -45,7 +45,7 @@ def test_factory_concatenate_same_source():
     # text the two methods get identical dataframes
     assert ts_from_list == ts_from_folder
     # test the frames have correct headings/keys (correct concatenation axis)
-    ts_from_list.columns == sunpy.timeseries.TimeSeries(
+    assert ts_from_list.columns == sunpy.timeseries.TimeSeries(
         eve_many_filepath[0], source='EVE', concatenate=True).columns
 
 
@@ -60,7 +60,7 @@ def test_factory_concatenate_different_source():
     # text the two methods get identical dataframes
     assert ts_from_list == ts_from_folder
     # test the frames have correct headings/keys (correct concatenation axis)
-    ts_from_list.columns == sunpy.timeseries.TimeSeries(
+    assert ts_from_list.columns == sunpy.timeseries.TimeSeries(
         eve_many_filepath[0], source='EVE', concatenate=True).columns
 
 

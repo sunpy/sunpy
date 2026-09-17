@@ -306,7 +306,7 @@ def initialize(kernels):
     global _center_registry
     if len(_center_registry) > 1:
         log.info(f"Removing {len(_center_registry) - 1} existing SPICE origin classes")
-        for spice_center_name, center_cls in _center_registry.items():
+        for _spice_center_name, center_cls in _center_registry.items():
             if center_cls != ICRS:
                 _uninstall_frame_by_class(center_cls, ICRS)
         _center_registry = {'SOLAR SYSTEM BARYCENTER': ICRS}

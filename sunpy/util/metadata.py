@@ -118,7 +118,7 @@ class MetaDict(OrderedDict):
     @staticmethod
     def _check_str_keys(items):
         bad_keys = []
-        for k, v in items:
+        for k, _ in items:
             if not isinstance(k, str):
                 bad_keys.append(str(k))
         if len(bad_keys):

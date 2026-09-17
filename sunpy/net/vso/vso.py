@@ -478,7 +478,9 @@ class VSOClient(BaseClient):
         ]
 
         for dresponse in response.getdataresponseitem:
-            for version, (from_, to) in GET_VERSION:
+            # from_ and to are used after the loop, relying on the value from the
+            # iteration where the break happened (see comment below the loop).
+            for version, (from_, to) in GET_VERSION:  # noqa: B007
                 if getattr(dresponse, version, '0.6') >= version:
                     break
             else:

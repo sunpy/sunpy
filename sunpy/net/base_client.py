@@ -490,21 +490,28 @@ class BaseClient(ABC):
         using the incorrect client.
         """
 
-    @property
+    @property  # noqa: B027
     def info_url(self):
         """
         This should return a string that is a URL to the data server or
         documentation on the data being served.
+
+        This is an optional property that subclasses may implement, the default
+        is to return `None`.
         """
 
     @staticmethod
-    def check_attr_types_in_query(query, required_attrs={}, optional_attrs={}):
+    def check_attr_types_in_query(query, required_attrs=None, optional_attrs=None):
         """
         Check a query against required and optional attributes.
 
         Returns `True` if *query* contains all the attrs in *required_attrs*,
         and if *query* contains only attrs in both *required_attrs* and *optional_attrs*.
         """
+        if required_attrs is None:
+            required_attrs = set()
+        if optional_attrs is None:
+            optional_attrs = set()
         query_attrs = {type(x) for x in query}
         all_attrs = required_attrs.union(optional_attrs)
         return required_attrs.issubset(query_attrs) and query_attrs.issubset(all_attrs)

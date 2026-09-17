@@ -237,7 +237,7 @@ class XRSTimeSeries(GenericTimeSeries):
             # h5netcdf < 0.14 return bytes instead of a str
             if isinstance(start_time_str, bytes):
                 start_time_str = start_time_str.decode("utf-8")
-            start_time_str = start_time_str.lstrip("seconds since").rstrip("UTC").strip()
+            start_time_str = start_time_str.removeprefix("seconds since").removesuffix("UTC").strip()
             times = Time(parse_time(start_time_str).unix + h5nc["time"], format="unix")
             # Checks for primary detector information
             detector_info = False

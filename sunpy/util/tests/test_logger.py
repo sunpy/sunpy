@@ -96,7 +96,8 @@ def test_sunpy_warnings_logging():
     # Without warnings logging
     with pytest.warns(SunpyUserWarning, match="This warning should not be captured") as warn_list:
         with log.log_to_list() as log_list:
-            warnings.warn("This warning should not be captured", SunpyUserWarning)
+            # The stacklevel is explicitly 1 so the warning is attributed to this file
+            warnings.warn("This warning should not be captured", SunpyUserWarning, stacklevel=1)
     assert len(log_list) == 0
     assert len(warn_list) == 1
 
@@ -104,8 +105,9 @@ def test_sunpy_warnings_logging():
     with pytest.warns(AstropyUserWarning, match="This warning should not be captured") as warn_list:  # NOQA: PT031
         log.enable_warnings_logging()
         with log.log_to_list() as log_list:
-            warnings.warn("This warning should be captured", SunpyUserWarning)
-            warnings.warn("This warning should not be captured", AstropyUserWarning)
+            # The stacklevel is explicitly 1 so the warning is attributed to this file
+            warnings.warn("This warning should be captured", SunpyUserWarning, stacklevel=1)
+            warnings.warn("This warning should not be captured", AstropyUserWarning, stacklevel=1)
         log.disable_warnings_logging()
     assert len(log_list) == 1
     assert len(warn_list) == 1

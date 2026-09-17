@@ -32,7 +32,7 @@ class BasicRegistrationFactory:
         Class of the default widget. Defaults to `None`.
     additional_validation_functions : `list` of `str`, optional
         List of strings corresponding to additional validation function names.
-        Defaults to `list`.
+        Defaults to `None`, which is treated as an empty list.
     registry : `dict`, optional
         Dictionary mapping classes (key) to function (value) which validates input.
         Defaults to `None`.
@@ -44,7 +44,9 @@ class BasicRegistrationFactory:
     """
 
     def __init__(self, default_widget_type=None,
-                 additional_validation_functions=[], registry=None):
+                 additional_validation_functions=None, registry=None):
+        if additional_validation_functions is None:
+            additional_validation_functions = []
         if registry is None:
             self.registry = dict()
         else:

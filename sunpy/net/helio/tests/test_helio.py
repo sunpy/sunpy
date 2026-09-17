@@ -248,7 +248,7 @@ def test_link_test_on_valueerror(mock_link_test):
     If `link_test` internally raises `ValueError`, ensure it
     returns `None`
     """
-    link_test('') is None
+    assert link_test('') is None
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', side_effect=urllib.error.URLError)
@@ -257,7 +257,7 @@ def test_link_test_on_urlerror(mock_link_test):
     If `link_test` internally raises `URLError`, ensure it
     returns `None`
     """
-    link_test('') is None
+    assert link_test('') is None
 
 
 @mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=wsdl_urls())

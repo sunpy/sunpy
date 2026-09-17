@@ -285,7 +285,7 @@ def test_concatenation_of_slices_ts(eve_test_ts, concatenated_slices_test_ts):
     assert eve_test_ts.meta.time_range == concatenated_slices_test_ts.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_ts.time_range
     # Test metadata MetaDict matches
-    eve_test_ts.meta.metadata[0][
+    assert eve_test_ts.meta.metadata[0][
         2] == concatenated_slices_test_ts.meta.metadata[0][
             2] == concatenated_slices_test_ts.meta.metadata[1][2]
     # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?
@@ -299,7 +299,7 @@ def test_concatenation_of_slices_list(eve_test_ts, concatenated_slices_test_list
     assert eve_test_ts.meta.time_range == concatenated_slices_test_list.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_list.time_range
     # Test metadata MetaDict matches
-    eve_test_ts.meta.metadata[0][
+    assert eve_test_ts.meta.metadata[0][
         2] == concatenated_slices_test_list.meta.metadata[0][
             2] == concatenated_slices_test_list.meta.metadata[1][2]
     # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?

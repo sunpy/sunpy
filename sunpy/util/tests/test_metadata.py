@@ -358,7 +358,7 @@ def test_pop(seas_metadict):
 
     # Nothing to 'pop', nothing should change
     len_before = len(seas_metadict)
-    seas_metadict.pop('kara') is None
+    assert seas_metadict.pop('kara') is None
     assert len(seas_metadict) == len_before
 
     # Nothing to 'pop', nothing should change but, we should get the default value
