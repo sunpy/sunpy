@@ -222,7 +222,7 @@ class Scraper:
         Goes over archives available over ftp to return list of files in the given timerange.
         """
         directories = self.range(timerange)
-        filesurls = list()
+        filesurls = []
         ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
@@ -261,7 +261,7 @@ class Scraper:
         # Change pattern variables class-wide
         self.pattern, self.datetime_pattern = pattern_temp, datetime_pattern_temp
         directories = self.range(timerange)
-        filepaths = list()
+        filepaths = []
         for directory in directories:
             try:
                 for file_i in os.listdir(directory):
@@ -281,7 +281,7 @@ class Scraper:
         Goes over http archives hosted on the web, to return list of files in the given timerange.
         """
         directories = self.range(timerange)
-        filesurls = list()
+        filesurls = []
         retry_counts = {}
         while directories:
             directory = directories.pop(0)
@@ -415,8 +415,8 @@ class Scraper:
         for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
         # Lists to contain the unique elements of the date and the pattern
-        final_date = list()
-        final_pattern = list()
+        final_date = []
+        final_pattern = []
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
         for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':

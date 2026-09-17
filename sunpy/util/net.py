@@ -40,7 +40,7 @@ def slugify(text, delim='_'):
     text = normalize('NFKC', text)
 
     chars_to_replace = ":\t !\"#$%&'()*-/<=>?@[\\]^_`{|},"
-    trans_map = str.maketrans({c: delim for c in chars_to_replace})
+    trans_map = str.maketrans(dict.fromkeys(chars_to_replace, delim))
 
     return text.translate(trans_map)
 

@@ -48,7 +48,7 @@ class BasicRegistrationFactory:
         if additional_validation_functions is None:
             additional_validation_functions = []
         if registry is None:
-            self.registry = dict()
+            self.registry = {}
         else:
             self.registry = registry
 
@@ -72,7 +72,7 @@ class BasicRegistrationFactory:
         """
         Implementation of a basic check to see if arguments match a widget.
         """
-        candidate_widget_types = list()
+        candidate_widget_types = []
 
         for key in self.registry:
 

@@ -91,8 +91,8 @@ def test_not_equals():
     assert sunpy.time.TimeRange(a_st, a_et) != sunpy.time.TimeRange(b_st, b_et)
 
     # Different objects
-    assert sunpy.time.TimeRange(a_st, a_et) != dict()
-    assert list() != sunpy.time.TimeRange(a_st, a_et)
+    assert sunpy.time.TimeRange(a_st, a_et) != {}
+    assert [] != sunpy.time.TimeRange(a_st, a_et)
 
 
 def test_get_dates():
@@ -157,8 +157,8 @@ def test_split(timerange_a):
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/2T00:00:00')]
     split = timerange_a.split(n=2)
     # Doing direct comparisons seem to not work
-    assert all([is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end)
-                for wi, ex in zip(split, expect)])
+    assert all(is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end)
+                for wi, ex in zip(split, expect))
 
 
 def test_split_n_0_error(timerange_a):
@@ -179,7 +179,7 @@ def test_window(timerange_a):
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi == ex for wi, ex in zip(window, expect)])
+    assert all(wi == ex for wi, ex in zip(window, expect))
 
 
 @pytest.mark.parametrize(('td1', 'td2'), [
@@ -194,7 +194,7 @@ def test_window_timedelta(timerange_a, td1, td2):
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi == ex for wi, ex in zip(window, expect)])
+    assert all(wi == ex for wi, ex in zip(window, expect))
 
 
 def test_days(timerange_a):

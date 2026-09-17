@@ -55,7 +55,7 @@ class HXIMap(GenericMap):
 
     @property
     def _default_observer_coordinate(self):
-        if not (set(['HGLN_OBS','HGLT_OBS','DSUN_OBS']) < set(self.fits_header)):
+        if not ({'HGLN_OBS','HGLT_OBS','DSUN_OBS'} < set(self.fits_header)):
             return  get_earth(self.reference_date)
 
     def _get_cmap_name(self):

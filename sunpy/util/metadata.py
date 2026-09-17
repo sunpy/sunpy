@@ -37,7 +37,7 @@ class MetaDict(OrderedDict):
     def __init__(self, *args, save_original=True):
         # Store all keys as lower-case to allow for case-insensitive indexing
         # OrderedDict can be instantiated from a list of lists or a tuple of tuples
-        tags = dict()
+        tags = {}
         if args:
             args = list(args)
             adict = args[0]

@@ -505,7 +505,7 @@ class JSOCClient(BaseClient):
                 requests[i] = r
 
         # We only download if all are finished
-        if not all([r.has_succeeded() for r in requests]):
+        if not all(r.has_succeeded() for r in requests):
             raise NotExportedError("Can not download as not all the requests "
                                    "have been exported for download yet.")
 
@@ -726,7 +726,7 @@ class JSOCClient(BaseClient):
         # whether the passed PrimeKeys is a subset of that.
         primekeys = client.pkeys(iargs['series'])
         primekeys_passed = iargs.get('primekey', None)  # primekeys_passes is a dict, with key-value pairs.
-        if primekeys_passed is not None and not set(list(primekeys_passed.keys())) <= set(primekeys):
+        if primekeys_passed is not None and not set(primekeys_passed) <= set(primekeys):
             error_message = f"Unexpected PrimeKeys were passed. The series {iargs['series']} supports the following Keywords: {primekeys}"
             raise ValueError(error_message.format(series=iargs['series'], primekeys=primekeys))
         # Raise special error for wavelength (even though the code would ignore it anyway)

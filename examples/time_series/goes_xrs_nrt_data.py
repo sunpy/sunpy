@@ -52,16 +52,14 @@ goes_data.index = parse_time(goes_data.index).datetime
 # "xrsa" and "xrsb" (the channel names for GOES XRS), to their corresponding
 # physical flux units, ``u.W/u.m**2``.
 
-units = dict([("xrsa", u.W / u.m ** 2), ("xrsb", u.W / u.m ** 2)])
+units = {"xrsa": u.W / u.m ** 2, "xrsb": u.W / u.m ** 2}
 
 ###############################################################################
 # We need to create a metadata dictionary for the data.
 # Typically, `sunpy.timeseries.TimeSeries` reads the metadata directly from the file.
 # However, here we need to define our own metadata and we will keep it fairly simple.
 
-meta = dict(
-    {"instrument": "GOES X-ray sensor", "measurements": "primary", "type": "quicklook"}
-)
+meta = {"instrument": "GOES X-ray sensor", "measurements": "primary", "type": "quicklook"}
 
 ###############################################################################
 # Now we will create a `sunpy.timeseries.TimeSeries` by passing in the data,

@@ -106,7 +106,7 @@ def test_patterns(eit_fits_directory):
     assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
     # Test that returned maps are sorted
-    files_sorted = sorted(list(eit_fits_directory.glob('*')))
+    files_sorted = sorted(eit_fits_directory.glob('*'))
     maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
     assert all(m.date == m_s.date for m, m_s in zip(maps, maps_sorted))
 

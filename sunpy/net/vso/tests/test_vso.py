@@ -68,7 +68,7 @@ class MockQRResponse:
     [2]
     """
     def __init__(self, records=None, errors=None):
-        self.provideritem = list()
+        self.provideritem = []
         if records is not None:
             self.provideritem = [MockObject(record=MockObject(recorditem=list(records)))]
         if errors is not None:
@@ -263,8 +263,8 @@ def test_vso_hmi(client, tmpdir):
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
         fileids = dri.fileiditem.fileid
-        series = list(map(lambda x: x.split(':')[0], fileids))
-        assert all([s == series[0] for s in series])
+        series = [x.split(':')[0] for x in fileids]
+        assert all(s == series[0] for s in series)
 
 
 def test_check_connection(mocker):

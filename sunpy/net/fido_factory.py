@@ -296,7 +296,7 @@ class UnifiedResponse(Sequence):
         colnames = set(self[0].colnames)
         for resp in self[1:]:
             colnames.union(resp.colnames)
-        return sorted(list(colnames))
+        return sorted(colnames)
 
 
 query_walker = attr.AttrWalker()
@@ -462,9 +462,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         is_jsoc_only = False
         for query_result in query_results:
             if isinstance(query_result, UnifiedResponse):
-                is_jsoc_only = all([isinstance(result.client, JSOCClient) for result in query_result])
+                is_jsoc_only = all(isinstance(result.client, JSOCClient) for result in query_result)
             elif isinstance(query_result, QueryResponseTable):
-                is_jsoc_only = all([isinstance(result.table.client, JSOCClient) for result in query_result])
+                is_jsoc_only = all(isinstance(result.table.client, JSOCClient) for result in query_result)
         if downloader is None:
             if is_jsoc_only:
                 max_conn = 1
@@ -520,7 +520,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def _check_registered_widgets(self, *args):
         """Factory helper function"""
-        candidate_widget_types = list()
+        candidate_widget_types = []
         for key in self.registry:
             if self.registry[key](*args):
                 candidate_widget_types.append(key)

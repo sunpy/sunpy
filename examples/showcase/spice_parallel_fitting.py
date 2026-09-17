@@ -239,7 +239,7 @@ aspect = hdu.header["CDELT2"] / hdu.header["CDELT1"]
 # ``wl_sum`` cube.  Use the constrained layout for better use of space
 # in the figure.
 fig1, ax1 = plt.subplots(
-    subplot_kw=dict(projection=wl_sum),
+    subplot_kw={'projection': wl_sum},
     figsize=(4.5, 4),
     layout="constrained",
 )
@@ -256,7 +256,7 @@ fig1.colorbar(
 ax1.set_title("Data (summed over wavelength)", pad=40)
 
 fig2, ax2 = plt.subplots(
-    subplot_kw=dict(projection=wl_sum),
+    subplot_kw={'projection': wl_sum},
     figsize=(4.5, 4),
     layout="constrained",
 )

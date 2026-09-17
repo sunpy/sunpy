@@ -15,7 +15,7 @@ def test_skeleton():
                      'MYNUMBER': 1, 'MYNUMBER_ARRAY': 3, 'MYNUMBER_ARRAY_DIMENSION': (2, 3, 4, 5),
                      'MYUINT': 1, 'MYSTRUCTURE': 14,  # the elements inside the OrderedDict
                      'MYSTRUCTURE_ARRAY': 6, 'HEADER': 5}
-    assert sorted(list(TESTING.keys())) == sorted(list(toplevel_dims.keys()))
+    assert sorted(TESTING.keys()) == sorted(toplevel_dims.keys())
     for key, val in toplevel_dims.items():
         if isinstance(val, tuple):
             assert TESTING[key].shape == tuple(reversed(val))

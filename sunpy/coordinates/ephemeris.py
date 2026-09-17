@@ -317,7 +317,7 @@ def get_horizons_coord(body, time='now', id_type=None, *,
         raise ValueError("Invalid id_type")
 
     if isinstance(time, dict):
-        if set(time.keys()) != set(['start', 'stop', 'step']):
+        if set(time.keys()) != {'start', 'stop', 'step'}:
             raise ValueError('time dictionary must have the keys ["start", "stop", "step"]')
         jpl_fmt = "'%Y-%m-%d %H:%M:%S.%f'"
         args['START_TIME'] = parse_time(time['start']).tdb.strftime(jpl_fmt)

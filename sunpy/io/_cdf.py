@@ -57,7 +57,7 @@ def read_cdf(fname, **kwargs):
     var_keys = [var for var in var_attrs if 'DEPEND_0' in var_attrs[var] and var_attrs[var]['DEPEND_0'] is not None]
 
     # Get unique time index keys
-    time_index_keys = sorted(set([var_attrs[var]['DEPEND_0'] for var in var_keys]))
+    time_index_keys = sorted({var_attrs[var]['DEPEND_0'] for var in var_keys})
 
     all_ts = []
     # For each time index, construct a GenericTimeSeries

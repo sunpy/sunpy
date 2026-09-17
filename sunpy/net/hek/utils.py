@@ -238,7 +238,7 @@ def _map_chain_code_columns_to_coordinates(table):
         # broadcasting of coordinate frame information later on if all shapes are the
         # same.
         coord_data = [np.full(shape, np.nan) if c is None else c for c in coord_data]
-        if all([coord_data[0].shape==c.shape for c in coord_data]):
+        if all(coord_data[0].shape==c.shape for c in coord_data):
             # NOTE: Taking the transpose of the coordinate such that the first
             # dimension of the coordinate is the number of rows in the table. The
             # transpose is not taken of the data prior to construction so that the

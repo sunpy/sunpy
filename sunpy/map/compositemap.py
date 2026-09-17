@@ -335,11 +335,11 @@ class CompositeMap:
                         'heliographic_longitude']
         if index is None:
             for i, amap in enumerate(self._maps):
-                if all([hasattr(amap, k) for k in needed_attrs]):
+                if all(hasattr(amap, k) for k in needed_attrs):
                     index = i
                     break
 
-        index_check = all([hasattr(self._maps[index], k) for k in needed_attrs])
+        index_check = all(hasattr(self._maps[index], k) for k in needed_attrs)
         if not index_check or index is None:
             raise ValueError("Specified index does not have all"
                              " the required attributes to draw grid.")

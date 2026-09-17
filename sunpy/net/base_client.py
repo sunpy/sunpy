@@ -386,7 +386,7 @@ class BaseClient(ABC):
     are examples of download clients that subclass ``BaseClient``.
     """
 
-    _registry = dict()
+    _registry = {}
 
     def __init_subclass__(cls, *args, **kwargs):
         """

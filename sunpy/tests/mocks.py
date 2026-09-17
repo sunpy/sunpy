@@ -45,7 +45,7 @@ class MockObject(MutableMapping):
     """
 
     def __init__(self, *args, **kwargs):
-        self._datastore = dict()
+        self._datastore = {}
         self.prohibited_attrs = set(dir(self))
         self.prohibited_attrs.update(dir(self._datastore))
 

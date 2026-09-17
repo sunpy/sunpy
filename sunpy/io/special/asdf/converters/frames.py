@@ -6,7 +6,7 @@ class SunpyFrameConverter(FrameConverter):
         # Sort the tags in reverse alphabetical order and pick the first (i.e.
         # the one with the highest version). This assumes that all the tags for
         # this converter are named the same other than the version number.
-        tags = list(sorted(tags, reverse=True))
+        tags = sorted(tags, reverse=True)
         return tags[0]
 
 

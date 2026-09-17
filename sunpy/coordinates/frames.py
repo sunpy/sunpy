@@ -625,7 +625,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         lat, lon = rep.lat, rep.lon
 
         # Check for the use of floats with lower precision than the native Python float
-        if not set([lon.dtype.type, lat.dtype.type]).issubset([float, np.float64, np.longdouble]):
+        if not {lon.dtype.type, lat.dtype.type}.issubset([float, np.float64, np.longdouble]):
             warn_user("The Helioprojective component values appear to be lower "
                       "precision than the native Python float: "
                       f"Tx is {lon.dtype.name}, and Ty is {lat.dtype.name}. "
@@ -649,7 +649,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         # within the stack trace.
         stack_trace = traceback.format_stack()
         matching_string = 'wcsaxes.*(_draw_grid|_update_ticks)'
-        bypass = any([re.search(matching_string, string) for string in stack_trace])
+        bypass = any(re.search(matching_string, string) for string in stack_trace)
         if not bypass and np.all(np.isnan(d)) and np.any(np.isfinite(cos_alpha)):
             warn_user("The conversion of these 2D helioprojective coordinates to 3D is all NaNs "
                       "because off-disk coordinates need an additional assumption to be mapped to "

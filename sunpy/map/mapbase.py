@@ -200,7 +200,7 @@ class GenericMap(NDData):
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
     """
-    _registry = dict()
+    _registry = {}
     # This overrides the default doc for the meta attribute
     meta = MetaData(doc=_meta_doc, copy=False)
     # Enabling the GenericMap reflected operators is a bit subtle. The GenericMap
