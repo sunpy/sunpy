@@ -812,7 +812,7 @@ class JSOCClient(BaseClient):
             info = client.series(rf'{series}\.')
             for item in info:
                 try:
-                    print(f'🛰 Getting info for {series}: {item}')
+                    print(f'🛰 Getting info for {series}: {item}')  # noqa: T201
                     data = client.info(item)
                     series_store.append((data.name, data.note))
                     if not data.segments.empty:
@@ -820,7 +820,7 @@ class JSOCClient(BaseClient):
                 except Exception as e:  # noqa: BLE001
                     # Any error getting info for a series is reported and the
                     # remaining series are still processed.
-                    print(f"⚠️  {series} failed with error: {e}")
+                    print(f"⚠️  {series} failed with error: {e}")  # noqa: T201
                     if item in ["hmi.V_avg120", "mdi.fdV_avg120"]:
                         # The following is from a private email from JSOC:
                         #
@@ -833,7 +833,7 @@ class JSOCClient(BaseClient):
                         # converting to utf8 from ascii". PostgreSQL ignores any byte that is not an
                         # ascii byte and simply returns it as is. So now jsocexintfo.py has a byte,
                         # 0xC5, that it expects is a UTF-8 byte, which it isn't.
-                        print(f"🛈 {item} has a known issue with the JSOC database.")
+                        print(f"🛈 {item} has a known issue with the JSOC database.")  # noqa: T201
         series_store = list(set(series_store))
         segments = list(set(segments))
         with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:

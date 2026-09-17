@@ -229,7 +229,7 @@ class HECClient(BaseClient):
         tables = self.get_table_names()
         table_list = sorted([t[0] for t in tables if len(t[0]) > 0])
         for index, table in enumerate(table_list):
-            print(f'{index + 1} - {table}')
+            print(f'{index + 1} - {table}')  # noqa: T201
         while True:
             user_input = input(f"\nPlease enter a table number between 1 and {len(table_list)} "
                                "('e' to exit): ")
@@ -239,7 +239,7 @@ class HECClient(BaseClient):
                 table_no = int(user_input)
                 return table_list[table_no - 1]
             else:
-                print(f"Input must be an integer between 1 and {len(table_list)}")
+                print(f"Input must be an integer between 1 and {len(table_list)}")  # noqa: T201
 
     def fetch(self, *args, **kwargs):
         """

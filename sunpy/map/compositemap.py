@@ -118,7 +118,7 @@ class CompositeMap:
 
     def list_maps(self):
         """Prints a list of the currently included maps."""
-        print([m.__class__ for m in self._maps])
+        print([m.__class__ for m in self._maps])  # noqa: T201
 
     def get_map(self, index):
         """Returns the map with given index """

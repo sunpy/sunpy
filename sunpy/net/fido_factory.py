@@ -259,9 +259,9 @@ class UnifiedResponse(Sequence):
 
         nprov = len(self)
         if nprov == 1:
-            print(f'Results from {len(self)} Provider:')
+            print(f'Results from {len(self)} Provider:')  # noqa: T201
         else:
-            print(f'Results from {len(self)} Providers:')
+            print(f'Results from {len(self)} Providers:')  # noqa: T201
 
         for i , table in enumerate(self._list):
             block = self[i]

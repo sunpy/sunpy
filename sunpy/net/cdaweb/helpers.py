@@ -130,7 +130,7 @@ def _update_cdaweb_dataset_data():
     N = 3
 
     def _fetch_cdaweb_dataset(group, url=url):
-        print(f'🛰 Getting datasets for {group}')
+        print(f'🛰 Getting datasets for {group}')  # noqa: T201
         u = url + f'?observatoryGroup={group}'
         res = requests.get(u, headers=_CDAS_HEADERS)
         datasets = res.json()['DatasetDescription']

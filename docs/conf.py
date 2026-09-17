@@ -30,7 +30,7 @@ from sunpy.util import missing_dependencies_by_extra
 
 missing_requirements = missing_dependencies_by_extra("sunpy")["docs"]
 if missing_requirements:
-    print(
+    print(  # noqa: T201
         f"The {' '.join(missing_requirements.keys())} package(s) could not be found and "
         "is needed to build the documentation, please install the 'docs' requirements."
     )
