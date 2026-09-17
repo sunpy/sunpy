@@ -1,0 +1,1 @@
+Expose additional columns from 1-minute averaged GOES files for flagging bad data in flare detection.
