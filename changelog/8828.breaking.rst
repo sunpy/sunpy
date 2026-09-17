@@ -1,0 +1,9 @@
+`sunpy.net.jsoc.Cutout` now transforms the supplied ``bottom_left`` and
+``top_right`` coordinates into a `~sunpy.coordinates.Helioprojective` frame with
+Earth as the observer, which is used as an approximation of SDO's location.
+Previously the ``observer`` frame attribute was ignored entirely and the
+coordinates were implicitly assumed to already be in SDO's frame. The
+coordinates must now have both ``obstime`` and ``observer`` defined, and a
+`~sunpy.util.exceptions.SunpyUserWarning` is raised when a transformation is
+actually applied. Requests built from coordinates that already have Earth as the
+observer are unaffected.
