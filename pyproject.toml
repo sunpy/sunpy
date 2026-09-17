@@ -230,7 +230,6 @@ PC180 = "No markdown formatter required"
 PC901 = "Opt-out"
 PC902 = "Opt-out"
 MY = "No SunPy projects make heavy use of types"
-RF101 = "ruff extended linting option disabled, enable to use bugbear"
 
 # TODO: This should be in towncrier.toml but Giles currently only works looks in
 # pyproject.toml we should move this back when it's fixed.

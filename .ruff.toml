@@ -16,6 +16,23 @@ select = [
   "UP",
   "PT",
   "I",
+  "B",
+  "BLE",
+  "A",
+  "C4",
+  "INP",
+  "PIE",
+  "T20",
+  "RET",
+  "TID",
+  "PTH",
+  "PD",
+  "PLC",
+  "PLE",
+  "FLY",
+  "NPY",
+  "PERF",
+  "RUF",
 ]
 ignore = [
   # pycodestyle (E, W)
