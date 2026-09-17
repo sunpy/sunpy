@@ -60,6 +60,9 @@ ignore = [
 "conftest.py" = [
   "INP001", # File is part of an implicit namespace package.
 ]
+"tools/**.py" = [
+  "INP001", # These are standalone scripts, not part of a package.
+]
 "docs/conf.py" = [
   "E402", # Module imports not at top of file
   "I", # isort
