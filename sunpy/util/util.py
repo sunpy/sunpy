@@ -9,6 +9,7 @@ from collections import UserList
 from collections.abc import Iterator
 from io import BytesIO
 from itertools import chain, count
+from pathlib import Path
 from shutil import get_terminal_size
 
 import numpy as np
@@ -67,14 +68,14 @@ def replacement_filename(path: str):
     `str`:
         A string path.
     """
-    if not os.path.exists(path):
+    if not Path(path).exists():
         return path
     dir_, filename = os.path.split(path)
-    base, ext = os.path.splitext(filename)
+    base, ext = Path(filename).stem, Path(filename).suffix
     for c in count():
         name = base + '.' + str(c) + ext
-        newpath = os.path.join(dir_, name)
-        if not os.path.exists(newpath):
+        newpath = os.fspath(Path(dir_) / name)
+        if not Path(newpath).exists():
             return newpath
     return None
 

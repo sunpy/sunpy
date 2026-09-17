@@ -4,10 +4,10 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
-import os
 import re
 import traceback
 from contextvars import ContextVar
+from pathlib import Path
 
 import numpy as np
 
@@ -963,9 +963,8 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
             raise ValueError
 
         # First look if the file is bundled in package
-        local_file = os.path.join(os.path.dirname(__file__), "data",
-                                  f"{self.magnetic_model}coeffs.txt")
-        if os.path.exists(local_file):
+        local_file = Path(__file__).parent / "data" / f"{self.magnetic_model}coeffs.txt"
+        if local_file.exists():
             return local_file
 
         # Otherwise download the file and cache it

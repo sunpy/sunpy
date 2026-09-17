@@ -265,7 +265,7 @@ def test_path_read_only(tmp_path):
         a.Time("2012/1/1", "2012/1/1"), a.Instrument.lyra, a.Level.two
     )
     # chmod doesn't seem to work correctly on the windows CI
-    os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)
+    tmp_path.chmod(S_IREAD | S_IRGRP | S_IROTH)
     # Check to see if it's actually read only before running the test
     if not os.access(tmp_path, os.W_OK):
         with pytest.raises(PermissionError):

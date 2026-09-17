@@ -15,11 +15,11 @@ from .version import version as __version__
 
 
 def _get_bibtex():
-    import os
     import textwrap
+    from pathlib import Path
 
     # Set the bibtex entry to the article referenced in CITATION.rst
-    citation_file = os.path.join(os.path.dirname(__file__), 'CITATION.rst')
+    citation_file = Path(__file__).parent / 'CITATION.rst'
 
     # Explicitly specify UTF-8 encoding in case the system's default encoding is problematic
     with open(citation_file, encoding='utf-8') as citation:

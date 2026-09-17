@@ -1,7 +1,7 @@
 """
 This module provides a JPEG 2000 file reader for internal use.
 """
-import os
+from pathlib import Path
 
 # We have to use lxml as lxml can not  serialize xml from the standard library
 import lxml.etree as ET
@@ -180,4 +180,4 @@ def write(fname, data, header, **kwargs):
     meta_boxes.insert(target_index, fits_box)
     # Rewrites the jp2 file on disk with the xml data in the header
     jp2.wrap(fname, boxes=meta_boxes)
-    os.remove(tmp_filename)
+    Path(tmp_filename).unlink()

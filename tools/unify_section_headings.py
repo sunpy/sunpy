@@ -7,6 +7,7 @@ Find the sets of characters used in RST section headers, and replace with a stan
 import re
 import shutil
 import tempfile
+from pathlib import Path
 
 HEADER_CHAR_LEVELS = '*=-^"+:~'
 
@@ -58,8 +59,6 @@ def replace_header_chars(filename):
 
 
 if __name__ == "__main__":
-    from glob import glob
-    from pathlib import Path
     here = Path(__file__).parent.absolute()
-    rst_files = glob(str(here/Path("../docs/**/*rst")), recursive=True)
+    rst_files = here.glob("../docs/**/*rst")
     [replace_header_chars(filename) for filename in rst_files]

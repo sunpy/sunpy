@@ -1,8 +1,7 @@
 import collections
-import glob
 import os
-import pathlib
 import re
+from pathlib import Path
 from urllib.parse import urlparse
 
 import fsspec
@@ -53,10 +52,10 @@ def parse_path(path, f, **kwargs):
         for afile in sorted(path.glob("*")):
             read_files += f(afile, **kwargs)
         return read_files
-    if glob.glob(str(path)):
+    glob_files = sorted(path.parent.glob(path.name))
+    if glob_files:
         read_files = []
-        for afile in sorted(glob.glob(str(path))):
-            afile = pathlib.Path(afile)
+        for afile in glob_files:
             read_files += f(afile, **kwargs)
         return read_files
     raise ValueError(f"Did not find any files at {path}")
@@ -86,7 +85,7 @@ def possibly_a_path(obj):
     Does *not* check if the path exists.
     """
     try:
-        pathlib.Path(obj)
+        Path(obj)
         return True
     except TypeError:
         return False

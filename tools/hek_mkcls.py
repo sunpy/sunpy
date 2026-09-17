@@ -29,9 +29,9 @@ barring like.
 # XXX: Maybe split into three modules and import them all into one so
 # we do not need a template but generate one module in its entirety.
 
-import os
 import sys
 from collections import defaultdict
+from pathlib import Path
 
 EVENTS = [
     'AR', 'CME', 'CD', 'CH', 'CW', 'FI', 'FE', 'FA', 'FL', 'LP', 'OS', 'SS',
@@ -274,14 +274,13 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
 if __name__ == '__main__':
     BUFFER = 4096
     used = set()
+    here = Path(__file__).parent
     tmpl = (
-        os.path.join(os.path.dirname(__file__), 'hektemplate.py')
+        here / 'hektemplate.py'
         if len(sys.argv) <= 2 else sys.argv[2]
     )
     dest = (
-        os.path.join(
-            os.path.dirname(__file__), os.pardir, 'sunpy', 'net', 'hek',
-            'attrs.py')
+        here.parent / 'sunpy' / 'net' / 'hek' / 'attrs.py'
         if len(sys.argv) <= 1 else sys.argv[1]
     )
 

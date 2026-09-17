@@ -1,4 +1,3 @@
-import os
 import pathlib
 from unittest.mock import patch
 
@@ -135,7 +134,7 @@ def test_write_file_ana(tmpdir):
     # Aim is to verify that we can write a ANA file and read back correctly
     ana_header, ana_data = read_file(get_test_filepath("test_ana.fz"))[0][::-1]
     write_file(str(tmpdir.join("ana_test_write.fz")), ana_data, str(ana_header))
-    assert os.path.exists(str(tmpdir.join("ana_test_write.fz")))
+    assert pathlib.Path(str(tmpdir.join("ana_test_write.fz"))).exists()
     test_ana_header, test_ana_data = read_file(get_test_filepath("test_ana.fz"))[0][::-1]
     assert np.all(np.equal(test_ana_data, ana_data))
     assert test_ana_header == ana_header

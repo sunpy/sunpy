@@ -625,8 +625,8 @@ class VSOClient(BaseClient):
         """
         from sunpy.net import attrs as a
 
-        here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
+        here = Path(__file__).resolve().parent
+        with open(here / 'data' / 'attrs.json') as attrs_file:
             keyword_info = json.load(attrs_file)
 
         # Now to traverse the saved dict and give them attr keys.
@@ -644,7 +644,7 @@ class VSOClient(BaseClient):
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
         """
-        here = os.path.dirname(os.path.realpath(__file__))
+        here = Path(__file__).resolve().parent
 
         # Keywords we are after
         keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
@@ -672,7 +672,7 @@ class VSOClient(BaseClient):
         for attr in attrs:
             attrs[attr] = sorted(attrs[attr], key=lambda _list: _list[0])
 
-        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+        with open(here / 'data' / 'attrs.json', 'w') as attrs_file:
             json.dump(dict(sorted(attrs.items())), attrs_file, indent=2)
 
     @property

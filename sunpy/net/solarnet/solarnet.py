@@ -1,5 +1,4 @@
 import json
-import os
 import urllib.request
 from pathlib import Path
 
@@ -145,9 +144,9 @@ class SOLARNETClient(BaseClient):
         Gets the names of available datasets, tags, and targets from SolarNet and saves them into
         separate JSON files.
         """
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        data_dir = os.path.join(dir_path, 'data')
-        os.makedirs(data_dir, exist_ok=True)
+        dir_path = Path(__file__).resolve().parent
+        data_dir = dir_path / 'data'
+        data_dir.mkdir(parents=True, exist_ok=True)
         # Datasets
         url_dataset = _BASE_URL.format("dataset")
         response = requests.get(url_dataset, params={"limit": 100})
@@ -157,7 +156,7 @@ class SOLARNETClient(BaseClient):
             name = obj["name"].replace(" ", "_").lower()
             description = obj.get("description") or obj.get("telescope", {}).get("description", "")
             values[name] = description.split(". ")[0].split(", ")[0] if description else ""
-        with open(os.path.join(data_dir, 'datasets.json'), 'w') as f:
+        with open(data_dir / 'datasets.json', 'w') as f:
             json.dump(dict(sorted(values.items())), f, indent=2)
         # Tags
         url_tags = _BASE_URL.format("tag")
@@ -167,7 +166,7 @@ class SOLARNETClient(BaseClient):
         for obj in data_tags.get("objects", []):
             tag_name = obj["name"].replace(" ", "_").lower()
             tag_values[tag_name] = tag_name
-        with open(os.path.join(data_dir, 'tags.json'), 'w') as f:
+        with open(data_dir / 'tags.json', 'w') as f:
             json.dump(dict(sorted(tag_values.items())), f, indent=2)
 
     @classmethod

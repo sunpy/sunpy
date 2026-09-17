@@ -1,5 +1,5 @@
 import datetime
-import os
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -69,7 +69,7 @@ def test_fetch_working(indices_client, tmpdir):
     target_dir = tmpdir.mkdir("down")
     download_list = indices_client.fetch(qr1, path=target_dir)
     assert len(download_list) == len(qr1)
-    assert os.path.basename(download_list[0]) == 'observed-solar-cycle-indices.json'
+    assert Path(download_list[0]).name == 'observed-solar-cycle-indices.json'
 
 
 @pytest.mark.parametrize(

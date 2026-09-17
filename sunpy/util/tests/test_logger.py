@@ -1,7 +1,7 @@
 
 import logging
-import os.path
 import warnings
+from pathlib import Path
 
 import pytest
 
@@ -59,7 +59,7 @@ def test_is_log_to_file_configured():
             assert level_to_numeric.get(log_file_level) == fh.level
 
             log_file_path = config.get('logger', 'log_file_path')
-            assert os.path.basename(fh.baseFilename) == os.path.basename(log_file_path)
+            assert Path(fh.baseFilename).name == Path(log_file_path).name
 
 
 def test_origin():

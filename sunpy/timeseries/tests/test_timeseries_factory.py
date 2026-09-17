@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os
 from collections import OrderedDict
 from pathlib import Path
 
@@ -76,8 +75,8 @@ def test_factory_generate_list_of_ts():
 @pytest.mark.filterwarnings('ignore:Unknown units')
 def test_factory_generate_from_glob():
     # Test making a TimeSeries from a glob
-    ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
-        rootdir, "eve", "*"), source='EVE', concatenate=True)
+    ts_from_glob = sunpy.timeseries.TimeSeries(rootdir / "eve" / "*",
+                                               source='EVE', concatenate=True)
     assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
 
@@ -379,7 +378,7 @@ def test_invalid_manual_data():
 
 
 def test_invalid_filepath():
-    invalid_filepath = os.path.join(rootdir, 'invalid_filepath_here')
+    invalid_filepath = rootdir / 'invalid_filepath_here'
     with pytest.raises(ValueError, match='Did not find any files'):
         sunpy.timeseries.TimeSeries(invalid_filepath)
     # Now with allow_errors kwarg set
@@ -388,7 +387,7 @@ def test_invalid_filepath():
 
 
 def test_invalid_file():
-    invalid_filepath = os.path.join(rootdir, 'annotation_ppt.db')
+    invalid_filepath = rootdir / 'annotation_ppt.db'
     with pytest.raises(NoMatchError):
         sunpy.timeseries.TimeSeries(invalid_filepath)
     # Now with allow_errors kwarg set

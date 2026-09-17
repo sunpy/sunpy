@@ -1,10 +1,10 @@
 """
 This module provides general net utility functions.
 """
-import os
 import shutil
 import sys
 from email.parser import FeedParser
+from pathlib import Path
 from unicodedata import normalize
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -155,8 +155,8 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
         The file path for the downloaded file.
     """
     filename = get_system_filename(opn, url, default)
-    path = os.path.join(directory, filename.decode('utf-8'))
-    if overwrite and os.path.exists(path):
+    path = Path(directory) / filename.decode('utf-8')
+    if overwrite and path.exists():
         path = replacement_filename(path)
     with open(path, 'wb') as fd:
         shutil.copyfileobj(opn, fd)

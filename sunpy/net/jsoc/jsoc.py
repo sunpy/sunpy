@@ -1,6 +1,5 @@
 import copy
 import json
-import os
 import time
 import urllib
 from pathlib import Path
@@ -512,29 +511,28 @@ class JSOCClient(BaseClient):
         # Ensure path has a {file} in it
         if path is None:
             default_dir = config.get("downloads", "download_dir")
-            path = os.path.join(default_dir, '{file}')
+            path = str(Path(default_dir) / '{file}')
         elif isinstance(path, Path):
             path = str(path)
 
         if isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
+            path = str(Path(path) / '{file}')
 
         paths = []
         for request in requests:
             if request.method == 'url-tar':
                 fname = path.format(file=Path(request.tarfile).name)
-                paths.append(os.path.expanduser(fname))
+                paths.append(Path(fname).expanduser())
             else:
                 for filename in request.data['filename']:
                     # Ensure we don't duplicate the file extension
-                    ext = os.path.splitext(filename)[1]
+                    ext = Path(filename).suffix
                     if path.endswith(ext):
                         fname = path.strip(ext)
                     else:
                         fname = path
                     fname = fname.format(file=filename)
-                    fname = os.path.expanduser(fname)
-                    paths.append(fname)
+                    paths.append(Path(fname).expanduser())
 
         dl_set = True
         if not downloader:
@@ -800,7 +798,7 @@ class JSOCClient(BaseClient):
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
         """
-        here = os.path.dirname(os.path.realpath(__file__))
+        here = Path(__file__).resolve().parent
         client = drms.Client()
         # Series we are after
         data_sources = ["hmi", "mdi", "aia"]
@@ -835,7 +833,7 @@ class JSOCClient(BaseClient):
                         print(f"🛈 {item} has a known issue with the JSOC database.")  # noqa: T201
         series_store = list(set(series_store))
         segments = list(set(segments))
-        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+        with open(Path(here) / 'data' / 'attrs.json', 'w') as attrs_file:
             keyword_info = {
                 "series_store": sorted(series_store),
                 "segments": sorted(segments),
@@ -855,8 +853,8 @@ class JSOCClient(BaseClient):
         # Import here to prevent circular imports
         from sunpy.net import attrs as a
 
-        here = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(here, 'data', 'attrs.json')) as attrs_file:
+        here = Path(__file__).resolve().parent
+        with open(here / 'data' / 'attrs.json') as attrs_file:
             keyword_info = json.load(attrs_file)
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}

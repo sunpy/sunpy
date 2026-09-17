@@ -25,10 +25,10 @@ Notes
 import collections
 import collections.abc
 import math
-import os
 import re
 import sys
 import traceback
+from pathlib import Path
 
 from astropy.io import fits
 
@@ -192,7 +192,7 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     fits_header = header_to_fits(header)
 
     if isinstance(fname, str):
-        fname = os.path.expanduser(fname)
+        fname = Path(fname).expanduser()
 
     fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)

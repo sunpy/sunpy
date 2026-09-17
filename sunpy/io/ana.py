@@ -10,8 +10,8 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
     By default, this module is not installed on platforms other than Linux (x86-64) and macOS (x86-64 and ARM64).
     See the installation guide for more info.
 """
-import os
 from functools import wraps
+from pathlib import Path
 
 from sunpy.io._header import FileHeader
 from sunpy.util.decorators import deprecated
@@ -66,7 +66,7 @@ def read(filename, debug=False, **kwargs):
     `list`
         A list of (data, header) tuples
     """
-    if not os.path.isfile(filename):
+    if not Path(filename).is_file():
         raise OSError(f"File {filename} does not exist!")
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]

@@ -5,6 +5,7 @@ import os
 import re
 from datetime import datetime
 from ftplib import FTP
+from pathlib import Path
 from time import sleep
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
@@ -261,8 +262,8 @@ class Scraper:
         filepaths = []
         for directory in directories:
             try:
-                for file_i in os.listdir(directory):
-                    fullpath = directory + file_i
+                for file_i in Path(directory).iterdir():
+                    fullpath = directory + file_i.name
                     if self._url_follows_pattern(fullpath):
                         if self._check_timerange(fullpath, timerange):
                             filepaths.append(fullpath)

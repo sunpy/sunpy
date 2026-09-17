@@ -1,4 +1,3 @@
-import os
 import re
 from pathlib import Path
 
@@ -194,7 +193,7 @@ def test_delete_db(sqlmanager, sqlstorage):
     test_function()
 
     # The DB file was then deleted
-    os.remove(str(sqlstorage._db_path))
+    Path(str(sqlstorage._db_path)).unlink()
 
     # SQLite should not throw an error
     test_function()
@@ -273,9 +272,8 @@ def test_file_deleted_redownload(storage, downloader, data_function):
     test_file_path = Path(storage._store[0]['file_path'])
     assert test_file_path.exists()
 
-    os.remove(test_file_path)
+    test_file_path.unlink()
     assert not test_file_path.exists()
-
     with pytest.warns(SunpyUserWarning, match="Requested file appears to missing and will be redownloaded."):
         data_function()
 

@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -56,7 +56,7 @@ def coordframe_array(request):
 def test_hgc_100():
     # Test that HeliographicCarrington is populated with Earth as the
     # observer when loading a older schema (1.0.0)
-    test_file = os.path.join(os.path.dirname(__file__), "hgc_100.asdf")
+    test_file = Path(__file__).parent / "hgc_100.asdf"
     with asdf.open(test_file) as input_asdf:
         hgc = input_asdf['hgc']
         assert isinstance(hgc, frames.HeliographicCarrington)

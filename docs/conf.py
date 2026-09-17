@@ -371,9 +371,9 @@ else:
 # see https://github.com/sunpy/sunpy/wiki/Home:-JSOC
 os.environ["JSOC_EMAIL"] = "jsoc@sunpy.org"
 sphinx_gallery_conf = {
-    'backreferences_dir': os.path.join('generated', 'modules'),
+    'backreferences_dir': 'generated/modules',
     'filename_pattern': '^((?!skip_).)*$',
-    'examples_dirs': os.path.join('..', 'examples'),
+    'examples_dirs': '../examples',
     'subsection_order': ExplicitOrder([
         '../examples/acquiring_data',
         '../examples/map',
@@ -387,7 +387,7 @@ sphinx_gallery_conf = {
         '../examples/showcase',
     ]),
     'within_subsection_order': "ExampleTitleSortKey",
-    'gallery_dirs': os.path.join('generated', 'gallery'),
+    'gallery_dirs': 'generated/gallery',
     'matplotlib_animations': True,
     # Comes from the theme.
     "default_thumb_file": PNG_ICON,

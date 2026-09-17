@@ -1,6 +1,5 @@
-import os
 from collections import OrderedDict
-from os.path import basename
+from pathlib import Path
 
 import numpy as np
 from pandas import DataFrame, to_datetime
@@ -225,7 +224,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             else:
                 if self._filename is not None:
                     base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
+                    kwargs['title'] = Path(base).stem
                 else:
                     kwargs['title'] = 'EVE Averages'
 
@@ -250,7 +249,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         Parses an EVE CSV file.
         """
-        cls._filename = basename(filepath)
+        cls._filename = Path(filepath).name
         with open(filepath, encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
