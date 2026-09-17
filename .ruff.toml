@@ -114,4 +114,4 @@ no-lines-before = ["local-folder"]
 "warnings.warn".msg = "Use sunpy specific warning helpers warn_* from sunpy.utils.exceptions"
 
 [lint.flake8-builtins]
-builtins-allowed-list = ["format"] # `format` is a standard argument name for our time APIs, mirroring astropy
+builtins-ignorelist = ["format"] # `format` is a standard argument name for our time APIs, mirroring astropy
