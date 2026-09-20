@@ -91,3 +91,9 @@ def test_file_change(cache, mocker):
         #Overwrite == False, so the existing file should not be overwritten
         file_path, file_hash, url = mock_download_and_hash('https://example.com/abc.text', redownload=True)
         assert file_hash == modified_hash
+
+
+def test_cache_download_empty_urls(cache):
+    with pytest.raises(ValueError, match="No URLs provided to download."):
+        cache.download([])
+
