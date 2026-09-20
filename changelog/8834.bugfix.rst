@@ -1,0 +1,1 @@
+Fixed an `UnboundLocalError` in ~sunpy.data.data_manager.cache.Cache.download when an empty list or sequence of URLs is passed.

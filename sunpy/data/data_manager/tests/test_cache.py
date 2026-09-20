@@ -96,4 +96,3 @@ def test_file_change(cache, mocker):
 def test_cache_download_empty_urls(cache):
     with pytest.raises(ValueError, match="No URLs provided to download."):
         cache.download([])
-
