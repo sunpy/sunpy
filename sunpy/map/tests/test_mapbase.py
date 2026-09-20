@@ -840,7 +840,8 @@ def test_submap_world(simple_map, rect, submap_out):
 
 
 @pytest.mark.parametrize('test_map', ["aia171_roll_map", "aia171_test_map",
-                                      "hmi_test_map", "aia171_test_map_with_mask"],
+                                      "hmi_test_map", "aia171_test_map_with_mask",
+                                      "swap_test_map"],
                          indirect=['test_map'])
 def test_submap_world_corners(test_map):
     """
@@ -1981,3 +1982,70 @@ def test_submap_nan_error(aia171_test_map):
     coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
     with pytest.raises(ValueError, match="The provided input coordinates to"):
         aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
+
+
+# ==============================================================================
+# Tests across all supported Map sources (#3502)
+# ==============================================================================
+def test_all_sources_wcs(all_test_maps):
+    """Verify that every map source creates a valid WCS object."""
+    assert isinstance(all_test_maps.wcs, astropy.wcs.WCS)
+    assert all_test_maps.wcs.array_shape == all_test_maps.data.shape
+    assert all_test_maps.coordinate_frame is not None
+
+
+def test_all_sources_dimensions_and_data(all_test_maps):
+    """Verify 2D dimensions, units, and data properties."""
+    assert len(all_test_maps.dimensions) == 2
+    assert all_test_maps.dimensions[0].unit == u.pix
+    assert all_test_maps.dimensions[1].unit == u.pix
+    assert all_test_maps.data.ndim == 2
+    assert all_test_maps.data.shape == (
+        int(all_test_maps.dimensions[1].value),
+        int(all_test_maps.dimensions[0].value),
+    )
+
+
+def test_all_sources_stats(all_test_maps):
+    """Verify basic statistics methods work across all map sources."""
+    assert np.isfinite(all_test_maps.min())
+    assert np.isfinite(all_test_maps.max())
+    assert np.isfinite(all_test_maps.mean())
+    assert np.isfinite(all_test_maps.std())
+
+
+def test_all_sources_name_and_nickname(all_test_maps):
+    """Verify that name and nickname are strings."""
+    assert isinstance(all_test_maps.name, str)
+    assert isinstance(all_test_maps.nickname, str)
+
+
+def test_all_sources_world_pixel_roundtrip(all_test_maps):
+    """Verify world to pixel and pixel to world round-trip conversion."""
+    pix = all_test_maps.reference_pixel
+    coord = all_test_maps.pixel_to_world(*pix)
+    roundtrip_pix = all_test_maps.world_to_pixel(coord)
+    assert u.allclose(pix.x, roundtrip_pix.x, atol=1e-3 * u.pix)
+    assert u.allclose(pix.y, roundtrip_pix.y, atol=1e-3 * u.pix)
+
+
+def test_all_sources_resample(all_test_maps):
+    """Verify that resample works across all map sources."""
+    w, h = all_test_maps.data.shape[1], all_test_maps.data.shape[0]
+    new_dims = (max(1, w // 2), max(1, h // 2)) * u.pix
+    resampled = all_test_maps.resample(new_dims)
+    assert resampled.dimensions[0] == new_dims[0]
+    assert resampled.dimensions[1] == new_dims[1]
+
+
+def test_all_sources_submap_pixel(all_test_maps):
+    """Verify pixel-based submap cropping works across all map sources."""
+    w, h = all_test_maps.data.shape[1], all_test_maps.data.shape[0]
+    if w >= 4 and h >= 4:
+        x1, y1 = w // 4, h // 4
+        x2, y2 = 3 * w // 4, 3 * h // 4
+        sub = all_test_maps.submap([x1, y1] * u.pix, top_right=[x2, y2] * u.pix)
+        assert sub.data.shape == (y2 - y1 + 1, x2 - x1 + 1)
+
+
+

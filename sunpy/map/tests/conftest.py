@@ -1,3 +1,4 @@
+import pathlib
 import warnings
 
 import numpy as np
@@ -174,3 +175,58 @@ def sample_hmi():
     from sunpy.data.sample import HMI_LOS_IMAGE
 
     return sunpy.map.Map(HMI_LOS_IMAGE)
+
+
+@pytest.fixture
+def swap_test_map():
+    return get_dummy_map_from_header(get_test_filepath("swap_lv1_20140606_000113.header"))
+
+
+@pytest.fixture
+def rhessi_test_map():
+    return sunpy.map.Map(get_test_filepath("hsi_image_20101016_191218.fits"))
+
+
+@pytest.fixture
+def lasco_test_map():
+    return get_dummy_map_from_header(get_test_filepath("lasco_c2_25299383_s.header"))
+
+
+ALL_MAP_SOURCE_FILES = [
+    "aia_171_level1.fits",
+    "resampled_hmi.fits",
+    "hsi_image_20101016_191218.fits",
+    "adapt.header",
+    "FGMG4_20110214_030443.7.header",
+    "HinodeXRT.header",
+    "iris_l2_20130801_074720_4040000014_SJI_1400_t000.header",
+    "20181209_180305_kcor_l2.header",
+    "swap_lv1_20140606_000113.header",
+    "tsi20010130_025823_a2.header",
+    "punch.header",
+    "lasco_c2_25299383_s.header",
+    "mdi.fd_Ic.20101015_230100_TAI.data.header",
+    "solo_L1_eui-fsi304-image_20201021T145510206_V03.header",
+    "cor1_20090615_000500_s4c1A.header",
+    "euvi_20090615_000900_n4euA_s.header",
+    "hi_20110910_114721_s7h2A.header",
+    "SUT_T24_0847_000444_Lev1.0_2024-06-28T18.21.33.178_0971NB03.header",
+    "dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0_rebinned.header",
+    "YohkohSXT.header",
+    "gong_halpha.header",
+    "gong_synoptic.header",
+    "EIT_header/efz20040301.020010_s.header",
+    "hxi_imgcube_01e02t_20230501_130758_HXI_CLEAN_0.header",
+    "solo_L2_metis-vl-tb_20220322T211301_V01.header",
+    "solo_L2_phi-hrt-icnt_20220307T000009_V202208311927_0243070101.header",
+]
+
+
+@pytest.fixture(params=ALL_MAP_SOURCE_FILES)
+def all_test_maps(request):
+    """
+    Fixture parameterized across all supported map sources.
+    """
+    p = pathlib.Path(get_test_filepath(request.param))
+    return get_dummy_map_from_header(p) if p.suffix == ".header" else sunpy.map.Map(p)
+
