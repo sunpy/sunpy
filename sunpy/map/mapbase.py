@@ -452,7 +452,11 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 "resolution of a map use GenericMap.superpixel, noting that it "
                 "combines pixels rather than discarding them."
             )
-        return super().__getitem__(key)
+
+        new_map = super().__getitem__(key)
+        # preserve plot settings
+        new_map.plot_settings.update(self.plot_settings)
+        return new_map
 
     def _text_summary(self):
         dt = self.exposure_time
