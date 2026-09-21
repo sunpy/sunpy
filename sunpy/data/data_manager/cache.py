@@ -55,6 +55,11 @@ class Cache:
         -------
         `pathlib.Path`
             Path to the downloaded file.
+
+        Raises
+        ------
+        `ValueError`
+            If ``urls`` is empty.
         """
         if isinstance(urls, str | Path):
             urls = [urls]
