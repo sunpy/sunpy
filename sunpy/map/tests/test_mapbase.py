@@ -135,6 +135,18 @@ def test_get_item_preserves_source_class(aia171_test_map):
     assert sliced.plot_settings['cmap'] == aia171_test_map.plot_settings['cmap']
 
 
+def test_get_item_preserves_plot_settings(aia171_test_map):
+    aia171_test_map.plot_settings['cmap'] = 'viridis'
+    assert aia171_test_map[10:20, 10:20].plot_settings['cmap'] == 'viridis'
+
+
+def test_crop_preserves_plot_settings(aia171_test_map):
+    aia171_test_map.plot_settings['cmap'] = 'viridis'
+    cropped = aia171_test_map.crop([aia171_test_map.wcs.pixel_to_world(10, 10)],
+                                   [aia171_test_map.wcs.pixel_to_world(20, 20)])
+    assert cropped.plot_settings['cmap'] == 'viridis'
+
+
 def test_crop_preserves_source_class(aia171_test_map):
     cropped = aia171_test_map.crop([aia171_test_map.wcs.pixel_to_world(10, 10)],
                                    [aia171_test_map.wcs.pixel_to_world(20, 20)])
