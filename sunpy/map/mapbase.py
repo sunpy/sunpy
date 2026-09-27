@@ -798,7 +798,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         # Validate meta before building the WCS, to emit useful errors.
         self._validate_meta()
 
-        w2 = astropy.wcs.WCS(naxis=2)
+        w2 = astropy.wcs.WCS(naxis=2, preserve_units=True)
 
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
@@ -831,9 +831,20 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             # Note that we have to create a new WCS as it's not possible to modify
             # wcs.wcs.aux in place.
             header = w2.to_header()
+
+            header["cdelt1"] = self.scale[0].to(self.spatial_units[0] / u.pix).value
+            header["cdelt2"] = self.scale[1].to(self.spatial_units[1] / u.pix).value
+            header["crval1"] = self._reference_longitude.value
+            header["crval2"] = self._reference_latitude.value
+            header["ctype1"] = self.coordinate_system[0]
+            header["ctype2"] = self.coordinate_system[1]
+            header["cunit1"] = str(self.spatial_units[0])
+            header["cunit2"] = str(self.spatial_units[1])
+
+
             for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
                 header.pop(kw, None)
-            w2 = astropy.wcs.WCS(header)
+            w2 = astropy.wcs.WCS(header, preserve_units=True)
 
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate

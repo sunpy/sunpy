@@ -1150,6 +1150,36 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
+def test_resample_matches_rebin(aia171_test_map):
+    # Linear interpolation at a factor of two samples the midpoint of each 2x2
+    # block, which is the block mean
+    rebinned = aia171_test_map.rebin((2, 2))
+    resampled = aia171_test_map.resample((64, 64) * u.pix, method='linear')
+    np.testing.assert_allclose(rebinned.data, resampled.data)
+    for key in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'naxis1', 'naxis2'):
+        assert u.allclose(rebinned.meta[key], resampled.meta[key])
+
+
+def test_rebin_preserves_plot_settings(aia171_test_map):
+    aia171_test_map.plot_settings['cmap'] = 'viridis'
+    assert aia171_test_map.rebin((2, 2)).plot_settings['cmap'] == 'viridis'
+
+
+@pytest.mark.parametrize("bin_shape", [(2, 2), (2, 4)])
+def test_rebin_matches_superpixel(aia171_test_map, bin_shape):
+    rebinned = aia171_test_map.rebin(bin_shape)
+    superpix = aia171_test_map.superpixel(bin_shape[::-1] * u.pix, func=np.mean)
+
+    assert isinstance(rebinned, type(aia171_test_map))
+    assert rebinned.unit == aia171_test_map.unit
+    assert rebinned.shape == superpix.shape
+    np.testing.assert_allclose(rebinned.data, superpix.data)
+    for key in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1', 'crval2', 'naxis1', 'naxis2'):
+        assert u.allclose(rebinned.meta[key], superpix.meta[key])
+    for key in ('cunit1', 'cunit2'):
+        assert rebinned.meta[key] == superpix.meta[key]
+
+
 def test_superpixel_simple_map(simple_map):
     # Put the reference pixel at the top-right of the bottom-left pixel
     simple_map.meta['crpix1'] = 1.5
