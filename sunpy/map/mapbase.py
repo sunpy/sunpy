@@ -832,6 +832,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             # wcs.wcs.aux in place.
             header = w2.to_header()
 
+            # to_header always return thing in SI units + deg so need to put bac
             header["cdelt1"] = self.scale[0].to(self.spatial_units[0] / u.pix).value
             header["cdelt2"] = self.scale[1].to(self.spatial_units[1] / u.pix).value
             header["crval1"] = self._reference_longitude.value
@@ -840,7 +841,6 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             header["ctype2"] = self.coordinate_system[1]
             header["cunit1"] = str(self.spatial_units[0])
             header["cunit2"] = str(self.spatial_units[1])
-
 
             for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
                 header.pop(kw, None)
@@ -883,6 +883,18 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         # We do this to figure out what's been changed post wcslib doing any
         # conversion (such as arcsec -> deg)
         changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+        # The WCS always uses PC + CDELT, but the metadata may use CD, which would take
+        # precedence over the PC and CDELT keys written here. If change by WCS update back
+        linear_keys = ("CDELT", "PC", "CD")
+        if ({'cd1_1', 'cd1_2', 'cd2_1', 'cd2_2'} & self.meta.keys()
+                and any(k.startswith(linear_keys) for k in changed_header)):
+            changed_header = {k: v for k, v in changed_header.items() if not k.startswith(linear_keys)}
+            cdelt = unwrapped.wcs.cdelt
+            cd = np.diag(cdelt) @ unwrapped.wcs.get_pc()
+            changed_header.update({f"CD{i}_{j}": cd[i - 1, j - 1] for i in (1, 2) for j in (1, 2)})
+            # Keep any CDELT that sits alongside CD in step, so scale stays correct
+            changed_header.update({f"CDELT{i}": cdelt[i - 1] for i in (1, 2) if f"cdelt{i}" in self.meta})
+
         # If any of the keys in spatial units are modified wcslib will have
         # almost certainly changed their units to deg if they were arcsec, so we
         # have to explicitly check this and convert them back to the original
