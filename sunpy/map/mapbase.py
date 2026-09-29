@@ -7,6 +7,7 @@ import inspect
 import itertools
 import numbers
 import textwrap
+import warnings
 import webbrowser
 from abc import ABCMeta
 from functools import wraps
@@ -1519,9 +1520,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         if ([arg is not None for arg in (top_right, width, height)]
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
-        # parse input arguments
-        pixel_corners = u.Quantity(self._parse_submap_input(
-            bottom_left, top_right, width, height)).T
+        # Parse input arguments into the four corners of the rectangle in world coordinates
+        world_corners = self._parse_submap_input(bottom_left, top_right, width, height)
 
         msg = (
             "The provided input coordinates to ``submap`` when transformed to the target "
@@ -1531,60 +1531,22 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
             "such coordinates to be interpreted as 3D coordinates."
         )
+        # Probe the corners for NaNs so that the error below can explain what went
+        # wrong. Any warning raised here is about the same problem, so it is
+        # suppressed in favour of the more specific message.
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            pixel_corners = [self.wcs.world_to_pixel(corner) for corner in world_corners]
         if np.any(np.isnan(pixel_corners)):
             raise ValueError(msg)
 
-        # The pixel corners result is in Cartesian order, so the first index is
-        # columns and the second is rows.
-        bottom = np.min(pixel_corners[1]).to_value(u.pix)
-        top = np.max(pixel_corners[1]).to_value(u.pix)
-        left = np.min(pixel_corners[0]).to_value(u.pix)
-        right = np.max(pixel_corners[0]).to_value(u.pix)
-
-        # Round the lower left pixel to the nearest integer
-        # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
-        bottom = np.floor(bottom + 0.5)
-        left = np.floor(left + 0.5)
-
-        # Round the top right pixel to the nearest integer, then add 1 for array indexing
-        # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
-        top = np.ceil(top - 0.5) + 1
-        right = np.ceil(right - 0.5) + 1
-
-        # Clip pixel values to max of array, prevents negative
-        # indexing
-        bottom = int(np.clip(bottom, 0, self.data.shape[0]))
-        top = int(np.clip(top, 0, self.data.shape[0]))
-        left = int(np.clip(left, 0, self.data.shape[1]))
-        right = int(np.clip(right, 0, self.data.shape[1]))
-
-        arr_slice = np.s_[bottom:top, left:right]
-        # Get ndarray representation of submap
-        new_data = self.data[arr_slice].copy()
-
-        # Make a copy of the header with updated centering information
-        new_meta = self.meta.copy()
-        # Add one to go from zero-based to one-based indexing
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom
-        new_meta['naxis1'] = new_data.shape[1]
-        new_meta['naxis2'] = new_data.shape[0]
-
-        # Create new map instance
-        if self.mask is not None:
-            new_mask = self.mask[arr_slice].copy()
-            # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
-            return new_map
-        # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
-        return new_map
+        return self.crop(*world_corners, keepdims=True)
 
     @seconddispatch
     def _parse_submap_input(self, bottom_left, top_right, width, height):
         """
-        Should take any valid input to submap() and return bottom_left and
-        top_right in pixel coordinates.
+        Should take any valid input to submap() and return the four corners of
+        the rectangle as world coordinates.
         """
 
     @_parse_submap_input.register(u.Quantity)
@@ -1612,7 +1574,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         top_left = u.Quantity([top_right[0], bottom_left[1]])
         bottom_right = u.Quantity([bottom_left[0], top_right[1]])
-        return bottom_left, top_left, top_right, bottom_right
+        # ``pixel_to_world`` takes bare pixel values, so any pixel-equivalent unit
+        # (e.g. mpix) has to be normalised to pix rather than passed through.
+        return tuple(self.wcs.pixel_to_world(*corner.to_value(u.pix))
+                     for corner in (bottom_left, top_left, top_right, bottom_right))
 
     @_parse_submap_input.register(SkyCoord)
     @_parse_submap_input.register(BaseCoordinateFrame)
@@ -1633,7 +1598,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                            [bottom_lat, top_lat, top_lat, bottom_lat],
                            frame=frame)
 
-        return tuple(u.Quantity(self.wcs.world_to_pixel(corners), u.pix).T)
+        return corners
 
     @u.quantity_input
     def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum,

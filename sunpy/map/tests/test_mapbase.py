@@ -962,7 +962,13 @@ pixel_corners = [
     [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
     # 0.5, 0.5 is the edge of the first pixel, so make sure
     # we don't include any other pixels
-    [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
+    pytest.param(([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]]),
+                 marks=pytest.mark.xfail(
+                     strict=True,
+                     reason="ndcube decides which side of a pixel edge a point falls on by "
+                            "the round-off in converting it from world coordinates rather "
+                            "than by the rounding rule. Fixed by sunpy/ndcube#984; remove "
+                            "this along with the ndcube minimum version bump.")),
     [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
                                                     [9]])],
     [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
