@@ -1009,10 +1009,29 @@ def test_submap_propagates_uncertainty(simple_map):
     assert submap.uncertainty.array.shape == submap.data.shape
 
 
-def test_submap_returns_a_view(simple_map):
-    # submap slices rather than copying, so it shares memory with the original
+def test_submap_copies_by_default(simple_map):
+    # A view would keep the whole of the original map alive for as long as the submap
+    # is, so the data has to be copied out of it rather than shared.
+    simple_map.mask = np.zeros(simple_map.data.shape, dtype=bool)
+    simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))
+
     submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix)
+
+    assert submap.data.base is None
+    assert not np.shares_memory(submap.data, simple_map.data)
+    assert not np.shares_memory(submap.mask, simple_map.mask)
+    assert not np.shares_memory(submap.uncertainty.array, simple_map.uncertainty.array)
+
+
+def test_submap_can_return_views(simple_map):
+    simple_map.mask = np.zeros(simple_map.data.shape, dtype=bool)
+    simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))
+
+    submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix, copy=False)
+
     assert np.shares_memory(submap.data, simple_map.data)
+    assert np.shares_memory(submap.mask, simple_map.mask)
+    assert np.shares_memory(submap.uncertainty.array, simple_map.uncertainty.array)
 
 
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when

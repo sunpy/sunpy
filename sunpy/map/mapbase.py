@@ -1396,7 +1396,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         return new_map
 
     @u.quantity_input
-    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
+    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
+               copy=True):
         """
         Returns a submap defined by a rectangle.
 
@@ -1421,6 +1422,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             The width of the rectangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
             The height of the rectangle. Required if ``top_right`` is omitted.
+        copy : `bool`, optional
+            If `True`, the submap's data, mask and uncertainty are copies of the parent
+            map's. If `False` they are views onto the parent map, which cannot then be
+            garbage collected separately from the submap. Defaults to `True`.
 
         Returns
         -------
@@ -1550,7 +1555,15 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         if np.any(np.isnan(pixel_corners)):
             raise ValueError(msg)
 
-        return self.crop(*world_corners, keepdims=True)
+        new_map = self.crop(*world_corners, keepdims=True)
+        if copy:
+            # ``crop`` slices, so the arrays it returns are views by default.
+            new_map._data = new_map.data.copy()
+            if new_map.mask is not None:
+                new_map.mask = new_map.mask.copy()
+            if new_map.uncertainty is not None:
+                new_map.uncertainty.array = new_map.uncertainty.array.copy()
+        return new_map
 
     @seconddispatch
     def _parse_submap_input(self, bottom_left, top_right, width, height):
