@@ -210,23 +210,23 @@ def cached_property_based_on(attr_name):
                 Any class instance that has the property ``prop``,
                 and attribute ``attr``.
             """
-            cache = instance.__dict__
+            # The attribute value is stored alongside the property it validates, so
+            # that properties based on the same attribute cannot mark each other as
+            # up to date and hand back a stale value.
+            cache = instance.__dict__.setdefault("_cached_properties", {})
             prop_key = prop.__name__
 
             # Check if our caching method has changed output
             new_attr_val = getattr(instance, attr_name)
-            old_attr_val = cache.get(attr_name, _NOT_FOUND)
+            old_attr_val, value = cache.get(prop_key, (_NOT_FOUND, None))
             if (old_attr_val is _NOT_FOUND or
                     new_attr_val is None or
-                    new_attr_val != old_attr_val or
-                    prop_key not in cache):
-                # Recompute the property
-                new_val = prop(instance)
-                cache[prop_key] = new_val
-                # Store the new attribute value after the property is computed successfully
-                cache[attr_name] = new_attr_val
+                    new_attr_val != old_attr_val):
+                # Recompute the property, storing the attribute value it was based on
+                value = prop(instance)
+                cache[prop_key] = (new_attr_val, value)
 
-            return cache[prop_key]
+            return value
         return inner
     return outer
 

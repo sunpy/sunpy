@@ -72,10 +72,6 @@ def test_cached_property_based_on():
 
         @property
         def attr(self):
-            # `attr_name` must be a property (not a plain instance attribute)
-            # so that `getattr(instance, attr_name)` always reflects the
-            # current state instead of the decorator's own cached copy,
-            # which is stored under the same key in `instance.__dict__`.
             return self._attr
 
         @property
@@ -100,6 +96,57 @@ def test_cached_property_based_on():
     foo._value = 2
     assert foo.prop == 2
     assert foo.n_calls == 2
+
+
+def test_shared_attr_cache_across_properties():
+    # 2 properties that both cache off the same attr must invalidate separately
+    # otherwoise, reading one property would mark the other as valid incorrectly.
+    class Foo:
+        def __init__(self, attr):
+            self._attr = attr
+
+        @property
+        def attr(self):
+            return self._attr
+
+        @property
+        @cached_property_based_on('attr')
+        def first(self):
+            return f"first {self._attr}"
+
+        @property
+        @cached_property_based_on('attr')
+        def second(self):
+            return f"second {self._attr}"
+
+    foo = Foo(1)
+    # Cache both properties
+    assert foo.first == "first 1"
+    assert foo.second == "second 1"
+
+    foo._attr = 2
+
+    # Reading `first`` recomputes it and records the new attribute value.
+    # Reading `second` must recompute it as well, since attr value has changed.
+    assert foo.first == "first 2"
+    assert foo.second == "second 2"
+
+
+def test_cached_property_based_on_plain_attribute():
+    class Foo:
+        def __init__(self, attr):
+            self.attr = attr
+
+        @property
+        @cached_property_based_on('attr')
+        def prop(self):
+            return self.attr * 10
+
+    foo = Foo(1)
+    assert foo.prop == 10
+    foo.attr = 2
+    assert foo.attr == 2
+    assert foo.prop == 20
 
 
 def test_cached_property_based_on_none_always_recomputes():
