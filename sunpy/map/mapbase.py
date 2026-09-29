@@ -899,6 +899,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                         "Sorry wcslib needs you to do more programming"
                     )
         self.meta.update(MetaDict(changed_header))
+        # The getter was called above to build old_wcs_header, which cached a WCS
+        # built from the metadata as it was before this update.
+        self.__dict__.pop('wcs', None)
 
     def _as_mpl_axes(self):
         """
