@@ -2297,6 +2297,23 @@ def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
     assert np.allclose(sliced_ref_coord, ori_ref_coord)
 
 
+@pytest.mark.parametrize("crop", [
+    lambda smap: smap.submap([32, 32] * u.pix, top_right=[80, 100] * u.pix),
+    lambda smap: smap[32:101, 32:81],
+], ids=["submap", "slice"])
+def test_no_stale_cached_wcs(aia171_test_map, crop):
+    """
+    The WCS setter reads the current WCS to work out what the new one changes, which
+    caches a WCS built from the metadata as it was before the update. Nothing should
+    be left holding that stale WCS afterwards.
+    """
+    new_map = crop(aia171_test_map)
+
+    assert "wcs" not in new_map.__dict__
+    assert new_map.wcs.wcs.crpix[0] == new_map.meta["CRPIX1"]
+    assert new_map.wcs.wcs.crpix[1] == new_map.meta["CRPIX2"]
+
+
 # Test that args get passed through to NDCube correctly
 def test_map_mask_arg(simple_map):
     mask = np.zeros(simple_map.data.shape, dtype=bool)
