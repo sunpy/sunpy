@@ -1151,14 +1151,14 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     assert resamp_map.reference_coordinate == simple_map.reference_coordinate
 
 
-def test_resample_matches_rebin(aia171_test_map):
+def test_rebin_matches_resample(aia171_test_map):
     # Linear interpolation at a factor of two samples the midpoint of each 2x2
     # block, which is the block mean
     rebinned = aia171_test_map.rebin((2, 2))
     resampled = aia171_test_map.resample((64, 64) * u.pix, method='linear')
     assert_allclose(rebinned.data, resampled.data)
     for key in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'naxis1', 'naxis2'):
-        assert_allclose(rebinned.meta[key], resampled.meta[key])
+        assert_allclose(resampled.meta[key], rebinned.meta[key])
     for key in ('cunit1', 'cunit2'):
         assert rebinned.meta[key] == resampled.meta[key]
 

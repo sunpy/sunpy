@@ -830,17 +830,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             # issues with maps that store multiple observer coordinate keywords.
             # Note that we have to create a new WCS as it's not possible to modify
             # wcs.wcs.aux in place.
+            w2.wcs.set()  # Need to preserve units in head until at least astropy==8.0.2
             header = w2.to_header()
-
-            # to_header always return thing in SI units + deg so need to put bac
-            header["cdelt1"] = self.scale[0].to(self.spatial_units[0] / u.pix).value
-            header["cdelt2"] = self.scale[1].to(self.spatial_units[1] / u.pix).value
-            header["crval1"] = self._reference_longitude.value
-            header["crval2"] = self._reference_latitude.value
-            header["ctype1"] = self.coordinate_system[0]
-            header["ctype2"] = self.coordinate_system[1]
-            header["cunit1"] = str(self.spatial_units[0])
-            header["cunit2"] = str(self.spatial_units[1])
 
             for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
                 header.pop(kw, None)
