@@ -20,6 +20,7 @@ import astropy.wcs
 from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
+from astropy.nddata import StdDevUncertainty
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
@@ -985,6 +986,33 @@ def test_submap_pixel(simple_map, rect, submap_out):
               dict(bottom_left=rect[1], top_right=rect[0])]:
         submap = simple_map.submap(**r)
         np.testing.assert_equal(submap.data, submap_out)
+
+
+def test_submap_outside_extent_errors(simple_map):
+    # A rectangle which lies entirely off the map returns an error
+    with pytest.raises(ValueError, match="outside the range"):
+        simple_map.submap([100, 100] * u.pix, top_right=[110, 110] * u.pix)
+
+
+def test_submap_degenerate_returns_single_pixel(simple_map):
+    # A rectangle with no area lies on a pixel edge, and a point on an edge belongs
+    # to the pixel above it, so one pixel is returned.
+    submap = simple_map.submap([0.5, 0.5] * u.pix, top_right=[0.5, 0.5] * u.pix)
+    assert submap.shape == (1, 1)
+    np.testing.assert_equal(submap.data, simple_map.data[1:2, 1:2])
+
+
+def test_submap_propagates_uncertainty(simple_map):
+    simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))
+    submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix)
+    assert submap.uncertainty is not None
+    assert submap.uncertainty.array.shape == submap.data.shape
+
+
+def test_submap_returns_a_view(simple_map):
+    # submap slices rather than copying, so it shares memory with the original
+    submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix)
+    assert np.shares_memory(submap.data, simple_map.data)
 
 
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
