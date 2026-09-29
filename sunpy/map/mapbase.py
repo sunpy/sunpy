@@ -1628,9 +1628,15 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         if ([arg is not None for arg in (top_right, width, height)]
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
-        # parse input arguments
-        pixel_corners = u.Quantity(self._parse_submap_input(
-            bottom_left, top_right, width, height)).T
+        # Parse input arguments into the four corners of the rectangle
+        world_corners = self._parse_submap_input(bottom_left, top_right, width, height)
+        # Pixel input is parsed in pixel coordinates, so that the plotter can reuse the
+        # parser to place a quadrangle. ``crop`` needs world coordinates, and
+        # ``pixel_to_world`` takes bare values, so any pixel-equivalent unit (e.g. mpix)
+        # has to be normalised to pix rather than passed through.
+        if isinstance(world_corners[0], u.Quantity):
+            world_corners = tuple(self.wcs.pixel_to_world(*corner.to_value(u.pix))
+                                  for corner in world_corners)
 
         msg = (
             "The provided input coordinates to ``submap`` when transformed to the target "
@@ -1721,6 +1727,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         top_left = u.Quantity([top_right[0], bottom_left[1]])
         bottom_right = u.Quantity([bottom_left[0], top_right[1]])
+        # These are returned as pixel coordinates because the plotter uses this method
+        # to place a quadrangle in pixel space. ``submap`` converts them itself.
         return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
