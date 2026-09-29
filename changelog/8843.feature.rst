@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap.submap` now uses `ndcube.NDCube.crop` to calculate the submap extent. As a consequence, the submap will now preserve the uncertainty from its parent map, where it would previously be dropped.
