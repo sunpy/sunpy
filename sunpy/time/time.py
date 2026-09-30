@@ -74,7 +74,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",  # Example 20070504_210812
     "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
-    "%Y%m%d%H%M",   # Example 201401041205 , Should precede "%Y%m%d%H%M%S".
+    "%Y%m%d%H%M",  # Example 201401041205, Should precede "%Y%m%d%H%M%S".
     "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC/VSO Export/Downloads)
     "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI - JSOC
     "%Y.%m.%d_%H:%M:%S.%f_TAI",  # Example 2019.09.15_00:00:02.898_TAI - JSOC
@@ -166,14 +166,77 @@ def find_time(string, format):
 find_time.__doc__ += ', '.join(list(REGEX.keys()))
 
 
+# The CDF epoch formats are not built into astropy, but are registered with
+# `astropy.time.Time` as a side effect of importing ``cdflib.epochs_astropy``.
+_CDF_TIME_FORMATS = ('cdf_epoch', 'cdf_epoch16', 'cdf_tt2000')
+# CDF_EPOCH16 stores picoseconds in the imaginary part of a complex number.
+_PICOSECONDS_PER_SECOND = 1e12
+# CDF_TIME_TT2000 counts nanoseconds in a 64-bit integer.
+_NANOSECONDS_PER_SECOND = 10**9
+
+
+def _register_cdf_time_formats(format=None):
+    """
+    Import ``cdflib.epochs_astropy``, which registers the CDF epoch formats with
+    `astropy.time.Time` as a side effect.
+
+    Parameters
+    ----------
+    format : `str`, optional
+        The CDF format that was asked for, used to make the error message specific.
+
+    Raises
+    ------
+    ImportError
+        If ``cdflib`` could not be imported. Any other failure to import it is
+        reported the same way, since the outcome for the caller is identical.
+    """
+    try:
+        import cdflib.epochs_astropy  # NOQA: F401
+    except Exception as err:
+        what = f"the '{format}' time format" if format else "the CDF time formats"
+        raise ImportError(f"cdflib must be installed to use {what}.") from err
+
+
+def _convert_cdf_time(time_string, format, **kwargs):
+    """
+    Convert one or more CDF epoch values into a `~astropy.time.Time`.
+
+    Where an epoch type carries more precision than a single `float` can hold, the
+    value is handed to `~astropy.time.Time` in two parts, which it sums internally
+    at full precision. See `~sunpy.time.parse_time` for the supported formats.
+    """
+    _register_cdf_time_formats(format)
+    # CDF epochs resolve nanoseconds (TT2000) or picoseconds (EPOCH16), so ask for
+    # astropy's finest precision rather than its default of milliseconds.
+    kwargs.setdefault('precision', 9)
+    if format == 'cdf_epoch16':
+        values = np.asanyarray(time_string)
+        if np.iscomplexobj(values):
+            # CDF_EPOCH16 is a complex number: the real part is seconds since 0 AD
+            # and the imaginary part is picoseconds within that second. astropy
+            # cannot take a complex value and silently discards the imaginary part
+            # when casting it to a float, which would throw away everything below
+            # a whole second, so pass the two halves over separately.
+            return Time(values.real, values.imag / _PICOSECONDS_PER_SECOND, format=format, **kwargs)
+    elif format == 'cdf_tt2000':
+        values = np.asanyarray(time_string)
+        if np.issubdtype(values.dtype, np.integer):
+            # CDF_TIME_TT2000 is a 64-bit integer count of nanoseconds, which needs
+            # more significant digits than a float64 has: converting it to a single
+            # float rounds present-day times to the nearest ~128 ns. Splitting it
+            # into whole seconds plus leftover nanoseconds keeps both halves exact.
+            seconds, nanoseconds = np.divmod(values, _NANOSECONDS_PER_SECOND)
+            # Scale back up in float64, as the product of the floored seconds and
+            # 10**9 can fall outside the range of an int64 and wrap around.
+            return Time(seconds * float(_NANOSECONDS_PER_SECOND), nanoseconds, format=format, **kwargs)
+    return Time(time_string, format=format, **kwargs)
+
+
 @singledispatch
 def convert_time(time_string, format=None, **kwargs):
-    if format in ['cdf_epoch', 'cdf_epoch16', 'cdf_tt2000']:
-        try:
-            from cdflib.epochs_astropy import CDFAstropy
-        except ImportError as err:
-            raise ImportError("cdflib must be installed to support CDF time formats.") from err
-        return CDFAstropy.convert_to_astropy(time_string, format=format)
+    if format in _CDF_TIME_FORMATS:
+        return _convert_cdf_time(time_string, format, **kwargs)
 
     # default case when no type matches
     return Time(time_string, format=format, **kwargs)
@@ -310,13 +373,11 @@ def _variables_for_parse_time_docstring():
     ret['parse_time_desc'] = """
                              Any time input, will be passed into `~sunpy.time.parse_time`.
                              """
-    try:
-        # Need to try importing cdflib, as if it is present it will register
-        # extra formats with time
-        import cdflib  # NOQA
-        import cdflib.epochs_astropy  # NOQA
-    except ImportError:
-        pass
+    # If cdflib is installed, this registers the CDF epoch formats with astropy so
+    # that they appear in the list below. A missing or broken cdflib must not stop
+    # sunpy.time from being importable.
+    with contextlib.suppress(ImportError):
+        _register_cdf_time_formats()
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
                                                 subsequent_indent=' '*10)
 
@@ -340,8 +401,9 @@ def parse_time(time_string, *, format=None, **kwargs):
           >>> list(astropy.time.Time.FORMATS)
           {astropy_time_formats}
 
-        If ``cdflib`` is installed, we also support:
-        ``'cdf_epoch'``, ``'cdf_epoch16'``, ``'cdf_tt2000'``.
+        If ``cdflib`` is installed, the CDF epoch formats ``'cdf_epoch'``,
+        ``'cdf_epoch16'`` and ``'cdf_tt2000'`` are supported as well, and are
+        included in the list above.
 
     **kwargs :
         Additional keyword arguments are passed to `astropy.time.Time`
