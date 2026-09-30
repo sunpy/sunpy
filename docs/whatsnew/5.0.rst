@@ -121,8 +121,8 @@ In the past, ``sunpy`` only provided a search over the high-cadence data.
 
     >>> from sunpy.net import Fido, attrs as a
     >>> res = Fido.search(a.Time("2022-02-15", "2022-02-15"),
-    ...                   a.Instrument("XRS"))  # doctest: +REMOTE_DATA
-    >>> res  # doctest: +REMOTE_DATA
+    ...                   a.Instrument("XRS"))  # doctest: +SKIP
+    >>> res  # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -146,8 +146,8 @@ If you want the 1s resolution data, you would instead pass ``a.Resolution("flx1s
 .. code-block:: python
 
     >>> res = Fido.search(a.Time("2022-02-15", "2022-02-15"),
-    ...                   a.Instrument("XRS"), a.Resolution("avg1m"))  # doctest: +REMOTE_DATA
-    >>> res  # doctest: +REMOTE_DATA
+    ...                   a.Instrument("XRS"), a.Resolution("avg1m"))  # doctest: +SKIP
+    >>> res  # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>

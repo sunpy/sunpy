@@ -1,10 +1,10 @@
 """
 This module provides sunpy specific decorators.
 """
-import threading
-from inspect import cleandoc
-from functools import wraps
+import contextvars
 from contextlib import contextmanager
+from functools import wraps
+from inspect import cleandoc
 
 import numpy as np
 
@@ -26,10 +26,9 @@ _NOT_FOUND = object()
 
 
 # Thread-safe stack (i.e., LIFO) of active contexts as a list of fully qualified name strings
-class _ActiveContexts(threading.local):
-    def __init__(self):
-        self.stack = []
-_active_contexts = _ActiveContexts()
+# It is not thread-safe to modify the list directly
+# Instead, the list should be copied and then the context variable set with the modified copy
+_active_contexts = contextvars.ContextVar('_active_contexts', default=[])
 
 
 def deprecated(
@@ -190,6 +189,13 @@ def cached_property_based_on(attr_name):
     Notes
     -----
     The cached value of ``meth(instance)`` is stored under the key ``meth.__name__``.
+
+    If ``getattr(instance, attr_name)`` returns `None`, the property is always
+    recomputed. This is because some attributes (e.g. `.MetaDict.item_hash`)
+    return `None` to indicate that their value could not be determined (for
+    example, because the underlying data contains an unhashable value), in
+    which case equality between two `None` values must not be taken to mean
+    that nothing has changed.
     """
     def outer(prop):
         """
@@ -211,6 +217,7 @@ def cached_property_based_on(attr_name):
             new_attr_val = getattr(instance, attr_name)
             old_attr_val = cache.get(attr_name, _NOT_FOUND)
             if (old_attr_val is _NOT_FOUND or
+                    new_attr_val is None or
                     new_attr_val != old_attr_val or
                     prop_key not in cache):
                 # Recompute the property
@@ -260,7 +267,9 @@ def sunpycontextmanager(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         func_name = f"{func.__module__}.{func.__qualname__}"
-        _active_contexts.stack.append(func_name)
+        active_contexts_copy = _active_contexts.get().copy()
+        active_contexts_copy.append(func_name)
+        token = _active_contexts.set(active_contexts_copy)
         gen = func(*args, **kwargs)
         value = next(gen)
         try:
@@ -269,8 +278,9 @@ def sunpycontextmanager(func):
             gen.throw(e)
         else:
             next(gen, None)
-            if (removed := _active_contexts.stack.pop()) != func_name:
+            if (removed := _active_contexts.get()[-1]) != func_name:
                 raise RuntimeError(f"Cannot remove {func_name} from tracking stack because {removed} is last active.")
+            _active_contexts.reset(token)
     return contextmanager(wrapper)
 
 

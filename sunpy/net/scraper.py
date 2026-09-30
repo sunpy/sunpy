@@ -3,10 +3,10 @@ This module provides a web scraper.
 """
 import os
 import re
-from time import sleep
-from ftplib import FTP
 from datetime import datetime
-from urllib.error import URLError, HTTPError
+from ftplib import FTP
+from time import sleep
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 

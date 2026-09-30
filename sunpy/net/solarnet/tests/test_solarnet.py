@@ -22,10 +22,10 @@ def test_info_url(client):
 
 @pytest.mark.remote_data
 def test_search():
-    query = [a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV")]
+    query = (a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA), a.Time("2020/02/04","2022/02/04"))
     url = Fido.search(*query)
     assert isinstance(url[0],QueryResponseTable)
-    assert len(url[0]) == 2
+    assert len(url[0]) == 20
 
 
 def test_can_handle_query(client):
@@ -50,7 +50,8 @@ def test_fetch_return_type():
 
 @pytest.mark.remote_data
 def test_fetch_path_specified(tmpdir):
-    query = Fido.search(a.solarnet.Dataset.eui_level_2 , a.solarnet.Limit(2) , a.Detector("HRI_EUV"))
+    query = (a.solarnet.Dataset.lyra_level_2, a.Wavelength(171*u.AA), a.Time("2020/02/04","2022/02/04"), a.solarnet.Limit(2))
+    query = Fido.search(*query)
     path = Path(tmpdir)
     files = Fido.fetch(query[0,0] , path=path)
     assert path.exists()

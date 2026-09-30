@@ -1,9 +1,9 @@
 """
 These tests are borrowed from CPython
 """
+import collections
 import sys
 import unittest
-import collections
 
 from sunpy.util.functools import seconddispatch
 

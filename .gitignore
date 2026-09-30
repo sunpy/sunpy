@@ -296,3 +296,6 @@ result_images
 # Save from Map.save example
 aia171.fits
 aia171.asdf
+# SPICE fitting example
+examples/showcase/*.fits.gz
+examples/showcase/art002e009301~orig.jpg

@@ -1,6 +1,6 @@
-import re
 import copy
 import datetime
+import re
 from collections import OrderedDict
 
 import numpy as np

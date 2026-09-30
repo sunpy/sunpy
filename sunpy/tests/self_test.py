@@ -77,8 +77,8 @@ def self_test(*, package=None, online=False, online_only=False, figure_only=Fals
 
 
 if __name__ == "__main__":
-    import sys
     import argparse
+    import sys
 
     parser = argparse.ArgumentParser(description="Run the sunpy test suite")
     parser.add_argument("--package", help="The sunpy subpackage to test.")

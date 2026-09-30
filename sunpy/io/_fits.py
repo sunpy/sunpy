@@ -22,13 +22,13 @@ Notes
    invalid header tags will result in an error so verifying it early on
    makes the header easier to work with later.
 """
+import collections
+import collections.abc
+import math
 import os
 import re
 import sys
-import math
 import traceback
-import collections
-import collections.abc
 
 from astropy.io import fits
 

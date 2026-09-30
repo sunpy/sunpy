@@ -8,6 +8,7 @@ import sys
 import datetime
 import warnings
 import tokenize
+import logging
 from pathlib import Path
 
 from packaging.version import Version
@@ -39,11 +40,19 @@ from matplotlib import MatplotlibDeprecationWarning
 from ruamel.yaml import YAML
 from sphinx_gallery.sorting import ExplicitOrder
 from sunpy_sphinx_theme import PNG_ICON
+from sphinx.util import logging as sphinx_logging
+sphx_logger = sphinx_logging.getLogger(__name__)
 
 from astropy.utils.exceptions import AstropyDeprecationWarning
 from astropy.io.fits.verify import VerifyWarning
 import sunpy
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
+
+# Hide log output during the sphinx build as it pollutes the output
+# and makes it harder to see real sphinx warnings
+sunpy.log.setLevel(logging.ERROR)
+spiceypy_log = logging.getLogger("spiceypy.utils.libspicehelper")
+spiceypy_log.setLevel(logging.ERROR)
 
 # -- Project information -------------------------------------------------------
 
@@ -110,7 +119,11 @@ linkcheck_ignore = [
     # This is super slow to check
     r"https://mathesaurus\.sourceforge\.net/idl-numpy\.html",
     # You have to be logged into GitHub in order to project wide issue searches
-    r"https://github.com/issues?.*"
+    r"https://github.com/issues?.*",
+    # They have an incomplete certificate chain which works in browsers but not CLI
+    r"https://suit.iucaa.in.*",
+    # I have no idea why these URLs 403 for linkcheck but pass every other way I try them
+    r"https://docutils.sourceforge.io/.*",
 ]
 linkcheck_anchors = False
 linkcheck_timeout = 120
@@ -235,6 +248,7 @@ intersphinx_mapping = {
     "hvpy": ("https://hvpy.readthedocs.io/en/latest/", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "mpl_animators": ("https://docs.sunpy.org/projects/mpl-animators/en/stable/", None),
+    "ndcube": ("https://docs.sunpy.org/projects/ndcube/en/stable/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
     "parfive": ("https://parfive.readthedocs.io/en/stable/", None),
     "reproject": ("https://reproject.readthedocs.io/en/stable/", None),
@@ -280,6 +294,7 @@ graphviz_dot_args = [
 autoclass_content = "both"
 
 bibtex_bibfiles = ['references.bib']
+bibtex_reference_style = "author_year"
 
 # -- Linking to source code ----------------------------------------------------
 
@@ -330,7 +345,7 @@ if link_github:
             source, lineno = inspect.getsourcelines(obj)
         except (OSError, TypeError, tokenize.TokenError):
             if hasattr(obj, '__qualname__'):
-                print(f"linkcode_resolve: could not get source for {obj.__module__}.{obj.__qualname__}")
+                sphx_logger.info(f"linkcode_resolve: could not get source for {obj.__module__}.{obj.__qualname__}")
             lineno = None
 
         linespec = (f"#L{lineno:d}-L{lineno + len(source) - 1:d}"
@@ -390,25 +405,18 @@ try:
     import requests
     from bs4 import BeautifulSoup
 
-    base_url = "https://docs.opencv.org"
+    # Get the redirected URL including the version number
+    base_url = requests.get("https://docs.opencv.org").url
+    cv_url = f"{base_url}main_modules/namespace_cv.html"
 
-    # The stable-version docs are the first item in the second list on the main page
-    all_docs = BeautifulSoup(requests.get(base_url).text, 'html.parser')
-    version = all_docs.find_all('ul')[1].li.a.attrs['href'][2:]  # strip leading "./"
-
-    # Find the relative URL to the page for the `cv` namespace
-    stable_docs = BeautifulSoup(requests.get(f"{base_url}/{version}/namespaces.html").text,
-                                'html.parser')
-    cv_namespace = stable_docs.find("a", string="cv").attrs['href']
-
-    # Find the relative URL for warpAffine/filter2D in the `cv` namespace
-    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text, 'html.parser')
-    warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
-    filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
+    # Find the anchors for warpAffine/filter2D in the `cv` namespace
+    all_cv = BeautifulSoup(requests.get(cv_url).text, 'html.parser')
+    warpAffine = all_cv.find("a", string="warpAffine").attrs['href']
+    filter2D = all_cv.find("a", string="filter2D").attrs['href']
 
     # Construct the full URL for warpAffine/filter2D
-    warpAffine_full = f"{base_url}/{version}/{warpAffine}"
-    filter2D_full = f"{base_url}/{version}/{filter2D}"
+    warpAffine_full = f"{cv_url}{warpAffine}"
+    filter2D_full = f"{cv_url}{filter2D}"
 except Exception:
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
@@ -451,7 +459,7 @@ def jinja_to_rst(app, docname, source):
     jinja_pages = ["reference/stability", "dev_guide/index"]
     if app.builder.format == 'html':
         if docname in jinja_pages:
-            print(f"Jinja rendering {docname}")
+            sphx_logger.info(f"Jinja rendering {docname}")
             rendered = app.builder.templates.render_string(
                 source[0], app.config.html_context
             )

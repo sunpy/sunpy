@@ -5,6 +5,7 @@ from astropy.visualization import AsinhStretch, ImageNormalize
 
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.time import parse_time
 
 __all__ = ["SUITMap"]
 
@@ -79,6 +80,12 @@ class SUITMap(GenericMap):
         The reference time is the time of Shutter open time. Does not include the exposure time.
         """
         return self._get_date("T_OBS") or super().reference_date
+
+    def _set_date(self, date):
+        self.meta["T_OBS"] = parse_time(date).utc.isot
+
+    def _set_reference_date(self, date):
+        self._set_date(date)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

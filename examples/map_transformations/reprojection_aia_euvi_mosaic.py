@@ -14,12 +14,12 @@ You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 o
 
 import matplotlib.pyplot as plt
 import numpy as np
-from reproject import reproject_interp
-from reproject.mosaicking import reproject_and_coadd
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
+from reproject import reproject_interp
+from reproject.mosaicking import reproject_and_coadd
 
 import sunpy.map
 import sunpy.sun

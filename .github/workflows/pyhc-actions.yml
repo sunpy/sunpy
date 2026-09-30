@@ -1,0 +1,42 @@
+name: PyHC Actions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - pyproject.toml
+      - .github/workflows/pyhc-actions.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - pyproject.toml
+      - .github/workflows/pyhc-actions.yml
+  schedule:
+    # Run quarterly: Jan 1, Apr 1, Jul 1, Oct 1 at 3pm UTC (8am Mountain Time)
+    - cron: '0 15 1 1,4,7,10 *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  phep3-compliance:
+    name: PHEP 3 Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check PHEP 3 Compliance
+        uses: heliophysicsPy/pyhc-actions/phep3-compliance@d0d1fb451f8189b17c2113efa3a91b615f3074a0 # v1.1.2
+
+  pyhc-env-compat:
+    name: PyHC Environment Compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check PyHC Environment Compatibility
+        uses: heliophysicsPy/pyhc-actions/pyhc-env-compat@d0d1fb451f8189b17c2113efa3a91b615f3074a0 # v1.1.2

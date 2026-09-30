@@ -79,7 +79,7 @@ def show_hpr_impact_angle(declination_axis):
 
     Parameters
     ----------
-    coordinate_axis : `astropy.visualization.wcsaxes.CoordinateHelper`
+    declination_axis : `astropy.visualization.wcsaxes.CoordinateHelper`
         The coordinate axis for Helioprojective Radial declination (``delta``)
 
     See Also

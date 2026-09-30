@@ -52,7 +52,7 @@ def date_floor(date, timestep):
 
     Parameters
     ----------
-    datetime : `datetime.datetime` or `astropy.time.Time`
+    date : `datetime.datetime` or `astropy.time.Time`
         The date to floor.
     timestep : `dateutil.relativedelta.relativedelta`
         The smallest timestep to floor.

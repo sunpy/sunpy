@@ -1,1 +1,0 @@
-Fixed the `sunpy.net.solarnet.SOLARNETClient` to use ``solarnet.oma.be`` instead of the blocked ``solarnet2.oma.be`` host.

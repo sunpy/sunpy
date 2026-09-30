@@ -66,3 +66,16 @@ The tags we add to examples are:
 
 Tags should be formatted to be human readable, so should be Title Case and make use of symbols such as ``&``.
 Adding a tag which hasn't already been added should be done thoughtfully.
+
+Building the Gallery
+====================
+
+If you are authoring gallery examples and wish to preview them you can use tox::
+
+  tox -e build_docs-gallery
+
+The documentation build is quite time consuming, but both sphinx and sphinx-gallery will cache outputs so subsequent runs should be faster.
+
+It's also possible to only execute a single gallery example (or pattern of examples) like this::
+
+  tox -e build_docs-gallery -D sphinx_gallery_conf.filename_pattern=filename\.py

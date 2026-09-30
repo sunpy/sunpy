@@ -1,1 +1,0 @@
-Fixed a bug where :meth:`~sunpy.map.MapSequence.plot` did not respect the mask of individual maps when updating animation frames.

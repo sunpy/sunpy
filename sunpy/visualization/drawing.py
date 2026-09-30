@@ -237,7 +237,7 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
     """
     c_kw = {'fill': False,
             'color': 'white',
-            'zorder': 100}
+            'zorder': 1.5}
     c_kw.update(kwargs)
     transform = axes.get_transform("world")
     c_kw.setdefault('transform', transform)

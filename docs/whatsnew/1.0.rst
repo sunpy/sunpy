@@ -275,7 +275,7 @@ For example, since the Earth moves, observers on the Earth must take into accoun
 
 
   The user can also explicitly specify an observer at a different time and location in space. The amount of solar
-  rotation applied depends on the time difference between the observation time of the`~astropy.coordinates.SkyCoord`
+  rotation applied depends on the time difference between the observation time of the `~astropy.coordinates.SkyCoord`
   and the time of the observer::
 
     >>> import astropy.units as u

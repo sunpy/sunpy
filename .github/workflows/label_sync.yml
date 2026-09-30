@@ -18,6 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Label Sync
     steps:
-      - uses: srealmoreno/label-sync-action@850ba5cef2b25e56c6c420c4feed0319294682fd
+      - uses: srealmoreno/label-sync-action@850ba5cef2b25e56c6c420c4feed0319294682fd  # v2.0.0
         with:
           config-file: https://raw.githubusercontent.com/sunpy/.github/main/labels.yml

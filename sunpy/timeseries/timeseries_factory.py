@@ -2,8 +2,8 @@
 This module provides the `~sunpy.timeseries.TimeSeriesFactory` class.
 """
 
-import os
 import copy
+import os
 import pathlib
 from collections import OrderedDict
 from urllib.request import Request

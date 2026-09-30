@@ -165,6 +165,7 @@ def test_map_sequence_plot_respects_masks(aia171_test_map, aia171_test_map_with_
     ax = fig.add_subplot(projection=seq.maps[0])
 
     animation = seq.plot(axes=ax)
+    animation._init_draw()  # prevent warning upon cleanup of no drawing
     image = animation._fig.axes[0].images[0]
     animation._func(1, *animation._args)
     rendered_data = image.get_array()
@@ -228,6 +229,7 @@ def test_mapsequence_plot_uint8_norm():
     ax = fig.add_subplot(projection=coconuts[0])
 
     moving_coconut = coconuts.plot(axes=ax)
+    moving_coconut._init_draw()  # prevent warning upon cleanup of no drawing
     moving_coconut._step()
 
 
@@ -241,10 +243,10 @@ def test_mapsequence_plot_uint8_norm_clip_interval():
     ax = fig.add_subplot(projection=coconuts[0])
 
     moving_coconut = coconuts.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+    moving_coconut._init_draw()  # prevent warning upon cleanup of no drawing
     moving_coconut._step()
 
 
-@skip_glymur
 def test_mapsequence_plot_set_norm_pass_vmin_vmax(aia171_test_map):
     # Checking that passing in interval values works if the map has a norm
     coconuts = sunpy.map.Map([aia171_test_map]*10,sequence=True)
@@ -253,6 +255,8 @@ def test_mapsequence_plot_set_norm_pass_vmin_vmax(aia171_test_map):
     ax = fig.add_subplot(projection=coconuts[0])
 
     moving_coconut = coconuts.plot(axes=ax, clip_interval=(1, 99.99)*u.percent)
+    moving_coconut._init_draw()  # prevent warning upon cleanup of no drawing
     moving_coconut._step()
     moving_coconut = coconuts.plot(axes=ax, vmin=100, vmax=1000)
+    moving_coconut._init_draw()  # prevent warning upon cleanup of no drawing
     moving_coconut._step()

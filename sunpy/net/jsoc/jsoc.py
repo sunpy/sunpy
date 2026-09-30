@@ -1,6 +1,6 @@
-import os
 import copy
 import json
+import os
 import time
 import urllib
 from pathlib import Path

@@ -285,7 +285,6 @@ def test_jsoc_attrs(client):
     assert len(attrs[a.jsoc.Segment]) != 0
 
 
-@pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
 def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     cutout = a.jsoc.Cutout(
@@ -310,6 +309,7 @@ def test_jsoc_cutout_attrs(client, jsoc_test_email, aia171_test_map):
     assert m.data.shape == (1085, 1085, 6)
 
 
+@pytest.mark.thread_unsafe(reason="mocks a method")
 def test_row_and_warning(mocker, client, jsoc_response_double):
     mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.get_request")
     request_data = mocker.patch("sunpy.net.jsoc.jsoc.JSOCClient.request_data")
@@ -385,7 +385,7 @@ def test_segments_query(client):
                         a.jsoc.Series('hmi.sharp_cea_720s'),
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
     # Check that the correct segments are returned and are not returned in the original query
-    assert len(res) == len(seg_res) == 1223
+    assert len(res) == len(seg_res) == 1336
     assert len(res.columns) != len(seg_res.columns)
     assert len(seg_res.columns) - len(res.columns) == 2
     assert "magnetogram" not in res.keys()

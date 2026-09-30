@@ -2,8 +2,8 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-from datetime import datetime
 from collections import OrderedDict
+from datetime import datetime
 
 import astropy.units as u
 from astropy.time import Time
@@ -32,7 +32,7 @@ class XRSClient(GenericClient):
     .. note::
 
         The new science quality data have the scaling factors removed for GOES 8-15
-        and they are not added to GOES 16 AND 17 data products.
+        and they are not added to GOES 16-19 data products.
         This means the peak flux will be different to the older version of the data,
         such as those collected from the NASA servers.
 
@@ -42,7 +42,7 @@ class XRSClient(GenericClient):
 
     * Reprocessed 8 - 15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/GOES_1-15_XRS_Science-Quality_Data_Readme.pdf
 
-    * GOES-R 16 - 17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/docs/GOES-R_XRS_L2_Data_Readme.pdf
+    * GOES-R 16 - 19: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/docs/GOES-R_XRS_L2_Data_Users_Guide.pdf
 
     Examples
     --------
@@ -56,7 +56,7 @@ class XRSClient(GenericClient):
     8 Results from the XRSClient:
     Source: <8: https://umbra.nascom.nasa.gov/goes/fits
     8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
-    16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
+    16-19: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
     <BLANKLINE>
            Start Time               End Time        Instrument  Physobs   Source Provider Resolution SatelliteNumber filename_res
     ----------------------- ----------------------- ---------- ---------- ------ -------- ---------- --------------- ------------
@@ -76,7 +76,7 @@ class XRSClient(GenericClient):
     # The reprocessed 8-15 data should be taken from NOAA.
     pattern_new = ("https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/xrs/goes{SatelliteNumber:02d}/{filename_res}-l2-{Resolution}_science"
                    "/{{year:4d}}/{{month:2d}}/sci_{filename_res}-l2-{Resolution}_g{SatelliteNumber:2d}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
-    # GOES-R Series 16-17 XRS data from NOAA.
+    # GOES-R Series 16-19 XRS data from NOAA.
     pattern_r = ("https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{SatelliteNumber:2d}/l2/data/xrsf-l2-{Resolution}_science"
                  "/{{year:4d}}/{{month:2d}}/sci_xrsf-l2-{Resolution}_g{SatelliteNumber:2d}_d{{year:4d}}{{month:2d}}{{day:2d}}_{{}}.nc")
 
@@ -84,7 +84,7 @@ class XRSClient(GenericClient):
     def info_url(self):
         return ("<8: https://umbra.nascom.nasa.gov/goes/fits \n"
                 "8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/ \n"
-                "16-17: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
+                "16-19: https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/")
 
     def post_search_hook(self, i, matchdict):
         tr = get_timerange_from_exdict(i)
@@ -150,7 +150,7 @@ class XRSClient(GenericClient):
         else:
             if matchdict["End Time"] >= "2017-02-07":
                 for sat in matchdict["SatelliteNumber"]:
-                    if int(sat) >= 16:  # here check for GOES 16 and 17
+                    if int(sat) >= 16:  # here check for the GOES-R series (16 onwards)
                         for res in matchdict["Resolution"]:
                             metalist += self._get_metalist_fn(matchdict, self.pattern_r, SatelliteNumber=int(sat), Resolution=res)
 
@@ -180,7 +180,7 @@ class XRSClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
         adict = {attrs.Instrument: [
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
             ("XRS", "GOES X-ray Sensor")],

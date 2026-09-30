@@ -16,13 +16,5 @@ Although there are code snippets in various parts of each topic guide, these are
    :maxdepth: 2
 
    coordinates/index
-   custom_map_rotate
-   deprecation
-   extending_fido
-   scraper_migration
-   history_comments
-   installation
-   logger
-   new_map_class
-   timeseries_metadata
-   rsun
+   data/index
+   configuration/index
