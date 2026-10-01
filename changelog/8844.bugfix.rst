@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.GenericMap` occasionally returning properties such as ``.wcs`` built from out of date metadata. After editing ``.meta``, accessing other attributes before ``.wcs`` could cause ``.wcs`` to be served from the cache rather than rebuilt.
