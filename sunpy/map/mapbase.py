@@ -1692,6 +1692,14 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         return cropped.rebin(bin_shape, operation=func,
                              handle_mask=np.any if conservative_mask else np.all)
 
+    @wraps(NDCube.rebin)
+    def rebin(self, *args, **kwargs):
+        new_map = super().rebin(*args, **kwargs)
+        # preserve plot settings
+        new_map.plot_settings.update(self.plot_settings)
+        return new_map
+
+
 # #### Visualization #### #
 
     @property
