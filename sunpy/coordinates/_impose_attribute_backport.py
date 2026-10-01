@@ -22,7 +22,6 @@ def _get_imposed_attributes():
     return _imposed_attributes.get() or {}
 
 
-
 @contextmanager
 def impose_frame_attributes(**kwargs):
     """
@@ -109,7 +108,7 @@ def impose_frame_attributes(**kwargs):
 
 class _AssumedAttributeMixin(Attribute):  # Inherit for type checking mainly
     # This class re-implements the astropy.coordinates.attributes.Attribute.__get__ method
-    # to support assumed attributes, maybe this will be upstreamed at somepoint
+    # to support assumed attributes, this is a backport of the version in astropy in 8.1
     def __get__(self, instance, frame_cls=None):
         if instance is None:
             # Return the descriptor instance to enable the retrieval of the docstring
