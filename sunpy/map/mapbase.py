@@ -44,7 +44,6 @@ import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapmeta import (
@@ -1675,62 +1674,23 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         dimensions = [int(dim) for dim in dimensions.to_value(u.pix)]
         offset = [int(off) for off in offset.to_value(u.pix)]
 
-        # Make a copy of the original data, perform reshaping, and apply the
-        # function.
-        if self.mask is not None:
-            data = np.ma.array(self.data.copy(), mask=self.mask)
-        else:
-            data = self.data.copy()
+        if self.mask is not None and conservative_mask ^ (func in [np.sum, np.prod]):
+            log.info(
+                f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                "False for mean/median/std/min/max."
+                )
 
-        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-        new_array = func(func(reshaped_data, axis=3), axis=1)
+        # rebin requires the bin shape to divide the array shape exactly, so slice off the offset at the start
+        # and any partial superpixels at the end.
+        bin_shape = np.array([dimensions[1], dimensions[0]])
+        start = np.array([offset[1], offset[0]])
+        n_superpixels = (np.array(self.shape) - start) // bin_shape
+        stop = start + n_superpixels * bin_shape
+        cropped = self[start[0]:stop[0], start[1]:stop[1]]
 
-        if self.mask is not None:
-            if conservative_mask ^ (func in [np.sum, np.prod]):
-                log.info(
-                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
-                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
-                    "False for mean/median/std/min/max."
-                    )
-
-            if conservative_mask:
-                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-                new_mask = np.any(reshaped_mask, axis=(3, 1))
-            else:
-                new_mask = np.ma.getmaskarray(new_array)
-        else:
-            new_mask = None
-
-        # Update image scale and number of pixels
-
-        # create copy of new meta data
-        new_meta = self.meta.copy()
-
-        # Update metadata
-        for key in {'cdelt1', 'cd1_1', 'cd2_1'} & self.meta.keys():
-            new_meta[key] *= dimensions[0]
-        for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
-            new_meta[key] *= dimensions[1]
-        if 'pc1_1' in self.meta:
-            new_meta['pc1_2'] *= dimensions[1] / dimensions[0]
-            new_meta['pc2_1'] *= dimensions[0] / dimensions[1]
-
-        new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
-                               0.5 - offset[0]) / dimensions[0]) + 0.5
-        new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
-                               0.5 - offset[1]) / dimensions[1]) + 0.5
-        new_meta['naxis1'] = new_array.shape[1]
-        new_meta['naxis2'] = new_array.shape[0]
-
-        # Create new map instance
-        if self.mask is not None:
-            new_data = np.ma.getdata(new_array)
-        else:
-            new_data = new_array
-
-        # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
-        return new_map
+        return cropped.rebin(bin_shape, operation=func,
+                             handle_mask=np.any if conservative_mask else np.all)
 
 # #### Visualization #### #
 
