@@ -1803,8 +1803,8 @@ def test_superpixel_metadata(generic_map, f, dimensions):
     assert superpix_map.meta['cdelt1'] == scale_x * generic_map.meta['cdelt1']
     assert superpix_map.meta['cdelt2'] == scale_y * generic_map.meta['cdelt2']
     assert superpix_map.meta['pc1_1'] == generic_map.meta['pc1_1']
-    assert superpix_map.meta['pc1_2'] == scale_y / scale_x * generic_map.meta['pc1_2']
-    assert superpix_map.meta['pc2_1'] == scale_x / scale_y * generic_map.meta['pc2_1']
+    assert_allclose(scale_y / scale_x * generic_map.meta['pc1_2'], superpix_map.meta['pc1_2'])
+    assert_allclose(scale_x / scale_y * generic_map.meta['pc2_1'], superpix_map.meta['pc2_1'])
     assert superpix_map.meta['pc2_2'] == generic_map.meta['pc2_2']
 
     assert superpix_map.meta['crpix1'] - 0.5 == (generic_map.meta['crpix1'] - 0.5) / scale_x
