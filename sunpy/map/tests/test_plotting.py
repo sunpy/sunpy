@@ -163,6 +163,19 @@ def test_quadrangle_aia17_pix_top_right_different_axes(aia171_test_map):
                                     top_right=(80, 90)*u.pix, edgecolor='cyan')
 
 
+@pytest.mark.parametrize("kwargs", [{"top_right": (80, 90) * u.pix},
+                                    {"width": 30 * u.pix, "height": 40 * u.pix}])
+def test_draw_quadrangle_pixel_extent(aia171_test_map, kwargs):
+    # Pixel input is parsed by the same helper that submap uses, so checking it here
+    # outside of a figure comparison.
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    quad = aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix, axes=ax, **kwargs)
+    vertices = quad.get_xy()
+    np.testing.assert_allclose(np.min(vertices, axis=0), [50, 50])
+    np.testing.assert_allclose(np.max(vertices, axis=0), [80, 90])
+
+
 @figure_test
 def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
