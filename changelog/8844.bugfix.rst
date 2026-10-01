@@ -1,1 +1,1 @@
-Fixed innapropriate cache behaviour in `~sunpy.util.decorators.cached_property_based_on` recording the attribute value it caches on under a key shared by every property based on that same attribute.
+Fixed `~sunpy.map.GenericMap` occasionally returning a WCS built from out of date metadata. After editing ``.meta``, accessing other attributes before ``.wcs`` could cause ``.wcs`` to be served from the cache rather than rebuilt.

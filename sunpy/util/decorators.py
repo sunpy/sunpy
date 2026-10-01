@@ -170,32 +170,32 @@ def deprecated_renamed_argument(
 
 def cached_property_based_on(attr_name):
     """
-    A decorator to cache the value of a property based on the output of a
+    A decorator to cache the value of a property based on the value of a
     different class attribute.
 
-    This decorator caches the values of ``getattr(instance, method)`` and
-    ``prop(instance)``. When the decorated property is accessed,
-    ``getattr(instance, method)`` is called. If this returns the same as its
-    cached value, the cached value of ``prop`` is returned. Otherwise both
-    ``meth`` and ``prop`` are recomputed, cached, and the new value of ``prop``
-    is returned.
+    When the decorated property is accessed, ``getattr(instance, attr_name)`` is
+    compared against its value when the property was last computed. If they are
+    equal the cached value of the property is returned, otherwise the property is
+    recomputed, cached, and the new value returned.
 
     Parameters
     ----------
-    attr_name
-        The name of the attribute, on which changes are checked for. The actual
-        attribute is accessed using ``getattr(attr_name, instance)``.
+    attr_name : `str`
+        The name of the attribute that changes are checked against. It is read
+        using ``getattr(instance, attr_name)``.
 
     Notes
     -----
-    The cached value of ``meth(instance)`` is stored under the key ``meth.__name__``.
+    Each property is cached together with the attribute value it was computed
+    from, under ``instance.__dict__["_cached_properties"]``. Properties based on
+    the same attribute are therefore invalidated independently of each other.
 
-    If ``getattr(instance, attr_name)`` returns `None`, the property is always
-    recomputed. This is because some attributes (e.g. `.MetaDict.item_hash`)
-    return `None` to indicate that their value could not be determined (for
-    example, because the underlying data contains an unhashable value), in
-    which case equality between two `None` values must not be taken to mean
-    that nothing has changed.
+    If ``getattr(instance, attr_name)`` returns `None` the property is always
+    recomputed and nothing is cached. This is because some attributes (e.g.
+    `.MetaDict.item_hash`) return `None` to indicate that their value could not
+    be determined (for example, because the underlying data contains an
+    unhashable value), in which case equality between two `None` values must not
+    be taken to mean that nothing has changed.
     """
     def outer(prop):
         """
@@ -224,7 +224,12 @@ def cached_property_based_on(attr_name):
                     new_attr_val != old_attr_val):
                 # Recompute the property, storing the attribute value it was based on
                 value = prop(instance)
-                cache[prop_key] = (new_attr_val, value)
+                if new_attr_val is None:
+                    # The property is recomputed on every access while the attribute
+                    # is `None`, so a cached value could never be used again.
+                    cache.pop(prop_key, None)
+                else:
+                    cache[prop_key] = (new_attr_val, value)
 
             return value
         return inner
