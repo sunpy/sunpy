@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap` now inherits from `ndcube.NDCube` rather than `astropy.nddata.NDData`.
