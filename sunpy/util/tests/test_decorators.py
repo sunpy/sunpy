@@ -100,7 +100,7 @@ def test_cached_property_based_on():
 
 def test_shared_attr_cache_across_properties():
     # 2 properties that both cache off the same attr must invalidate separately
-    # otherwoise, reading one property would mark the other as valid incorrectly.
+    # otherwise, reading one property would mark the other as valid incorrectly.
     class Foo:
         def __init__(self, attr):
             self._attr = attr
