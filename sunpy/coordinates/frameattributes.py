@@ -20,11 +20,11 @@ __all__ = ["impose_observer", "TimeFrameAttributeSunPy", "ObserverCoordinateAttr
 @contextmanager
 def impose_observer(observer):
     """
-    Impose the provided observer and it's obstime on all frames with an observer attribute.
+    Impose the provided observer and its obstime on all frames with an observer attribute.
 
     Parameters
     ----------
-    observer: astropy.coordinates.SkyCoord
+    observer : `~astropy.coordinates.SkyCoord`
         The observer to impose, should have an obstime which will also be imposed.
 
     Examples
