@@ -27,6 +27,8 @@ try:
 except ImportError:
     DASK_INSTALLED = False
 
+from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
+
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
@@ -667,12 +669,38 @@ class GenericMap(MapMetaMixin, NDCube):
         return w2
 
     @wcs.setter
-    def wcs(self, value):
-        # NDData.__init__ assigns to wcs, so this has to exist. A Map derives its
-        # WCS from the metadata and cannot be given one.
-        if value is not None:
-            raise ValueError("Passing a WCS to GenericMap is not supported, "
-                             "the WCS is derived from the metadata.")
+    def wcs(self, wcs):
+        """
+        Map uses the meta dict as the source of truth.
+        When setting the wcs of the map we convert it to a header and then update the header of the map.
+        """
+        # A Map is constructed with wcs=None, so there is nothing to merge in that case
+        if wcs is None:
+            return
+        # Unwrap any wrapper classes to FITS WCS
+        unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
+        # Convert to a header. wcslib omits NAXIS, so it has to be added back or the
+        # metadata keeps describing the shape of the array we started with.
+        new_header = unwrapped.to_header()
+        for n in range(1, unwrapped.naxis + 1):
+            new_header[f"NAXIS{n}"] = unwrapped._naxis[n - 1]
+        old_wcs_header = self.wcs.to_header()
+        # Reduce the new header to just the keys which differ from the current WCS
+        # We do this to figure out what's been changed post wcslib doing any
+        # conversion (such as arcsec -> deg)
+        changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+        # If any of the keys in spatial units are modified wcslib will have
+        # almost certainly changed their units to deg if they were arcsec, so we
+        # have to explicitly check this and convert them back to the original
+        # header units to not confuse people.
+        naughty_key_prefixes = {"CDELT", "CRVAL", "CD"}
+        for prefix in naughty_key_prefixes:
+            if any(k.startswith(prefix) for k in changed_header.keys()):
+                if new_header["CUNIT1"] != self.meta["CUNIT1"]:
+                    raise NotImplementedError(
+                        "Sorry wcslib needs you to do more programming"
+                    )
+        self.meta.update(MetaDict(changed_header))
 
     def _as_mpl_axes(self):
         """
