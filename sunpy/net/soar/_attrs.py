@@ -19,11 +19,12 @@ class Product(SimpleAttr):
     The data product descriptor to search for.
 
     Makes the value passed lower so that it is case insensitive as all
-    descriptors on the SOAR are now lowercase.
+    descriptors on the SOAR are now lowercase. It also replaces underscores
+    with hyphens to allow querying by attribute name.
     """
 
     def __init__(self, value) -> None:
-        self.value = value.lower()
+        self.value = value.lower().replace("_", "-")
 
 
 class SOOP(SimpleAttr):
