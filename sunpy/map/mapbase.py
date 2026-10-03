@@ -659,15 +659,6 @@ class GenericMap(NDData):
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
-            # Clear all the aux information that was set earlier. This is to avoid
-            # issues with maps that store multiple observer coordinate keywords.
-            # Note that we have to create a new WCS as it's not possible to modify
-            # wcs.wcs.aux in place.
-            header = w2.to_header()
-            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-                header.pop(kw, None)
-            w2 = astropy.wcs.WCS(header)
-
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
