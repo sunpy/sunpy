@@ -20,6 +20,7 @@ from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 
 # Test fixtures are in ../conftest.py
@@ -257,6 +258,88 @@ def test_extraction(eve_test_ts):
     extracted_df = DataFrame(eve_test_ts.to_dataframe()['CMLon']).dropna()
     extracted_df = extracted_df.sort_index()
     assert_frame_equal(cmlon.to_dataframe(), extracted_df)
+
+
+@pytest.fixture
+def staggered_nan_ts():
+    # A time series whose columns have deliberately staggered missing values,
+    # so that dropna(how="any") and dropna(how="all") give different results.
+    base = parse_time("2016/10/01T05:00:00")
+    dates = base + TimeDelta(np.arange(4) * u.minute)
+    data = DataFrame(
+        [[1.0, np.nan],
+         [np.nan, 2.0],
+         [3.0, 4.0],
+         [np.nan, np.nan]],
+        index=dates.isot.astype('datetime64[ms]'),
+        columns=['intensity', 'intensity2'],
+    )
+    units = {'intensity': u.W / u.m**2, 'intensity2': u.W / u.m**2}
+    meta = MetaDict({'key': 'value'})
+    return sunpy.timeseries.TimeSeries(data, meta, units)
+
+
+def test_extraction_multiple_columns(eve_test_ts):
+    extracted = eve_test_ts.extract(['CMLat', 'CMLon'])
+
+    assert extracted.to_dataframe().columns.tolist() == ['CMLat', 'CMLon']
+    assert sorted(extracted.units.keys()) == ['CMLat', 'CMLon']
+    assert sorted(extracted.meta.columns) == ['CMLat', 'CMLon']
+
+
+def test_extraction_single_column_in_list(eve_test_ts):
+    # Passing a single name and a one-element list must agree.
+    assert_frame_equal(
+        eve_test_ts.extract('CMLon').to_dataframe(),
+        eve_test_ts.extract(['CMLon']).to_dataframe(),
+    )
+
+
+def test_extraction_dropna_semantics(staggered_nan_ts):
+    # Selecting both columns should only drop the row that is empty in both.
+    both = staggered_nan_ts.extract(['intensity', 'intensity2'])
+    assert len(both.to_dataframe()) == 3
+
+    # Selecting one column keeps the old behaviour of dropping every row in
+    # which that column is missing.
+    single = staggered_nan_ts.extract('intensity')
+    assert len(single.to_dataframe()) == 2
+
+
+def test_extraction_drop_keyword(staggered_nan_ts):
+    columns = ['intensity', 'intensity2']
+
+    # "any" keeps only the times at which both columns have a measurement.
+    assert len(staggered_nan_ts.extract(columns, drop='any').to_dataframe()) == 1
+    # "all" keeps every time at which at least one column has a measurement.
+    assert len(staggered_nan_ts.extract(columns, drop='all').to_dataframe()) == 3
+    # None does no row filtering at all.
+    assert len(staggered_nan_ts.extract(columns, drop=None).to_dataframe()) == 4
+
+    # For a single column "any" and "all" agree.
+    assert_frame_equal(
+        staggered_nan_ts.extract('intensity', drop='any').to_dataframe(),
+        staggered_nan_ts.extract('intensity', drop='all').to_dataframe(),
+    )
+
+
+def test_extraction_invalid_drop(staggered_nan_ts):
+    with pytest.raises(ValueError, match="drop must be one of"):
+        staggered_nan_ts.extract('intensity', drop='sometimes')
+
+
+def test_extraction_invalid_column(eve_test_ts):
+    with pytest.raises(ValueError, match='not in list of columns'):
+        eve_test_ts.extract('NOT_A_COLUMN')
+
+    with pytest.raises(ValueError, match='NOT_A_COLUMN, ALSO_NOT_A_COLUMN'):
+        eve_test_ts.extract(['CMLon', 'NOT_A_COLUMN', 'ALSO_NOT_A_COLUMN'])
+
+
+def test_extraction_deprecated_column_name_kwarg(eve_test_ts):
+    with pytest.warns(SunpyDeprecationWarning, match='column_name'):
+        extracted = eve_test_ts.extract(column_name='CMLon')
+    assert extracted.to_dataframe().columns.tolist() == ['CMLon']
 
 
 @pytest.fixture
