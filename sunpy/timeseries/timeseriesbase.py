@@ -214,11 +214,11 @@ class GenericTimeSeries:
         if obs is None:
             try:
                 obs = self.meta.metadata[0][2]["telescop"]
-            except KeyError:
+            except (KeyError, IndexError):
                 obs = "Unknown"
         try:
             inst = self.meta.metadata[0][2]["instrume"]
-        except KeyError:
+        except (KeyError, IndexError):
             inst = "Unknown"
         try:
             link = f"""<a href={self.url} target="_blank">{inst}</a>"""
@@ -229,10 +229,18 @@ class GenericTimeSeries:
         drange = drange.to_string(float_format="{:.2E}".format)
         drange = drange.replace("\n", "<br>")
 
-        center = self.time_range.center.value.astype('datetime64[s]')
-        center = str(center).replace("T", " ")
-        resolution = round(self.time_range.seconds.value/self.shape[0], 3)
-        resolution = str(resolution)+" s"
+        time_range = self.time_range
+        if time_range is None:
+            # The timeseries holds no data, so there are no dates to report.
+            start_date = end_date = center = "None"
+            resolution = "None"
+        else:
+            start_date = dat.index.min().round('s')
+            end_date = dat.index.max().round('s')
+            center = time_range.center.value.astype('datetime64[s]')
+            center = str(center).replace("T", " ")
+            resolution = round(time_range.seconds.value/self.shape[0], 3)
+            resolution = str(resolution)+" s"
 
         channels = self.columns
         channels = "<br>".join(channels)
@@ -248,8 +256,8 @@ class GenericTimeSeries:
                    Observatory:\t\t\t{obs}
                    Instrument:\t\t\t{link}
                    Channel(s):\t\t\t{channels}
-                   Start Date:\t\t\t{dat.index.min().round('s')}
-                   End Date:\t\t\t{dat.index.max().round('s')}
+                   Start Date:\t\t\t{start_date}
+                   End Date:\t\t\t{end_date}
                    Center Date:\t\t\t{center}
                    Resolution:\t\t\t{resolution}
                    Samples per Channel:\t\t{self.shape[0]}
@@ -342,6 +350,17 @@ class GenericTimeSeries:
         # conflict in a single notebook.
         source = str(self.source) + str(time.perf_counter_ns())
 
+        # When the timeseries holds no (finite) data no histograms are
+        # produced, so fall back to a blank cell rather than indexing an
+        # empty list.
+        if hlist2:
+            hist_cell = (
+                f"""<img src="{hlist2[0]}" alt="Click here for histograms" """
+                f"""onclick="{source}.next(this)"/>"""
+            )
+        else:
+            hist_cell = "No data to histogram"
+
         return textwrap.dedent(f"""\
             <pre>{html.escape(object.__repr__(self))}</pre>
             <script type="text/javascript">
@@ -368,8 +387,7 @@ class GenericTimeSeries:
                 </tr>
                 <tr>
                     <td>
-                    <img src="{hlist2[0]}" alt="Click here for histograms"
-                         onclick="{source}.next(this)"/>
+                    {hist_cell}
                     </td>
                 </tr>
             </table>""")
