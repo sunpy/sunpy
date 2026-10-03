@@ -11,7 +11,7 @@ import sunpy.net.attrs as a
 from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, Range, SimpleAttr
 from sunpy.util.exceptions import warn_user
 
-__all__ = ["SOOP", "Distance", "Product"]
+__all__ = ["SOOP", "Distance", "Product", "Category"]
 
 
 class Product(SimpleAttr):
@@ -20,6 +20,15 @@ class Product(SimpleAttr):
 
     Makes the value passed lower so that it is case insensitive as all
     descriptors on the SOAR are now lowercase.
+    """
+
+    def __init__(self, value) -> None:
+        self.value = value.lower()
+
+
+class Category(SimpleAttr):
+    """
+    The data category to search for (e.g., science, calibration, ancillary).
     """
 
     def __init__(self, value) -> None:
@@ -171,6 +180,11 @@ def _(wlk, attr, params) -> None:
 @walker.add_applier(Product)
 def _(wlk, attr, params) -> None:
     params.append(f"descriptor='{attr.value}'")
+
+
+@walker.add_applier(Category)
+def _(wlk, attr, params) -> None:
+    params.append(f"category='{attr.value}'")
 
 
 @walker.add_applier(a.Provider)
