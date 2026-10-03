@@ -1,4 +1,3 @@
-
 import pytest
 
 import astropy.units as u
@@ -9,80 +8,85 @@ from sunpy.map.sources.hinode import SOTMap
 from sunpy.util.exceptions import SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
-
-@pytest.fixture
-def sot():
-    return get_dummy_map_from_header(get_test_filepath("HinodeSOT.header"))
-
-
-def test_fitstoSOT(sot):
-    """Tests the creation of SOTMap using FITS."""
-    assert isinstance(sot, SOTMap)
-
-
-def test_sot_coordinate_system(sot):
-    assert sot.coordinate_system ==  SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
-
-
-def test_is_datasource_for(sot):
-    """Test the is_datasource_for method of SOTMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
-    assert sot.is_datasource_for(sot.data, sot.meta)
+SOT_LOADABLE_HEADERS = {
+    "HinodeSOT/HinodeSOT_FG_WB_G_band_4305_L0.header": {
+        "instrument": "SOT/WB",
+        "wave": "G band 4305",
+        "date": "1999-12-31T23:59:59.006",
+    },
+    "HinodeSOT/HinodeSOT_FG_WB_CaIIH_L1.header": {
+        "instrument": "SOT/WB",
+        "wave": "Ca II H line",
+        "date": "2006-11-06T12:00:32.887",
+    },
+    "HinodeSOT/HinodeSOT_FG_NB_TF_Na_I_5896_L1.header": {
+        "instrument": "SOT/NB",
+        "wave": "TF Na I 5896",
+        "date": "2011-02-15T06:22:34.060",
+    },
+}
 
 
-def test_observatory(sot):
-    """Tests the observatory property of the SOTMap object."""
-    assert sot.observatory == "Hinode"
+@pytest.fixture(scope="module", params=list(SOT_LOADABLE_HEADERS))
+def sot_header(request):
+    return request.param
 
 
-def test_detector(sot):
-    """Tests the detector property of the SOTMap object"""
-    assert sot.detector == "SOT"
+@pytest.fixture(scope="module")
+def sot_expected(sot_header):
+    return SOT_LOADABLE_HEADERS[sot_header]
 
 
-def test_reference_date(sot):
-    assert sot.reference_date.isot == "2015-10-13T23:13:44.601"
+@pytest.fixture(scope="module")
+def sot_map(sot_header):
+    return get_dummy_map_from_header(get_test_filepath(sot_header))
 
 
-def test_date(sot):
-    assert sot.date.isot == "2015-10-13T23:13:44.601"
+def test_fitstoSOT(sot_map):
+    assert isinstance(sot_map, SOTMap)
 
 
-def test_private_date_setters(sot):
-    _test_private_date_setters(sot)
+def test_is_datasource_for(sot_map):
+    assert sot_map.is_datasource_for(sot_map.data, sot_map.meta)
 
 
-def test_measurement(sot):
-    """Tests the measurement property of the SOTMap object."""
-    assert sot.measurement is None
+def test_observatory(sot_map):
+    assert sot_map.observatory == "Hinode"
 
 
-def test_instruments(sot):
-    """Tests the Instruments object of SOTMap."""
-    assert (sot.Instruments == ['SOT/WB',
-                                'SOT/NB', 'SOT/SP', 'SOT/CT'])
+def test_detector(sot_map):
+    assert sot_map.detector == "SOT"
 
 
-def test_waves(sot):
-    """Tests the Waves object of SOTMap."""
-    assert (sot.Waves == ['6302A', 'BFI no move',
-                          'CN bandhead 3883', 'Ca II H line',
-                          'G band 4305', 'NFI no move', 'TF Fe I 6302',
-                          'TF Mg I 5172', 'TF Na I 5896',
-                          'blue cont 4504', 'green cont 5550',
-                          'red cont 6684'])
+def test_instrument(sot_map, sot_expected):
+    assert sot_map.instrument == sot_expected["instrument"]
 
 
-def test_obstype(sot):
-    """Tests the Observation_Type object of SOTMap."""
-    assert (sot.Observation_Type == ['FG (simple)',
-                                     'FG focus scan', 'FG shuttered I and V',
-                                     'FG shutterless I and V', 'FG shutterless I and V with 0.2s intervals',
-                                     'FG shutterless Stokes', 'SP IQUV 4D array'])
+def test_measurement(sot_map):
+    assert sot_map.measurement is None
 
 
-def test_wcs(sot):
+def test_wave_in_waves(sot_map, sot_expected):
+    assert sot_expected["wave"] in sot_map._waves
+
+
+def test_coordinate_system(sot_map):
+    assert sot_map.coordinate_system == SpatialPair(axis1='HPLN-TAN', axis2='HPLT-TAN')
+
+
+def test_reference_date(sot_map, sot_expected):
+    assert sot_map.reference_date.isot == sot_expected["date"]
+
+
+def test_date(sot_map, sot_expected):
+    assert sot_map.date.isot == sot_expected["date"]
+
+
+def test_private_date_setters(sot_map):
+    _test_private_date_setters(sot_map)
+
+
+def test_wcs(sot_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
-        sot.pixel_to_world(0*u.pix, 0*u.pix)
+        sot_map.pixel_to_world(0*u.pix, 0*u.pix)
