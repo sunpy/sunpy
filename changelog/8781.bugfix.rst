@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.GenericMap.wcs` and `~sunpy.map.GenericMap.observer_coordinate` permanently returning a stale value after the map's metadata changed, if the metadata ever contained a value that could not be hashed (e.g. a list).

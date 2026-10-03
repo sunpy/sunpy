@@ -189,6 +189,13 @@ def cached_property_based_on(attr_name):
     Notes
     -----
     The cached value of ``meth(instance)`` is stored under the key ``meth.__name__``.
+
+    If ``getattr(instance, attr_name)`` returns `None`, the property is always
+    recomputed. This is because some attributes (e.g. `.MetaDict.item_hash`)
+    return `None` to indicate that their value could not be determined (for
+    example, because the underlying data contains an unhashable value), in
+    which case equality between two `None` values must not be taken to mean
+    that nothing has changed.
     """
     def outer(prop):
         """
@@ -210,6 +217,7 @@ def cached_property_based_on(attr_name):
             new_attr_val = getattr(instance, attr_name)
             old_attr_val = cache.get(attr_name, _NOT_FOUND)
             if (old_attr_val is _NOT_FOUND or
+                    new_attr_val is None or
                     new_attr_val != old_attr_val or
                     prop_key not in cache):
                 # Recompute the property
