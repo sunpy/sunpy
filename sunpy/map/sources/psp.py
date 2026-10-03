@@ -5,7 +5,7 @@ Parker Solar Probe subclass definitions.
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 
 __all__ = ['WISPRMap']
 

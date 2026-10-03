@@ -10,7 +10,7 @@ from astropy.visualization import AsinhStretch, ImageNormalize, PercentileInterv
 
 from sunpy import log
 from sunpy.coordinates import HeliocentricInertial
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.util.exceptions import warn_user
 
