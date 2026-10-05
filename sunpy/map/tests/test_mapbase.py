@@ -1267,7 +1267,9 @@ def test_rebin_resample_superpixel_rotated_map_cd(cd, method, args,kwargs, simpl
         assert smap.wcs.pixel_to_world(*ur_pix).separation(
             new_map.wcs.pixel_to_world(*new_ur_pix)) < 1e-8 * u.arcsec
     # and put every pixel in the same place as each other
-    assert_allclose(ref_map.axis_world_coords_values(), rebin_map.axis_world_coords_values())
+    pix = np.indices(rebin_map.shape)[::-1]
+    assert np.all(ref_map.wcs.pixel_to_world(*pix).separation(
+        rebin_map.wcs.pixel_to_world(*pix)) < 1e-8 * u.arcsec)
 
 def test_rebin_preserves_plot_settings(aia171_test_map):
     aia171_test_map.plot_settings['cmap'] = 'viridis'
