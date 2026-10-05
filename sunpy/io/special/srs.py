@@ -57,9 +57,13 @@ def make_table(header, section_lines, supplementary_lines):
                 'Z': np.str_,
                 'LL': np.int64,
                 'NN': np.int64,
-                'Magtype': np.bytes_,
+                'MAGTYPE': np.bytes_,
                 'LAT': np.str_,
             }
+            # SRS tables sometimes have incorrectly capitalised column names.
+            # Normalise them to uppercase to match the column data type keys.
+            lines = lines.copy()
+            lines[1] = ' '.join(name.upper() for name in lines[1].split()) + '\n'
             t1 = astropy.io.ascii.read(
                 lines,
                 converters=col_data_types,
