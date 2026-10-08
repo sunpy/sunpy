@@ -3,7 +3,10 @@ import warnings
 import pytest
 
 from sunpy.util.decorators import (
-    _active_contexts, cached_property_based_on, deprecated, sunpycontextmanager,
+    _active_contexts,
+    cached_property_based_on,
+    deprecated,
+    sunpycontextmanager,
 )
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
