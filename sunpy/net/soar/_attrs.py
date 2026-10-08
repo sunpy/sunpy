@@ -180,7 +180,13 @@ def _(wlk, attr, params) -> None:
 
 @walker.add_applier(SOOP)
 def _(wlk, attr, params) -> None:
-    params.append(f"soop_name='{attr.value}'")
+    # Data taken during overlapping SOOPs list every SOOP name in one field
+    # separated by ";", so match the name as any element of that list.
+    name = attr.value
+    params.append(
+        f"(soop_name='{name}' OR soop_name LIKE '{name};%' "
+        f"OR soop_name LIKE '%;{name}' OR soop_name LIKE '%;{name};%')"
+    )
 
 
 @walker.add_applier(a.Detector)
