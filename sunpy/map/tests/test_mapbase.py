@@ -13,6 +13,7 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from matplotlib.transforms import Affine2D
+from numpy.testing import assert_allclose
 
 import astropy.units as u
 import astropy.wcs
@@ -1148,6 +1149,91 @@ def test_resample_simple_map(simple_map, sample_method, new_dimensions):
     # Reference pixel should change, but reference coordinate should not
     assert u.allclose(list(resamp_map.reference_pixel), [0.5 * u.pix, 0.16666667 * u.pix])
     assert resamp_map.reference_coordinate == simple_map.reference_coordinate
+
+
+def test_rebin_matches_resample(aia171_test_map):
+    # Linear interpolation at a factor of two samples the midpoint of each 2x2
+    # block, which is the block mean
+    rebinned = aia171_test_map.rebin((2, 2))
+    resampled = aia171_test_map.resample((64, 64) * u.pix, method='linear')
+    assert_allclose(rebinned.data, resampled.data)
+    for key in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'naxis1', 'naxis2'):
+        assert_allclose(resampled.meta[key], rebinned.meta[key])
+    for key in ('cunit1', 'cunit2'):
+        assert rebinned.meta[key] == resampled.meta[key]
+
+def test_rebin_superpixel_rotated_unequal_bins(aia171_test_map):
+    aia171_test_map.meta.pop('crota2', None)
+    aia171_test_map.meta.update({'pc1_1': 0.8, 'pc1_2': -0.6, 'pc2_1': 0.6, 'pc2_2': 0.8})
+    rebinned = aia171_test_map.rebin((2, 4))
+    superpix = aia171_test_map.superpixel((4, 2) * u.pix, func=np.mean)
+    assert_allclose(superpix.data, rebinned.data)
+    for key in ('pc1_1', 'pc1_2', 'pc2_1', 'pc2_2'):
+        assert_allclose(rebinned.meta[key], superpix.meta[key])
+    pixels = ([0, 10, 31], [0, 5, 63])
+    assert_quantity_allclose(rebinned.wcs.pixel_to_world(*pixels).Tx,
+                             superpix.wcs.pixel_to_world(*pixels).Tx)
+    assert_quantity_allclose(rebinned.wcs.pixel_to_world(*pixels).Ty,
+                             superpix.wcs.pixel_to_world(*pixels).Ty)
+
+
+@pytest.mark.parametrize('cd', [
+    # Scale only, no rotation
+    {'cd1_1': 2, 'cd1_2': 0, 'cd2_1': 0, 'cd2_2': 1},
+    # 90-degree rotation
+    {'cd1_1': 0, 'cd1_2': -1, 'cd2_1': 2, 'cd2_2': 0},
+    # 30-degree rotation with unequal scales
+    {'cd1_1': 2 * np.cos(np.pi / 6), 'cd1_2': -np.sin(np.pi / 6),
+     'cd2_1': 2 * np.sin(np.pi / 6), 'cd2_2': np.cos(np.pi / 6)},
+    # Rotation and skew
+    {'cd1_1': 3, 'cd1_2': -4, 'cd2_1': 5, 'cd2_2': 12},
+], ids=['scale', 'rot90', 'rot30', 'skew'])
+@pytest.mark.parametrize(('method', 'args', 'kwargs'), [
+    # resample takes the output size in (x, y), not a factor
+    ('resample', ((9, 3) * u.pix,), {}),
+    # superpixel sums by default, rebin takes the mean
+    ('superpixel', ((1, 3) * u.pix,), {'func': np.mean}),
+])
+def test_rebin_resample_superpixel_rotated_map_cd(cd, method, args,kwargs, simple_map):
+    meta = simple_map.meta.copy()
+    meta.update(cd)
+    for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
+        meta.pop(key, None)
+    smap = sunpy.map.Map(simple_map.data, meta)
+    # rebin takes the bin shape in array (row, column) order and without units
+    rebin_map  = smap.rebin((3, 1))
+    ref_map = getattr(smap, method)(*args, **kwargs)
+    assert_allclose(ref_map.data, rebin_map.data)
+    # Both should cover the same area as the original map
+    ll_pix = [-0.5, -0.5]
+    ur_pix = [smap.shape[1] - 0.5, smap.shape[0] - 0.5]
+    new_ur_pix = [rebin_map.shape[1] - 0.5, rebin_map.shape[0] - 0.5]
+    for new_map in (rebin_map, ref_map):
+        assert smap.wcs.pixel_to_world(*ll_pix).separation(
+            new_map.wcs.pixel_to_world(*ll_pix)) < 1e-8 * u.arcsec
+        assert smap.wcs.pixel_to_world(*ur_pix).separation(
+            new_map.wcs.pixel_to_world(*new_ur_pix)) < 1e-8 * u.arcsec
+    # and put every pixel in the same place as each other
+    assert_allclose(ref_map.axis_world_coords_values(), rebin_map.axis_world_coords_values())
+
+def test_rebin_preserves_plot_settings(aia171_test_map):
+    aia171_test_map.plot_settings['cmap'] = 'viridis'
+    assert aia171_test_map.rebin((2, 2)).plot_settings['cmap'] == 'viridis'
+
+
+@pytest.mark.parametrize("bin_shape", [(2, 2), (2, 4)])
+def test_rebin_matches_superpixel(aia171_test_map, bin_shape):
+    rebinned = aia171_test_map.rebin(bin_shape)
+    superpix = aia171_test_map.superpixel(bin_shape[::-1] * u.pix, func=np.mean)
+
+    assert isinstance(rebinned, type(aia171_test_map))
+    assert rebinned.unit == aia171_test_map.unit
+    assert rebinned.shape == superpix.shape
+    assert_allclose(rebinned.data, superpix.data)
+    for key in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1', 'crval2', 'naxis1', 'naxis2'):
+        assert_allclose(rebinned.meta[key], superpix.meta[key])
+    for key in ('cunit1', 'cunit2'):
+        assert rebinned.meta[key] == superpix.meta[key]
 
 
 def test_superpixel_simple_map(simple_map):
