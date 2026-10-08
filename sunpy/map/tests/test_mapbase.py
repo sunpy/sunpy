@@ -20,6 +20,7 @@ import astropy.wcs
 from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
+from astropy.nddata import StdDevUncertainty
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
@@ -962,7 +963,13 @@ pixel_corners = [
     [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
     # 0.5, 0.5 is the edge of the first pixel, so make sure
     # we don't include any other pixels
-    [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
+    pytest.param(([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]]),
+                 marks=pytest.mark.xfail(
+                     strict=True,
+                     reason="ndcube decides which side of a pixel edge a point falls on by "
+                            "the round-off in converting it from world coordinates rather "
+                            "than by the rounding rule. Fixed by sunpy/ndcube#984; remove "
+                            "this along with the ndcube minimum version bump.")),
     [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
                                                     [9]])],
     [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
@@ -979,6 +986,52 @@ def test_submap_pixel(simple_map, rect, submap_out):
               dict(bottom_left=rect[1], top_right=rect[0])]:
         submap = simple_map.submap(**r)
         np.testing.assert_equal(submap.data, submap_out)
+
+
+def test_submap_outside_extent_errors(simple_map):
+    # A rectangle which lies entirely off the map returns an error
+    with pytest.raises(ValueError, match="outside the range"):
+        simple_map.submap([100, 100] * u.pix, top_right=[110, 110] * u.pix)
+
+
+def test_submap_degenerate_returns_single_pixel(simple_map):
+    # A rectangle with no area lies on a pixel edge, and a point on an edge belongs
+    # to the pixel above it, so one pixel is returned.
+    submap = simple_map.submap([0.5, 0.5] * u.pix, top_right=[0.5, 0.5] * u.pix)
+    assert submap.shape == (1, 1)
+    np.testing.assert_equal(submap.data, simple_map.data[1:2, 1:2])
+
+
+def test_submap_propagates_uncertainty(simple_map):
+    simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))
+    submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix)
+    assert submap.uncertainty is not None
+    assert submap.uncertainty.array.shape == submap.data.shape
+
+
+def test_submap_copies_by_default(simple_map):
+    # A view would keep the whole of the original map alive for as long as the submap
+    # is, so the data has to be copied out of it rather than shared.
+    simple_map.mask = np.zeros(simple_map.data.shape, dtype=bool)
+    simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))
+
+    submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix)
+
+    assert submap.data.base is None
+    assert not np.shares_memory(submap.data, simple_map.data)
+    assert not np.shares_memory(submap.mask, simple_map.mask)
+    assert not np.shares_memory(submap.uncertainty.array, simple_map.uncertainty.array)
+
+
+def test_submap_can_return_views(simple_map):
+    simple_map.mask = np.zeros(simple_map.data.shape, dtype=bool)
+    simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))
+
+    submap = simple_map.submap([1, 1] * u.pix, top_right=[3, 3] * u.pix, copy=False)
+
+    assert np.shares_memory(submap.data, simple_map.data)
+    assert np.shares_memory(submap.mask, simple_map.mask)
+    assert np.shares_memory(submap.uncertainty.array, simple_map.uncertainty.array)
 
 
 # The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
@@ -2261,6 +2314,23 @@ def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
                                                               aia171_test_map.meta["CRPIX2"])
 
     assert np.allclose(sliced_ref_coord, ori_ref_coord)
+
+
+@pytest.mark.parametrize("crop", [
+    lambda smap: smap.submap([32, 32] * u.pix, top_right=[80, 100] * u.pix),
+    lambda smap: smap[32:101, 32:81],
+], ids=["submap", "slice"])
+def test_no_stale_cached_wcs(aia171_test_map, crop):
+    """
+    The WCS setter reads the current WCS to work out what the new one changes, which
+    caches a WCS built from the metadata as it was before the update. Nothing should
+    be left holding that stale WCS afterwards.
+    """
+    new_map = crop(aia171_test_map)
+
+    assert "wcs" not in new_map.__dict__
+    assert new_map.wcs.wcs.crpix[0] == new_map.meta["CRPIX1"]
+    assert new_map.wcs.wcs.crpix[1] == new_map.meta["CRPIX2"]
 
 
 # Test that args get passed through to NDCube correctly
