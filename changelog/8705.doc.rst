@@ -1,1 +1,0 @@
-Corrected several docstring parameter names in `sunpy.map`, `sunpy.net.scraper` and `sunpy.visualization` that did not match their function signatures.

@@ -1,3 +1,30 @@
+8.0.1 (2026-10-08)
+==================
+
+Bug Fixes
+---------
+
+- Fix bug in `~sunpy.net.vso.vso.VSOClient` where unparsable times would cause a crash. Now unparsable times are replaced with a dummy value and the entry is masked, similar to how missing values are already treated. (`#8702 <https://github.com/sunpy/sunpy/pull/8702>`__)
+- Fixed a bug that prevented our coordinates context managers from applying to threads spawned within them (e.g., for parallel processing). (`#8707 <https://github.com/sunpy/sunpy/pull/8707>`__)
+- Fixed `~sunpy.map.sources.SUITMap` modifying the ``DATE-OBS`` keyword rather than the ``T_OBS`` keyword used to construct the ``.date`` property. (`#8741 <https://github.com/sunpy/sunpy/pull/8741>`__)
+- Fix debug logging so enabling it does not cause an error from the `~sunpy.net.scraper.Scraper` due to ``parse`` using standard lib logging. (`#8793 <https://github.com/sunpy/sunpy/pull/8793>`__)
+- Fixed `~sunpy.map.GenericMap` occasionally returning properties such as ``.wcs`` built from out of date metadata. After editing ``.meta``, accessing other attributes before ``.wcs`` could cause ``.wcs`` to be served from the cache rather than rebuilt. (`#8844 <https://github.com/sunpy/sunpy/pull/8844>`__)
+- Fixed `sunpy.io.special.srs.read_srs` failing to read SRS files with both mixed-case column headers and sections containing ``None``. (`#8854 <https://github.com/sunpy/sunpy/pull/8854>`__)
+
+
+Documentation
+-------------
+
+- Corrected several docstring parameter names in `sunpy.map`, `sunpy.net.scraper` and `sunpy.visualization` that did not match their function signatures. (`#8705 <https://github.com/sunpy/sunpy/pull/8705>`__)
+
+
+Internal Changes
+----------------
+
+- Tidied and expanded the `~sunpy.map.sources.solo.METISMap` tests. (`#8683 <https://github.com/sunpy/sunpy/pull/8683>`__)
+- Fixed `pandas.errors.Pandas4Warning` raised by `~sunpy.timeseries.sources.eve.ESPTimeSeries`, `~sunpy.timeseries.sources.goes.XRSTimeSeries`, and `~sunpy.timeseries.sources.lyra.LYRATimeSeries` from using the deprecated ``inplace`` keyword of `pandas.DataFrame.sort_index`. (`#8809 <https://github.com/sunpy/sunpy/pull/8809>`__)
+
+
 8.0.0 (2026-06-30)
 ==================
 

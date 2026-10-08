@@ -1,1 +1,0 @@
-Fixed `sunpy.io.special.srs.read_srs` failing to read SRS files with both mixed-case column headers and sections containing ``None``.
