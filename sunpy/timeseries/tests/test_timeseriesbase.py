@@ -446,6 +446,72 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
     assert (ts.quantity('array_added') == column_quantity.value).all()
 
 
+def test_add_column_overwrite_with_different_unit(eve_test_ts):
+    col = eve_test_ts.columns[0]
+    n_rows = len(eve_test_ts.to_dataframe())
+    new_quantity = np.arange(n_rows, dtype=float) * u.s
+    new_ts = eve_test_ts.add_column(col, new_quantity, overwrite=True)
+    assert new_ts.units[col] == u.s
+    assert_quantity_allclose(new_ts.quantity(col), new_quantity)
+
+
+def test_add_column_overwrite_with_convertible_unit(eve_test_ts):
+    col = eve_test_ts.columns[0]
+    n_rows = len(eve_test_ts.to_dataframe())
+    new_quantity = np.arange(n_rows, dtype=float) * (u.W / u.m**2)
+    # Convert and add with a different unit (e.g., mW / m**2)
+    new_ts = eve_test_ts.add_column(col, new_quantity.to(u.mW / u.m**2), overwrite=True)
+    assert new_ts.units[col] == (u.mW / u.m**2)
+    assert_quantity_allclose(new_ts.quantity(col), new_quantity)
+
+
+def test_add_column_overwrite_with_explicit_unit(eve_test_ts):
+    col = eve_test_ts.columns[0]
+    n_rows = len(eve_test_ts.to_dataframe())
+    new_quantity = np.arange(n_rows, dtype=float) * u.km
+    new_ts = eve_test_ts.add_column(col, new_quantity, unit=u.m, overwrite=True)
+    assert new_ts.units[col] == u.m
+    assert_quantity_allclose(new_ts.quantity(col), new_quantity.to(u.m))
+
+
+def test_add_column_overwrite_with_array_keep_unit(eve_test_ts):
+    col = eve_test_ts.columns[0]
+    original_unit = eve_test_ts.units[col]
+    n_rows = len(eve_test_ts.to_dataframe())
+    new_values = np.arange(n_rows, dtype=float)
+    new_ts = eve_test_ts.add_column(col, new_values, overwrite=True)
+    assert new_ts.units[col] == original_unit
+    assert np.allclose(new_ts.to_dataframe()[col].values, new_values)
+
+
+def test_add_column_overwrite_with_array_and_unit(eve_test_ts):
+    col = eve_test_ts.columns[0]
+    n_rows = len(eve_test_ts.to_dataframe())
+    new_values = np.arange(n_rows, dtype=float)
+    new_ts = eve_test_ts.add_column(col, new_values, unit=u.K, overwrite=True)
+    assert new_ts.units[col] == u.K
+    assert_quantity_allclose(new_ts.quantity(col), new_values * u.K)
+
+
+def test_add_column_dimensionless(generic_ts):
+    n_rows = len(generic_ts.to_dataframe())
+    values = np.arange(n_rows, dtype=float) * u.percent
+    new_ts = generic_ts.add_column('new_dim', values, unit=u.dimensionless_unscaled)
+    assert new_ts.units['new_dim'] == u.dimensionless_unscaled
+    assert_quantity_allclose(new_ts.quantity('new_dim'), values.to(u.dimensionless_unscaled))
+
+
+def test_add_column_overwrite_false(eve_test_ts):
+    col = eve_test_ts.columns[0]
+    original_unit = eve_test_ts.units[col]
+    original_values = eve_test_ts.to_dataframe()[col].values.copy()
+    n_rows = len(eve_test_ts.to_dataframe())
+    new_quantity = np.arange(n_rows, dtype=float) * u.s
+    new_ts = eve_test_ts.add_column(col, new_quantity, overwrite=False)
+    assert new_ts.units[col] == original_unit
+    assert np.array_equal(new_ts.to_dataframe()[col].values, original_values, equal_nan=True)
+
+
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
     assert isinstance(tbl, Table)
