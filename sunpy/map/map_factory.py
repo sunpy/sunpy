@@ -366,7 +366,7 @@ class MapFactory(BasicRegistrationFactory):
         # Only one is found
         WidgetType = candidate_widget_types[0]
 
-        return WidgetType(data, meta, **kwargs)
+        return WidgetType(data, meta=meta, **kwargs)
 
 
 class InvalidMapInput(ValueError):
