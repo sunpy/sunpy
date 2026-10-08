@@ -9,12 +9,15 @@ Notes
    dictionary with the same name as a key in the header (upcased).
 
 2. Due to the way `~astropy.io.fits` works with images, the header dictionary may
-   differ depending on whether is accessed before or after the fits[0].data
+   differ depending on whether it is accessed before or after the fits[0].data
    is requested. If the header is read before the data then the original
    header will be returned. If the header is read after the data has been
    accessed then the data will have been scaled and a modified header
    reflecting these changes will be returned: BITPIX may differ and
-   BSCALE and B_ZERO may be dropped in the modified version.
+   BSCALE and BZERO may be dropped in the modified version. This module reads
+   the header after the data so that the pair returned by `read` describe the
+   same values; `get_header` does not touch the data and so returns the
+   header as it appears in the file.
 
 3. The verify('silentfix+warn') call attempts to handle violations of the FITS
    standard. For example, ``nan`` values will be converted to "nan" strings.
@@ -76,12 +79,15 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
         for h in hdulist:
             h.verify('silentfix+warn')
 
-        headers = get_header(hdulist)
         pairs = []
 
-        for i, (hdu, header) in enumerate(zip(hdulist, headers)):
+        for i, hdu in enumerate(hdulist):
             try:
-                pairs.append(HDPair(hdu.data, header))
+                # Accessing the data applies any BSCALE/BZERO scaling and drops
+                # those keywords from the HDU's header, so the header has to be
+                # read afterwards for it to describe the data it is paired with.
+                data = hdu.data
+                pairs.append(HDPair(data, format_comments_and_history(hdu.header)))
             except (KeyError, ValueError) as e:
                 message = f"Error when reading HDU {i}. Skipping.\n"
                 for line in traceback.format_tb(sys.exc_info()[2]):
@@ -190,6 +196,12 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     header = header.copy()
 
     fits_header = header_to_fits(header)
+    # Strip cards that describe the structure of the file the header was read
+    # from rather than the data being written now; astropy regenerates them
+    # from `data` and the HDU type. This matters most for BSCALE/BZERO, which
+    # astropy already applied to `data` when it was read, so carrying them
+    # over here would apply the same scaling a second time.
+    fits_header.strip()
 
     if isinstance(fname, str):
         fname = os.path.expanduser(fname)
@@ -202,10 +214,9 @@ def write(fname, data, header, hdu_type=None, **kwargs):
 
     if isinstance(hdu_type, fits.PrimaryHDU | fits.hdu.base.ExtensionHDU):
         hdu = hdu_type  # HDU already initialized
-        # Merge `header` into HDU's header
-        # Values in `header` take priority, including cards such as
-        # 'SIMPLE' and 'BITPIX'.
-        hdu.header.extend(fits_header, strip=False, update=True)
+        # Merge `header` into HDU's header.
+        # Values in `header` take priority.
+        hdu.header.extend(fits_header, strip=True, update=True)
         # Set the HDU's data
         hdu.data = data
     else:
