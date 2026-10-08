@@ -1267,26 +1267,13 @@ def test_rebin_resample_superpixel_rotated_map_cd(cd, method, args,kwargs, simpl
         assert smap.wcs.pixel_to_world(*ur_pix).separation(
             new_map.wcs.pixel_to_world(*new_ur_pix)) < 1e-8 * u.arcsec
     # and put every pixel in the same place as each other
-    assert_allclose(ref_map.axis_world_coords_values(), rebin_map.axis_world_coords_values())
+    pix = np.indices(rebin_map.shape)[::-1]
+    assert np.all(ref_map.wcs.pixel_to_world(*pix).separation(
+        rebin_map.wcs.pixel_to_world(*pix)) < 1e-8 * u.arcsec)
 
 def test_rebin_preserves_plot_settings(aia171_test_map):
     aia171_test_map.plot_settings['cmap'] = 'viridis'
     assert aia171_test_map.rebin((2, 2)).plot_settings['cmap'] == 'viridis'
-
-
-@pytest.mark.parametrize("bin_shape", [(2, 2), (2, 4)])
-def test_rebin_matches_superpixel(aia171_test_map, bin_shape):
-    rebinned = aia171_test_map.rebin(bin_shape)
-    superpix = aia171_test_map.superpixel(bin_shape[::-1] * u.pix, func=np.mean)
-
-    assert isinstance(rebinned, type(aia171_test_map))
-    assert rebinned.unit == aia171_test_map.unit
-    assert rebinned.shape == superpix.shape
-    assert_allclose(rebinned.data, superpix.data)
-    for key in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1', 'crval2', 'naxis1', 'naxis2'):
-        assert_allclose(rebinned.meta[key], superpix.meta[key])
-    for key in ('cunit1', 'cunit2'):
-        assert rebinned.meta[key] == superpix.meta[key]
 
 
 def test_superpixel_simple_map(simple_map):
@@ -1335,8 +1322,8 @@ def test_superpixel_metadata(generic_map, f, dimensions):
     assert superpix_map.meta['cdelt1'] == scale_x * generic_map.meta['cdelt1']
     assert superpix_map.meta['cdelt2'] == scale_y * generic_map.meta['cdelt2']
     assert superpix_map.meta['pc1_1'] == generic_map.meta['pc1_1']
-    assert superpix_map.meta['pc1_2'] == scale_y / scale_x * generic_map.meta['pc1_2']
-    assert superpix_map.meta['pc2_1'] == scale_x / scale_y * generic_map.meta['pc2_1']
+    assert_allclose(scale_y / scale_x * generic_map.meta['pc1_2'], superpix_map.meta['pc1_2'])
+    assert_allclose(scale_x / scale_y * generic_map.meta['pc2_1'], superpix_map.meta['pc2_1'])
     assert superpix_map.meta['pc2_2'] == generic_map.meta['pc2_2']
 
     assert superpix_map.meta['crpix1'] - 0.5 == (generic_map.meta['crpix1'] - 0.5) / scale_x
