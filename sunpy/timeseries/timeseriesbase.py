@@ -415,7 +415,7 @@ class GenericTimeSeries:
         unit = self.units[colname]
         return u.Quantity(values, unit)
 
-    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
+    def add_column(self, colname, quantity, unit=None, overwrite=True, **kwargs):
         """
         Return a new `~sunpy.timeseries.TimeSeries` with the given column added
         or updated.
@@ -427,6 +427,10 @@ class GenericTimeSeries:
         quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
             The values to be placed within the column.
             If updating values only then a numpy array is permitted.
+        unit : `~astropy.units.Unit`, optional
+            The unit for the column. If not provided, it is inferred from
+            ``quantity`` if it is a `~astropy.units.Quantity`, or set to
+            ``u.dimensionless_unscaled`` (or the existing column unit if updating).
         overwrite : `bool`, optional
             Defaults to `True`, allowing the method to overwrite a column already present in the `~sunpy.timeseries.TimeSeries`.
 
@@ -435,28 +439,31 @@ class GenericTimeSeries:
         `sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries`.
         """
-        # Get the expected units from the quantity if required
-        if not unit and isinstance(quantity, astropy.units.quantity.Quantity):
+        # Determine the unit and extracted values
+        if unit is not None and unit is not False:
+            unit = u.Unit(unit)
+            if isinstance(quantity, astropy.units.quantity.Quantity):
+                values = quantity.to(unit).value
+            else:
+                values = quantity
+        elif isinstance(quantity, astropy.units.quantity.Quantity):
             unit = quantity.unit
-        elif not unit:
-            unit = u.dimensionless_unscaled
+            values = quantity.value
+        else:
+            if colname in self.columns:
+                unit = self.units.get(colname, u.dimensionless_unscaled)
+            else:
+                unit = u.dimensionless_unscaled
+            values = quantity
 
         # Make a copy of all the TimeSeries components.
         data = copy.copy(self._data)
         meta = TimeSeriesMetaData(copy.deepcopy(self.meta.metadata))
         units = copy.copy(self.units)
 
-        # Add the unit to the units dictionary if already there.
-        if colname not in self.columns:
-            units[colname] = unit
-
-        # Convert the given quantity into values for given units if necessary.
-        values = quantity
-        if isinstance(values, astropy.units.quantity.Quantity) and overwrite:
-            values = values.to(units[colname]).value
-
-        # Update or add the data.
+        # Update or add the data and unit.
         if colname not in self.columns or overwrite:
+            units[colname] = unit
             data[colname] = values
 
         # Return a new TimeSeries with the given updated/added column.
