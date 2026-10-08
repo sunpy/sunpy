@@ -229,8 +229,16 @@ class GenericTimeSeries:
         drange = drange.to_string(float_format="{:.2E}".format)
         drange = drange.replace("\n", "<br>")
 
-        center = self.time_range.center.value.astype('datetime64[s]')
-        center = str(center).replace("T", " ")
+        def _format_date(time):
+            # ``time`` is an astropy ``Time``; ``.iso`` yields a
+            # ``YYYY-MM-DD HH:MM:SS.sss`` string regardless of the underlying
+            # ``Time.format`` (which ``.value`` is sensitive to). Slice to the
+            # seconds field to keep the previous second-resolution output.
+            return time.iso[:19]
+
+        start = _format_date(self.time_range.start)
+        end = _format_date(self.time_range.end)
+        center = _format_date(self.time_range.center)
         resolution = round(self.time_range.seconds.value/self.shape[0], 3)
         resolution = str(resolution)+" s"
 
@@ -248,8 +256,8 @@ class GenericTimeSeries:
                    Observatory:\t\t\t{obs}
                    Instrument:\t\t\t{link}
                    Channel(s):\t\t\t{channels}
-                   Start Date:\t\t\t{dat.index.min().round('s')}
-                   End Date:\t\t\t{dat.index.max().round('s')}
+                   Start Date:\t\t\t{start}
+                   End Date:\t\t\t{end}
                    Center Date:\t\t\t{center}
                    Resolution:\t\t\t{resolution}
                    Samples per Channel:\t\t{self.shape[0]}
