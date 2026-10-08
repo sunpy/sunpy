@@ -335,7 +335,7 @@ def test_map_list_uri():
     ("hi_20110910_114721_s7h2A.header", sunpy.map.sources.HIMap),
     (AIA_171_IMAGE, sunpy.map.sources.AIAMap),
     (RHESSI_IMAGE, sunpy.map.sources.RHESSIMap),
-    ("FGMG4_20110214_030443.7.header", sunpy.map.sources.SOTMap),
+    ("HinodeSOT/HinodeSOT_FG_NB_TF_Na_I_5896_L1.header", sunpy.map.sources.SOTMap),
     ("swap_lv1_20140606_000113.header", sunpy.map.sources.SWAPMap),
     ("HinodeXRT.header", sunpy.map.sources.XRTMap),
 ])
