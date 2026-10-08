@@ -329,7 +329,7 @@ else:
 planets_pix_x = planets_pixels[:,1]
 planets_pix_y = planets_pixels[:,0]
 
-planet_coords = artemis_map.pixel_to_world(planets_pix_x * u.pix, planets_pix_y * u.pix)
+planet_coords = artemis_map.wcs.pixel_to_world(planets_pix_x, planets_pix_y)
 
 ###############################################################################
 # Verify we've correctly identified the planets.

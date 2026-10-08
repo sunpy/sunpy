@@ -787,6 +787,7 @@ class GenericMap(MapMetaMixin, NDData):
         return cmap_string.lower()
 
 # #### Data conversion routines #### #
+    @deprecated(since="8.1", alternative="map.wcs.world_to_pixel")
     def world_to_pixel(self, coordinate):
         """
         Convert a world (data) coordinate to a pixel coordinate.
@@ -807,6 +808,9 @@ class GenericMap(MapMetaMixin, NDData):
         return PixelPair(x * u.pixel, y * u.pixel)
 
     @u.quantity_input
+    @deprecated(since="8.1", alternative="map.wcs.pixel_to_world",
+                message="The {func} {obj_type} is deprecated and may be removed in a future "
+                        "version. Use {alternative} instead, noting that it accepts unit-less inputs.")
     def pixel_to_world(self, x: u.pixel, y: u.pixel):
         """
         Convert a pixel coordinate to a data (world) coordinate.
