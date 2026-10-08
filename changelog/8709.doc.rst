@@ -1,0 +1,1 @@
+Added an example (:ref:`sphx_glr_generated_gallery_plotting_hmi_vector_field.py`) showing how to overlay the transverse magnetic field vectors from a Spaceweather HMI Active Region Patch (SHARP) on top of the line-of-sight magnetogram.
