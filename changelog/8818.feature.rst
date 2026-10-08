@@ -1,0 +1,1 @@
+Added :meth:`~sunpy.net.attr.AttrMeta.to_html_datatable`, which renders an attrs table as an interactive ``itables`` datatable and returns it, so it can be embedded anywhere that picks up an object's ``_repr_html_``, such as a documentation example.
