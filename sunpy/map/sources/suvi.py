@@ -4,7 +4,7 @@ from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ["SUVIMap"]
