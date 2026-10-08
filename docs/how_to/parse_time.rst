@@ -123,3 +123,58 @@ Format output by the ``anytim2tai`` routine in SolarSoft (see the documentation 
 
     >>> parse_time(1824441848, format='tai_seconds')
     <Time object: scale='tai' format='tai_seconds' value=1824441848.0>
+
+CDF epochs
+==========
+
+Times in `Common Data Format <https://cdf.gsfc.nasa.gov/>`__ (CDF) files, such as the in-situ datasets distributed by `CDAWeb <https://cdaweb.gsfc.nasa.gov/>`__, are stored as plain numbers counted from an epoch.
+There are three such types, and the ``format`` to pass to `~sunpy.time.parse_time` for each is:
+
+.. list-table::
+   :header-rows: 1
+
+   * - CDF type
+     - ``format``
+     - Stored as
+   * - ``CDF_EPOCH``
+     - ``'cdf_epoch'``
+     - Milliseconds since 0000-01-01 UTC, as a `float`.
+   * - ``CDF_EPOCH16``
+     - ``'cdf_epoch16'``
+     - Seconds since 0000-01-01 UTC, plus picoseconds within that second in the imaginary part, as a `complex`.
+   * - ``CDF_TIME_TT2000``
+     - ``'cdf_tt2000'``
+     - Nanoseconds since 2000-01-01 12:00:00 TT, as an `int`. Being TT-based, this is the only one of the three that can represent a leap second.
+
+This requires `cdflib <https://cdflib.readthedocs.io/>`__ to be installed, which you will already have if you installed sunpy with the ``timeseries`` extra.
+
+.. doctest-requires:: cdflib
+
+    >>> parse_time(63871286400000.0, format='cdf_epoch')
+    <Time object: scale='utc' format='cdf_epoch' value=63871286400000.0>
+    >>> parse_time(757339269184000000, format='cdf_tt2000')
+    <Time object: scale='tt' format='cdf_tt2000' value=7.57339269184e+17>
+
+Note the scale of the result: because ``CDF_TIME_TT2000`` is counted in TT, the times you get back are on the TT scale, which in 2024 runs 69.184 seconds ahead of UTC.
+Convert to UTC before comparing against civil times:
+
+.. doctest-requires:: cdflib
+
+    >>> parse_time(757339269184000000, format='cdf_tt2000').utc.isot
+    '2024-01-01T00:00:00.000000000'
+
+Reading a CDF file with `~sunpy.timeseries.TimeSeries` already converts its times for you, so you are most likely to need these formats when the numbers have been separated from the file that defined them.
+A time column exported to a CSV, returned by a web API, or listed in someone else's notebook carries no record of the epoch it was counted from.
+Given the numbers and which of the three types they are, `~sunpy.time.parse_time` turns them back into times without you having to know how each epoch is defined.
+
+For example, the times below arrived as a list of ``CDF_TIME_TT2000`` values, and can be used as times straight away once parsed:
+
+.. doctest-requires:: cdflib
+
+    >>> times = parse_time([757339269184000000, 757339270184000000, 757339271184000000],
+    ...                    format='cdf_tt2000')
+    >>> times.utc.isot
+    array(['2024-01-01T00:00:00.000000000', '2024-01-01T00:00:01.000000000',
+           '2024-01-01T00:00:02.000000000'], dtype='<U29')
+    >>> (times[1:] - times[:-1]).sec
+    array([1., 1.])
