@@ -1,0 +1,1 @@
+Moved `coordinate_is_on_solar_disk` from `sunpy.map.maputils` to `sunpy.coordinates.utils`.
