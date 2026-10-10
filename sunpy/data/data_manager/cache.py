@@ -58,6 +58,10 @@ class Cache:
         """
         if isinstance(urls, str | Path):
             urls = [urls]
+
+        if len(urls) == 0:
+            raise ValueError("No URLs provided to download.")
+
         # Logic plan
         # 1. Check if the file is present in cache by url
         # 2. If present and it has not expired nor redownload, return the file path
