@@ -1919,8 +1919,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         Notes
         -----
-        The reprojected map does not preserve any metadata beyond the WCS-associated
-        metadata.
+        The reprojected map keeps this map's metadata, with the WCS-associated
+        keywords replaced by those of the target WCS.
 
         The supported `reproject` algorithms are:
 
