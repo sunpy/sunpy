@@ -496,9 +496,10 @@ def test_heliocentric_radial_psi(x, y, psi):
 @pytest.mark.parametrize(('obstime', 'dipole_lonlat'),
                          [('2012-07-01', [-72.408328, 80.16423]*u.deg),
                           ('2012-08-01', [-72.415148, 80.169261]*u.deg),
-                          ('2032-08-01', [-72.576963, 81.212062]*u.deg),
+                          ('2025-01-01', [-72.762823, 80.789361]*u.deg),
+                          ('2030-01-01', [-72.959072, 80.993912]*u.deg),
                           (['2012-07-01', '2012-08-01'], [[-72.408328, 80.16423], [-72.415148, 80.169261]]*u.deg),
-                          (['2012-07-01', '2032-08-01'], [[-72.408328, 80.16423], [-72.576963, 81.212062]]*u.deg),
+                          (['2012-07-01', '2032-08-01'], [[-72.408328, 80.16423], [-73.064354, 81.099936]]*u.deg),
                           ('1899-01-01', ValueError),
                           (['1899-01-01', '2012-07-01'], ValueError)])
 def test_magnetic_model_obstime(obstime, dipole_lonlat):
@@ -520,7 +521,8 @@ def test_magnetic_model_default():
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(('magnetic_model', 'obstime', 'dipole_lonlat'),
-                         [('igrf12', '2012-07-01', [-72.414318, 80.16354]*u.deg),
+                         [('igrf13', '2017-07-01', [-72.644700, 80.44977]*u.deg),
+                          ('igrf12', '2012-07-01', [-72.414318, 80.16354]*u.deg),
                           ('igrf11', '2006-01-01', [-71.886023, 79.801523]*u.deg),
                           ('igrf10', '2006-01-01', [-71.822653, 79.785185]*u.deg)])
 def test_magnetic_model_with(magnetic_model, obstime, dipole_lonlat):
