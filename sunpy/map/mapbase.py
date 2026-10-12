@@ -20,8 +20,6 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-import reproject
-
 from ndcube import NDCube
 
 try:
