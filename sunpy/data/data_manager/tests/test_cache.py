@@ -92,6 +92,8 @@ def test_file_change(cache, mocker):
         file_path, file_hash, url = mock_download_and_hash('https://example.com/abc.text', redownload=True)
         assert file_hash == modified_hash
 
-def test_cache_empty_urls(cache):
+@pytest.mark.parametrize("empty_urls", [[], ()])
+def test_cache_empty_urls(cache, empty_urls):
     with pytest.raises(ValueError, match="No URLs provided to download."):
-        cache.download([])
+        cache.download(empty_urls)
+

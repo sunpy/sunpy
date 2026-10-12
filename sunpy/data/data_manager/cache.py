@@ -59,7 +59,7 @@ class Cache:
         if isinstance(urls, str | Path):
             urls = [urls]
 
-        if len(urls) == 0:
+        if not urls:
             raise ValueError("No URLs provided to download.")
 
         # Logic plan
@@ -67,6 +67,7 @@ class Cache:
         # 2. If present and it has not expired nor redownload, return the file path
         # 3. If not present or present and (expired or redownload), download the file and update cache
         #   a. If there is an error from the above steps, we will return the file from the cache if present
+        cache_details = None
         for url in urls:
             cache_details = self._get_by_url(url)
             if cache_details:
