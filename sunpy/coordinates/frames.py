@@ -106,8 +106,8 @@ def _frame_parameters():
     ret['magnetic_model'] = ("magnetic_model : `str`\n"
                              "    The IGRF model to use for determining the orientation of\n"
                              "    Earth's magnetic dipole pole. The supported options are\n"
-                             "    ``'igrf13'`` (default), ``'igrf12'``, ``'igrf11'``, and\n"
-                             "    ``'igrf10'``.")
+                             "    ``'igrf14'`` (default), ``'igrf13'``, ``'igrf12'``,\n"
+                             "    ``'igrf11'``, and ``'igrf10'``.")
     ret['igrf_reference'] = ("* `International Geomagnetic Reference Field (IGRF) "
                              "<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`__")
 
@@ -957,7 +957,7 @@ class BaseMagnetic(SunPyBaseCoordinateFrame):
 
     This class is not intended to be used directly and has no transformations defined.
     """
-    magnetic_model = Attribute(default='igrf13')
+    magnetic_model = Attribute(default='igrf14')
 
     @property
     def _igrf_file(self):

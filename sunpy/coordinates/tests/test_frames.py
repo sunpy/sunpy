@@ -502,7 +502,7 @@ def test_heliocentric_radial_psi(x, y, psi):
                           ('1899-01-01', ValueError),
                           (['1899-01-01', '2012-07-01'], ValueError)])
 def test_magnetic_model_obstime(obstime, dipole_lonlat):
-    frame = Geomagnetic(obstime=obstime, magnetic_model='igrf13')
+    frame = Geomagnetic(obstime=obstime, magnetic_model='igrf14')
     ctx = pytest.raises(ValueError, match="earlier than the year 1900") if dipole_lonlat is ValueError else nullcontext()
     with ctx:
         assert_quantity_allclose(frame.dipole_lonlat, dipole_lonlat.T)
@@ -512,10 +512,10 @@ def test_magnetic_model_default():
     # Also tests that no downloading happens because this test is not marked as remote
     obstime = '2012-07-01'
     frame_default = Geomagnetic(obstime=obstime)
-    frame_igrf13 = Geomagnetic(obstime=obstime, magnetic_model='igrf13')
+    frame_igrf14 = Geomagnetic(obstime=obstime, magnetic_model='igrf14')
 
-    assert_quantity_allclose(frame_igrf13.dipole_lonlat, [-72.408328, 80.16423]*u.deg)
-    assert_quantity_allclose(frame_default.dipole_lonlat, frame_igrf13.dipole_lonlat)
+    assert_quantity_allclose(frame_igrf14.dipole_lonlat, [-72.408328, 80.16423]*u.deg)
+    assert_quantity_allclose(frame_default.dipole_lonlat, frame_igrf14.dipole_lonlat)
 
 
 @pytest.mark.remote_data

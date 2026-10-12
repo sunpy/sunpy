@@ -13,14 +13,14 @@ examples:
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/solarmagnetic-1.1.0>
           frame_attributes:
-            magnetic_model: igrf13
+            magnetic_model: igrf14
   -
     - A Solar Magnetic frame with an obstime
     - asdf-standard-1.6.0
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/solarmagnetic-1.1.0>
           frame_attributes:
-            magnetic_model: igrf13
+            magnetic_model: igrf14
             obstime: !time/time-1.2.0 '2011-01-01T01:01:01.000'
 
 allOf:
