@@ -943,7 +943,7 @@ _sunspice_data = [
     (ITRS, (-20*u.deg, 10*u.deg, 0.7*u.AU)),
     (Geomagnetic, (54.400820*u.deg, 15.674828*u.deg, 0.7*u.AU)),
     (SolarMagnetic, (163.35062*u.deg, 15.674828*u.deg, 0.7*u.AU)),
-    (GeocentricSolarMagnetospheric, (163.98552*u.deg, -0.71263503*u.deg, 0.7*u.AU)),
+    (GeocentricSolarMagnetospheric, (163.99118333*u.deg, -0.71183974*u.deg, 0.7*u.AU)),
 ]
 
 
