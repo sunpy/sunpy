@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.GenericMap.reproject_to` warning about an ``rsun`` mismatch when reprojecting between maps that have the same solar radius.
