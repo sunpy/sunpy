@@ -1965,55 +1965,39 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(target_wcs)
-
-        # Select the desired reprojection algorithm
-        functions = {'interpolation': reproject.reproject_interp,
-                     'adaptive': reproject.reproject_adaptive,
-                     'exact': reproject.reproject_exact}
-        if algorithm not in functions:
-            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
-        func = functions[algorithm]
+            target_wcs = astropy.wcs.WCS(header=target_wcs)
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
         if auto_extent is not None:
             left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
-                                                            method=auto_extent, integers=True)
+                                                           method=auto_extent, integers=True)
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
-        # reproject does not automatically grab the array shape from the WCS instance
-        if target_wcs.array_shape is not None:
-            reproject_args.setdefault('shape_out', target_wcs.array_shape)
+        # Read rsun off the target WCS rather than the reprojected map, so that the
+        # reprojection itself can be left to NDCube
+        rsun_target = target_wcs.wcs.aux.rsun_ref
+        if rsun_target is not None and self.rsun_meters.to_value(u.m) != rsun_target:
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} m of the target WCS. "
+                      "This might cause unexpected results during reprojection.")
 
-        # Reproject the array
-        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
-        if return_footprint:
-            output_array, footprint = output_array
+        output = super().reproject_to(target_wcs, algorithm=algorithm,
+                                      return_footprint=return_footprint, **reproject_args)
+        outmap, footprint = output if return_footprint else (output, None)
 
-        target_header = target_wcs.to_header(relax=True)
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
-            # target_header has a DATE-AVG key and if it does not, we would inadvertently
+            # the target has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            if (ref_date := target_header.get('DATE-AVG', target_header.get('DATE-OBS'))) is None:
+            if (ref_date := outmap.meta.get('DATE-AVG', outmap.meta.get('DATE-OBS'))) is None:
                 raise ValueError("The target_wcs has neither a DATE-AVG or DATE-OBS. It is ambiguous "
                                  "as to what date should be used as reference date in the target header. "
                                  "To avoid this, either set DATE-AVG or DATE-OBS on target_wcs or "
                                  "set preserve_date_obs=False.")
-            target_header['DATE-AVG'] = ref_date
-            target_header['DATE-OBS'] = self.date.utc.isot
-
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, meta=target_header,
-                            plot_settings=self.plot_settings)
-
-        # Check rsun mismatch
-        if self.rsun_meters != outmap.rsun_meters:
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
-                      "This might cause unexpected results during reprojection.")
+            outmap.meta['DATE-AVG'] = ref_date
+            outmap.meta['DATE-OBS'] = self.date.utc.isot
 
         if return_footprint:
             return outmap, footprint
