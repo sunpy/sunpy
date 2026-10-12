@@ -1478,6 +1478,7 @@ def test_superpixel_metadata(generic_map, f, dimensions):
 
     scale_x, scale_y = dimensions.value
 
+    # because we don't care about atomic level precision on the surface of the sun apparently
     assert_allclose(superpix_map.meta['cdelt1'], scale_x * generic_map.meta['cdelt1'])
     assert_allclose(superpix_map.meta['cdelt2'], scale_y * generic_map.meta['cdelt2'])
     assert superpix_map.meta['pc1_1'] == generic_map.meta['pc1_1']

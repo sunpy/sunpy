@@ -1949,23 +1949,24 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
-        # Read rsun off the target WCS rather than the reprojected map, so that the
-        # reprojection itself can be left to NDCube
-        rsun_target = target_wcs.wcs.aux.rsun_ref
-        if rsun_target is not None and self.rsun_meters.to_value(u.m) != rsun_target:
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters} != {rsun_target} m of the target WCS. "
-                      "This might cause unexpected results during reprojection.")
-
         output = super().reproject_to(target_wcs, algorithm=algorithm,
                                       return_footprint=return_footprint, **reproject_args)
         outmap, footprint = output if return_footprint else (output, None)
+
+        # Compared with a tolerance because a WCS round-tripped through a FITS header
+        # carries float noise far below any physically meaningful difference.
+        if not u.isclose(self.rsun_meters, outmap.rsun_meters, rtol=1e-11):
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
 
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # the target has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            if (ref_date := outmap.meta.get('DATE-AVG', outmap.meta.get('DATE-OBS'))) is None:
+            # Read from the target, not the result: the result keeps this map's
+            # metadata, so it always has a date of its own.
+            if not (ref_date := target_wcs.wcs.dateavg or target_wcs.wcs.dateobs):
                 raise ValueError("The target_wcs has neither a DATE-AVG or DATE-OBS. It is ambiguous "
                                  "as to what date should be used as reference date in the target header. "
                                  "To avoid this, either set DATE-AVG or DATE-OBS on target_wcs or "
