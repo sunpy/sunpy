@@ -1,0 +1,1 @@
+Fix debug logging so enabling it does not cause an error from the `~sunpy.net.scraper.Scraper` due to ``parse`` using standard lib logging.

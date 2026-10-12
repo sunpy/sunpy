@@ -24,6 +24,7 @@ permissions: {}
 
 jobs:
   core:
+    if: ${{ !github.event.repository.fork || github.event_name != 'schedule' }}
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@22ddf09dfabb443adddfb9f861b7d41a787d6b1a  # v3.0.3
     permissions:
       id-token: write
@@ -237,7 +238,7 @@ jobs:
     environment:
       name: matrix
     steps:
-      - uses: Cadair/matrix-notify-action@31c7cc36051ee7dc4157a22c1f13dbc7d68e5120  # v2
+      - uses: Cadair/matrix-notify-action@9f46790e6ae0a5a83bd63ae0a3bb1948f2bc784c  # v3
         with:
           workflow_description: 'CI Workflow'
           matrix_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}
