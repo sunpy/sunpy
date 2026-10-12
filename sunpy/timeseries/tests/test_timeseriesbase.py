@@ -240,6 +240,17 @@ def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts,
     assert (truncated_new_tr_all_before_ts.meta.metadata ==
             truncated_new_tr_all_after_ts.meta.metadata ==
             [])
+    # Ensure empty truncated timeseries can be displayed and summarized without error (#7914)
+    for ts in [truncated_new_tr_all_before_ts, truncated_new_tr_all_after_ts]:
+        assert ts.shape[0] == 0
+        assert ts.time_range is None
+        assert ts.observatory is None
+        text = str(ts)
+        assert "Samples per Channel:\t\t0" in text
+        assert "Start Date:\t\t\tNone" in text
+        html = ts._repr_html_()
+        assert "<table" in html
+        assert "None" in html
 
 
 def test_extraction(eve_test_ts):

@@ -143,3 +143,14 @@ def test_goes_ylim(goes_test_ts):
     fig, ax = plt.subplots()
     goes_test_ts.plot(ax)
     ax.set_ylim(1e-7, 1e-5)
+
+
+def test_goes_truncate_empty():
+    from sunpy.time import TimeRange
+    ts = sunpy.timeseries.TimeSeries(goes_fits_filepath_com, source='XRS')
+    tr = TimeRange('2000-01-01', '2000-01-02')
+    trunc = ts.truncate(tr)
+    assert trunc.shape[0] == 0
+    assert trunc.observatory is None
+    assert "Samples per Channel:\t\t0" in str(trunc)
+    assert "<table" in trunc._repr_html_()
