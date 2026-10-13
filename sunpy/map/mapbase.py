@@ -257,7 +257,7 @@ class GenericMap(NDData):
         # `.unit` reads BUNIT, not the value NDData just stored, so an explicit unit is
         # lost unless written there. Compared as units.
         if (unit := nddata_kwargs.get('unit')) is not None:
-            unit = u.Unit(unit)
+            unit = self._parse_fits_unit(unit)
             if self.unit != unit:
                 self.meta['bunit'] = unit.to_string()
 
