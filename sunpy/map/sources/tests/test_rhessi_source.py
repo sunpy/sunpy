@@ -62,15 +62,14 @@ def test_new_instance_preserves_plot_settings(rhessi_map):
     # that _new_instance persists the old custom plot_settings
     rhessi_map.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
     rhessi_map.plot_settings['cmap'] = 'inferno'
-    new_rhessi_map = rhessi_map._new_instance(rhessi_map.data,
-                                              rhessi_map.meta,
+    new_rhessi_map = rhessi_map._new_instance(data=rhessi_map.data, meta=rhessi_map.meta,
                                               plot_settings=rhessi_map.plot_settings)
     assert new_rhessi_map.plot_settings['norm'].vmin == rhessi_map.plot_settings['norm'].vmin
     assert new_rhessi_map.plot_settings['norm'].vmax == rhessi_map.plot_settings['norm'].vmax
     assert new_rhessi_map.plot_settings['cmap'] == rhessi_map.plot_settings['cmap']
     # If no plot settings are explicitly passed, the plot_settings should fall back to those
     # in the constructor
-    new_rhessi_map = rhessi_map._new_instance(rhessi_map.data, rhessi_map.meta)
+    new_rhessi_map = rhessi_map._new_instance(data=rhessi_map.data, meta=rhessi_map.meta)
     assert new_rhessi_map.plot_settings['norm'].vmin is None
     assert new_rhessi_map.plot_settings['norm'].vmax is None
     assert new_rhessi_map.plot_settings['cmap'] == new_rhessi_map._get_cmap_name()
