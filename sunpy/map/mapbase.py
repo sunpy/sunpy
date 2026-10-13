@@ -237,8 +237,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         an empty dictionary is created.
 
     unit : `astropy.units.Unit` or `str`, optional
-        Unit for the dataset. Strings that can be converted to a `~astropy.units.Unit` are allowed.
-        Default is `None` which results in dimensionless units.
+        Unit to record in BUNIT. Overrides any existing BUNIT in ``meta`` - does not convert
+        the data array. Use this to set the unit of the data after converting it. e.g. when
+        converting units from counts to counts per second.
+        Default is `None`, which leaves the unit to BUNIT.
 
     copy : bool, optional
         Indicates whether to save the arguments as copy. `True` copies every attribute
