@@ -255,9 +255,11 @@ class GenericMap(NDData):
         super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
 
         # `.unit` reads BUNIT, not the value NDData just stored, so an explicit unit is
-        # lost unless written there. Compared as units.
+        # lost unless written there. Compared as units but note that this is done only so
+        # we can keep the original BUNIT if the constructor had received an equal unit
+        # e.g counts / pixel and ct / pix but not Erg and J.
         if (unit := nddata_kwargs.get('unit')) is not None:
-            unit = self._parse_fits_unit(unit)
+            unit = u.Unit(unit)
             if self.unit != unit:
                 self.meta['bunit'] = unit.to_string()
 

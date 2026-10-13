@@ -292,12 +292,20 @@ def test_unit_kwarg_sets_bunit(generic_map):
     assert new_map.meta['bunit'] == 'ct'
 
 
-def test_unit_kwarg_does_not_rewrite_equivalent_bunit(generic_map):
-    generic_map.meta['bunit'] = 'counts / pixel'
-    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.Unit('ct/pix'))
+@pytest.mark.parametrize(('bunit', 'unit', 'expected_bunit'), [
+    # The same unit written differently keeps the original bunit
+    ('counts / pixel', u.Unit('ct / pix'), 'counts / pixel'),
+    ('DN / s', u.Unit('DN s-1'), 'DN / s'),
+    # A different unit overwrites the old bunit
+    ('DN', u.DN * u.s, 'DN s'),
+    ('DN', u.DN / u.s, 'DN / s'),
+])
+def test_unit_kwarg_only_rewrites_bunit_when_the_unit_changes(generic_map, bunit, unit, expected_bunit):
+    generic_map.meta['bunit'] = bunit
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=unit)
 
-    assert new_map.unit == u.ct / u.pix
-    assert new_map.meta['bunit'] == 'counts / pixel'
+    assert new_map.unit == unit
+    assert new_map.meta['bunit'] == expected_bunit
 
 
 # ==============================================================================
