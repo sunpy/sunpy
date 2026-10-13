@@ -508,7 +508,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         padded_meta['crpix2'] += deltay
 
         # Create the padded map that will be used to create the rotated map.
-        smap = smap._new_instance(padded_data, padded_meta, smap.plot_settings)
+        smap = smap._new_instance(data=padded_data, meta=padded_meta, plot_settings=smap.plot_settings)
 
     # Check for masked maps
     if smap.mask is not None:
@@ -548,7 +548,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
 
-    outmap = smap._new_instance(out_data, out_meta, smap.plot_settings)
+    outmap = smap._new_instance(data=out_data, meta=out_meta, plot_settings=smap.plot_settings)
 
     # Update the meta information with the new date and time.
     outmap._set_date(new_observer.obstime)
