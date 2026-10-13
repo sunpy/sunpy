@@ -4,12 +4,12 @@ This module provides `sunpy.timeseries.GenericTimeSeries` which all other
 """
 import copy
 import html
-import time
 import textwrap
+import time
 import webbrowser
-from tempfile import NamedTemporaryFile
 from collections import OrderedDict
 from collections.abc import Iterable
+from tempfile import NamedTemporaryFile
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -294,6 +294,8 @@ class GenericTimeSeries:
             ncols=1,
             sharex=True,
         )
+        # Guarantee a 1D iterable to prevent scalar zip failures
+        axs = np.atleast_1d(axs)
         for i, (ax, column) in enumerate(zip(axs, self.columns)):
             values = dat[column].values
             ax.plot(

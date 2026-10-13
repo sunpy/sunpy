@@ -1,7 +1,7 @@
 from functools import partial
-from xml.etree import ElementTree
-from urllib.error import URLError, HTTPError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
+from xml.etree import ElementTree
 
 import numpy as np
 import pytest
@@ -238,6 +238,12 @@ def test_QueryResponse_build_table_with_no_end_time(mocker):
     assert len(start_time_) == 1
     assert start_time_[0].value == '2016-02-14 08:08:12.000'
 
+
+def test_QueryResponse_build_table_bad_time_format(mocker):
+    mocker.patch("sunpy.net.vso.vso.build_client", return_value=True)
+    records = (MockQRRecord(start_time="20220102030462"),)
+    table = VSOQueryResponseTable.from_zeep_response(MockQRResponse(records), client=None)
+    assert table['Start Time'].masked
 
 
 @pytest.mark.remote_data

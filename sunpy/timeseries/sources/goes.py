@@ -1,8 +1,8 @@
 """
 This module provides GOES XRS `~sunpy.timeseries.TimeSeries` source.
 """
-from pathlib import Path
 from collections import OrderedDict
+from pathlib import Path
 
 import h5netcdf
 import numpy as np
@@ -201,7 +201,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
                          index=times.isot.astype('datetime64'))
-        data.sort_index(inplace=True)
+        data = data.sort_index()
 
         # Add the units
         units = OrderedDict([('xrsa', u.W/u.m**2),

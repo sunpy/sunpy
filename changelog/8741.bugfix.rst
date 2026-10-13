@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.sources.SUITMap` modifying the ``DATE-OBS`` keyword rather than the ``T_OBS`` keyword used to construct the ``.date`` property.

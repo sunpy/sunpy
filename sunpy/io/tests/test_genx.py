@@ -109,3 +109,27 @@ def test_unpacker():
 
     with pytest.raises(EOFError):
         up.unpack_uint()
+
+
+def test_read_genx_error(tmp_path):
+    idl_signature = b'SR\x00\x04' + b'\x00' * 10
+    temp_file = tmp_path / "dummy_idl.geny"
+    temp_file.write_bytes(idl_signature)
+    with pytest.raises(ValueError, match="is an IDL savefile, not a genx file"):
+        genx.read_genx(temp_file)
+
+
+def test_read_genx_too_short_error(tmp_path):
+    short_file = b'12345'
+    temp_file = tmp_path / "short_dummy.genx"
+    temp_file.write_bytes(short_file)
+    with pytest.raises(ValueError, match="is too short to be a valid genx file"):
+        genx.read_genx(temp_file)
+
+
+def test_read_genx_unsupported_version_error(tmp_path):
+    text_data = b'this is a plain text file'
+    temp_file = tmp_path / "plain_text.txt"
+    temp_file.write_bytes(text_data)
+    with pytest.raises(ValueError, match="is not a 'genx' file with version"):
+        genx.read_genx(temp_file)

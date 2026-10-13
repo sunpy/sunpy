@@ -9,9 +9,9 @@ This module provides the `Fido
 """
 import os
 import re
+from collections.abc import Sequence
 from pathlib import Path
 from textwrap import dedent
-from collections.abc import Sequence
 
 import numpy as np
 import parfive
@@ -295,7 +295,7 @@ class UnifiedResponse(Sequence):
         """
         colnames = set(self[0].colnames)
         for resp in self[1:]:
-            colnames.union(resp.colnames)
+            colnames.update(resp.colnames)
         return sorted(list(colnames))
 
 
