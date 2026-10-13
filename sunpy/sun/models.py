@@ -140,17 +140,11 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     1 microrad/s is approximately 4.95 deg/day.
     See also the comparisons in :cite:t:`beck_comparison_2000`.
 
-    Note that the synodic correction assumes a circular Earth orbit.
-    Because Earth's orbital eccentricity is :math:`e \approx 0.0167`, the
-    true rate varies over the year by about :math:`+0.034` deg/day near
-    perihelion (early January) and :math:`-0.032` deg/day near aphelion
-    (early July), following
-    :math:`\dot\nu = n(1+e\cos\nu)^2/(1-e^2)^{3/2}` from two-body Kepler
-    orbital mechanics. This seasonal variation is not accounted for and is
-    generally negligible, but for precise differential-rotation
-    calculations, use the ``sunpy.coordinates`` framework directly rather
-    than this function.
-
+    The synodic return option uses the average orbital motion of Earth of
+    0.9856 deg/day, which can differ from the actual orbital motion by up to
+    0.034 deg/day.  For accurate differential-rotation calculations for an Earth
+    observer, use :func:`~sunpy.coordinates.propagate_with_solar_surface` or
+    `~sunpy.coordinates.RotatedSunFrame` instead.
     Examples
     --------
     .. minigallery:: sunpy.sun.models.differential_rotation
