@@ -19,6 +19,7 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
@@ -555,6 +556,20 @@ def test_timeseries_array():
     with pytest.warns(SunpyUserWarning, match='Unknown units'):
         ts = sunpy.timeseries.TimeSeries(data, {})
     assert isinstance(ts, sunpy.timeseries.GenericTimeSeries)
+
+def test_repr_html_single_column():
+    df = pd.DataFrame(
+        {"flux": [1, 2, 3]},
+        index=pd.date_range("2025-01-01", periods=3),
+    )
+    ts = GenericTimeSeries(
+        df,
+        {},
+        {"flux": u.W / u.m**2},
+    )
+    html = ts._repr_html_()
+    assert isinstance(html, str)
+    assert "<table" in html
 
 
 # TODO:
