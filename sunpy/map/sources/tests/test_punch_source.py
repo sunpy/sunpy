@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.punch import PUNCHMap
+from .helpers import _test_private_date_setters
 
 
 @pytest.fixture
@@ -50,3 +51,6 @@ def test_instrument(punch_map):
 def test_wcs(punch_map):
     """Test WCS is valid and can transform from pixels to world coordinates"""
     punch_map.pixel_to_world(0*u.pix, 0*u.pix)
+
+def test_private_date_setters(punch_map):
+    _test_private_date_setters(punch_map)

@@ -1,0 +1,1 @@
+Fixed `pandas.errors.Pandas4Warning` raised by `~sunpy.timeseries.sources.eve.ESPTimeSeries`, `~sunpy.timeseries.sources.goes.XRSTimeSeries`, and `~sunpy.timeseries.sources.lyra.LYRATimeSeries` from using the deprecated ``inplace`` keyword of `pandas.DataFrame.sort_index`.

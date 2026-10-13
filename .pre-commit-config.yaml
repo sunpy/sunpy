@@ -1,23 +1,13 @@
 repos:
-  - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.25.2
-    hooks:
-      - id: zizmor
     # This should be before any formatting hooks like isort
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.15.15"
+    rev: "v0.16.9"
     hooks:
-      - id: ruff
-        args: ["--fix"]
+      - id: ruff-check
+        args: ["--fix", "--show-fixes"]
         types: [python]
         # Define here once and then reference using YAML anchor
         exclude: &exclude_dirs ^sunpy/(data|extern)/
-  - repo: https://github.com/PyCQA/isort
-    rev: 8.0.1
-    hooks:
-      - id: isort
-        types: [python]
-        exclude: *exclude_dirs
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -44,12 +34,23 @@ repos:
         types_or: [python, rst]
       - id: mixed-line-ending
         types_or: [python, rst]
-  - repo: https://github.com/adhtruong/mirrors-typos
-    rev: v1.45.0
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
     hooks:
-      - id: typos
+      - id: codespell
+        args: [ "--write-changes" ]
         types_or: [python, rst]
         exclude: *exclude_dirs
+  - repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: v1.0.2
+    hooks:
+      - id: sphinx-lint
+        types_or: [python, rst]
+        exclude: *exclude_dirs
+  - repo: https://github.com/scientific-python/cookie
+    rev: 2026.08.14
+    hooks:
+      - id: sp-repo-review
   - repo: local
     hooks:
       - id: generate-sunpy-net-hek-attrs

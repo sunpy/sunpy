@@ -173,7 +173,7 @@ def output_version_bumps(package, threshold=timedelta(days=365*2)):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Process package dependancies for minimum bumps.')
+    parser = argparse.ArgumentParser(description='Process package dependencies for minimum bumps.')
     # Required positional argument
     parser.add_argument('--packagename', type=str, default="sunpy", help='The name of the package')
     # Optional integer argument with default value

@@ -170,7 +170,7 @@ print(stix_fov)
 # More usefully, every coordinate in a SPICE frame has a
 # :meth:`~sunpy.coordinates.spice.SpiceBaseCoordinateFrame.to_helioprojective`
 # method that converts the coordinate to `~sunpy.coordinates.Helioprojective`
-# with the ``observer`` at the center of te SPICE frame. For the
+# with the ``observer`` at the center of the SPICE frame. For the
 # 'SOLO_STIX_ILS' frame, the center is Solar Orbiter, which is exactly what we
 # want.
 

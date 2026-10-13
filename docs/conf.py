@@ -405,25 +405,18 @@ try:
     import requests
     from bs4 import BeautifulSoup
 
-    base_url = "https://docs.opencv.org"
+    # Get the redirected URL including the version number
+    base_url = requests.get("https://docs.opencv.org").url
+    cv_url = f"{base_url}main_modules/namespace_cv.html"
 
-    # The stable-version docs are the first item in the second list on the main page
-    all_docs = BeautifulSoup(requests.get(base_url).text, 'html.parser')
-    version = all_docs.find_all('ul')[1].li.a.attrs['href'][2:]  # strip leading "./"
-
-    # Find the relative URL to the page for the `cv` namespace
-    stable_docs = BeautifulSoup(requests.get(f"{base_url}/{version}/namespaces.html").text,
-                                'html.parser')
-    cv_namespace = stable_docs.find("a", string="cv").attrs['href']
-
-    # Find the relative URL for warpAffine/filter2D in the `cv` namespace
-    all_cv = BeautifulSoup(requests.get(f"{base_url}/{version}/{cv_namespace}").text, 'html.parser')
-    warpAffine = all_cv.find("a", string="warpAffine").attrs['href'][6:]  # strip leading "../../"
-    filter2D = all_cv.find("a", string="filter2D").attrs['href'][6:]  # strip leading "../../"
+    # Find the anchors for warpAffine/filter2D in the `cv` namespace
+    all_cv = BeautifulSoup(requests.get(cv_url).text, 'html.parser')
+    warpAffine = all_cv.find("a", string="warpAffine").attrs['href']
+    filter2D = all_cv.find("a", string="filter2D").attrs['href']
 
     # Construct the full URL for warpAffine/filter2D
-    warpAffine_full = f"{base_url}/{version}/{warpAffine}"
-    filter2D_full = f"{base_url}/{version}/{filter2D}"
+    warpAffine_full = f"{cv_url}{warpAffine}"
+    filter2D_full = f"{cv_url}{filter2D}"
 except Exception:
     # In the event of any failure (e.g., no network connectivity)
     warpAffine_full = ""
