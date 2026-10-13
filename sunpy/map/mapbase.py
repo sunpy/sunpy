@@ -130,6 +130,10 @@ class GenericMap(NDData):
 
     Other Parameters
     ----------------
+    unit : unit-like, optional
+        Unit to record in BUNIT. Overrides any existing BUNIT in header - does not convert the data array.
+        Use this to set the unit of the data after converting it. e.g. when converting units from counts
+        to counts per second.
     **kwargs :
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
