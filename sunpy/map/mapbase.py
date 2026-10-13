@@ -631,7 +631,7 @@ class GenericMap(NDData):
         provided by the `.date_end` property, which normally returns a value only if the
         DATE-END key is in the metadata.
         """
-        w2 = astropy.wcs.WCS(naxis=2)
+        w2 = astropy.wcs.WCS(naxis=2, preserve_units=True)
 
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
