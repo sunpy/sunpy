@@ -1,0 +1,1 @@
+Documented the inaccuracy of the non-default synodic return option of :func:`sunpy.sun.models.differential_rotation`.
