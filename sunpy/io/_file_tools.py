@@ -1,9 +1,9 @@
 """
 This module provides a generic file reader for internal use.
 """
-import re
 import gzip
 import pathlib
+import re
 
 import fsspec
 

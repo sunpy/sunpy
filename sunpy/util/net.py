@@ -2,10 +2,10 @@
 This module provides general net utility functions.
 """
 import os
-import sys
 import shutil
-from unicodedata import normalize
+import sys
 from email.parser import FeedParser
+from unicodedata import normalize
 from urllib.parse import urlparse
 from urllib.request import urlopen
 

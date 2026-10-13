@@ -19,6 +19,17 @@ Non-Compliance
 ==============
 Contributions which that appear to violate this principle can be summarily closed or removed.
 
+All pull requests **must** include the AI Assistance Disclosure checklist (listed below) in their description
+
+.. literalinclude:: /../.github/PULL_REQUEST_TEMPLATE.md
+    :lines: 33,42-49
+
+This is automatically added to the pull request description when you open a pull request.
+If it is not automatically added to the pull request description (e.g. if using the GitHub API), then the contributor is responsible for manually adding the above checklist to the pull request description.
+Pull requests which fail to complete the AI Assistance Disclosure checklist **will be marked as draft and will not be reviewed until the checklist is completed**.
+Pull requests which remove the AI Assistance Disclosure checklist entirely **may be immediately closed without a review**.
+Removing or failing to complete this checklist may be deemed a form of non-compliance.
+
 Repeated non-compliance may be considered a `code of conduct <https://sunpy.org/coc/>`__ violation.
 
 Responsible Uses of AI

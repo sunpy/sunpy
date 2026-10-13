@@ -1,10 +1,10 @@
+import importlib
 import re
 import string
-import importlib
 from abc import ABC, abstractmethod
-from textwrap import dedent
-from functools import wraps
 from collections.abc import Sequence
+from functools import wraps
+from textwrap import dedent
 
 import numpy as np
 
