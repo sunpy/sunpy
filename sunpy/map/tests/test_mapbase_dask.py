@@ -17,8 +17,8 @@ from sunpy.data.test import get_test_filepath
 def aia171_test_dask_map(aia171_test_map):
     dask_array = pytest.importorskip('dask.array')
     return aia171_test_map._new_instance(
-        dask_array.from_array(aia171_test_map.data),
-        copy.deepcopy(aia171_test_map.meta)
+        data=dask_array.from_array(aia171_test_map.data),
+        meta=copy.deepcopy(aia171_test_map.meta),
     )
 
 
