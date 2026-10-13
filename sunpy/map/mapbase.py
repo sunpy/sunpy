@@ -418,6 +418,15 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         # After the NDCube constructor has run there is now metadata for the setter
         self.wcs = wcs
 
+        # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
+        # lost unless written there. Compared as units but note that this is done only so
+        # we can keep the original BUNIT if the constructor had received an equal unit
+        # e.g counts / pixel and ct / pix but not Erg and J.
+        if unit is not None:
+            unit = u.Unit(unit)
+            if self.unit != unit:
+                self.meta['bunit'] = unit.to_string()
+
         # The plotter is an NDCube descriptor, so it is assigned the plotter
         # class rather than an instance of it.
         self.plotter = MapPlotter
