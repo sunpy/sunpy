@@ -1,2 +1,1 @@
 Updates IGRF from version 13 to version 14 in `~sunpy.coordinates.frames`.
-
