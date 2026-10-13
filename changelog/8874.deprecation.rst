@@ -1,0 +1,2 @@
+Deprecated ``sunpy.util.decorators.check_arithmetic_compatibility``.
+Map arithmetic is inherited from `ndcube.NDCube`, which checks its own operators, so the decorator is no longer needed.
