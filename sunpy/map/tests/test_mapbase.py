@@ -285,6 +285,21 @@ def test_unit(generic_map):
         assert generic_map.unit is None
 
 
+def test_unit_kwarg_sets_bunit(generic_map):
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.ct)
+
+    assert new_map.unit == u.ct
+    assert new_map.meta['bunit'] == 'ct'
+
+
+def test_unit_kwarg_does_not_rewrite_equivalent_bunit(generic_map):
+    generic_map.meta['bunit'] = 'counts / pixel'
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.Unit('ct/pix'))
+
+    assert new_map.unit == u.ct / u.pix
+    assert new_map.meta['bunit'] == 'counts / pixel'
+
+
 # ==============================================================================
 # Test the default value of a load of properties
 # TODO: Test the header keyword extraction

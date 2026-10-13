@@ -254,6 +254,13 @@ class GenericMap(NDData):
         nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
         super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
 
+        # `.unit` reads BUNIT, not the value NDData just stored, so an explicit unit is
+        # lost unless written there. Compared as units.
+        if (unit := nddata_kwargs.get('unit')) is not None:
+            unit = u.Unit(unit)
+            if self.unit != unit:
+                self.meta['bunit'] = unit.to_string()
+
         # Setup some attributes
         self._nickname = None
         # These are placeholders for default attributes, which are only set
