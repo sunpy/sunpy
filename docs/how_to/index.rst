@@ -25,6 +25,7 @@ If you're starting fresh you might want to check out the :ref:`sunpy-tutorial-in
    remote_data_manager
    search_multiple_wavelengths
    search_vso
+   slice_a_map
    transform_coords
    soar_wavelength
 
@@ -47,6 +48,8 @@ For more complete code examples, see the how-to guides above.
      - `my_map.quicklook() <sunpy.map.GenericMap.quicklook>`, `my_map.peek() <sunpy.map.GenericMap.peek>`
    * - plot a map
      - `my_map.plot() <sunpy.map.GenericMap.plot>`
+   * - cut out part of a map by array index
+     - `my_map[260:460, 680:880] <sunpy-how-to-slice-a-map>`
    * - access the underlying data array of a map
      - `my_map.data <sunpy.map.GenericMap.data>`
    * - access the map metadata
