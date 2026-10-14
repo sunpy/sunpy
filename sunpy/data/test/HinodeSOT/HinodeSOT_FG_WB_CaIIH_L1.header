@@ -1,0 +1,203 @@
+SIMPLE  =                    T / Written by IDL:  Wed Jun 22 10:26:09 2022      
+BITPIX  =                  -32 / Real*4 (floating point)                        
+NAXIS   =                    2 /                                                
+NAXIS1  =                 1024 /                                                
+NAXIS2  =                 2048 /                                                
+DATE    = '2007-05-30T05:32:21.000' /                                           
+DATE_RF0= '2007-05-30T05:32:21.000' /                                           
+TELESCOP= 'HINODE  '           /                                                
+MDP_CLK =           2024200181 /                                                
+FILEORIG= '2007_0522_015910.sci' /                                              
+MDPCTREF=           2024198914 /                                                
+CTREF   =           1186804520 /                                                
+CTRATE  =              584.000 /                                                
+TIMEERR =                    0 /                                                
+EXP0    =       0.204992000000 /                                                
+OBT_TIME=           2024199628 /                                                
+OBT_END =           2024199733 /                                                
+DATE_OBS= '2006-11-06T12:00:32.887' /                                           
+TIME-OBS= '12:00:32.887'       /                                                
+CTIME   = 'Mon Nov  6 12:00:32 2006' /                                          
+DATE_END= '2006-11-06T12:00:33.092' /                                           
+TIMESPAN=       0.204992000000 /                                                
+TIMESYS = 'UTC     '           /                                                
+INSTRUME= 'SOT/WB  '           /                                                
+ORIGIN  = 'JAXA/ISAS, SIRIUS'  /                                                
+DATA_LEV=                    1 /                                                
+ORIG_RF0= 'JAXA/ISAS, SIRIUS'  /                                                
+VER_RF0 = '1.33    '           /                                                
+PROG_VER=                   46 /                                                
+SEQN_VER=                   87 /                                                
+PARM_VER=                  200 /                                                
+PROG_NO =                   14 /                                                
+SUBR_NO =                    1 /                                                
+SEQN_NO =                   79 /                                                
+MAIN_CNT=                    1 /                                                
+MAIN_RPT=                    1 /                                                
+MAIN_POS=                    1 /                                                
+SUBR_CNT=                    1 /                                                
+SUBR_RPT=                  100 /                                                
+SUBR_POS=                    1 /                                                
+SEQN_CNT=                    1 /                                                
+SEQN_RPT=                    1 /                                                
+SEQN_POS=                    1 /                                                
+OBSTITLE= '        '           /                                                
+TARGET  = '        '           /                                                
+SCI_OBJ = '        '           /                                                
+SCI_OBS = 'TBD     '           /                                                
+OBS_DEC = '        '           /                                                
+JOIN_SB = '        '           /                                                
+OBS_NUM =                    0 /                                                
+JOP_ID  =                    0 /                                                
+NOAA_NUM=                    0 /                                                
+OBSERVER= '        '           /                                                
+PLANNER = '        '           /                                                
+TOHBANS = '        '           /                                                
+DATATYPE= 'SCI     '           /                                                
+SAA     = 'OUT     '           /                                                
+HLZ     = 'OUT     '           /                                                
+FLFLG   = 'NON     '           /                                                
+OBS_ID  =                    1 /                                                
+GEN_ID  =                    1 /                                                
+FRM_ID  =                   27 /                                                
+WAVEID  =                    2 /                                                
+OBS_TYPE= 'FG (simple)'        /                                                
+MACROID =                19191 /                                                
+XSCALE  =      0.0544800000000 /                                                
+YSCALE  =      0.0544800000000 /                                                
+FGXOFF  =                    0 /                                                
+FGYOFF  =                    0 /                                                
+FGCCDIX0=                 1536 /                                                
+FGCCDIX1=                 2559 /                                                
+FGCCDIY0=                    0 /                                                
+FGCCDIY1=                 2047 /                                                
+CRPIX1  =              512.500 /                                                
+CRPIX2  =              1024.50 /                                                
+SC_ATTX =       -849.801000000 /                                                
+SC_ATTY =       -449.967000000 /                                                
+CRVAL1  =       -842.173889160 /                                                
+CRVAL2  =       -446.761627197 /                                                
+CDELT1  =      0.0536748776038 /                                                
+CDELT2  =      0.0536748776038 /                                                
+CUNIT1  = 'arcsec  '           /                                                
+CUNIT2  = 'arcsec  '           /                                                
+CTYPE1  = 'Solar-X '           /                                                
+CTYPE2  = 'Solar-Y '           /                                                
+SAT_ROT =   -8.58307000000E-05 /                                                
+INST_ROT=       0.412000000000 /                                                
+CROTA1  =       0.411914000000 /                                                
+CROTA2  =       0.411914000000 /                                                
+XCEN    =       -842.173881000 /                                                
+YCEN    =       -446.761621500 /                                                
+FOVX    =              55.7875 /                                                
+FOVY    =              111.575 /                                                
+TR_MODE = 'FIX     '           /                                                
+FGBINX  =                    1 /                                                
+FGBINY  =                    1 /                                                
+EXPTIME =       0.204800000000 /                                                
+WAVE    = 'Ca II H line'       /                                                
+DARKFLAG=                    0 /                                                
+BITCOMP1=                    6 /                                                
+IMGCOMP1=                    7 /                                                
+QTABLE1 =                    1 /                                                
+BITCOMP2=                    1 /                                                
+IMGCOMP2=                    7 /                                                
+QTABLE2 =                    4 /                                                
+PCK_SN0 =               958737 /                                                
+PCK_SN1 =               958769 /                                                
+NUM_PCKS=                   33 /                                                
+FGMODE  = 'shuttered'          /                                                
+FGNINT  =                    1 /                                                
+ROILOOP =                    0 /                                                
+CTSERVO =                    1 /                                                
+CTMESTAT=                36864 /                                                
+CTMEX   =                -4637 /                                                
+CTMEY   =                  699 /                                                
+CTMODE  =                   35 /                                                
+T_SPCCD =       -47.9170000000 /                                                
+T_FGCCD =       -35.1503000000 /                                                
+T_CTCCD =              24.0294 /                                                
+T_SPCEB =       -10.1514000000 /                                                
+T_FGCEB =       -3.21861000000 /                                                
+T_CTCEB =       -2.80823000000 /                                                
+MASK    =                   22 /                                                
+WBFW    =                  117 /                                                
+WEDGE   =                   82 /                                                
+NBFW    =                   38 /                                                
+TF1     =                   36 /                                                
+TF2     =                   15 /                                                
+TF3     =                   15 /                                                
+TF4     =                   18 /                                                
+TF5     =                   18 /                                                
+TF6     =                    1 /                                                
+TF7     =                   47 /                                                
+TF8     =                   21 /                                                
+SLITENC =                 2594 /                                                
+FOCUS   =                 2083 /                                                
+WBEXP   =                   50 /                                                
+NBEXP   =                   90 /                                                
+WAVEOFF =                    0 /                                                
+ROISTART=                  512 /                                                
+ROISTOP =                 1024 /                                                
+DOPVUSED=                -1479 /                                                
+CAMGAIN =                    2 /                                                
+CAMDACA =                    8 /                                                
+CAMDACB =                    8 /                                                
+CAMPSUM =                    1 /                                                
+CAMSSUM =                    1 /                                                
+CAMAMP  =                    0 /                                                
+CAMSCLK =                    0 /                                                
+PMUDELAY=                  128 /                                                
+BITCVER1=                45094 /                                                
+ACHFVER1=                40961 /                                                
+DCHFVER1=                53249 /                                                
+QTABVER1=                57363 /                                                
+BYTECNTI=               336708 /                                                
+PIXCNTI =              2097152 /                                                
+BITSPPI =              1.28444 /                                                
+BYTECNTQ=                    0 /                                                
+PIXCNTQ =                    0 /                                                
+BITSPPQ =              0.00000 /                                                
+HISTORY fg_shift_pix VERSION:  1.60 Corrected CCD readout anomalies.            
+HISTORY fg_dark_sub VERSION:  1.42 Subtracted dark pedestal and current.        
+HISTORY fg_flatfield VERSION:  1.40 Applied flatfield correction: /mars/venus/ss
+HISTORY fg_bad_pix  Corrected bad pixels.                                       
+HISTORY sot_fix_pointing  CEN, CRPIX, CRVAL, CROTA, CDELT tags corrected - AGAIN
+HISTORY FG_PREP.PRO          V3.2.0                                             
+HISTORY FG_NUM_EFF_EXP.PRO   V1.1.8                                             
+HISTORY FG_WAVEID.PRO        V0.2                                               
+HISTORY SOT_FIX_POINING.PRO  V1.2                                               
+HISTORY FG_SHIFT_PIX.PRO     V1.6.1                                             
+HISTORY FG_DARK_SUB.PRO      V1.42                                              
+HISTORY FG_FLATFIELD.PRO     V1.4.3                                             
+HISTORY CORR DATABASE        $SSWDB/hinode/gen/sot_corr_db_corrected            
+HISTORY FLAT DATABASE        $SSWDB/hinode/sot/fg/flats                         
+HISTORY DARK DATABASE        $SSWDB/hinode/sot/fg/darks                         
+HISTORY FG_SHIFT_PIX applied                                                    
+HISTORY FG_FLATFIELD applied                                                    
+HISTORY FG_BAD_PIX applied                                                      
+HISTORY SOT_FIX_POINTING applied                                                
+HISTORY SOT_FIX_ROLL_SCALE not applied                                          
+CORR_DB_= '        '           /                                                
+XCENORIG=       -849.801000000 /                                                
+YCENORIG=       -449.967000000 /                                                
+XCEN_SHI=       -842.173881000 /                                                
+YCEN_SHI=       -446.761621500 /                                                
+XCEN_SYN=       -99999.0000000 /                                                
+YCEN_SYN=       -99999.0000000 /                                                
+XCEN_CDB=       -99999.0000000 /                                                
+YCEN_CDB=       -99999.0000000 /                                                
+DTSECPRI=               -99999 /                                                
+DTSECAFT=               -99999 /                                                
+PEAK_STR=       -99999.0000000 /                                                
+XDSP_ROT=       -99999.0000000 /                                                
+YDSP_ROT=       -99999.0000000 /                                                
+XDSP_TOT=       -99999.0000000 /                                                
+YDSP_TOT=       -99999.0000000 /                                                
+XDISP   =       -99999.0000000 /                                                
+YDISP   =       -99999.0000000 /                                                
+FILE_SOT= '        '           /                                                
+FILE_SDO= '        '           /                                                
+T_SOT   = '        '           /                                                
+T_SDO   = '        '           /                                                
+DT_SDO  =       -99999.0000000 /                                                
