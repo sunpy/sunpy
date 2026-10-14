@@ -95,14 +95,9 @@ jobs:
           posargs: -D html_theme_options.collapse_navigation=True
 
   online:
-<<<<<<<
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@22ddf09dfabb443adddfb9f861b7d41a787d6b1a  # v3.0.3
-=======
-    needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@3a3dcf3ba6828dac29eba10334948ef38364ed14  # v3.1.0
->>>>>>>
     permissions:
       id-token: write
     with:
