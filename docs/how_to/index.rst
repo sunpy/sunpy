@@ -49,7 +49,7 @@ For more complete code examples, see the how-to guides above.
    * - plot a map
      - `my_map.plot() <sunpy.map.GenericMap.plot>`
    * - cut out part of a map by array index
-     - `my_map[260:460, 680:880] <sunpy-how-to-slice-a-map>`
+     - ``my_map[260:460, 680:880]``
    * - access the underlying data array of a map
      - `my_map.data <sunpy.map.GenericMap.data>`
    * - access the map metadata
