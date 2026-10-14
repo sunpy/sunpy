@@ -943,7 +943,7 @@ _sunspice_data = [
     (ITRS, (-20*u.deg, 10*u.deg, 0.7*u.AU)),
     (Geomagnetic, (54.400820*u.deg, 15.674828*u.deg, 0.7*u.AU)),
     (SolarMagnetic, (163.35062*u.deg, 15.674828*u.deg, 0.7*u.AU)),
-    (GeocentricSolarMagnetospheric, (163.99118333*u.deg, -0.71183974*u.deg, 0.7*u.AU)),
+    (GeocentricSolarMagnetospheric, (163.98552*u.deg, -0.71263503*u.deg, 0.7*u.AU)),
 ]
 
 
@@ -955,7 +955,7 @@ def test_magnetic_sunspice(start_class, start_vector, end_class, end_vector):
     start_repr = SphericalRepresentation(*start_vector)
     end_repr = SphericalRepresentation(*end_vector)
 
-    start = SkyCoord(start_repr, frame=start_class(obstime=t))
+    start = SkyCoord(start_repr, frame=start_class, obstime=t, magnetic_model='igrf13')
     if end_class == start_class:
         start = start.itrs
     end = start.transform_to(end_class)
