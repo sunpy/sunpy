@@ -1,0 +1,2 @@
+Switched the default version of the IGRF magnetic-field model from 13 to 14 when using the coordinate frames `~sunpy.coordinates.Geomagnetic`, `~sunpy.coordinates.SolarMagnetic`, and `~sunpy.coordinates.GeocentricSolarMagnetospheric`.
+IGRF-14 is now bundled.
