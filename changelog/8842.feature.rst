@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap` can now be downsampled with :meth:`~sunpy.map.GenericMap.rebin`, which returns a new map with updated metadata and the original plot settings.
