@@ -36,3 +36,12 @@ def test_instrument_show_in_notebook(mocker):
     mock_datagrid =  mocker.patch("itables.show")
     a.Instrument.show_in_notebook()
     mock_datagrid.assert_called_once()
+
+
+def test_instrument_to_html_datatable():
+    pytest.importorskip("itables")
+    from IPython.display import HTML
+
+    html = a.Instrument.to_html_datatable()
+    assert isinstance(html, HTML)
+    assert "table" in html._repr_html_()
