@@ -1,0 +1,1 @@
+Documented the three CDF epoch types and how to parse them in :ref:`sunpy-how-to-parse-times-with-parse-time`.
