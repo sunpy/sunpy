@@ -12,12 +12,13 @@ These observations were taken during the Long-Term Active Region SOOP (``R_SMALL
 import dkist.net  # NOQA: F401
 import matplotlib.pyplot as plt
 import numpy as np
-from ndcube import NDCube
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.wcs import WCS
+
+from ndcube import NDCube
 
 import sunpy.map
 from sunpy.net import Fido
