@@ -25,7 +25,7 @@ from astropy.visualization import hist
 
 from sunpy import config
 from sunpy.time import TimeRange
-from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.timeseries.metadata import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
