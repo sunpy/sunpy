@@ -247,7 +247,6 @@ class MapMetaMixin:
             self.date_average or
             self.date_end
         )
-
         if time is None:
             if self._default_time is None:
                 warn_metadata("Missing metadata for observation time, "
@@ -255,7 +254,6 @@ class MapMetaMixin:
                               "Set the 'DATE-OBS' FITS keyword to prevent this warning.")
                 self._default_time = parse_time('now')
             time = self._default_time
-
         return time
 
     def _set_date(self, date):
@@ -323,7 +321,6 @@ class MapMetaMixin:
         --------
         wavelength : The wavelength of the observation.
         """
-
         return self.wavelength
 
     @property
@@ -695,7 +692,6 @@ class MapMetaMixin:
                     [self.meta.get('CD2_1', 0), self.meta.get('CD2_2', 0)]
                 ]
             )
-
             cdelt = u.Quantity(self.scale).value
 
             # Divide each row by each CDELT
