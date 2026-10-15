@@ -61,8 +61,12 @@ def test_provider():
 
 
 def test_soop():
+    """The SOOP name should match on its own or as one of several names joined by ';'."""
     params = _apply(SOOP("r_small_mres_mcad_ar_long_term"))
-    assert params == ["soop_name='r_small_mres_mcad_ar_long_term'"]
+    assert params == [
+        "(soop_name='r_small_mres_mcad_ar_long_term' OR soop_name LIKE 'r_small_mres_mcad_ar_long_term;%' "
+        "OR soop_name LIKE '%;r_small_mres_mcad_ar_long_term' OR soop_name LIKE '%;r_small_mres_mcad_ar_long_term;%')"
+    ]
 
 
 def test_detector():
