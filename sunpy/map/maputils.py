@@ -16,7 +16,7 @@ __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
            'map_edges', 'solar_angular_radius', 'sample_at_coords',
            'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
-           'contains_limb', 'coordinate_is_on_solar_disk',
+           'contains_limb', 'coordinate_is_on_solar_disk', 'on_disk_mask',
            'on_disk_bounding_coordinates',
            'contains_coordinate', 'contains_solar_center',
            'pixelate_coord_path']
@@ -285,6 +285,29 @@ def coordinate_is_on_solar_disk(coordinates):
     # Calculate the radial angle from the center of the Sun (do not assume small angles)
     # and compare it to the angular radius of the Sun
     return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
+
+
+def on_disk_mask(smap):
+    """
+    Returns a mask of the pixels of a map that are on the solar disk.
+
+    This combines `all_coordinates_from_map` and `coordinate_is_on_solar_disk`
+    into a single call. See `coordinate_is_on_solar_disk` for how the check is
+    made for each pixel.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        The input map. The coordinate frame of the map must be
+        `~sunpy.coordinates.frames.Helioprojective`.
+
+    Returns
+    -------
+    `~numpy.ndarray`
+        A boolean array with the same shape as ``smap.data``. A value is
+        `True` if that pixel is on the solar disk, and `False` otherwise.
+    """
+    return coordinate_is_on_solar_disk(all_coordinates_from_map(smap))
 
 
 def is_all_off_disk(smap):
