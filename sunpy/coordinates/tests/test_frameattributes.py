@@ -7,7 +7,11 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 from sunpy.coordinates import frames, get_earth
-from sunpy.coordinates.frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
+from sunpy.coordinates.frameattributes import (
+    ObserverCoordinateAttribute,
+    TimeFrameAttributeSunPy,
+    impose_observer,
+)
 from sunpy.coordinates.frames import (
     Heliocentric,
     HeliocentricInertial,
@@ -16,6 +20,14 @@ from sunpy.coordinates.frames import (
     Helioprojective,
 )
 from sunpy.time import parse_time
+
+# We add tests for `impose_frame_attributes` here both to test our
+# backport and to ensure that the astropy version continues to work
+# with our frames in the future.
+try:
+    from astropy.coordinates import impose_frame_attributes
+except ImportError:
+    from sunpy.coordinates._impose_attribute_backport import impose_frame_attributes
 
 
 @pytest.fixture
@@ -214,3 +226,88 @@ def test_observer_in_heeq(frame_class):
     frame = frame_class(observer=obs_heeq)
     assert issubclass(frame.observer.representation_type, SphericalRepresentation)
     assert_quantity_allclose(frame.observer.radius, 13*u.AU)
+
+
+def test_impose_obstime():
+    imposed_obstime = Time('2012-01-01 00:00:00')
+
+    hpc1 = Helioprojective()
+
+    assert hpc1.obstime != imposed_obstime
+
+    with impose_frame_attributes(obstime=imposed_obstime):
+        assert hpc1.obstime == imposed_obstime
+
+
+def test_impose_observer():
+    original_obstime = Time('2026-08-12 19:09:00')
+    out_icrs = ICRS(get_body_barycentric("mars", original_obstime))
+    original_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=original_obstime))
+
+    imposed_obstime = Time('2012-01-01 00:00:00')
+    out_icrs = ICRS(get_body_barycentric("mars", imposed_obstime))
+    imposed_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=imposed_obstime))
+
+    hpc1 = Helioprojective(observer=original_observer, obstime=original_obstime)
+
+    assert hpc1.obstime != imposed_obstime
+    # This errors as the frames aren't compatible
+    # assert hpc1.observer != imposed_observer
+
+    with impose_frame_attributes(obstime=imposed_obstime, observer=imposed_observer):
+        assert hpc1.obstime == imposed_obstime
+        assert hpc1.observer == imposed_observer
+
+
+def test_transform_impose_attributes():
+    original_obstime = Time('2026-08-12 19:09:00')
+    out_icrs = ICRS(get_body_barycentric("mars", original_obstime))
+    original_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=original_obstime))
+
+    imposed_obstime = Time('2012-01-01 00:00:00')
+    out_icrs = ICRS(get_body_barycentric("mars", imposed_obstime))
+    imposed_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=imposed_obstime))
+
+    hpc1 = Helioprojective(0*u.arcsec, 0*u.arcsec, observer=original_observer, obstime=original_obstime)
+    hpc2 = Helioprojective(observer=imposed_observer, obstime=imposed_obstime)
+
+    original_transform = hpc1.transform_to(hpc2)
+    assert not u.allclose(original_transform.Tx, 0*u.arcsec)
+    assert not u.allclose(original_transform.Ty, 0*u.arcsec)
+
+    with impose_frame_attributes(obstime=imposed_obstime, observer=imposed_observer):
+        imposed_transform = hpc1.transform_to(hpc2)
+        assert u.allclose(imposed_transform.Tx, 0*u.arcsec)
+        assert u.allclose(imposed_transform.Ty, 0*u.arcsec)
+
+    # Test that nesting works
+    with impose_frame_attributes(obstime=imposed_obstime):
+        with impose_frame_attributes(observer=imposed_observer):
+            imposed_transform = hpc1.transform_to(hpc2)
+            assert u.allclose(imposed_transform.Tx, 0*u.arcsec)
+            assert u.allclose(imposed_transform.Ty, 0*u.arcsec)
+
+        # Test that exiting the inner context manager only reset the observer.
+        assert hpc1.obstime == imposed_obstime
+
+
+def test_transform_impose_observer():
+    original_obstime = Time('2026-08-12 19:09:00')
+    out_icrs = ICRS(get_body_barycentric("mars", original_obstime))
+    original_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=original_obstime))
+
+    imposed_obstime = Time('2012-01-01 00:00:00')
+    out_icrs = ICRS(get_body_barycentric("mars", imposed_obstime))
+    imposed_observer = out_icrs.transform_to(HeliographicStonyhurst(obstime=imposed_obstime))
+
+    hpc1 = Helioprojective(0*u.arcsec, 0*u.arcsec, observer=original_observer, obstime=original_obstime)
+    hpc2 = Helioprojective(observer=imposed_observer, obstime=imposed_obstime)
+
+    original_transform = hpc1.transform_to(hpc2)
+    assert not u.allclose(original_transform.Tx, 0*u.arcsec)
+    assert not u.allclose(original_transform.Ty, 0*u.arcsec)
+
+    with impose_observer(imposed_observer):
+        imposed_transform = hpc1.transform_to(hpc2)
+        assert u.allclose(imposed_transform.Tx, 0*u.arcsec)
+        assert u.allclose(imposed_transform.Ty, 0*u.arcsec)
