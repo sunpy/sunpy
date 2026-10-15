@@ -5,12 +5,13 @@ from unittest import mock
 
 import hypothesis.strategies as st
 import pytest
-from drms import DrmsQueryError
 from hypothesis import assume, given, settings
 from parfive import Results, SessionConfig
 from parfive.utils import FailedDownload
 
 import astropy.units as u
+
+from drms import DrmsQueryError
 
 from sunpy import config
 from sunpy.net import Fido, attr, jsoc
