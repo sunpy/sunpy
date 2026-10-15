@@ -1,10 +1,14 @@
+import numpy as np
+
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates.frames import Helioprojective
+from sunpy.coordinates.screens import SphericalScreen
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.net.attr import AttrAnd, AttrComparison, AttrOr, AttrWalker, DataAttr, SimpleAttr
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'PrimeKey', 'Cutout', "Keyword"]
 
@@ -157,8 +161,44 @@ class Cutout(DataAttr):
     Notes
     -----
     The ``bottom_left`` coordinate must be in the `~sunpy.coordinates.Helioprojective`
-    frame. The ``observer`` frame attribute of ``bottom_left`` is ignored, and
-    instead the observer location is assumed to be SDO.
+    frame, and must have both ``obstime`` and ``observer`` defined. The supplied
+    coordinates are transformed into the frame that the JSOC uses to interpret an
+    ``arcsec`` cutout specification, rather than being assumed to already be in it.
+
+    .. warning::
+
+        The JSOC interprets the cutout specification as seen from SDO, but the
+        transformation performed here uses **Earth** as the observer, as an
+        approximation of SDO's location. SDO is in an inclined geosynchronous
+        orbit, so it is displaced from Earth's center by at most one
+        geosynchronous radius (~42,164 km). Because Helioprojective coordinates
+        are referenced to the Sun-center direction, the bulk parallax from this
+        displacement cancels, and only a depth-dependent residual remains: at
+        most ~0.3 arcsec, or roughly half an AIA or HMI pixel. The residual is
+        largest near disk center and falls to zero at the limb. If you need
+        better accuracy than this, request a larger cutout and crop it locally.
+
+    Transforming a two-dimensional Helioprojective coordinate between observers
+    is ill-posed, because a 2D coordinate specifies only a line of sight rather
+    than a point in space. An assumption about the distance to the coordinate is
+    therefore required:
+
+    * On-disk coordinates are assumed to lie on the solar surface, as defined by
+      the ``rsun`` frame attribute. This is the usual `sunpy` assumption and is a
+      good one for features in the photosphere/low corona.
+    * Off-disk coordinates are placed on a `~sunpy.coordinates.SphericalScreen`
+      centered on the original observer, i.e., they are assumed to lie at the
+      same distance from the observer as the Sun's center.
+
+    Because the corners of the requested rectangle do not in general remain a
+    rectangle under this transformation, the returned cutout is the bounding box
+    of the four transformed corners, so the requested field of view is fully
+    contained in the result.
+
+    A `~sunpy.util.exceptions.SunpyUserWarning` is emitted whenever a
+    transformation is actually applied, since the result depends on the
+    assumptions above. Coordinates that already have Earth as the observer are
+    passed through unchanged and do not warn.
 
     If ``tracking`` is `True`, the center of the cutout is required to be on the
     solar disk, otherwise the JSOC will produce unexpected output.
@@ -172,10 +212,21 @@ class Cutout(DataAttr):
         if not isinstance(bl.frame, Helioprojective):
             raise ValueError("`bottom_left` must be in the `Helioprojective` frame, but is instead "
                              f"in the `{bl.frame.__class__.__name__}` frame")
+        if bl.obstime is None:
+            raise ValueError("`bottom_left` must have `obstime` set, because the JSOC cutout "
+                             "request requires a reference time.")
+        if bl.frame.observer is None:
+            raise ValueError("`bottom_left` must have `observer` set, because the coordinates "
+                             "need to be transformed to a Helioprojective frame with Earth as "
+                             "the observer. Use ``observer='earth'`` to reproduce the behavior "
+                             "of sunpy <8.1, which assumed the coordinates needed no "
+                             "transformation.")
+
+        bl, tr = self._transform_to_earth_observer(bl, tr)
 
         center_x = (bl.Tx + tr.Tx) / 2
         center_y = (bl.Ty + tr.Ty) / 2
-        center = SkyCoord(center_x, center_y, frame=bottom_left.frame)
+        center = SkyCoord(center_x, center_y, frame=bl.frame)
         if tracking:
             # import here so net won't depend on map
             from sunpy.map.maputils import coordinate_is_on_solar_disk
@@ -196,6 +247,51 @@ class Cutout(DataAttr):
             'width': (tr.Tx - bl.Tx).to_value('arcsec'),
             'height': (tr.Ty - bl.Ty).to_value('arcsec'),
         }
+
+    @staticmethod
+    def _transform_to_earth_observer(bl, tr):
+        """
+        Transform the corners of the requested rectangle to a Helioprojective
+        frame with Earth as the observer, which is used here as an approximation
+        of SDO's location (see the class docstring for the size of the error).
+
+        Returns the bottom-left and top-right corners of the bounding box of the
+        four transformed corners. If the input observer is already Earth, the
+        inputs are returned unchanged.
+        """
+        earth_frame = Helioprojective(obstime=bl.obstime, observer='earth', rsun=bl.frame.rsun)
+        if bl.frame.is_equivalent_frame(earth_frame):
+            return bl, tr
+
+        corners = SkyCoord(u.Quantity([bl.Tx, tr.Tx, bl.Tx, tr.Tx]),
+                           u.Quantity([bl.Ty, bl.Ty, tr.Ty, tr.Ty]),
+                           frame=bl.frame.replicate_without_data())
+        # On-disk coordinates are assumed to be on the solar surface, which is the
+        # default sunpy assumption. Off-disk coordinates have no such natural
+        # assumption, so they are placed on a spherical screen centered on the
+        # original observer.
+        with SphericalScreen(bl.frame.observer, only_off_disk=True):
+            corners = corners.transform_to(earth_frame)
+
+        if np.any(np.isnan(corners.Tx)) or np.any(np.isnan(corners.Ty)):
+            raise ValueError("The requested cutout could not be transformed to a "
+                             "Helioprojective frame with Earth as the observer. This "
+                             "normally means part of the requested field of view is not "
+                             "visible from Earth.")
+
+        new_bl = SkyCoord(corners.Tx.min(), corners.Ty.min(), frame=earth_frame)
+        new_tr = SkyCoord(corners.Tx.max(), corners.Ty.max(), frame=earth_frame)
+
+        shift = np.sqrt((new_bl.Tx - bl.Tx)**2 + (new_bl.Ty - bl.Ty)**2).to('arcsec')
+        warn_user(
+            "The cutout coordinates have been transformed to a Helioprojective frame with "
+            "Earth as the observer, which is used as an approximation of SDO's location. "
+            f"The bottom-left corner moved by {shift:.3f}. On-disk coordinates were assumed "
+            "to lie on the solar surface, and off-disk coordinates were assumed to lie on a "
+            "spherical screen centered on the original observer. See the documentation for "
+            "`sunpy.net.jsoc.Cutout` for details."
+        )
+        return new_bl, new_tr
 
     def collides(self, other):
         return isinstance(other, self.__class__)
