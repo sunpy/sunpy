@@ -55,6 +55,7 @@ from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
     check_arithmetic_compatibility,
+    deprecated,
 )
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
@@ -683,6 +684,7 @@ class GenericMap(MapMetaMixin, NDData):
         return PixelPair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
 
     @property
+    @deprecated(since="8.1", obj_type="property", alternative="sunpy.map.GenericMap.data.dtype")
     def dtype(self):
         """
         The `numpy.dtype` of the array of the map.
@@ -690,12 +692,14 @@ class GenericMap(MapMetaMixin, NDData):
         return self.data.dtype
 
     @property
+    @deprecated(since="8.1", obj_type="property", alternative="sunpy.map.GenericMap.data.ndim")
     def ndim(self):
         """
         The value of `numpy.ndarray.ndim` of the data array of the map.
         """
         return self.data.ndim
 
+    @deprecated(since="8.1", alternative="numpy.nanstd")
     def std(self, *args, **kwargs):
         """
         Calculate the standard deviation of the data array, ignoring NaNs.
@@ -704,6 +708,7 @@ class GenericMap(MapMetaMixin, NDData):
         """
         return np.nanstd(self.data, *args, **kwargs)
 
+    @deprecated(since="8.1", alternative="numpy.nanmean")
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array, ignoring NaNs.
@@ -712,6 +717,7 @@ class GenericMap(MapMetaMixin, NDData):
         """
         return np.nanmean(self.data, *args, **kwargs)
 
+    @deprecated(since="8.1", alternative="numpy.nanmin")
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array, ignoring NaNs.
@@ -720,6 +726,7 @@ class GenericMap(MapMetaMixin, NDData):
         """
         return np.nanmin(self.data, *args, **kwargs)
 
+    @deprecated(since="8.1", alternative="numpy.nanmax")
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array, ignoring NaNs.
