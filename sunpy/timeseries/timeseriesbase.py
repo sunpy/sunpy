@@ -214,25 +214,35 @@ class GenericTimeSeries:
         if obs is None:
             try:
                 obs = self.meta.metadata[0][2]["telescop"]
-            except KeyError:
+            except (KeyError, IndexError):
                 obs = "Unknown"
         try:
             inst = self.meta.metadata[0][2]["instrume"]
-        except KeyError:
+        except (KeyError, IndexError):
             inst = "Unknown"
         try:
             link = f"""<a href={self.url} target="_blank">{inst}</a>"""
         except AttributeError:
             link = inst
         dat = self.to_dataframe()
-        drange = dat.max() - dat.min()
-        drange = drange.to_string(float_format="{:.2E}".format)
-        drange = drange.replace("\n", "<br>")
 
-        center = self.time_range.center.value.astype('datetime64[s]')
-        center = str(center).replace("T", " ")
-        resolution = round(self.time_range.seconds.value/self.shape[0], 3)
-        resolution = str(resolution)+" s"
+        if self.shape[0] == 0 or self.time_range is None:
+            drange = "None"
+            center = "None"
+            resolution = "None"
+            start_date = "None"
+            end_date = "None"
+        else:
+            drange = dat.max() - dat.min()
+            drange = drange.to_string(float_format="{:.2E}".format)
+            drange = drange.replace("\n", "<br>")
+
+            center = self.time_range.center.value.astype('datetime64[s]')
+            center = str(center).replace("T", " ")
+            resolution = round(self.time_range.seconds.value/self.shape[0], 3)
+            resolution = str(resolution)+" s"
+            start_date = str(dat.index.min().round('s'))
+            end_date = str(dat.index.max().round('s'))
 
         channels = self.columns
         channels = "<br>".join(channels)
@@ -248,8 +258,8 @@ class GenericTimeSeries:
                    Observatory:\t\t\t{obs}
                    Instrument:\t\t\t{link}
                    Channel(s):\t\t\t{channels}
-                   Start Date:\t\t\t{dat.index.min().round('s')}
-                   End Date:\t\t\t{dat.index.max().round('s')}
+                   Start Date:\t\t\t{start_date}
+                   End Date:\t\t\t{end_date}
                    Center Date:\t\t\t{center}
                    Resolution:\t\t\t{resolution}
                    Samples per Channel:\t\t{self.shape[0]}
@@ -279,6 +289,9 @@ class GenericTimeSeries:
                 <tr><th>{partial_html}</td></tr>
             </table>"""
         ).replace("\n", "")
+
+        if self.shape[0] == 0:
+            return text_to_table
 
         # Create the timeseries plots for each channel as a panel in one
         # figure. The color list below is passed to both timeseries and

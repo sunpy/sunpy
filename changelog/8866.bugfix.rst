@@ -1,0 +1,1 @@
+Fixed an issue where truncating a `~sunpy.timeseries.TimeSeries` to an empty time range resulted in an ``IndexError`` or ``ZeroDivisionError`` when displaying or inspecting the truncated time series. Empty time series are now handled safely in `~sunpy.timeseries.sources.goes.XRSTimeSeries.observatory` and summary representations.

@@ -109,6 +109,8 @@ class XRSTimeSeries(GenericTimeSeries):
         """
         Retrieves the goes satellite number by parsing the meta dictionary.
         """
+        if not getattr(self, "meta", None) or not self.meta.metas:
+            return None
         # Various pattern matches for the meta fields.
         pattern_inst = ("GOES 1-{SatelliteNumber:02d} {}")
         pattern_new = ("sci_gxrs-l2-irrad_g{SatelliteNumber:02d}_d{year:4d}{month:2d}{day:2d}_{}.nc")
