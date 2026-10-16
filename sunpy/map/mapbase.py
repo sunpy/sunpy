@@ -679,7 +679,8 @@ class GenericMap(MapMetaMixin, NDCube):
         # metadata keeps describing the shape of the array we started with.
         # need to call set until min astropy==8.0.2
         unwrapped.wcs.set()
-        new_header = unwrapped.to_header()
+        # relax=True so non-standard keywords (e.g. SIP) are kept rather than warned about
+        new_header = unwrapped.to_header(relax=True)
         for n in range(1, unwrapped.naxis + 1):
             new_header[f"NAXIS{n}"] = unwrapped._naxis[n - 1]
             # The new WCS may not have preserved units (e.g. it is in degrees), so
@@ -703,7 +704,8 @@ class GenericMap(MapMetaMixin, NDCube):
                         new_header[key] *= factor
                 new_header[f"CUNIT{n}"] = meta_unit
         old_wcs = self.wcs
-        old_wcs_header = old_wcs.to_header()
+        # Must use the same relax as new_header for the comparison below
+        old_wcs_header = old_wcs.to_header(relax=True)
         # Reduce the new header to just the keys which differ from the current WCS
         changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
 
