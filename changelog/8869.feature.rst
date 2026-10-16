@@ -1,3 +1,0 @@
-`~sunpy.map.GenericMap.reproject_to` now uses `ndcube.NDCube.reproject_to` to perform the reprojection.
-As a consequence, the reprojected map keeps the metadata of the original map, replacing only the WCS keywords with those of the target WCS, where previously everything other than the WCS was discarded.
-The result is now the same type of map as the original, so reprojecting an `~sunpy.map.sources.AIAMap` returns an `~sunpy.map.sources.AIAMap` with its usual plot settings, rather than a plain `~sunpy.map.GenericMap`.
