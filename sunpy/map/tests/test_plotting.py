@@ -491,3 +491,10 @@ def test_plot_uint8(aia171_test_map):
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_uint8)
     aia171_uint8.plot(axes=ax)
+
+
+def test_degree_map_wcs_resample(carrington_map):
+    # A preserve_units WCS in degrees segfaults when its cdelt is set after
+    # set() (astropy#20417), which is what rebinning does to the map WCS
+    rebinned = carrington_map.rebin((2, 2))
+    assert u.allclose(rebinned.scale[0], 2 * carrington_map.scale[0])
