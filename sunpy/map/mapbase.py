@@ -601,7 +601,7 @@ class GenericMap(MapMetaMixin, NDData):
         provided by the `.date_end` property, which normally returns a value only if the
         DATE-END key is in the metadata.
         """
-        w2 = astropy.wcs.WCS(naxis=2)
+        w2 = astropy.wcs.WCS(naxis=2, preserve_units=True)
 
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
@@ -625,20 +625,13 @@ class GenericMap(MapMetaMixin, NDData):
             w2.wcs.datebeg = self.date_start.utc.isot
         if self.date_end is not None:
             w2.wcs.dateend = self.date_end.utc.isot
+        # Sert MJD-OBS/MJD-AVG/etc was implicitly done in now removed to_header call
+        w2.wcs.datfix()
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
-            # Clear all the aux information that was set earlier. This is to avoid
-            # issues with maps that store multiple observer coordinate keywords.
-            # Note that we have to create a new WCS as it's not possible to modify
-            # wcs.wcs.aux in place.
-            header = w2.to_header()
-            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-                header.pop(kw, None)
-            w2 = astropy.wcs.WCS(header)
-
-            # Get observer coord, and set the aux information
+            w2.wcs.set() # can remove once on astropy>=8.0.2
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
