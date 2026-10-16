@@ -21,3 +21,70 @@ Updates to minimum dependencies
 The minimum required versions of the following packages have been updated:
 
   - Update this when it happens
+
+
+``Map`` is now built on ``ndcube``
+==================================
+
+`~sunpy.map.GenericMap` now inherits from `ndcube.NDCube` rather than `astropy.nddata.NDData`.
+This is a large change to `sunpy.map` in terms of design, but it has been executed in a way designed to have as little impact as possible on you.
+Maps are created the same way, carry the same attributes, and are plotted the same way, so most of your code will need no changes at all.
+The result is that a ``Map`` now shares a common interface with the rest of the ndcube ecosystem, and that methods previously implemented within sunpy are now inherited.
+
+The primary motivation for the change is future work and improved maintainability that will benefit the `sunpy` project long term but, there are some immediate user facing benefits to this change.
+
+Slicing
+-------
+
+Maps can be sliced directly, returning a new map whose metadata describes the sliced region:
+
+.. code-block:: python
+
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +SKIP
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +SKIP
+    >>> aia[100:200, 300:400]  # doctest: +SKIP
+
+[Insert image of a slice??]
+
+They can also be cropped to world coordinates with `ndcube.NDCube.crop`, which returns the smallest region containing all the points supplied.
+
+Unit conversion
+---------------
+
+The data of a map can now be converted easily to a different unit with `~ndcube.NDCube.to`, which scales the data values and records the new unit.
+For example you could convert a magnetogram from Gauss to Tesla, or an AIA image from DN to kDN:
+
+.. code-block:: python
+
+    >>> import astropy.units as u
+    >>> hmi_map.unit  # doctest: +SKIP
+    Unit("Mx / cm2")
+    >>> hmi_map.to(u.T).unit  # doctest: +SKIP
+    Unit("T")
+
+
+Metadata Changes
+----------------
+
+In general, operations that build a new map now carry more of the original Map with them.
+`~sunpy.map.GenericMap.submap` keeps the uncertainty of its parent, and all map arithmetic (e.g. multiply) keeps the parent's mask and propagates its uncertainty.
+
+The rest of the `ndcube.NDCube` API comes along too, including `~ndcube.NDCube.rebin`, ``fill_masked`` and `~ndcube.NDCube.axis_world_coords`.
+
+Behaviour Changes
+-----------------
+
+The impact on users was minimal, but a few behaviours are different:
+
+* `~sunpy.map.GenericMap.submap` now raises a `ValueError` for a bounding box that lies entirely outside the map, where it previously returned an empty map.
+  Similarly, a rectangle with no area now returns the single pixel whose edge it shares, following the same rules as `ndcube.NDCube.crop`.
+* Instantiating a map class directly now needs the NDCube style signature, i.e. ``MyMap(data, meta=header)`` rather than ``MyMap(data, header)``.
+  We still *strongly* recommend using the ``Map`` factory instead of instantiating map classes via their constructor directly.
+
+Several attributes are deprecated in favour of their ndcube or numpy equivalents, and may be removed in a future release:
+
+* ``GenericMap.dimensions`` in favour of `~sunpy.map.GenericMap.shape`, noting that ``shape`` is in (row, column) order and a plain tuple, whereas ``dimensions`` was in (x, y) order and in pixel units, so indices need swapping when moving across.
+* ``GenericMap.dtype``, ``ndim``, ``min``, ``max``, ``mean`` and ``std`` in favour of working with ``numpy`` operators on ``GenericMap.data`` directly.
+* ``GenericMap.pixel_to_world`` and ``GenericMap.world_to_pixel`` in favour of the equivalent methods on ``GenericMap.wcs``.
+  Note that these do not take or return pixel units.
