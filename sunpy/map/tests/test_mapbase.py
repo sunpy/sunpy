@@ -76,6 +76,30 @@ def test_get_item_integer_index(generic_map):
         generic_map[1:3, 3]
 
 
+def test_get_item_integer_index_suggestion_is_usable(generic_map):
+    # if we suggest [-1:0] as the slice to use instead of [-1] then the length is 0
+    with pytest.raises(TypeError, match=re.escape("mymap[-1:]")):
+        generic_map[-1]
+    assert generic_map[-1:].shape == (1, generic_map.shape[1])
+    # bool is an Integral, so it has to be formatted as the index it acts as
+    with pytest.raises(TypeError, match=re.escape("mymap[1:2]")):
+        generic_map[True]
+
+
+@pytest.mark.parametrize("item", [
+    np.s_[1:1],
+    np.s_[1:1, 2:4],
+    np.s_[-1:0],
+    np.s_[200:300],
+    np.s_[:, 0:0],
+])
+def test_get_item_length_zero_axis(generic_map, item):
+    # A length-0 axis holds no data so it is rejected rather
+    # than returning an empty map that will fail when used.
+    with pytest.raises(IndexError, match="length-0 axis"):
+        generic_map[item]
+
+
 def test_get_item_step(generic_map):
     # astropy cannot slice a WCS with a step, and striding is not the same operation as
     # superpixel anyway, so it is rejected
