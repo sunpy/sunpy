@@ -76,6 +76,17 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_wcs_revalidates_modified_meta(simple_map):
+    # A valid unit of the wrong physical type is accepted by astropy's parser
+    # our own GenericMap._validate_meta validation rejects it.
+    simple_map.wcs # wcs is valid
+    simple_map.meta['cunit1'] = 'm' # incorrect unit (also busts cache)
+    with pytest.raises(sunpy.map.MapMetaValidationError, match="angular units"):
+        simple_map.wcs
+    with pytest.raises(sunpy.map.MapMetaValidationError, match="angular units"):
+        simple_map.coordinate_frame
+
+
 def test_wcs_pv():
     # Test that PVi_m values are preserved in the reconstructed WCS
     zpn_header = {
@@ -594,6 +605,7 @@ def test_rotation_matrix_defaults(generic_map, i, j, key):
     np.testing.assert_equal(rot_mat, expected)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyMetadataWarning")
 def test_rotation_matrix_cd_cdelt():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
@@ -618,6 +630,7 @@ def test_rotation_matrix_cd_cdelt():
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0.5, -1.], [1., 2.]]))
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyMetadataWarning")
 def test_rotation_matrix_cd_cdelt_square():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
@@ -1350,23 +1363,23 @@ def test_rotate_assumed_obstime():
         'dsun_obs': 150000000000,
         'rsun_ref': 700000000,
     }
-    original = sunpy.map.Map(np.zeros((10, 10)), header)
-
-    # Accessing the date makes the assumption of "now" for obstime
+    # The WCS is built when the map is constructed, which is when the assumption of
+    # "now" for obstime is made
     with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
-        original.date
+        original = sunpy.map.Map(np.zeros((10, 10)), header)
 
-    # The assumption has already been made, so no further warning should be emitted by rotate()
-    rotated = original.rotate(0*u.deg)
+    # The rotated map is a new map, so it makes the assumption again when constructed
+    with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
+        rotated = original.rotate(0*u.deg)
 
     # The reference coordinate should be unchanged by this 0-degree rotation
     # Since the reference coordinate is off-disk, a non-identity transformation would result in NaNs
     assert_quantity_allclose(rotated.reference_pixel.x, original.reference_pixel.x)
     assert_quantity_allclose(rotated.reference_pixel.y, original.reference_pixel.y)
 
-    # The returned map should also be missing observing time
-    with pytest.warns(SunpyMetadataWarning, match="Missing metadata for observation time"):
-        rotated.date
+    # The returned map is also missing the observing time, and has likewise already
+    # made the assumption
+    assert rotated.date is not None
 
 
 def test_as_mpl_axes_aia171(aia171_test_map):
@@ -1441,6 +1454,7 @@ def test_hg_data_to_pix(heliographic_test_map):
     assert_quantity_allclose(out[1], 90)
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyMetadataWarning")
 @pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
 def test_more_than_two_dimensions():
     """
@@ -1999,6 +2013,7 @@ def test_parse_nonfits_units(units_string):
         assert GenericMap._parse_fits_unit(units_string) is None
 
 
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyMetadataWarning")
 def test_only_cd():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
