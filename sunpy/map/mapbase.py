@@ -447,7 +447,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             key = (key,)
 
         if any(intidx := [isinstance(k, numbers.Integral) for k in key]):
-            strslice = ", ".join([f"{k}:{k+1}" if isint else format_slice(k)
+            # -1 is special-cased because k+1 is then 0, which reads as the start of
+            # the axis rather than one past the end.
+            strslice = ", ".join([(f"{int(k)}:" if k == -1 else f"{int(k)}:{int(k)+1}")
+                                  if isint else format_slice(k)
                                   for k, isint in zip(key, intidx)])
             raise TypeError(
                 "It is not possible to slice a map with an integer as it will "
@@ -464,6 +467,16 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 "resolution of a map use GenericMap.superpixel, noting that it "
                 "combines pixels rather than discarding them."
             )
+
+        # Resolved against the shape so that negative and out-of-range bounds are
+        # measured the same way numpy would.
+        for axis, (k, length) in enumerate(zip(key, self.data.shape)):
+            if isinstance(k, slice) and len(range(length)[k]) == 0:
+                raise IndexError(
+                    "It is not possible to slice a map down to a length-0 axis, as "
+                    f"the result would have no data. mymap[{', '.join(map(format_slice, key))}] "
+                    f"gives a length-0 axis at position {axis}."
+                )
 
         new_map = super().__getitem__(key)
         # preserve plot settings
