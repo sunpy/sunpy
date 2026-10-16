@@ -29,8 +29,6 @@ try:
 except ImportError:
     DASK_INSTALLED = False
 
-from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
-
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
