@@ -93,7 +93,8 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
             distance = observer.transform_to(HeliocentricInertial).spherical.distance
             # Obtain the solar radius and the world->pixel transform
             angular_radius = _angular_radius(rsun, distance)
-            circ = patches.Circle([0, 0], radius=angular_radius.to_value(u.deg), **c_kw)
+            lon_unit, _ = _celestial_world_units(axes.wcs)
+            circ = patches.Circle([0, 0], radius=angular_radius.to_value(lon_unit), **c_kw)
             axes.add_artist(circ)
             return circ, None
 
@@ -242,10 +243,11 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
     transform = axes.get_transform("world")
     c_kw.setdefault('transform', transform)
 
-    # Get the 2D vertices of the coordinates
+    # Get the 2D vertices of the coordinates, in the units of the world transform
     coord = coord.transform_to(frame)
-    Tx = coord.spherical.lon.to_value(u.deg)
-    Ty = coord.spherical.lat.to_value(u.deg)
+    lon_unit, lat_unit = _celestial_world_units(axes.wcs)
+    Tx = coord.spherical.lon.to_value(lon_unit)
+    Ty = coord.spherical.lat.to_value(lat_unit)
     vertices = np.array([Tx, Ty]).T
 
     # Determine which points are visible (2D points are always visible)
@@ -284,6 +286,25 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
         axes.add_artist(hidden)
 
     return visible, hidden
+
+
+def _celestial_world_units(wcs):
+    """
+    The units of the longitude and latitude world axes of ``wcs``.
+
+    The ``world`` transform of a WCSAxes takes values in these units, which are
+    not necessarily degrees (e.g. a map WCS with ``preserve_units=True``).
+    """
+    if isinstance(wcs, BaseHighLevelWCS):
+        wcs = wcs.low_level_wcs
+    units = [u.deg, u.deg]
+    celestial = [key for key, (class_or_str, *_) in wcs.world_axis_object_classes.items()
+                 if isinstance(class_or_str, type) and issubclass(class_or_str, SkyCoord)]
+    if celestial:
+        for unit, (key, index, _) in zip(wcs.world_axis_units, wcs.world_axis_object_components):
+            if key == celestial[0] and index in (0, 1):
+                units[index] = u.Unit(unit)
+    return tuple(units)
 
 
 def _modify_polygon_visibility(polygon, keep):
