@@ -1,0 +1,1 @@
+Added a topic guide explaining how :meth:`~sunpy.map.GenericMap.submap` differs from :meth:`~ndcube.NDCube.crop` and when to use each method.
