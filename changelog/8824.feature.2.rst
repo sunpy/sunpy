@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap` can now be cropped with `ndcube.NDCube.crop`, which returns the smallest region containing the given list of world coordinate points.
