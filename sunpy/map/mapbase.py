@@ -35,6 +35,8 @@ from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 
+from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
+
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.visualization.colormaps
@@ -614,7 +616,12 @@ class GenericMap(MapMetaMixin, NDCube):
         # Validate meta before building the WCS, to emit useful errors.
         self._validate_meta()
 
-        w2 = astropy.wcs.WCS(naxis=2)
+        # Keep the celestial axes in the units of the metadata rather than letting
+        # wcslib convert them to degrees. When they already are degrees there is
+        # nothing to preserve and cause a  segfaults if cdelt or crval are
+        # set after set() can remove after astropy 8.0.2 with astropy#20418
+        preserve_units = any(unit is not None and unit != u.deg for unit in self.spatial_units)
+        w2 = astropy.wcs.WCS(naxis=2, preserve_units=preserve_units)
 
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
@@ -638,19 +645,12 @@ class GenericMap(MapMetaMixin, NDCube):
             w2.wcs.datebeg = self.date_start.utc.isot
         if self.date_end is not None:
             w2.wcs.dateend = self.date_end.utc.isot
+        # used to be called implicitly but now have call manually
+        w2.wcs.datfix()
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
-            # Clear all the aux information that was set earlier. This is to avoid
-            # issues with maps that store multiple observer coordinate keywords.
-            # Note that we have to create a new WCS as it's not possible to modify
-            # wcs.wcs.aux in place.
-            header = w2.to_header()
-            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-                header.pop(kw, None)
-            w2 = astropy.wcs.WCS(header)
-
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
@@ -668,12 +668,79 @@ class GenericMap(MapMetaMixin, NDCube):
         return w2
 
     @wcs.setter
-    def wcs(self, value):
-        # NDData.__init__ assigns to wcs, so this has to exist. A Map derives its
-        # WCS from the metadata and cannot be given one.
-        if value is not None:
-            raise ValueError("Passing a WCS to GenericMap is not supported, "
-                             "the WCS is derived from the metadata.")
+    def wcs(self, wcs):
+        """
+        Map uses the meta dict as the source of truth.
+        When setting the wcs of the map we convert it to a header and then update the header of the map.
+        """
+        # A Map is constructed with wcs=None, so there is nothing to merge in that case
+        if wcs is None:
+            return
+        # Unwrap any wrapper classes to FITS WCS
+        unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
+        # Convert to a header. wcslib omits NAXIS, so it has to be added back or the
+        # metadata keeps describing the shape of the array we started with.
+        # need to call set until min astropy==8.0.2
+        unwrapped.wcs.set()
+        # relax=True so non-standard keywords (e.g. SIP) are kept rather than warned about
+        new_header = unwrapped.to_header(relax=True)
+        for n in range(1, unwrapped.naxis + 1):
+            new_header[f"NAXIS{n}"] = unwrapped._naxis[n - 1]
+            # The new WCS may not have preserved units (e.g. it is in degrees), so
+            # convert it into the units the metadata already uses.
+            meta_unit = self.meta.get(f"cunit{n}")
+            if meta_unit is None and n <= len(self.spatial_units):
+                # Some sources (e.g. EIT) omit CUNIT and declare their units by
+                # overriding `spatial_units`, which the rest of the metadata is
+                # written against.
+                default_unit = self.spatial_units[n - 1]
+                meta_unit = None if default_unit is None else default_unit.to_string()
+            header_unit = new_header.get(f"CUNIT{n}")
+            if meta_unit is None or header_unit is None:
+                continue
+            factor = u.Unit(header_unit).to(u.Unit(meta_unit))
+            if factor != 1:
+                keys = [f"CDELT{n}", f"CRVAL{n}"]
+                keys += [f"CD{n}_{m}" for m in range(1, unwrapped.naxis + 1)]
+                for key in keys:
+                    if key in new_header:
+                        new_header[key] *= factor
+                new_header[f"CUNIT{n}"] = meta_unit
+        old_wcs = self.wcs
+        # Must use the same relax as new_header for the comparison below
+        old_wcs_header = old_wcs.to_header(relax=True)
+        # Reduce the new header to just the keys which differ from the current WCS
+        changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+
+        # The WCS always expresses rotation and scale as PC and CDELT. Only when these
+        # change do CROTA (rotation) and CD (rotation and scale) in the metadata stop
+        # describing the map, so only then replace them, otherwise keep the metadata's
+        # own convention.
+        pc = unwrapped.wcs.get_pc()
+        pc_changed = not np.array_equal(pc, old_wcs.wcs.get_pc())
+        cdelt_changed = not np.array_equal(unwrapped.wcs.get_cdelt(), old_wcs.wcs.get_cdelt())
+        to_drop = ['CROTA1', 'CROTA2'] if pc_changed else []
+        if pc_changed or cdelt_changed:
+            to_drop += ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
+        if any(key.lower() in self.meta for key in to_drop):
+            for key in to_drop:
+                self.meta.pop(key, None)
+            # Write the whole linear transform, as the entries that did not change
+            # were previously implied by the keys just dropped.
+            changed_header.update({f"PC{i}_{j}": pc[i - 1, j - 1] for i in (1, 2) for j in (1, 2)})
+            changed_header.update({k: v for k, v in new_header.items() if k.startswith("CDELT")})
+
+        # Similarly the new WCS carries its own PV values, so if they differ, replace
+        # all of the old ones rather than only updating the ones that changed.
+        if sorted(unwrapped.wcs.get_pv()) != sorted(old_wcs.wcs.get_pv()):
+            for i, m, _ in self._pv_values:
+                self.meta.pop(f'PV{i}_{m}', None)
+            changed_header.update({k: v for k, v in new_header.items() if k.startswith("PV")})
+
+        self.meta.update(MetaDict(changed_header))
+        # The getter was called above to build old_wcs_header, which cached a WCS
+        # built from the metadata as it was before this update.
+        self.__dict__.pop('wcs', None)
 
     def _as_mpl_axes(self):
         """
