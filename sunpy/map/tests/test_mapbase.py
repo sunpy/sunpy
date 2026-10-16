@@ -12,6 +12,7 @@ import pytest
 from hypothesis import HealthCheck, given, settings
 from matplotlib.figure import Figure
 from matplotlib.transforms import Affine2D
+from numpy.testing import assert_allclose
 
 import astropy.units as u
 import astropy.wcs
@@ -86,6 +87,165 @@ def test_wcs_revalidates_modified_meta(simple_map):
         simple_map.wcs
     with pytest.raises(sunpy.map.MapMetaValidationError, match="angular units"):
         simple_map.coordinate_frame
+
+
+@pytest.mark.parametrize(("aslice", "dims"), [
+    (np.s_[600:], (0,)),
+    (np.s_[600:, 700:], (0, 1)),
+    (np.s_[:, 700:], (1,)),
+])
+def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
+    """
+    Given a slice which causes the crpix to be modified, assert that it is.
+    """
+    sliced_map = deepcopy(aia171_test_map)
+    sliced_map._data = aia171_test_map.data[aslice]
+    sliced_map.wcs = SlicedLowLevelWCS(aia171_test_map.wcs, aslice)
+
+    if 0 in dims:
+        assert sliced_map.meta["CRPIX2"] != aia171_test_map.meta["CRPIX2"]
+
+    if 1 in dims:
+        assert sliced_map.meta["CRPIX1"] != aia171_test_map.meta["CRPIX1"]
+
+    sliced_ref_coord = sliced_map.wcs.pixel_to_world_values(sliced_map.meta["CRPIX1"],
+                                                            sliced_map.meta["CRPIX2"])
+    ori_ref_coord = aia171_test_map.wcs.pixel_to_world_values(aia171_test_map.meta["CRPIX1"],
+                                                              aia171_test_map.meta["CRPIX2"])
+
+    assert np.allclose(sliced_ref_coord, ori_ref_coord)
+
+
+def test_wcs_preserves_units(aia171_test_map):
+    assert aia171_test_map.meta["cunit1"] == "arcsec"
+    assert list(aia171_test_map.wcs.wcs.cunit) == [u.arcsec, u.arcsec]
+    # Not exact as the getter round-trips through a FITS header, which limits precision
+    assert_allclose(aia171_test_map.wcs.wcs.cdelt[0], aia171_test_map.meta["cdelt1"])
+    assert_allclose(aia171_test_map.wcs.wcs.crval[0], aia171_test_map.meta["crval1"])
+
+
+def test_set_wcs_unchanged_leaves_meta_alone(aia171_test_map):
+    smap = deepcopy(aia171_test_map)
+    smap.wcs = smap.wcs.deepcopy()
+    assert smap.meta == aia171_test_map.meta
+
+
+def test_set_wcs_converts_into_units_declared_by_spatial_units():
+    """
+    EIT omits CUNIT and declares arcsec by overriding `spatial_units`.
+    """
+    smap = get_dummy_map_from_header(
+        get_test_filepath('EIT_header/efz20040301.000010_s.header'))
+    assert "cunit1" not in smap.meta
+    assert smap.spatial_units[0] == u.arcsec
+
+    original_scale = smap.scale
+    original_rsun = smap.rsun_meters
+
+    # Round-tripping through a header without preserve_units renders the axes in degrees
+    target = astropy.wcs.WCS(header=smap.wcs.to_header())
+    smap.wcs = target
+
+    assert u.allclose(smap.scale[0], original_scale[0])
+    assert u.allclose(smap.scale[1], original_scale[1])
+    assert u.isclose(smap.rsun_meters, original_rsun)
+
+
+@pytest.mark.parametrize(("new_pv", "expected"), [
+    ([], []),
+    ([(2, 1, 0.5)], [(2, 1, 0.5)]),
+    ([(2, 1, 0.9)], [(2, 1, 0.9)]),
+], ids=["dropped", "unchanged", "changed"])
+def test_set_wcs_pv_values(aia171_test_map, new_pv, expected):
+    """
+    PV keywords are read back out of the metadata.
+    If they are changed, the metadata must be updated to match.
+    """
+    smap = deepcopy(aia171_test_map)
+    smap.meta["PV2_1"] = 0.5
+
+    target = smap.wcs.deepcopy()
+    target.wcs.set_pv(new_pv)
+    smap.wcs = target
+
+    assert smap.wcs.wcs.get_pv() == expected
+
+
+def test_set_wcs_keeps_non_transform_metadata(aia171_test_map):
+    """
+    Assigning a new WCS must leave non-transform metadata alone.
+    """
+    smap = deepcopy(aia171_test_map)
+    target = smap.wcs.deepcopy()
+    target.wcs.dateobs = ""
+    target.wcs.dateavg = ""
+    target.wcs.aux.rsun_ref = None
+
+    smap.wcs = target
+
+    assert smap.date == aia171_test_map.date
+    assert smap.reference_date == aia171_test_map.reference_date
+    assert u.isclose(smap.rsun_meters, aia171_test_map.rsun_meters)
+
+
+def test_set_wcs_rotation_replaces_crota(aia171_test_map):
+    smap = deepcopy(aia171_test_map)
+    smap.meta["crota2"] = 0
+    target = smap.wcs.deepcopy()
+    rotation = np.array([[0, -1], [1, 0]])
+    target.wcs.pc = rotation
+    smap.wcs = target
+
+    assert "crota2" not in smap.meta
+    np.testing.assert_allclose(smap.rotation_matrix, rotation)
+
+
+def test_set_wcs_crpix_keeps_crota(aia171_test_map):
+    smap = deepcopy(aia171_test_map)
+    smap.meta["crota2"] = 10
+    target = smap.wcs.deepcopy()
+    target.wcs.crpix = [10, 20]
+    smap.wcs = target
+
+    assert smap.meta["crota2"] == 10
+    assert smap.meta["crpix1"] == 10
+    assert smap.meta["crpix2"] == 20
+
+
+@pytest.mark.parametrize("cd", [
+    [[0.6, 0], [0, 0.6]],
+    [[0.5, -0.3], [0.3, 0.5]],
+], ids=["scale", "rotated"])
+def test_set_wcs_scale_replaces_cd(simple_map, cd):
+    smap = deepcopy(simple_map)
+    for key in ['cdelt1', 'cdelt2', 'pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
+        smap.meta.pop(key, None)
+    smap.meta.update({f"cd{i}_{j}": cd[i - 1][j - 1] for i in (1, 2) for j in (1, 2)})
+    original_rotation = smap.rotation_matrix
+    original_scale = smap.scale
+
+    target = smap.wcs.deepcopy()
+    target.wcs.cdelt = 2 * target.wcs.cdelt
+    smap.wcs = target
+
+    assert not {"cd1_1", "cd1_2", "cd2_1", "cd2_2"} & smap.meta.keys()
+    assert_allclose(smap.rotation_matrix, original_rotation)
+    assert u.allclose(smap.scale[0], 2 * original_scale[0])
+    assert u.allclose(smap.scale[1], 2 * original_scale[1])
+
+
+def test_set_wcs_does_not_leave_stale_cache(aia171_test_map):
+    """
+    The WCS setter reads the current WCS to work out what the new one changes, which
+    caches a WCS built from the metadata as it was before the update.
+    """
+    smap = deepcopy(aia171_test_map)
+    target = smap.wcs.deepcopy()
+    target.wcs.crpix = [10, 20]
+    smap.wcs = target
+
+    assert "wcs" not in smap.__dict__
+    assert list(smap.wcs.wcs.crpix) == [10, 20]
 
 
 def test_wcs_pv():
@@ -2086,30 +2246,3 @@ def test_submap_nan_error(aia171_test_map):
     coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
     with pytest.raises(ValueError, match="The provided input coordinates to"):
         aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
-
-
-@pytest.mark.parametrize(("aslice", "dims"), [
-    (np.s_[600:], (0,)),
-    (np.s_[600:, 700:], (0, 1)),
-    (np.s_[:, 700:], (1,)),
-])
-def test_set_wcs_modifies_crpix(aia171_test_map, aslice, dims):
-    """
-    Given a slice which causes the crpix to be modified, assert that it is.
-    """
-    sliced_map = deepcopy(aia171_test_map)
-    sliced_map._data = aia171_test_map.data[aslice]
-    sliced_map.wcs = SlicedLowLevelWCS(aia171_test_map.wcs, aslice)
-
-    if 0 in dims:
-        assert sliced_map.meta["CRPIX2"] != aia171_test_map.meta["CRPIX2"]
-
-    if 1 in dims:
-        assert sliced_map.meta["CRPIX1"] != aia171_test_map.meta["CRPIX1"]
-
-    sliced_ref_coord = sliced_map.wcs.pixel_to_world_values(sliced_map.meta["CRPIX1"],
-                                                            sliced_map.meta["CRPIX2"])
-    ori_ref_coord = aia171_test_map.wcs.pixel_to_world_values(aia171_test_map.meta["CRPIX1"],
-                                                              aia171_test_map.meta["CRPIX2"])
-
-    assert np.allclose(sliced_ref_coord, ori_ref_coord)
