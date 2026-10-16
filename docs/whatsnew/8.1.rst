@@ -68,7 +68,7 @@ Metadata Changes
 ----------------
 
 In general, operations that build a new map now carry more of the original Map with them.
-`~sunpy.map.GenericMap.submap` keeps the uncertainty of its parent, all map arithmetic (e.g. multiply) keeps the parent's mask and propagates its uncertainty, and `~sunpy.map.GenericMap.reproject_to` keeps the metadata of the original map instead of rebuilding it from the target WCS, which has the benefit that reproject now gives you back the same type of map you started with rather than a plain `~sunpy.map.GenericMap`.
+`~sunpy.map.GenericMap.submap` keeps the uncertainty of its parent, and all map arithmetic (e.g. multiply) keeps the parent's mask and propagates its uncertainty.
 
 The rest of the `ndcube.NDCube` API comes along too, including `~ndcube.NDCube.rebin`, ``fill_masked`` and `~ndcube.NDCube.axis_world_coords`.
 
