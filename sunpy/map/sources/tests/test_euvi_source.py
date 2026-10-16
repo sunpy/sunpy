@@ -60,7 +60,7 @@ def test_rsun_obs(euvi_map):
 
 def test_rsun_missing(euvi_map):
     """Tests output if 'rsun' is missing"""
-    euvi_no_rsun = euvi_map._new_instance(euvi_map.data, copy.deepcopy(euvi_map.meta))
+    euvi_no_rsun = euvi_map._new_instance(data=euvi_map.data, meta=copy.deepcopy(euvi_map.meta))
     euvi_no_rsun.meta.pop('rsun', None)
     r = euvi_no_rsun.observer_coordinate.radius
     assert euvi_no_rsun.rsun_obs == sun._angular_radius(constants.radius, r)

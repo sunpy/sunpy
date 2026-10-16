@@ -584,6 +584,29 @@ def test_unit(generic_map):
         assert generic_map.unit is None
 
 
+def test_unit_kwarg_sets_bunit(generic_map):
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.ct)
+
+    assert new_map.unit == u.ct
+    assert new_map.meta['bunit'] == 'ct'
+
+
+@pytest.mark.parametrize(('bunit', 'unit', 'expected_bunit'), [
+    # The same unit written differently keeps the original bunit
+    ('counts / pixel', u.Unit('ct / pix'), 'counts / pixel'),
+    ('DN / s', u.Unit('DN s-1'), 'DN / s'),
+    # A different unit overwrites the old bunit
+    ('DN', u.DN * u.s, 'DN s'),
+    ('DN', u.DN / u.s, 'DN / s'),
+])
+def test_unit_kwarg_only_rewrites_bunit_when_the_unit_changes(generic_map, bunit, unit, expected_bunit):
+    generic_map.meta['bunit'] = bunit
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=unit)
+
+    assert new_map.unit == unit
+    assert new_map.meta['bunit'] == expected_bunit
+
+
 # ==============================================================================
 # Test the default value of a load of properties
 # TODO: Test the header keyword extraction
@@ -1498,6 +1521,29 @@ def test_superpixel_metadata(generic_map, f, dimensions):
             assert superpix_map.meta[key] == generic_map.meta[key]
 
 
+@pytest.mark.parametrize("unmask", [False, True])
+def test_fill_masked(aia171_test_map_with_mask, unmask):
+    masked = aia171_test_map_with_mask.mask
+    filled = aia171_test_map_with_mask.fill_masked(0, unmask=unmask)
+
+    assert isinstance(filled, type(aia171_test_map_with_mask))
+    assert_quantity_allclose(filled.data[masked], 0)
+    # Unmasked values are untouched
+    assert_quantity_allclose(filled.data[~masked], aia171_test_map_with_mask.data[~masked])
+    if unmask:
+        assert not np.any(filled.mask)
+    else:
+        assert np.array_equal(filled.mask, masked)
+    # The metadata is carried over rather than rebuilt
+    assert filled.meta == aia171_test_map_with_mask.meta
+
+
+def test_fill_masked_in_place(aia171_test_map_with_mask):
+    masked = aia171_test_map_with_mask.mask.copy()
+    assert aia171_test_map_with_mask.fill_masked(0, fill_in_place=True) is None
+    assert_quantity_allclose(aia171_test_map_with_mask.data[masked], 0)
+
+
 def test_superpixel_masked(aia171_test_map_with_mask):
     input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
@@ -2378,7 +2424,9 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):
+    # `NDCube.__rtruediv__` evaluates ``self ** -1`` before it looks at the operand, so
+    # it divides by any zeros in the data on its way to rejecting the operand.
+    with np.errstate(divide='ignore'), pytest.raises(TypeError):
         _ = value / aia171_test_map
 
 @pytest.mark.parametrize(('units_string','expected_unit'),[

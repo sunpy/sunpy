@@ -1,7 +1,6 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-import copy
 import html
 import inspect
 import itertools
@@ -59,7 +58,6 @@ from sunpy.util import MetaDict, extent_in_other_wcs, warn_deprecated
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
-    check_arithmetic_compatibility,
     deprecated,
 )
 from sunpy.util.exceptions import warn_user
@@ -237,8 +235,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         an empty dictionary is created.
 
     unit : `astropy.units.Unit` or `str`, optional
-        Unit for the dataset. Strings that can be converted to a `~astropy.units.Unit` are allowed.
-        Default is `None` which results in dimensionless units.
+        Unit to record in BUNIT. Overrides any existing BUNIT in ``meta`` - does not convert
+        the data array. Use this to set the unit of the data after converting it. e.g. when
+        converting units from counts to counts per second.
+        Default is `None`, which leaves the unit to BUNIT.
 
     copy : bool, optional
         Indicates whether to save the arguments as copy. `True` copies every attribute
@@ -417,6 +417,15 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         )
         # After the NDCube constructor has run there is now metadata for the setter
         self.wcs = wcs
+
+        # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
+        # lost unless written there. Compared as units but note that this is done only so
+        # we can keep the original BUNIT if the constructor had received an equal unit
+        # e.g counts / pixel and ct / pix but not Erg and J.
+        if unit is not None:
+            unit = u.Unit(unit)
+            if self.unit != unit:
+                self.meta['bunit'] = unit.to_string()
 
         # The plotter is an NDCube descriptor, so it is assigned the plotter
         # class rather than an instance of it.
@@ -699,17 +708,18 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    @classmethod
-    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+    def _new_instance(self, **kwargs):
         """
-        Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
+        Instantiate a new instance of this class, carrying over anything the caller
+        does not replace.
         """
-        new_map = cls(data, meta=meta, **kwargs)
-        # plot_settings are set explicitly here as some map sources
-        # explicitly set some of the plot_settings in the constructor
-        # and we want to preserve the plot_settings of the previous
-        # instance.
+        plot_settings = kwargs.pop("plot_settings", None)
+        # The WCS is built from the metadata, so it must not be carried over as well:
+        # the setter would write this map's WCS back over whatever metadata is given.
+        kwargs.setdefault("wcs", None)
+        new_map = super()._new_instance(**kwargs)
+        # Applied after the map is built because some map sources set plot_settings in
+        # their own constructor, which would otherwise overwrite these.
         if plot_settings is not None:
             new_map.plot_settings.update(plot_settings)
         return new_map
@@ -726,54 +736,6 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     def quantity(self):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
-
-    def _new_instance_from_op(self, new_data):
-        """
-        Helper function for creating new map instances after arithmetic
-        operations.
-        """
-        new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string()
-        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
-
-    def __neg__(self):
-        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
-
-    @check_arithmetic_compatibility
-    def __pow__(self, value):
-        new_data = self.quantity ** value
-        return self._new_instance_from_op(new_data)
-
-    @check_arithmetic_compatibility
-    def __add__(self, value):
-        new_data = self.quantity + value
-        return self._new_instance_from_op(new_data)
-
-    def __radd__(self, value):
-        return self.__add__(value)
-
-    def __sub__(self, value):
-        return self.__add__(-value)
-
-    def __rsub__(self, value):
-        return self.__neg__().__add__(value)
-
-    @check_arithmetic_compatibility
-    def __mul__(self, value):
-        new_data = self.quantity * value
-        return self._new_instance_from_op(new_data)
-
-    def __rmul__(self, value):
-        return self.__mul__(value)
-
-    @check_arithmetic_compatibility
-    def __truediv__(self, value):
-        return self.__mul__(1/value)
-
-    @check_arithmetic_compatibility
-    def __rtruediv__(self, value):
-        new_data = value / self.quantity
-        return self._new_instance_from_op(new_data)
 
     @property
     @cached_property_based_on('_meta_hash')
@@ -1054,7 +1016,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plot_settings)
 
         return new_map
 
@@ -1226,7 +1188,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1421,7 +1383,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
 
         return new_map
 
