@@ -117,7 +117,7 @@ def map_edges(smap):
         hand side pixel locations respectively of the input map.
     """
     # Calculate all the edge pixels
-    nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
+    nx, ny = smap.shape[1], smap.shape[0]
     top = list(product(np.arange(nx), [ny - 1])) * u.pix
     bottom = list(product(np.arange(nx), [0])) * u.pix
     left_hand_side = list(product([0], np.arange(ny))) * u.pix

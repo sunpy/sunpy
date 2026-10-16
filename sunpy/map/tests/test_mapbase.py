@@ -284,6 +284,7 @@ def test_std(generic_map):
 
 
 @pytest.mark.parametrize(("name", "is_property"), [
+    ("dimensions", True),
     ("dtype", True),
     ("ndim", True),
     ("min", False),
@@ -815,8 +816,25 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.dimensions[0] == 9 * u.pix
-    assert simple_map.dimensions[1] == 9 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match="dimensions"):
+        assert simple_map.dimensions[0] == 9 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match="dimensions"):
+        assert simple_map.dimensions[1] == 9 * u.pix
+
+
+def test_dimensions_axis_order():
+    # ``dimensions`` is (x, y) whereas ``shape`` is (row, column). Use a
+    # non-square map so that a transposed conversion cannot pass unnoticed.
+    data = np.arange(15).reshape((3, 5))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00',
+                         unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
+                                           frame='heliographic_stonyhurst'))
+    smap = sunpy.map.Map(data, sunpy.map.make_fitswcs_header(data, ref_coord))
+
+    assert smap.shape == (3, 5)
+    with pytest.warns(SunpyDeprecationWarning, match="dimensions"):
+        assert u.allclose(u.Quantity(smap.dimensions), [5, 3] * u.pix)
 
 
 pixel_corners = [
@@ -963,8 +981,8 @@ resample_test_data = [('linear', (100, 200) * u.pixel),
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.dimensions[0] == new_dimensions[0]
-    assert resampled_map.dimensions[1] == new_dimensions[1]
+    assert resampled_map.shape[1] == new_dimensions[0].value
+    assert resampled_map.shape[0] == new_dimensions[1].value
 
 
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
@@ -1038,11 +1056,11 @@ def test_superpixel_dims_values(aia171_test_map, f):
     dimensions = (2, 2) * u.pix
     superpix_map = aia171_test_map.superpixel(dimensions, func=f)
 
-    # Check dimensions of new map
-    old_dims = u.Quantity(aia171_test_map.dimensions)
-    expected_new_dims = old_dims * (1 * u.pix / dimensions)
-    assert superpix_map.dimensions[0] == expected_new_dims[0]
-    assert superpix_map.dimensions[1] == expected_new_dims[1]
+    # Check shape of new map. ``dimensions`` is in (x, y) order whereas
+    # ``shape`` is in (row, column) order.
+    old_shape = aia171_test_map.shape
+    assert superpix_map.shape[0] == old_shape[0] / dimensions[1].value
+    assert superpix_map.shape[1] == old_shape[1] / dimensions[0].value
 
     # Check value of lower left pixel is calculated correctly
     expected = f(aia171_test_map.data[0:2, 0:2])
@@ -1076,36 +1094,41 @@ def test_superpixel_metadata(generic_map, f, dimensions):
 
 
 def test_superpixel_masked(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
     # Test that the mask is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions)
     assert superpix_map.mask is not None
-    # Check the shape of the mask
-    expected_shape = input_dims * (1 * u.pix / dimensions)
-    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+    # Check the shape of the mask. ``dimensions`` is in (x, y) order whereas
+    # ``shape`` is in (row, column) order.
+    expected_shape = (input_shape[0] / dimensions[1].value,
+                      input_shape[1] / dimensions[0].value)
+    assert superpix_map.mask.shape == expected_shape
 
     # Test that the offset is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
-    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+    assert superpix_map.shape[0] == expected_shape[0] - 1
+    assert superpix_map.shape[1] == expected_shape[1] - 1
 
     dimensions = (7, 9) * u.pix
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
-    expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
-    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+    expected_shape = (np.round(input_shape[0] / dimensions[1].value),
+                      np.round(input_shape[1] / dimensions[0].value))
+    assert superpix_map.shape[0] == expected_shape[0] - 1
+    assert superpix_map.shape[1] == expected_shape[1] - 1
 
 
 def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
 
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
     assert superpix_map.mask is not None
 
-    expected_shape = input_dims * (1 * u.pix / dimensions)
-    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+    # ``dimensions`` is in (x, y) order whereas ``shape`` is (row, column)
+    expected_shape = (input_shape[0] / dimensions[1].value,
+                      input_shape[1] / dimensions[0].value)
+    assert superpix_map.mask.shape == expected_shape
 
     # Verify mask values (bin_mask=True)
     reshaped_mask = reshape_image_to_4d_superpixel(
@@ -1432,9 +1455,10 @@ def test_more_than_two_dimensions():
     with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
             bad_map = sunpy.map.Map(bad_data, hdr)
-    # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
+    # Test fails if the data is not 2D or the shape of the array is wrong.
+    # The data is (Y, X) = (3, 5), and ``shape`` is (row, column).
     assert bad_map.data.ndim == 2
-    assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
+    assert bad_map.shape == (3, 5)
 
 
 def test_missing_metadata_warnings():
@@ -1578,7 +1602,7 @@ def test_submap_inputs(generic_map2, coords):
 
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
-        assert u.allclose(smap.dimensions, (3, 3) * u.pix)
+        assert smap.shape == (3, 3)
 
 
 def test_find_contours_contourpy(simple_map):
