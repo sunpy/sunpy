@@ -45,9 +45,37 @@ Maps can be sliced directly, returning a new map whose metadata describes the sl
     >>> aia = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +SKIP
     >>> aia[100:200, 300:400]  # doctest: +SKIP
 
-[Insert image of a slice??]
+[Insert image of a slice?? e..g map[0:100, 0:100].plot() alongside a rectangle drawn on the original map]
 
-They can also be cropped to world coordinates with `ndcube.NDCube.crop`, which returns the smallest region containing all the points supplied.
+Cropping
+--------
+
+Maps can now be cropped in world coordinates with `ndcube.NDCube.crop`. This complements the existing `~sunpy.map.GenericMap.submap` method.
+Both methods return a rectangular block of pixels, but they interpret the supplied coordinates differently.
+
+`~sunpy.map.GenericMap.submap` interprets two coordinates as opposite corners of a rectangle in world coordinates and returns the smallest pixel rectangle containing it.
+`~ndcube.NDCube.crop` instead returns the smallest pixel rectangle containing the supplied coordinates. It accepts any number of coordinates.
+
+When the pixel and world coordinate grids are aligned, both methods return the same result.
+When the map is rotated, they can return different regions. For example:
+
+.. code-block:: python
+
+    >>> from sunpy.data.sample import SWAP_LEVEL1_IMAGE  # doctest: +SKIP
+    >>> rotated = sunpy.map.Map(SWAP_LEVEL1_IMAGE).rotate(30 * u.deg)  # doctest: +SKIP
+    >>> bottom_left = SkyCoord(-900 * u.arcsec, -900 * u.arcsec, frame=rotated.coordinate_frame)  # doctest: +SKIP
+    >>> top_right = SkyCoord(0 * u.arcsec, -200 * u.arcsec, frame=rotated.coordinate_frame)  # doctest: +SKIP
+
+    >>> rotated.crop(bottom_left, top_right).data.shape  # doctest: +SKIP
+    (335, 137)
+    >>> rotated.submap(bottom_left, top_right=top_right).data.shape  # doctest: +SKIP
+    (335, 358)
+
+[MAYBE THIS SHOULDN'T BE A COMPARISON EXAMPLE, AND INSTEAD PLOT E.G. 5 POINTS ON A MAP AND THE RECTANGLE PRODUCED BY CROP]
+
+You can also use `~ndcube.NDCube.crop_by_values` with plain `~astropy.units.Quantity` values instead of coordinate objects.
+
+See :ref:`sunpy-topic-guide-submap-vs-crop` for further explanation, and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for an example.
 
 Unit conversion
 ---------------
