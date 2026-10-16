@@ -28,6 +28,7 @@ try:
 except ImportError:
     DASK_INSTALLED = False
 
+import astropy.io.fits
 from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 
 import astropy.units as u
@@ -1936,8 +1937,12 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        if not isinstance(target_wcs, astropy.wcs.WCS):
+        if isinstance(target_wcs, (dict, astropy.io.fits.Header)):
             target_wcs = astropy.wcs.WCS(header=target_wcs)
+        else:
+            # Unwrap any wrapper classes, e.g. a SlicedLowLevelWCS, to a FITS WCS, as
+            # the extent and date handling below need the FITS keywords.
+            target_wcs, _ = unwrap_wcs_to_fitswcs(target_wcs)
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
@@ -1951,26 +1956,33 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                                       return_footprint=return_footprint, **reproject_args)
         outmap, footprint = output if return_footprint else (output, None)
 
-        # Compared with a tolerance because a WCS round-tripped through a FITS header
-        # carries float noise far below any physically meaningful difference.
-        if not u.isclose(self.rsun_meters, outmap.rsun_meters, rtol=1e-11):
-            warn_user("rsun mismatch detected: "
-                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
-                      "This might cause unexpected results during reprojection.")
+        # NDCube carries this map's metadata over to the result, but the reprojected
+        # data is on a different grid, so header values describing the old one  may no longer
+        # applies. Rebuild from the target WCS alone, going back through the factory so
+        # that the class matches the metadata rather than whatever was reprojected.
+        new_meta = MetaDict(target_wcs.to_header(relax=True))
+        for n in range(1, target_wcs.naxis + 1):
+            new_meta[f"NAXIS{n}"] = outmap.data.shape[::-1][n - 1]
 
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
             # the target has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            # Read from the target, not the result: the result keeps this map's
-            # metadata, so it always has a date of its own.
             if not (ref_date := target_wcs.wcs.dateavg or target_wcs.wcs.dateobs):
                 raise ValueError("The target_wcs has neither a DATE-AVG or DATE-OBS. It is ambiguous "
                                  "as to what date should be used as reference date in the target header. "
                                  "To avoid this, either set DATE-AVG or DATE-OBS on target_wcs or "
                                  "set preserve_date_obs=False.")
-            outmap.meta['DATE-AVG'] = ref_date
-            outmap.meta['DATE-OBS'] = self.date.utc.isot
+            new_meta['DATE-AVG'] = ref_date
+            new_meta['DATE-OBS'] = self.date.utc.isot
+
+        outmap = sunpy.map.Map(outmap.data, new_meta, plot_settings=self.plot_settings)
+
+        # Compared with a tolerance because a WCS round-tripped through a FITS header carries float noise
+        if not u.isclose(self.rsun_meters, outmap.rsun_meters, rtol=1e-11):
+            warn_user("rsun mismatch detected: "
+                      f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
+                      "This might cause unexpected results during reprojection.")
 
         if return_footprint:
             return outmap, footprint
