@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap.submap` now returns a `ValueError` for a bounding box that sits outside the Map's extent. A rectangle with no area now returns the single pixel whose edge it shares, following the same rules as `ndcube.NDCube.crop`.
