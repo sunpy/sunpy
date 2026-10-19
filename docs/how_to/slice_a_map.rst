@@ -41,5 +41,5 @@ Slicing cannot reduce a map's number of dimensions, so using an integer index ra
 Use a slice of length one instead.
 
 To cut out a region using world coordinates, use :meth:`~sunpy.map.GenericMap.submap` or :meth:`ndcube.NDCube.crop`.
-See :ref:`sphx_glr_generated_gallery_map_submaps_and_cropping.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for examples.
+See :ref:`sphx_glr_generated_gallery_map_creating_a_submap.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for examples.
 The :ref:`sunpy-topic-guide-submap-vs-crop` topic guide explains how these two methods differ.
