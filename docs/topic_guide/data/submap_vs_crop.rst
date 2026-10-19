@@ -4,42 +4,43 @@
 Cutting out a region: submap vs crop
 *************************************
 
-`~sunpy.map.GenericMap` offers two ways to cut a smaller map from a larger one.
-:meth:`~sunpy.map.GenericMap.submap` has long been part of SunPy, while :meth:`~ndcube.NDCube.crop` is inherited from `ndcube.NDCube`.
-Both take world coordinates and return a rectangular block of pixels. On many maps, they return the same result when given the same two coordinates.
-This guide explains how the methods differ and why their results can diverge.
+`~sunpy.map.GenericMap` provides two ways to cut out a region from a map; :meth:`~sunpy.map.GenericMap.submap` and the inherited :meth:`~ndcube.NDCube.crop`.
+Both take world coordinates and return a rectangular block of pixels.
+Given the same two coordinates, they often return the same region, but there are maps for which their returns will differ, for example when the pixel grid has been rotated relative to the world coordinate axes.
+This guide explains how the methods interpret their inputs and therefore why those differences "crop" up.
 
 What they have in common
 ========================
 
-A map holds its data in a rectangular array; any cutout has to be a whole number of rows and columns.
-Neither method resamples or rotates the data. Each converts the input coordinates to pixel positions and returns the smallest rectangle of the parent map's pixels that contains them.
+A map stores its data in a rectangular array; a cutout must contain a whole number of rows and columns.
+Neither `submap` nor `crop` resamples or rotates the data, both convert the input coordinates to pixel positions and return the smallest rectangle of the map's pixels that contains them.
 
 Where they differ
 =================
 
-They differ in which coordinates they use to define the pixel rectangle.
+The methods differ in how they use the supplied coordinates to define the pixel rectangle.
 
-:meth:`~ndcube.NDCube.crop` uses exactly the coordinates you pass.
-It makes no assumption about what they mean, which allows it to accept any number of them.
+:meth:`~ndcube.NDCube.crop` uses only the coordinates you pass and makes no assumptions about their meaning.
+You can pass any number of coordinates.
 
-:meth:`~sunpy.map.GenericMap.submap` treats its two arguments as opposite corners of a rectangle *in world coordinates*, then derives the other two corners before cropping.
-It combines the supplied longitude and latitude values, so ``(-900", -900")`` and ``(0", -200")`` imply two additional corners: ``(-900", -200")`` and ``(0", -900")``.
+:meth:`~sunpy.map.GenericMap.submap` takes only two arguments and treats these as opposite corners of a rectangle *in world coordinates*, then derives the other two corners prior to cropping.
+For example, when provided with world coordinates at ``(-900", -900")`` and ``(0", -200")`` this implies two additional corners: ``(-900", -200")`` and ``(0", -900")``.
 It passes all four corners to :meth:`~ndcube.NDCube.crop`.
 
-You can get the same behavior from :meth:`~ndcube.NDCube.crop` by passing all four corners yourself; :meth:`~sunpy.map.GenericMap.submap` fills in the two extra points for you.
+To get the same result with :meth:`~ndcube.NDCube.crop`, you could calculate those additional two corners and pass all four world-coordinate corners yourself.
+:meth:`~sunpy.map.GenericMap.submap` simply derives the two additional corners for you.
 
 For many maps, the pixel grid is aligned with the world coordinate axes: moving along a row changes longitude, and moving along a column changes latitude.
-The rectangle defined by the two supplied corners is then aligned with the pixels. The two derived corners fall on its edges, so both methods return the same result.
+The rectangle defined by the two supplied corners is then aligned with the pixel grid. The derived corners fall on its edges, and both methods return identical regions.
 
 On a rotated map
 ================
 
-When the pixel grid is not aligned with the world coordinate axes, as in a rotated map, a rectangle bounded by straight lines in world coordinates is tilted relative to the pixel grid.
-The smallest pixel rectangle containing it is larger than the tilted region itself.
+On a rotated map, the sides of a world-coordinate rectangle do not follow the pixel rows and columns, so a pixel-aligned cutout must extend beyond the world-coordinate rectangle's edges.
 
-The two supplied coordinates form one diagonal of the tilted rectangle; the derived corners form the other.
-Each diagonal has its own pixel bounding box, and on a rotated map those boxes differ:
+The two coordinates passed to :meth:`~ndcube.NDCube.crop` define one diagonal of the rectangle.
+The rectangle produced by :meth:`~ndcube.NDCube.crop` is minimised to contain just those two points, while :meth:`~sunpy.map.GenericMap.submap` also includes the two derived corners, which extend the rectangle.
+The resulting pixel bounding boxes are different:
 
 .. code-block:: python
 
@@ -57,7 +58,7 @@ Each diagonal has its own pixel bounding box, and on a rotated map those boxes d
     >>> rotated.submap(bottom_left, top_right=top_right).data.shape  # doctest: +SKIP
     (335, 358)
 
-Drawn on the pixel grid, with the tilted rectangle in grey:
+The plot shows the tilted rectangle and the pixel bounding boxes:
 
 .. plot::
     :context: close-figs
@@ -107,33 +108,32 @@ Drawn on the pixel grid, with the tilted rectangle in grey:
 
     plt.show()
 
-The grey rectangle is the requested region. ``bl`` and ``tr`` are the supplied coordinates, and the open markers show the corners derived by :meth:`~sunpy.map.GenericMap.submap`.
+The grey polygon is the requested region. The red markers show the supplied ``bl`` and ``tr`` coordinates; the open markers show ``br`` and ``tl``, the two corners derived by :meth:`~sunpy.map.GenericMap.submap`.
 
-The crop is a narrow strip because its diagonal runs steeply across the pixel grid: it is tall but barely wide.
-The submap also covers the other diagonal, which runs almost horizontally and extends the region sideways.
-Both results have the same height because the first diagonal already spans the full extent in that direction.
+The out from :meth:`~ndcube.NDCube.crop` is a narrow strip because the supplied diagonal runs steeply across the pixel grid.
+The submap, whose bounds include the points from the other diagonal, extends the region horizontally.
+Both cutouts have the same height because the supplied diagonal already spans the full height.
 
 Which one to use
 ================
 
-Use :meth:`~sunpy.map.GenericMap.submap` when you want the region between two corners, interpreted as a rectangle on the sky.
-Because the rectangle is defined in world coordinates, it covers the same part of the Sun regardless of the map's rotation, though the pixel cutout may be larger when the map is rotated.
+Use :meth:`~sunpy.map.GenericMap.submap` when you want to cut out the full rectangle on the sky defined by two opposite corners.
+It includes that world-coordinate region regardless of the map's rotation, though the pixel cutout may extend beyond it.
 
-Use :meth:`~ndcube.NDCube.crop` when you need the result to contain a set of coordinates, such as the corners of a tracked feature, without adding any implied corners.
+``crop`` is more flexible, use :meth:`~ndcube.NDCube.crop` when you need to include a set of any length of coordinates, such as a series of features, without implying the other corners of a rectangle when using 2.
+You can also always pass all four world-coordinate corners to define the rectangle explicitly with ``crop``.
 
-To define a rectangle aligned with the pixel grid rather than the sky, pass pixel coordinates to :meth:`~sunpy.map.GenericMap.submap`.
-It fills in the other corners on the pixel grid, so the result stays within the box defined by your two pixel positions.
 
-In summary
-==========
+Summary
+=======
 
 Given the same two coordinates, :meth:`~ndcube.NDCube.crop` uses a subset of the points used by :meth:`~sunpy.map.GenericMap.submap`.
 The bounding box of a subset cannot be larger than that of the full set, so the region returned by :meth:`~ndcube.NDCube.crop` is always contained within the region returned by :meth:`~sunpy.map.GenericMap.submap`.
 
-The methods return the same region when the pixel grid is aligned with the world coordinate axes, including after quarter turns.
-Otherwise, :meth:`~ndcube.NDCube.crop` returns a smaller region. This includes rotations that are not multiples of 90 degrees and skewed grids with non-perpendicular axes.
+The methods return the same region when the pixel grid is aligned with the world coordinate axes, including after rotations by multiples of 90 degrees.
+Otherwise, :meth:`~ndcube.NDCube.crop` returns a smaller region. This can happen with other rotations or with a skewed grid whose axes are not perpendicular.
 
 This comparison applies only when both methods receive the same two coordinates.
-If you give :meth:`~ndcube.NDCube.crop` more points, it returns the smallest region containing all of them, which may be larger.
+With more points, :meth:`~ndcube.NDCube.crop` returns the smallest region containing them all, which may be larger.
 
-See :ref:`sphx_glr_generated_gallery_map_submaps_and_cropping.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for worked examples.
+See :ref:`sphx_glr_generated_gallery_map_submaps_and_cropping.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for some relevant examples.

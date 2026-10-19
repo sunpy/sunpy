@@ -4,10 +4,10 @@
 Slice a `~sunpy.map.Map`
 *****************************
 
-A `~sunpy.map.Map` can be sliced with array indices.
-The result is a new map of the same type, whose metadata describes the region that was sliced out, so it plots and transforms correctly on its own.
+A `~sunpy.map.Map` can be sliced using array indices.
+Slicing returns a new map of the same type, with metadata that describes the selected region so it plots and transforms correctly on its own.
 
-Indices are in array order, ``map[rows, columns]``, which is the opposite order to the ``(x, y)`` ordering used by world coordinates.
+Indices follow array order, ``map[rows, columns]``. World coordinates use the opposite order, ``(x, y)``.
 
 .. plot::
     :include-source:
@@ -35,10 +35,11 @@ Indices are in array order, ``map[rows, columns]``, which is the opposite order 
 
     plt.show()
 
-Any mask and uncertainty are sliced alongside the data.
+The slice includes any mask and uncertainty associated with the data.
 
-Slicing cannot reduce the number of dimensions of a map, so an integer index raises an error.
-Use a length-one slice instead.
+Slicing cannot reduce a map's number of dimensions, so using an integer index raises an error.
+Use a slice of length one instead.
 
-To cut out a region given in world coordinates rather than array indices, use :meth:`~sunpy.map.GenericMap.submap` or :meth:`ndcube.NDCube.crop` instead.
-See :ref:`sphx_glr_generated_gallery_map_submaps_and_cropping.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for examples, and :ref:`sunpy-topic-guide-submap-vs-crop` for a comparison of the two methods.
+To cut out a region using world coordinates, use :meth:`~sunpy.map.GenericMap.submap` or :meth:`ndcube.NDCube.crop`.
+See :ref:`sphx_glr_generated_gallery_map_submaps_and_cropping.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for examples.
+The :ref:`sunpy-topic-guide-submap-vs-crop` topic guide explains how these two methods differ.
