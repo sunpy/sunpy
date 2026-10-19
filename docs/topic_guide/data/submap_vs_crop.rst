@@ -136,4 +136,4 @@ Otherwise, :meth:`~ndcube.NDCube.crop` returns a smaller region. This can happen
 This comparison applies only when both methods receive the same two coordinates.
 With more points, :meth:`~ndcube.NDCube.crop` returns the smallest region containing them all, which may be larger.
 
-See :ref:`sphx_glr_generated_gallery_map_submaps_and_cropping.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for some relevant examples.
+See :ref:`sphx_glr_generated_gallery_map_creating_a_submap.py` and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for examples.
