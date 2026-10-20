@@ -213,9 +213,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     data : array-like or `astropy.nddata.NDData`
         The array holding the actual data in this object.
 
-    wcs : `None`
-        The ``WCS`` should not be set, it must always be `None` as it
-        is built from the `meta`.
+    wcs : `~astropy.wcs.WCS`, optional
+        A WCS to apply on top of ``meta``, which updates the WCS keywords in
+        ``meta`` in the same way as setting `.wcs`. ``meta`` is still required as
+        it remains the source of truth for the map.
 
     uncertainty : Any, optional
         Uncertainty in the dataset. Should have an attribute uncertainty_type
