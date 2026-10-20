@@ -1322,6 +1322,15 @@ def test_submap_copies_by_default(simple_map):
     assert not np.shares_memory(submap.uncertainty.array, simple_map.uncertainty.array)
 
 
+def test_submap_copy_does_not_share_plot_settings(aia171_test_map):
+    # Copying only the arrays would leave mutable objects such as the plot norm shared
+    submap = aia171_test_map.submap([10, 10] * u.pix, top_right=[30, 30] * u.pix)
+
+    assert submap.plot_settings['norm'] is not aia171_test_map.plot_settings['norm']
+    submap.plot_settings['norm'].vmin = 1
+    assert aia171_test_map.plot_settings['norm'].vmin is None
+
+
 def test_submap_can_return_views(simple_map):
     simple_map.mask = np.zeros(simple_map.data.shape, dtype=bool)
     simple_map.uncertainty = StdDevUncertainty(np.ones(simple_map.data.shape))

@@ -10,6 +10,7 @@ import textwrap
 import warnings
 import webbrowser
 from abc import ABCMeta
+from copy import deepcopy
 from functools import wraps
 from tempfile import NamedTemporaryFile
 from typing import Literal
@@ -1624,12 +1625,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         new_map = self.crop(*world_corners, keepdims=True)
         if copy:
-            # ``crop`` slices, so the arrays it returns are views by default.
-            new_map._data = new_map.data.copy()
-            if new_map.mask is not None:
-                new_map.mask = new_map.mask.copy()
-            if new_map.uncertainty is not None:
-                new_map.uncertainty.array = new_map.uncertainty.array.copy()
+            # ``crop`` slices, so the result is a view onto this map. Copy all of it,
+            # not only the arrays, so nothing (e.g. the plot norm) is shared.
+            new_map = deepcopy(new_map)
         return new_map
 
     @seconddispatch
