@@ -1667,8 +1667,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     @seconddispatch
     def _parse_submap_input(self, bottom_left, top_right, width, height):
         """
-        Should take any valid input to submap() and return bottom_left and
-        top_right in pixel coordinates.
+        Should take any valid input to submap() and return the four corners of
+        the rectangle, as pixel coordinates for a `~astropy.units.Quantity` input
+        or as world coordinates for a coordinate input.
         """
 
     @_parse_submap_input.register(u.Quantity)
