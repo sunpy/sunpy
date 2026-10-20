@@ -5,6 +5,7 @@ from datetime import timedelta
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+from astropy.units.quantity import Quantity
 
 from sunpy import config
 from sunpy.time import is_time_equal, parse_time
@@ -139,11 +140,6 @@ class TimeRange:
     def start(self) -> Time:
         """
         Get the start time.
-
-        Returns
-        -------
-        `astropy.time.Time`
-            The start time.
         """
         return self._t1
 
@@ -151,23 +147,14 @@ class TimeRange:
     def end(self) -> Time:
         """
         Get the end time.
-
-        Returns
-        -------
-        `astropy.time.Time`
-            The end time.
         """
         return self._t2
 
     @property
-    def dt(self):
+    def dt(self) -> TimeDelta:
         """
-        Get the length of the time range. Always a positive value.
-
-        Returns
-        -------
-        `astropy.time.TimeDelta`
-            The difference between the start and the end time.
+        Get the length of the time range. The difference between the start and
+        the end time. Always a positive value.
         """
         return self._t2 - self._t1
 
@@ -175,59 +162,38 @@ class TimeRange:
     def center(self) -> Time:
         """
         Gets the center of the time range.
-
-        Returns
-        -------
-        `astropy.time.Time`
-            The center time.
         """
         return self.start + self.dt / 2
 
     @property
-    def hours(self):
+    def hours(self) -> Quantity:
         """
-        Get the number of hours elapsed.
-
-        Returns
-        -------
-        `astropy.units.Quantity`
-            The amount of hours between the start and end time.
+        Get the number of hours elapsed. The amount of hours between the start
+        and end time.
         """
         return self.dt.to('hour')
 
     @property
-    def days(self):
+    def days(self) -> Quantity:
         """
-        Gets the number of days elapsed.
-
-        Returns
-        -------
-        `astropy.units.Quantity`
-            The amount of days between the start and end time.
+        Gets the number of days elapsed. The amount of days between the start
+        and end time.
         """
         return self.dt.to('d')
 
     @property
-    def seconds(self):
+    def seconds(self) -> Quantity:
         """
-        Gets the number of seconds elapsed.
-
-        Returns
-        -------
-        `astropy.units.Quantity`
-            The amount of seconds between the start and end time.
+        Gets the number of seconds elapsed. The amount of seconds between the
+        start and end time.
         """
         return self.dt.to('s')
 
     @property
-    def minutes(self):
+    def minutes(self) -> Quantity:
         """
-        Gets the number of minutes elapsed.
-
-        Returns
-        -------
-        `astropy.units.Quantity`
-            The amount of minutes between the start and end time.
+        Gets the number of minutes elapsed. The amount of minutes between the
+        start and end time.
         """
         return self.dt.to('min')
 
