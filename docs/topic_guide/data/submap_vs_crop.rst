@@ -13,7 +13,7 @@ What they have in common
 ========================
 
 A map stores its data in a rectangular array; a cutout must contain a whole number of rows and columns.
-Neither `submap` nor `crop` resamples or rotates the data, both convert the input coordinates to pixel positions and return the smallest rectangle of the map's pixels that contains them.
+Neither `~sunpy.map.GenericMap.submap` nor `~sunpy.map.GenericMap.crop` resamples or rotates the data, both convert the input coordinates to pixel positions and return the smallest rectangle of the map's pixels that contains them.
 
 Where they differ
 =================
