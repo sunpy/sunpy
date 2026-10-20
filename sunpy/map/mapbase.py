@@ -130,6 +130,10 @@ class GenericMap(NDData):
 
     Other Parameters
     ----------------
+    unit : unit-like, optional
+        Unit to record in BUNIT. Overrides any existing BUNIT in header - does not convert the data array.
+        Use this to set the unit of the data after converting it. e.g. when converting units from counts
+        to counts per second.
     **kwargs :
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
@@ -253,6 +257,15 @@ class GenericMap(NDData):
         params = list(inspect.signature(NDData).parameters)
         nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
         super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
+
+        # `.unit` reads BUNIT, not the value NDData just stored, so an explicit unit is
+        # lost unless written there. Compared as units but note that this is done only so
+        # we can keep the original BUNIT if the constructor had received an equal unit
+        # e.g counts / pixel and ct / pix but not Erg and J.
+        if (unit := nddata_kwargs.get('unit')) is not None:
+            unit = u.Unit(unit)
+            if self.unit != unit:
+                self.meta['bunit'] = unit.to_string()
 
         # Setup some attributes
         self._nickname = None
