@@ -29,8 +29,6 @@ try:
 except ImportError:
     DASK_INSTALLED = False
 
-from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
-
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
@@ -117,7 +115,7 @@ __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 # this is that if an non-updated class calls ``super().__init__`` with
 # the old signature, so we also need to inject a class above an old
 # class to translate the call in the old class to it's superclass to
-# the new signature as well.  So we define to decorators (wrappers)
+# the new signature as well.  So we define two decorators (wrappers)
 # which convert in both directions.
 def old_to_new_converter(old_init):
     """
@@ -682,7 +680,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
+        This is a shortcut for ``cls(data, meta=meta, **kwargs)`` which also
+        applies ``plot_settings`` to the new instance.
         """
         new_map = cls(data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources

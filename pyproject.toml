@@ -64,7 +64,7 @@ map = [
   "contourpy>=1.3.0",
   "matplotlib>=3.10.0",
   "mpl-animators>=1.2.0",
-  "ndcube>=2.3.0",
+  "ndcube>=2.4.0",
   "reproject>=0.14.0",
   "scipy>=1.14.0",
 ]
@@ -149,7 +149,7 @@ docs-gallery = [
   "jplephem>=2.23",
   "pillow",
   "exifread",
-  "ndcube>=2.3.0",
+  "ndcube>=2.4.0",
   "dkist",
 ]
 dev = ["sunpy[docs,tests]"]
