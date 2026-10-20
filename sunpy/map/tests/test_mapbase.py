@@ -76,14 +76,18 @@ def test_get_item_integer_index(generic_map):
         generic_map[1:3, 3]
 
 
-def test_get_item_integer_index_suggestion_is_usable(generic_map):
+def test_get_item_integer_index_suggestion(generic_map):
     # if we suggest [-1:0] as the slice to use instead of [-1] then the length is 0
     with pytest.raises(TypeError, match=re.escape("mymap[-1:]")):
         generic_map[-1]
-    assert generic_map[-1:].shape == (1, generic_map.shape[1])
     # bool is an Integral, so it has to be formatted as the index it acts as
     with pytest.raises(TypeError, match=re.escape("mymap[1:2]")):
         generic_map[True]
+
+
+@pytest.mark.xfail(reason="NDCube can not slice with a negative start until sunpy/ndcube#979")
+def test_get_item_integer_index_suggestion_is_usable(generic_map):
+    assert generic_map[-1:].shape == (1, generic_map.shape[1])
 
 
 @pytest.mark.parametrize("item", [
@@ -250,6 +254,18 @@ def test_wcs_preserves_units(aia171_test_map):
     # Not exact as the getter round-trips through a FITS header, which limits precision
     assert_allclose(aia171_test_map.wcs.wcs.cdelt[0], aia171_test_map.meta["cdelt1"])
     assert_allclose(aia171_test_map.wcs.wcs.crval[0], aia171_test_map.meta["crval1"])
+
+
+def test_init_with_wcs_updates_meta(aia171_test_map):
+    # A wcs passed to the constructor is applied on top of meta, as NDCube does when
+    # it builds a new map from a sliced WCS.
+    new_wcs = aia171_test_map.wcs.deepcopy()
+    new_wcs.wcs.crpix = [10, 20]
+    smap = sunpy.map.GenericMap(aia171_test_map.data, meta=aia171_test_map.meta.copy(), wcs=new_wcs)
+
+    assert smap.meta['crpix1'] == 10
+    assert smap.meta['crpix2'] == 20
+    assert smap.meta['telescop'] == aia171_test_map.meta['telescop']
 
 
 def test_set_wcs_unchanged_leaves_meta_alone(aia171_test_map):
