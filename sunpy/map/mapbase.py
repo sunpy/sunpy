@@ -721,6 +721,10 @@ class GenericMap(MapMetaMixin, NDCube):
                     if key in new_header:
                         new_header[key] *= factor
                 new_header[f"CUNIT{n}"] = meta_unit
+        # The getter hands out its cached WCS, which the caller may have edited in
+        # place before assigning it back, so rebuild the current WCS from the
+        # metadata rather than comparing the new WCS against itself.
+        self.__dict__.get("_cached_properties", {}).pop("wcs", None)
         old_wcs = self.wcs
         # Must use the same relax as new_header for the comparison below
         old_wcs_header = old_wcs.to_header(relax=True)
@@ -753,9 +757,6 @@ class GenericMap(MapMetaMixin, NDCube):
             changed_header.update({k: v for k, v in new_header.items() if k.startswith("PV")})
 
         self.meta.update(MetaDict(changed_header))
-        # The getter was called above to build old_wcs_header, which cached a WCS
-        # built from the metadata as it was before this update.
-        self.__dict__.pop('wcs', None)
 
     def _as_mpl_axes(self):
         """
