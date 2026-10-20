@@ -1725,18 +1725,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
         """
-
-        # Note: because the underlying ndarray is transposed in sense when
-        #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back.
-        # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers.
-
         if (offset.value[0] < 0) or (offset.value[1] < 0):
             raise ValueError("Offset is strictly non-negative.")
 
-        # These are rounded by int() in reshape_image_to_4d_superpixel,
-        # so round here too for use in constructing metadata later.
+        # Superpixels and the offset are a whole number of pixels
         dimensions = [int(dim) for dim in dimensions.to_value(u.pix)]
         offset = [int(off) for off in offset.to_value(u.pix)]
 
