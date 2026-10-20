@@ -209,6 +209,17 @@ def test_differential_rotate_observer_straddles_limb(straddles_limb_map):
     assert dmap.heliographic_longitude == new_observer.lon
 
 
+def test_differential_rotate_masked_map(aia171_test_map_with_mask):
+    pytest.importorskip("skimage")
+    # The data is warped but the mask is not, so it would no longer line up with it
+    new_time = aia171_test_map_with_mask.date + 6*u.hr
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = differential_rotate(aia171_test_map_with_mask, time=new_time)
+    assert dmap.data.shape == aia171_test_map_with_mask.data.shape
+    assert dmap.mask is None
+
+
+
 # ----- Testing with time input -----
 def test_differential_rotate_time_full_disk(aia171_test_map):
     pytest.importorskip("skimage")

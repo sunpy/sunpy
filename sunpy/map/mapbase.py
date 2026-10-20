@@ -737,6 +737,11 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         # Packages built on sunpy call this with the old positional
         # ``(data, meta, plot_settings)`` signature, so keep accepting it.
         kwargs.update(zip(("data", "meta", "plot_settings"), args))
+        # NDCube carries the mask and uncertainty over, but they only describe the data
+        # if it keeps its shape, which e.g. resample and rotate do not.
+        if "data" in kwargs and np.shape(kwargs["data"]) != self.data.shape:
+            kwargs.setdefault("mask", None)
+            kwargs.setdefault("uncertainty", None)
         plot_settings = kwargs.pop("plot_settings", None)
         # The WCS is built from the metadata, so it must not be carried over as well:
         # the setter would write this map's WCS back over whatever metadata is given.
@@ -1215,7 +1220,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
+        # The data has been transformed, so the mask and uncertainty no longer describe it
+        new_map = self._new_instance(data=new_data, meta=new_meta, mask=None, uncertainty=None,
+                                     plot_settings=self.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1410,7 +1417,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(data=new_data, meta=new_meta, plot_settings=self.plot_settings)
+        # The data has been transformed, so the mask and uncertainty no longer describe it
+        new_map = self._new_instance(data=new_data, meta=new_meta, mask=None, uncertainty=None,
+                                     plot_settings=self.plot_settings)
 
         return new_map
 
