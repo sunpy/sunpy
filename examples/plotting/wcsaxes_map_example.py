@@ -29,8 +29,8 @@ smap = aia.submap(bottom_left, top_right=top_right)
 # the plot to be created with the map coordinates, in this case helioprojective
 # coordinates. The standard plot
 # command expects pixel coordinates. It is also possible to plot a point using the
-# map coordinates if we pass the transformation but this transform expects
-# the values to be in degrees and not arcseconds.
+# map coordinates by passing a `~astropy.coordinates.SkyCoord` to
+# `~astropy.visualization.wcsaxes.WCSAxes.plot_coord`.
 
 # sphinx_gallery_defer_figures
 
@@ -57,13 +57,12 @@ ax.plot(pixel_coord[0], pixel_coord[1], 'x', color='white',
 
 
 ################################################################################
-# Using the transform command expects coordinates in degrees and not arcseconds.
+# plot a point given in map coordinates
 
-map_coord = ([-300, 200] * u.arcsec)
+map_coord = SkyCoord(-300 * u.arcsec, 200 * u.arcsec, frame=smap.coordinate_frame)
 
-ax.plot(map_coord[0].to('deg'), map_coord[1].to('deg'), 'o', color='white',
-        transform=ax.get_transform('world'),
-        label=f'Map coordinate [{map_coord[0]}, {map_coord[1]}]')
+ax.plot_coord(map_coord, 'o', color='white',
+              label=f'Map coordinate [{map_coord.Tx}, {map_coord.Ty}]')
 ax.legend()
 
 plt.show()
