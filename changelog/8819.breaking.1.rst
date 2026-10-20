@@ -1,2 +1,3 @@
-`~sunpy.map.GenericMap.wcs` now keeps the units specified by the map metadata (usually arcseconds for solar maps) instead of converting its world axes to degrees.
-Code that uses raw WCS values, including ``map.wcs.wcs.cdelt``, ``map.wcs.wcs.crval``, ``map.wcs.pixel_to_world_values`` or ``ax.get_transform('world')``, must now account for the units reported by ``map.wcs.world_axis_units``; coordinate-aware methods such as ``map.wcs.pixel_to_world`` and ``ax.plot_coord`` are unaffected.
+`~sunpy.map.GenericMap.wcs` now keeps the units of the map's metadata (usually arcseconds) instead of converting to degrees.
+Raw world values, such as ``map.wcs.wcs.cdelt`` or values passed to ``ax.get_transform('world')``, are now in those units.
+To plot world coordinates, pass a `~astropy.coordinates.SkyCoord` to ``ax.plot_coord``, which handles the units for you.
