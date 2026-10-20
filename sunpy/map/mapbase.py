@@ -702,16 +702,18 @@ class GenericMap(MapMetaMixin, NDCube):
             # The new WCS may not have preserved units (e.g. it is in degrees), so
             # convert it into the units the metadata already uses.
             meta_unit = self.meta.get(f"cunit{n}")
-            if meta_unit is None and n <= len(self.spatial_units):
-                # Some sources (e.g. EIT) omit CUNIT and declare their units by
-                # overriding `spatial_units`, which the rest of the metadata is
-                # written against.
-                default_unit = self.spatial_units[n - 1]
-                meta_unit = None if default_unit is None else default_unit.to_string()
+            # Sources declare how their CUNIT should be read by overriding
+            # `spatial_units`, e.g. EIT omits it and LASCO uses a non-FITS 'ARCSEC',
+            # so convert to that rather than parsing the raw keyword.
+            target_unit = self.spatial_units[n - 1] if n <= len(self.spatial_units) else None
+            if target_unit is None and meta_unit is not None:
+                target_unit = u.Unit(meta_unit)
+            if meta_unit is None and target_unit is not None:
+                meta_unit = target_unit.to_string()
             header_unit = new_header.get(f"CUNIT{n}")
-            if meta_unit is None or header_unit is None:
+            if target_unit is None or header_unit is None:
                 continue
-            factor = u.Unit(header_unit).to(u.Unit(meta_unit))
+            factor = u.Unit(header_unit).to(target_unit)
             if factor != 1:
                 keys = [f"CDELT{n}", f"CRVAL{n}"]
                 keys += [f"CD{n}_{m}" for m in range(1, unwrapped.naxis + 1)]
