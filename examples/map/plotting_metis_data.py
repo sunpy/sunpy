@@ -100,7 +100,8 @@ ani_running = m_seq_running.plot(
     title='VL-TB Running Difference',
     norm=norm
 )
-plt.colorbar(extend='both', label=m_seq_running[0].unit.to_string())
+# The Metis BUNIT (MSB, mean solar brightness) is not a unit astropy knows, so use the raw string
+plt.colorbar(extend='both', label=m_seq_running[0].meta['bunit'])
 plt.show()
 
 
