@@ -1944,8 +1944,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         Notes
         -----
-        The reprojected map keeps this map's metadata, with the WCS-associated
-        keywords replaced by those of the target WCS.
+        The reprojected map does not preserve any metadata beyond the WCS-associated
+        metadata.
 
         The supported `reproject` algorithms are:
 
@@ -1983,9 +1983,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         outmap, footprint = output if return_footprint else (output, None)
 
         # NDCube carries this map's metadata over to the result, but the reprojected
-        # data is on a different grid, so header values describing the old one  may no longer
-        # applies. Rebuild from the target WCS alone, going back through the factory so
-        # that the class matches the metadata rather than whatever was reprojected.
+        # data is on a different grid, so header values describing the old one may no
+        # longer apply. Rebuild from the target WCS alone, going back through the factory
+        # so that the class matches the metadata rather than whatever was reprojected.
         new_meta = MetaDict(target_wcs.to_header(relax=True))
         for n in range(1, target_wcs.naxis + 1):
             new_meta[f"NAXIS{n}"] = outmap.data.shape[::-1][n - 1]
