@@ -20,7 +20,8 @@ Updates to minimum dependencies
 
 The minimum required versions of these packages have been updated:
 
-  - Update this when it happens
+  - astropy 7.2.1
+  - ndcube 2.4.3
 
 
 ``Map`` is now built on ``ndcube``
@@ -48,11 +49,11 @@ Maps can be sliced directly. Slicing returns a new map whose metadata describes 
 Cropping
 --------
 
-Maps can also be cropped using world coordinates with `ndcube.NDCube.crop`, alongside the existing `~sunpy.map.GenericMap.submap` method.
+Maps can also be cropped using world coordinates with `~sunpy.map.GenericMap.crop`, alongside the existing `~sunpy.map.GenericMap.submap` method.
 Both methods return a rectangular block of pixels, but interpret the coordinates differently.
 
 `~sunpy.map.GenericMap.submap` interprets two coordinates as opposite corners of a rectangle in world coordinates and returns the smallest pixel rectangle containing it.
-`~ndcube.NDCube.crop` instead returns the smallest pixel rectangle containing the supplied coordinates. It accepts any number of coordinates.
+`~sunpy.map.GenericMap.crop` instead returns the smallest pixel rectangle containing the supplied coordinates. It accepts any number of coordinates.
 
 The methods return the same result when the pixel and world coordinate grids are aligned. On a rotated map, they can return different regions:
 
@@ -68,7 +69,7 @@ The methods return the same result when the pixel and world coordinate grids are
     >>> rotated.submap(bottom_left, top_right=top_right).data.shape  # doctest: +SKIP
     (335, 358)
 
-Use `~ndcube.NDCube.crop_by_values` to crop with plain `~astropy.units.Quantity` values instead of coordinate objects.
+Use `~sunpy.map.GenericMap.crop_by_values` to crop with plain `~astropy.units.Quantity` values instead of coordinate objects.
 
 See :ref:`sunpy-topic-guide-submap-vs-crop` for details and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for an example.
 
@@ -76,7 +77,7 @@ Unit conversion
 ---------------
 
 You can convert a map's data to a different unit with `~ndcube.NDCube.to`. This scales the data values and records the new unit.
-For example, convert a magnetogram from gauss to tesla or an AIA image from DN to kDN:
+For example, convert a magnetogram from gauss to tesla:
 
 .. code-block:: python
 
@@ -92,6 +93,8 @@ Metadata Changes
 
 Operations that create a new map now preserve more of the original map's associated data.
 `~sunpy.map.GenericMap.submap` preserves its parent's uncertainty. Map arithmetic, such as multiplication, preserves the parent's mask and propagates its uncertainty.
+Arithmetic between two maps is still not supported, but a map can be combined with the data of another map
+using `~ndcube.NDCube.to_nddata`, e.g. ``map1 + map2.to_nddata(wcs=None)``, which also propagates their uncertainties.
 
 Maps also gain the rest of the `ndcube.NDCube` API, including `~ndcube.NDCube.rebin`, ``fill_masked``, and `~ndcube.NDCube.axis_world_coords`.
 
@@ -101,7 +104,10 @@ Behaviour Changes
 Most users will see little impact, but some behaviours have changed:
 
 * `~sunpy.map.GenericMap.submap` now raises a `ValueError` when the bounding box lies entirely outside the map; previously, it returned an empty map.
-  A zero-area rectangle now returns the single pixel that touches its edge, following the behavior of `ndcube.NDCube.crop`.
+  A zero-area rectangle now returns a 1×1 map of the single pixel that touches its edge, following the behavior of `ndcube.NDCube.crop`.
+* `~sunpy.map.GenericMap.wcs` now keeps the units of the map's metadata (usually arcseconds) instead of converting to degrees.
+  Raw world values, such as ``map.wcs.wcs.cdelt`` or values passed to ``ax.get_transform('world')``, are now in those units.
+  To plot world coordinates, pass a `~astropy.coordinates.SkyCoord` to ``ax.plot_coord``, which handles the units for you.
 * Directly instantiating a map class now requires the NDCube-style signature ``MyMap(data, meta=header)`` instead of ``MyMap(data, header)``.
   We strongly recommend using the ``Map`` factory rather than calling a map class constructor directly.
 
