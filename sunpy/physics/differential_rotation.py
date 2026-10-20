@@ -548,7 +548,9 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
 
-    outmap = smap._new_instance(data=out_data, meta=out_meta, plot_settings=smap.plot_settings)
+    # The data has been warped, so the mask and uncertainty no longer describe it
+    outmap = smap._new_instance(data=out_data, meta=out_meta, mask=None, uncertainty=None,
+                                plot_settings=smap.plot_settings)
 
     # Update the meta information with the new date and time.
     outmap._set_date(new_observer.obstime)
