@@ -995,6 +995,24 @@ def test_resample(simple_map, shape):
     assert u.allclose(resampled_upper_right.Ty, original_upper_right.Ty)
 
 
+@pytest.mark.parametrize("method", ['nearest', 'linear', 'spline'])
+def test_resample_non_square(method):
+    # resample takes (x, y) whereas shape is (row, column). A non-square map with a
+    # different scale factor on each axis means a swapped axis cannot pass unnoticed.
+    data = np.arange(24, dtype=float).reshape((4, 6))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00',
+                         unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
+                                           frame='heliographic_stonyhurst'))
+    smap = sunpy.map.Map(data, sunpy.map.make_fitswcs_header(data, ref_coord))
+
+    resampled = smap.resample((2, 4) * u.pix, method=method)
+
+    assert resampled.shape == (4, 2)
+    assert resampled.meta['cdelt1'] == 3 * smap.meta['cdelt1']
+    assert resampled.meta['cdelt2'] == smap.meta['cdelt2']
+
+
 resample_test_data = [('linear', (100, 200) * u.pixel),
                       ('nearest', (512, 128) * u.pixel),
                       ('spline', (200, 200) * u.pixel)]

@@ -700,7 +700,7 @@ class GenericMap(MapMetaMixin, NDData):
     @deprecated(since="8.1", obj_type="property",
                 message="The {func} {obj_type} is deprecated and may be removed in a future "
                         "version. Use sunpy.map.GenericMap.shape instead, noting that it is in "
-                        "(row, column) order whereas this property is in (x, y) order.")
+                        "(row, column) order whereas this property is in (column, row) or (x, y) order.")
     def dimensions(self):
         """
         The dimensions of the array (x axis first, y axis second).
