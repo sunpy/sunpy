@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap.wcs` can now be set, and the corresponding WCS metadata is updated while preserving its existing units, rotation, and scale keywords when they are unchanged.
