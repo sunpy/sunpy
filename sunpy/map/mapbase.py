@@ -484,6 +484,14 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_map.plot_settings.update(self.plot_settings)
         return new_map
 
+    # A map should never drop a dimension, so these default to keepdims=True rather than
+    # NDCube's False.
+    def crop(self, *points, wcs=None, keepdims=True):
+        return super().crop(*points, wcs=wcs, keepdims=keepdims)
+
+    def crop_by_values(self, *points, units=None, wcs=None, keepdims=True):
+        return super().crop_by_values(*points, units=units, wcs=wcs, keepdims=keepdims)
+
     def _text_summary(self):
         dt = self.exposure_time
         wave = self.wavelength
