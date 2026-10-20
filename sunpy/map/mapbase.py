@@ -729,11 +729,14 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    def _new_instance(self, **kwargs):
+    def _new_instance(self, *args, **kwargs):
         """
         Instantiate a new instance of this class, carrying over anything the caller
         does not replace.
         """
+        # Packages built on sunpy call this with the old positional
+        # ``(data, meta, plot_settings)`` signature, so keep accepting it.
+        kwargs.update(zip(("data", "meta", "plot_settings"), args))
         plot_settings = kwargs.pop("plot_settings", None)
         # The WCS is built from the metadata, so it must not be carried over as well:
         # the setter would write this map's WCS back over whatever metadata is given.

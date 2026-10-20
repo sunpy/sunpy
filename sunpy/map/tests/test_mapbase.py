@@ -2641,6 +2641,15 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
     with np.errstate(divide='ignore'), pytest.raises(TypeError):
         _ = value / aia171_test_map
 
+
+def test_new_instance_positional_signature(aia171_test_map):
+    # Packages built on sunpy call this with the old (data, meta, plot_settings) order
+    new_map = aia171_test_map._new_instance(aia171_test_map.data, aia171_test_map.meta,
+                                            {'cmap': 'gray'})
+    assert isinstance(new_map, type(aia171_test_map))
+    assert new_map.plot_settings['cmap'] == 'gray'
+
+
 @pytest.mark.parametrize(('units_string','expected_unit'),[
     ('Gauss', u.G),
     ('G', u.G),
