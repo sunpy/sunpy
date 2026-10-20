@@ -156,6 +156,29 @@ def test_crop_matches_submap(generic_map):
     assert cropped.meta['crpix2'] == submap.meta['crpix2']
 
 
+@pytest.mark.parametrize(("bottom_left", "top_right", "shape"), [
+    ((2, 1), (2, 3), (3, 1)),  # one pixel wide in x
+    ((2, 1), (4, 1), (1, 3)),  # one pixel high in y
+    ((2, 1), (2, 1), (1, 1)),  # a single pixel
+])
+def test_crop_one_pixel_wide_keeps_dimensions(generic_map, bottom_left, top_right, shape):
+    # NDCube would index a length-1 axis with an integer, which a map can not do
+    cropped = generic_map.crop([generic_map.wcs.pixel_to_world(*bottom_left)],
+                               [generic_map.wcs.pixel_to_world(*top_right)])
+    assert cropped.shape == shape
+    np.testing.assert_array_equal(
+        cropped.data,
+        generic_map.data[bottom_left[1]:top_right[1] + 1, bottom_left[0]:top_right[0] + 1])
+
+
+def test_crop_by_values_one_pixel_wide_keeps_dimensions(generic_map):
+    lower = generic_map.wcs.pixel_to_world_values(2, 1)
+    upper = generic_map.wcs.pixel_to_world_values(2, 3)
+    units = generic_map.wcs.world_axis_units
+    cropped = generic_map.crop_by_values(lower, upper, units=units)
+    assert cropped.shape == (3, 1)
+
+
 def test_get_item_preserves_source_class(aia171_test_map):
     # Slicing rebuilds the map through the source class, so the subclass should survive
     sliced = aia171_test_map[10:20, 10:20]
