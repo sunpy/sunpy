@@ -1770,6 +1770,77 @@ def test_resample_rotated_map_cd(cd, method, simple_map):
         new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
+def _non_square_map(shape, rotation=0 * u.deg, mask=None):
+    # A different scale on each axis as well as a non-square shape, so that mixing up
+    # x and y, or rows and columns, cannot cancel out.
+    data = np.arange(np.prod(shape), dtype=float).reshape(shape)
+    ref_coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame='helioprojective',
+                         obstime='2020-01-01 00:00:00',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
+                                           frame='heliographic_stonyhurst'))
+    header = sunpy.map.make_fitswcs_header(data, ref_coord, scale=[1, 2] * u.arcsec / u.pix,
+                                           rotation_angle=rotation)
+    return sunpy.map.Map(data, header, mask=mask)
+
+
+@pytest.mark.parametrize("shape", [(4, 6), (6, 4), (5, 7)])
+@pytest.mark.parametrize(("dimensions", "offset"), [
+    ((2, 1), (0, 0)),
+    ((1, 2), (0, 0)),
+    ((3, 2), (1, 0)),
+    ((2, 3), (0, 1)),
+])
+@pytest.mark.parametrize("func", [np.sum, np.mean])
+def test_superpixel_non_square_data(shape, dimensions, offset, func):
+    # dimensions and offset are (x, y), shape is (row, column), and any partial
+    # superpixels left over at the end are dropped
+    smap = _non_square_map(shape)
+    superpix_map = smap.superpixel(dimensions * u.pix, offset=offset * u.pix, func=func)
+
+    (bin_x, bin_y), (off_x, off_y) = dimensions, offset
+    n_y, n_x = (shape[0] - off_y) // bin_y, (shape[1] - off_x) // bin_x
+    blocks = smap.data[off_y:off_y + n_y * bin_y, off_x:off_x + n_x * bin_x]
+    expected = func(blocks.reshape(n_y, bin_y, n_x, bin_x), axis=(1, 3))
+
+    assert superpix_map.shape == (n_y, n_x)
+    np.testing.assert_allclose(superpix_map.data, expected)
+    assert superpix_map.meta['naxis1'] == n_x
+    assert superpix_map.meta['naxis2'] == n_y
+
+
+@pytest.mark.parametrize("shape", [(4, 6), (6, 4)])
+@pytest.mark.parametrize("rotation", [0, 30] * u.deg)
+def test_superpixel_non_square_wcs(shape, rotation):
+    smap = _non_square_map(shape, rotation)
+    (bin_x, bin_y), (off_x, off_y) = (3, 2), (1, 0)
+    superpix_map = smap.superpixel((bin_x, bin_y) * u.pix, offset=(off_x, off_y) * u.pix)
+
+    # The outer corners of the superpixel grid sit on the matching pixel corners of the
+    # original map
+    n_y, n_x = superpix_map.shape
+    for x, y in [(-0.5, -0.5), (n_x - 0.5, -0.5), (-0.5, n_y - 0.5), (n_x - 0.5, n_y - 0.5)]:
+        original = (off_x - 0.5 + (x + 0.5) * bin_x, off_y - 0.5 + (y + 0.5) * bin_y)
+        separation = superpix_map.wcs.pixel_to_world(x, y).separation(
+            smap.wcs.pixel_to_world(*original))
+        assert separation < 1e-6 * u.arcsec
+
+
+@pytest.mark.parametrize("conservative_mask", [True, False])
+def test_superpixel_non_square_mask(conservative_mask):
+    # One masked pixel inside the first (3, 2) superpixel of a (4, 6) map
+    mask = np.zeros((4, 6), dtype=bool)
+    mask[1, 2] = True
+    smap = _non_square_map((4, 6), mask=mask)
+
+    superpix_map = smap.superpixel((3, 2) * u.pix, conservative_mask=conservative_mask)
+
+    assert superpix_map.mask.shape == (2, 2)
+    # A conservative mask masks a superpixel if any of its pixels are masked,
+    # otherwise only if all of them are
+    assert superpix_map.mask[0, 0] == conservative_mask
+    assert superpix_map.mask.sum() == int(conservative_mask)
+
+
 def test_superpixel_err(generic_map):
     with pytest.raises(ValueError, match="Offset is strictly non-negative."):
         generic_map.superpixel((2, 2) * u.pix, offset=(-2, 2) * u.pix)
