@@ -934,8 +934,9 @@ class GenericMap(MapMetaMixin, NDData):
             new_meta[key] *= scale_factor_x
         for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
             new_meta[key] *= scale_factor_y
-        if 'pc1_1' in self.meta:
+        if 'pc1_2' in self.meta:
             new_meta['pc1_2'] *= scale_factor_y / scale_factor_x
+        if 'pc2_1' in self.meta:
             new_meta['pc2_1'] *= scale_factor_x / scale_factor_y
 
         new_meta['crpix1'] = (self.reference_pixel.x.to_value(u.pix) + 0.5) / scale_factor_x + 0.5
@@ -1476,8 +1477,9 @@ class GenericMap(MapMetaMixin, NDData):
             new_meta[key] *= dimensions[0]
         for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
             new_meta[key] *= dimensions[1]
-        if 'pc1_1' in self.meta:
+        if 'pc1_2' in self.meta:
             new_meta['pc1_2'] *= dimensions[1] / dimensions[0]
+        if 'pc2_1' in self.meta:
             new_meta['pc2_1'] *= dimensions[0] / dimensions[1]
 
         new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
