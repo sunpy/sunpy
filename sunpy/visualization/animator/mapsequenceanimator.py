@@ -5,7 +5,8 @@ from copy import deepcopy
 
 from mpl_animators import BaseFuncAnimator
 
-from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
+from sunpy.visualization import wcsaxes_compat
+from sunpy.visualization.visualization import axis_labels_from_ctype
 
 __all__ = ['MapSequenceAnimator']
 

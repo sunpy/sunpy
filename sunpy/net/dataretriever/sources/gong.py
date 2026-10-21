@@ -1,4 +1,4 @@
-from sunpy.net.dataretriever import GenericClient
+from sunpy.net.dataretriever.client import GenericClient
 
 __all__ = ['GONGClient']
 
