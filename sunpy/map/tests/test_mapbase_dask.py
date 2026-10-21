@@ -48,6 +48,7 @@ with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):  #
     ("superpixel", {"dimensions": (10, 10)*u.pix}),
     ("submap", {"bottom_left": (100, 100)*u.pixel, "width": 10*u.pixel, "height": 10*u.pixel}),
 ])
+@pytest.mark.filterwarnings("ignore::sunpy.util.exceptions.SunpyDeprecationWarning")
 def test_method_preserves_dask_array(aia171_test_map, aia171_test_dask_map, func, args):
     """
     Check that map methods preserve dask arrays if they are given as input, instead of eagerly

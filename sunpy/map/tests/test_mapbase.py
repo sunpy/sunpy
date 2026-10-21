@@ -259,23 +259,45 @@ def test_header_immutability(aia171_test_map):
 
 
 def test_dtype(generic_map):
-    assert generic_map.dtype == np.float64
+    with pytest.warns(SunpyDeprecationWarning, match="dtype"):
+        assert generic_map.dtype == np.float64
 
 
 def test_min(generic_map):
-    assert generic_map.min() == 0
+    with pytest.warns(SunpyDeprecationWarning, match="min"):
+        assert generic_map.min() == 0
 
 
 def test_max(generic_map):
-    assert generic_map.max() == 35
+    with pytest.warns(SunpyDeprecationWarning, match="max"):
+        assert generic_map.max() == 35
 
 
 def test_mean(generic_map):
-    assert generic_map.mean() == 17.5
+    with pytest.warns(SunpyDeprecationWarning, match="mean"):
+        assert generic_map.mean() == 17.5
 
 
 def test_std(generic_map):
-    np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
+    with pytest.warns(SunpyDeprecationWarning, match="std"):
+        np.testing.assert_allclose(generic_map.std(), 10.388294694831615)
+
+
+@pytest.mark.parametrize(("name", "is_property"), [
+    ("dtype", True),
+    ("ndim", True),
+    ("min", False),
+    ("max", False),
+    ("mean", False),
+    ("std", False),
+])
+def test_deprecated_attributes_warn(simple_map, name, is_property):
+    if is_property:
+        with pytest.warns(SunpyDeprecationWarning, match=name):
+            getattr(simple_map, name)
+    else:
+        with pytest.warns(SunpyDeprecationWarning, match=name):
+            getattr(simple_map, name)()
 
 
 def test_unit(generic_map):
@@ -283,6 +305,29 @@ def test_unit(generic_map):
     generic_map.meta['bunit'] = 'not a unit'
     with pytest.warns(SunpyMetadataWarning, match='Could not parse unit string "not a unit"'):
         assert generic_map.unit is None
+
+
+def test_unit_kwarg_sets_bunit(generic_map):
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.ct)
+
+    assert new_map.unit == u.ct
+    assert new_map.meta['bunit'] == 'ct'
+
+
+@pytest.mark.parametrize(('bunit', 'unit', 'expected_bunit'), [
+    # The same unit written differently keeps the original bunit
+    ('counts / pixel', u.Unit('ct / pix'), 'counts / pixel'),
+    ('DN / s', u.Unit('DN s-1'), 'DN / s'),
+    # A different unit overwrites the old bunit
+    ('DN', u.DN * u.s, 'DN s'),
+    ('DN', u.DN / u.s, 'DN / s'),
+])
+def test_unit_kwarg_only_rewrites_bunit_when_the_unit_changes(generic_map, bunit, unit, expected_bunit):
+    generic_map.meta['bunit'] = bunit
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=unit)
+
+    assert new_map.unit == unit
+    assert new_map.meta['bunit'] == expected_bunit
 
 
 # ==============================================================================
@@ -1185,12 +1230,12 @@ def test_rotate(aia171_test_map):
     assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
     assert np.isnan(rotated_map_1.data[0, 0])
     assert np.isnan(rotated_map_2.data[0, 0])
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_1.mean(), rtol=5e-3)
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_2.mean(), rtol=5e-3)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_1.data), rtol=5e-3)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_2.data), rtol=5e-3)
 
     # A scaled-up map should have the same mean because the output map should be expanded
     rotated_map_3 = aia171_test_map.rotate(0 * u.deg, order=0, scale=2)
-    np.testing.assert_allclose(aia171_test_map.mean(), rotated_map_3.mean(), rtol=1e-4)
+    np.testing.assert_allclose(np.nanmean(aia171_test_map.data), np.nanmean(rotated_map_3.data), rtol=1e-4)
 
     # Mean and std should be equal for a 90 degree rotation as long as 1 pixel is cropped out on
     # all sides
@@ -1411,7 +1456,7 @@ def test_more_than_two_dimensions():
         with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
             bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
-    assert bad_map.ndim == 2
+    assert bad_map.data.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
 
 
@@ -1816,7 +1861,7 @@ def test_plot_composite_map_updated_args(simple_map):
     simple_map.plot_settings['zorder'] = 8
     contour_args = {'norm': 'log',
                     'cmap':'plasma'}
-    updated_args = simple_map._update_contour_args(contour_args)
+    updated_args = simple_map.plotter._update_contour_args(contour_args)
     # Since 'norm' and  'cmap' are explicitly provided in contour_args of draw_contours,
     # their contour_args values will be used instead of plot_settings value
     assert updated_args ==  {
