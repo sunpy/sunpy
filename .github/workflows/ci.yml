@@ -25,7 +25,7 @@ permissions: {}
 jobs:
   core:
     if: ${{ !github.event.repository.fork || github.event_name != 'schedule' }}
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
     permissions:
       id-token: write
     with:
@@ -52,7 +52,7 @@ jobs:
 
   test:
     needs: [core, sdist_verify]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
     permissions:
       id-token: write
     with:
@@ -73,7 +73,7 @@ jobs:
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
     with:
       default_python: '3.13'
       submodules: false
@@ -97,10 +97,11 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
     permissions:
       id-token: write
     with:
+<<<<<<<
       submodules: false
       toxdeps: tox-pypi-filter
       coverage: codecov-oidc
@@ -108,6 +109,15 @@ jobs:
         apt:
           - libopenjp2-7
           - graphviz
+=======
+  
+  threading:
+    needs: [core]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    permissions:
+      id-token: write
+    with:
+>>>>>>>
       envs: |
         - linux: build_docs-gallery
           # Speed up CI builds by not building full nav tree
@@ -166,7 +176,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
