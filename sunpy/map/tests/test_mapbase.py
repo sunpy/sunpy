@@ -77,6 +77,7 @@ def test_wcs(aia171_test_map):
 
 
 def test_wcs_revalidates_modified_meta(simple_map):
+    simple_map = deepcopy(simple_map)
     # A valid unit of the wrong physical type is accepted by astropy's parser
     # our own GenericMap._validate_meta validation rejects it.
     simple_map.wcs # wcs is valid
