@@ -1,0 +1,3 @@
+`~sunpy.map.GenericMap.wcs` now keeps the units of the map's metadata (usually arcseconds) instead of converting to degrees.
+Raw world values, such as ``map.wcs.wcs.cdelt`` or values passed to ``ax.get_transform('world')``, are now in those units.
+To plot world coordinates, pass a `~astropy.coordinates.SkyCoord` to ``ax.plot_coord``, which handles the units for you.
