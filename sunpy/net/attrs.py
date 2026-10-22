@@ -17,6 +17,7 @@ attrs specific to them, under:
 
 * `a.adapt <sunpy.net.dataretriever.attrs.adapt>`
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
+* `a.hinode <sunpy.net.dataretriever.attrs.hinode>`
 * `a.hek <sunpy.net.hek.attrs>`
 * `a.helio <sunpy.net.helio.attrs>`
 * `a.jsoc <sunpy.net.jsoc.attrs>`
