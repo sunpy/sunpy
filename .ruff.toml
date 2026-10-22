@@ -84,6 +84,7 @@ section-order = [
   "standard-library",
   "third-party",
   "astropy",
+  "affiliated",
   "first-party",
   "local-folder",
 ]
@@ -91,6 +92,7 @@ no-lines-before = ["local-folder"]
 
 [lint.isort.sections]
 "astropy" = ["astropy", "asdf", "gwcs", "reproject"]
+"affiliated" = ["drms", "ndcube"]
 
 [lint.flake8-tidy-imports]
 [lint.flake8-tidy-imports.banned-api]
