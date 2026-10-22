@@ -1,7 +1,6 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-import copy
 import html
 import inspect
 import itertools
@@ -58,7 +57,6 @@ from sunpy.util import MetaDict, extent_in_other_wcs, warn_deprecated
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
-    check_arithmetic_compatibility,
     deprecated,
 )
 from sunpy.util.exceptions import warn_user
@@ -731,18 +729,26 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    @classmethod
-    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+    def _new_instance(self, *args, **kwargs):
         """
-        Instantiate a new instance of this class using given data.
-        This is a shortcut for ``cls(data, meta=meta, **kwargs)`` which also
-        applies ``plot_settings`` to the new instance.
+        Instantiate a new instance of this class, carrying over anything the caller
+        does not replace.
         """
-        new_map = cls(data, meta=meta, **kwargs)
-        # plot_settings are set explicitly here as some map sources
-        # explicitly set some of the plot_settings in the constructor
-        # and we want to preserve the plot_settings of the previous
-        # instance.
+        # Packages built on sunpy call this with the old positional
+        # ``(data, meta, plot_settings)`` signature, so keep accepting it.
+        kwargs.update(zip(("data", "meta", "plot_settings"), args))
+        # NDCube carries the mask and uncertainty over, but they only describe the data
+        # if it keeps its shape, which e.g. resample and rotate do not.
+        if "data" in kwargs and np.shape(kwargs["data"]) != self.data.shape:
+            kwargs.setdefault("mask", None)
+            kwargs.setdefault("uncertainty", None)
+        plot_settings = kwargs.pop("plot_settings", None)
+        # The WCS is built from the metadata, so it must not be carried over as well:
+        # the setter would write this map's WCS back over whatever metadata is given.
+        kwargs.setdefault("wcs", None)
+        new_map = super()._new_instance(**kwargs)
+        # Applied after the map is built because some map sources set plot_settings in
+        # their own constructor, which would otherwise overwrite these.
         if plot_settings is not None:
             new_map.plot_settings.update(plot_settings)
         return new_map
@@ -759,54 +765,6 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     def quantity(self):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
-
-    def _new_instance_from_op(self, new_data):
-        """
-        Helper function for creating new map instances after arithmetic
-        operations.
-        """
-        new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string()
-        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
-
-    def __neg__(self):
-        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
-
-    @check_arithmetic_compatibility
-    def __pow__(self, value):
-        new_data = self.quantity ** value
-        return self._new_instance_from_op(new_data)
-
-    @check_arithmetic_compatibility
-    def __add__(self, value):
-        new_data = self.quantity + value
-        return self._new_instance_from_op(new_data)
-
-    def __radd__(self, value):
-        return self.__add__(value)
-
-    def __sub__(self, value):
-        return self.__add__(-value)
-
-    def __rsub__(self, value):
-        return self.__neg__().__add__(value)
-
-    @check_arithmetic_compatibility
-    def __mul__(self, value):
-        new_data = self.quantity * value
-        return self._new_instance_from_op(new_data)
-
-    def __rmul__(self, value):
-        return self.__mul__(value)
-
-    @check_arithmetic_compatibility
-    def __truediv__(self, value):
-        return self.__mul__(1/value)
-
-    @check_arithmetic_compatibility
-    def __rtruediv__(self, value):
-        new_data = value / self.quantity
-        return self._new_instance_from_op(new_data)
 
     @property
     @cached_property_based_on('_meta_hash')
@@ -1090,7 +1048,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plot_settings)
 
         return new_map
 
@@ -1262,7 +1220,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        # The data has been transformed, so the mask and uncertainty no longer describe it
+        new_map = self._new_instance(data=new_data, meta=new_meta, mask=None, uncertainty=None,
+                                     plot_settings=self.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1457,7 +1417,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        # The data has been transformed, so the mask and uncertainty no longer describe it
+        new_map = self._new_instance(data=new_data, meta=new_meta, mask=None, uncertainty=None,
+                                     plot_settings=self.plot_settings)
 
         return new_map
 
