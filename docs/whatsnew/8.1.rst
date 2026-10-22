@@ -4,20 +4,115 @@
 What's New in sunpy 8.1?
 ************************
 
-The SunPy Project is pleased to announce the 8.1 release of the ``sunpy`` core package.
+The SunPy Project is pleased to announce version 8.1 of the ``sunpy`` core package.
 
-On this page, you can read about some of the big changes in this release.
+This page highlights some of the major changes in this release.
 
 .. contents::
     :local:
     :depth: 1
 
-``sunpy`` 8.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+Version 8.1 also includes many smaller improvements and bug fixes, described in the :ref:`changelog`.
 
 
 Updates to minimum dependencies
 ===============================
 
-The minimum required versions of the following packages have been updated:
+The minimum required versions of these packages have been updated:
 
-  - Update this when it happens
+  - astropy 7.2.1
+  - ndcube 2.4.3
+
+
+``Map`` is now built on ``ndcube``
+==================================
+
+`~sunpy.map.GenericMap` now inherits from `ndcube.NDCube` rather than `astropy.nddata.NDData`.
+This is a significant design change to `sunpy.map`, but it should have little impact on users.
+Maps are created and plotted in the same way and retain the same attributes, so most code will continue to work unchanged.
+As a result, a ``Map`` now shares an interface with the rest of the ndcube ecosystem and inherits methods that SunPy previously implemented itself.
+
+This change lays the groundwork for future development and makes `sunpy` easier to maintain. It also brings immediate benefits, described below.
+
+Slicing
+-------
+
+Maps can be sliced directly. Slicing returns a new map whose metadata describes the selected region:
+
+.. code-block:: python
+
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +SKIP
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +SKIP
+    >>> aia[100:200, 300:400]  # doctest: +SKIP
+
+Cropping
+--------
+
+Maps can also be cropped using world coordinates with `~sunpy.map.GenericMap.crop`, alongside the existing `~sunpy.map.GenericMap.submap` method.
+Both methods return a rectangular block of pixels, but interpret the coordinates differently.
+
+`~sunpy.map.GenericMap.submap` interprets two coordinates as opposite corners of a rectangle in world coordinates and returns the smallest pixel rectangle containing it.
+`~sunpy.map.GenericMap.crop` instead returns the smallest pixel rectangle containing the supplied coordinates. It accepts any number of coordinates.
+
+The methods return the same result when the pixel and world coordinate grids are aligned. On a rotated map, they can return different regions:
+
+.. code-block:: python
+
+    >>> from sunpy.data.sample import SWAP_LEVEL1_IMAGE  # doctest: +SKIP
+    >>> rotated = sunpy.map.Map(SWAP_LEVEL1_IMAGE).rotate(30 * u.deg)  # doctest: +SKIP
+    >>> bottom_left = SkyCoord(-900 * u.arcsec, -900 * u.arcsec, frame=rotated.coordinate_frame)  # doctest: +SKIP
+    >>> top_right = SkyCoord(0 * u.arcsec, -200 * u.arcsec, frame=rotated.coordinate_frame)  # doctest: +SKIP
+
+    >>> rotated.crop(bottom_left, top_right).data.shape  # doctest: +SKIP
+    (335, 137)
+    >>> rotated.submap(bottom_left, top_right=top_right).data.shape  # doctest: +SKIP
+    (335, 358)
+
+Use `~sunpy.map.GenericMap.crop_by_values` to crop with plain `~astropy.units.Quantity` values instead of coordinate objects.
+
+See :ref:`sunpy-topic-guide-submap-vs-crop` for details and :ref:`sphx_glr_generated_gallery_map_cropping_a_map.py` for an example.
+
+Unit conversion
+---------------
+
+You can convert a map's data to a different unit with `~ndcube.NDCube.to`. This scales the data values and records the new unit.
+For example, convert a magnetogram from gauss to tesla:
+
+.. code-block:: python
+
+    >>> import astropy.units as u
+    >>> hmi_map.unit  # doctest: +SKIP
+    Unit("Mx / cm2")
+    >>> hmi_map.to(u.T).unit  # doctest: +SKIP
+    Unit("T")
+
+
+Metadata Changes
+----------------
+
+Operations that create a new map now preserve more of the original map's associated data.
+`~sunpy.map.GenericMap.submap` preserves its parent's uncertainty. Map arithmetic, such as multiplication, preserves the parent's mask and propagates its uncertainty.
+Arithmetic between two maps is still not supported, but a map can be combined with the data of another map
+using `~ndcube.NDCube.to_nddata`, e.g. ``map1 + map2.to_nddata(wcs=None)``, which also propagates their uncertainties.
+
+Maps also gain the rest of the `ndcube.NDCube` API, including `~ndcube.NDCube.rebin`, ``fill_masked``, and `~ndcube.NDCube.axis_world_coords`.
+
+Behaviour Changes
+-----------------
+
+Most users will see little impact, but some behaviours have changed:
+
+* `~sunpy.map.GenericMap.submap` now raises a `ValueError` when the bounding box lies entirely outside the map; previously, it returned an empty map.
+  A zero-area rectangle now returns a 1×1 map of the single pixel that touches its edge, following the behavior of `ndcube.NDCube.crop`.
+* `~sunpy.map.GenericMap.wcs` now keeps the units of the map's metadata (usually arcseconds) instead of converting to degrees.
+  Raw world values, such as ``map.wcs.wcs.cdelt`` or values passed to ``ax.get_transform('world')``, are now in those units.
+  To plot world coordinates, pass a `~astropy.coordinates.SkyCoord` to ``ax.plot_coord``, which handles the units for you.
+* Directly instantiating a map class now requires the NDCube-style signature ``MyMap(data, meta=header)`` instead of ``MyMap(data, header)``.
+  We strongly recommend using the ``Map`` factory rather than calling a map class constructor directly.
+
+Several attributes are deprecated in favor of their `~ndcube.NDCube` or NumPy equivalents and may be removed in a future release:
+
+* ``GenericMap.dimensions`` is deprecated in favor of `~sunpy.map.GenericMap.shape`. ``shape`` is a plain tuple in (row, column) order, while ``dimensions`` used (x, y) order and pixel units. Swap the indices when converting between them.
+* ``GenericMap.dtype``, ``ndim``, ``min``, ``max``, ``mean``, and ``std`` are deprecated. Use NumPy operations on ``GenericMap.data`` instead.
+* ``GenericMap.pixel_to_world`` and ``GenericMap.world_to_pixel`` are deprecated in favor of the equivalent methods on ``GenericMap.wcs``. These methods do not take or return pixel units.
