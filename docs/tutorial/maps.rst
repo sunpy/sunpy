@@ -153,20 +153,24 @@ Data attributes like dimensionality and type are also accessible as attributes o
 
 .. code-block:: python
 
-    >>> my_map.dimensions  # doctest: +REMOTE_DATA
-    PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
-    >>> my_map.dtype  # doctest: +REMOTE_DATA
+    >>> my_map.shape  # doctest: +REMOTE_DATA
+    (1024, 1024)
+    >>> my_map.data.dtype  # doctest: +REMOTE_DATA
     dtype('float32')
 
-Additionally, there are several methods that provide basic summary statistics of the data:
+Note that, like the array itself, ``shape`` is in (row, column) order.
+
+Additionally, basic summary statistics of the data can be calculated using `numpy`:
 
 .. code-block:: python
 
-    >>> my_map.min()  # doctest: +REMOTE_DATA
+    >>> import numpy as np
+
+    >>> np.nanmin(my_map.data)  # doctest: +REMOTE_DATA
     np.float32(-129.78036)
-    >>> my_map.max()  # doctest: +REMOTE_DATA
+    >>> np.nanmax(my_map.data)  # doctest: +REMOTE_DATA
     np.float32(192130.17)
-    >>> my_map.mean()  # doctest: +REMOTE_DATA
+    >>> np.nanmean(my_map.data)  # doctest: +REMOTE_DATA
     np.float32(427.02252)
 
 .. _sunpy-tutorial-map-coordinates-wcs:
