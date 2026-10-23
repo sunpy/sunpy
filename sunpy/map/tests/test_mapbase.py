@@ -284,6 +284,7 @@ def test_std(generic_map):
 
 
 @pytest.mark.parametrize(("name", "is_property"), [
+    ("dimensions", True),
     ("dtype", True),
     ("ndim", True),
     ("min", False),
@@ -539,7 +540,7 @@ def test_observer_hgln_crln_priority():
               'rsun_ref': 690000000}
     generic_map = sunpy.map.Map((data, header))
 
-    c = generic_map.pixel_to_world(0*u.pix, 0*u.pix)
+    c = generic_map.wcs.pixel_to_world(0, 0)
     assert c.observer.lon == 0 * u.deg
     # Note: don't test whether crlt or hglt is used---according to
     # coordinates.wcs_utils._set_wcs_aux_obs_coord, those are expected to
@@ -694,29 +695,31 @@ def test_crota_scale():
     map2 = sunpy.map.Map(data, header)
 
     # Lower left coord
-    coord1 = map1.pixel_to_world(*(-0.5, -0.5) * u.pix)
+    coord1 = map1.wcs.pixel_to_world(-0.5, -0.5)
     # After rotating by 90 deg about the center of the map (CRPIX),
     # this should map to the lower right coordinate
-    coord2 = map2.pixel_to_world(*(-0.5, n - 0.5) * u.pix)
+    coord2 = map2.wcs.pixel_to_world(-0.5, n - 0.5)
     assert coord1.separation(coord2) < 1e-6 * u.arcsec
 
 
 def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally consistent"""
-    test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate)
-    assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+    test_pixel = generic_map.wcs.world_to_pixel(generic_map.reference_coordinate)
+    assert_quantity_allclose(u.Quantity(test_pixel, u.pix), generic_map.reference_pixel)
 
 
 def test_world_to_pixel_error(generic_map):
     strerr = 'Expected the following order of world arguments: SkyCoord'
     with pytest.raises(ValueError, match=strerr):
-        generic_map.world_to_pixel(1)
+        generic_map.wcs.world_to_pixel(1)
 
 
 def test_world_pixel_roundtrip(simple_map):
     pix = 1 * u.pix, 1 * u.pix
-    coord = simple_map.pixel_to_world(*pix)
-    pix_roundtrip = simple_map.world_to_pixel(coord)
+    with pytest.warns(SunpyDeprecationWarning):
+        coord = simple_map.pixel_to_world(*pix)
+    with pytest.warns(SunpyDeprecationWarning):
+        pix_roundtrip = simple_map.world_to_pixel(coord)
 
     assert u.allclose(pix_roundtrip.x, pix[0], atol=1e-10 * u.pix)
     assert u.allclose(pix_roundtrip.y, pix[1], atol=1e-10 * u.pix)
@@ -838,8 +841,25 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.dimensions[0] == 9 * u.pix
-    assert simple_map.dimensions[1] == 9 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match="dimensions"):
+        assert simple_map.dimensions[0] == 9 * u.pix
+    with pytest.warns(SunpyDeprecationWarning, match="dimensions"):
+        assert simple_map.dimensions[1] == 9 * u.pix
+
+
+def test_dimensions_axis_order():
+    # ``dimensions`` is (x, y) whereas ``shape`` is (row, column). Use a
+    # non-square map so that a transposed conversion cannot pass unnoticed.
+    data = np.arange(15).reshape((3, 5))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00',
+                         unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
+                                           frame='heliographic_stonyhurst'))
+    smap = sunpy.map.Map(data, sunpy.map.make_fitswcs_header(data, ref_coord))
+
+    assert smap.shape == (3, 5)
+    with pytest.warns(SunpyDeprecationWarning, match="dimensions"):
+        assert u.allclose(u.Quantity(smap.dimensions), [5, 3] * u.pix)
 
 
 pixel_corners = [
@@ -872,10 +892,10 @@ def test_submap_pixel(simple_map, rect, submap_out):
 @pytest.mark.parametrize(("rect", "submap_out"), pixel_corners[:2] + pixel_corners[3:])
 def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
-    corner1 = simple_map.pixel_to_world(*rect[0])
-    corner2 = simple_map.pixel_to_world(*rect[1])
-    corners = simple_map.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
-                                        u.Quantity([rect[0][1], rect[1][1]]))
+    corner1 = simple_map.wcs.pixel_to_world(*rect[0])
+    corner2 = simple_map.wcs.pixel_to_world(*rect[1])
+    corners = simple_map.wcs.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
+                                            u.Quantity([rect[0][1], rect[1][1]]))
     for r in [dict(bottom_left=corner1, top_right=corner2),
               dict(bottom_left=corner2, top_right=corner1),
               dict(bottom_left=corners, ),
@@ -965,16 +985,34 @@ def test_resample(simple_map, shape):
         assert resampled.data == np.array([[40]])
 
     # Check that the corner coordinates of the input and output are the same
-    resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
-    original_lower_left = simple_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    resampled_lower_left = resampled.wcs.pixel_to_world(-0.5, -0.5)
+    original_lower_left = simple_map.wcs.pixel_to_world(-0.5, -0.5)
     assert u.allclose(resampled_lower_left.Tx, original_lower_left.Tx)
     assert u.allclose(resampled_lower_left.Ty, original_lower_left.Ty)
 
-    resampled_upper_right = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
-                                                    (shape[1] - 0.5) * u.pix)
-    original_upper_right = simple_map.pixel_to_world(8.5 * u.pix, 8.5 * u.pix)
+    resampled_upper_right = resampled.wcs.pixel_to_world((shape[0] - 0.5),
+                                                         (shape[1] - 0.5))
+    original_upper_right = simple_map.wcs.pixel_to_world(8.5, 8.5)
     assert u.allclose(resampled_upper_right.Tx, original_upper_right.Tx)
     assert u.allclose(resampled_upper_right.Ty, original_upper_right.Ty)
+
+
+@pytest.mark.parametrize("method", ['nearest', 'linear', 'spline'])
+def test_resample_non_square(method):
+    # resample takes (x, y) whereas shape is (row, column). A non-square map with a
+    # different scale factor on each axis means a swapped axis cannot pass unnoticed.
+    data = np.arange(24, dtype=float).reshape((4, 6))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00',
+                         unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU,
+                                           frame='heliographic_stonyhurst'))
+    smap = sunpy.map.Map(data, sunpy.map.make_fitswcs_header(data, ref_coord))
+
+    resampled = smap.resample((2, 4) * u.pix, method=method)
+
+    assert resampled.shape == (4, 2)
+    assert resampled.meta['cdelt1'] == 3 * smap.meta['cdelt1']
+    assert resampled.meta['cdelt2'] == smap.meta['cdelt2']
 
 
 resample_test_data = [('linear', (100, 200) * u.pixel),
@@ -986,8 +1024,8 @@ resample_test_data = [('linear', (100, 200) * u.pixel),
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.dimensions[0] == new_dimensions[0]
-    assert resampled_map.dimensions[1] == new_dimensions[1]
+    assert resampled_map.shape[1] == new_dimensions[0].value
+    assert resampled_map.shape[0] == new_dimensions[1].value
 
 
 @pytest.mark.parametrize(("sample_method", "new_dimensions"), resample_test_data)
@@ -1061,11 +1099,11 @@ def test_superpixel_dims_values(aia171_test_map, f):
     dimensions = (2, 2) * u.pix
     superpix_map = aia171_test_map.superpixel(dimensions, func=f)
 
-    # Check dimensions of new map
-    old_dims = u.Quantity(aia171_test_map.dimensions)
-    expected_new_dims = old_dims * (1 * u.pix / dimensions)
-    assert superpix_map.dimensions[0] == expected_new_dims[0]
-    assert superpix_map.dimensions[1] == expected_new_dims[1]
+    # Check shape of new map. ``dimensions`` is in (x, y) order whereas
+    # ``shape`` is in (row, column) order.
+    old_shape = aia171_test_map.shape
+    assert superpix_map.shape[0] == old_shape[0] / dimensions[1].value
+    assert superpix_map.shape[1] == old_shape[1] / dimensions[0].value
 
     # Check value of lower left pixel is calculated correctly
     expected = f(aia171_test_map.data[0:2, 0:2])
@@ -1099,36 +1137,41 @@ def test_superpixel_metadata(generic_map, f, dimensions):
 
 
 def test_superpixel_masked(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
     # Test that the mask is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions)
     assert superpix_map.mask is not None
-    # Check the shape of the mask
-    expected_shape = input_dims * (1 * u.pix / dimensions)
-    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+    # Check the shape of the mask. ``dimensions`` is in (x, y) order whereas
+    # ``shape`` is in (row, column) order.
+    expected_shape = (input_shape[0] / dimensions[1].value,
+                      input_shape[1] / dimensions[0].value)
+    assert superpix_map.mask.shape == expected_shape
 
     # Test that the offset is respected
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
-    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+    assert superpix_map.shape[0] == expected_shape[0] - 1
+    assert superpix_map.shape[1] == expected_shape[1] - 1
 
     dimensions = (7, 9) * u.pix
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
-    expected_shape = np.round(input_dims * (1 * u.pix / dimensions))
-    assert superpix_map.dimensions[0] == expected_shape[0] - 1 * u.pix
-    assert superpix_map.dimensions[1] == expected_shape[1] - 1 * u.pix
+    expected_shape = (np.round(input_shape[0] / dimensions[1].value),
+                      np.round(input_shape[1] / dimensions[0].value))
+    assert superpix_map.shape[0] == expected_shape[0] - 1
+    assert superpix_map.shape[1] == expected_shape[1] - 1
 
 
 def test_superpixel_masked_conservative_mask_true(aia171_test_map_with_mask):
-    input_dims = u.Quantity(aia171_test_map_with_mask.dimensions)
+    input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
 
     superpix_map = aia171_test_map_with_mask.superpixel(dimensions, conservative_mask=True)
     assert superpix_map.mask is not None
 
-    expected_shape = input_dims * (1 * u.pix / dimensions)
-    assert np.all(superpix_map.mask.shape * u.pix == expected_shape)
+    # ``dimensions`` is in (x, y) order whereas ``shape`` is (row, column)
+    expected_shape = (input_shape[0] / dimensions[1].value,
+                      input_shape[1] / dimensions[0].value)
+    assert superpix_map.mask.shape == expected_shape
 
     # Verify mask values (bin_mask=True)
     reshaped_mask = reshape_image_to_4d_superpixel(
@@ -1174,9 +1217,9 @@ def test_resample_rotated_map_pc(pc, method, simple_map):
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
-    ll_pix = [-0.5, -0.5]*u.pix
-    assert smap.pixel_to_world(*ll_pix).separation(
-        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+    ll_pix = [-0.5, -0.5]
+    assert smap.wcs.pixel_to_world(*ll_pix).separation(
+        new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
 @pytest.mark.parametrize('method', ['resample', 'superpixel'])
@@ -1196,9 +1239,9 @@ def test_resample_rotated_map_cd(cd, method, simple_map):
     new_dims = (1, 2) * u.pix
     new_map = getattr(smap, method)(new_dims)
     # Coordinate of the lower left corner should not change
-    ll_pix = [-0.5, -0.5]*u.pix
-    assert smap.pixel_to_world(*ll_pix).separation(
-        new_map.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
+    ll_pix = [-0.5, -0.5]
+    assert smap.wcs.pixel_to_world(*ll_pix).separation(
+        new_map.wcs.pixel_to_world(*ll_pix)).to(u.arcsec) < 1e-8 * u.arcsec
 
 
 def test_superpixel_err(generic_map):
@@ -1424,7 +1467,7 @@ def test_hg_coord(heliographic_test_map):
 
 
 def test_hg_pix_to_data(heliographic_test_map):
-    out = heliographic_test_map.pixel_to_world(180 * u.pix, 90 * u.pix)
+    out = heliographic_test_map.wcs.pixel_to_world(180, 90)
     assert isinstance(out, SkyCoord)
     assert isinstance(out.frame, sunpy.coordinates.HeliographicCarrington)
     assert_quantity_allclose(out.lon, 0 * u.deg)
@@ -1432,11 +1475,11 @@ def test_hg_pix_to_data(heliographic_test_map):
 
 
 def test_hg_data_to_pix(heliographic_test_map):
-    out = heliographic_test_map.world_to_pixel(
+    out = heliographic_test_map.wcs.world_to_pixel(
         SkyCoord(
             0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
-    assert_quantity_allclose(out[0], 180 * u.pix)
-    assert_quantity_allclose(out[1], 90 * u.pix)
+    assert_quantity_allclose(out[0], 180)
+    assert_quantity_allclose(out[1], 90)
 
 
 @pytest.mark.skipif(pytest.__version__ < "8.0.0", reason="pytest >= 8.0.0 raises two warnings for this test")
@@ -1455,9 +1498,10 @@ def test_more_than_two_dimensions():
     with pytest.warns(SunpyMetadataWarning, match='Missing CTYPE'):
         with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
             bad_map = sunpy.map.Map(bad_data, hdr)
-    # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
+    # Test fails if the data is not 2D or the shape of the array is wrong.
+    # The data is (Y, X) = (3, 5), and ``shape`` is (row, column).
     assert bad_map.data.ndim == 2
-    assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
+    assert bad_map.shape == (3, 5)
 
 
 def test_missing_metadata_warnings():
@@ -1601,7 +1645,7 @@ def test_submap_inputs(generic_map2, coords):
 
     for args, kwargs in inputs:
         smap = generic_map2.submap(*args, **kwargs)
-        assert u.allclose(smap.dimensions, (3, 3) * u.pix)
+        assert smap.shape == (3, 3)
 
 
 def test_find_contours_contourpy(simple_map):

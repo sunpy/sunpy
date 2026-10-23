@@ -93,14 +93,14 @@ def test_measurement(metis_map):
 
 
 def test_wcs(metis_map):
-    metis_map.pixel_to_world(0 * u.pix, 0 * u.pix)
+    metis_map.wcs.pixel_to_world(0, 0)
 
 
 def test_wcs_center_pixel(metis_test_data, minimal_metis_header):
     """Test that pixel coordinates correctly transform to world coordinates (Arcsecs)."""
     metis_map = Map(metis_test_data,minimal_metis_header)
     # Center of the image (0-indexed 511.5) should be close to CRVAL (0,0)
-    center_coord = metis_map.pixel_to_world(511 * u.pix, 511 * u.pix)
+    center_coord = metis_map.wcs.pixel_to_world(511, 511)
     assert isinstance(center_coord, SkyCoord)
     assert u.allclose(center_coord.Tx, 0 * u.arcsec, atol=1e-2 * u.arcsec)
 

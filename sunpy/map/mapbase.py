@@ -309,7 +309,7 @@ class GenericMap(MapMetaMixin, NDData):
                                meas=measurement, wave=wave,
                                date=self.date.strftime(TIME_FORMAT),
                                dt=dt,
-                               dim=u.Quantity(self.dimensions),
+                               dim=u.Quantity(self.shape[::-1], 'pix'),
                                scale=u.Quantity(self.scale),
                                coord=self._coordinate_frame_name,
                                refpix=u.Quantity(self.reference_pixel),
@@ -690,6 +690,17 @@ class GenericMap(MapMetaMixin, NDData):
 
     # Some numpy extraction
     @property
+    def shape(self):
+        """
+        The shape of the data array, in (row, column) order.
+        """
+        return self.data.shape
+
+    @property
+    @deprecated(since="8.1", obj_type="property",
+                message="The {func} {obj_type} is deprecated and may be removed in a future "
+                        "version. Use sunpy.map.GenericMap.shape instead, noting that it is in "
+                        "(row, column) order whereas this property is in (column, row) or (x, y) order.")
     def dimensions(self):
         """
         The dimensions of the array (x axis first, y axis second).
@@ -789,6 +800,7 @@ class GenericMap(MapMetaMixin, NDData):
         return cmap_string.lower()
 
 # #### Data conversion routines #### #
+    @deprecated(since="8.1", alternative="map.wcs.world_to_pixel")
     def world_to_pixel(self, coordinate):
         """
         Convert a world (data) coordinate to a pixel coordinate.
@@ -809,6 +821,9 @@ class GenericMap(MapMetaMixin, NDData):
         return PixelPair(x * u.pixel, y * u.pixel)
 
     @u.quantity_input
+    @deprecated(since="8.1", alternative="map.wcs.pixel_to_world",
+                message="The {func} {obj_type} is deprecated and may be removed in a future "
+                        "version. Use {alternative} instead, noting that it accepts unit-less inputs.")
     def pixel_to_world(self, x: u.pixel, y: u.pixel):
         """
         Convert a pixel coordinate to a data (world) coordinate.
@@ -923,8 +938,9 @@ class GenericMap(MapMetaMixin, NDData):
                                         method, center=True)
         new_data = new_data.T
 
-        scale_factor_x = float(self.dimensions[0] / dimensions[0])
-        scale_factor_y = float(self.dimensions[1] / dimensions[1])
+        # ``dimensions`` is in (x, y) order whereas ``shape`` is (row, column)
+        scale_factor_x = float(self.shape[1] / dimensions[0].value)
+        scale_factor_y = float(self.shape[0] / dimensions[1].value)
 
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
