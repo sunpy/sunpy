@@ -1,0 +1,1 @@
+Fixed `~sunpy.timeseries.GenericTimeSeries.add_column` failing to update column units in ``.units`` when overwriting existing columns with ``overwrite=True``.
