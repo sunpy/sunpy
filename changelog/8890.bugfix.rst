@@ -1,0 +1,1 @@
+Fixed :func:`~sunpy.physics.differential_rotation.differential_rotate` shifting the output of maps that do not cover the full disk by half a pixel on each axis.

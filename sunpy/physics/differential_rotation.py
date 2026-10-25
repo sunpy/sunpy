@@ -543,9 +543,9 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
             smap.center, observer=new_observer, **diff_rot_kwargs)
         out_meta['crval1'] = center_rotated.Tx.value
         out_meta['crval2'] = center_rotated.Ty.value
-        out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + \
+        out_meta['crpix1'] = (smap.data.shape[1] + 1)/2.0 + \
             ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
-        out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
+        out_meta['crpix2'] = (smap.data.shape[0] + 1)/2.0 + \
             ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
 
     outmap = smap._new_instance(out_data, out_meta, smap.plot_settings)

@@ -250,6 +250,23 @@ def test_differential_rotate_time_straddles_limb(straddles_limb_map):
     assert dmap.date.isot == new_time.isot
 
 
+@pytest.mark.parametrize("npix", [20, 21])
+def test_differential_rotate_zero_time_is_identity(npix):
+    pytest.importorskip("skimage")
+    # Rotating a sub full disk map by zero time should not move it.
+    # Checks both even and odd sizes, since the reference pixel depends on the shape.
+    center = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime="2020-01-01", observer="earth",
+                      frame=frames.Helioprojective)
+    header = sunpy.map.make_fitswcs_header((npix, npix), center, scale=[2, 2]*u.arcsec/u.pix)
+    smap = sunpy.map.Map(np.zeros((npix, npix)), header)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        dmap = differential_rotate(smap, time=0*u.s)
+    assert_quantity_allclose(dmap.reference_pixel.x, smap.reference_pixel.x)
+    assert_quantity_allclose(dmap.reference_pixel.y, smap.reference_pixel.y)
+    corner = smap.wcs.pixel_to_world(0, 0)
+    np.testing.assert_allclose(dmap.wcs.world_to_pixel(corner), [0, 0], atol=1e-6)
+
+
 def test_differential_rotate_time_off_disk(all_off_disk_map):
     pytest.importorskip("skimage")
     # Test a map that is entirely off the disk of the Sun
