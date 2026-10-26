@@ -249,6 +249,26 @@ def test_great_arc_different_observer(aia171_test_map):
     np.testing.assert_almost_equal(end.z.value, b2h.z.value)
 
 
+@pytest.mark.parametrize('dtype', [np.float32, np.float64])
+def test_great_arc_float_precision(dtype):
+    # Regression test for #8885: GreatArc with float32 in metres produced v3 == 0 due to overflow.
+    R = constants.radius.to_value(u.m)
+    obs = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, dtype(1.5e11) * u.m, obstime="2024-04-08")
+
+    def mk(x, y, z):
+        return SkyCoord(dtype(x) * u.m, dtype(y) * u.m, dtype(z) * u.m, frame=frames.Heliocentric,
+                        observer=obs, obstime="2024-04-08")
+
+    arc = GreatArc(mk(0.6 * R, 0, 0.8 * R), mk(0, 0.6 * R, 0.8 * R), center=mk(0, 0, 0))
+    assert not np.all(arc.v3 == 0)
+    assert not np.isnan(arc.v3).any()
+    coords = arc.coordinates(5)
+    # The last point on the arc should match the end coordinate (x/R == 0, y/R == 0.6, z/R == 0.8)
+    assert np.isclose(coords.cartesian.x.to_value(u.m)[-1] / R, 0, atol=1e-5)
+    assert np.isclose(coords.cartesian.y.to_value(u.m)[-1] / R, 0.6, atol=1e-5)
+    assert np.isclose(coords.cartesian.z.to_value(u.m)[-1] / R, 0.8, atol=1e-5)
+
+
 @pytest.fixture
 def rectangle_args():
     bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame='heliographic_stonyhurst')

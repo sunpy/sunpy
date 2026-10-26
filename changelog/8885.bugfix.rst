@@ -1,0 +1,1 @@
+Fixed an issue where `~sunpy.coordinates.utils.GreatArc` computed an arc with all-zero vector component ``v3`` due to floating-point overflow when coordinates were float32 in metres.
