@@ -95,8 +95,9 @@ Operations that create a new map now preserve more of the original map's associa
 `~sunpy.map.GenericMap.submap` preserves its parent's uncertainty. Map arithmetic, such as multiplication, preserves the parent's mask and propagates its uncertainty.
 Arithmetic between two maps is still not supported, but a map can be combined with the data of another map
 using `~ndcube.NDCube.to_nddata`, e.g. ``map1 + map2.to_nddata(wcs=None)``, which also propagates their uncertainties.
+`~sunpy.map.GenericMap.rotate`, `~sunpy.map.GenericMap.resample`, and `~sunpy.physics.differential_rotation.differential_rotate` still drop the mask and uncertainty, as they no longer describe the transformed data.
 
-Maps also gain the rest of the `ndcube.NDCube` API, including `~ndcube.NDCube.rebin`, ``fill_masked``, and `~ndcube.NDCube.axis_world_coords`.
+Maps also gain the rest of the `ndcube.NDCube` API, including `~sunpy.map.GenericMap.rebin`, ``fill_masked``, and `~ndcube.NDCube.axis_world_coords`.
 
 Behaviour Changes
 -----------------
