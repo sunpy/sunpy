@@ -1,6 +1,7 @@
 import pytest
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.data.test import get_dummy_map_from_header_obj, get_header_from_file, get_test_filepath
 from sunpy.map.sources.gong import GONGMagnetogramMap
@@ -75,3 +76,19 @@ def test_rsun_obs(gong_magnetogram):
 def test_wcs(gong_magnetogram):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     gong_magnetogram.wcs.pixel_to_world(0, 0)
+
+
+@pytest.mark.parametrize("method", ["resample", "superpixel"])
+def test_scale_after_resampling(gong_magnetogram, method):
+    """Tests that halving the number of pixels doubles the scale and keeps the field of view."""
+    ny, nx = gong_magnetogram.data.shape
+    if method == "resample":
+        smaller = gong_magnetogram.resample([nx // 2, ny // 2] * u.pix)
+    else:
+        smaller = gong_magnetogram.superpixel([2, 2] * u.pix)
+    assert_quantity_allclose(smaller.scale.axis1, 2 * gong_magnetogram.scale.axis1)
+    assert_quantity_allclose(smaller.scale.axis2, 2 * gong_magnetogram.scale.axis2)
+    corner = gong_magnetogram.wcs.pixel_to_world(nx - 0.5, ny - 0.5)
+    smaller_corner = smaller.wcs.pixel_to_world(nx / 2 - 0.5, ny / 2 - 0.5)
+    assert_quantity_allclose(smaller_corner.Tx, corner.Tx)
+    assert_quantity_allclose(smaller_corner.Ty, corner.Ty)
