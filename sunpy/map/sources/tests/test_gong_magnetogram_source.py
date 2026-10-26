@@ -92,3 +92,12 @@ def test_scale_after_resampling(gong_magnetogram, method):
     smaller_corner = smaller.wcs.pixel_to_world(nx / 2 - 0.5, ny / 2 - 0.5)
     assert_quantity_allclose(smaller_corner.Tx, corner.Tx)
     assert_quantity_allclose(smaller_corner.Ty, corner.Ty)
+
+
+def test_scale_falls_back_to_limb_fit_without_cdelt(gong_magnetogram):
+    """Tests that the scale is computed from the limb fit when CDELTi are removed."""
+    limb_fit_scale = gong_magnetogram._limb_fit_scale
+    del gong_magnetogram.meta['cdelt1']
+    del gong_magnetogram.meta['cdelt2']
+    assert_quantity_allclose(gong_magnetogram.scale.axis1, limb_fit_scale.axis1)
+    assert_quantity_allclose(gong_magnetogram.scale.axis2, limb_fit_scale.axis2)
