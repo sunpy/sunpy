@@ -133,6 +133,16 @@ class GenericTimeSeries:
                 warn_user(f'Unknown units for {col}')
                 self.units[col] = u.dimensionless_unscaled
 
+    @classmethod
+    def _new_instance(cls, data, meta=None, units=None, **kwargs):
+        """
+        Instantiate a new instance of this class using the given data.
+
+        Operations that return a new time series go through this, so a
+        subclass can override it to carry extra state over to the result.
+        """
+        return cls(data, meta, units, **kwargs)
+
 # #### Attribute definitions #### #
 
     @property
@@ -462,7 +472,7 @@ class GenericTimeSeries:
             data[colname] = values
 
         # Return a new TimeSeries with the given updated/added column.
-        return self.__class__(data, meta, units)
+        return self._new_instance(data, meta, units)
 
     def remove_column(self, colname):
         """
@@ -483,7 +493,7 @@ class GenericTimeSeries:
         data = self._data.drop(colname, axis='columns')
         units = self.units.copy()
         units.pop(colname)
-        return self.__class__(data, copy.deepcopy(self.meta), units)
+        return self._new_instance(data, copy.deepcopy(self.meta), units)
 
     def sort_index(self, **kwargs):
         """
@@ -497,9 +507,9 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` in ascending chronological order.
         """
-        return GenericTimeSeries(self._data.sort_index(**kwargs),
-                                 TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
-                                 copy.copy(self.units))
+        return self._new_instance(self._data.sort_index(**kwargs),
+                                  TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
+                                  copy.copy(self.units))
 
     def truncate(self, a, b=None, int=None):
         """
@@ -547,7 +557,7 @@ class GenericTimeSeries:
             truncated_meta._truncate(tr)
 
         # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
+        object = self._new_instance(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
         object._sanitize_metadata()
         return object
 
@@ -577,6 +587,8 @@ class GenericTimeSeries:
         units = {column_name: self.units[column_name]}
 
         # Build generic TimeSeries object and sanatise metadata and units.
+        # This stays generic because some source classes (e.g., GOES XRS) plot
+        # columns by name and fail when only one column is left.
         object = GenericTimeSeries(data.sort_index(),
                                    TimeSeriesMetaData(copy.deepcopy(self.meta.metadata)),
                                    units)
@@ -661,7 +673,7 @@ class GenericTimeSeries:
 
         # If sources match then build similar TimeSeries.
         if all(self.__class__ == series.__class__ for series in others):
-            object = self.__class__(data.sort_index(), meta, units)
+            object = self._new_instance(data.sort_index(), meta, units)
         else:
             # Build generic time series if the sources don't match.
             object = GenericTimeSeries(data.sort_index(), meta, units)
