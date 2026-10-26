@@ -87,6 +87,20 @@ For example, convert a magnetogram from gauss to tesla:
     >>> hmi_map.to(u.T).unit  # doctest: +SKIP
     Unit("T")
 
+Setting the WCS
+---------------
+
+A map's `~sunpy.map.GenericMap.wcs` can now be set, which updates the map's metadata to match.
+Non-WCS related keywords do not change.
+
+.. code-block:: python
+
+    >>> new_wcs = aia.wcs.deepcopy()  # doctest: +SKIP
+    >>> new_wcs.wcs.crpix = [10, 20]  # doctest: +SKIP
+    >>> aia.wcs = new_wcs  # doctest: +SKIP
+    >>> aia.reference_pixel  # doctest: +SKIP
+    PixelPair(x=<Quantity 9. pix>, y=<Quantity 19. pix>)
+
 
 Metadata Changes
 ----------------
