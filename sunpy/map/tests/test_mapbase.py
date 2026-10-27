@@ -26,6 +26,8 @@ from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
 from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
+from ndcube.utils.exceptions import NDCubeUserWarning
+
 import sunpy
 import sunpy.coordinates
 import sunpy.map
@@ -1262,13 +1264,7 @@ pixel_corners = [
     [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
     # 0.5, 0.5 is the edge of the first pixel, so make sure
     # we don't include any other pixels
-    pytest.param(([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]]),
-                 marks=pytest.mark.xfail(
-                     strict=True,
-                     reason="ndcube decides which side of a pixel edge a point falls on by "
-                            "the round-off in converting it from world coordinates rather "
-                            "than by the rounding rule. Fixed by sunpy/ndcube#984; remove "
-                            "this along with the ndcube minimum version bump.")),
+    [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
     [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
                                                     [9]])],
     [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
@@ -1296,7 +1292,8 @@ def test_submap_outside_extent_errors(simple_map):
 def test_submap_degenerate_returns_single_pixel(simple_map):
     # A rectangle with no area lies on a pixel edge, and a point on an edge belongs
     # to the pixel above it, so one pixel is returned.
-    submap = simple_map.submap([0.5, 0.5] * u.pix, top_right=[0.5, 0.5] * u.pix)
+    with pytest.warns(NDCubeUserWarning, match="lie on the boundary"):
+        submap = simple_map.submap([0.5, 0.5] * u.pix, top_right=[0.5, 0.5] * u.pix)
     assert submap.shape == (1, 1)
     np.testing.assert_equal(submap.data, simple_map.data[1:2, 1:2])
 
