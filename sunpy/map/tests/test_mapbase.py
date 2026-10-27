@@ -85,7 +85,6 @@ def test_get_item_integer_index_suggestion(generic_map):
         generic_map[True]
 
 
-@pytest.mark.xfail(reason="NDCube can not slice with a negative start until sunpy/ndcube#979")
 def test_get_item_integer_index_suggestion_is_usable(generic_map):
     assert generic_map[-1:].shape == (1, generic_map.shape[1])
 
