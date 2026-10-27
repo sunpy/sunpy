@@ -27,6 +27,8 @@ from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
 from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
+from ndcube.utils.exceptions import NDCubeUserWarning
+
 import sunpy
 import sunpy.coordinates
 import sunpy.map
@@ -1291,7 +1293,8 @@ def test_submap_outside_extent_errors(simple_map):
 def test_submap_degenerate_returns_single_pixel(simple_map):
     # A rectangle with no area lies on a pixel edge, and a point on an edge belongs
     # to the pixel above it, so one pixel is returned.
-    submap = simple_map.submap([0.5, 0.5] * u.pix, top_right=[0.5, 0.5] * u.pix)
+    with pytest.warns(NDCubeUserWarning, match="lie on the boundary"):
+        submap = simple_map.submap([0.5, 0.5] * u.pix, top_right=[0.5, 0.5] * u.pix)
     assert submap.shape == (1, 1)
     np.testing.assert_equal(submap.data, simple_map.data[1:2, 1:2])
 
