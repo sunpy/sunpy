@@ -11,7 +11,6 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.visualization.wcsaxes import Quadrangle
-from astropy.visualization.wcsaxes.wcsapi import wcsapi_to_celestial_frame
 
 from sunpy import log
 from sunpy.coordinates.utils import get_rectangle_coordinates
@@ -20,7 +19,6 @@ from sunpy.util import grid_perimeter
 from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_user
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
-from sunpy.visualization.drawing import _celestial_world_units
 from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
 __all__ = ['MapPlotter']
@@ -264,15 +262,7 @@ class MapPlotter:
             width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
             height = top_right.spherical.lat - bottom_left.spherical.lat
             anchor = self.smap._get_lon_lat(bottom_left)
-            frame = bottom_left.replicate_without_data()
-            if frame.is_equivalent_frame(wcsapi_to_celestial_frame(axes.wcs)):
-                # The world transform takes values in the units of the axes' WCS,
-                # which are not necessarily degrees. Before astropy 7.2.3 (astropy#20600)
-                # get_transform(frame) drops the unit conversion for the axes' own frame.
-                transform = axes.get_transform('world')
-                kwargs.setdefault("vertex_unit", _celestial_world_units(axes.wcs)[0])
-            else:
-                transform = axes.get_transform(frame)
+            transform = axes.get_transform(bottom_left.replicate_without_data())
 
         kwergs = {
             "transform": transform,
