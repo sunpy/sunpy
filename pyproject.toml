@@ -52,7 +52,7 @@ asdf = [
 ]
 dask = ["dask[array]>=2024.6.0"]
 image = [
-  "scipy>=1.14.0",
+  "scipy>=1.14.1",
 ]
 jpeg2000 = [
   "glymur>=0.14.0",
