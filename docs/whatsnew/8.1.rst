@@ -126,8 +126,10 @@ Most users will see little impact, but some behaviours have changed:
 * Directly instantiating a map class now requires the NDCube-style signature ``MyMap(data, meta=header)`` instead of ``MyMap(data, header)``.
   We strongly recommend using the ``Map`` factory rather than calling a map class constructor directly.
 
-Several attributes are deprecated in favor of their `~ndcube.NDCube` or NumPy equivalents and may be removed in a future release:
+The following are deprecated and may be removed in a future release:
 
 * ``GenericMap.dimensions`` is deprecated in favor of `~sunpy.map.GenericMap.shape`. ``shape`` is a plain tuple in (row, column) order, while ``dimensions`` used (x, y) order and pixel units. Swap the indices when converting between them.
 * ``GenericMap.dtype``, ``ndim``, ``min``, ``max``, ``mean``, and ``std`` are deprecated. Use NumPy operations on ``GenericMap.data`` instead.
 * ``GenericMap.pixel_to_world`` and ``GenericMap.world_to_pixel`` are deprecated in favor of the equivalent methods on ``GenericMap.wcs``. These methods do not take or return pixel units.
+* Map classes which uses the old ``(data, header, **kwargs)`` signature are deprecated. These still work when created through the ``Map`` factory, but should be updated to the `ndcube.NDCube` signature, which takes the header as the ``meta`` keyword. See :ref:`sunpy-topic-guide-create-new-map-class`.
+* ``sunpy.util.decorators.check_arithmetic_compatibility`` is deprecated. Map arithmetic is now inherited from `ndcube.NDCube`, which checks its own operands.
