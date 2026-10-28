@@ -2,6 +2,7 @@ import pytest
 from numpy.testing import assert_equal
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import GONGHalphaMap
@@ -65,3 +66,46 @@ def test_earth_location(gong_halpha):
 def test_observer_coordinate(gong_halpha):
     xyz_expected = [146712246479.363, -5563586.169750214, -17605285536.73928] * u.m
     assert u.isclose(gong_halpha.observer_coordinate.data.xyz, xyz_expected, rtol=1e-8).all()
+
+
+def test_scale_units(gong_halpha):
+    """Tests that the scale is reported in arcsec / pix, even though CDELTi are stored in spatial_units."""
+    assert gong_halpha.scale.axis1.unit == u.arcsec / u.pix
+    assert gong_halpha.scale.axis2.unit == u.arcsec / u.pix
+    assert gong_halpha.spatial_units == (u.deg, u.deg)
+
+
+@pytest.mark.parametrize("method", ["resample", "superpixel"])
+def test_scale_after_resampling(gong_halpha, method):
+    """Tests that halving the number of pixels doubles the scale and keeps the field of view."""
+    ny, nx = gong_halpha.data.shape
+    if method == "resample":
+        smaller = gong_halpha.resample([nx // 2, ny // 2] * u.pix)
+    else:
+        smaller = gong_halpha.superpixel([2, 2] * u.pix)
+    assert smaller.scale.axis1.unit == u.arcsec / u.pix
+    assert smaller.scale.axis2.unit == u.arcsec / u.pix
+    assert_quantity_allclose(smaller.scale.axis1, 2 * gong_halpha.scale.axis1)
+    assert_quantity_allclose(smaller.scale.axis2, 2 * gong_halpha.scale.axis2)
+    corner = gong_halpha.wcs.pixel_to_world(nx - 0.5, ny - 0.5)
+    smaller_corner = smaller.wcs.pixel_to_world(nx / 2 - 0.5, ny / 2 - 0.5)
+    assert_quantity_allclose(smaller_corner.Tx, corner.Tx)
+    assert_quantity_allclose(smaller_corner.Ty, corner.Ty)
+
+
+def test_scale_falls_back_to_limb_fit_without_cdelt(gong_halpha):
+    """Tests that the scale is computed from the limb fit when CDELTi are removed."""
+    limb_fit_scale = gong_halpha._limb_fit_scale
+    del gong_halpha.meta['cdelt1']
+    del gong_halpha.meta['cdelt2']
+    assert_quantity_allclose(gong_halpha.scale.axis1, limb_fit_scale.axis1)
+    assert_quantity_allclose(gong_halpha.scale.axis2, limb_fit_scale.axis2)
+
+
+def test_scale_after_rotate_with_scale(gong_halpha):
+    """Tests that rotating with a scale factor changes the scale, and keeps it in arcsec / pix."""
+    rotated = gong_halpha.rotate(scale=2, missing=0)
+    assert rotated.scale.axis1.unit == u.arcsec / u.pix
+    assert rotated.scale.axis2.unit == u.arcsec / u.pix
+    assert_quantity_allclose(rotated.scale.axis1, gong_halpha.scale.axis1 / 2)
+    assert_quantity_allclose(rotated.scale.axis2, gong_halpha.scale.axis2 / 2)
