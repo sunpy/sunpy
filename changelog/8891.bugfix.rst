@@ -1,0 +1,1 @@
+:meth:`sunpy.timeseries.GenericTimeSeries.sort_index` now returns the same time series class it was called on, instead of always returning a `~sunpy.timeseries.GenericTimeSeries`.
