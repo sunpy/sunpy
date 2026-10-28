@@ -25,7 +25,7 @@ permissions: {}
 jobs:
   core:
     if: ${{ !github.event.repository.fork || github.event_name != 'schedule' }}
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
         with:
           python-version: '3.13'
       - run: python -m pip install -U --user build twine "validate-pyproject[all]"
@@ -52,7 +52,7 @@ jobs:
 
   test:
     needs: [core, sdist_verify]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -73,7 +73,7 @@ jobs:
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     with:
       default_python: '3.13'
       submodules: false
@@ -97,7 +97,7 @@ jobs:
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -113,7 +113,7 @@ jobs:
   
   threading:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -176,7 +176,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8d5ad7efc8e84a051639373f6ea0d10441eafee1  # v3.2.1
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
