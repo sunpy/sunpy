@@ -21,8 +21,6 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-import reproject
-
 from ndcube import NDCube
 
 try:
@@ -31,6 +29,7 @@ try:
 except ImportError:
     DASK_INSTALLED = False
 
+import astropy.io.fits
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
@@ -1964,53 +1963,49 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(target_wcs)
-
-        # Select the desired reprojection algorithm
-        functions = {'interpolation': reproject.reproject_interp,
-                     'adaptive': reproject.reproject_adaptive,
-                     'exact': reproject.reproject_exact}
-        if algorithm not in functions:
-            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
-        func = functions[algorithm]
+        if isinstance(target_wcs, (dict, astropy.io.fits.Header)):
+            target_wcs = astropy.wcs.WCS(header=target_wcs)
+        else:
+            # Unwrap any wrapper classes, e.g. a SlicedLowLevelWCS, to a FITS WCS, as
+            # the extent and date handling below need the FITS keywords.
+            target_wcs, _ = unwrap_wcs_to_fitswcs(target_wcs)
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
         if auto_extent is not None:
             left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
-                                                            method=auto_extent, integers=True)
+                                                           method=auto_extent, integers=True)
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
-        # reproject does not automatically grab the array shape from the WCS instance
-        if target_wcs.array_shape is not None:
-            reproject_args.setdefault('shape_out', target_wcs.array_shape)
+        output = super().reproject_to(target_wcs, algorithm=algorithm,
+                                      return_footprint=return_footprint, **reproject_args)
+        outmap, footprint = output if return_footprint else (output, None)
 
-        # Reproject the array
-        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
-        if return_footprint:
-            output_array, footprint = output_array
+        # NDCube carries this map's metadata over to the result, but the reprojected
+        # data is on a different grid, so header values describing the old one may no
+        # longer apply. Rebuild from the target WCS alone, going back through the factory
+        # so that the class matches the metadata rather than whatever was reprojected.
+        new_meta = MetaDict(target_wcs.to_header(relax=True))
+        for n in range(1, target_wcs.naxis + 1):
+            new_meta[f"NAXIS{n}"] = outmap.data.shape[::-1][n - 1]
 
-        target_header = target_wcs.to_header(relax=True)
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
-            # target_header has a DATE-AVG key and if it does not, we would inadvertently
+            # the target has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            if (ref_date := target_header.get('DATE-AVG', target_header.get('DATE-OBS'))) is None:
+            if not (ref_date := target_wcs.wcs.dateavg or target_wcs.wcs.dateobs):
                 raise ValueError("The target_wcs has neither a DATE-AVG or DATE-OBS. It is ambiguous "
                                  "as to what date should be used as reference date in the target header. "
                                  "To avoid this, either set DATE-AVG or DATE-OBS on target_wcs or "
                                  "set preserve_date_obs=False.")
-            target_header['DATE-AVG'] = ref_date
-            target_header['DATE-OBS'] = self.date.utc.isot
+            new_meta['DATE-AVG'] = ref_date
+            new_meta['DATE-OBS'] = self.date.utc.isot
 
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, meta=target_header,
-                            plot_settings=self.plot_settings)
+        outmap = sunpy.map.Map(outmap.data, new_meta, plot_settings=self.plot_settings)
 
-        # Check rsun mismatch
-        if self.rsun_meters != outmap.rsun_meters:
+        # Compared with a tolerance because a WCS round-tripped through a FITS header carries float noise
+        if not u.isclose(self.rsun_meters, outmap.rsun_meters, rtol=1e-11):
             warn_user("rsun mismatch detected: "
                       f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
                       "This might cause unexpected results during reprojection.")
