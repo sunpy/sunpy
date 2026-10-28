@@ -1,0 +1,3 @@
+Fixed `~sunpy.timeseries.GenericTimeSeries.add_column` failing to update column units in ``.units`` when overwriting existing columns with ``overwrite=True``.
+Overwriting a column with a `~astropy.units.Quantity` now sets the column unit to the unit of that quantity, instead of converting the values to the existing column unit.
+To keep the old unit, pass it explicitly with the ``unit`` keyword.
