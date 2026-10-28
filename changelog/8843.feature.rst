@@ -1,0 +1,3 @@
+`~sunpy.map.GenericMap.submap` now uses `ndcube.NDCube.crop` to calculate the submap extent. As a consequence, the submap will now preserve the uncertainty from its parent map, where it would previously be dropped.
+
+`~sunpy.map.GenericMap.submap` gained a copy keyword. Passing False returns views onto the parent map rather than making a copy of the data, uncertainty, and mask. This is cheaper but keeps the parent alive in memory as long as the submap exists.
