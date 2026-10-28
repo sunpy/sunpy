@@ -101,7 +101,6 @@ jobs:
     permissions:
       id-token: write
     with:
-<<<<<<<
       submodules: false
       toxdeps: tox-pypi-filter
       coverage: codecov-oidc
@@ -109,15 +108,6 @@ jobs:
         apt:
           - libopenjp2-7
           - graphviz
-=======
-  
-  threading:
-    needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
-    permissions:
-      id-token: write
-    with:
->>>>>>>
       envs: |
         - linux: build_docs-gallery
           # Speed up CI builds by not building full nav tree
@@ -139,7 +129,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c9f6c4af6750aa4b26765e8c312164efc226dfd  # v3.2.0
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
