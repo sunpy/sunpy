@@ -492,6 +492,13 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     def crop_by_values(self, *points, units=None, wcs=None, keepdims=True):
         return super().crop_by_values(*points, units=units, wcs=wcs, keepdims=keepdims)
 
+    @wraps(NDCube.rebin)
+    def rebin(self, *args, **kwargs):
+        new_map = super().rebin(*args, **kwargs)
+        # preserve plot settings
+        new_map.plot_settings.update(self.plot_settings)
+        return new_map
+
     def _text_summary(self):
         dt = self.exposure_time
         wave = self.wavelength
