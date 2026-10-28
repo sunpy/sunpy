@@ -68,6 +68,13 @@ def test_observer_coordinate(gong_halpha):
     assert u.isclose(gong_halpha.observer_coordinate.data.xyz, xyz_expected, rtol=1e-8).all()
 
 
+def test_scale_units(gong_halpha):
+    """Tests that the scale is reported in arcsec / pix, even though CDELTi are stored in spatial_units."""
+    assert gong_halpha.scale.axis1.unit == u.arcsec / u.pix
+    assert gong_halpha.scale.axis2.unit == u.arcsec / u.pix
+    assert gong_halpha.spatial_units == (u.deg, u.deg)
+
+
 @pytest.mark.parametrize("method", ["resample", "superpixel"])
 def test_scale_after_resampling(gong_halpha, method):
     """Tests that halving the number of pixels doubles the scale and keeps the field of view."""
@@ -76,6 +83,8 @@ def test_scale_after_resampling(gong_halpha, method):
         smaller = gong_halpha.resample([nx // 2, ny // 2] * u.pix)
     else:
         smaller = gong_halpha.superpixel([2, 2] * u.pix)
+    assert smaller.scale.axis1.unit == u.arcsec / u.pix
+    assert smaller.scale.axis2.unit == u.arcsec / u.pix
     assert_quantity_allclose(smaller.scale.axis1, 2 * gong_halpha.scale.axis1)
     assert_quantity_allclose(smaller.scale.axis2, 2 * gong_halpha.scale.axis2)
     corner = gong_halpha.wcs.pixel_to_world(nx - 0.5, ny - 0.5)
@@ -91,3 +100,12 @@ def test_scale_falls_back_to_limb_fit_without_cdelt(gong_halpha):
     del gong_halpha.meta['cdelt2']
     assert_quantity_allclose(gong_halpha.scale.axis1, limb_fit_scale.axis1)
     assert_quantity_allclose(gong_halpha.scale.axis2, limb_fit_scale.axis2)
+
+
+def test_scale_after_rotate_with_scale(gong_halpha):
+    """Tests that rotating with a scale factor changes the scale, and keeps it in arcsec / pix."""
+    rotated = gong_halpha.rotate(scale=2, missing=0)
+    assert rotated.scale.axis1.unit == u.arcsec / u.pix
+    assert rotated.scale.axis2.unit == u.arcsec / u.pix
+    assert_quantity_allclose(rotated.scale.axis1, gong_halpha.scale.axis1 / 2)
+    assert_quantity_allclose(rotated.scale.axis2, gong_halpha.scale.axis2 / 2)

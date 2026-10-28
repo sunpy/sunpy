@@ -133,7 +133,10 @@ class GONGHalphaMap(GenericMap):
     @property
     def scale(self):
         if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
-            return super().scale
+            # CDELTi are in spatial_units (degrees), but this class has always reported the scale in arcsec / pix
+            scale = super().scale
+            return SpatialPair(scale.axis1.to(u.arcsec / u.pixel),
+                               scale.axis2.to(u.arcsec / u.pixel))
         return self._limb_fit_scale
 
     @property
@@ -232,7 +235,10 @@ class GONGMagnetogramMap(GenericMap):
     @property
     def scale(self):
         if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
-            return super().scale
+            # CDELTi are in spatial_units (degrees), but this class has always reported the scale in arcsec / pix
+            scale = super().scale
+            return SpatialPair(scale.axis1.to(u.arcsec / u.pixel),
+                               scale.axis2.to(u.arcsec / u.pixel))
         return self._limb_fit_scale
 
     @property

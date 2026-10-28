@@ -78,6 +78,13 @@ def test_wcs(gong_magnetogram):
     gong_magnetogram.wcs.pixel_to_world(0, 0)
 
 
+def test_scale_units(gong_magnetogram):
+    """Tests that the scale is reported in arcsec / pix, even though CDELTi are stored in spatial_units."""
+    assert gong_magnetogram.scale.axis1.unit == u.arcsec / u.pix
+    assert gong_magnetogram.scale.axis2.unit == u.arcsec / u.pix
+    assert gong_magnetogram.spatial_units == (u.deg, u.deg)
+
+
 @pytest.mark.parametrize("method", ["resample", "superpixel"])
 def test_scale_after_resampling(gong_magnetogram, method):
     """Tests that halving the number of pixels doubles the scale and keeps the field of view."""
@@ -86,6 +93,8 @@ def test_scale_after_resampling(gong_magnetogram, method):
         smaller = gong_magnetogram.resample([nx // 2, ny // 2] * u.pix)
     else:
         smaller = gong_magnetogram.superpixel([2, 2] * u.pix)
+    assert smaller.scale.axis1.unit == u.arcsec / u.pix
+    assert smaller.scale.axis2.unit == u.arcsec / u.pix
     assert_quantity_allclose(smaller.scale.axis1, 2 * gong_magnetogram.scale.axis1)
     assert_quantity_allclose(smaller.scale.axis2, 2 * gong_magnetogram.scale.axis2)
     corner = gong_magnetogram.wcs.pixel_to_world(nx - 0.5, ny - 0.5)
@@ -101,3 +110,12 @@ def test_scale_falls_back_to_limb_fit_without_cdelt(gong_magnetogram):
     del gong_magnetogram.meta['cdelt2']
     assert_quantity_allclose(gong_magnetogram.scale.axis1, limb_fit_scale.axis1)
     assert_quantity_allclose(gong_magnetogram.scale.axis2, limb_fit_scale.axis2)
+
+
+def test_scale_after_rotate_with_scale(gong_magnetogram):
+    """Tests that rotating with a scale factor changes the scale, and keeps it in arcsec / pix."""
+    rotated = gong_magnetogram.rotate(scale=2, missing=0)
+    assert rotated.scale.axis1.unit == u.arcsec / u.pix
+    assert rotated.scale.axis2.unit == u.arcsec / u.pix
+    assert_quantity_allclose(rotated.scale.axis1, gong_magnetogram.scale.axis1 / 2)
+    assert_quantity_allclose(rotated.scale.axis2, gong_magnetogram.scale.axis2 / 2)
