@@ -11,6 +11,7 @@ from astropy.wcs.wcsapi import HighLevelWCSWrapper
 from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
 import sunpy.io
+from sunpy.coordinates import HeliographicStonyhurst
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.tests.helpers import figure_test
@@ -84,6 +85,38 @@ def test_limb_invisible(aia171_test_map):
     visible, hidden = drawing.limb(ax, new_obs)
     assert visible is None
     assert hidden is not None
+
+
+def _drawn_pixels(points, artist, axes):
+    # Where the artist draws ``points`` (in its path coordinates), in the pixel coordinates of the axes
+    return axes.transData.inverted().transform(artist.get_transform().transform(points))
+
+
+def test_limb_circle_pixel_radius(aia171_test_map):
+    ax = Figure().add_subplot(projection=aia171_test_map)
+    circ, _ = drawing.limb(ax, aia171_test_map.observer_coordinate)
+    # The path of a Circle is the unit circle, scaled into place by the artist's transform
+    angles = np.linspace(0, 2 * np.pi, 8, endpoint=False)
+    pixels = _drawn_pixels(np.array([np.cos(angles), np.sin(angles)]).T, circ, ax)
+
+    centre = aia171_test_map.wcs.world_to_pixel(
+        SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame))
+    radius = np.hypot(*(pixels - centre).T)
+    expected = (aia171_test_map.rsun_obs / aia171_test_map.scale.axis1).to_value(u.pix)
+    np.testing.assert_allclose(radius, expected, rtol=1e-3)
+
+
+def test_plot_vertices_pixels(aia171_test_map):
+    ax = Figure().add_subplot(projection=aia171_test_map)
+    visible, _ = drawing.equator(ax, resolution=10)
+    # Polygon closes the path by repeating the first vertex
+    pixels = _drawn_pixels(visible.get_xy()[:-1], visible, ax)
+
+    equator = SkyCoord(np.linspace(-180, 179, 10) * u.deg, np.zeros(10) * u.deg,
+                       radius=drawing.R_sun,
+                       frame=HeliographicStonyhurst(obstime=aia171_test_map.reference_date))
+    expected = np.array(aia171_test_map.wcs.world_to_pixel(equator)).T
+    np.testing.assert_allclose(pixels, expected, atol=1e-6)
 
 
 @pytest.fixture

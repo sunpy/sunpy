@@ -81,12 +81,13 @@ def limb(axes, observer, *, rsun: u.m = R_sun, resolution=1000, **kwargs):
             'zorder': 100}
     c_kw.update(kwargs)
 
-    transform = axes.get_transform('world')
+    # The frame transform takes degrees and converts them to the units of the axes' WCS
+    axes_frame = wcsapi_to_celestial_frame(axes.wcs)
+    transform = axes.get_transform(axes_frame)
     # transform is always passed on as a keyword argument
     c_kw.setdefault('transform', transform)
 
     # If the observer matches the axes's observer frame and is Helioprojective, use a Circle
-    axes_frame = wcsapi_to_celestial_frame(axes.wcs)
     if isinstance(axes_frame, Helioprojective):
         axes_observer = SkyCoord(axes_frame.observer)
         if axes_observer.separation_3d(observer) < 1 * u.m:
@@ -239,7 +240,8 @@ def _plot_vertices(coord, axes, frame, rsun, close_path=True, **kwargs):
             'color': 'white',
             'zorder': 1.5}
     c_kw.update(kwargs)
-    transform = axes.get_transform("world")
+    # The frame transform takes degrees and converts them to the units of the axes' WCS
+    transform = axes.get_transform(frame)
     c_kw.setdefault('transform', transform)
 
     # Get the 2D vertices of the coordinates
