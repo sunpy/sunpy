@@ -70,15 +70,14 @@ def test_new_instance_preserves_plot_settings(aia_map):
     # that _new_instance persists the old custom plot_settings
     aia_map.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
     aia_map.plot_settings['cmap'] = 'inferno'
-    new_aia_map = aia_map._new_instance(aia_map.data,
-                                        aia_map.meta,
+    new_aia_map = aia_map._new_instance(data=aia_map.data, meta=aia_map.meta,
                                         plot_settings=aia_map.plot_settings)
     assert new_aia_map.plot_settings['norm'].vmin == aia_map.plot_settings['norm'].vmin
     assert new_aia_map.plot_settings['norm'].vmax == aia_map.plot_settings['norm'].vmax
     assert new_aia_map.plot_settings['cmap'] == aia_map.plot_settings['cmap']
     # If no plot settings are explicitly passed, the plot_settings should fall back to those
     # in the constructor
-    new_aia_map = aia_map._new_instance(aia_map.data, aia_map.meta)
+    new_aia_map = aia_map._new_instance(data=aia_map.data, meta=aia_map.meta)
     assert new_aia_map.plot_settings['norm'].vmin is None
     assert new_aia_map.plot_settings['norm'].vmax is None
     assert new_aia_map.plot_settings['cmap'] == new_aia_map._get_cmap_name()
@@ -93,5 +92,5 @@ def test_missing_tobs(aia_map):
     # Should fall back to base reference_date for reference date if T_OBS is missing
     new_meta = copy.deepcopy(aia_map.meta)
     new_meta.pop('T_OBS')
-    new_aia_map = aia_map._new_instance(aia_map.data, new_meta)
+    new_aia_map = aia_map._new_instance(data=aia_map.data, meta=new_meta)
     assert new_aia_map.reference_date == super(type(new_aia_map), new_aia_map).reference_date

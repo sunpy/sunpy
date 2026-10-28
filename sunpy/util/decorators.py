@@ -236,6 +236,13 @@ def cached_property_based_on(attr_name):
     return outer
 
 
+@deprecated(
+    since="8.1",
+    message="The check_arithmetic_compatibility decorator is deprecated and may be removed "
+            "in a future version of `sunpy`. "
+            "Map arithmetic is inherited from ndcube.NDCube, which checks its own "
+            "operands, so this decorator is no longer needed.",
+)
 def check_arithmetic_compatibility(func):
     """
     A decorator to check if an arithmetic operation can

@@ -1662,6 +1662,29 @@ def test_superpixel_metadata(generic_map, f, dimensions):
             assert superpix_map.meta[key] == generic_map.meta[key]
 
 
+@pytest.mark.parametrize("unmask", [False, True])
+def test_fill_masked(aia171_test_map_with_mask, unmask):
+    masked = aia171_test_map_with_mask.mask
+    filled = aia171_test_map_with_mask.fill_masked(0, unmask=unmask)
+
+    assert isinstance(filled, type(aia171_test_map_with_mask))
+    assert_quantity_allclose(filled.data[masked], 0)
+    # Unmasked values are untouched
+    assert_quantity_allclose(filled.data[~masked], aia171_test_map_with_mask.data[~masked])
+    if unmask:
+        assert not np.any(filled.mask)
+    else:
+        assert np.array_equal(filled.mask, masked)
+    # The metadata is carried over rather than rebuilt
+    assert filled.meta == aia171_test_map_with_mask.meta
+
+
+def test_fill_masked_in_place(aia171_test_map_with_mask):
+    masked = aia171_test_map_with_mask.mask.copy()
+    assert aia171_test_map_with_mask.fill_masked(0, fill_in_place=True) is None
+    assert_quantity_allclose(aia171_test_map_with_mask.data[masked], 0)
+
+
 def test_superpixel_masked(aia171_test_map_with_mask):
     input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
@@ -2613,8 +2636,55 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):
+    # `NDCube.__rtruediv__` evaluates ``self ** -1`` before it looks at the operand, so
+    # it divides by any zeros in the data on its way to rejecting the operand.
+    with np.errstate(divide='ignore'), pytest.raises(TypeError):
         _ = value / aia171_test_map
+
+
+@pytest.fixture
+def aia171_with_mask_and_uncertainty(aia171_test_map):
+    mask = np.zeros(aia171_test_map.data.shape, dtype=bool)
+    mask[:10, :] = True
+    return sunpy.map.Map(aia171_test_map.data, aia171_test_map.meta, mask=mask,
+                         uncertainty=StdDevUncertainty(np.ones(aia171_test_map.data.shape)))
+
+
+def test_map_arithmetic_keeps_mask_and_propagates_uncertainty(aia171_with_mask_and_uncertainty):
+    smap = aia171_with_mask_and_uncertainty
+    result = smap * (2 * u.dimensionless_unscaled)
+    np.testing.assert_array_equal(result.mask, smap.mask)
+    np.testing.assert_allclose(result.uncertainty.array, 2 * smap.uncertainty.array)
+
+
+@pytest.mark.parametrize("operation", [
+    lambda m: m.resample([32, 32] * u.pix),
+    lambda m: m.resample(m.data.shape[::-1] * u.pix),
+    lambda m: m.rotate(30 * u.deg),
+    lambda m: m.rotate(90 * u.deg),
+], ids=["resample", "resample-same-shape", "rotate", "rotate-90-same-shape"])
+def test_transforms_drop_mask_and_uncertainty(aia171_with_mask_and_uncertainty, operation):
+    # The data is transformed but the mask and uncertainty are not, so they would no
+    # longer line up with it, even when the shape happens to be unchanged.
+    result = operation(aia171_with_mask_and_uncertainty)
+    assert result.mask is None
+    assert result.uncertainty is None
+
+
+def test_new_instance_positional_signature(aia171_test_map):
+    # Packages built on sunpy call this with the old (data, meta, plot_settings) order
+    new_map = aia171_test_map._new_instance(aia171_test_map.data, aia171_test_map.meta,
+                                            {'cmap': 'gray'})
+    assert isinstance(new_map, type(aia171_test_map))
+    assert new_map.plot_settings['cmap'] == 'gray'
+
+
+def test_new_instance_different_shape_drops_mask(aia171_with_mask_and_uncertainty):
+    smap = aia171_with_mask_and_uncertainty
+    new_map = smap._new_instance(data=smap.data[:10, :10], meta=smap.meta)
+    assert new_map.mask is None
+    assert new_map.uncertainty is None
+
 
 @pytest.mark.parametrize(('units_string','expected_unit'),[
     ('Gauss', u.G),
