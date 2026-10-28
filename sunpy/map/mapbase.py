@@ -213,9 +213,10 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     data : array-like or `astropy.nddata.NDData`
         The array holding the actual data in this object.
 
-    wcs : `None`
-        The ``WCS`` should not be set, it must always be `None` as it
-        is built from the `meta`.
+    wcs : `~astropy.wcs.WCS`, optional
+        A WCS to apply on top of ``meta``, which updates the WCS keywords in
+        ``meta`` in the same way as setting `.wcs`. ``meta`` is still required as
+        it remains the source of truth for the map.
 
     uncertainty : Any, optional
         Uncertainty in the dataset. Should have an attribute uncertainty_type
@@ -399,10 +400,6 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        if wcs is not None:
-            raise ValueError("Passing a WCS to GenericMap is not supported, "
-                             "the WCS is derived from the metadata.")
-
         # We can get superfluous kwargs from the factories so strip them out here
         params = list(inspect.signature(NDCube).parameters)
         ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
@@ -420,6 +417,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             global_coords=global_coords,
             **ndcube_kwargs,
         )
+        # After the NDCube constructor has run there is now metadata for the setter
+        self.wcs = wcs
 
         # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
         # lost unless written there. Compared as units but note that this is done only so
@@ -437,10 +436,61 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             self.plotter.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        def format_slice(key):
+            if not isinstance(key, slice):
+                return f"{key}"
+            start = "" if key.start is None else key.start
+            stop = "" if key.stop is None else key.stop
+            step = "" if key.step is None else f":{key.step}"
+            return f"{start}:{stop}{step}"
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if any(intidx := [isinstance(k, numbers.Integral) for k in key]):
+            # -1 is special-cased because k+1 is then 0, which reads as the start of
+            # the axis rather than one past the end.
+            strslice = ", ".join([(f"{int(k)}:" if k == -1 else f"{int(k)}:{int(k)+1}")
+                                  if isint else format_slice(k)
+                                  for k, isint in zip(key, intidx)])
+            raise TypeError(
+                "It is not possible to slice a map with an integer as it will "
+                "reduce the number of data dimensions by one.\nIn order to "
+                "apply the same slice without dropping a dimension do "
+                f"mymap[{strslice}]."
+            )
+
+        # astropy's SlicedLowLevelWCS rejects a step, so catch it here to say something
+        # more useful than "Slicing WCS with a step is not supported".
+        if any(isinstance(k, slice) and k.step not in (None, 1) for k in key):
+            raise IndexError(
+                "It is not possible to slice a map with a step. To reduce the "
+                "resolution of a map use GenericMap.superpixel, noting that it "
+                "combines pixels rather than discarding them."
+            )
+
+        # Resolved against the shape so that negative and out-of-range bounds are
+        # measured the same way numpy would.
+        for axis, (k, length) in enumerate(zip(key, self.data.shape)):
+            if isinstance(k, slice) and len(range(length)[k]) == 0:
+                raise IndexError(
+                    "It is not possible to slice a map down to a length-0 axis, as "
+                    f"the result would have no data. mymap[{', '.join(map(format_slice, key))}] "
+                    f"gives a length-0 axis at position {axis}."
+                )
+
+        new_map = super().__getitem__(key)
+        # preserve plot settings
+        new_map.plot_settings.update(self.plot_settings)
+        return new_map
+
+    # A map should never drop a dimension, so these default to keepdims=True rather than
+    # NDCube's False.
+    def crop(self, *points, wcs=None, keepdims=True):
+        return super().crop(*points, wcs=wcs, keepdims=keepdims)
+
+    def crop_by_values(self, *points, units=None, wcs=None, keepdims=True):
+        return super().crop_by_values(*points, units=units, wcs=wcs, keepdims=keepdims)
 
     def _text_summary(self):
         dt = self.exposure_time

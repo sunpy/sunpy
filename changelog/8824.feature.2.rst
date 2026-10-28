@@ -1,0 +1,1 @@
+`~sunpy.map.GenericMap` can now be cropped with `~sunpy.map.GenericMap.crop`, given world coordinates, or `~sunpy.map.GenericMap.crop_by_values`, given world coordinates as `~astropy.units.Quantity` values, which return the smallest rectangular region containing those points.
