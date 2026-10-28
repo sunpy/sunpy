@@ -1,0 +1,1 @@
+Fix a loss of precision in `sunpy.map.GenericMap.wcs`, which was needlessly being round-tripped through a FITS header when it was created.
