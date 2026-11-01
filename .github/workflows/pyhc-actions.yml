@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
 
       - name: Check PHEP 3 Compliance
-        uses: heliophysicsPy/pyhc-actions/phep3-compliance@d0d1fb451f8189b17c2113efa3a91b615f3074a0 # v1.1.2
+        uses: heliophysicsPy/pyhc-actions/phep3-compliance@110b8e87adfa7e2db13ea21f23413f79f2c038fc # v1.1.3
 
   pyhc-env-compat:
     name: PyHC Environment Compatibility
@@ -39,4 +39,4 @@ jobs:
           persist-credentials: false
 
       - name: Check PyHC Environment Compatibility
-        uses: heliophysicsPy/pyhc-actions/pyhc-env-compat@d0d1fb451f8189b17c2113efa3a91b615f3074a0 # v1.1.2
+        uses: heliophysicsPy/pyhc-actions/pyhc-env-compat@110b8e87adfa7e2db13ea21f23413f79f2c038fc # v1.1.3
