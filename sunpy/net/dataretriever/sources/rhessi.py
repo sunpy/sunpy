@@ -12,7 +12,7 @@ from dateutil.rrule import MONTHLY, rrule
 from astropy.time import Time
 
 from sunpy.extern.parse import parse
-from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.time import TimeRange, parse_time
 
 __all__ = ['RHESSIClient']

@@ -8,7 +8,7 @@ from matplotlib.image import AxesImage, _ImageBase
 
 import astropy.units as u
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 from sunpy.util import expand_list, get_keywords, get_set_methods
 from sunpy.util.decorators import add_common_docstring
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat

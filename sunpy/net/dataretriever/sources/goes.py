@@ -10,7 +10,7 @@ from astropy.time import Time
 
 from sunpy import config
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
 from sunpy.net.scraper_utils import get_timerange_from_exdict
 from sunpy.time import TimeRange, parse_time

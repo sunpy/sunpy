@@ -7,8 +7,7 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy import config
-from sunpy.time import is_time_equal, parse_time
-from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.time.time import _variables_for_parse_time_docstring, is_time_equal, parse_time
 from sunpy.util.decorators import add_common_docstring
 
 TIME_FORMAT = config.get('general', 'time_format')

@@ -11,7 +11,7 @@ import numpy as np
 
 from astropy.visualization import ImageNormalize
 
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import expand_list
 from sunpy.util.exceptions import warn_user

@@ -3,8 +3,7 @@ import numpy as np
 import astropy.units as u
 
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever import GenericClient
-from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 from sunpy.net.scraper import Scraper
 from sunpy.time import TimeRange
 

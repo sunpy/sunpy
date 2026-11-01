@@ -10,8 +10,8 @@ import astropy.units as u
 from astropy.coordinates.representation import CartesianRepresentation, UnitSphericalRepresentation
 
 from sunpy import log
-from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
 from sunpy.coordinates._transformations import _autoapply_diffrot
+from sunpy.coordinates.frames import HeliographicStonyhurst, Helioprojective
 from sunpy.util.decorators import _active_contexts
 from sunpy.util.exceptions import warn_user
 

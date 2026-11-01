@@ -10,7 +10,7 @@ from packaging.markers import Marker
 from packaging.requirements import Requirement
 
 import sunpy.extern.distro as distro
-from sunpy.util import warn_user
+from sunpy.util.exceptions import warn_user
 
 __all__ = ['system_info', 'find_dependencies', 'missing_dependencies_by_extra']
 

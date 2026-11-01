@@ -4,7 +4,7 @@
 
 
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever import GenericClient, QueryResponse
+from sunpy.net.dataretriever.client import GenericClient, QueryResponse
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
