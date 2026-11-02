@@ -269,20 +269,57 @@ This can be done with the `pytest tmpdir function argument <https://pytest.org/e
 Tests that use test data
 ------------------------
 
-We store test data in "sunpy/data/test" as long as it is less than about 100 kB.
-These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.get_test_data_filenames` functions.
-This way you can use them when you create a test.
+We store test data in ``sunpy/data/test``.
+To keep the repository size small and tests fast, we aim to keep this collection of files as minimal as possible.
+Real, full-sized data files (such as certain AIA and HMI FITS files) are only kept when strictly necessary, such as for performing visual figure tests.
 
-You can also use our sample data but this will have to be marked as an online test (see above)::
+Whenever possible, rather than committing an entire FITS image, you should use header-only files.
+A header-only file contains the FITS header information without the actual image array data, dramatically reducing the file size.
+Dummy data files or maps can then be generated on the fly during testing.
+
+Generating header-only test files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To convert an existing FITS file into a header-only plaintext file, use :func:`sunpy.data.test.write_header_file_from_image_file`::
+
+    from sunpy.data.test import write_header_file_from_image_file
+
+    write_header_file_from_image_file('path/to/real_data.fits', 'sunpy/data/test/my_header.header')
+
+Using test data and dummy maps in tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Test files in ``sunpy/data/test`` should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.get_test_data_filenames` functions::
+
+    from sunpy.data.test import get_test_filepath
+
+    filepath = get_test_filepath('my_header.header')
+
+If your test needs a `~sunpy.map.Map` instance from a header-only file, you can create a dummy map with random image data matching the header dimensions using :func:`sunpy.data.test.get_dummy_map_from_header`::
+
+    from sunpy.data.test import get_dummy_map_from_header
+
+    dummy_map = get_dummy_map_from_header('my_header.header')
+
+Alternatively, if you need a temporary dummy FITS file written to disk, you can use :func:`sunpy.data.test.write_image_file_from_header_file`::
+
+    from sunpy.data.test import write_image_file_from_header_file
+
+    fits_file = write_image_file_from_header_file(header_path, tmp_path)
+
+Sample data
+^^^^^^^^^^^
+
+You can also use our sample data, but any test using it must be marked as an online test::
 
     import sunpy.data.sample
 
     @pytest.mark.remote_data
-    def func():
+    def test_sample():
         """Returns the file path for the sample data."""
         return sunpy.data.sample.AIA_131_IMAGE
 
-Generally we do not run the tests on our sample data, so only do this if you have a valid reason.
+Generally we do not run tests on sample data, so only do this if you have a valid reason.
 
 Figure unit tests
 -----------------
