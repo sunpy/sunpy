@@ -288,6 +288,33 @@ def _figure_to_base64(fig):
     return b64encode(buf.getvalue()).decode('utf-8')
 
 
+# The figures in HTML reprs have transparent backgrounds, so their black text is hard to read when
+# displayed on a dark background.  This CSS adds a white background behind any figure that has the
+# class "sunpy-repr-figure", but only when a dark color scheme is detected.  The selectors cover
+# JupyterLab/Notebook 7, VS Code, and PyData Sphinx Theme (including the sunpy docs), with the
+# browser/OS color scheme as a fallback unless a light theme has been explicitly set.  Where the
+# CSS is not supported, the figures keep their transparent backgrounds.
+_REPR_FIGURE_STYLE = """\
+<style>
+body[data-jp-theme-light="false"] .sunpy-repr-figure,
+body.vscode-dark .sunpy-repr-figure,
+body[data-vscode-theme-kind="vscode-high-contrast"] .sunpy-repr-figure,
+html[data-theme="dark"] .sunpy-repr-figure,
+html[theme="dark"] .sunpy-repr-figure,
+body[data-theme="dark"] .sunpy-repr-figure {
+    background-color: white;
+}
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not([theme="light"])
+    body:not([data-jp-theme-light="true"]):not(.vscode-light):not(.vscode-high-contrast-light):not([data-theme="light"])
+    .sunpy-repr-figure {
+        background-color: white;
+    }
+}
+</style>
+"""
+
+
 def fix_duplicate_notes(notes_to_add, docstring):
     """
     Merges a note section into a docstring that may have a notes section.
