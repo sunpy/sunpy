@@ -1,0 +1,1 @@
+Adds return type hints to all properties in `sunpy.time.TimeRange`. Changes sphinx-automodapi behaviour to enable the docs to pull return type from type hints on properties.
