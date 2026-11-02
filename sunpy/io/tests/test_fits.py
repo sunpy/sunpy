@@ -122,6 +122,78 @@ def test_simple_write_compressed_instance(tmpdir, kwargs, should_fail):
             assert data_preserved
 
 
+@pytest.fixture(params=[(0.1, 0.0), (0.5, 1000.0)], ids=['bscale', 'bscale-bzero'])
+def scaled_int_file(request, tmp_path):
+    """
+    A FITS file whose data is stored as scaled integers, as HMI data is.
+
+    The physical values are ``BSCALE`` times the integers on disk plus
+    ``BZERO``, and `astropy.io.fits` applies that scaling when the data is
+    accessed.
+    """
+    bscale, bzero = request.param
+    # Derived from the stored integers so that every value is exactly
+    # representable once the file is written.
+    stored = np.array([[0, 100, -100], [4554, -4554, 1]])
+    physical = stored * bscale + bzero
+    # `scale` un-scales the array it is given in place, so hand it a copy.
+    hdu = fits.PrimaryHDU(data=physical.copy())
+    hdu.scale('int16', bscale=bscale, bzero=bzero)
+    path = tmp_path / "scaled_int.fits"
+    hdu.writeto(path)
+    return path, physical
+
+
+def test_read_scaled_int_strips_scaling_keywords(scaled_int_file):
+    # astropy applies BSCALE/BZERO when the data is accessed, so a header that
+    # still advertises them does not describe the data it is paired with.
+    path, physical = scaled_int_file
+    (data, header), = _fits.read(path)
+    assert data == pytest.approx(physical, rel=1e-4)
+    assert 'BSCALE' not in header
+    assert 'BZERO' not in header
+
+
+@pytest.mark.parametrize('make_hdu_type', [
+    pytest.param(lambda: None, id='primary'),
+    pytest.param(lambda: fits.CompImageHDU, id='comp-class'),
+    pytest.param(lambda: fits.CompImageHDU(), id='comp-instance'),
+    pytest.param(lambda: fits.ImageHDU, id='image-class'),
+    pytest.param(lambda: fits.ImageHDU(), id='image-instance'),
+])
+def test_write_scaled_int_roundtrip(scaled_int_file, tmp_path, make_hdu_type):
+    # Writing must not re-apply a scaling that has already been applied to the
+    # data, whether ``hdu_type`` is passed as a class or as an instance.
+    path, physical = scaled_int_file
+    data, header = _fits.read(path)[0]
+    outfile = tmp_path / "out.fits"
+    hdu_type = make_hdu_type()
+    kwargs = {} if hdu_type is None else {'hdu_type': hdu_type}
+    _fits.write(str(outfile), data, header, output_verify="silentfix", **kwargs)
+
+    with fits.open(outfile) as hdul:
+        written = hdul[-1]
+        assert written.data == pytest.approx(physical, rel=1e-4)
+        assert 'BSCALE' not in written.header
+        assert 'BZERO' not in written.header
+
+
+def test_write_ignores_stale_scaling_keywords(tmp_path):
+    # A BSCALE in the header describes a scaling that has already been applied
+    # to `data`, so writing must not apply it again. This guards the write path
+    # for headers that did not come from `_fits.read`.
+    data, header = _fits.read(TEST_AIA_IMAGE)[0]
+    header['BSCALE'] = 0.1
+    header['BZERO'] = 100.0
+    outfile = tmp_path / "out.fits"
+    _fits.write(str(outfile), data, header, hdu_type=fits.CompImageHDU(),
+                output_verify="silentfix")
+    with fits.open(outfile) as hdul:
+        assert hdul[1].data == pytest.approx(data, abs=10)
+        assert 'BSCALE' not in hdul[1].header
+        assert 'BZERO' not in hdul[1].header
+
+
 def test_write_with_metadict_header_astropy(tmpdir):
     with fits.open(TEST_AIA_IMAGE) as fits_file:
         data, header = fits_file[0].data, fits_file[0].header
