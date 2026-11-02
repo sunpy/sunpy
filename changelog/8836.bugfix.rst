@@ -1,0 +1,1 @@
+Fixed a bug in ``sunpy.net.soar.Product`` where passing an attribute name with underscores (e.g., ``mag_rtn_normal``) would fail to return results because the SOAR API expects hyphens. Underscores are now automatically converted to hyphens.
