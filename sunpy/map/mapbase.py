@@ -9,6 +9,7 @@ import numbers
 import textwrap
 import webbrowser
 from abc import ABCMeta
+from collections.abc import Mapping
 from functools import wraps
 from tempfile import NamedTemporaryFile
 from typing import Literal
@@ -20,6 +21,7 @@ from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
 import reproject
+from astropy.wcs.wcsapi import BaseHighLevelWCS, BaseLowLevelWCS
 
 from ndcube import NDCube
 
@@ -231,9 +233,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         that valid data points are marked by `False` and invalid ones with `True`.
         Defaults to `None`.
 
-    meta : dict-like, optional
-        Additional meta information about the dataset. If no meta is provided
-        an empty dictionary is created.
+    meta : dict-like
+        The FITS-like header to build the map from. **Required**
 
     unit : `astropy.units.Unit` or `str`, optional
         Unit to record in BUNIT. Overrides any existing BUNIT in ``meta`` - does not convert
@@ -398,6 +399,41 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             # Warn the user that the data has been truncated
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
+
+        # Remove after deprecation
+        # Support the old header kwarg
+        header = kwargs.pop("header", None)
+        if header is not None:
+            if meta is None:
+                meta = header
+                warn_deprecated("The header= keyword argument is deprecated, use meta=")
+            else:
+                raise TypeError("Passing header and meta is not supported, just use meta.")
+
+        # Remove after deprecation
+        # Support the case where a header is passed instead of the wcs argument,
+        # This is normally only done as a positional argument
+        if meta is None and wcs is not None:
+            if not isinstance(wcs, (BaseLowLevelWCS, BaseHighLevelWCS)) and isinstance(wcs, Mapping):
+                meta = wcs
+                wcs = None
+                warn_deprecated(
+                    "Constructing a Map with a header as a positional argument is deprecated"
+                    ", use ``GenericMap(data, meta=header)``"
+                )
+
+        # If only a WCS is passed, convert it to a header and construct that way.
+        if meta is None and wcs is not None:
+            # unwrap and validate that it's a FITS WCS
+            wcs, _ = unwrap_wcs_to_fitswcs(wcs)
+            meta = wcs.to_header()
+            wcs = None
+
+        # We can't make meta a required argument in the signature
+        # without breaking NDCube compatibility.
+        if meta is None:
+            raise TypeError("Missing required argument 'meta'.")
+
 
         if wcs is not None:
             raise ValueError("Passing a WCS to GenericMap is not supported, "
