@@ -7,6 +7,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.io.special import genx
 
 TESTING = genx.read_genx(get_test_filepath('generated_sample.genx'))
+TESTING_BYTE = genx.read_genx(get_test_filepath('byte_sample.genx'))
 
 
 def test_skeleton():
@@ -63,6 +64,27 @@ def test_value_slice(slice, value):
                                                 (TESTING['MYSTRUCTURE']['MYDCARRAY'], np.complex64)])
 def test_type(myarray, dtype):
     assert myarray.dtype == dtype
+
+
+def test_byte_data():
+    # Byte data is written by IDL as a single counted block (the xdr_bytes
+    # representation), not element by element like the other numeric types.
+    # The sample file holds a byte array, a scalar byte, a 2D byte array
+    # and an int array stored after them.
+    np.testing.assert_array_equal(TESTING_BYTE['MYBYTE_ARRAY'],
+                                  np.array([0, 1, 2, 127, 128, 255], dtype=np.uint8))
+    assert TESTING_BYTE['MYBYTE_ARRAY'].dtype == np.uint8
+    assert TESTING_BYTE['MYBYTE'] == 200
+    np.testing.assert_array_equal(TESTING_BYTE['MYBYTE_ARRAY_DIMENSION'],
+                                  np.arange(6, dtype=np.uint8).reshape(3, 2))
+    # Reading the byte blocks must consume exactly the right number of
+    # bytes, so the int array stored after them is not corrupted.
+    np.testing.assert_array_equal(TESTING_BYTE['MYINT_ARRAY'],
+                                  np.array([0, 1, 2], dtype=np.int16))
+    # Byte data nested inside a structure.
+    np.testing.assert_array_equal(TESTING_BYTE['MYSTRUCTURE']['MYBYTES'],
+                                  np.array([10, 20, 30, 40], dtype=np.uint8))
+    assert TESTING_BYTE['MYSTRUCTURE']['MYINT'] == 7
 
 
 def test_date():
