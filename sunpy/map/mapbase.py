@@ -212,12 +212,13 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
 
     Parameters
     ----------
-    data : array-like or `astropy.nddata.NDData`
+    data : array-like or `ndcube.NDCube` or `astropy.nddata.NDData`
         The array holding the actual data in this object.
 
-    wcs : `None`
-        The ``WCS`` should not be set, it must always be `None` as it
-        is built from the `meta`.
+    wcs : `astropy.wcs.WCS` or `None`
+        A WCS to apply over the ``meta=`` (header). If only a ``wcs``
+        is provided and not a ``meta`` the WCS is converted to a
+        header and used in lieu of ``meta``.
 
     uncertainty : Any, optional
         Uncertainty in the dataset. Should have an attribute uncertainty_type
@@ -234,7 +235,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         Defaults to `None`.
 
     meta : dict-like
-        The FITS-like header to build the map from. **Required**
+        A FITS header like object to build the map from. **Required, unless ``wcs`` is given.**
 
     unit : `astropy.units.Unit` or `str`, optional
         Unit to record in BUNIT. Overrides any existing BUNIT in ``meta`` - does not convert
@@ -423,10 +424,12 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                 )
 
         # If only a WCS is passed, convert it to a header and construct that way.
+        # If both are passed then the WCS takes precedence, as it is
+        # applied after the super().__init__ call.
         if meta is None and wcs is not None:
             # unwrap and validate that it's a FITS WCS
             wcs, _ = unwrap_wcs_to_fitswcs(wcs)
-            meta = wcs.to_header()
+            meta = wcs.to_header(relax=True)
             wcs = None
 
         # We can't make meta a required argument in the signature
@@ -434,15 +437,12 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         if meta is None:
             raise TypeError("Missing required argument 'meta'.")
 
-
-        if wcs is not None:
-            raise ValueError("Passing a WCS to GenericMap is not supported, "
-                             "the WCS is derived from the metadata.")
-
         # We can get superfluous kwargs from the factories so strip them out here
         params = list(inspect.signature(NDCube).parameters)
         ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        # The WCS is derived from the metadata, so pass None here. The wcs is built by the NDCube constructor when it accesses the `.wcs` property.
+        # The WCS is derived from the metadata, so pass None here. The
+        # wcs is built by the NDCube constructor when it accesses the
+        # `.wcs` property.
         super().__init__(
             data,
             wcs=None,
@@ -456,6 +456,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             global_coords=global_coords,
             **ndcube_kwargs,
         )
+        # After the NDCube constructor has run there is now metadata for the setter
+        self.wcs = wcs
 
         # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
         # lost unless written there. Compared as units but note that this is done only so
