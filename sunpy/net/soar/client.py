@@ -113,6 +113,9 @@ class SOARClient(BaseClient):
                 if "stx" not in instrument_table:
                     # To avoid duplicate rows in the output table, the dimension index is set to 1.
                     final_query += "h2.dimension_index='1' AND "
+            elif parameter.startswith("(soop_name"):
+                # The SOOP clause refers to soop_name several times, so each one needs the table prefix.
+                final_query += parameter.replace("soop_name", "h1.soop_name") + " AND "
             else:
                 final_query += f"{prefix}{parameter} AND "
 
@@ -214,8 +217,9 @@ class SOARClient(BaseClient):
             Query results.
         """
         payload = SOARClient._construct_payload(query)
-        # Need to force requests to not form-encode the parameters
-        payload = "&".join([f"{key}={val}" for key, val in payload.items()])
+        # Need to force requests to not form-encode the parameters.
+        # A literal "%" (used by LIKE in the ADQL query) still has to be escaped or the server rejects the URL.
+        payload = "&".join([f"{key}={val.replace('%', '%25')}" for key, val in payload.items()])
         # Get request info
         r = requests.get(f"{self.tap_endpoint}/sync", params=payload, timeout=60)
         log.debug(f"Sent query: {r.url}")
