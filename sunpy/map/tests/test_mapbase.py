@@ -1,6 +1,7 @@
 """
 Test Generic Map
 """
+import contextlib
 import inspect
 import re
 import tempfile
@@ -2381,3 +2382,46 @@ def test_genericmap_subclass_sig_rewriting():
     assert sig == inspect.signature(GenericMap.__init__)
     assert "header" not in sig.parameters
     assert "meta" in sig.parameters
+
+@pytest.mark.parametrize(("args", "kwargs", "deprecated"),
+                         [pytest.param(("data", "meta"), {}, True, id="positional argument with 'header' (old sig)"),
+                          pytest.param(("data", "wcs"), {}, False, id="positional argument with 'wcs' (new sig)"),
+                          pytest.param(("data",), {"header": "meta"}, True, id="keyword argument header (old sig)"),
+                          pytest.param(("data",), {"meta": "meta"}, False, id="keyword argument meta (new sig)"),
+                          ])
+
+def test_generic_map_both_sig(simple_map, args, kwargs, deprecated):
+    arg_lookup = {
+        "data": simple_map.data,
+        "meta": simple_map.meta,
+        "header": simple_map.meta,
+        "wcs": simple_map.wcs,
+    }
+    cargs = (arg_lookup[a] for a in args)
+    ckwargs = {k: arg_lookup[v] for k, v in kwargs.items()}
+
+    context = contextlib.nullcontext()
+    if deprecated:
+        context = pytest.warns(SunpyDeprecationWarning)
+
+    with context:
+        smap = GenericMap(*cargs, **ckwargs)
+        if "meta" in args or "meta" in kwargs or "header" in kwargs:
+            assert smap.meta == simple_map.meta
+        else:
+            assert smap.meta == MetaDict(simple_map.wcs.to_header())
+
+    # Ensure that both pixel to worlds match (WCS is the same)
+    assert_allclose(
+        smap.wcs.pixel_to_world_values(0, 0),
+        simple_map.wcs.pixel_to_world_values(0, 0),
+    )
+
+def test_generic_map_constructed_from_wrapped_wcs(simple_map):
+    sliced_wcs = SlicedLowLevelWCS(simple_map.wcs, (slice(None), slice(None)))
+    smap = GenericMap(simple_map.data, sliced_wcs)
+    # Ensure that both pixel to worlds match (WCS is the same)
+    assert_allclose(
+        smap.wcs.pixel_to_world_values(0, 0),
+        simple_map.wcs.pixel_to_world_values(0, 0),
+    )
