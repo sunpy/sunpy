@@ -1,0 +1,1 @@
+Fixed `~sunpy.timeseries.GenericTimeSeries` raising an error when it is printed or displayed after being truncated to a time range that contains no data. Summarising an empty timeseries now reports ``None`` for the start, end and center dates and for the resolution, instead of raising.
