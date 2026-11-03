@@ -245,6 +245,9 @@ def struct_to_data(xdrdata, subskeleton):
                 # (the xdr_bytes representation), so read it in one go.
                 byte_data = xdrdata.unpack_bytes()
                 if sswsize[0] == 0:
+                    if len(byte_data) != 1:
+                        raise ValueError(f"A scalar byte value is stored as a single byte, "
+                                         f"but the byte block for {key} contains {len(byte_data)} bytes.")
                     subskeleton[key] = byte_data[0]
                 else:
                     subskeleton[key] = np.frombuffer(byte_data, dtype=np.uint8).copy().reshape(

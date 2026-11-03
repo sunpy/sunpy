@@ -8,6 +8,7 @@ from sunpy.io.special import genx
 
 TESTING = genx.read_genx(get_test_filepath('generated_sample.genx'))
 TESTING_BYTE = genx.read_genx(get_test_filepath('byte_sample.genx'))
+TESTING_BYTE_PADDING = genx.read_genx(get_test_filepath('byte_padding_sample.genx'))
 
 
 def test_skeleton():
@@ -85,6 +86,37 @@ def test_byte_data():
     np.testing.assert_array_equal(TESTING_BYTE['MYSTRUCTURE']['MYBYTES'],
                                   np.array([10, 20, 30, 40], dtype=np.uint8))
     assert TESTING_BYTE['MYSTRUCTURE']['MYINT'] == 7
+
+
+@pytest.mark.parametrize(('tag', 'values', 'following'), [
+    ('PAD0', [], 101),
+    ('PAD1', [11], 102),
+    ('PAD2', [21, 22], 103),
+    ('PAD3', [31, 32, 33], 104),
+    ('PAD4', [41, 42, 43, 44], 105),
+])
+def test_byte_array_padding(tag, values, following):
+    # A byte array is stored as a counted block padded up to a multiple
+    # of 4 bytes, so lengths 0 to 4 exercise every padding width. Reading
+    # must consume the block and its padding exactly, which is checked
+    # against the int value stored after each array.
+    array = TESTING_BYTE_PADDING[tag]
+    np.testing.assert_array_equal(array, np.array(values, dtype=np.uint8))
+    assert array.dtype == np.uint8
+    assert TESTING_BYTE_PADDING[f'AFTER{tag[-1]}'] == following
+
+
+def test_byte_scalar_empty_block_error():
+    # A scalar byte whose counted block is empty is malformed.
+    with pytest.raises(ValueError, match='scalar byte'):
+        genx.read_genx(get_test_filepath('byte_scalar_empty_sample.genx'))
+
+
+def test_byte_scalar_long_block_error():
+    # A scalar byte whose counted block holds more than one byte is
+    # malformed; the extra bytes must not be silently discarded.
+    with pytest.raises(ValueError, match='scalar byte'):
+        genx.read_genx(get_test_filepath('byte_scalar_long_sample.genx'))
 
 
 def test_date():
