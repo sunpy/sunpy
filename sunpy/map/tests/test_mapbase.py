@@ -2520,6 +2520,7 @@ def test_genericmap_subclass_sig_rewriting():
                           pytest.param(("data", "wcs"), {}, False, id="positional argument with 'wcs' (new sig)"),
                           pytest.param(("data",), {"header": "meta"}, True, id="keyword argument header (old sig)"),
                           pytest.param(("data",), {"meta": "meta"}, False, id="keyword argument meta (new sig)"),
+                          pytest.param(("data",), {"meta": "meta", "wcs": "wcs"}, False, id="both meta and wcs (identical)"),
                           ])
 
 def test_generic_map_both_sig(simple_map, args, kwargs, deprecated):
@@ -2557,3 +2558,49 @@ def test_generic_map_constructed_from_wrapped_wcs(simple_map):
         smap.wcs.pixel_to_world_values(0, 0),
         simple_map.wcs.pixel_to_world_values(0, 0),
     )
+
+
+@pytest.fixture
+def simple_map_2():
+    """
+    A simple 9x9 map, with its center at (0, 0),
+    and scaled differently in each direction.
+    """
+    data = np.arange(81).reshape((9, 9))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00', unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU, frame='heliographic_stonyhurst'))
+    ref_pix = [4, 4] * u.pix
+    scale = [4, 2] * u.arcsec / u.pix
+    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
+    return sunpy.map.Map(data, header)
+
+
+def test_wcs_arg_overrides_meta(simple_map, simple_map_2):
+    """
+    Test that the wcs argument wins, when also passed with meta.
+    """
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, wcs=simple_map_2.wcs)
+    assert u.allclose(smap.scale, [4, 2] * u.arcsec / u.pix)
+
+
+def test_wcs_arg_sip(aia171_test_map):
+    wcs1 = aia171_test_map.wcs
+    header_sip = wcs1.to_header()
+    k1 = -7e-12
+
+    header_sip["CTYPE1"] = header_sip["CTYPE1"] + "-SIP"
+    header_sip["CTYPE2"] = header_sip["CTYPE2"] + "-SIP"
+    header_sip['A_ORDER'] = 3
+    header_sip['B_ORDER'] = 3
+    header_sip['A_3_0'] = -k1
+    header_sip['A_1_2'] = -k1
+    header_sip['B_0_3'] = -k1
+    header_sip['B_2_1'] = -k1
+    header_sip['A_DMAX'] = 1.0
+    header_sip['B_DMAX'] = 1.0
+
+    sip_wcs = astropy.wcs.WCS(header_sip)
+
+    smap = GenericMap(aia171_test_map.data, wcs=sip_wcs)
+    np.testing.assert_allclose(smap.wcs.sip.a, sip_wcs.sip.a)
+    np.testing.assert_allclose(smap.wcs.sip.b, sip_wcs.sip.b)
