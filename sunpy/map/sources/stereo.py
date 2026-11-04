@@ -35,8 +35,36 @@ class EUVIMap(GenericMap):
         euvi_map.plot()
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
         self.plot_settings['cmap'] = f'euvi{int(self.wavelength.value):d}'
@@ -89,8 +117,36 @@ class CORMap(GenericMap):
     * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`__
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
         self.plot_settings['cmap'] = f'stereocor{self.detector[-1]!s}'
@@ -127,8 +183,36 @@ class HIMap(GenericMap):
     * `HI Instrument Page <https://www.stereo.rl.ac.uk/>`__
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
 
         self._nickname = f"{self.detector}-{self.observatory[-1]}"
         self.plot_settings['cmap'] = f'stereohi{self.detector[-1]!s}'
