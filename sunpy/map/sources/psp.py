@@ -30,8 +30,36 @@ class WISPRMap(GenericMap):
     * :cite:t:`vourlidas_wide-field_2016`
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
 
         self.plot_settings['norm'] = ImageNormalize(
             stretch=AsinhStretch(a=0.001), vmin=0)
