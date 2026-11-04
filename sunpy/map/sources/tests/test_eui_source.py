@@ -7,6 +7,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import EUIMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 header_list = [
@@ -73,3 +74,10 @@ def test_norm_clip(eui_map):
 def test_wcs(eui_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     eui_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(eui_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = EUIMap(eui_map.data, eui_map.meta)
+    assert isinstance(smap, EUIMap)

@@ -8,6 +8,7 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.mlso import KCorMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -77,3 +78,10 @@ def test_observer_coordinate(kcor):
     # The observer coordinate should now no longer be the default observer coordinate
     assert_quantity_allclose(kcor.observer_coordinate.radius, 1*u.AU)
     assert_quantity_allclose(kcor.observer_coordinate.lat, kcor.meta['crlt_obs']*u.deg)
+
+
+def test_old_sig_sources(kcor):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = KCorMap(kcor.data, kcor.meta)
+    assert isinstance(smap, KCorMap)
