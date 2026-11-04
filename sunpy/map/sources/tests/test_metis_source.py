@@ -16,7 +16,7 @@ from astropy.visualization import ImageNormalize
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.solo import METISMap
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from .helpers import _test_private_date_setters
 
 metis_vl_tb_header = get_test_filepath("solo_L2_metis-vl-tb_20220322T211301_V01.header")
@@ -196,3 +196,10 @@ def test_mask_uses_field_stop_center_dr2(metis_test_data, minimal_metis_header):
 
 def test_private_date_setters(metis_map):
     _test_private_date_setters(metis_map)
+
+
+def test_old_sig_sources(metis_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = METISMap(metis_map.data, metis_map.meta)
+    assert isinstance(smap, METISMap)

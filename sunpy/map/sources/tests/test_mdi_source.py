@@ -8,6 +8,7 @@ from astropy.coordinates import Angle
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.soho import MDIMap, MDISynopticMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 # The observer is now resolved when the map is constructed rather than on first
@@ -98,3 +99,17 @@ def test_unit_synoptic(mdi_synoptic):
 
 def test_private_date_setters_synoptic(mdi_synoptic):
     _test_private_date_setters(mdi_synoptic)
+
+
+def test_old_sig_sources(mdi):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = MDIMap(mdi.data, mdi.meta)
+    assert isinstance(smap, MDIMap)
+
+
+def test_old_sig_sources_synoptic(mdi_synoptic):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = MDISynopticMap(mdi_synoptic.data, mdi_synoptic.meta)
+    assert isinstance(smap, MDISynopticMap)
