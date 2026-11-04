@@ -6,6 +6,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.sdo import HMISynopticMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 # The observer is now resolved when the map is constructed rather than on first
@@ -65,3 +66,10 @@ def test_unit(hmi_synoptic):
 def test_wcs(hmi_synoptic):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     hmi_synoptic.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(hmi_synoptic):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = HMISynopticMap(hmi_synoptic.data, hmi_synoptic.meta)
+    assert isinstance(smap, HMISynopticMap)

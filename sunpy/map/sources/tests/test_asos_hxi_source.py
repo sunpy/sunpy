@@ -10,7 +10,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.asos import HXIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
 
@@ -105,3 +105,10 @@ def test_new_instance_preserves_plot_settings(hxi_map):
 def test_wcs(hxi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     hxi_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(hxi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = HXIMap(hxi_map.data, hxi_map.meta)
+    assert isinstance(smap, HXIMap)

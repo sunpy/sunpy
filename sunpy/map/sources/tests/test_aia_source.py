@@ -11,6 +11,7 @@ from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.tests.helpers import SKIP_GLYMUR
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 params = [get_test_filepath("aia_171_level1.fits")]
@@ -95,3 +96,10 @@ def test_missing_tobs(aia_map):
     new_meta.pop('T_OBS')
     new_aia_map = aia_map._new_instance(aia_map.data, new_meta)
     assert new_aia_map.reference_date == super(type(new_aia_map), new_aia_map).reference_date
+
+
+def test_old_sig_sources(aia_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = AIAMap(aia_map.data, aia_map.meta)
+    assert isinstance(smap, AIAMap)

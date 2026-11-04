@@ -3,6 +3,7 @@ import pytest
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import SOTMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 SOT_LOADABLE_HEADERS = {
@@ -89,3 +90,10 @@ def test_private_date_setters(sot_map):
 def test_wcs(sot_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     sot_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(sot):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SOTMap(sot.data, sot.meta)
+    assert isinstance(smap, SOTMap)

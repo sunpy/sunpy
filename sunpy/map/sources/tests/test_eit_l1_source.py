@@ -8,6 +8,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import EITL1Map
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -82,3 +83,10 @@ def test_l1_eit_l1_map_colormaps():
     assert eit_l1_map.plot_settings["cmap"] == "sohoeit284"
     eit_l1_map = get_dummy_map_from_header(get_test_filepath("EIT_header/SOHO_EIT_304_20070601T121937_L1.header"))
     assert eit_l1_map.plot_settings["cmap"] == "sohoeit304"
+
+
+def test_old_sig_sources(eit_l1_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = EITL1Map(eit_l1_map.data, eit_l1_map.meta)
+    assert isinstance(smap, EITL1Map)
