@@ -1652,6 +1652,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
             "such coordinates to be interpreted as 3D coordinates."
         )
+        pixel_corners = [self.wcs.world_to_pixel(corner) for corner in world_corners]
         if np.any(np.isnan(pixel_corners)):
             raise ValueError(msg)
 
