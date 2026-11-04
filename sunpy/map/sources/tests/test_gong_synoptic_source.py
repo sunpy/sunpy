@@ -4,6 +4,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.gong import GONGSynopticMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -58,3 +59,10 @@ def test_spatial_units(gong_synoptic):
 def test_wcs(gong_synoptic):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     gong_synoptic.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(gong_synoptic):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = GONGSynopticMap(gong_synoptic.data, gong_synoptic.meta)
+    assert isinstance(smap, GONGSynopticMap)

@@ -5,6 +5,7 @@ import pytest
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import HIMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -55,3 +56,10 @@ def test_norm_clip(hi_map):
 def test_wcs(hi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     hi_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(hi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = HIMap(hi_map.data, hi_map.meta)
+    assert isinstance(smap, HIMap)

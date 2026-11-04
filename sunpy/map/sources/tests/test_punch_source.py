@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.punch import PUNCHMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -54,3 +55,10 @@ def test_wcs(punch_map):
 
 def test_private_date_setters(punch_map):
     _test_private_date_setters(punch_map)
+
+
+def test_old_sig_sources(punch_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = PUNCHMap(punch_map.data, punch_map.meta)
+    assert isinstance(smap, PUNCHMap)

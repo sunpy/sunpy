@@ -1,13 +1,14 @@
 """
 Test cases for Yohkoh SXTMap subclass
 """
+
 import pytest
 
 import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.yohkoh import SXTMap
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
 
@@ -76,3 +77,11 @@ def test_dsun(sxt_map):
 def test_wcs(sxt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     sxt_map.wcs.pixel_to_world(0, 0)
+
+
+@pytest.mark.filterwarnings("ignore:Missing CTYPE")
+def test_old_sig_sources(sxt_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SXTMap(sxt_map.data, sxt_map.meta)
+    assert isinstance(smap, SXTMap)
