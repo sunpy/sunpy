@@ -58,8 +58,36 @@ class AIAMap(GenericMap):
         amap.plot(clip_interval=(1.25, 99.5)*u.percent)
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+        data=data,
+        wcs=wcs,
+        uncertainty=uncertainty,
+        mask=mask,
+        meta=meta,
+        unit=unit,
+        copy=copy,
+        psf=psf,
+        extra_coords=extra_coords,
+        global_coords=global_coords,
+        plot_settings=plot_settings,
+        **kwargs,
+    )
         # Fill in some missing info
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
@@ -144,8 +172,36 @@ class HMIMap(GenericMap):
         hmi_map.plot()
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
         if self.unit is not None and self.unit.is_equivalent(u.T):
             # Avoid JP2K images not having a norm due to UNIT8 data
             # This means they are not scaled correctly.
@@ -241,8 +297,36 @@ class HMISynopticMap(HMIMap):
     * `JSOC's HMI Synoptic Charts <http://jsoc.stanford.edu/HMI/LOS_Synoptic_charts.html>`__
     """
 
-    def __init__(self, data, **kwargs):
-        super().__init__(data, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
         self.plot_settings['cmap'] = 'hmimag'
         self.plot_settings['norm'] = ImageNormalize(vmin=-1.5e3, vmax=1.5e3)
 
