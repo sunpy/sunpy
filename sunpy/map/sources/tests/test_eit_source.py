@@ -9,6 +9,7 @@ import sunpy.map
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import EITMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 # The observer is now resolved when the map is constructed rather than on first
@@ -79,3 +80,10 @@ def test_old_eit_date():
     eit_map = get_dummy_map_from_header(get_test_filepath("seit_00171_fd_19961211_1900.header"))
     assert eit_map.date.value == '1996-12-11T19:00:14.254'
     assert eit_map.reference_date.value == '1996-12-11T19:00:14.254'
+
+
+def test_old_sig_sources(eit_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = EITMap(eit_map.data, eit_map.meta)
+    assert isinstance(smap, EITMap)

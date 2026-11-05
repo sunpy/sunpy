@@ -9,6 +9,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -137,3 +138,10 @@ def test_memmap():
     accessed = process.memory_info()
     assert accessed.vms - instantiated.vms < 1e6  # The addressable memory has not changed
     assert accessed.rss - instantiated.rss > 8e6  # but the array has now been read
+
+
+def test_old_sig_sources(hmi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = HMIMap(hmi_map.data, hmi_map.meta)
+    assert isinstance(smap, HMIMap)
