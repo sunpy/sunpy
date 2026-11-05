@@ -697,8 +697,11 @@ class GenericMap(MapMetaMixin, NDCube):
         unwrapped.wcs.set()
         # relax=True so non-standard keywords (e.g. SIP) are kept rather than warned about
         new_header = unwrapped.to_header(relax=True)
+        # A WCS built from a header without NAXIS does not know the shape, in which
+        # case we can take the shape from the shape of the data
+        pixel_shape = unwrapped.pixel_shape or self.data.shape[::-1]
         for n in range(1, unwrapped.naxis + 1):
-            new_header[f"NAXIS{n}"] = unwrapped._naxis[n - 1]
+            new_header[f"NAXIS{n}"] = pixel_shape[n - 1]
             # The new WCS may not have preserved units (e.g. it is in degrees), so
             # convert it into the units the metadata already uses.
             meta_unit = self.meta.get(f"cunit{n}")
@@ -741,12 +744,13 @@ class GenericMap(MapMetaMixin, NDCube):
         to_drop = ['CROTA1', 'CROTA2'] if pc_changed else []
         if pc_changed or cdelt_changed:
             to_drop += ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
-        if any(key.lower() in self.meta for key in to_drop):
-            for key in to_drop:
-                self.meta.pop(key, None)
-            # Write the whole linear transform, as the entries that did not change
-            # were previously implied by the keys just dropped.
-            changed_header.update({f"PC{i}_{j}": pc[i - 1, j - 1] for i in (1, 2) for j in (1, 2)})
+            dropped = [key for key in to_drop if self.meta.pop(key, None) is not None]
+            # Write the whole linear transform. The header leaves out PC entries at
+            # their default values, so an entry changed back to its default (e.g. the
+            # identity) would otherwise keep its old value in the metadata, as would
+            # the entries previously implied by the keys just dropped.
+            if pc_changed or dropped:
+                changed_header.update({f"PC{i}_{j}": pc[i - 1, j - 1] for i in (1, 2) for j in (1, 2)})
             changed_header.update({k: v for k, v in new_header.items() if k.startswith("CDELT")})
 
         # Similarly the new WCS carries its own PV values, so if they differ, replace
