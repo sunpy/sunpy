@@ -14,6 +14,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.wcs import WCS
+from astropy.wcs.wcsapi import SlicedLowLevelWCS
 
 import sunpy.coordinates
 import sunpy.map
@@ -151,8 +152,48 @@ def test_return_footprint(aia171_test_map, hpc_header):
 
 
 def test_invalid_inputs(aia171_test_map, hpc_header):
-    with pytest.raises(ValueError, match="The specified algorithm must be one of"):
+    with pytest.raises(ValueError, match="is not valid, it must be one of"):
         aia171_test_map.reproject_to(hpc_header, algorithm='something')
+    with pytest.raises(ValueError, match="The allowed options for `auto_extent`"):
+        aia171_test_map.reproject_to(hpc_header, auto_extent='something')
+
+
+def test_reproject_to_sliced_wcs(aia171_test_map):
+    # A WCS wrapper should be unwrapped rather than treated as a header
+    sliced = SlicedLowLevelWCS(aia171_test_map.wcs, np.s_[10:60, 10:60])
+
+    out = aia171_test_map.reproject_to(sliced)
+
+    assert out.data.shape == (50, 50)
+    assert_quantity_allclose(out.reference_pixel.x, aia171_test_map.reference_pixel.x - 10 * u.pix)
+
+
+def test_reproject_to_metadata_comes_from_the_target(aia171_test_map, hpc_header):
+    # The result is on a different grid, so metadata describing the old one is dropped
+    out = aia171_test_map.reproject_to(hpc_header)
+
+    assert "instrume" not in out.meta
+    assert "datamax" not in out.meta
+    assert out.meta["naxis1"] == out.data.shape[1]
+    assert out.meta["naxis2"] == out.data.shape[0]
+
+
+def test_reproject_to_result_can_be_operated_on(aia171_test_map, hpc_header):
+    # The class has to match the metadata, since slicing and friends rebuild the map
+    # from it. See https://github.com/sunpy/sunpy/pull/8869
+    out = aia171_test_map.reproject_to(hpc_header)
+
+    assert type(out) is sunpy.map.GenericMap
+    assert out[10:20, 10:20].data.shape == (10, 10)
+    assert out.rotate(1 * u.deg) is not None
+
+
+def test_reproject_to_keeps_plot_settings(aia171_test_map, hpc_header):
+    # The source class sets plot_settings in its constructor, so they have to be
+    # applied to the result afterwards or a user's changes are overwritten
+    aia171_test_map.plot_settings["cmap"] = "viridis"
+
+    assert aia171_test_map.reproject_to(hpc_header).plot_settings["cmap"] == "viridis"
 
 
 def test_rsun_mismatch_warning(aia171_test_map, hpc_header):
@@ -291,8 +332,7 @@ def m_eit_2():
 
 def test_reproject_to_preserve_date_obs(m_eit_1, m_eit_2):
     """Test that preserve_date_obs preserves the date of the original date in DATE-OBS"""
-    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
-        m_2_r = m_eit_2.reproject_to(m_eit_1.wcs, preserve_date_obs=True)
+    m_2_r = m_eit_2.reproject_to(m_eit_1.wcs, preserve_date_obs=True)
     assert m_2_r.date == m_eit_2.date
     assert m_2_r.reference_date == m_eit_1.date_average
     assert m_2_r.coordinate_frame.obstime == m_eit_1.coordinate_frame.obstime
@@ -300,8 +340,7 @@ def test_reproject_to_preserve_date_obs(m_eit_1, m_eit_2):
 
 def test_reproject_to_preserve_date_obs_target_has_no_date_avg(m_eit_1_no_date_avg, m_eit_2):
     """Test that date is preserved even when target WCS does not have a date-avg"""
-    with pytest.warns(SunpyUserWarning, match="rsun mismatch detected: "):
-        m_2_r = m_eit_2.reproject_to(m_eit_1_no_date_avg.wcs, preserve_date_obs=True)
+    m_2_r = m_eit_2.reproject_to(m_eit_1_no_date_avg.wcs, preserve_date_obs=True)
     assert m_2_r.date == m_eit_2.date
     assert m_2_r.reference_date == m_eit_1_no_date_avg.date
     assert m_2_r.coordinate_frame.obstime == m_eit_1_no_date_avg.coordinate_frame.obstime
