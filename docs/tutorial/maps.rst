@@ -226,12 +226,12 @@ The WCS is accessible as an attribute:
     <BLANKLINE>
     Number of WCS axes: 2
     CTYPE : 'HPLN-TAN' 'HPLT-TAN'
-    CUNIT : 'deg' 'deg'
-    CRVAL : 0.00089530541880571 0.00038493926472939
+    CUNIT : 'arcsec' 'arcsec'
+    CRVAL : 3.223099507700556 1.385781353025793
     CRPIX : 512.5 512.5
-    PC1_1 PC1_2  : 0.99999706448085 0.0024230207763071
-    PC2_1 PC2_2  : -0.0024230207763071 0.99999706448085
-    CDELT : 0.00066744222222222 0.00066744222222222
+    PC1_1 PC1_2  : 0.9999970644808501 0.0024230207763071276
+    PC2_1 PC2_2  : -0.0024230207763071276 0.9999970644808501
+    CDELT : 2.402792 2.402792
     NAXIS : 1024  1024
 
 WCS is a fairly complex topic, but all we need to know for now is that the WCS provides the transformation between the pixel coordinates of the image and physical or "world" coordinates.
