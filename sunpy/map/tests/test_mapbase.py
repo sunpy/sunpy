@@ -251,6 +251,46 @@ def test_set_wcs_scale_replaces_cd(simple_map, cd):
     assert u.allclose(smap.scale[1], 2 * original_scale[1])
 
 
+def test_set_wcs_identity_pc_replaces_rotated_pc(aia171_test_map):
+    # The header leaves out PC entries at their default values, so rotating a map
+    # back to the identity must still overwrite the PC values in the metadata.
+    smap = deepcopy(aia171_test_map)
+    smap.meta.pop("crota2")
+    rotation = [[0, -1], [1, 0]]
+    smap.meta.update({f"pc{i}_{j}": rotation[i - 1][j - 1] for i in (1, 2) for j in (1, 2)})
+
+    target = smap.wcs.deepcopy()
+    target.wcs.pc = np.identity(2)
+    smap.wcs = target
+
+    assert_allclose(smap.rotation_matrix, np.identity(2))
+
+
+def test_set_wcs_scale_keeps_crota(aia171_test_map):
+    # Only the scale changes, so CROTA still describes the rotation and PC must not
+    # be added alongside it.
+    smap = deepcopy(aia171_test_map)
+    target = smap.wcs.deepcopy()
+    target.wcs.cdelt = 2 * target.wcs.cdelt
+    smap.wcs = target
+
+    assert smap.meta["crota2"] == aia171_test_map.meta["crota2"]
+    assert not {"pc1_1", "pc1_2", "pc2_1", "pc2_2"} & smap.meta.keys()
+    assert u.allclose(smap.scale[0], 2 * aia171_test_map.scale[0])
+
+
+def test_set_wcs_without_shape_keeps_naxis(aia171_test_map):
+    # A WCS built from a header does not know its shape, as the header leaves out
+    # NAXIS, so the metadata must keep describing the shape of the data.
+    smap = deepcopy(aia171_test_map)
+    target = astropy.wcs.WCS(smap.wcs.to_header())
+    assert target.pixel_shape is None
+    smap.wcs = target
+
+    assert smap.meta["naxis1"] == smap.data.shape[1]
+    assert smap.meta["naxis2"] == smap.data.shape[0]
+
+
 def test_set_wcs_cdelt_in_metadata_units(aia171_test_map):
     # The WCS keeps the units of the metadata (arcsec here), so plain floats set on
     # it are read in those units rather than in degrees.
