@@ -88,15 +88,14 @@ def test_new_instance_preserves_plot_settings(hxi_map):
     # that _new_instance persists the old custom plot_settings
     hxi_map.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
     hxi_map.plot_settings['cmap'] = 'inferno'
-    new_hxi_map = hxi_map._new_instance(hxi_map.data,
-                                        hxi_map.meta,
+    new_hxi_map = hxi_map._new_instance(data=hxi_map.data, meta=hxi_map.meta,
                                         plot_settings=hxi_map.plot_settings)
     assert new_hxi_map.plot_settings['norm'].vmin == hxi_map.plot_settings['norm'].vmin
     assert new_hxi_map.plot_settings['norm'].vmax == hxi_map.plot_settings['norm'].vmax
     assert new_hxi_map.plot_settings['cmap'] == hxi_map.plot_settings['cmap']
     # If no plot settings are explicitly passed, the plot_settings should fall back to those
     # in the constructor
-    new_hxi_map = hxi_map._new_instance(hxi_map.data, hxi_map.meta)
+    new_hxi_map = hxi_map._new_instance(data=hxi_map.data, meta=hxi_map.meta)
     assert new_hxi_map.plot_settings['norm'].vmin is None
     assert new_hxi_map.plot_settings['norm'].vmax is None
     assert new_hxi_map.plot_settings['cmap'] == new_hxi_map._get_cmap_name()
