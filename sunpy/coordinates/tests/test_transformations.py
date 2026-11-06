@@ -955,7 +955,7 @@ def test_magnetic_sunspice(start_class, start_vector, end_class, end_vector):
     start_repr = SphericalRepresentation(*start_vector)
     end_repr = SphericalRepresentation(*end_vector)
 
-    start = SkyCoord(start_repr, frame=start_class(obstime=t))
+    start = SkyCoord(start_repr, frame=start_class, obstime=t, magnetic_model='igrf13')
     if end_class == start_class:
         start = start.itrs
     end = start.transform_to(end_class)
