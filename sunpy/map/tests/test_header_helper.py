@@ -91,6 +91,37 @@ def test_rotation_angle_rectangular_pixels(map_data, hpc_coord):
     np.testing.assert_allclose(wcs.wcs.pc, np.sqrt(0.5) * np.array([[1, -2.5], [0.4, 1]]), atol=1e-5)
 
 
+def test_rotation_angle_hpr():
+    coordinate = SkyCoord(
+        45*u.deg, -89*u.deg,
+        frame=frames.HelioprojectiveRadial,
+        observer="earth",
+        obstime="2020-01-01"
+    )
+
+    scale = u.Quantity([
+        0.01*u.deg/u.pix,
+        20*u.arcsec/u.pix
+    ])
+
+    header = make_fitswcs_header(
+        (12, 16),
+        coordinate,
+        scale=scale,
+        rotation_angle=30*u.deg
+    )
+
+    wcs = WCS(header)
+
+    # Verify rotation when the coordinate axes use different angular units.
+    expected_pc = np.array([
+        [np.sqrt(3)/2, -5/18],
+        [9/10, np.sqrt(3)/2]
+    ])
+
+    np.testing.assert_allclose(wcs.wcs.pc, expected_pc, atol=1e-10)
+
+
 def test_rotation_matrix(map_data, hpc_coord):
     header = make_fitswcs_header(map_data, hpc_coord,
                                  rotation_matrix=np.array([[1, 0], [0, 1]]))
