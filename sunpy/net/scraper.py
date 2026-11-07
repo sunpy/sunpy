@@ -8,7 +8,7 @@ from ftplib import FTP
 from time import sleep
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import urlopen
+from urllib.request import url2pathname, urlopen
 
 from bs4 import BeautifulSoup
 
@@ -91,10 +91,10 @@ class Scraper:
     """
     def __init__(self, format, **kwargs):
         pattern = format.format(**kwargs)
-        datetime_pattern = pattern
+        datetime_pattern = pattern.replace('%', '%%')
         for k, v in PARSE_TIME_CONVERSIONS.items():
             if k in datetime_pattern:
-                datetime_pattern = datetime_pattern.replace(k,v)
+                datetime_pattern = datetime_pattern.replace(k, v)
         self.datetime_pattern = datetime_pattern
         # so that they don't conflict later on, either one can help in extracting year
         if "year:4d" in pattern and "year:2d" in pattern:
@@ -148,7 +148,7 @@ class Scraper:
             directorypattern = '/'.join(self.datetime_pattern.split('/')[:-1]) + '/'
         timestep = extract_timestep(directorypattern)
         if timestep is None:
-            return [directorypattern]
+            return [directorypattern.replace('%%', '%')]
         else:
             directories = []
             cur = date_floor(timerange.start, timestep)
@@ -263,7 +263,7 @@ class Scraper:
         filepaths = list()
         for directory in directories:
             try:
-                for file_i in os.listdir(directory):
+                for file_i in os.listdir(url2pathname(directory)):
                     fullpath = directory + file_i
                     if self._url_follows_pattern(fullpath):
                         if self._check_timerange(fullpath, timerange):
