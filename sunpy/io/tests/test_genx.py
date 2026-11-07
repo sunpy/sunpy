@@ -9,6 +9,7 @@ from sunpy.io.special import genx
 TESTING = genx.read_genx(get_test_filepath('generated_sample.genx'))
 TESTING_BYTE = genx.read_genx(get_test_filepath('byte_sample.genx'))
 TESTING_BYTE_PADDING = genx.read_genx(get_test_filepath('byte_padding_sample.genx'))
+TESTING_BYTE_NESTED = genx.read_genx(get_test_filepath('byte_nested_sample.genx'))
 
 
 def test_skeleton():
@@ -117,6 +118,42 @@ def test_byte_scalar_long_block_error():
     # malformed; the extra bytes must not be silently discarded.
     with pytest.raises(ValueError, match='scalar byte'):
         genx.read_genx(get_test_filepath('byte_scalar_long_sample.genx'))
+
+
+def test_byte_array_3d():
+    # A byte array with three dimensions is reshaped with the IDL
+    # dimensions reversed, as for the other array types.
+    array = TESTING_BYTE_NESTED['MYBYTE_3D']
+    assert array.dtype == np.uint8
+    np.testing.assert_array_equal(array,
+                                  np.arange(24, dtype=np.uint8).reshape(4, 3, 2))
+
+
+def test_byte_scalar_zero():
+    # A scalar byte holding zero is a valid value, not missing data.
+    assert TESTING_BYTE_NESTED['MYZERO'] == 0
+
+
+def test_byte_data_nested():
+    # Byte data nested inside a structure is read through the same
+    # counted-block path; the members stored after a nested scalar byte
+    # must still be read correctly.
+    structure = TESTING_BYTE_NESTED['MYSTRUCTURE']
+    assert structure['MYSCALAR_BYTE'] == 42
+    np.testing.assert_array_equal(structure['MYBYTE_ARRAY'],
+                                  np.array([7, 8, 9], dtype=np.uint8))
+    assert structure['MYINT'] == 3
+    # Byte members of an array of structures: each element is read from
+    # its own position in the stream, so elements keep distinct values.
+    structs = TESTING_BYTE_NESTED['MYSTRUCT_ARRAY']
+    assert structs[0]['MYBYTE'] == 90
+    assert structs[1]['MYBYTE'] == 91
+    np.testing.assert_array_equal(structs[0]['MYBYTES'],
+                                  np.array([1, 2], dtype=np.uint8))
+    np.testing.assert_array_equal(structs[1]['MYBYTES'],
+                                  np.array([3, 4], dtype=np.uint8))
+    # The int stored after the structure array is not corrupted.
+    assert TESTING_BYTE_NESTED['MYAFTER'] == 555
 
 
 def test_date():
