@@ -1,0 +1,2 @@
+Added support for IDL byte data (type code 1) to :func:`~sunpy.io.special.genx.read_genx`.
+genx files containing byte arrays, as written by ``savegen`` from structures holding ``bytarr`` data, previously failed with an unhelpful ``KeyError`` and can now be read.
