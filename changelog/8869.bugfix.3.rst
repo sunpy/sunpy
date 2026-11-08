@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.GenericMap.reproject_to` rejecting targets with different spatial units by constructing the result from the target WCS without an intermediate map using source metadata. Target headers now retain their specified units.
