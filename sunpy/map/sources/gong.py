@@ -74,6 +74,9 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def scale(self):
+        # Explicit units identify a WCS scale rather than a sine-latitude step.
+        if 'cunit2' in self.meta:
+            return super().scale
         # Since, this map uses the cylindrical equal-area (CEA) projection,
         # the spacing should be modified to 180/pi times the original value
         # Reference: Section 5.5, Thompson 2006
@@ -111,6 +114,9 @@ class GONGHalphaMap(GenericMap):
 
     @property
     def scale(self):
+        # Prefer explicit WCS scales over the legacy limb-fit metadata.
+        if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
+            return super().scale
         solar_r = self.meta['SOLAR-R'] * u.arcsec
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r/ (self.meta['FNDLMBMA'] * u.pixel))
@@ -203,6 +209,9 @@ class GONGMagnetogramMap(GenericMap):
 
     @property
     def scale(self):
+        # Prefer explicit WCS scales over the legacy limb-fit metadata.
+        if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
+            return super().scale
         solar_r = (self.meta['SEMIDIAM'] * u.rad).to(u.arcsec)
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r / (self.meta['FNDLMBMA'] * u.pixel))

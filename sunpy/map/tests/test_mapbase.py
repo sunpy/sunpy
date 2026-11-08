@@ -24,6 +24,8 @@ from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
 from astropy.wcs.wcsapi.wrappers import SlicedLowLevelWCS
 
+from ndcube.wcs.wrappers import ResampledLowLevelWCS
+
 import sunpy
 import sunpy.coordinates
 import sunpy.map
@@ -125,13 +127,62 @@ def test_wcs_preserves_units(aia171_test_map):
     assert_allclose(aia171_test_map.wcs.wcs.crval[0], aia171_test_map.meta["crval1"])
 
 
+@pytest.mark.parametrize("operation", ["slice", "resample"])
+def test_set_wcs_wrapped_preserves_units(aia171_test_map, operation):
+    smap = deepcopy(aia171_test_map)
+    if operation == "slice":
+        target = SlicedLowLevelWCS(smap.wcs, np.s_[1:, 2:])
+        smap._data = smap.data[1:, 2:]
+    else:
+        target = ResampledLowLevelWCS(smap.wcs, [2, 4])
+        smap._data = smap.data[::4, ::2]
+    expected = target.pixel_to_world_values(0, 0)
+    smap.wcs = target
+
+    assert smap.spatial_units == (u.arcsec, u.arcsec)
+    assert list(smap.wcs.wcs.cunit) == [u.arcsec, u.arcsec]
+    assert_allclose(smap.wcs.pixel_to_world_values(0, 0), expected)
+
+
+@pytest.mark.parametrize("header", [
+    'EIT_header/efz20040301.000010_s.header',
+    'gong_halpha.header', 'gong_magnetogram.header', 'gong_synoptic.header',
+    'lasco_c2_25299383_s.header', 'lasco_c3.header',
+])
+@pytest.mark.parametrize("operation", ["slice", "resample"])
+@pytest.mark.filterwarnings("ignore:Missing metadata for observer")
+def test_set_wcs_wrapped_legacy_sources(header, operation):
+    smap = get_dummy_map_from_header(get_test_filepath(header))
+    if isinstance(smap, sunpy.map.sources.LASCOMap):
+        smap.meta['cunit1'] = smap.meta['cunit2'] = 'ARCSEC'
+    original_units = smap.spatial_units
+    original_scale = u.Quantity(smap.scale)
+    if operation == "slice":
+        target = SlicedLowLevelWCS(smap.wcs, np.s_[1:, 2:])
+        smap._data = smap.data[1:, 2:]
+        expected_scale = original_scale
+    else:
+        target = ResampledLowLevelWCS(smap.wcs, [2, 4])
+        smap._data = smap.data[::4, ::2]
+        expected_scale = original_scale * [2, 4]
+    expected = target.pixel_to_world_values([0, 4], [0, 3])
+    smap.wcs = target
+
+    assert smap.spatial_units == original_units
+    if isinstance(smap, sunpy.map.sources.LASCOMap):
+        assert smap.meta['cunit1'] == smap.meta['cunit2'] == 'ARCSEC'
+    assert u.allclose(u.Quantity(smap.scale), expected_scale)
+    assert_allclose(smap.wcs.pixel_to_world_values([0, 4], [0, 3]), expected)
+
+
 def test_set_wcs_unchanged_leaves_meta_alone(aia171_test_map):
     smap = deepcopy(aia171_test_map)
     smap.wcs = smap.wcs.deepcopy()
     assert smap.meta == aia171_test_map.meta
 
 
-def test_set_wcs_converts_into_units_declared_by_spatial_units():
+@pytest.mark.parametrize("preserve_units", [True, False])
+def test_set_wcs_checks_implicit_cunit(preserve_units):
     """
     EIT omits CUNIT and declares arcsec by overriding `spatial_units`.
     """
@@ -142,18 +193,29 @@ def test_set_wcs_converts_into_units_declared_by_spatial_units():
 
     original_scale = smap.scale
     original_rsun = smap.rsun_meters
+    original_rsun_obs = smap.rsun_obs
 
     # Round-tripping through a header without preserve_units renders the axes in degrees
-    target = astropy.wcs.WCS(header=smap.wcs.to_header())
+    target = astropy.wcs.WCS(header=smap.wcs.to_header(), preserve_units=preserve_units)
+    if not preserve_units:
+        original_meta = smap.meta.copy()
+        with pytest.raises(ValueError, match="different spatial units"):
+            smap.wcs = target
+        assert smap.meta == original_meta
+        return
     smap.wcs = target
 
+    assert list(smap.wcs.wcs.cunit) == list(target.wcs.cunit)
+    assert smap.spatial_units == tuple(target.wcs.cunit)
     assert u.allclose(smap.scale[0], original_scale[0])
     assert u.allclose(smap.scale[1], original_scale[1])
     assert u.isclose(smap.rsun_meters, original_rsun)
+    assert u.isclose(smap.rsun_obs, original_rsun_obs)
 
 
 @pytest.mark.filterwarnings("ignore:Missing metadata for observer")
-def test_set_wcs_non_fits_cunit_read_by_spatial_units():
+@pytest.mark.parametrize("preserve_units", [True, False])
+def test_set_wcs_checks_non_fits_cunit(preserve_units):
     # LASCO files use CUNIT = 'ARCSEC', which only `spatial_units` knows how to read.
     lasco = get_dummy_map_from_header(get_test_filepath('lasco_c2_25299383_s.header'))
     meta = lasco.meta.copy()
@@ -161,11 +223,41 @@ def test_set_wcs_non_fits_cunit_read_by_spatial_units():
     smap = sunpy.map.Map(lasco.data, meta)
     original_scale = smap.scale
 
-    smap.wcs = astropy.wcs.WCS(header=smap.wcs.to_header())
+    target = astropy.wcs.WCS(header=smap.wcs.to_header(), preserve_units=preserve_units)
+    if not preserve_units:
+        original_meta = smap.meta.copy()
+        with pytest.raises(ValueError, match="different spatial units"):
+            smap.wcs = target
+        assert smap.meta == original_meta
+        return
+    smap.wcs = target
 
+    assert list(smap.wcs.wcs.cunit) == list(target.wcs.cunit)
     assert smap.meta['cunit1'] == 'ARCSEC'
     assert u.allclose(smap.scale[0], original_scale[0])
     assert u.allclose(smap.scale[1], original_scale[1])
+
+
+@pytest.mark.parametrize("units", [
+    ["deg", "arcsec"], ["arcsec", "deg"], ["deg", "deg"],
+])
+@pytest.mark.parametrize("change_rotation", [False, True])
+def test_set_wcs_rejects_different_units(aia171_test_map, units, change_rotation):
+    smap = deepcopy(aia171_test_map)
+    original_meta = smap.meta.copy()
+    original_wcs = smap.wcs
+    header = original_wcs.to_header()
+    header['CUNIT1'], header['CUNIT2'] = units
+    target = astropy.wcs.WCS(header, preserve_units=True)
+    if change_rotation:
+        target.wcs.pc = [[0, -1], [1, 0]]
+
+    with pytest.raises(ValueError, match="different spatial units"):
+        smap.wcs = target
+
+    # Validation must precede removal of any existing rotation/scale metadata.
+    assert smap.meta == original_meta
+    assert smap.wcs.to_header(relax=True) == original_wcs.to_header(relax=True)
 
 
 @pytest.mark.parametrize(("new_pv", "expected"), [
@@ -283,7 +375,7 @@ def test_set_wcs_without_shape_keeps_naxis(aia171_test_map):
     # A WCS built from a header does not know its shape, as the header leaves out
     # NAXIS, so the metadata must keep describing the shape of the data.
     smap = deepcopy(aia171_test_map)
-    target = astropy.wcs.WCS(smap.wcs.to_header())
+    target = astropy.wcs.WCS(smap.wcs.to_header(), preserve_units=True)
     assert target.pixel_shape is None
     smap.wcs = target
 

@@ -684,7 +684,8 @@ class GenericMap(MapMetaMixin, NDCube):
     def wcs(self, wcs):
         """
         Map uses the meta dict as the source of truth.
-        When setting the wcs of the map we convert it to a header and then update the header of the map.
+        Setting the WCS updates the metadata while preserving the map's spatial units.
+        Assigning a WCS with different spatial units raises `ValueError`.
         """
         # A Map is constructed with wcs=None, so there is nothing to merge in that case
         if wcs is None:
@@ -693,37 +694,22 @@ class GenericMap(MapMetaMixin, NDCube):
         unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
         # Convert to a header. wcslib omits NAXIS, so it has to be added back or the
         # metadata keeps describing the shape of the array we started with.
-        # need to call set until min astropy==8.0.2
-        unwrapped.wcs.set()
         # relax=True so non-standard keywords (e.g. SIP) are kept rather than warned about
         new_header = unwrapped.to_header(relax=True)
+        # Internal WCS operations should preserve units. Reject changes before modifying
+        # metadata, using spatial_units to handle implicit or non-FITS CUNIT values.
+        for axis, unit in enumerate(self.spatial_units, start=1):
+            incoming_unit = u.Unit(new_header.get(f"CUNIT{axis}", ""))
+            if incoming_unit != unit:
+                raise ValueError(
+                    f"Setting a WCS with different spatial units is not supported: "
+                    f"axis {axis} uses {incoming_unit}, but the map uses {unit}."
+                )
         # A WCS built from a header without NAXIS does not know the shape, in which
         # case we can take the shape from the shape of the data
         pixel_shape = unwrapped.pixel_shape or self.data.shape[::-1]
-        for n in range(1, unwrapped.naxis + 1):
-            new_header[f"NAXIS{n}"] = pixel_shape[n - 1]
-            # The new WCS may not have preserved units (e.g. it is in degrees), so
-            # convert it into the units the metadata already uses.
-            meta_unit = self.meta.get(f"cunit{n}")
-            # Sources declare how their CUNIT should be read by overriding
-            # `spatial_units`, e.g. EIT omits it and LASCO uses a non-FITS 'ARCSEC',
-            # so convert to that rather than parsing the raw keyword.
-            target_unit = self.spatial_units[n - 1] if n <= len(self.spatial_units) else None
-            if target_unit is None and meta_unit is not None:
-                target_unit = u.Unit(meta_unit)
-            if meta_unit is None and target_unit is not None:
-                meta_unit = target_unit.to_string()
-            header_unit = new_header.get(f"CUNIT{n}")
-            if target_unit is None or header_unit is None:
-                continue
-            factor = u.Unit(header_unit).to(target_unit)
-            if factor != 1:
-                keys = [f"CDELT{n}", f"CRVAL{n}"]
-                keys += [f"CD{n}_{m}" for m in range(1, unwrapped.naxis + 1)]
-                for key in keys:
-                    if key in new_header:
-                        new_header[key] *= factor
-                new_header[f"CUNIT{n}"] = meta_unit
+        for n, length in enumerate(pixel_shape, start=1):
+            new_header[f"NAXIS{n}"] = length
         # The getter hands out its cached WCS, which the caller may have edited in
         # place before assigning it back, so rebuild the current WCS from the
         # metadata rather than comparing the new WCS against itself.
@@ -732,7 +718,9 @@ class GenericMap(MapMetaMixin, NDCube):
         # Must use the same relax as new_header for the comparison below
         old_wcs_header = old_wcs.to_header(relax=True)
         # Reduce the new header to just the keys which differ from the current WCS
-        changed_header = dict(set(new_header.items()).difference(old_wcs_header.items()))
+        changed_header = {key: value for key, value in new_header.items()
+            if key not in old_wcs_header or value != old_wcs_header[key]
+        }
 
         # The WCS always expresses rotation and scale as PC and CDELT. Only when these
         # change do CROTA (rotation) and CD (rotation and scale) in the metadata stop
@@ -752,6 +740,10 @@ class GenericMap(MapMetaMixin, NDCube):
             if pc_changed or dropped:
                 changed_header.update({f"PC{i}_{j}": pc[i - 1, j - 1] for i in (1, 2) for j in (1, 2)})
             changed_header.update({k: v for k, v in new_header.items() if k.startswith("CDELT")})
+            # Explicit units distinguish WCS scales from legacy source values
+            # (e.g. GONG sine-latitude steps), while retaining existing spellings.
+            changed_header.update({k: v for k, v in new_header.items()
+                                   if k.startswith("CUNIT") and k not in self.meta})
 
         # Similarly the new WCS carries its own PV values, so if they differ, replace
         # all of the old ones rather than only updating the ones that changed.
