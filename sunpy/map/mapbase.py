@@ -1997,7 +1997,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
         if isinstance(target_wcs, (dict, astropy.io.fits.Header)):
-            target_wcs = astropy.wcs.WCS(header=target_wcs)
+            target_wcs = astropy.wcs.WCS(header=target_wcs, preserve_units=True)
         else:
             # Unwrap any wrapper classes, e.g. a SlicedLowLevelWCS, to a FITS WCS, as
             # the extent and date handling below need the FITS keywords.
@@ -2011,14 +2011,15 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
-        output = super().reproject_to(target_wcs, algorithm=algorithm,
-                                      return_footprint=return_footprint, **reproject_args)
+        # NDCube constructs its result using type(self). Use a plain NDCube so
+        # it does not combine a Map subclass's source metadata with the target WCS.
+        source = NDCube(self.data, wcs=self.wcs)
+        output = source.reproject_to(target_wcs, algorithm=algorithm,
+                                     return_footprint=return_footprint, **reproject_args)
         outmap, footprint = output if return_footprint else (output, None)
 
-        # NDCube carries this map's metadata over to the result, but the reprojected
-        # data is on a different grid, so header values describing the old one may no
-        # longer apply. Rebuild from the target WCS alone, going back through the factory
-        # so that the class matches the metadata rather than whatever was reprojected.
+        # Build from the target WCS alone, going back through the factory so that
+        # the class matches the target metadata rather than the source map.
         new_meta = MetaDict(target_wcs.to_header(relax=True))
         for n in range(1, target_wcs.naxis + 1):
             new_meta[f"NAXIS{n}"] = outmap.data.shape[::-1][n - 1]

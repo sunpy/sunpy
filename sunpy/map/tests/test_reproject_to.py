@@ -178,6 +178,26 @@ def test_reproject_to_metadata_comes_from_the_target(aia171_test_map, hpc_header
     assert out.meta["naxis2"] == out.data.shape[0]
 
 
+@pytest.mark.parametrize("target_fixture", ["hpc_header", "hgs_header"])
+@pytest.mark.parametrize("as_wcs", [False, True])
+def test_reproject_to_uses_target_units(aia171_test_map, target_fixture, as_wcs, request):
+    header = request.getfixturevalue(target_fixture)
+    # An explicit WCS may use degrees even when the header specifies arcseconds.
+    expected_wcs = WCS(header, preserve_units=not as_wcs)
+    target = expected_wcs if as_wcs else header
+    original_meta = aia171_test_map.meta.copy()
+
+    out = aia171_test_map.reproject_to(target)
+
+    assert type(out) is sunpy.map.GenericMap
+    assert out.spatial_units == tuple(expected_wcs.wcs.cunit)
+    assert out.data.shape == expected_wcs.array_shape
+    assert np.isfinite(out.data).any()
+    np.testing.assert_allclose(out.wcs.pixel_to_world_values(0, 0),
+                               expected_wcs.pixel_to_world_values(0, 0))
+    assert aia171_test_map.meta == original_meta
+
+
 def test_reproject_to_result_can_be_operated_on(aia171_test_map, hpc_header):
     # The class has to match the metadata, since slicing and friends rebuild the map
     # from it. See https://github.com/sunpy/sunpy/pull/8869
@@ -287,7 +307,8 @@ def test_reproject_to_auto_extent_wcs(aia171_test_map, auto_extent, crpix, pixel
 
     # These parts of the WCS should not change
     assert_quantity_allclose(reprojected_wcs.wcs.crval, hgs_map.wcs.wcs.crval)
-    assert_quantity_allclose(reprojected_wcs.wcs.cdelt * u.deg, 1 * u.arcsec)
+    assert list(reprojected_wcs.wcs.cunit) == [u.arcsec, u.arcsec]
+    assert_quantity_allclose(reprojected_wcs.wcs.cdelt * u.arcsec, 1 * u.arcsec)
 
     # These parts of the WCS should have changed
     assert_quantity_allclose(reprojected_wcs.wcs.crpix, crpix)
