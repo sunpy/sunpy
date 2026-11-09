@@ -417,3 +417,127 @@ def test_eitmap_does_not_match_level1_header_regression():
     # Before fix (old precedence): this incorrectly returned True
     # After fix: must be False so EITL1Map can claim it
     assert sunpy.map.sources.EITMap.is_datasource_for(None, header) is False
+
+
+def test_multi_hdu_with_ancillary_extension(tmp_path):
+    # Regression test for #8599 (e.g. CCOR-1 science data with ancillary mask HDU)
+    primary_hdr = fits.Header()
+    primary_hdr['TELESCOP'] = 'GOES-19'
+    primary_hdr['INSTRUME'] = 'CCOR-1'
+    primary_hdu = fits.PrimaryHDU(header=primary_hdr)
+
+    # Valid science image HDU
+    data1 = np.ones((50, 50), dtype=np.float32)
+    hdr1 = fits.Header()
+    hdr1['TELESCOP'] = 'GOES-19'
+    hdr1['INSTRUME'] = 'CCOR-1'
+    hdr1['DATE-OBS'] = '2026-04-07T00:00:25'
+    hdr1['CTYPE1'] = 'HPLN-TAN'
+    hdr1['CTYPE2'] = 'HPRT-TAN'
+    hdr1['CUNIT1'] = 'deg'
+    hdr1['CUNIT2'] = 'deg'
+    hdr1['CDELT1'] = 0.001
+    hdr1['CDELT2'] = 0.001
+    hdr1['CRPIX1'] = 25.0
+    hdr1['CRPIX2'] = 25.0
+    hdr1['CRVAL1'] = 0.0
+    hdr1['CRVAL2'] = 0.0
+    hdr1['HGLN_OBS'] = 0.0
+    hdr1['HGLT_OBS'] = 0.0
+    hdr1['DSUN_OBS'] = 149597870700.0
+    sci_hdu = fits.ImageHDU(data=data1, header=hdr1, name='SCI')
+
+    # Ancillary HDU missing coordinate units (e.g. data quality mask)
+    data2 = np.zeros((50, 50), dtype=np.int16)
+    hdr2 = fits.Header()
+    hdr2['TELESCOP'] = 'GOES-19'
+    hdr2['INSTRUME'] = 'CCOR-1'
+    hdr2['DATE-OBS'] = '2026-04-07T00:00:25'
+    hdr2['CTYPE1A'] = 'HPLN-TAN'
+    hdr2['CTYPE2A'] = 'HPRT-TAN'
+    hdr2['CUNIT1A'] = 'deg'
+    hdr2['CUNIT2A'] = 'deg'
+    mask_hdu = fits.ImageHDU(data=data2, header=hdr2, name='MASK')
+
+    test_file = str(tmp_path / 'multi_hdu.fits')
+    hdul = fits.HDUList([primary_hdu, sci_hdu, mask_hdu])
+    hdul.writeto(test_file)
+
+    # Loading without allow_errors should succeed and return HDU 1
+    m = sunpy.map.Map(test_file)
+    assert isinstance(m, sunpy.map.GenericMap)
+    assert m.data.shape == (50, 50)
+
+    # Loading with allow_errors should also return HDU 1 and emit a warning for HDU 2
+    with pytest.warns(SunpyUserWarning, match='One of the data, header pairs failed to validate'):
+        m_warn = sunpy.map.Map(test_file, allow_errors=True)
+    assert isinstance(m_warn, sunpy.map.GenericMap)
+    assert m_warn.data.shape == (50, 50)
+
+    # Explicitly requesting the valid HDU
+    m_hdu1 = sunpy.map.Map(test_file, hdus=1)
+    assert isinstance(m_hdu1, sunpy.map.GenericMap)
+
+    # Explicitly requesting the invalid HDU should raise MapMetaValidationError
+    with pytest.raises(sunpy.map.MapMetaValidationError):
+        sunpy.map.Map(test_file, hdus=2)
+
+    with pytest.warns(SunpyUserWarning, match='One of the data, header pairs failed to validate'):
+        with pytest.raises(RuntimeError, match='No maps loaded'):
+            sunpy.map.Map(test_file, hdus=2, allow_errors=True)
+
+
+def test_multi_hdu_all_broken(tmp_path):
+    primary_hdu = fits.PrimaryHDU()
+    # HDU 1 missing CUNIT
+    hdu1 = fits.ImageHDU(data=np.ones((20, 20)), header=fits.Header())
+    # HDU 2 missing CUNIT
+    hdu2 = fits.ImageHDU(data=np.zeros((20, 20)), header=fits.Header())
+
+    test_file = str(tmp_path / 'all_broken.fits')
+    hdul = fits.HDUList([primary_hdu, hdu1, hdu2])
+    hdul.writeto(test_file)
+
+    with pytest.raises(sunpy.map.MapMetaValidationError):
+        sunpy.map.Map(test_file)
+
+    with pytest.warns(SunpyUserWarning, match='One of the data, header pairs failed to validate'):
+        with pytest.raises(RuntimeError, match='No maps loaded'):
+            sunpy.map.Map(test_file, allow_errors=True)
+
+
+def test_multi_hdu_multiple_valid(tmp_path):
+    primary_hdr = fits.Header()
+    primary_hdu = fits.PrimaryHDU(header=primary_hdr)
+
+    def create_valid_header():
+        hdr = fits.Header()
+        hdr['DATE-OBS'] = '2026-04-07T00:00:25'
+        hdr['CTYPE1'] = 'HPLN-TAN'
+        hdr['CTYPE2'] = 'HPRT-TAN'
+        hdr['CUNIT1'] = 'deg'
+        hdr['CUNIT2'] = 'deg'
+        hdr['CDELT1'] = 0.001
+        hdr['CDELT2'] = 0.001
+        hdr['CRPIX1'] = 25.0
+        hdr['CRPIX2'] = 25.0
+        hdr['CRVAL1'] = 0.0
+        hdr['CRVAL2'] = 0.0
+        hdr['HGLN_OBS'] = 0.0
+        hdr['HGLT_OBS'] = 0.0
+        hdr['DSUN_OBS'] = 149597870700.0
+        return hdr
+
+    sci1 = fits.ImageHDU(data=np.ones((50, 50)), header=create_valid_header(), name='SCI1')
+    mask = fits.ImageHDU(data=np.zeros((50, 50)), header=fits.Header(), name='MASK')
+    sci2 = fits.ImageHDU(data=np.full((50, 50), 2.0), header=create_valid_header(), name='SCI2')
+
+    test_file = str(tmp_path / 'multi_valid.fits')
+    hdul = fits.HDUList([primary_hdu, sci1, mask, sci2])
+    hdul.writeto(test_file)
+
+    maps = sunpy.map.Map(test_file)
+    assert isinstance(maps, list)
+    assert len(maps) == 2
+    assert all(isinstance(m, sunpy.map.GenericMap) for m in maps)
+

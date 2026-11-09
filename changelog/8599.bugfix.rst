@@ -1,0 +1,1 @@
+Multi-extension FITS files containing valid image HDUs alongside ancillary data HDUs (such as CCOR-1 Level 3 science files with data quality masks) can now be loaded directly with :class:~sunpy.map.Map without failing on the non-map HDUs.

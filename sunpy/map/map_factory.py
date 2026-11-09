@@ -99,7 +99,7 @@ class MapFactory(BasicRegistrationFactory):
 
     def _read_file(self, fname, **kwargs):
         """
-        Read in a file name and return the list of (data, meta) pairs in that file.
+        Read in a file name and return the list of maps or (data, meta) pairs in that file.
         """
         # File gets read here. This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
@@ -140,7 +140,34 @@ class MapFactory(BasicRegistrationFactory):
         if not new_pairs:
             raise NoMapsInFileError(f"Found no HDUs with >= 2D data in '{fname}'.")
 
-        return new_pairs
+        maps = []
+        errors = []
+        allow_errors = kwargs.get("allow_errors", False)
+        widget_kwargs = kwargs.copy()
+        widget_kwargs.pop("allow_errors", None)
+        widget_kwargs.pop("silence_errors", None)
+        widget_kwargs.pop("hdus", None)
+
+        for data, meta in new_pairs:
+            try:
+                new_map = self._check_registered_widgets(data, meta, **widget_kwargs)
+                maps.append(new_map)
+            except (NoMatchError, MultipleMatchError, ValidationFunctionError, MapMetaValidationError) as e:
+                errors.append(e)
+                if allow_errors:
+                    warn_user(f"One of the data, header pairs failed to validate with: {e}")
+
+        if maps:
+            for e in errors:
+                log.debug(f"An HDU in '{fname}' failed to validate as a Map: {e}")
+            return maps
+
+        if errors:
+            if not allow_errors:
+                raise errors[0]
+            return []
+
+        return maps
 
     def _validate_meta(self, meta):
         """
