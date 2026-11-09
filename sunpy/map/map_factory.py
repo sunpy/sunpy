@@ -163,12 +163,9 @@ class MapFactory(BasicRegistrationFactory):
                 log.debug(f"An HDU in '{fname}' failed to validate as a Map: {e}")
             return maps
 
-        if errors:
-            if not allow_errors:
-                raise errors[0]
-            return []
-
-        return maps
+        if not allow_errors and errors:
+            raise errors[0]
+        return []
 
     def _validate_meta(self, meta):
         """
