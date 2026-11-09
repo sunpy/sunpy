@@ -110,11 +110,12 @@ class MapFactory(BasicRegistrationFactory):
             filetype = detect_filetype(fname)
             if filetype == "asdf":
                 import asdf
+
                 if minversion(asdf, "3.1.0"):
                     _NO_MEMMAP_KWARGS = {"memmap": False, "lazy_load": False}
                 else:
                     _NO_MEMMAP_KWARGS = {"copy_arrays": True, "lazy_load": False}
-                with asdf.open(fname,** _NO_MEMMAP_KWARGS) as af:
+                with asdf.open(fname, **_NO_MEMMAP_KWARGS) as af:
                     pairs = [value for value in af.tree.values() if isinstance(value, GenericMap)]
                     return pairs
             else:
@@ -225,7 +226,7 @@ class MapFactory(BasicRegistrationFactory):
                     )
 
                 # The next two items are data and a header
-                data, header = args[i:i+2]
+                data, header = args[i : i + 2]
                 if not isinstance(header, WCS) and not self._validate_meta(header):
                     raise ValueError(
                         "Array inputs to sunpy.map.Map must be followed by a header-like "
@@ -409,5 +410,6 @@ class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files"""
 
 
-Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,
-                 additional_validation_functions=["is_datasource_for"])
+Map = MapFactory(
+    registry=GenericMap._registry, default_widget_type=GenericMap, additional_validation_functions=["is_datasource_for"]
+)
