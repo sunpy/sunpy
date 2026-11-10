@@ -440,6 +440,19 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         # We can get superfluous kwargs from the factories so strip them out here
         params = list(inspect.signature(NDCube).parameters)
         ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        # `.unit` reads BUNIT, not the value NDCube stores, so an explicit unit is lost
+        # unless written there. It has to be written before the NDCube constructor, as
+        # that attaches the uncertainty, which takes or checks its unit against `.unit`.
+        # Compared as units so that the original BUNIT is kept if the constructor
+        # received an equal unit e.g counts / pixel and ct / pix but not Erg and J.
+        meta = MetaDict(meta)
+        if unit is not None:
+            unit = u.Unit(unit)
+            # Sources can override `.unit` (e.g. AIA falls back to PIXLUNIT), so the
+            # metadata is attached early to compare against that rather than BUNIT
+            self.meta = meta
+            if self.unit != unit:
+                meta['bunit'] = unit.to_string()
         # The WCS is derived from the metadata, so pass None here. The
         # wcs is built by the NDCube constructor when it accesses the
         # `.wcs` property.
@@ -448,7 +461,7 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             wcs=None,
             uncertainty=uncertainty,
             mask=mask,
-            meta=MetaDict(meta),
+            meta=meta,
             unit=unit,
             copy=copy,
             psf=psf,
@@ -458,15 +471,6 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         )
         # After the NDCube constructor has run there is now metadata for the setter
         self.wcs = wcs
-
-        # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
-        # lost unless written there. Compared as units but note that this is done only so
-        # we can keep the original BUNIT if the constructor had received an equal unit
-        # e.g counts / pixel and ct / pix but not Erg and J.
-        if unit is not None:
-            unit = u.Unit(unit)
-            if self.unit != unit:
-                self.meta['bunit'] = unit.to_string()
 
         # The plotter is an NDCube descriptor, so it is assigned the plotter
         # class rather than an instance of it.

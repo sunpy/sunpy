@@ -21,6 +21,7 @@ import astropy.wcs
 from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
+from astropy.nddata import StdDevUncertainty
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
@@ -690,6 +691,17 @@ def test_unit_kwarg_only_rewrites_bunit_when_the_unit_changes(generic_map, bunit
 
     assert new_map.unit == unit
     assert new_map.meta['bunit'] == expected_bunit
+
+
+@pytest.mark.parametrize('uncertainty_unit', [None, u.DN / u.s])
+def test_unit_kwarg_sets_uncertainty_unit(generic_map, uncertainty_unit):
+    generic_map.meta['bunit'] = 'DN'
+    uncertainty = StdDevUncertainty(np.ones(generic_map.data.shape), unit=uncertainty_unit)
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.DN / u.s,
+                            uncertainty=uncertainty)
+
+    assert new_map.unit == u.DN / u.s
+    assert new_map.uncertainty.unit == u.DN / u.s
 
 
 # ==============================================================================
