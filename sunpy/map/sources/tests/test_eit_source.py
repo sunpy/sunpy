@@ -66,10 +66,11 @@ def test_rsun(eit_map):
 
 
 def test_rsun_uses_spatial_units(eit_map):
-    original_rsun = eit_map.rsun_obs
-    eit_map.meta['cdelt1'] /= 3600
-    eit_map.meta['cunit1'] = 'deg'
-    assert u.allclose(eit_map.rsun_obs, original_rsun)
+    meta = eit_map.meta.copy()
+    meta['cdelt1'] /= 3600
+    meta['cunit1'] = 'deg'
+    new_map = sunpy.map.Map(eit_map.data, meta)
+    assert u.allclose(new_map.rsun_obs, eit_map.rsun_obs)
 
 
 def test_norm_clip(eit_map):
