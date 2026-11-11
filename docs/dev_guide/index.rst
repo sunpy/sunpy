@@ -16,11 +16,8 @@ This section contains the various guidelines to be followed by anyone working on
 .. grid:: 1 2 2 2
     :gutter: 3
 
-    .. grid-item-card::
+    .. grid-item-card:: Getting started
         :class-card: card
-
-        Getting started
-        ^^^^^^^^^^^^^^^
 
         .. toctree::
             :maxdepth: 3
@@ -29,11 +26,8 @@ This section contains the various guidelines to be followed by anyone working on
             contents/pr_checklist
             contents/conda_for_dependencies
 
-    .. grid-item-card::
+    .. grid-item-card:: Conventions
         :class-card: card
-
-        Conventions
-        ^^^^^^^^^^^
 
         .. toctree::
             :maxdepth: 1
@@ -46,11 +40,8 @@ This section contains the various guidelines to be followed by anyone working on
             contents/pr_review_procedure
             contents/units_quantities
 
-    .. grid-item-card::
+    .. grid-item-card:: Repo management
         :class-card: card
-
-        Repo management
-        ^^^^^^^^^^^^^^^
 
         .. toctree::
             :maxdepth: 1
@@ -61,11 +52,8 @@ This section contains the various guidelines to be followed by anyone working on
             contents/backports
             contents/funding
 
-    .. grid-item-card::
+    .. grid-item-card:: Extending sunpy
         :class-card: card
-
-        Extending sunpy
-        ^^^^^^^^^^^^^^^
 
         .. toctree::
             :maxdepth: 1
