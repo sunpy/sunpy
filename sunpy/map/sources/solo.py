@@ -14,7 +14,7 @@ from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.util.exceptions import warn_user
 
-__all__ = ['EUIMap', 'PHIMap', 'METISMap']
+__all__ = ['EUIMap', 'SPICEMap', 'PHIMap', 'METISMap']
 
 
 class EUIMap(GenericMap):
@@ -75,6 +75,45 @@ class EUIMap(GenericMap):
         is_solo = 'solar orbiter' in str(header.get('obsrvtry', '')).lower()
         is_eui = str(header.get('instrume', '')).startswith('EUI')
         return is_solo and is_eui
+
+
+class SPICEMap(GenericMap):
+    """
+    SPICE Image Map
+
+    SPICE stands for Spectral Imaging of the Coronal Environment, an extreme ultraviolet (EUV) imaging spectrometer
+    and one of the remote-sensing instruments aboard the European Space Agency's (ESA) Solar Orbiter mission
+
+    References
+    ----------
+    * `Solar Orbiter Mission Page <https://sci.esa.int/web/solar-orbiter/>`
+    * `SPICE Instrument Page <https://www.sidc.be/SPICE/about/instrument>`
+    """
+
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+        self._nickname = 'SPICE'
+
+    @property
+    def _rotation_matrix_from_crota(self):
+        return super()._rotation_matrix_from_crota(crota_key='CROTA')
+
+    @property
+    def processing_level(self):
+        if self.meta.get('level'):
+            # The level number is prepended by the letter L
+            return int(self.meta.get('level')[1:])
+
+    @property
+    def waveunit(self):
+        return super().waveunit or u.Angstrom
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Determines if header corresponds to an EUI image"""
+        is_solo = 'solar orbiter' in str(header.get('obsrvtry', '')).lower()
+        is_spice = str(header.get('instrume', '')).startswith('SPICE')
+        return is_solo and is_spice
 
 
 class PHIMap(GenericMap):
