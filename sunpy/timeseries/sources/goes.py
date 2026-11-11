@@ -83,6 +83,10 @@ class XRSTimeSeries(GenericTimeSeries):
         if columns is None:
             columns = ["xrsa", "xrsb"]
         axes, columns = self._setup_axes_columns(axes, columns)
+        valid_cols = [c for c in columns if c in ["xrsa","xrsb"]]
+        if not valid_cols:
+            raise ValueError("XRSTimeSeries.plot() only supports the flux channels: 'xrsa' and 'xrsb'.")
+        columns = valid_cols
         plot_settings = {"xrsa": ["blue", r"0.5$-$4.0 $\mathrm{\AA}$"], "xrsb": ["red", r"1.0$-$8.0 $\mathrm{\AA}$"]}
         data = self.to_dataframe()
         for channel in columns:
@@ -245,6 +249,41 @@ class XRSTimeSeries(GenericTimeSeries):
                 detector_info = True
                 xrsa_primary_chan = np.asarray(h5nc["xrsa_primary_chan"])
                 xrsb_primary_chan = np.asarray(h5nc["xrsb_primary_chan"])
+            keys_skip = {
+                "time",
+                "a_flux", "b_flux",
+                "xrsa_flux", "xrsb_flux",
+                "a_flags", "b_flags",
+                "xrsa_flags", "xrsb_flags",
+                "xrsa_flag", "xrsb_flag"
+            }
+            if detector_info:
+                keys_skip.update({"xrsa_primary_chan","xrsb_primary_chan"})
+            extra_col_data = {}
+            extra_col_units = {}
+            with u.add_enabled_aliases({'degs':u.deg}):
+                for key,var in h5nc.variables.items():
+                    if key in keys_skip:
+                        continue
+                    unit_str = var.attrs.get('units','')
+                    if isinstance(unit_str,bytes):
+                        unit_str = unit_str.decode('utf-8')
+                    if not unit_str or unit_str.lower() in ["none","dimensionless"]:
+                        unit = u.dimensionless_unscaled
+                    else:
+                        try:
+                            unit = u.Unit(unit_str)
+                        except ValueError:
+                            unit = u.dimensionless_unscaled
+                    if var.ndim == 1 and var.shape[0] == len(times):
+                        extra_col_data[key] = np.asarray(var)
+                        extra_col_units[key] = unit
+                    elif key == "corrected_current_xrsb2" and var.ndim == 2:
+                        corrected_current = np.asarray(var)
+                        for index in range(corrected_current.shape[1]):
+                            col_name = f"quad_diode{index}"
+                            extra_col_data[col_name] = corrected_current[:, index]
+                            extra_col_units[col_name] = unit
         try:
             times = times.datetime
         except ValueError:
@@ -279,6 +318,10 @@ class XRSTimeSeries(GenericTimeSeries):
             data["xrsb_primary_chan"] = xrsb_primary_chan
             units.update({"xrsa_primary_chan": u.dimensionless_unscaled,
                           "xrsb_primary_chan": u.dimensionless_unscaled})
+        # Adds additional columns info for GOES File
+        for col, value in extra_col_data.items():
+            data[col] = value
+            units[col] = extra_col_units[col]
         data = data.replace(-9999, np.nan)
         return data, header, units
 

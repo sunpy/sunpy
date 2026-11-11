@@ -1,3 +1,4 @@
+import h5netcdf
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -108,12 +109,31 @@ def test_goes_plot_column(goes_test_ts):
     assert len(ax.lines) == 1
     assert '0.5$-$4.0' == ax.lines[0].get_label().split()[0]
 
+def test_goes_plot_column_filter(goes_test_ts):
+    with pytest.raises(ValueError,match = r"XRSTimeSeries\.plot\(\) only supports the flux channels: 'xrsa' and 'xrsb'\."):
+        goes_test_ts.plot(columns=["quad_diode0"])
 
 def test_goes_r_primarydetector():
     # Test that the primary channel column added for the GOES-R satellites
     ts_goes = sunpy.timeseries.TimeSeries(goes17_filepath_nc, source="XRS")
     assert "xrsa_primary_chan" in ts_goes.columns
 
+def test_goes_additional_columns():
+    # Test additional goes columns for 1 min avg files
+    for file_path in [goes15_1m_avg_filepath,goes16_1m_avg_filepath]:
+        ts_goes = sunpy.timeseries.TimeSeries(file_path,source="XRS")
+        ts_columns = set(ts_goes.columns)
+        with h5netcdf.File(file_path,mode="r") as h5nc:
+            goes_keys = set(h5nc.variables.keys())
+        if "corrected_current_xrsb2" in goes_keys:
+            assert "corrected_current_xrsb2" not in ts_columns
+            assert {"quad_diode0", "quad_diode1", "quad_diode2", "quad_diode3"} <= ts_columns
+        if "roll_angle" in goes_keys:
+            assert "roll_angle" in ts_columns
+        assert "xrsa_flux" not in ts_columns
+        assert "xrsb_flux" not in ts_columns
+        assert "xrsa_flag" not in ts_columns
+        assert "xrsb_flag" not in ts_columns
 
 @pytest.mark.remote_data
 def test_goes_remote():
