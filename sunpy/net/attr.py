@@ -187,6 +187,40 @@ class AttrMeta(type):
         table = _create_table(self)
         show(table.to_pandas(), **kwargs)
 
+    def to_html_datatable(self, **kwargs):
+        """
+        Render the attrs table as an interactive itables datatable and return the HTML.
+
+        Unlike `show_in_notebook`, which only renders when called live inside
+        a Jupyter notebook, this returns the rendered HTML directly, so it can
+        be embedded anywhere that picks up an object's ``_repr_html_``, such
+        as a documentation example.
+
+        .. note::
+            This function requires the optional dependency ``itables``.
+            Ensure it is installed before calling this method.
+
+        Parameters
+        ----------
+        **kwargs : dict, optional
+            Additional keyword arguments to customize the ``itables.to_html_datatable`` function.
+
+        Returns
+        -------
+        `IPython.display.HTML`
+        """
+        try:
+            from itables import to_html_datatable
+        except ImportError:
+            raise ImportError(
+                "`itables` is required to display tables. "
+                "Install itables using `pip install itables` or `conda install -c conda-forge itables`."
+            )
+        from IPython.display import HTML
+
+        table = _create_table(self)
+        return HTML(to_html_datatable(table.to_pandas(), **kwargs))
+
 
 class Attr(metaclass=AttrMeta):
     """This is the base for all attributes."""
