@@ -2070,3 +2070,34 @@ def test_submap_nan_error(aia171_test_map):
     coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
     with pytest.raises(ValueError, match="The provided input coordinates to"):
         aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
+
+
+def test_resample_superpixel_omitted_pc_keywords():
+    ref = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime="2020-01-01", observer="earth", frame="helioprojective")
+    # Case 1: pc1_1 absent (defaults to 1.0), pc1_2 present
+    h = sunpy.map.make_fitswcs_header((64, 64), ref, scale=[2, 2] * u.arcsec / u.pix)
+    for k in ['pc1_1', 'pc1_2', 'pc2_1', 'pc2_2']:
+        h.pop(k, None)
+    h['pc1_2'] = 0.2
+    m = sunpy.map.Map(np.zeros((64, 64)), h)
+
+    resampled = m.resample([32, 16] * u.pix)
+    assert resampled.meta['pc1_2'] == pytest.approx(0.4)
+    p_r = resampled.wcs.pixel_to_world(-0.5, -0.5)
+    np.testing.assert_allclose(m.wcs.world_to_pixel(p_r), [-0.5, -0.5], atol=1e-5)
+
+    superpixel_map = m.superpixel([2, 4] * u.pix)
+    assert superpixel_map.meta['pc1_2'] == pytest.approx(0.4)
+    p_s = superpixel_map.wcs.pixel_to_world(-0.5, -0.5)
+    np.testing.assert_allclose(m.wcs.world_to_pixel(p_s), [-0.5, -0.5], atol=1e-5)
+
+    # Case 2: pc1_1 and pc2_2 present, zero off-diagonals omitted
+    h2 = sunpy.map.make_fitswcs_header((64, 64), ref, scale=[2, 2] * u.arcsec / u.pix)
+    for k in ['pc1_2', 'pc2_1']:
+        h2.pop(k, None)
+    m2 = sunpy.map.Map(np.zeros((64, 64)), h2)
+    resampled2 = m2.resample([32, 16] * u.pix)
+    assert 'pc1_2' not in resampled2.meta
+    superpixel_map2 = m2.superpixel([2, 4] * u.pix)
+    assert 'pc1_2' not in superpixel_map2.meta
+
