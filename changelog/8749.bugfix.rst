@@ -1,0 +1,1 @@
+Fixed :meth:`sunpy.timeseries.GenericTimeSeries.extract` raising an unhelpful ``KeyError`` for an invalid column name. It now raises a ``ValueError`` listing the valid columns, matching :meth:`~sunpy.timeseries.GenericTimeSeries.remove_column`.
