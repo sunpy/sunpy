@@ -1,0 +1,1 @@
+Added a white background behind the figures in the HTML representations of `~sunpy.map.GenericMap` and `~sunpy.timeseries.GenericTimeSeries` (e.g., in Jupyter notebooks, VS Code, and ``quicklook()``) when a dark color scheme is in use, so that the text in the figures is legible. The figures still have transparent backgrounds when a light color scheme is in use.
