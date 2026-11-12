@@ -8,6 +8,8 @@ import itertools
 import numbers
 import textwrap
 import webbrowser
+from abc import ABCMeta
+from collections.abc import Mapping
 from functools import wraps
 from tempfile import NamedTemporaryFile
 from typing import Literal
@@ -19,6 +21,7 @@ from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
 import reproject
+from astropy.wcs.wcsapi import BaseHighLevelWCS, BaseLowLevelWCS
 
 from ndcube import NDCube
 
@@ -53,7 +56,7 @@ from sunpy.map.mixins.mapmeta import (
     SpatialPair,  # noqa: F401 -- re-exported for backwards compatibility with `sunpy.map.mapbase.SpatialPair`
 )
 from sunpy.map.plotting.mpl_plotter import MapPlotter
-from sunpy.util import MetaDict, extent_in_other_wcs
+from sunpy.util import MetaDict, extent_in_other_wcs, warn_deprecated
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
@@ -109,27 +112,150 @@ to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representa
 __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
-class GenericMap(MapMetaMixin, NDCube):
+# We want to deprecate the old ``GenericMap.__init__``, but without
+# breaking the old constructor right away, The main complication with
+# this is that if an non-updated class calls ``super().__init__`` with
+# the old signature, so we also need to inject a class above an old
+# class to translate the call in the old class to it's superclass to
+# the new signature as well.  So we define two decorators (wrappers)
+# which convert in both directions.
+def old_to_new_converter(old_init):
+    """
+    Wraps an old init to call it as a new init.
+    """
+    def wrapper(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        kwargs.update(
+            {
+                "wcs": wcs,
+                "uncertainty": uncertainty,
+                "mask": mask,
+                "unit": unit,
+                "copy": copy,
+                "psf": psf,
+                "extra_coords": extra_coords,
+                "global_coords": global_coords,
+                "plot_settings": plot_settings,
+            }
+        )
+        return old_init(self, data=data, header=meta, **kwargs)
+
+    # Pass wrapped through so we know we've wrapped it
+    wrapper.__wrapped__ = old_init
+    # But set the signature to the un-wrapped version
+    wrapper.__signature__ = inspect.signature(wrapper, follow_wrapped=False)
+    return wrapper
+
+
+def new_to_old_converter(new_init):
+    """
+    Wraps an new init to call it as a old init.
+    """
+    def wrapper(
+        self,
+        data,
+        header,
+        plot_settings=None,
+        **kwargs,
+    ):
+        return new_init(self, data=data, meta=header, plot_settings=plot_settings, **kwargs)
+
+    # Pass wrapped through so we know we've wrapped it
+    wrapper.__wrapped__ = new_init
+    # But set the signature to the un-wrapped version
+    wrapper.__signature__ = inspect.signature(wrapper, follow_wrapped=False)
+    return wrapper
+
+
+class GenericMapDeprecationMeta(ABCMeta):
+    """
+    A metaclass which translates old ``__init__`` methods to new ones.
+
+    This also injects a mixin class to override the ``super().__init__``.
+    """
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        original_init = namespace.get('__init__')
+        # Don't wrap again if we already wrapped
+        if original_init is not None and not hasattr(original_init, "__wrapped__"):
+            sig = inspect.signature(original_init)
+            if "header" in sig.parameters:
+                warn_deprecated("The old GenericMap(data, header, **kwargs) signature is deprecated in favour of the NDCube constructor signature. You should pass the header as the ``meta=header`` keyword argument.", stacklevel=2)
+                namespace['__init__'] = old_to_new_converter(original_init)
+                gmbase = [b for b in bases if issubclass(b, GenericMap)][0]
+                Translator = type(
+                    f"{gmbase.__name__}Translator",
+                    (object,),
+                    {"__init__": new_to_old_converter(gmbase.__init__)},
+                )
+                bases = (Translator,) + bases
+
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     """
     A Generic spatially-aware 2D data array
 
     Parameters
     ----------
-    data : `numpy.ndarray`, list
-        A 2d list or ndarray containing the map data.
-    header : dict
-        A dictionary of the original image header tags.
+    data : array-like or `ndcube.NDCube` or `astropy.nddata.NDData`
+        The array holding the actual data in this object.
+
+    wcs : `astropy.wcs.WCS` or `None`
+        A WCS to apply over the ``meta=`` (header). If only a ``wcs``
+        is provided and not a ``meta`` the WCS is converted to a
+        header and used in lieu of ``meta``.
+
+    uncertainty : Any, optional
+        Uncertainty in the dataset. Should have an attribute uncertainty_type
+        that defines what kind of uncertainty is stored, for example "std"
+        for standard deviation or "var" for variance. A metaclass defining such
+        an interface is `~astropy.nddata.NDUncertainty` - but isn't mandatory.
+        If the uncertainty has no such attribute the uncertainty is stored as
+        `~astropy.nddata.UnknownUncertainty`.
+        Defaults to `None`.
+
+    mask : Any, optional
+        Mask for the dataset. Masks should follow the numpy convention
+        that valid data points are marked by `False` and invalid ones with `True`.
+        Defaults to `None`.
+
+    meta : dict-like
+        A FITS header like object to build the map from. **Required, unless ``wcs`` is given.**
+
+    unit : `astropy.units.Unit` or `str`, optional
+        Unit to record in BUNIT. Overrides any existing BUNIT in ``meta`` - does not convert
+        the data array. Use this to set the unit of the data after converting it. e.g. when
+        converting units from counts to counts per second.
+        Default is `None`, which leaves the unit to BUNIT.
+
+    copy : bool, optional
+        Indicates whether to save the arguments as copy. `True` copies every attribute
+        before saving it while `False` tries to save every parameter as reference.
+        Note however that it is not always possible to save the input as reference.
+        Default is `False`.
+
     plot_settings : dict, optional
         Plot settings.
 
     Other Parameters
     ----------------
-    unit : unit-like, optional
-        Unit to record in BUNIT. Overrides any existing BUNIT in header - does not convert the data array.
-        Use this to set the unit of the data after converting it. e.g. when converting units from counts
-        to counts per second.
     **kwargs :
-        Additional keyword arguments are passed to `~astropy.nddata.NDData`
+        Additional keyword arguments are passed to `~ndcube.NDCube`
         init.
 
 
@@ -233,7 +359,22 @@ class GenericMap(MapMetaMixin, NDCube):
             if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
         # These have to be set before calling the parent __init__, because
         # NDCube.__init__ checks that the WCS is not None, which for a Map means
         # building it from the metadata, which in turn needs these attributes.
@@ -260,22 +401,76 @@ class GenericMap(MapMetaMixin, NDCube):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
+        # Remove after deprecation
+        # Support the old header kwarg
+        header = kwargs.pop("header", None)
+        if header is not None:
+            if meta is None:
+                meta = header
+                warn_deprecated("The header= keyword argument is deprecated, use meta=")
+            else:
+                raise TypeError("Passing header and meta is not supported, just use meta.")
+
+        # Remove after deprecation
+        # Support the case where a header is passed instead of the wcs argument,
+        # This is normally only done as a positional argument
+        if meta is None and wcs is not None:
+            if not isinstance(wcs, (BaseLowLevelWCS, BaseHighLevelWCS)) and isinstance(wcs, Mapping):
+                meta = wcs
+                wcs = None
+                warn_deprecated(
+                    "Constructing a Map with a header as a positional argument is deprecated"
+                    ", use ``GenericMap(data, meta=header)``"
+                )
+
+        # If only a WCS is passed, convert it to a header and construct that way.
+        # If both are passed then the WCS takes precedence, as it is
+        # applied after the super().__init__ call.
+        if meta is None and wcs is not None:
+            # unwrap and validate that it's a FITS WCS
+            wcs, _ = unwrap_wcs_to_fitswcs(wcs)
+            meta = wcs.to_header(relax=True)
+            wcs = None
+
+        # We can't make meta a required argument in the signature
+        # without breaking NDCube compatibility.
+        if meta is None:
+            raise TypeError("Missing required argument 'meta'.")
+
+        # We can get superfluous kwargs from the factories so strip them out here
         params = list(inspect.signature(NDCube).parameters)
         ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        if ndcube_kwargs.pop("wcs", None) is not None:
-            raise ValueError("Passing a WCS to GenericMap is not supported, "
-                             "the WCS is derived from the metadata.")
-        # The WCS is derived from the metadata, so pass None here. The wcs is built by the NDCube constructor when it accesses the `.wcs` property.
-        super().__init__(data, wcs=None, meta=MetaDict(header), **ndcube_kwargs)
-
-        # `.unit` reads BUNIT, not the value NDCube just stored, so an explicit unit is
-        # lost unless written there. Compared as units but note that this is done only so
-        # we can keep the original BUNIT if the constructor had received an equal unit
-        # e.g counts / pixel and ct / pix but not Erg and J.
-        if (unit := ndcube_kwargs.get('unit')) is not None:
+        # `.unit` reads BUNIT, not the value NDCube stores, so an explicit unit is lost
+        # unless written there. It has to be written before the NDCube constructor, as
+        # that attaches the uncertainty, which takes or checks its unit against `.unit`.
+        # Compared as units so that the original BUNIT is kept if the constructor
+        # received an equal unit e.g counts / pixel and ct / pix but not Erg and J.
+        meta = MetaDict(meta)
+        if unit is not None:
             unit = u.Unit(unit)
+            # Sources can override `.unit` (e.g. AIA falls back to PIXLUNIT), so the
+            # metadata is attached early to compare against that rather than BUNIT
+            self.meta = meta
             if self.unit != unit:
-                self.meta['bunit'] = unit.to_string()
+                meta['bunit'] = unit.to_string()
+        # The WCS is derived from the metadata, so pass None here. The
+        # wcs is built by the NDCube constructor when it accesses the
+        # `.wcs` property.
+        super().__init__(
+            data,
+            wcs=None,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            **ndcube_kwargs,
+        )
+        # After the NDCube constructor has run there is now metadata for the setter
+        self.wcs = wcs
 
         # The plotter is an NDCube descriptor, so it is assigned the plotter
         # class rather than an instance of it.
@@ -525,9 +720,10 @@ class GenericMap(MapMetaMixin, NDCube):
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
+        This is a shortcut for ``cls(data, meta=meta, **kwargs)`` which also
+        applies ``plot_settings`` to the new instance.
         """
-        new_map = cls(data, meta, **kwargs)
+        new_map = cls(data, meta=meta, **kwargs)
         # plot_settings are set explicitly here as some map sources
         # explicitly set some of the plot_settings in the constructor
         # and we want to preserve the plot_settings of the previous
@@ -1856,7 +2052,7 @@ class GenericMap(MapMetaMixin, NDCube):
             target_header['DATE-OBS'] = self.date.utc.isot
 
         # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_header,
+        outmap = GenericMap(output_array, meta=target_header,
                             plot_settings=self.plot_settings)
 
         # Check rsun mismatch

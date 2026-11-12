@@ -6,6 +6,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.rhessi import RHESSIMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 # The observer is now resolved when the map is constructed rather than on first
@@ -79,3 +80,10 @@ def test_new_instance_preserves_plot_settings(rhessi_map):
 def test_wcs(rhessi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     rhessi_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(rhessi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = RHESSIMap(rhessi_map.data, rhessi_map.meta)
+    assert isinstance(smap, RHESSIMap)

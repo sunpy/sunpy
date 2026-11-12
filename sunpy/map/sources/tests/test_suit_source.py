@@ -5,6 +5,7 @@ import pytest
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suit import SUITMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -56,3 +57,10 @@ def test_wcs(suit_map):
 
 def test_private_date_setters(suit_map):
     _test_private_date_setters(suit_map)
+
+
+def test_old_sig_sources(suit_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SUITMap(suit_map.data, suit_map.meta)
+    assert isinstance(smap, SUITMap)
