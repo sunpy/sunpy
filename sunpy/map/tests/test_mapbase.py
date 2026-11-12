@@ -21,7 +21,7 @@ import astropy.wcs
 from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
-from astropy.nddata import StdDevUncertainty
+from astropy.nddata import InverseVariance, NDDataRef, StdDevUncertainty, VarianceUncertainty
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
@@ -1820,6 +1820,29 @@ def test_superpixel_metadata(generic_map, f, dimensions):
             assert superpix_map.meta[key] == generic_map.meta[key]
 
 
+@pytest.mark.parametrize("unmask", [False, True])
+def test_fill_masked(aia171_test_map_with_mask, unmask):
+    masked = aia171_test_map_with_mask.mask
+    filled = aia171_test_map_with_mask.fill_masked(0, unmask=unmask)
+
+    assert isinstance(filled, type(aia171_test_map_with_mask))
+    assert_quantity_allclose(filled.data[masked], 0)
+    # Unmasked values are untouched
+    assert_quantity_allclose(filled.data[~masked], aia171_test_map_with_mask.data[~masked])
+    if unmask:
+        assert not np.any(filled.mask)
+    else:
+        assert np.array_equal(filled.mask, masked)
+    # The metadata is carried over rather than rebuilt
+    assert filled.meta == aia171_test_map_with_mask.meta
+
+
+def test_fill_masked_in_place(aia171_test_map_with_mask):
+    masked = aia171_test_map_with_mask.mask.copy()
+    assert aia171_test_map_with_mask.fill_masked(0, fill_in_place=True) is None
+    assert_quantity_allclose(aia171_test_map_with_mask.data[masked], 0)
+
+
 def test_superpixel_masked(aia171_test_map_with_mask):
     input_shape = aia171_test_map_with_mask.shape
     dimensions = (2, 2) * u.pix
@@ -2771,8 +2794,217 @@ def test_map_arithmetic_operations_raise_exceptions(aia171_test_map, value):
         _ = aia171_test_map + value
     with pytest.raises(TypeError):
         _ = aia171_test_map * value
-    with pytest.raises(TypeError):
+    # `NDCube.__rtruediv__` evaluates ``self ** -1`` before it looks at the operand, so
+    # it divides by any zeros in the data on its way to rejecting the operand.
+    with np.errstate(divide='ignore'), pytest.raises(TypeError):
         _ = value / aia171_test_map
+
+
+@pytest.fixture
+def aia171_with_mask_and_uncertainty(aia171_test_map):
+    mask = np.zeros(aia171_test_map.data.shape, dtype=bool)
+    mask[:10, :] = True
+    return sunpy.map.Map(aia171_test_map.data, aia171_test_map.meta, mask=mask,
+                         uncertainty=StdDevUncertainty(np.ones(aia171_test_map.data.shape)))
+
+
+def test_map_arithmetic_keeps_mask_and_propagates_uncertainty(aia171_with_mask_and_uncertainty):
+    smap = aia171_with_mask_and_uncertainty
+    result = smap * (2 * u.dimensionless_unscaled)
+    np.testing.assert_array_equal(result.mask, smap.mask)
+    np.testing.assert_allclose(result.uncertainty.array, 2 * smap.uncertainty.array)
+
+
+@pytest.fixture
+def map_with_uncertainty(aia171_test_map):
+    # Positive data and non-uniform uncertainty, so that relative uncertainties matter
+    rng = np.random.default_rng(0)
+    shape = aia171_test_map.data.shape
+    mask = np.zeros(shape, dtype=bool)
+    mask[:10, :] = True
+    return sunpy.map.Map(rng.uniform(1, 10, shape), aia171_test_map.meta, mask=mask,
+                         uncertainty=StdDevUncertainty(rng.uniform(0.1, 1, shape)))
+
+
+def nddata_operand(shape, unit):
+    rng = np.random.default_rng(1)
+    mask = np.zeros(shape, dtype=bool)
+    mask[:, :5] = True
+    return NDDataRef(rng.uniform(1, 10, shape), unit=unit, mask=mask,
+                     uncertainty=StdDevUncertainty(rng.uniform(0.1, 1, shape)))
+
+
+def check_uncertainty_matches_data(smap):
+    # The uncertainty, the map's unit and BUNIT must all agree, or e.g.
+    # `uncertainty.quantity` is in the wrong unit
+    assert smap.uncertainty.unit == smap.unit
+    assert u.Unit(smap.meta["bunit"]) == smap.unit
+
+
+@pytest.mark.parametrize("value", [
+    2,
+    2 * u.dimensionless_unscaled,
+    2 * u.s,
+    2 * u.DN,
+    u.Quantity(np.full((128, 128), 2), u.s),
+])
+@pytest.mark.parametrize("operator", ["mul", "truediv"])
+def test_map_arithmetic_quantity_uncertainty_units(map_with_uncertainty, value, operator):
+    # The uncertainty used to keep the map's original unit, as BUNIT was only updated
+    # after the uncertainty had been attached to the new map
+    smap = map_with_uncertainty
+    result = getattr(smap, f"__{operator}__")(value)
+    expected_unit = getattr(smap.unit, f"__{operator}__")(u.Quantity(value).unit)
+    assert result.unit == expected_unit
+    if expected_unit != smap.unit:
+        check_uncertainty_matches_data(result)
+    assert result.uncertainty.unit == expected_unit
+    expected = getattr(smap.uncertainty.array, f"__{operator}__")(u.Quantity(value).value)
+    np.testing.assert_allclose(result.uncertainty.array, expected)
+    np.testing.assert_array_equal(result.mask, smap.mask)
+
+
+@pytest.mark.parametrize("value", [2 * u.s, 2 * u.DN, 2])
+def test_map_arithmetic_reflected_quantity_uncertainty_units(map_with_uncertainty, value):
+    result = value * map_with_uncertainty
+    assert result.uncertainty.unit == result.unit == map_with_uncertainty.unit * u.Quantity(value).unit
+
+
+@pytest.mark.parametrize("operator", ["add", "sub"])
+def test_map_arithmetic_quantity_add_keeps_uncertainty(map_with_uncertainty, operator):
+    smap = map_with_uncertainty
+    result = getattr(smap, f"__{operator}__")(1 * u.DN)
+    assert result.unit == smap.unit
+    assert result.uncertainty.unit == smap.unit
+    np.testing.assert_allclose(result.uncertainty.array, smap.uncertainty.array)
+
+
+def test_map_arithmetic_neg_keeps_uncertainty(map_with_uncertainty):
+    result = -map_with_uncertainty
+    assert result.uncertainty.unit == result.unit
+    np.testing.assert_allclose(result.uncertainty.array, map_with_uncertainty.uncertainty.array)
+
+
+@pytest.mark.parametrize(("operator", "operand_unit"), [
+    ("add", u.DN),
+    ("subtract", u.DN),
+    ("multiply", u.s),
+    ("divide", u.s),
+    ("multiply", u.DN),
+    ("divide", u.DN),
+])
+def test_map_arithmetic_nddata_propagates_uncertainty(map_with_uncertainty, operator, operand_unit):
+    # These used to raise UnitConversionError whenever the unit changed, as the new
+    # uncertainty was checked against the old BUNIT
+    smap = map_with_uncertainty
+    other = nddata_operand(smap.data.shape, operand_unit)
+    dunder = {"add": "add", "subtract": "sub", "multiply": "mul", "divide": "truediv"}[operator]
+    result = getattr(smap, f"__{dunder}__")(other)
+
+    # astropy's own NDData arithmetic is the reference
+    reference = getattr(NDDataRef(smap.data, unit=smap.unit,
+                                  uncertainty=StdDevUncertainty(smap.uncertainty.array)),
+                        operator)(other)
+    assert isinstance(result, type(smap))
+    assert result.unit == reference.unit
+    np.testing.assert_allclose(result.data, reference.data)
+    np.testing.assert_allclose(result.uncertainty.array, reference.uncertainty.array)
+    assert result.uncertainty.unit == reference.uncertainty.unit
+    if result.unit != smap.unit:
+        check_uncertainty_matches_data(result)
+    np.testing.assert_array_equal(result.mask, smap.mask | other.mask)
+
+
+def test_map_arithmetic_reflected_nddata(map_with_uncertainty):
+    smap = map_with_uncertainty
+    other = nddata_operand(smap.data.shape, u.DN)
+    result = other + smap
+    assert isinstance(result, type(smap))
+    np.testing.assert_allclose(result.uncertainty.array,
+                               np.hypot(smap.uncertainty.array, other.uncertainty.array))
+
+
+@pytest.mark.parametrize("operator", ["add", "sub", "mul", "truediv"])
+def test_map_arithmetic_with_own_to_nddata(map_with_uncertainty, operator):
+    # The documented way to combine two cubes is to strip the WCS from one of them
+    smap = map_with_uncertainty
+    result = getattr(smap, f"__{operator}__")(smap.to_nddata(wcs=None))
+    expected_unit = getattr(smap.unit, f"__{operator}__")(smap.unit) if operator in ("mul", "truediv") else smap.unit
+    assert result.unit == expected_unit
+    assert result.uncertainty.unit == expected_unit
+    assert np.all(np.isfinite(result.uncertainty.array))
+
+
+def test_map_arithmetic_with_to_nddata_keeping_wcs_raises(map_with_uncertainty):
+    with pytest.raises(TypeError, match="coordinate-aware"):
+        map_with_uncertainty + map_with_uncertainty.to_nddata()
+
+
+def test_map_arithmetic_without_uncertainty_takes_operand_uncertainty(map_with_uncertainty):
+    smap = sunpy.map.Map(map_with_uncertainty.data, map_with_uncertainty.meta)
+    other = nddata_operand(smap.data.shape, u.s)
+    result = smap * other
+    assert result.unit == smap.unit * u.s
+    assert result.uncertainty.unit == result.unit
+
+
+@pytest.mark.parametrize("operator", ["mul", "truediv"])
+def test_map_arithmetic_result_to_nddata_round_trip(map_with_uncertainty, operator):
+    result = getattr(map_with_uncertainty, f"__{operator}__")(2 * u.s)
+    nddata = result.to_nddata(wcs=None)
+    assert nddata.unit == result.unit
+    assert nddata.uncertainty.unit == result.unit
+    np.testing.assert_allclose(nddata.uncertainty.array, result.uncertainty.array)
+    # and it can be rebuilt into an equivalent map
+    rebuilt = sunpy.map.Map(nddata.data, result.meta, uncertainty=nddata.uncertainty)
+    assert rebuilt.unit == result.unit
+    assert rebuilt.uncertainty.unit == result.unit
+
+
+@pytest.mark.parametrize(("uncertainty_type", "power"), [
+    (StdDevUncertainty, 1),
+    (VarianceUncertainty, 2),
+    (InverseVariance, -2),
+])
+@pytest.mark.parametrize("value", [2 * u.s, 1 / (2 * u.s)])
+def test_map_arithmetic_uncertainty_type_units(aia171_test_map, uncertainty_type, power, value):
+    # Only the units are checked: the values of variance-type uncertainties are scaled
+    # by ndcube itself, not by the map
+    smap = sunpy.map.Map(np.ones(aia171_test_map.data.shape), aia171_test_map.meta,
+                         uncertainty=uncertainty_type(np.ones(aia171_test_map.data.shape)))
+    result = smap * value
+    assert result.unit == smap.unit * value.unit
+    assert result.uncertainty.unit == result.unit ** power
+
+
+@pytest.mark.parametrize("operation", [
+    lambda m: m.resample([32, 32] * u.pix),
+    lambda m: m.resample(m.data.shape[::-1] * u.pix),
+    lambda m: m.rotate(30 * u.deg),
+    lambda m: m.rotate(90 * u.deg),
+], ids=["resample", "resample-same-shape", "rotate", "rotate-90-same-shape"])
+def test_transforms_drop_mask_and_uncertainty(aia171_with_mask_and_uncertainty, operation):
+    # The data is transformed but the mask and uncertainty are not, so they would no
+    # longer line up with it, even when the shape happens to be unchanged.
+    result = operation(aia171_with_mask_and_uncertainty)
+    assert result.mask is None
+    assert result.uncertainty is None
+
+
+def test_new_instance_positional_signature(aia171_test_map):
+    # Packages built on sunpy call this with the old (data, meta, plot_settings) order
+    new_map = aia171_test_map._new_instance(aia171_test_map.data, aia171_test_map.meta,
+                                            {'cmap': 'gray'})
+    assert isinstance(new_map, type(aia171_test_map))
+    assert new_map.plot_settings['cmap'] == 'gray'
+
+
+def test_new_instance_different_shape_drops_mask(aia171_with_mask_and_uncertainty):
+    smap = aia171_with_mask_and_uncertainty
+    new_map = smap._new_instance(data=smap.data[:10, :10], meta=smap.meta)
+    assert new_map.mask is None
+    assert new_map.uncertainty is None
+
 
 @pytest.mark.parametrize(('units_string','expected_unit'),[
     ('Gauss', u.G),
