@@ -15,6 +15,17 @@ from sunpy.time import parse_time
 __all__ = ['GONGSynopticMap', 'GONGHalphaMap', 'GONGMagnetogramMap']
 
 
+def _add_cdelt_from_limb_fit(gong_map):
+    # GONG H-alpha and magnetogram headers have no CDELTi, so the pixel scale comes
+    # from the limb fit. Store it as CDELTi so that methods which rescale the image
+    # (e.g. resample and superpixel) update the scale along with the data.
+    if 'cdelt1' in gong_map.meta or 'cdelt2' in gong_map.meta:
+        return
+    scale = gong_map._limb_fit_scale
+    gong_map.meta['cdelt1'] = scale.axis1.to_value(gong_map.spatial_units[0] / u.pixel)
+    gong_map.meta['cdelt2'] = scale.axis2.to_value(gong_map.spatial_units[1] / u.pixel)
+
+
 _SITE_NAMES = {
     'LE': 'Learmonth, (AUS)',
     'UD': 'Udaipur, (IND)',
@@ -104,16 +115,29 @@ class GONGHalphaMap(GenericMap):
     * `GONG H-alpha Full-disk Images. <https://doi.org/10.25668/as28-7p13>`__
     """
 
+    def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
+        _add_cdelt_from_limb_fit(self)
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         return (str(header.get('TELESCOP', '')).endswith('GONG') and
                 str(header.get('IMTYPE', '')).startswith('H-ALPHA'))
 
     @property
-    def scale(self):
+    def _limb_fit_scale(self):
         solar_r = self.meta['SOLAR-R'] * u.arcsec
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r/ (self.meta['FNDLMBMA'] * u.pixel))
+
+    @property
+    def scale(self):
+        if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
+            # CDELTi are in spatial_units (degrees), but this class has always reported the scale in arcsec / pix
+            scale = super().scale
+            return SpatialPair(scale.axis1.to(u.arcsec / u.pixel),
+                               scale.axis2.to(u.arcsec / u.pixel))
+        return self._limb_fit_scale
 
     @property
     def rsun_obs(self):
@@ -167,6 +191,7 @@ class GONGMagnetogramMap(GenericMap):
     """
     def __init__(self, data, header, **kwargs):
         super().__init__(data, header, **kwargs)
+        _add_cdelt_from_limb_fit(self)
         data_abs_max = np.nanmax(np.abs(self.data))
         self.plot_settings['norm'] =  SymLogNorm(50, vmin=-data_abs_max, vmax=data_abs_max)
 
@@ -202,10 +227,19 @@ class GONGMagnetogramMap(GenericMap):
         self._set_date(date)
 
     @property
-    def scale(self):
+    def _limb_fit_scale(self):
         solar_r = (self.meta['SEMIDIAM'] * u.rad).to(u.arcsec)
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r / (self.meta['FNDLMBMA'] * u.pixel))
+
+    @property
+    def scale(self):
+        if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
+            # CDELTi are in spatial_units (degrees), but this class has always reported the scale in arcsec / pix
+            scale = super().scale
+            return SpatialPair(scale.axis1.to(u.arcsec / u.pixel),
+                               scale.axis2.to(u.arcsec / u.pixel))
+        return self._limb_fit_scale
 
     @property
     def coordinate_system(self):
